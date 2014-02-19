@@ -1,0 +1,21 @@
+{
+  "name": "mwater-forms",
+  "version": "0.0.0",
+  "description": "",
+  "main": "lib/index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "testem ci"
+  },
+  "author": "Clayton Grassick",
+  "license": "GPLv3",
+  "dependencies": {
+    "chai": "~1.9.0",
+    "coffeeify": "~0.6.0",
+    "backbone": "~1.1.1",
+    "jquery": "~2.1.0",
+    "underscore": "~1.6.0"
+  }
+}

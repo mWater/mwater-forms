@@ -1,0 +1,5 @@
+dedup Locationfinder, LocationView, GeoJSON
+
+add displayImage to context
+
+add selectSource to context
