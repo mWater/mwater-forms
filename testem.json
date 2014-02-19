@@ -13,7 +13,7 @@
     ],
     "launchers": {
     },
-    "before_tests": "coffee -c -o lib src/*.coffee && browserify -t coffeeify --extension=.coffee --debug test/*Tests.coffee -o test/browserified.js",
+    "before_tests": "browserify -t coffeeify -t hbsfy --extension=.coffee --debug test/*Tests.coffee -o test/browserified.js",
     "on_exit": "rm test/browserified.js",
     "launch_in_dev": [ "chrome" ]
 }

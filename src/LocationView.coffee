@@ -24,7 +24,7 @@ class LocationView extends Backbone.View
       @locationFinder.startWatch()
 
     # Do not re-render template as it would destroy input fields
-    @$el.html templates['LocationView']()
+    @$el.html require('./templates/LocationView.hbs')()
 
     @render()
 

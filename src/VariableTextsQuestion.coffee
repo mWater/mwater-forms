@@ -39,7 +39,7 @@ module.exports = Question.extend
     items = @model.get(@id) or []
 
     # Perform a render
-    @preserveInputs templates['forms/VariableTextsQuestion'](
+    @preserveInputs require('./templates/VariableTextsQuestion.hbs')(
       items: items), @answerEl
 
   # Apply a template of newHtml to an oldElem, preserving inputs focus 

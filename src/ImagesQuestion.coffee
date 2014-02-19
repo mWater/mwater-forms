@@ -30,7 +30,7 @@ module.exports = class ImagesQuestion extends Question
       noImage = not canAdd and (not images or images.length == 0) and not notSupported
 
       # Render images
-      answerEl.html templates['forms/ImagesQuestion'](images: images, canAdd: canAdd, noImage: noImage, notSupported: notSupported)
+      answerEl.html require('./templates/ImagesQuestion.hbs')(images: images, canAdd: canAdd, noImage: noImage, notSupported: notSupported)
 
       # Set sources
       if images
@@ -59,13 +59,13 @@ module.exports = class ImagesQuestion extends Question
 
     # Create onRemove callback if not readonly
     if not @options.readonly
-      onRemove = () => 
+      remove = () => 
         images = @model.get(@id) || []
         images = _.reject images, (img) =>
           img.id == id
         @model.set(@id, images)
     else
-      onRemove = null
+      remove = null
 
     if @ctx.displayImage?
-      @ctx.displayImage({ id: id, onRemove: onRemove })
+      @ctx.displayImage({ id: id, remove: remove })

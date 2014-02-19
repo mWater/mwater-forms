@@ -1,0 +1,13 @@
+{{#if prefixOrSuffix}}
+<div class="input-group">
+	{{#if prefix}}
+	<span class="input-group-addon">{{prefix}}</span>
+	{{/if}}
+	<input class="form-control" type="number" {{#if decimal}} step="any" {{/if}} />
+	{{#if suffix}}
+	<span class="input-group-addon">{{suffix}}</span>
+	{{/if}}
+</div>
+{{else}}
+<input class="form-control" type="number" {{#if decimal}} step="any" {{/if}} />
+{{/if}}

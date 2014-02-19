@@ -5,7 +5,7 @@ Question = require './Question'
 
 module.exports = Question.extend
   renderAnswer: (answerEl) ->
-    answerEl.html templates['forms/NumberQuestion'](
+    answerEl.html require('./templates/NumberQuestion.hbs')(
       prefix: @options.prefix, 
       suffix: @options.suffix, 
       decimal: @options.decimal,

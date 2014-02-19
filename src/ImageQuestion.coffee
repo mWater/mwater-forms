@@ -29,7 +29,7 @@ module.exports = class ImageQuestion extends Question
       noImage = not canAdd and not image and not notSupported
 
       # Render images
-      answerEl.html templates['forms/ImageQuestion'](image: image, canAdd: canAdd, noImage: noImage, notSupported: notSupported)
+      answerEl.html require('./templates/ImageQuestion.hbs')(image: image, canAdd: canAdd, noImage: noImage, notSupported: notSupported)
 
       # Set source
       if image
@@ -51,8 +51,8 @@ module.exports = class ImageQuestion extends Question
     id = ev.currentTarget.id
 
     # Create onRemove callback
-    onRemove = () => 
+    remove = () => 
       @model.set(@id, null)
 
     if @ctx.displayImage?
-      @ctx.displayImage({ id: id, onRemove: onRemove })
+      @ctx.displayImage({ id: id, remove: remove })

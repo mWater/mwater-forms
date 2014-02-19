@@ -12,7 +12,7 @@ module.exports = Question.extend
     # Convert units to maps
     units = _.map @options.units, (item) => { id: item[0], value: item[1] }
 
-    answerEl.html templates['forms/UnitQuestion'](
+    answerEl.html require('./templates/UnitQuestion.hbs')(
       units: units, prefix: @options.prefix,
       defaultUnit: @options.defaultUnit)
 

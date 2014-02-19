@@ -1,0 +1,22 @@
+<div class="row">
+	{{#if prefix}}{{else}}
+	<div class="col-xs-6">
+		<input id="value" class="form-control" type="number" step="any" />
+	</div>
+	{{/if}}
+	<div class="col-xs-6">
+		<select id="unit" class="form-control">
+			{{#if defaultUnit}}{{else}}
+			<option value="">Select units</option>
+			{{/if}}
+			{{#each units}}
+				<option value="{{id}}">{{value}}</option>
+			{{/each}}
+		</select>
+	</div>
+	{{#if prefix}}
+	<div class="col-xs-6">
+		<input id="value" class="form-control" type="number" step="any" />
+	</div>
+	{{/if}}
+</div>
