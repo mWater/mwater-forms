@@ -23,6 +23,21 @@ exports.ECPlates = require './ECPlates'
 exports.VariableTextsQuestion = require './VariableTextsQuestion'
 exports.UnitQuestion = require './UnitQuestion'
 
+# Setup controls
+$ ->
+  # Make checkboxes clickable
+  $("body").on "click", ".touch-checkbox", ->
+    $(this).toggleClass "checked"
+    $(this).trigger "checked"
+
+  # Make radio buttons clickable if not readonly (to make readonly, add to class readonly to radiogroup)
+  $("body").on "click", ".touch-radio", ->
+    if not $(this).parents(".touch-radio-group").hasClass("readonly")
+      # Find parent radiogroup
+      $(this).parents(".touch-radio-group").find(".touch-radio").removeClass "checked"
+      $(this).addClass "checked"
+      $(this).trigger "checked"
+
 # Must be created with model (backbone model) and contents (array of views)
 exports.FormView = class FormView extends Backbone.View
   initialize: (options) ->

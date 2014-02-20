@@ -7,11 +7,11 @@ module.exports = class CheckQuestion extends Question
 
   checked: (e) ->
     # Get checked
-    @model.set @id, @$(".checkbox").hasClass("checked")
+    @model.set @id, @$(".touch-checkbox").hasClass("checked")
 
   renderAnswer: (answerEl) ->
     i = undefined
-    answerEl.append $(_.template("<div class=\"checkbox <%=checked%>\"><%=text%></div>",
+    answerEl.append $(_.template("<div class=\"touch-checkbox <%=checked%>\"><%=text%></div>",
       text: @options.text
       checked: (if (@model.get(@id)) then "checked" else "")
     ))

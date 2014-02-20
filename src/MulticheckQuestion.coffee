@@ -9,7 +9,7 @@ module.exports = Question.extend
     # Get all checked
     value = []
     opts = @options.options
-    @$(".checkbox").each (index, el) ->
+    @$(".touch-checkbox").each (index, el) ->
       pos = parseInt($(el).data("value"))
       if $(this).hasClass("checked")
         value.push opts[pos][0]
@@ -24,7 +24,7 @@ module.exports = Question.extend
           text: @options.options[i][0]
         ))
       else
-        answerEl.append $(_.template("<div class=\"checkbox <%=checked%>\" data-value=\"<%=position%>\"><%=text%></div>",
+        answerEl.append $(_.template("<div class=\"touch-checkbox <%=checked%>\" data-value=\"<%=position%>\"><%=text%></div>",
           position: i
           text: @options.options[i][1]
           checked: (if (@model.get(@id) and _.contains(@model.get(@id), @options.options[i][0])) then "checked" else "")

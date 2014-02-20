@@ -3,3 +3,9 @@ dedup Locationfinder, LocationView, GeoJSON
 add displayImage to context
 
 add selectSource to context
+
+remove checkbox mobile behaviour
+
+remove css related to forms and mobile
+
+change to touch-checkbox and touch-radio and touch-radio-group
