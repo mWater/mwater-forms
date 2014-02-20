@@ -1,0 +1,88 @@
+.btn-group > .btn {
+  min-width: 80px;
+}
+.section {
+  margin-bottom: 15px;
+}
+
+.question {
+  padding: 5px 5px 5px 5px;
+}
+
+.question.invalid {
+    border: #C43B1D 2px solid;
+    background-color: #FFE6CC;
+}
+
+.question-default {
+  margin-bottom: 20px;
+}
+
+.question-tabular  {
+  display:table-row;
+}
+.question-tabular > .prompt {
+  padding-right: 2px;
+  display:table-cell;
+}
+.question-tabular  > .answer {
+  display:table-cell;
+}
+
+.prompt {
+  margin-bottom: 10px;
+}
+
+.question-default  > .prompt {
+  font-weight: bold;
+}
+
+.required {
+    color: Red;
+    margin-left: 2px;
+}
+
+select {
+  width: 300px;
+}
+
+.check-section {
+  font-weight: bold;
+  color: #999999;
+}
+
+.checkbox {
+  background-repeat: no-repeat;
+  vertical-align: middle;
+  line-height: 30px;
+  padding-left: 33px;
+  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAACICAYAAADqM7tyAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAAB3RJTUUH3QcTAQQI+Y2mMQAAAvBJREFUaN7t2k9sDFEcwPHvmxm7O9Pp1jZltUoiLpSGFBE3idShEomLqD8JFw4kJI04EAkhbiqcxEE4EOHChXDw7yCpirjgQEg23ZVS7Xa383a6s/scMGy2Um33IPI+yTtM5s1vfr/33rzLG1EsFpWUkmKxSKlUYipM0yQejwNgFQoF0uk00xUEAYlEAiOTySCEmHYbGRlBKYWhlGKmhBAY1IBSqjaBACwhxL8TqKal/c+DXYsFqZSqXUa1m7VaZFQulzEaGxtn9PU7joNhGAjP85Tv+/i+z1QHPhKJYNs2mqZpmqZpmqZpmqZpmqZpmqZpmqZptSa+5qS6/nKQx2/SDOb8KT08tz5K14oF7FiVxHr2Mcu1R6+mlcWAB5fuf2auuxax6fxTlc2OzKislmQT1tj43/10EnijBDIPgGW7WE48vDc46n8/gp6sBd4ohaE02zrm8bx3Lye3rCQajFX0mfRQvCRzBDJPMhikZ9dmADrXtHFg43JKMhf2M4CqDJT/622BzJNLveX0oT3hQ1JKzt548P0M+8ehelgaQLmQpzCUpq2hhDmaoTCUxvucYk9nB6val4aBes5ewbdcjJhbXVq5kEd+GWD76hYu9nRzaX8XIptm/izJkX07wyB3n/TRNyCJ1MX5/Yjf+lkaQPs8m4PdXQAsXtDMwwuHef3uY0VJJ67ew25ZUjFr4Rj91P8uw/U798Nr27arShKJ1qogFWNkmiZRdzbHL97k2Jneqo637j6kb0ASdRsmXCJhRkbMxU0upKltHbdepNh96CjDw8MAvE9lOHf7Gc6cVoyYO+EyqZh+067HjidILFpO/6ci3QeP8z6V4dTl26iGFiwnPmE2AGJD71Olxr2K6Mofw89n8XPDBDKH3dSKHU8gonUTbyERB8uZZeIVK//UEDGXWLSOqNvA76X/cTtxIxhbVjZjmmb14BkGpl0ftj99h6Zp0rmsGWtbRxIvgP4PX/jqjU9p+2h0IqxfkmTriia+AfnrBYxSemuvAAAAAElFTkSuQmCC');
+  font-size: 14pt;
+  font-weight: bold;
+  background-position: 8px 6px;
+  margin-bottom: 5px;
+  margin-top: 3px;
+  cursor: pointer;
+}
+
+.checkbox.checked {
+  background-position: 8px -112px;
+}
+
+.radio-button {
+  background-repeat: no-repeat;
+  vertical-align: middle;
+  line-height: 30px;
+  padding-left: 33px;
+  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAACICAYAAADqM7tyAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAAB3RJTUUH3QcTDSE7p7TupAAABHNJREFUaN7tmU9s22QYh3/fG9tZ2i/YbUq7ohG6MNgkaGFCGovEAQkOXAqnnDjshLTzxA3BgYG4oJ2RdkBC4pQTq5A4wNQDUrRDKZQdKrplW5i6blOaf06+2LH9cvAcNWlXdekOaPIj+RDbefz68+efrdei1+thDxYBFFqtVt7zvCwAaJpWSafTJQBFAEvDfxCu6+78fRrApXK5/C72IZfLLQO4AGB1L9Fio9Eobm9vJ3EAJicnHdM0C1F1keh0vV4v1Wq1A0kiJiYmHMuy8gBWiZkRBMGlJ5UAQK1WSwZBcImZIRzHWaxUKleCIMAoEBGy2eyHGjMXmBlCiJFEzAxmLmi2bedHlUTYtp0nAFkcEmbOakopHLaibrcLklJWHp3nyIuUsqIlEomSEOLEYSpKJBIl0nW9aBjGyBLDMKDrepGYecmyrOVRRZZlLTPzEgGArusXTNN0nlRimqaj6/oFACAACIJgVUpZME3TEULgIItpmo6UshAEwSoAEDMDAHzfX5JS5qemppZ1XX9sFbquY2pqallKmfd9fyma3aLdbg9M90QiAQCLnucVXNfNu66bfTSoFcMwSpqmFZl5KQiCgfkn9krItU0bv27UsP5vFbeq4YGOZ8Zx6sUM3n9lAgsvSOybkDerCpdL93Dt+j/7DvLbr7+KT/KzeDmT2i26WVX4tLiGRqPe3+h1mgMCbey5HVfMwreFhb5MuK67SzIsGCYS7pQRM+Ny6R6azQaEEAi6dihTNrrVzYHFU+G2oGtDCIFms4HLpXtgZtDapo2V9XI4BVSrL/E6TST9DvJZiXxWIul34HWafVm078p6GWubNrSrG3XsTMhI8t6paVw8X0AqFY6BUgqff1fEb+sPQETQUhJCCDAzrm7UQRtbtV15lPQ7AxIASKVSuHi+gKTfGbzsQmBjqwa6UwtvMXbaICL4qoWzJ48NSHbKzp48Bl+1QERgJ5xjd2oOiHxnV0U9oT32iu3cRkfC0yPfAc3NTIbhlEpDCIFEKo2V9dtQSu2SKKWwsn67v29UwNzMJCiXGeuvICIQETwjjW9++HlAppTCV99fgWekQUQDY5TLjEFcu/kQX/z0N6IZ7nWa6HVa6LUbOBIovHHiGADgrxt30aUU9HET+lgooyMShmHgy4/moc3PjmNhbgYrG3fx6PUFJM1w4AMTf9z3wkOnjyJJ1JeI5DgAYGFuBvOz49AA4NyZWdzdbuN+tQaRHAcxI0mE4cd4dEqRZCYzgXNnZsN17XYbzIzbdRdf/3IDD7brB4rZ6UkLn31wAnOWEQ58FGyR7MeVLfx56wEe8yYHXdfx5vFpfPzW0b6kX9FwQl7f6uD3ch3lhzbuVMN766WMRO55iXdyFl6bSWE4IbW9nmlEBJcFbOWiqcLKbOXCZQEiwl6ZHidknJBxQsYJ+cwlZExMTExMTExMTExMTExMTExMzH6IXq/HwytH/QbZFx22w86R5LAddo477HGH/f/UYednt8POT6vDzsDT6bD38+gwHfb/AA/Aj2GT0n6fAAAAAElFTkSuQmCC');
+  font-size: 14pt;
+  font-weight: bold;
+  background-position: 8px 6px;
+  margin-bottom: 3px;
+  margin-top: 3px;
+  cursor: pointer;
+}
+
+.radio-button.checked {
+  background-position: 8px -112px;
+}
