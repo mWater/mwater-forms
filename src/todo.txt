@@ -9,3 +9,5 @@ remove checkbox mobile behaviour
 remove css related to forms and mobile
 
 change to touch-checkbox and touch-radio and touch-radio-group
+
+check that buttons in groups are spaced
