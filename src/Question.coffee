@@ -9,8 +9,9 @@ module.exports = class Question extends Backbone.View
   validate: ->
     val = undefined
     
-    # Check required
-    val = "Required"  if @model.get(@id) is `undefined` or @model.get(@id) is null or @model.get(@id) is ""  if @required
+    # Check required # TODO localize required
+    # TODO non-answers/alternates are ok
+    val = "Required"  if not @getAnswer()? or @getAnswer() is ""  if @required
     
     # Check internal validation
     val = @validateInternal()  if not val and @validateInternal

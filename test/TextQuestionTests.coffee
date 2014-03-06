@@ -58,6 +58,7 @@ describe "TextQuestion", ->
       assert @qview.validate()
 
     it "accepts valid urls"
+    it "rejects invalid urls"
 
     it "enforces required", ->
       assert @qview.validate()
@@ -65,6 +66,11 @@ describe "TextQuestion", ->
       @q.required = false
       @qview = @compiler.compileQuestion(@q).render()
       assert not @qview.validate()
+
+    it "enforces required on blank answer", ->
+      @qview.$el.find("input").val("response").change()
+      @qview.$el.find("input").val("").change()
+      assert @qview.validate()
 
     it "validates length"
     it "validates regex"
