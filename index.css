@@ -27,8 +27,12 @@
 }
 
 .prompt {
-  margin-bottom: 10px;
 }
+
+.answer {
+  margin-top: 10px;
+}
+
 
 .question-default  > .prompt {
   font-weight: bold;

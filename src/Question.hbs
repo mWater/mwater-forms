@@ -1,0 +1,12 @@
+{{#if options.prompt}}
+	<div class="prompt">
+		{{options.prompt}}
+		{{#if options.required}}
+			<span class="required">*</span>
+		{{/if}}
+	</div>
+	{{#if options.hint}}
+		<div class="text-muted">{{options.hint}}</div>
+	{{/if}}
+{{/if}}
+<div class="answer"></div>

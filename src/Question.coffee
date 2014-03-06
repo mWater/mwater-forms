@@ -4,15 +4,6 @@ _ = require 'underscore'
 module.exports = class Question extends Backbone.View
   className: "question"
 
-  template: _.template("<% if (options.prompt) { %><div class=\"prompt\"><%=options.prompt%><%=renderRequired()%></div><% } %><div class=\"answer\"></div><%=renderHint()%>")
-
-  renderRequired: ->
-    return "<span class=\"required\">*</span>"  if @required
-    return ""
-
-  renderHint: ->
-    _.template("<div class=\"text-muted\"><%=hint%></div>") hint: @options.hint  if @options.hint
-  
   # Validate the question. Returns string of error if not valid or true if not valid but no specific error
   # Returns falsy if no error.
   validate: ->
@@ -73,7 +64,7 @@ module.exports = class Question extends Backbone.View
     @render()
 
   render: ->
-    @$el.html @template(this)
+    @$el.html(require("./Question.hbs")(this))
     
     # Render answer
     @renderAnswer @$(".answer")
@@ -83,3 +74,16 @@ module.exports = class Question extends Backbone.View
       @$el.hide()
       @visible = false
     this
+
+  # Sets the answer field in the model
+  setAnswer: (val) ->
+    # Clone existing model entry
+    entry = @model.get(@id) || {}
+    entry = _.clone(entry)
+    entry.answer = val
+    @model.set(@id, entry)
+
+  # Gets the answer field in the model
+  getAnswer: ->
+    entry = @model.get(@id) || {}
+    return entry.answer

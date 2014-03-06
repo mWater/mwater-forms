@@ -10,11 +10,6 @@
     "test": "testem ci",
     "prepublish": "coffee -c -o lib src/*.coffee && cp -r src/templates lib"
   },
-  "browserify": {
-    "transform": [
-      "coffeeify", "hbsfy"
-    ]
-  },
   "author": "Clayton Grassick",
   "license": "GPLv3",
   "dependencies": {
