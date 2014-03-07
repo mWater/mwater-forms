@@ -14,7 +14,7 @@ describe "Validation compiler", ->
       op: "lengthRange"
       rhs: { literal: { min: 6, max: 8 } }
     }
-    result = @compiler.compileValidations([validation])({ answer: "1234567" })
+    result = @compiler.compileValidations([validation])({ value: "1234567" })
     assert not result
 
   it "validates length range below min", ->
@@ -22,7 +22,7 @@ describe "Validation compiler", ->
       op: "lengthRange"
       rhs: { literal: { min: 10 } }
     }
-    result = @compiler.compileValidations([validation])({ answer: "1234567" })
+    result = @compiler.compileValidations([validation])({ value: "1234567" })
     assert result
 
   it "validates length range above max", ->
@@ -30,7 +30,7 @@ describe "Validation compiler", ->
       op: "lengthRange"
       rhs: { literal: { max: 6 } }
     }
-    result = @compiler.compileValidations([validation])({ answer: "1234567" })
+    result = @compiler.compileValidations([validation])({ value: "1234567" })
     assert result
 
   it "validates regex ok", ->
@@ -38,7 +38,7 @@ describe "Validation compiler", ->
       op: "regex"
       rhs: { literal: "^\\d+$" }
     }
-    result = @compiler.compileValidations([validation])({ answer: "1234567" })
+    result = @compiler.compileValidations([validation])({ value: "1234567" })
     assert not result
 
   it "validates regex not ok", ->
@@ -46,7 +46,7 @@ describe "Validation compiler", ->
       op: "regex"
       rhs: { literal: "^\\d+$" }
     }
-    result = @compiler.compileValidations([validation])({ answer: "1234567a" })
+    result = @compiler.compileValidations([validation])({ value: "1234567a" })
     assert result
 
   it "validates range between", ->
@@ -54,7 +54,7 @@ describe "Validation compiler", ->
       op: "range"
       rhs: { literal: { min: 6, max: 6 } }
     }
-    result = @compiler.compileValidations([validation])({ answer: 6 })
+    result = @compiler.compileValidations([validation])({ value: 6 })
     assert not result
 
   it "validates range below min", ->
@@ -62,7 +62,7 @@ describe "Validation compiler", ->
       op: "range"
       rhs: { literal: { min: 6 } }
     }
-    result = @compiler.compileValidations([validation])({ answer: 5 })
+    result = @compiler.compileValidations([validation])({ value: 5 })
     assert result
 
   it "validates range above max", ->
@@ -70,7 +70,7 @@ describe "Validation compiler", ->
       op: "range"
       rhs: { literal: { max: 6 } }
     }
-    result = @compiler.compileValidations([validation])({ answer: 8 })
+    result = @compiler.compileValidations([validation])({ value: 8 })
     assert result
 
 

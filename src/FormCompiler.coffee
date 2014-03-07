@@ -23,7 +23,7 @@ module.exports = class FormCompiler
     switch val.op 
       when "lengthRange"
         return (answer) ->
-          not val.rhs.literal.min? or answer.answer>= answer
+          not val.rhs.literal.min? or answer.value.length >= val.rhs.literal.min
     return -> null
 
   compileValidations: (vals) ->

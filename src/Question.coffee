@@ -11,7 +11,7 @@ module.exports = class Question extends Backbone.View
     
     # Check required # TODO localize required
     # TODO non-answers/alternates are ok
-    val = "Required"  if not @getAnswer()? or @getAnswer() is ""  if @required
+    val = "Required"  if not @getAnswerValue()? or @getAnswerValue() is ""  if @required
     
     # Check internal validation
     val = @validateInternal()  if not val and @validateInternal
@@ -76,15 +76,15 @@ module.exports = class Question extends Backbone.View
       @visible = false
     this
 
-  # Sets the answer field in the model
-  setAnswer: (val) ->
+  # Sets the answer value field in the model
+  setAnswerValue: (val) ->
     # Clone existing model entry
     entry = @model.get(@id) || {}
     entry = _.clone(entry)
-    entry.answer = val
+    entry.value = val
     @model.set(@id, entry)
 
-  # Gets the answer field in the model
-  getAnswer: ->
+  # Gets the answer value field in the model
+  getAnswerValue: ->
     entry = @model.get(@id) || {}
-    return entry.answer
+    return entry.value
