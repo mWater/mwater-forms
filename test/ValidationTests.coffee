@@ -73,7 +73,21 @@ describe "Validation compiler", ->
     result = @compiler.compileValidations([validation])({ value: 8 })
     assert result
 
+  it "validates two conditions", ->
+    validations = [
+      {
+        op: "range"
+        rhs: { literal: { max: 6 } }
+      }, 
+      {
+        op: "range"
+        rhs: { literal: { min: 4 } }
+      }]
+    result = @compiler.compileValidations(validations)({ value: 5 })
+    assert not result
 
-  it "validates two conditions"
+    result = @compiler.compileValidations(validations)({ value: 7 })
+    assert result
 
-
+    result = @compiler.compileValidations(validations)({ value: 3 })
+    assert result

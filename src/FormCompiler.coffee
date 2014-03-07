@@ -23,8 +23,30 @@ module.exports = class FormCompiler
     switch val.op 
       when "lengthRange"
         return (answer) ->
-          not val.rhs.literal.min? or answer.value.length >= val.rhs.literal.min
-    return -> null
+          value = answer.value || ""
+          len = value.length
+          if val.rhs.literal.min? and len < val.rhs.literal.min
+            return "Too short" # TODO Localize
+          if val.rhs.literal.max? and len > val.rhs.literal.max
+            return "Too long" # TODO Localize
+          return null
+      when "regex"
+        return (answer) ->
+          value = answer.value || ""
+          if value.match(val.rhs.literal)
+            return null
+          return true # TODO localize
+      when "range"
+        return (answer) ->
+          value = answer.value
+          if val.rhs.literal.min? and value < val.rhs.literal.min
+            return "Too short" # TODO Localize
+          if val.rhs.literal.max? and value > val.rhs.literal.max
+            return "Too long" # TODO Localize
+          return null
+      else
+        throw new Error("Unknown validation op " + val.op)
+
 
   compileValidations: (vals) ->
     compVals = _.map(vals, @compileValidation)
