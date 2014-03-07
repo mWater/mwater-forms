@@ -1,6 +1,7 @@
 TextQuestion = require './TextQuestion'
 NumberQuestion = require './NumberQuestion'
 RadioQuestion = require './RadioQuestion'
+DropdownQuestion = require './DropdownQuestion'
 _ = require 'underscore'
 
 module.exports = class FormCompiler
@@ -102,5 +103,8 @@ module.exports = class FormCompiler
       when "RadioQuestion"
         options.choices = @compileChoices(q.choices)
         return new RadioQuestion(options)
+      when "DropdownQuestion"
+        options.choices = @compileChoices(q.choices)
+        return new DropdownQuestion(options)
 
     throw new Error("Unknown question type")

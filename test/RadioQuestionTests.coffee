@@ -5,9 +5,6 @@ assert = require('chai').assert
 FormCompiler = require '../src/FormCompiler'
 commonQuestionTests = require './commonQuestionTests'
 
-# Require forms to setup special click handling
-require '../src'
-
 describe "RadioQuestion", ->
   beforeEach ->
     @model = new Backbone.Model()
