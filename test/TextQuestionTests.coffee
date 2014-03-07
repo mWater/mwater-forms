@@ -11,7 +11,7 @@ describe "TextQuestion", ->
       @model = new Backbone.Model()
       @compiler = new FormCompiler(model: @model, locale: "es")
       @q = {
-        _id: "1234"
+        _id: "q1234"
         _type: "TextQuestion"
         text: { _base: "en", en: "English", es: "Spanish" }
         hint: { _base: "en", en: "", es: "HINT" }
@@ -24,21 +24,21 @@ describe "TextQuestion", ->
 
     it "records string in singleline answer", ->
       @qview.$el.find("input").val("response").change()
-      assert.equal @model.get("1234").value, "response"
+      assert.equal @model.get("q1234").value, "response"
 
     it "records string in multiline answer", ->
       @q.format = "multiline"
       @qview = @compiler.compileQuestion(@q).render()
 
       @qview.$el.find("textarea").val("response").change()
-      assert.equal @model.get("1234").value, "response"
+      assert.equal @model.get("q1234").value, "response"
 
     it "accepts valid emails", ->
       @q.format = "email"
       @qview = @compiler.compileQuestion(@q).render()
 
       @qview.$el.find("input").val("test@test.com").change()
-      assert.equal @model.get("1234").value, "test@test.com"
+      assert.equal @model.get("q1234").value, "test@test.com"
       assert not @qview.validate(), "should validate"
 
     it "rejects invalid emails", ->
@@ -46,7 +46,7 @@ describe "TextQuestion", ->
       @qview = @compiler.compileQuestion(@q).render()
 
       @qview.$el.find("input").val("test").change()
-      assert.equal @model.get("1234").value, "test"
+      assert.equal @model.get("q1234").value, "test"
       assert @qview.validate()
 
     it "accepts valid urls"

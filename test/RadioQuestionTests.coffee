@@ -10,7 +10,7 @@ describe "RadioQuestion", ->
     @model = new Backbone.Model()
     @compiler = new FormCompiler(model: @model, locale: "es")
     @q = {
-      _id: "1234"
+      _id: "q1234"
       _type: "RadioQuestion"
       text: { _base: "en", en: "English", es: "Spanish" }
       choices: [

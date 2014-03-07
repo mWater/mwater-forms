@@ -10,7 +10,7 @@ describe 'DropdownQuestion', ->
     @model = new Backbone.Model()
     @compiler = new FormCompiler(model: @model, locale: "es")
     @q = {
-      _id: "1234"
+      _id: "q1234"
       _type: "DropdownQuestion"
       text: { _base: "en", en: "English", es: "Spanish" }
       choices: [
@@ -25,18 +25,18 @@ describe 'DropdownQuestion', ->
   commonQuestionTests.call(this)
 
   it 'accepts known value', ->
-    @model.set("1234": { value: 'a' })
-    assert.deepEqual @model.get("1234"), { value: 'a'}
+    @model.set("q1234": { value: 'a' })
+    assert.deepEqual @model.get("q1234"), { value: 'a'}
     assert.isFalse @qview.$("select").is(":disabled")
 
   it 'is disabled with unknown value', ->
-    @model.set("1234": { value: 'x' })
-    assert.deepEqual @model.get("1234"), { value: 'x' }
+    @model.set("q1234": { value: 'x' })
+    assert.deepEqual @model.get("q1234"), { value: 'x' }
     assert.isTrue @qview.$("select").is(":disabled")
 
   it 'is not disabled with empty value', ->
-    @model.set("1234": null)
-    assert.equal @model.get("1234"), null
+    @model.set("q1234": null)
+    assert.equal @model.get("q1234"), null
     assert.isFalse @qview.$("select").is(":disabled")
 
   it "displays choices", ->

@@ -11,7 +11,7 @@ describe "NumberQuestion", ->
       @model = new Backbone.Model()
       @compiler = new FormCompiler(model: @model, locale: "es")
       @q = {
-        _id: "1234"
+        _id: "q1234"
         _type: "NumberQuestion"
         text: { _base: "en", en: "English", es: "Spanish" }
         required: true
@@ -24,14 +24,14 @@ describe "NumberQuestion", ->
 
     it "records decimal number", ->
       @qview.$el.find("input").val("123.4").change()
-      assert @model.get("1234").value == 123.4
+      assert @model.get("q1234").value == 123.4
 
     it "records whole number", ->
       @q.decimal = false
       @qview = @compiler.compileQuestion(@q).render()
 
       @qview.$el.find("input").val("123.4").change()
-      assert.equal @model.get("1234").value, 123
+      assert.equal @model.get("q1234").value, 123
 
     it "enforces required", ->
       assert @qview.validate()
