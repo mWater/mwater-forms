@@ -1,6 +1,6 @@
 {
   "name": "mwater-forms",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Form controls for mWater",
   "main": "lib/index.js",
   "directories": {
@@ -8,8 +8,9 @@
   },
   "scripts": {
     "test": "testem ci",
-    "prepublish": "coffee -c -o lib src/*.coffee && cp -r src/templates lib"
+    "prepublish": "coffee -c -o lib src/*.coffee && cp -r src/templates lib && cp src/*.hbs lib"
   },
+  "browserify": { "transform": [ "coffeeify", "hbsfy" ] },
   "author": "Clayton Grassick",
   "license": "GPLv3",
   "dependencies": {

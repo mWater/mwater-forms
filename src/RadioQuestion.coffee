@@ -1,14 +1,25 @@
 Question = require './Question'
 _ = require 'underscore'
+$ = require 'jquery'
 
 module.exports = class RadioQuestion extends Question
   events:
-    checked: "checked"
+    "click .touch-radio" : "checked"
 
   checked: (e) ->
-    index = parseInt(e.target.getAttribute("data-value"))
+    # Ignore if readonlu
+    if @options.readonly
+      return
+
+    # Set answer
+    index = parseInt(e.currentTarget.getAttribute("data-value"))
     value = @options.choices[index].id
-    @setAnswerValue(value)
+
+    # If already set, unset
+    if value == @getAnswerValue()
+      @setAnswerValue(null)
+    else
+      @setAnswerValue(value)
 
   renderAnswer: (answerEl) ->
     answerEl.html _.template("<div class=\"touch-radio-group\"><%=renderRadioOptions()%></div>", this)
@@ -22,7 +33,7 @@ module.exports = class RadioQuestion extends Question
       data = {
         position: i
         text: @options.choices[i].label
-        checked: (if @getAnswerValue is @options.choices[i].id then "checked" else "")
+        checked: (if @getAnswerValue() is @options.choices[i].id then "checked" else "")
         hint: @options.choices[i].hint
       }
 

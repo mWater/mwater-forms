@@ -36,6 +36,10 @@ describe "RadioQuestion", ->
     @qview.$el.find(".touch-radio:contains('AA')").trigger("click")
     assert.equal @model.get('1234').value, "a"
 
-  it "allows unselecting choice"
+  it "allows unselecting choice by clicking twice", ->
+    @qview.$el.find(".touch-radio:contains('AA')").trigger("click")
+    @qview.$el.find(".touch-radio:contains('AA')").trigger("click")
+    assert.equal @model.get('1234').value, null
+
   it "displays specify box"
   it "records specify value"
