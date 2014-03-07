@@ -70,6 +70,12 @@ select {
   background-position: 8px -112px;
 }
 
+.checkbox-choice-hint {
+  font-size: 10pt;
+  font-weight: normal;
+  color: gray;
+}
+
 .touch-radio {
   background-repeat: no-repeat;
   vertical-align: middle;

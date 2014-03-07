@@ -25,13 +25,6 @@ exports.VariableTextsQuestion = require './VariableTextsQuestion'
 exports.UnitQuestion = require './UnitQuestion'
 exports.FormCompiler = require './FormCompiler'
 
-# Setup controls
-$ ->
-  # Make checkboxes clickable
-  $("body").on "click", ".touch-checkbox", ->
-    $(this).toggleClass "checked"
-    $(this).trigger "checked"
-
 # Must be created with model (backbone model) and contents (array of views)
 exports.FormView = class FormView extends Backbone.View
   initialize: (options) ->

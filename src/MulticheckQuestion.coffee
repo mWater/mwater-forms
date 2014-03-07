@@ -1,32 +1,47 @@
 Question = require './Question'
 _ = require 'underscore'
+$ = require 'jquery'
 
-module.exports = Question.extend
+module.exports = class MulticheckQuestion extends Question
   events:
-    checked: "checked"
+    "click .touch-checkbox": "checked"
+    "change .specify-input": "specifyChange"
 
   checked: (e) ->
     # Get all checked
     value = []
-    opts = @options.options
+    opts = @options.choices
+    $(e.currentTarget).toggleClass("checked")
+
     @$(".touch-checkbox").each (index, el) ->
       pos = parseInt($(el).data("value"))
       if $(this).hasClass("checked")
-        value.push opts[pos][0]
+        value.push opts[pos].id
 
-    @model.set @id, value
+    @setAnswerValue(value)
+
+    # Remove other specifies
+    specify = _.clone(@getAnswerField('specify') || {})
+    specify = _.pick(specify, value)
+    @setAnswerField('specify', specify)
+
+  specifyChange: (e) ->
+    specify = _.clone(@getAnswerField('specify') || {})
+    specify[$(e.currentTarget).data('id')] = $(e.currentTarget).val()
+    @setAnswerField('specify', specify)
 
   renderAnswer: (answerEl) ->
-    for i in [0...@options.options.length]
-      # Add headers if length 1
-      if @options.options[i].length == 1
-        answerEl.append $(_.template("<div class=\"check-section\"><%=text%></div>",
-          text: @options.options[i][0]
-        ))
-      else
-        answerEl.append $(_.template("<div class=\"touch-checkbox <%=checked%>\" data-value=\"<%=position%>\"><%=text%></div>",
-          position: i
-          text: @options.options[i][1]
-          checked: (if (@model.get(@id) and _.contains(@model.get(@id), @options.options[i][0])) then "checked" else "")
-        ))
+    for i in [0...@options.choices.length]
+      checked = @getAnswerValue() and _.contains(@getAnswerValue(), @options.choices[i].id)
+      data = {
+        id: @options.choices[i].id
+        position: i
+        text: @options.choices[i].label
+        checked: checked
+        hint: @options.choices[i].hint
+        specify: checked and @options.choices[i].specify
+        specifyValue: if @model.get(@id)? and @model.get(@id).specify? then @model.get(@id).specify[@options.choices[i].id]
+      }
 
+      html = require("./templates/MulticheckQuestionChoice.hbs")(data)
+      answerEl.append $(html)

@@ -15,7 +15,7 @@ class MockImageManager
 
 class MockImageAcquirer
   acquire: (success, error) ->
-    success("q1234")
+    success("1234")
 
 describe 'ImagesQuestion', ->
   beforeEach ->
@@ -39,20 +39,20 @@ describe 'ImagesQuestion', ->
       assert.isTrue true
 
     it 'displays one image', ->
-      @model.set(q1: [{id: "q1234"}])
+      @model.set(q1: [{id: "1234"}])
       assert.equal @question.$("img.img-thumbnail").attr("src"), "images/1234.jpg"
 
     it 'opens page', ->
-      @model.set(q1: [{id: "q1234"}])
+      @model.set(q1: [{id: "1234"}])
       spy = sinon.spy()
       @ctx.displayImage = spy 
       @question.$("img.img-thumbnail").click()
 
       assert.isTrue spy.calledOnce
-      assert.equal spy.args[0][0].id, "q1234"
+      assert.equal spy.args[0][0].id, "1234"
 
     it 'allows removing image', ->
-      @model.set(q1: [{id: "q1234"}])
+      @model.set(q1: [{id: "1234"}])
       @ctx.displayImage = (options) ->
         options.remove()
 
@@ -77,6 +77,6 @@ describe 'ImagesQuestion', ->
 
     it 'gets an image', ->
       @question.$("img#add").click()
-      assert.isTrue _.isEqual(@model.get("q1"), [{id:"q1234"}]), @model.get("q1")
+      assert.isTrue _.isEqual(@model.get("q1"), [{id:"1234"}]), @model.get("q1")
 
     
