@@ -1,5 +1,6 @@
 TextQuestion = require './TextQuestion'
 NumberQuestion = require './NumberQuestion'
+_ = require 'underscore'
 
 module.exports = class FormCompiler
   constructor: (options) ->
@@ -17,6 +18,23 @@ module.exports = class FormCompiler
 
     # Return base if present
     return str[str._base] || ""
+
+  compileValidation: (val) =>
+    switch val.op 
+      when "lengthRange"
+        return (answer) ->
+          not val.rhs.literal.min? or answer.answer>= answer
+    return -> null
+
+  compileValidations: (vals) ->
+    compVals = _.map(vals, @compileValidation)
+    return (answer) =>
+      for compVal in compVals
+        result = compVal(answer)
+        if result
+          return result
+
+      return null
 
   compileQuestion: (q) ->
     options = {

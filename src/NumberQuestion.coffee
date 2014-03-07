@@ -20,10 +20,10 @@ module.exports = Question.extend
     val = @$("input").val()
     if @options.decimal and val.length > 0
       if isNaN(parseFloat(val))
-        return "Invalid decimal number"
+        return "Invalid decimal number" # TODO localize
     else if val.length > 0
       if not val.match(/^-?\d+$/)
-        return "Invalid integer number"
+        return "Invalid integer number" # TODO localize
     return null
 
   changed: ->
