@@ -11,7 +11,7 @@ module.exports = Question.extend
       decimal: @options.decimal,
       prefixOrSuffix: @options.prefix or @options.suffix)
 
-    answerEl.find("input").val @model.get(@id)
+    answerEl.find("input").val @getAnswer()
 
   events:
     change: "changed"
@@ -27,7 +27,7 @@ module.exports = Question.extend
     return null
 
   changed: ->
-    val = parseFloat(@$("input").val())
+    val = if @options.decimal then parseFloat(@$("input").val()) else parseInt(@$("input").val())
     if isNaN(val)
       val = null
-    @model.set @id, val 
+    @setAnswer(val)

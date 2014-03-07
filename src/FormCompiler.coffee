@@ -1,4 +1,5 @@
 TextQuestion = require './TextQuestion'
+NumberQuestion = require './NumberQuestion'
 
 module.exports = class FormCompiler
   constructor: (options) ->
@@ -24,6 +25,14 @@ module.exports = class FormCompiler
       required: q.required
       prompt: @compileString(q.text)
       hint: @compileString(q.hint)
-      format: q.format
     }
-    return new TextQuestion(options)
+    
+    switch q._type
+      when "TextQuestion"
+        options.format = q.format
+        return new TextQuestion(options)
+      when "NumberQuestion"
+        options.decimal = q.decimal
+        return new NumberQuestion(options)
+
+    throw new Error("Unknown question type")
