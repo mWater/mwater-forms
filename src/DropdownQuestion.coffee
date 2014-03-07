@@ -37,15 +37,15 @@ module.exports = class DropdownQuestion extends Question
     choice = _.findWhere(@options.choices, { id: @getAnswerValue() })
     if choice?
       # Find item number selected
-      itemChecked = _.indexOf(@options.choices, choice)
+      itemSelected = _.indexOf(@options.choices, choice)
 
       # Append specify input
-      if @options.choices[itemChecked].specify
+      if @options.choices[itemSelected].specify
         html += _.template('''
           <input class="form-control specify-input" data-id="<%=id%>" type="text" id="specify_<%=id%>" value="<%=specifyValue%>">
             ''', { 
-            id: @options.choices[itemChecked].id, 
-            specifyValue: if @model.get(@id)? and @model.get(@id).specify? then @model.get(@id).specify[@options.choices[itemChecked].id]
+            id: @options.choices[itemSelected].id, 
+            specifyValue: if @model.get(@id)? and @model.get(@id).specify? then @model.get(@id).specify[@options.choices[itemSelected].id]
             })
 
     answerEl.html(html)
@@ -59,19 +59,15 @@ module.exports = class DropdownQuestion extends Question
     
     # Add empty option
     html += "<option value=\"\"></option>"
-    itemChecked = null
     for i in [0...@options.choices.length]
-      checked = @getAnswerValue() is @options.choices[i].id
+      selected = @getAnswerValue() is @options.choices[i].id
       data = {
         id: @options.choices[i].id
         position: i
         text: @options.choices[i].label
-        checked: checked
+        selected: selected
         hint: @options.choices[i].hint
       }
-
-      if checked
-        itemChecked = i
 
       html += require("./templates/DropdownQuestionChoice.hbs")(data)
 
