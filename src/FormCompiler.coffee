@@ -19,30 +19,36 @@ module.exports = class FormCompiler
     # Return base if present
     return str[str._base] || ""
 
+  compileValidationMessage: (val) =>
+    str = @compileString(val.message)
+    if str
+      return str
+    return true
+
   compileValidation: (val) =>
     switch val.op 
       when "lengthRange"
-        return (answer) ->
+        return (answer) =>
           value = answer.value || ""
           len = value.length
           if val.rhs.literal.min? and len < val.rhs.literal.min
-            return "Too short" # TODO Localize
+            return @compileValidationMessage(val)
           if val.rhs.literal.max? and len > val.rhs.literal.max
-            return "Too long" # TODO Localize
+            return @compileValidationMessage(val)
           return null
       when "regex"
-        return (answer) ->
+        return (answer) =>
           value = answer.value || ""
           if value.match(val.rhs.literal)
             return null
-          return true # TODO localize
+          return @compileValidationMessage(val)
       when "range"
-        return (answer) ->
+        return (answer) =>
           value = answer.value
           if val.rhs.literal.min? and value < val.rhs.literal.min
-            return "Too short" # TODO Localize
+            return @compileValidationMessage(val)
           if val.rhs.literal.max? and value > val.rhs.literal.max
-            return "Too long" # TODO Localize
+            return @compileValidationMessage(val)
           return null
       else
         throw new Error("Unknown validation op " + val.op)
