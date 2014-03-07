@@ -1,5 +1,6 @@
 TextQuestion = require './TextQuestion'
 NumberQuestion = require './NumberQuestion'
+RadioQuestion = require './RadioQuestion'
 _ = require 'underscore'
 
 module.exports = class FormCompiler
@@ -64,6 +65,16 @@ module.exports = class FormCompiler
 
       return null
 
+  compileChoice: (choice) =>
+    return {
+      id: choice.id
+      label: @compileString(choice.label)
+      hint: @compileString(choice.hint)
+    }
+
+  compileChoices: (choices) ->
+    return _.map choices, @compileChoice
+
   compileQuestion: (q) ->
     # Compile validations
     compiledValidations = @compileValidations(q.validations)
@@ -87,5 +98,8 @@ module.exports = class FormCompiler
       when "NumberQuestion"
         options.decimal = q.decimal
         return new NumberQuestion(options)
+      when "RadioQuestion"
+        options.choices = @compileChoices(q.choices)
+        return new RadioQuestion(options)
 
     throw new Error("Unknown question type")

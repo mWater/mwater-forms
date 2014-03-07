@@ -3,6 +3,7 @@ Backbone = require 'backbone'
 Backbone.$ = $
 assert = require('chai').assert
 FormCompiler = require '../src/FormCompiler'
+commonQuestionTests = require './commonQuestionTests'
 
 describe "NumberQuestion", ->
   context "compiled question", ->
@@ -18,10 +19,8 @@ describe "NumberQuestion", ->
       }
       @qview = @compiler.compileQuestion(@q).render()
 
-    it "displays question text"
-    it "displays hint"
-    it "displays help"
-    it "displays required"
+    # Run common tests
+    commonQuestionTests.call(this)
 
     it "records decimal number", ->
       @qview.$el.find("input").val("123.4").change()
@@ -50,5 +49,15 @@ describe "NumberQuestion", ->
       @qview.$el.find("input").val("0").change()
       assert not @qview.validate()
 
-    it "validates range"
+    it "validates range", ->
+      @q.validations = [
+        {
+          op: "range"
+          rhs: { literal: { max: 6 } }
+          message: { _base: "es", es: "message" }
+        }
+      ]
+      @qview = @compiler.compileQuestion(@q).render()
 
+      @qview.$el.find("input").val("7").change()
+      assert.equal @qview.validate(), "message"

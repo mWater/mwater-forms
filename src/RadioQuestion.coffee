@@ -7,8 +7,8 @@ module.exports = class RadioQuestion extends Question
 
   checked: (e) ->
     index = parseInt(e.target.getAttribute("data-value"))
-    value = @options.options[index][0]
-    @model.set @id, value
+    value = @options.choices[index].id
+    @setAnswerValue(value)
 
   renderAnswer: (answerEl) ->
     answerEl.html _.template("<div class=\"touch-radio-group\"><%=renderRadioOptions()%></div>", this)
@@ -18,11 +18,19 @@ module.exports = class RadioQuestion extends Question
     html = ""
     i = undefined
     i = 0
-    while i < @options.options.length
-      html += _.template("<div class=\"touch-radio <%=checked%>\" data-value=\"<%=position%>\"><%=text%></div>",
+    while i < @options.choices.length
+      data = {
         position: i
-        text: @options.options[i][1]
-        checked: (if @model.get(@id) is @options.options[i][0] then "checked" else "")
-      )
+        text: @options.choices[i].label
+        checked: (if @getAnswerValue is @options.choices[i].id then "checked" else "")
+        hint: @options.choices[i].hint
+      }
+
+      html += _.template('''
+        <div class="touch-radio <%=checked%>" 
+          data-value="<%=position%>">
+          <%=text%>
+          <span class="choice-hint"><%=hint%></span>
+        </div>''', data)
       i++
     return html

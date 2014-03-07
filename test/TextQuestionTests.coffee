@@ -3,6 +3,7 @@ Backbone = require 'backbone'
 Backbone.$ = $
 assert = require('chai').assert
 FormCompiler = require '../src/FormCompiler'
+commonQuestionTests = require './commonQuestionTests'
 
 describe "TextQuestion", ->
   context "compiled text question", ->
@@ -14,21 +15,12 @@ describe "TextQuestion", ->
         _type: "TextQuestion"
         text: { _base: "en", en: "English", es: "Spanish" }
         hint: { _base: "en", en: "", es: "HINT" }
-        required: true
         format: "singleline"
       }
       @qview = @compiler.compileQuestion(@q).render()
 
-    it "displays question text", ->
-      assert.match @qview.el.outerHTML, /Spanish/
-
-    it "displays hint", ->
-      assert.match @qview.el.outerHTML, /HINT/
-
-    it "displays help"
-
-    it "displays required", ->
-      assert.match @qview.el.outerHTML, /\*/    
+    # Run common tests
+    commonQuestionTests.call(this)
 
     it "records string in singleline answer", ->
       @qview.$el.find("input").val("response").change()
@@ -61,6 +53,8 @@ describe "TextQuestion", ->
     it "rejects invalid urls"
 
     it "enforces required", ->
+      @q.required = true
+      @qview = @compiler.compileQuestion(@q).render()
       assert @qview.validate()
 
       @q.required = false
@@ -68,6 +62,9 @@ describe "TextQuestion", ->
       assert not @qview.validate()
 
     it "enforces required on blank answer", ->
+      @q.required = true
+      @qview = @compiler.compileQuestion(@q).render()
+
       @qview.$el.find("input").val("response").change()
       @qview.$el.find("input").val("").change()
       assert @qview.validate()
