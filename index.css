@@ -87,3 +87,9 @@ select {
 .touch-radio.checked {
   background-position: 8px -112px;
 }
+
+.radio-choice-hint {
+  font-size: 10pt;
+  font-weight: normal;
+  color: gray;
+}

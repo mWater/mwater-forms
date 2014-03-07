@@ -76,15 +76,23 @@ module.exports = class Question extends Backbone.View
       @visible = false
     this
 
-  # Sets the answer value field in the model
-  setAnswerValue: (val) ->
+  # Sets answer field in the model
+  setAnswerField: (field, val) ->
     # Clone existing model entry
     entry = @model.get(@id) || {}
     entry = _.clone(entry)
-    entry.value = val
+    entry[field] = val
     @model.set(@id, entry)
+
+  # Sets the answer value field in the model
+  setAnswerValue: (val) ->
+    @setAnswerField('value', val)
+
+  # Gets answer field in the model
+  getAnswerField: (field) ->
+    entry = @model.get(@id) || {}
+    return entry[field]
 
   # Gets the answer value field in the model
   getAnswerValue: ->
-    entry = @model.get(@id) || {}
-    return entry.value
+    return @getAnswerField('value')

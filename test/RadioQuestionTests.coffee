@@ -19,6 +19,7 @@ describe "RadioQuestion", ->
       choices: [
         { id: "a", label: { _base: "en", es: "AA" }, hint: { _base: "en", es: "a-hint" } }
         { id: "b", label: { _base: "en", es: "BB" } }
+        { id: "c", label: { _base: "en", es: "CC" }, specify: true }
       ]
     }
     @qview = @compiler.compileQuestion(@q).render()
@@ -41,5 +42,19 @@ describe "RadioQuestion", ->
     @qview.$el.find(".touch-radio:contains('AA')").trigger("click")
     assert.equal @model.get('1234').value, null
 
-  it "displays specify box"
-  it "records specify value"
+  it "displays specify box", ->
+    @qview.$el.find(".touch-radio:contains('CC')").trigger("click")
+    assert @qview.$el.find("input[type='text']").get(0)
+
+  it "records specify value", ->
+    @qview.$el.find(".touch-radio:contains('CC')").trigger("click")
+    @qview.$el.find("input[type='text']").val("specified").change()
+    
+    assert.equal @model.get('1234').value, "c"    
+    assert.equal @model.get('1234').specify['c'], "specified"    
+
+  it "removes specify value on other selection", ->
+    @qview.$el.find(".touch-radio:contains('CC')").trigger("click")
+    @qview.$el.find("input[type='text']").val("specified").change()
+    @qview.$el.find(".touch-radio:contains('AA')").trigger("click")
+    assert not @model.get('1234').specify['c'], "Should be removed"

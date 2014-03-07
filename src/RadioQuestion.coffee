@@ -5,9 +5,10 @@ $ = require 'jquery'
 module.exports = class RadioQuestion extends Question
   events:
     "click .touch-radio" : "checked"
+    "change .specify-input": "specifyChange"
 
   checked: (e) ->
-    # Ignore if readonlu
+    # Ignore if readonly
     if @options.readonly
       return
 
@@ -21,27 +22,34 @@ module.exports = class RadioQuestion extends Question
     else
       @setAnswerValue(value)
 
+    # Remove other specifies
+    specify = _.clone(@getAnswerField('specify') || {})
+    specify = _.pick(specify, [value])
+    @setAnswerField('specify', specify)
+
+  specifyChange: (e) ->
+    specify = _.clone(@getAnswerField('specify') || {})
+    specify[$(e.currentTarget).data('id')] = $(e.currentTarget).val()
+    @setAnswerField('specify', specify)
+
   renderAnswer: (answerEl) ->
     answerEl.html _.template("<div class=\"touch-radio-group\"><%=renderRadioOptions()%></div>", this)
     answerEl.find(".radio-group").addClass "readonly"  if @options.readonly
 
   renderRadioOptions: ->
     html = ""
-    i = undefined
-    i = 0
-    while i < @options.choices.length
+    for i in [0...@options.choices.length]
+      checked = @getAnswerValue() is @options.choices[i].id
       data = {
+        id: @options.choices[i].id
         position: i
         text: @options.choices[i].label
-        checked: (if @getAnswerValue() is @options.choices[i].id then "checked" else "")
+        checked: checked
         hint: @options.choices[i].hint
+        specify: checked and @options.choices[i].specify
+        specifyValue: if @model.get(@id)? and @model.get(@id).specify? then @model.get(@id).specify[@options.choices[i].id]
       }
 
-      html += _.template('''
-        <div class="touch-radio <%=checked%>" 
-          data-value="<%=position%>">
-          <%=text%>
-          <span class="choice-hint"><%=hint%></span>
-        </div>''', data)
-      i++
+      html += require("./templates/RadioQuestionChoice.hbs")(data)
+
     return html

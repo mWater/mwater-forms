@@ -70,6 +70,7 @@ module.exports = class FormCompiler
       id: choice.id
       label: @compileString(choice.label)
       hint: @compileString(choice.hint)
+      specify: choice.specify
     }
 
   compileChoices: (choices) ->
