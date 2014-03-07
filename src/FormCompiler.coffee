@@ -29,7 +29,7 @@ module.exports = class FormCompiler
     switch val.op 
       when "lengthRange"
         return (answer) =>
-          value = answer.value || ""
+          value = if answer? and answer.value? then answer.value else ""
           len = value.length
           if val.rhs.literal.min? and len < val.rhs.literal.min
             return @compileValidationMessage(val)
@@ -38,13 +38,13 @@ module.exports = class FormCompiler
           return null
       when "regex"
         return (answer) =>
-          value = answer.value || ""
+          value = if answer? and answer.value? then answer.value else ""
           if value.match(val.rhs.literal)
             return null
           return @compileValidationMessage(val)
       when "range"
         return (answer) =>
-          value = answer.value
+          value = if answer? and answer.value? then answer.value else 0
           if val.rhs.literal.min? and value < val.rhs.literal.min
             return @compileValidationMessage(val)
           if val.rhs.literal.max? and value > val.rhs.literal.max
@@ -65,12 +65,19 @@ module.exports = class FormCompiler
       return null
 
   compileQuestion: (q) ->
+    # Compile validations
+    compiledValidations = @compileValidations(q.validations)
+
     options = {
       model: @model
       id: q._id
       required: q.required
       prompt: @compileString(q.text)
       hint: @compileString(q.hint)
+      validate: =>
+        # Get answer
+        answer = @model.get(q._id)
+        return compiledValidations(answer)
     }
     
     switch q._type

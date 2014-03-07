@@ -72,5 +72,15 @@ describe "TextQuestion", ->
       @qview.$el.find("input").val("").change()
       assert @qview.validate()
 
-    it "validates length"
-    it "validates regex"
+    it "validates", ->
+      @q.validations = [
+        {
+          op: "lengthRange"
+          rhs: { literal: { max: 6 } }
+          message: { _base: "es", es: "message" }
+        }
+      ]
+      @qview = @compiler.compileQuestion(@q).render()
+
+      @qview.$el.find("input").val("1234567").change()
+      assert.equal @qview.validate(), "message"
