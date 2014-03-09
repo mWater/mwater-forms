@@ -12,6 +12,7 @@
     "prepublish": "coffee -c -o lib src/*.coffee && cp -r src/templates lib && cp src/*.hbs lib"
   },
   "browserify": { "transform": [ "coffeeify", "hbsfy" ] },
+  "style": "./src/index.css",
   "author": "Clayton Grassick",
   "license": "GPLv3",
   "dependencies": {
