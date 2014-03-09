@@ -6,6 +6,7 @@
   "directories": {
     "test": "test"
   },
+  "repository": "git@github.com:mWater/mwater-forms.git",
   "scripts": {
     "test": "testem ci",
     "prepublish": "coffee -c -o lib src/*.coffee && cp -r src/templates lib && cp src/*.hbs lib"
