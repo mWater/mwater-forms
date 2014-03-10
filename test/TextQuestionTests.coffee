@@ -14,7 +14,6 @@ describe "TextQuestion", ->
         _id: "q1234"
         _type: "TextQuestion"
         text: { _base: "en", en: "English", es: "Spanish" }
-        hint: { _base: "en", en: "", es: "HINT" }
         format: "singleline"
       }
       @qview = @compiler.compileQuestion(@q).render()

@@ -13,7 +13,7 @@ module.exports = class ImageQuestion extends Question
     if not @ctx.imageManager
       answerEl.html '''<div class="text-error">Images not available</div>'''
     else
-      image = @model.get(@id)
+      image = @getAnswerValue()
 
       # Determine if can add images
       notSupported = false
@@ -44,7 +44,7 @@ module.exports = class ImageQuestion extends Question
     # Call imageAcquirer
     @ctx.imageAcquirer.acquire (id) =>
       # Add to model
-      @model.set(@id, { id: id })
+      @setAnswerValue({ id: id })
     , @ctx.error
 
   thumbnailClick: (ev) ->
@@ -52,7 +52,7 @@ module.exports = class ImageQuestion extends Question
 
     # Create onRemove callback
     remove = () => 
-      @model.set(@id, null)
+      @setAnswerValue(null)
 
     if @ctx.displayImage?
       @ctx.displayImage({ id: id, remove: remove })
