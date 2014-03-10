@@ -9,7 +9,7 @@
   "repository": "git@github.com:mWater/mwater-forms.git",
   "scripts": {
     "test": "testem ci",
-    "prepublish": "coffee -c -o lib src/*.coffee && cp -r src/templates lib && cp src/*.hbs lib"
+    "prepublish": "coffee -c -o lib src/*.coffee && cp -r src/templates lib && cp src/*.hbs lib && cp src/*.js lib"
   },
   "browserify": { "transform": [ "coffeeify", "hbsfy" ] },
   "style": "./src/index.css",

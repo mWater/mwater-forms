@@ -1,18 +1,52 @@
-# TODO Fix to have editable YYYY-MM-DD with click to popup scroller
 _ = require 'underscore'
-
+$ = require 'jquery'
 Question = require './Question'
+require './mobiscroll.custom-2.5.4.min'
 
-module.exports = Question.extend
+# TODO Fix to have editable YYYY-MM-DD with click to popup scroller
+
+module.exports = class DateQuestion extends Question
   events:
-    change: "changed"
+    "change input[name='date']": "changed"
 
+  toIso: (formatted) ->
+    if not formatted
+      return ""
+
+    switch @options.format 
+      when "YYYY-MM-DD"
+        return formatted
+      when "MM/DD/YYYY"
+        return formatted.substring(6, 10) + "-" + formatted.substring(0, 2) + "-" + formatted.substring(3, 5)
+      else   
+        throw new Error("Unknown format " + @options.format)
+
+  fromIso: (iso) ->
+    if not iso
+      return ""
+
+    switch @options.format 
+      when "YYYY-MM-DD"
+        return iso
+      when "MM/DD/YYYY"
+        return iso.substring(5, 7) + "/" + iso.substring(8, 10) + "/" + iso.substring(0, 4)
+      else   
+        throw new Error("Unknown format " + @options.format)
+  
   changed: ->
-    @model.set @id, @$el.find("input[name=\"date\"]").val()
+    @setAnswerValue(@toIso(@$el.find("input[name=\"date\"]").val()))
 
   renderAnswer: (answerEl) ->
     answerEl.html _.template("<input class=\"needsclick\" name=\"date\" />", this)
-    answerEl.find("input").val @model.get(@id)
+    answerEl.find("input").val(@fromIso(@getAnswerValue()))
+
+    switch @options.format
+      when "YYYY-MM-DD"
+        dateOrder = "yymmD dd"
+        dateFormat = "yy-mm-dd"
+      when "MM/DD/YYYY"
+        dateOrder = "mmD ddyy"
+        dateFormat = "mm/dd/yy"
 
     # Support readonly
     if @options.readonly
@@ -23,5 +57,5 @@ module.exports = Question.extend
         theme: "ios"
         display: "modal"
         mode: "scroller"
-        dateOrder: "yymmD dd"
-        dateFormat: "yy-mm-dd"
+        dateOrder: dateOrder
+        dateFormat: dateFormat
