@@ -1,17 +1,18 @@
 Question = require './Question'
 _ = require 'underscore'
+$ = require 'jquery'
 
 module.exports = class CheckQuestion extends Question
   events:
-    checked: "checked"
+    "click #check": "checked"
 
   checked: (e) ->
     # Get checked
-    @model.set @id, @$(".touch-checkbox").hasClass("checked")
+    @setAnswerValue(not @getAnswerValue())
 
   renderAnswer: (answerEl) ->
     i = undefined
-    answerEl.append $(_.template("<div class=\"touch-checkbox <%=checked%>\"><%=text%></div>",
-      text: @options.text
+    answerEl.append $(_.template("<div id=\"check\" class=\"touch-checkbox <%=checked%>\"><%=label%></div>",
+      label: @options.label
       checked: (if (@model.get(@id)) then "checked" else "")
     ))

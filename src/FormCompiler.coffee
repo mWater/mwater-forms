@@ -8,6 +8,7 @@ UnitsQuestion = require './UnitsQuestion'
 LocationQuestion = require './LocationQuestion'
 ImageQuestion = require './ImageQuestion'
 ImagesQuestion = require './ImagesQuestion'
+CheckQuestion = require './CheckQuestion'
 _ = require 'underscore'
 
 module.exports = class FormCompiler
@@ -132,5 +133,8 @@ module.exports = class FormCompiler
         return new ImageQuestion(options)
       when "ImagesQuestion"
         return new ImagesQuestion(options)
+      when "CheckQuestion"
+        options.label = @compileString(q.label)
+        return new CheckQuestion(options)
 
     throw new Error("Unknown question type")
