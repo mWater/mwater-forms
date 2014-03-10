@@ -1,10 +1,11 @@
 Question = require './Question'
 _ = require 'underscore'
+$ = require 'jquery'
 
 # Question that has a variable number of textboxes that the user
 # can add more as needed
 
-module.exports = Question.extend
+module.exports = class TextListQuestion extends Question
   events:
     "input .box" : "record"
     "click .remove" : "removeItem"
@@ -24,23 +25,26 @@ module.exports = Question.extend
     if _.last(items) == ""
       items = items[0...-1]
 
-    @model.set(@id, items)
+    @setAnswerValue(items)
 
   removeItem: (ev) ->
-    # Clone to force change
-    items = _.clone(@model.get(@id))
+    items = @getAnswerValue()
 
     # Remove item
     index = parseInt($(ev.currentTarget).data("index"))
     items.splice(index, 1)
-    @model.set(@id, items)
+    @setAnswerValue(items)
 
   update: ->
-    items = @model.get(@id) or []
+    items = @getAnswerValue() or []
 
     # Perform a render
-    @preserveInputs require('./templates/VariableTextsQuestion.hbs')(
-      items: items), @answerEl
+    boxes = []
+    for i in [0...items.length]
+      boxes.push { index: i, position: i+1, text: items[i] } 
+
+    @preserveInputs require('./templates/TextListQuestion.hbs')({
+      boxes: boxes, length: boxes.length}), @answerEl
 
   # Apply a template of newHtml to an oldElem, preserving inputs focus 
   preserveInputs: (newHtml, oldElem) ->

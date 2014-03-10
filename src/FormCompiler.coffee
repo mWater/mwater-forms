@@ -1,3 +1,5 @@
+_ = require 'underscore'
+
 TextQuestion = require './TextQuestion'
 NumberQuestion = require './NumberQuestion'
 RadioQuestion = require './RadioQuestion'
@@ -9,7 +11,7 @@ LocationQuestion = require './LocationQuestion'
 ImageQuestion = require './ImageQuestion'
 ImagesQuestion = require './ImagesQuestion'
 CheckQuestion = require './CheckQuestion'
-_ = require 'underscore'
+TextListQuestion = require './TextListQuestion'
 
 module.exports = class FormCompiler
   constructor: (options) ->
@@ -136,5 +138,7 @@ module.exports = class FormCompiler
       when "CheckQuestion"
         options.label = @compileString(q.label)
         return new CheckQuestion(options)
+      when "TextListQuestion"
+        return new TextListQuestion(options)
 
     throw new Error("Unknown question type")

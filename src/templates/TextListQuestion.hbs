@@ -1,0 +1,24 @@
+<table style="width:100%">
+{{#each boxes}}
+	<tr>
+		<td><b>{{position}}.&nbsp;</b></td>
+		<td>
+			<div class="input-group">
+				<input type="text" id="{{index}}" class="form-control box" value="{{text}}">
+				<span class="input-group-btn">
+					<button class="btn btn-default remove" data-index="{{index}}" type="button">
+						<span class="glyphicon glyphicon-remove"></span>
+					</button>
+				</span>
+			</div>
+		</td>
+	</tr>
+{{/each}}
+<tr>
+	<td></td>
+	<td>
+		<input type="text" id="{{length}}" class="form-control box" value="">
+	</td>
+</tr>
+</table>
+
