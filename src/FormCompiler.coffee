@@ -5,6 +5,7 @@ DropdownQuestion = require './DropdownQuestion'
 MulticheckQuestion = require './MulticheckQuestion'
 DateQuestion = require './DateQuestion'
 UnitsQuestion = require './UnitsQuestion'
+LocationQuestion = require './LocationQuestion'
 _ = require 'underscore'
 
 module.exports = class FormCompiler
@@ -123,5 +124,7 @@ module.exports = class FormCompiler
         options.defaultUnits = q.defaultUnits
         options.unitsPosition = q.unitsPosition
         return new UnitsQuestion(options)
+      when "LocationQuestion"
+        return new LocationQuestion(options)
 
     throw new Error("Unknown question type")

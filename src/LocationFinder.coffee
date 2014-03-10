@@ -1,7 +1,7 @@
 Backbone = require 'backbone'
 _ = require 'underscore'
 
-# Improved location finder. Triggers found event with HTML5 position object.
+# Improved location finder. Triggers found event with HTML5 position object (containing coords, etc).
 class LocationFinder
   constructor: ->
     _.extend @, Backbone.Events

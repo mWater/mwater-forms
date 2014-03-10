@@ -1,12 +1,13 @@
 Backbone = require 'backbone'
 LocationFinder = require './LocationFinder'
-GeoJSON = require './GeoJSON'
+_ = require 'underscore'
 
 # Shows the relative location of a point and allows setting it
 # Fires events locationset, map, both with 
 # options readonly makes it non-editable
 # options hideMap is true to hide map
 # options locationFinder overrides default LocationFinder
+# Location is stored format { latitude, longitude, accuracy, altitude?, altitudeAccuracy? }
 class LocationView extends Backbone.View
   constructor: (options) ->
     super()
@@ -52,10 +53,10 @@ class LocationView extends Backbone.View
     else if not @currentLoc
       @$("#location_relative").text("Waiting for GPS...")
     else
-      @$("#location_relative").text(GeoJSON.getRelativeLocation(@currentLoc, @loc))
+      @$("#location_relative").text(getRelativeLocation(@currentLoc, @loc))
 
     if @loc and not @settingLocation
-      @$("#location_absolute").text("#{this.loc.coordinates[1].toFixed(6)}, #{this.loc.coordinates[0].toFixed(6)}")
+      @$("#location_absolute").text("#{this.loc.latitude.toFixed(6)}, #{this.loc.longitude.toFixed(6)}")
     else
       @$("#location_absolute").text("")
 
@@ -78,6 +79,12 @@ class LocationView extends Backbone.View
   clearLocation: ->
     @trigger('locationset', null)
 
+  # Takes out relevant coords from html5 position
+  convertPosToLoc: (pos) ->
+    if not pos?
+      return pos
+    return _.pick(pos.coords, "latitude", "longitude", "accuracy", "altitude", "altitudeAccuracy")
+
   setLocation: ->
     @settingLocation = true
     @errorFindingLocation = false
@@ -86,9 +93,11 @@ class LocationView extends Backbone.View
       @settingLocation = false
       @errorFindingLocation = false
 
+      # Extract location
+      @loc = @convertPosToLoc(pos)
+      
       # Set location
-      @loc = GeoJSON.posToPoint(pos)
-      @currentLoc = GeoJSON.posToPoint(pos)
+      @currentLoc = @convertPosToLoc(pos)
       @trigger('locationset', @loc)
       @render()
 
@@ -101,7 +110,7 @@ class LocationView extends Backbone.View
     @render()
 
   locationFound: (pos) =>
-    @currentLoc = GeoJSON.posToPoint(pos)
+    @currentLoc = @convertPosToLoc(pos)
     @render()
 
   locationError: =>
@@ -112,8 +121,8 @@ class LocationView extends Backbone.View
 
   editLocation: ->
     # Set values
-    @$("#latitude").val(if @loc then @loc.coordinates[1] else "")
-    @$("#longitude").val(if @loc then @loc.coordinates[0] else "")
+    @$("#latitude").val(if @loc then @loc.latitude else "")
+    @$("#longitude").val(if @loc then @loc.longitude else "")
     @$("#location_edit_controls").slideDown()
 
   saveEditLocation: ->
@@ -126,8 +135,9 @@ class LocationView extends Backbone.View
 
     # Set location
     @loc = {
-      type: 'Point'
-      coordinates: [parseFloat(@$("#longitude").val()), parseFloat(@$("#latitude").val())]
+      latitude: parseFloat(@$("#latitude").val())
+      longitude: parseFloat(@$("#longitude").val())
+      accuracy: 0  # Perfectly accurate when entered
     }
     @trigger('locationset', @loc)
 
@@ -139,3 +149,27 @@ class LocationView extends Backbone.View
     @$("#location_edit_controls").slideUp()    
 
 module.exports = LocationView
+
+getRelativeLocation = (from, to) ->
+  x1 = from.longitude
+  y1 = from.latitude
+  x2 = to.longitude
+  y2 = to.latitude
+  
+  # Convert to relative position (approximate)
+  dy = (y2 - y1) / 57.3 * 6371000
+  dx = Math.cos(y1 / 57.3) * (x2 - x1) / 57.3 * 6371000
+  
+  # Determine direction and angle
+  dist = Math.sqrt(dx * dx + dy * dy)
+  angle = 90 - (Math.atan2(dy, dx) * 57.3)
+  angle += 360 if angle < 0
+  angle -= 360 if angle > 360
+  
+  # Get approximate direction
+  compassDir = (Math.floor((angle + 22.5) / 45)) % 8
+  compassStrs = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
+  if dist > 1000
+    (dist / 1000).toFixed(1) + "km " + compassStrs[compassDir]
+  else
+    (dist).toFixed(0) + "m " + compassStrs[compassDir]

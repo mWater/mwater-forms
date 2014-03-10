@@ -24,6 +24,7 @@ exports.ECPlates = require './ECPlates'
 exports.VariableTextsQuestion = require './VariableTextsQuestion'
 exports.UnitsQuestion = require './UnitsQuestion'
 exports.FormCompiler = require './FormCompiler'
+exports.LocationView = require './LocationView'
 
 # Must be created with model (backbone model) and contents (array of views)
 exports.FormView = class FormView extends Backbone.View

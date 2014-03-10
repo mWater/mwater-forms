@@ -1,4 +1,4 @@
-dedup Locationfinder, LocationView, GeoJSON
+dedup Locationfinder, LocationView
 
 add displayImage to context
 
@@ -13,4 +13,9 @@ change to touch-checkbox and touch-radio and touch-radio-group
 check that buttons in groups are spaced
 
 radio buttons no longer have events attached automatically
+
 checkboxes no longer have events attached automatically
+
+GeoJSON removed!
+
+LocationView uses { latitude, longitude, accuracy, etc. }

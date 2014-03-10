@@ -1,3 +1,4 @@
+$ = require 'jquery'
 assert = require("chai").assert
 
 class UIDriver

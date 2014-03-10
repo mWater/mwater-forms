@@ -1,6 +1,8 @@
 Question = require './Question'
 LocationView = require './LocationView'
 
+# Stores data in value: { latitude, longitude, accuracy, altitude?, altitudeAccuracy? }
+
 module.exports = class LocationQuestion extends Question
   renderAnswer: (answerEl) ->
     # Remove old location view
@@ -8,20 +10,13 @@ module.exports = class LocationQuestion extends Question
       @locationView.remove()
 
     # Create location view
-    latlng = @model.get(@id)
-    if latlng? and latlng.lat?
-      loc = {
-        type: "Point"
-        coordinates: [latlng.lng, latlng.lat]
-      }
-    else
-      loc = null
-    @locationView = new LocationView(loc: loc, readonly: @options.readonly, hideMap: true)
+    loc = @getAnswerValue()
+    @locationView = new LocationView(loc: loc, readonly: @options.readonly, hideMap: true, locationFinder: @ctx.locationFinder)
     @locationView.on "locationset", (loc) =>
       if loc?
-        @model.set(@id, { lat: loc.coordinates[1], lng: loc.coordinates[0]})
+        @setAnswerValue(loc)
       else
-        @model.unset(@id)
+        @setAnswerValue(null)
 
     answerEl.append(@locationView.el)
 
