@@ -80,7 +80,8 @@ module.exports = class FormCompiler
   compileChoices: (choices) ->
     return _.map choices, @compileChoice
 
-  compileQuestion: (q) ->
+  # Compile a question with the given form context
+  compileQuestion: (q, ctx={}) ->
     # Compile validations
     compiledValidations = @compileValidations(q.validations)
 
@@ -94,6 +95,7 @@ module.exports = class FormCompiler
         # Get answer
         answer = @model.get(q._id)
         return compiledValidations(answer)
+      ctx: ctx
     }
     
     switch q._type

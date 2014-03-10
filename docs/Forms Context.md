@@ -27,3 +27,9 @@ Success is called with id of image, error with error message
 Used by SourceQuestion
 
 Function which takes success parameter. Success is called with code of source
+
+### locationFinder
+
+Used by all questions. Optional.
+
+Override default locationFinder which is new LocationFinder

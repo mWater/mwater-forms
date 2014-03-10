@@ -6,6 +6,7 @@ GeoJSON = require './GeoJSON'
 # Fires events locationset, map, both with 
 # options readonly makes it non-editable
 # options hideMap is true to hide map
+# options locationFinder overrides default LocationFinder
 class LocationView extends Backbone.View
   constructor: (options) ->
     super()

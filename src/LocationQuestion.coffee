@@ -1,7 +1,7 @@
 Question = require './Question'
 LocationView = require './LocationView'
 
-module.exports = class GPSQuestion extends Question
+module.exports = class LocationQuestion extends Question
   renderAnswer: (answerEl) ->
     # Remove old location view
     if @locationView?
