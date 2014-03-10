@@ -22,7 +22,7 @@ exports.ImagesQuestion = require './ImagesQuestion'
 exports.Instructions = require './Instructions'
 exports.ECPlates = require './ECPlates'
 exports.VariableTextsQuestion = require './VariableTextsQuestion'
-exports.UnitQuestion = require './UnitQuestion'
+exports.UnitsQuestion = require './UnitsQuestion'
 exports.FormCompiler = require './FormCompiler'
 
 # Must be created with model (backbone model) and contents (array of views)

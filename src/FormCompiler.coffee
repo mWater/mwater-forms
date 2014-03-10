@@ -4,6 +4,7 @@ RadioQuestion = require './RadioQuestion'
 DropdownQuestion = require './DropdownQuestion'
 MulticheckQuestion = require './MulticheckQuestion'
 DateQuestion = require './DateQuestion'
+UnitsQuestion = require './UnitsQuestion'
 _ = require 'underscore'
 
 module.exports = class FormCompiler
@@ -114,5 +115,11 @@ module.exports = class FormCompiler
       when "DateQuestion"
         options.format = q.format
         return new DateQuestion(options)
+      when "UnitsQuestion"
+        options.decimal = q.decimal
+        options.units = @compileChoices(q.units)
+        options.defaultUnits = q.defaultUnits
+        options.unitsPosition = q.unitsPosition
+        return new UnitsQuestion(options)
 
     throw new Error("Unknown question type")
