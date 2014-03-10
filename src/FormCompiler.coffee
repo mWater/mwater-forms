@@ -1,4 +1,5 @@
 _ = require 'underscore'
+markdown = require("markdown").markdown
 
 TextQuestion = require './TextQuestion'
 NumberQuestion = require './NumberQuestion'
@@ -97,6 +98,7 @@ module.exports = class FormCompiler
       required: q.required
       prompt: @compileString(q.text)
       hint: @compileString(q.hint)
+      help: if @compileString(q.help) then markdown.toHTML(@compileString(q.help))
       commentsField: q.commentsField
       recordTimestamp: q.recordTimestamp
       recordLocation: q.recordLocation

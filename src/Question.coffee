@@ -81,6 +81,10 @@ module.exports = class Question extends Backbone.View
     @$("#comments").on 'change', =>
       @setAnswerField('comments', @$("#comments").val())
 
+    # Listen to help clicks
+    @$("#toggle_help").on 'click', =>
+      @$(".help").slideToggle()
+
     return this
 
   # Sets answer field in the model

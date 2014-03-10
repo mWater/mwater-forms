@@ -10,6 +10,7 @@ module.exports = ->
     beforeEach ->
       @q.text = { _base: "en", en: "English", es: "Spanish" }
       @q.hint = { _base: "en", en: "", es: "HINT" }
+      @q.help = { _base: "en", en: "", es: "has *formatting*" }
       @q.required = true
 
       @qview = @compiler.compileQuestion(@q).render()
@@ -23,7 +24,9 @@ module.exports = ->
     it "displays required", ->
       assert.match @qview.el.outerHTML, /\*/    
 
-    it "displays help"
+    it "displays help", ->
+      assert.match @qview.el.outerHTML, /<em>formatting<\/em>/    
+
     it "display comment box", ->
       @q.commentsField = true
       @qview = @compiler.compileQuestion(@q).render()
