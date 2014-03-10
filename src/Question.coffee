@@ -74,7 +74,13 @@ module.exports = class Question extends Backbone.View
     unless @shouldBeVisible()
       @$el.hide()
       @visible = false
-    this
+
+    # Listen to comment changes
+    @$("#comments").val(@getAnswerField('comments'))
+    @$("#comments").on 'change', =>
+      @setAnswerField('comments', @$("#comments").val())
+
+    return this
 
   # Sets answer field in the model
   setAnswerField: (field, val) ->

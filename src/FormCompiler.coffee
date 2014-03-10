@@ -97,6 +97,7 @@ module.exports = class FormCompiler
       required: q.required
       prompt: @compileString(q.text)
       hint: @compileString(q.hint)
+      commentsField: q.commentsField
       validate: =>
         # Get answer
         answer = @model.get(q._id)

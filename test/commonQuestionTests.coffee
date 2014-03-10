@@ -22,7 +22,12 @@ module.exports = ->
       assert.match @qview.el.outerHTML, /\*/    
 
     it "displays help"
-    it "display comment box"
+    it "display comment box", ->
+      @q.commentsField = true
+      @qview = @compiler.compileQuestion(@q).render()
+      @qview.$("#comments").val("some comment").change()
+      assert.equal @model.get("q1234").comments, "some comment"
+
     it "records location"
     it "records timestamp"
     it "is sticky"
