@@ -1,3 +1,5 @@
+_ = require 'underscore'
+Backbone = require 'backbone'
 chai = require 'chai'
 assert = require('chai').assert
 
@@ -28,9 +30,36 @@ module.exports = ->
       @qview.$("#comments").val("some comment").change()
       assert.equal @model.get("q1234").comments, "some comment"
 
-    it "records location"
-    it "records timestamp"
+    it "records timestamp", ->
+      @q.recordTimestamp = true
+      @qview = @compiler.compileQuestion(@q).render()
+
+      before = new Date().toISOString()
+      @qview.setAnswerValue(null)
+      after = new Date().toISOString()
+      assert @model.get("q1234").timestamp >= before
+      assert @model.get("q1234").timestamp <= after
+
+    it "records location", ->
+      @q.recordLocation = true
+      ctx = {
+        locationFinder: new MockLocationFinder()
+      }
+      ctx.locationFinder.getLocation = (success, error) =>
+        success({ coords: { latitude: 2, longitude: 3, accuracy: 10}})
+
+      @qview = @compiler.compileQuestion(@q, ctx).render()
+
+      @qview.setAnswerValue(null)
+      assert.deepEqual @model.get("q1234").location, { latitude: 2, longitude: 3, accuracy: 10}
+
     it "is sticky"
 
 
+class MockLocationFinder
+  constructor:  ->
+    _.extend @, Backbone.Events
 
+  getLocation: (success, error) ->
+  startWatch: ->
+  stopWatch: ->

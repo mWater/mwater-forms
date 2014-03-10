@@ -1,5 +1,6 @@
 Backbone = require 'backbone'
 _ = require 'underscore'
+LocationFinder = require './LocationFinder'
 
 module.exports = class Question extends Backbone.View
   className: "question"
@@ -91,8 +92,17 @@ module.exports = class Question extends Backbone.View
     @model.set(@id, entry)
 
   # Sets the answer value field in the model
+  # Also timestamps and records location if appropriate
   setAnswerValue: (val) ->
     @setAnswerField('value', val)
+    if @options.recordTimestamp and not @getAnswerField('timestamp')
+      @setAnswerField('timestamp', new Date().toISOString())
+
+    if @options.recordLocation and not @getAnswerField('location')
+      locationFinder = @ctx.locationFinder or new LocationFinder()
+      locationFinder.getLocation (loc) =>
+        if loc?
+          @setAnswerField('location', loc.coords)
 
   # Gets answer field in the model
   getAnswerField: (field) ->

@@ -98,6 +98,8 @@ module.exports = class FormCompiler
       prompt: @compileString(q.text)
       hint: @compileString(q.hint)
       commentsField: q.commentsField
+      recordTimestamp: q.recordTimestamp
+      recordLocation: q.recordLocation
       validate: =>
         # Get answer
         answer = @model.get(q._id)
