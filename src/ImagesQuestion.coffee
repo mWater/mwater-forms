@@ -14,7 +14,7 @@ module.exports = class ImagesQuestion extends Question
     if not @ctx.imageManager
       answerEl.html '''<div class="text-error">Images not available</div>'''
     else
-      images = @model.get(@id)
+      images = @getAnswerValue()
 
       # Determine if can add images
       notSupported = false
@@ -51,7 +51,7 @@ module.exports = class ImagesQuestion extends Question
       # Make copy to force a model change
       images = images.slice(0)
       images.push { id: id }
-      @model.set(@id, images)   
+      @setAnswerValue(images)
     , @ctx.error
 
   thumbnailClick: (ev) ->
@@ -63,7 +63,7 @@ module.exports = class ImagesQuestion extends Question
         images = @model.get(@id) || []
         images = _.reject images, (img) =>
           img.id == id
-        @model.set(@id, images)
+        @setAnswerValue(images)
     else
       remove = null
 

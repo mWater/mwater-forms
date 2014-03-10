@@ -7,6 +7,7 @@ DateQuestion = require './DateQuestion'
 UnitsQuestion = require './UnitsQuestion'
 LocationQuestion = require './LocationQuestion'
 ImageQuestion = require './ImageQuestion'
+ImagesQuestion = require './ImagesQuestion'
 _ = require 'underscore'
 
 module.exports = class FormCompiler
@@ -129,5 +130,7 @@ module.exports = class FormCompiler
         return new LocationQuestion(options)
       when "ImageQuestion"
         return new ImageQuestion(options)
+      when "ImagesQuestion"
+        return new ImagesQuestion(options)
 
     throw new Error("Unknown question type")
