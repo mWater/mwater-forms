@@ -87,6 +87,62 @@ module.exports = class FormCompiler
   compileChoices: (choices) ->
     return _.map choices, @compileChoice
 
+  compileCondition: (cond) =>
+    getValue = =>
+      answer = @model.get(cond.lhs.question) || {}
+      return answer.value
+
+    switch cond.op
+      when "present"
+        return () =>
+          value = getValue()
+          return not(not value) and not (value instanceof Array and value.length == 0)
+      when "!present"
+        return () =>
+          value = getValue()
+          return (not value) or (value instanceof Array and value.length == 0)
+      when "contains"
+        return () =>
+          return getValue().indexOf(cond.rhs.literal) != -1
+      when "!contains"
+        return () =>
+          return getValue().indexOf(cond.rhs.literal) == -1
+      when "=", "is"
+        return () =>
+          return getValue() == cond.rhs.literal
+      when ">", "after"
+        return () =>
+          return getValue() > cond.rhs.literal
+      when "<", "before"
+        return () =>
+          return getValue() < cond.rhs.literal
+      when "!=", "isnt"
+        return () =>
+          return getValue() != cond.rhs.literal
+      when "includes"
+        return () =>
+          return _.contains(getValue(), cond.rhs.literal)
+      when "!includes"
+        return () =>
+          return not _.contains(getValue(), cond.rhs.literal)
+      when "true"
+        return () =>
+          return getValue() == true
+      when "false"
+        return () =>
+          return getValue() == false
+      else
+        throw new Error("Unknown condition op " + cond.op)
+
+  compileConditions: (conds) ->
+    compConds = _.map(conds, @compileCondition)
+    return =>
+      for compCond in compConds
+        if not compCond()
+          return false
+
+      return true
+
   # Compile a question with the given form context
   compileQuestion: (q, ctx={}) ->
     # Compile validations
