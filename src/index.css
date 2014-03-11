@@ -35,6 +35,9 @@
   margin-top: 10px;
 }
 
+.question-comments {
+  margin-top: 5px;
+}
 
 .question-default  > .prompt {
   font-weight: bold;
