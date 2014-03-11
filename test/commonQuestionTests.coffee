@@ -27,6 +27,21 @@ module.exports = ->
     it "displays help", ->
       assert.match @qview.el.outerHTML, /<em>formatting<\/em>/    
 
+    it "hides only when conditions are false", ->
+      @q.conditions = [
+        { lhs: { question: "q1" }, op: "=", rhs: { literal: 1 }}
+        { lhs: { question: "q2" }, op: "=", rhs: { literal: 2 }}
+      ]
+      @qview = @compiler.compileQuestion(@q).render()
+
+      assert.isFalse @qview.shouldBeVisible()
+
+      @model.set({ q1: { value: 1 }})
+      assert.isFalse @qview.shouldBeVisible()
+
+      @model.set({ q2: { value: 2 }})
+      assert.isTrue @qview.shouldBeVisible()
+
     it "display comment box", ->
       @q.commentsField = true
       @qview = @compiler.compileQuestion(@q).render()

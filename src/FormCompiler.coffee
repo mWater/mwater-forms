@@ -162,6 +162,7 @@ module.exports = class FormCompiler
         # Get answer
         answer = @model.get(q._id)
         return compiledValidations(answer)
+      conditional: if q.conditions and q.conditions.length > 0 then @compileConditions(q.conditions)
       ctx: ctx
     }
     
