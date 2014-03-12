@@ -43,11 +43,11 @@ module.exports = class UnitsQuestion extends Question
     val = @$("#value").val()
     if @options.decimal and val.length > 0
       if isNaN(parseFloat(val))
-        return "Invalid decimal number" # TODO localize
+        return true # TODO localize
     else if val.length > 0
       if not val.match(/^-?\d+$/)
-        return "Invalid integer number" # TODO localize
+        return true # TODO localize
 
     if val and not @$("#units").val()
-      return "Specify units"
+      return true # TODO localize
     return null

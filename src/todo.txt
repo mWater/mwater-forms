@@ -19,3 +19,5 @@ checkboxes no longer have events attached automatically
 GeoJSON removed!
 
 LocationView uses { latitude, longitude, accuracy, etc. }
+
+Remove scrollintoview plugin from app

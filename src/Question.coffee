@@ -12,7 +12,7 @@ module.exports = class Question extends Backbone.View
     
     # Check required # TODO localize required
     # TODO non-answers/alternates are ok
-    val = "Required"  if not @getAnswerValue()? or @getAnswerValue() is ""  if @required
+    val = true  if not @getAnswerValue()? or @getAnswerValue() is ""  if @required
     
     # Check internal validation
     val = @validateInternal()  if not val and @validateInternal

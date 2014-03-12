@@ -3,7 +3,7 @@ questions1 = [
   {
     _id: "0001"
     _type: "TextQuestion"
-    text: { _base: "en", en: "What is your pet's name" } 
+    text: { _base: "en", en: "Section1q1" } 
     hint: { _base: "en", en: "Benji? Bingo?" } 
     conditions: []
   },
@@ -42,6 +42,7 @@ questions1 = [
 section1 = {
   _id: "1"
   _type: "Section"
+  title: { _base: "en", en: "Section1" } 
   contents: questions1
 }
 
@@ -50,7 +51,7 @@ questions2 = [
   {
     _id: "0005"
     _type: "TextQuestion"
-    text: { _base: "en", en: "What is your pet's name" } 
+    text: { _base: "en", en: "Section2q1" } 
     conditions: []
   }
 ]
@@ -58,9 +59,29 @@ questions2 = [
 section2 = {
   _id: "2"
   _type: "Section"
+  title: { _base: "en", en: "Section2" } 
   contents: questions2
 }
 
+questions3 = [
+  {
+    _id: "0006"
+    _type: "TextQuestion"
+    text: { _base: "en", en: "Section3q1" } 
+    conditions: []
+  }
+]
+
+section3 = {
+  _id: "3"
+  _type: "Section"
+  title: { _base: "en", en: "Section3" } 
+  contents: questions3
+}
+
 module.exports = {
-  contents: [section1, section2]
+  _id: "theformid"
+  _type: "Form"
+  name: { _base: "en", en: "Form" } 
+  contents: [section1, section2, section3]
 }

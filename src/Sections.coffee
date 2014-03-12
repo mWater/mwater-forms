@@ -1,5 +1,6 @@
 Backbone = require 'backbone'
 _ = require 'underscore'
+require './jquery-scrollintoview'
 
 module.exports = class Sections extends Backbone.View
   className: "survey"

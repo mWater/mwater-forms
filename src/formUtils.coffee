@@ -124,3 +124,7 @@ exports.changeQuestionType = (question, newType) ->
   exports.prepareQuestion(question)
 
   return question
+
+# Check if a form is all sections
+exports.isSectioned = (form) ->
+  return form.contents.length > 0 and _.every form.contents, (item) -> item._type == "Section"

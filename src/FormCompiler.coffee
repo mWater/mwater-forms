@@ -19,12 +19,17 @@ SiteQuestion = require './SiteQuestion'
 
 Instructions = require './Instructions'
 
+Section = require './Section'
+Sections = require './Sections'
+FormView = require './FormView'
+
+
 module.exports = class FormCompiler
   constructor: (options) ->
     @model = options.model
     @locale = options.locale
 
-  compileString: (str) ->
+  compileString: (str) =>
     # If no base or null, return null
     if not str? or not str._base
       return null
@@ -71,7 +76,7 @@ module.exports = class FormCompiler
         throw new Error("Unknown validation op " + val.op)
 
 
-  compileValidations: (vals) ->
+  compileValidations: (vals) =>
     compVals = _.map(vals, @compileValidation)
     return (answer) =>
       for compVal in compVals
@@ -139,7 +144,7 @@ module.exports = class FormCompiler
       else
         throw new Error("Unknown condition op " + cond.op)
 
-  compileConditions: (conds) ->
+  compileConditions: (conds) =>
     compConds = _.map(conds, @compileCondition)
     return =>
       for compCond in compConds
@@ -149,7 +154,7 @@ module.exports = class FormCompiler
       return true
 
   # Compile a question with the given form context
-  compileQuestion: (q, ctx={}) ->
+  compileQuestion: (q, ctx={}) =>
     # Compile validations
     compiledValidations = @compileValidations(q.validations)
 
@@ -212,7 +217,7 @@ module.exports = class FormCompiler
 
     throw new Error("Unknown question type")
 
-  compileInstructions: (item, ctx={}) ->
+  compileInstructions: (item, ctx={}) =>
     options = {
       model: @model
       id: item._id
@@ -222,7 +227,7 @@ module.exports = class FormCompiler
     }
     return new Instructions(options)
 
-  compileItem: (item, ctx={}) ->
+  compileItem: (item, ctx={}) =>
     if formUtils.isQuestion(item)
       return @compileQuestion(item, ctx)
 
@@ -230,3 +235,48 @@ module.exports = class FormCompiler
       return @compileInstructions(item, ctx)
 
     throw new Error("Unknown item type: " + item._type)
+
+  compileSection: (section, ctx={}) =>
+    # Compile contents
+    contents = _.map section.contents, @compileItem
+
+    options = {
+      model: @model
+      id: section._id
+      ctx: ctx
+      title: @compileString(section.title)
+      contents: contents
+      conditional: if section.conditions and section.conditions.length > 0 then @compileConditions(section.conditions)
+    }
+
+    return new Section(options)
+
+  compileForm: (form, ctx={}) ->
+    # Compile contents
+    if formUtils.isSectioned(form) 
+      # Compile sections
+      sections = _.map form.contents, @compileSection
+
+      # Create Sections view
+      sectionsView = new Sections({ 
+        sections: sections
+        model: @model
+        title: @compileString(form.name)
+        ctx: ctx
+      })
+      contents = [sectionsView]
+
+    else
+      # Compile simple contents
+      contents = _.map form.contents, @compileItem
+
+    # TODO Display name in non-sectioned form
+    options = {
+      model: @model
+      id: form._id
+      ctx: ctx
+      name: @compileString(form.name)
+      contents: contents
+    }
+
+    return new FormView(options)
