@@ -1,6 +1,8 @@
 _ = require 'underscore'
 markdown = require("markdown").markdown
 
+formUtils = require './formUtils'
+
 TextQuestion = require './TextQuestion'
 NumberQuestion = require './NumberQuestion'
 RadioQuestion = require './RadioQuestion'
@@ -13,6 +15,7 @@ ImageQuestion = require './ImageQuestion'
 ImagesQuestion = require './ImagesQuestion'
 CheckQuestion = require './CheckQuestion'
 TextListQuestion = require './TextListQuestion'
+Instructions = require './Instructions'
 
 module.exports = class FormCompiler
   constructor: (options) ->
@@ -204,3 +207,22 @@ module.exports = class FormCompiler
         return new TextListQuestion(options)
 
     throw new Error("Unknown question type")
+
+  compileInstructions: (item, ctx={}) ->
+    options = {
+      model: @model
+      id: item._id
+      html: if @compileString(item.text) then markdown.toHTML(@compileString(item.text))
+      conditional: if item.conditions and item.conditions.length > 0 then @compileConditions(item.conditions)
+      ctx: ctx
+    }
+    return new Instructions(options)
+
+  compileItem: (item, ctx={}) ->
+    if formUtils.isQuestion(item)
+      return @compileQuestion(item, ctx)
+
+    if item._type == "Instructions"
+      return @compileInstructions(item, ctx)
+
+    throw new Error("Unknown item type: " + item._type)
