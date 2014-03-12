@@ -2,6 +2,7 @@ $ = require 'jquery'
 Backbone = require 'backbone'
 _ = require 'underscore'
 
+exports.formUtils = require './formUtils'
 exports.Sections = require './Sections'
 exports.Section = require './Section'
 exports.Question = require './Question'
