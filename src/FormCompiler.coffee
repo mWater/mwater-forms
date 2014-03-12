@@ -15,6 +15,8 @@ ImageQuestion = require './ImageQuestion'
 ImagesQuestion = require './ImagesQuestion'
 CheckQuestion = require './CheckQuestion'
 TextListQuestion = require './TextListQuestion'
+SiteQuestion = require './SiteQuestion'
+
 Instructions = require './Instructions'
 
 module.exports = class FormCompiler
@@ -205,6 +207,8 @@ module.exports = class FormCompiler
         return new CheckQuestion(options)
       when "TextListQuestion"
         return new TextListQuestion(options)
+      when "SiteQuestion"
+        return new SiteQuestion(options)
 
     throw new Error("Unknown question type")
 

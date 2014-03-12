@@ -2,7 +2,7 @@ dedup Locationfinder, LocationView
 
 add displayImage to context
 
-add selectSource to context
+add selectSite to context
 
 remove checkbox mobile behaviour
 

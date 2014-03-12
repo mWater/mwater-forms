@@ -22,11 +22,11 @@ Contains acquire(success, error)
 
 Success is called with id of image, error with error message
 
-### selectSource
+### selectSite
 
-Used by SourceQuestion
+Used by SiteQuestion
 
-Function which takes success parameter. Success is called with code of source
+Function which takes success parameter. Success is called with code of site
 
 ### locationFinder
 

@@ -1,4 +1,4 @@
-# Validates mWater water source codes
+# Validates mWater water site codes
 exports.seqToCode = (seq) ->
   # Get string of seq number
   str = "" + seq
