@@ -6,7 +6,8 @@ _ = require 'underscore'
 
 module.exports = class UnitsQuestion extends Question
   events:
-    "change": "changed"
+    "change #value": "changed"
+    "change #units": "changed"
 
   renderAnswer: (answerEl) ->
     # Convert units to maps
@@ -19,11 +20,6 @@ module.exports = class UnitsQuestion extends Question
     # Set values
     answerEl.find("#value").val(@getAnswerValue())
     answerEl.find("#units").val(@getAnswerField("units") || @options.defaultUnits)
-
-  # TODO still needed with htmlPreserver?
-  update: ->
-    @$("#value").val(@getAnswerValue())
-    @$("#units").val(@getAnswerField("units") || @options.defaultUnits)
 
   setUnits: (units) ->
     @options.units = units
