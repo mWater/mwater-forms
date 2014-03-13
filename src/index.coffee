@@ -92,8 +92,6 @@ exports.instantiateView = (viewStr, options) =>
   viewFunc = new Function("options", viewStr)
   viewFunc(options)
 
-# TODO figure out how to allow two surveys for differing client versions? Or just use minVersion?
-
 # Create a base32 time code to write on forms
 exports.createBase32TimeCode = (date) ->
   # Characters to use (skip 1, I, 0, O)

@@ -32,7 +32,7 @@ module.exports = class FormView extends Backbone.View
     super()
 
   load: (data) ->
-    @model.clear()  #TODO clear or not clear? clearing removes defaults, but allows true reuse.
+    @model.clear()
 
     # Apply defaults 
     @model.set(_.defaults(_.cloneDeep(data || {}), @options.defaults || {}))

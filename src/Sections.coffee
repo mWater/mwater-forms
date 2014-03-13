@@ -15,7 +15,7 @@ module.exports = class Sections extends Backbone.View
     # Adjust next/prev based on model
     @model.on "change", @renderNextPrev, this
     
-    # Go to appropriate section TODO
+    # Go to first section
     @showSection 0
     return
 
