@@ -1,6 +1,8 @@
+$ = require 'jquery'
 Backbone = require 'backbone'
 _ = require 'underscore'
 LocationFinder = require './LocationFinder'
+htmlPreserver = require('pojo-backbone-view').htmlPreserver
 
 module.exports = class Question extends Backbone.View
   className: "question"
@@ -61,30 +63,36 @@ module.exports = class Question extends Backbone.View
     @ctx = @options.ctx or {}
     @render()
 
+    # Listen to comment changes 
+    @$el.on "change", "#comments", =>
+      @setAnswerField('comments', @$("#comments").val())
+
+    # Listen to help clicks
+    @$el.on "click", "#toggle_help", =>
+      @$(".help").slideToggle()
+
   update: ->
     # Default is to re-render
     @render()
 
   render: ->
-    @$el.html(require("./Question.hbs")(this))
-    
+    # Render question
+    question = $(require("./Question.hbs")(this))
+
     # Render answer
-    @renderAnswer @$(".answer")
-    
+    @renderAnswer question.find(".answer")
+
     # TODO Tabular controls will have display:table-row replaced with block
     unless @shouldBeVisible()
-      @$el.hide()
+      question.hide()
       @visible = false
+    
+    # Replace element, preserving html
+    htmlPreserver.preserveFocus =>
+      htmlPreserver.replaceHtml(@$el, question)
 
-    # Listen to comment changes
     @$("#comments").val(@getAnswerField('comments'))
-    @$("#comments").on 'change', =>
-      @setAnswerField('comments', @$("#comments").val())
-
-    # Listen to help clicks
-    @$("#toggle_help").on 'click', =>
-      @$(".help").slideToggle()
-
+    
     return this
 
   # Sets answer field in the model

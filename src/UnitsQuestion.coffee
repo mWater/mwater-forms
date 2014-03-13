@@ -17,8 +17,10 @@ module.exports = class UnitsQuestion extends Question
       defaultUnits: @options.defaultUnits)
 
     # Set values
-    @update()
+    answerEl.find("#value").val(@getAnswerValue())
+    answerEl.find("#units").val(@getAnswerField("units") || @options.defaultUnits)
 
+  # TODO still needed with htmlPreserver?
   update: ->
     @$("#value").val(@getAnswerValue())
     @$("#units").val(@getAnswerField("units") || @options.defaultUnits)

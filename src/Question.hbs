@@ -1,26 +1,28 @@
-{{#if options.prompt}}
-	<div class="prompt">
-		{{options.prompt}}
-		{{#if options.required}}
-			<span class="required">*</span>
+<div>
+	{{#if options.prompt}}
+		<div class="prompt">
+			{{options.prompt}}
+			{{#if options.required}}
+				<span class="required">*</span>
+			{{/if}}
+			{{#if options.help}}
+			<button type="button" class="btn btn-link btn-sm" id="toggle_help">
+	  			<span class="glyphicon glyphicon-question-sign"></span>
+			</button>
+			{{/if}}
+		</div>
+		{{#if options.hint}}
+			<div class="text-muted">{{options.hint}}</div>
 		{{/if}}
 		{{#if options.help}}
-		<button type="button" class="btn btn-link btn-sm" id="toggle_help">
-  			<span class="glyphicon glyphicon-question-sign"></span>
-		</button>
+		<div class="help well well-sm" style="display: none">
+			{{{options.help}}}
+		</div>
 		{{/if}}
-	</div>
-	{{#if options.hint}}
-		<div class="text-muted">{{options.hint}}</div>
 	{{/if}}
-	{{#if options.help}}
-	<div class="help well well-sm" style="display: none">
-		{{{options.help}}}
-	</div>
+	<div class="answer"></div>
+	{{#if options.commentsField}}
+	<!-- TODO localize placeholder -->
+	<textarea id="comments" class="form-control question-comments" placeholder="Comments"></textarea>
 	{{/if}}
-{{/if}}
-<div class="answer"></div>
-{{#if options.commentsField}}
-<!-- TODO localize placeholder -->
-<textarea id="comments" class="form-control question-comments" placeholder="Comments"></textarea>
-{{/if}}
+</div>

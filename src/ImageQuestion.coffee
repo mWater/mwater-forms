@@ -33,11 +33,11 @@ module.exports = class ImageQuestion extends Question
 
       # Set source
       if image
-        @setThumbnailUrl(image.id)
+        @setThumbnailUrl(answerEl.find("#" + image.id), image.id)
     
-  setThumbnailUrl: (id) ->
+  setThumbnailUrl: (elem, id) ->
     success = (url) =>
-      @$("#" + id).attr("src", url)
+      elem.attr("src", url)
     @ctx.imageManager.getImageThumbnailUrl id, success, @error
 
   addClick: ->
