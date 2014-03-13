@@ -261,7 +261,6 @@ module.exports = class FormCompiler
       sectionsView = new Sections({ 
         sections: sections
         model: @model
-        title: @compileString(form.name)
         ctx: ctx
       })
       contents = [sectionsView]
@@ -270,7 +269,6 @@ module.exports = class FormCompiler
       # Compile simple contents
       contents = _.map form.contents, @compileItem
 
-    # TODO Display name in non-sectioned form
     options = {
       model: @model
       id: form._id

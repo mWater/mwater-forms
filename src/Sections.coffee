@@ -8,7 +8,6 @@ module.exports = class Sections extends Backbone.View
   initialize: (options) ->
     # Save options
     @options = options or {}
-    @title = @options.title
     @sections = @options.sections
     @render()
     
