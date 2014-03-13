@@ -5,7 +5,7 @@ $ = require 'jquery'
 module.exports = class DropdownQuestion extends Question
   events:
     "change select": "changed"
-    "change .specify-input": "specifyChange"
+    "input .specify-input": "specifyChange"
 
   setOptions: (options) ->
     @options.choices = options

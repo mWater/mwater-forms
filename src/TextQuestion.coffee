@@ -4,19 +4,19 @@ _ = require 'underscore'
 module.exports = class TextQuestion extends Question
   renderAnswer: (answerEl) ->
     if @options.format == "multiline"
-      answerEl.html _.template("<textarea class=\"form-control\" rows=\"5\" x-webkit-speech/>", this)
+      answerEl.html _.template("<textarea id=\"input\" class=\"form-control\" rows=\"5\" x-webkit-speech/>", this)
       answerEl.find("textarea").val @getAnswerValue()
       answerEl.find("textarea").attr "readonly", "readonly"  if @options.readonly
     else
-      answerEl.html _.template("<input class=\"form-control\" type=\"text\" x-webkit-speech/>", this)
+      answerEl.html _.template("<input id=\"input\" class=\"form-control\" type=\"text\" x-webkit-speech/>", this)
       answerEl.find("input").val @getAnswerValue()
       answerEl.find("input").attr "readonly", "readonly"  if @options.readonly
 
   events:
-    change: "changed"
+    "change #input": "changed"
 
   getText: ->
-    return @$((if @options.format == "multiline" then "textarea" else "input")).val()
+    return @$("#input").val()
 
   changed: ->
     @setAnswerValue(@getText())

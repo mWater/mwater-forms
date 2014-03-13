@@ -5,7 +5,7 @@ $ = require 'jquery'
 module.exports = class RadioQuestion extends Question
   events:
     "click .touch-radio" : "checked"
-    "change .specify-input": "specifyChange"
+    "input .specify-input": "specifyChange"
 
   checked: (e) ->
     # Ignore if readonly
