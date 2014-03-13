@@ -42,7 +42,7 @@ questions1 = [
 section1 = {
   _id: "1"
   _type: "Section"
-  title: { _base: "en", en: "Section1" } 
+  name: { _base: "en", en: "Section1" } 
   contents: questions1
 }
 
@@ -59,7 +59,7 @@ questions2 = [
 section2 = {
   _id: "2"
   _type: "Section"
-  title: { _base: "en", en: "Section2" } 
+  name: { _base: "en", en: "Section2" } 
   contents: questions2
 }
 
@@ -75,7 +75,7 @@ questions3 = [
 section3 = {
   _id: "3"
   _type: "Section"
-  title: { _base: "en", en: "Section3" } 
+  name: { _base: "en", en: "Section3" } 
   contents: questions3
 }
 
