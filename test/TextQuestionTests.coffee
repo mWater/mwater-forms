@@ -47,8 +47,21 @@ describe "TextQuestion", ->
     assert.equal @model.get("q1234").value, "test"
     assert @qview.validate()
 
-  it "accepts valid urls"
-  it "rejects invalid urls"
+  it "accepts valid urls", ->
+    @q.format = "url"
+    @qview = @compiler.compileQuestion(@q).render()
+
+    @qview.$el.find("input").val("www.apple.com").change()
+    assert.equal @model.get("q1234").value, "www.apple.com"
+    assert not @qview.validate(), "should validate"
+
+  it "rejects invalid urls", ->
+    @q.format = "url"
+    @qview = @compiler.compileQuestion(@q).render()
+
+    @qview.$el.find("input").val("sometext").change()
+    assert.equal @model.get("q1234").value, "sometext"
+    assert @qview.validate()
 
   it "enforces required", ->
     @q.required = true

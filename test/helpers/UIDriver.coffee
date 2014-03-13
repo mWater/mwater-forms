@@ -14,7 +14,7 @@ class UIDriver
   click: (str) ->
     for item in @el.find("a,button")
       if $(item).text().indexOf(str) != -1
-        console.log "Clicking: " + $(item).text()
+        #console.log "Clicking: " + $(item).text()
         $(item).trigger("click")
         return
     assert.fail(null, str, "Can't find: " + str)
