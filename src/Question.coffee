@@ -22,11 +22,16 @@ module.exports = class Question extends Backbone.View
     # Check custom validation
     val = @options.validate()  if not val and @options.validate
     
-    # Show validation results TODO
+    # Show validation results 
     if val
       @$el.addClass "invalid"
+      if typeof(val) == "string"
+        @$(".validation-message").text(val)
+      else
+        @$(".validation-message").text("")
     else
       @$el.removeClass "invalid"
+      @$(".validation-message").text("")
     return val
 
   updateVisibility: (e) ->
@@ -77,19 +82,19 @@ module.exports = class Question extends Backbone.View
 
   render: ->
     # Render question
-    question = $(require("./Question.hbs")(this))
+    question = $("<div>" + require("./Question.hbs")(this) + "</div>")
 
     # Render answer
     @renderAnswer question.find(".answer")
 
     # TODO Tabular controls will have display:table-row replaced with block
     unless @shouldBeVisible()
-      question.hide()
+      @$el.hide()
       @visible = false
     
     # Replace element, preserving html
     htmlPreserver.preserveFocus =>
-      htmlPreserver.replaceHtml(@$el, question)
+      htmlPreserver.replaceHtml(@$el, question.contents())
 
     @$("#comments").val(@getAnswerField('comments'))
     

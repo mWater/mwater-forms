@@ -59,13 +59,13 @@ describe 'DropdownQuestion', ->
 
   it "records specify value", ->
     @qview.$el.find("select").val("2").change()
-    @qview.$el.find("input[type='text']").val("specified").change()
+    @qview.$el.find("input[type='text']").val("specified").trigger('input').change()
     
     assert.equal @model.get('q1234').value, "c"    
     assert.equal @model.get('q1234').specify['c'], "specified"    
 
   it "removes specify value on other selection", ->
     @qview.$el.find("select").val("2").change()
-    @qview.$el.find("input[type='text']").val("specified").change()
+    @qview.$el.find("input[type='text']").val("specified").trigger('input').change()
     @qview.$el.find("select").val("0").change()
     assert not @model.get('q1234').specify['c'], "Should be removed"
