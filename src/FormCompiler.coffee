@@ -244,7 +244,7 @@ module.exports = class FormCompiler
       model: @model
       id: section._id
       ctx: ctx
-      title: @compileString(section.title)
+      name: @compileString(section.name)
       contents: contents
       conditional: if section.conditions and section.conditions.length > 0 then @compileConditions(section.conditions)
     }

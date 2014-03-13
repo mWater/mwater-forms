@@ -9,7 +9,7 @@ module.exports = class Section extends Backbone.View
   initialize: (options) ->
     # Save options
     @options = options or {}
-    @title = @options.title
+    @name = @options.name
     @contents = @options.contents
     
     # Always invisible initially
