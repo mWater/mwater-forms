@@ -1,22 +1,25 @@
-<div class="row">
-	{{#if prefix}}{{else}}
-	<div class="col-xs-6">
-		<input id="value" class="form-control" type="number" step="any" />
-	</div>
+<table>
+	<tr>
+		{{#unless prefix}}
+		<td width="100%">
+			<input id="value" class="form-control" type="number" step="any" />
+		</td>
+		{{/unless}}
+		<td>
+			<select id="units" class="form-control" style="width:auto">
+				{{#if defaultUnits}}{{else}}
+				<option value="">Select units</option>
+				{{/if}}
+				{{#each units}}
+					<option value="{{id}}">{{value}}</option>
+				{{/each}}
+			</select>
+		</td>
+		{{#if prefix}}
+		<td width="100%">
+			<input id="value" class="form-control" type="number" step="any" />
+		</td>
 	{{/if}}
-	<div class="col-xs-6">
-		<select id="units" class="form-control">
-			{{#if defaultUnits}}{{else}}
-			<option value="">Select units</option>
-			{{/if}}
-			{{#each units}}
-				<option value="{{id}}">{{value}}</option>
-			{{/each}}
-		</select>
-	</div>
-	{{#if prefix}}
-	<div class="col-xs-6">
-		<input id="value" class="form-control" type="number" step="any" />
-	</div>
-	{{/if}}
-</div>
+
+	</tr>
+</table>
