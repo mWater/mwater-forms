@@ -112,11 +112,17 @@ module.exports = class Question extends Backbone.View
     @$("#comments").val(@getAnswerField('comments'))
 
     # Set checked status of alternates
-    if @getAnswerField('alternate')
-      @$("#" + @getAnswerField('alternate')).addClass("checked")
+    if @options.alternates
+      if @getAnswerField('alternate')
+        @$("#" + @getAnswerField('alternate')).addClass("checked")
 
-      # Hide answer
-      @$('.answer').hide()
+        # Hide answer
+        @$('.answer').hide()
+
+        # Hide other alternates
+        for alt in @options.alternates
+          if alt.id != @getAnswerField('alternate')
+            @$("#" + alt.id).hide()
     
     return this
 
