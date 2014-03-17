@@ -4,7 +4,7 @@ $ = require 'jquery'
 
 module.exports = class MulticheckQuestion extends Question
   events:
-    "click .touch-checkbox": "checked"
+    "click .choice": "checked"
     "change .specify-input": "specifyChange"
 
   checked: (e) ->

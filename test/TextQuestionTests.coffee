@@ -101,3 +101,14 @@ describe "TextQuestion", ->
     @qview.$("#dontknow").click()
 
     assert not @model.get("q1234").value
+
+  it "erases alternate on value entered", ->
+    @q.alternates = {dontknow: true, na: true}
+    @qview = @compiler.compileQuestion(@q).render()
+
+    @qview.$el.find("input").val("response").change()
+    @qview.$("#dontknow").click()
+
+    # Add input
+    @qview.$el.find("input").val("response").change()
+    assert not @model.get("q1234").alternate
