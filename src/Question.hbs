@@ -20,6 +20,11 @@
 	{{/if}}
 {{/if}}
 <div class="answer"></div>
+
+{{#each options.alternates}}
+<div id="{{id}}" class="checkbox alternate">{{label}}</div>
+{{/each}}
+
 <div class="validation-message text-danger"></div>
 {{#if options.commentsField}}
 <!-- TODO localize placeholder -->

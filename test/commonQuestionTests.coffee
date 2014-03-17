@@ -73,6 +73,29 @@ module.exports = ->
 
     it "is sticky"
 
+    it "records alternate na", ->
+      @q.alternates = ['na']
+      @qview = @compiler.compileQuestion(@q).render()
+      @qview.$("#na").click()
+
+      assert.equal @model.get("q1234").alternate, "na"
+
+    it "records alternate dontknow", ->
+      @q.alternates = ['dontknow', 'na']
+      @qview = @compiler.compileQuestion(@q).render()
+      @qview.$("#dontknow").click()
+
+      assert.equal @model.get("q1234").alternate, "dontknow"
+
+    it "hides answer when alternate selected", ->
+      @q.alternates = ['dontknow', 'na']
+      @qview = @compiler.compileQuestion(@q).render()
+      @qview.$("#dontknow").click()
+
+      assert.equal @qview.$(".answer").css("display"), "none"
+
+    it "shows answer when alternate unselected"
+
 
 class MockLocationFinder
   constructor:  ->

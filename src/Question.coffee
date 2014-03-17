@@ -80,6 +80,11 @@ module.exports = class Question extends Backbone.View
       @helpVisible = not @helpVisible
       @$(".help").slideToggle(@helpVisible)
 
+    # Listen to alternates
+    @$el.on "click", ".alternate", (ev) =>
+      @setAnswerField('alternate', ev.currentTarget.id)
+      @setAnswerValue(null)
+
   update: ->
     # Default is to re-render
     @render()
@@ -100,7 +105,15 @@ module.exports = class Question extends Backbone.View
     htmlPreserver.preserveFocus =>
       htmlPreserver.replaceHtml(@$el, question.contents())
 
+    # Fill comments
     @$("#comments").val(@getAnswerField('comments'))
+
+    # Set checked status of alternates
+    if @getAnswerField('alternate')
+      @$("#" + @getAnswerField('alternate')).addClass("checked")
+
+      # Hide answer
+      @$('.answer').hide()
     
     return this
 

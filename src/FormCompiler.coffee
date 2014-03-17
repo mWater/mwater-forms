@@ -176,6 +176,18 @@ module.exports = class FormCompiler
       ctx: ctx
     }
     
+    # Add alternates
+    if q.alternates and q.alternates.length > 0
+      options.alternates = []
+      for alternate in q.alternates
+        switch alternate
+          when "na"
+            options.alternates.push { id: "na", label: "N/A" }  # TODO localize
+          when "dontknow"
+            options.alternates.push { id: "dontknow", label: "Don't know" }  # TODO localize
+          else
+            throw new Error("Unknown alternate")
+
     switch q._type
       when "TextQuestion"
         options.format = q.format

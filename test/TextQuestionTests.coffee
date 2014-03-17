@@ -92,3 +92,5 @@ describe "TextQuestion", ->
 
     @qview.$el.find("input").val("1234567").change()
     assert.equal @qview.validate(), "message"
+
+  it "erases value on alternate selected"
