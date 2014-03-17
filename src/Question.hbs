@@ -14,7 +14,7 @@
 		<div class="text-muted">{{options.hint}}</div>
 	{{/if}}
 	{{#if options.help}}
-	<div class="help well well-sm" style="display: none">
+	<div class="help well well-sm" style="{{#unless helpVisible}}display: none{{/unless}}">
 		{{{options.help}}}
 	</div>
 	{{/if}}

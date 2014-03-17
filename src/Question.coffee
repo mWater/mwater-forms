@@ -63,6 +63,9 @@ module.exports = class Question extends Backbone.View
     
     # Starts visible
     @visible = true
+
+    # Help starts invisible
+    @helpVisible = false
     
     # Save context
     @ctx = @options.ctx or {}
@@ -74,7 +77,8 @@ module.exports = class Question extends Backbone.View
 
     # Listen to help clicks
     @$el.on "click", "#toggle_help", =>
-      @$(".help").slideToggle()
+      @helpVisible = not @helpVisible
+      @$(".help").slideToggle(@helpVisible)
 
   update: ->
     # Default is to re-render
