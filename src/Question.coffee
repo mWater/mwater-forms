@@ -82,8 +82,11 @@ module.exports = class Question extends Backbone.View
 
     # Listen to alternates
     @$el.on "click", ".alternate", (ev) =>
-      @setAnswerField('alternate', ev.currentTarget.id)
       @setAnswerValue(null)
+      if @getAnswerField('alternate') != ev.currentTarget.id
+        @setAnswerField('alternate', ev.currentTarget.id)
+      else 
+        @setAnswerField('alternate', null)
 
   update: ->
     # Default is to re-render

@@ -177,16 +177,12 @@ module.exports = class FormCompiler
     }
     
     # Add alternates
-    if q.alternates and q.alternates.length > 0
+    if q.alternates 
       options.alternates = []
-      for alternate in q.alternates
-        switch alternate
-          when "na"
-            options.alternates.push { id: "na", label: "N/A" }  # TODO localize
-          when "dontknow"
-            options.alternates.push { id: "dontknow", label: "Don't know" }  # TODO localize
-          else
-            throw new Error("Unknown alternate")
+      if q.alternates.na
+        options.alternates.push { id: "na", label: "N/A" }  # TODO localize
+      if q.alternates.dontknow
+        options.alternates.push { id: "dontknow", label: "Don't know" }  # TODO localize
 
     switch q._type
       when "TextQuestion"

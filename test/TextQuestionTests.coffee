@@ -93,4 +93,11 @@ describe "TextQuestion", ->
     @qview.$el.find("input").val("1234567").change()
     assert.equal @qview.validate(), "message"
 
-  it "erases value on alternate selected"
+  it "erases value on alternate selected", ->
+    @q.alternates = {dontknow: true, na: true}
+    @qview = @compiler.compileQuestion(@q).render()
+
+    @qview.$el.find("input").val("response").change()
+    @qview.$("#dontknow").click()
+
+    assert not @model.get("q1234").value
