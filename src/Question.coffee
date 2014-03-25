@@ -82,10 +82,16 @@ module.exports = class Question extends Backbone.View
 
     # Listen to alternates
     @$el.on "click", ".alternate", (ev) =>
-      @setAnswerValue(null)
+      # If being set
       if @getAnswerField('alternate') != ev.currentTarget.id
+        # Cache answer and remove
+        @cachedAnswer = @getAnswerValue()
+        @setAnswerValue(null)
+
         @setAnswerField('alternate', ev.currentTarget.id)
       else 
+        # Restore cached answer
+        @setAnswerValue(@cachedAnswer)
         @setAnswerField('alternate', null)
 
   update: ->

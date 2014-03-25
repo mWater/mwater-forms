@@ -102,6 +102,16 @@ describe "TextQuestion", ->
 
     assert not @model.get("q1234").value
 
+  it "caches value on alternate selected", ->
+    @q.alternates = {dontknow: true, na: true}
+    @qview = @compiler.compileQuestion(@q).render()
+
+    @qview.$el.find("input").val("response").change()
+    @qview.$("#dontknow").click()
+    @qview.$("#dontknow").click()
+
+    assert.equal @model.get("q1234").value, "response"
+
   it "erases alternate on value entered", ->
     @q.alternates = {dontknow: true, na: true}
     @qview = @compiler.compileQuestion(@q).render()
