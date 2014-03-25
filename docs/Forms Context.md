@@ -33,3 +33,10 @@ Function which takes success parameter. Success is called with code of site
 Used by all questions. Optional.
 
 Override default locationFinder which is new LocationFinder
+
+### displayMap
+
+Used by LocationQuestion
+
+Function which takes location object ( latitude, longitude, accuracy, altitude?, altitudeAccuracy? )
+Opens a map to the location

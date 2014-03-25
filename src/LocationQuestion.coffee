@@ -11,7 +11,16 @@ module.exports = class LocationQuestion extends Question
 
     # Create location view
     loc = @getAnswerValue()
-    @locationView = new LocationView(loc: loc, readonly: @options.readonly, hideMap: true, locationFinder: @ctx.locationFinder)
+    @locationView = new LocationView({ 
+      loc: loc
+      readonly: @options.readonly
+      disableMap: not @ctx.displayMap?
+      locationFinder: @ctx.locationFinder})
+
+    @locationView.on 'map', (loc) =>
+      if @ctx.displayMap?
+        @ctx.displayMap(loc)
+
     @locationView.on "locationset", (loc) =>
       if loc?
         @setAnswerValue(loc)

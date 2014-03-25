@@ -14,6 +14,7 @@ class LocationView extends Backbone.View
     @loc = options.loc
     @readonly = options.readonly
     @hideMap = options.hideMap
+    @disableMap = options.disableMap
     @settingLocation = false
     @locationFinder = options.locationFinder || new LocationFinder()
 

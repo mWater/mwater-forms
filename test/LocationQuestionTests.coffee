@@ -32,6 +32,8 @@ describe "LocationQuestion", ->
     }
     ctx = {
       locationFinder: new MockLocationFinder()
+      displayMap: (loc) =>
+        @mapDisplayed = loc
     }
     ctx.locationFinder.getLocation = (success) ->
       success(coords: { latitude: 1, longitude: 2, accuracy: 0 })
@@ -46,3 +48,10 @@ describe "LocationQuestion", ->
   it "records location when set is clicked", ->
     @ui.click("Set")
     assert.deepEqual @model.get("q1234"), { value: { latitude: 1, longitude: 2, accuracy: 0 }}
+
+  it "displays map", ->
+    assert not @mapDisplayed
+    @ui.click("Set")
+    @ui.click("Map")
+    assert.deepEqual @mapDisplayed, { latitude: 1, longitude: 2, accuracy: 0 }
+
