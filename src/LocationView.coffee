@@ -1,4 +1,5 @@
 Backbone = require 'backbone'
+Backbone.$ = require 'jquery'
 LocationFinder = require './LocationFinder'
 _ = require 'underscore'
 
@@ -79,7 +80,7 @@ class LocationView extends Backbone.View
 
   clearLocation: ->
     @trigger('locationset', null)
-
+ 
   # Takes out relevant coords from html5 position
   convertPosToLoc: (pos) ->
     if not pos?

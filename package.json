@@ -8,8 +8,7 @@
   },
   "repository": "git@github.com:mWater/mwater-forms.git",
   "scripts": {
-    "test": "testem ci",
-    "prepublish": "coffee -c -o lib src/*.coffee && cp -r src/templates lib && cp src/*.hbs lib && cp src/*.js lib"
+    "test": "testem ci"
   },
   "browserify": {
     "transform": [
@@ -32,6 +31,9 @@
     "lodash": "~2.4.1"
   },
   "devDependencies": {
-    "sinon": "~1.8.2"
+    "sinon": "~1.8.2",
+    "vinyl-source-stream": "~0.1.1",
+    "express": "~3.5.1",
+    "gulp-open": "~0.2.8"
   }
 }
