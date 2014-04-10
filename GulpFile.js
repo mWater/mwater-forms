@@ -6,25 +6,21 @@ var concat = require('gulp-concat');
 var open = require('gulp-open');
 var streamConvert = require('vinyl-source-stream');
 
-var EXPRESS_PORT = 8080;
+var EXPRESS_PORT = 8081;
 
 gulp.task('startExpress', function() {
 	var express = require("express");
 	var app = express();
-	var middleware = require("connect-livereload");
-	//this puts a snippet of js on our page that will respond to file changes
 	app.use(express.static(__dirname));
-	//this makes our static files servable
-	//this starts the server
 	app.listen(EXPRESS_PORT);
 	console.log("Server started on port " + EXPRESS_PORT);
 });
 
 gulp.task('openBrowser', function() {
 	var options = {
-		url: "http://localhost:" + EXPRESS_PORT + "/dist"
+		url: "http://localhost:" + EXPRESS_PORT + "/demo/demo.html"
 	};
-	gulp.src("./dist/index.html").pipe(open("", options));
+	gulp.src("./demo/demo.html").pipe(open("", options));
 });
 
 
@@ -42,8 +38,7 @@ gulp.task('browserify', function() {
 
 	bundler.bundle()
 		.pipe(streamConvert('bundle.js'))
-		.pipe(gulp.dest('./lib'));
-
+		.pipe(gulp.dest('./demo'));
 });
 
 gulp.task('coffee', function() {
@@ -65,6 +60,7 @@ gulp.task('copy', function() {
 gulp.task('watch', function() {
 	gulp.watch('./lib/demo.js', ['browserify']);
 	gulp.watch('./src/*.coffee', ['coffee', 'copy', 'libs', 'browserify']);
+	gulp.watch('./src/templates/*.hbs', ['coffee', 'copy', 'libs', 'browserify']);
 });
 
 gulp.task('default', ['coffee', 'copy', 'libs', 'browserify', 'startExpress','watch', 'openBrowser']);

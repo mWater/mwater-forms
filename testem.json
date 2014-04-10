@@ -13,7 +13,7 @@
     ],
     "launchers": {
     },
-    "before_tests": "browserify --extension=.coffee test/*Tests.coffee -o test/browserified.js",
+    "before_tests": "browserify --extension=.coffee test/LocationViewTests.coffee -o test/browserified.js",
     "on_exit": "rm test/browserified.js",
     "launch_in_dev": [ "chrome" ]
 }

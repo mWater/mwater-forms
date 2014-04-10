@@ -19,3 +19,18 @@
 	<button id="save_button" type="button" class="btn btn-primary">Save</button>	
 	<button id="cancel_button" type="button" class="btn btn-default">Cancel</button>	
 </div>
+
+<style>
+@-webkit-keyframes 'blink' {
+    0% { opacity: .7 }
+    50% { opacity: .9 }
+    100% { opacity: .7 }
+}
+#location_set.btn-danger {
+    -webkit-animation-direction: normal;
+    -webkit-animation-duration: 1.5s;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-name: blink;
+    -webkit-animation-timing-function: ease;  
+}
+</style>

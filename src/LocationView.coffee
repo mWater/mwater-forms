@@ -72,12 +72,15 @@ class LocationView extends Backbone.View
     # Disable clear if location not set or readonly
     @$("#location_clear").attr("disabled", not @loc || @readonly)
 
-    # Disable set if setting or readonly
-    @$("#location_set").attr("disabled", @settingLocation || @readonly)
-
     # Disable edit if readonly
     @$("#location_edit").attr("disabled", @readonly)
 
+    accuracy = @getAccuracyAttributes(@currentLoc)
+    # Disable set if setting or readonly
+    @$("#location_set").attr("disabled", @settingLocation || @readonly).removeClass("disabled btn-danger btn-warning btn-success").addClass(accuracy.class);
+
+    console.log accuracy.strength
+    if accuracy.strength == "weak" then @$("#location_set").text("Waiting for GPS...")
   clearLocation: ->
     @trigger('locationset', null)
  
@@ -88,6 +91,7 @@ class LocationView extends Backbone.View
     return _.pick(pos.coords, "latitude", "longitude", "accuracy", "altitude", "altitudeAccuracy")
 
   setLocation: ->
+    console.log "setting location"
     @settingLocation = true
     @errorFindingLocation = false
 
@@ -97,7 +101,6 @@ class LocationView extends Backbone.View
 
       # Extract location
       @loc = @convertPosToLoc(pos)
-      
       # Set location
       @currentLoc = @convertPosToLoc(pos)
       @trigger('locationset', @loc)
@@ -148,9 +151,16 @@ class LocationView extends Backbone.View
     @render()
 
   cancelEditLocation: ->
-    @$("#location_edit_controls").slideUp()    
+    @$("#location_edit_controls").slideUp() 
+
+  getAccuracyAttributes: (pos) =>
+    if not (pos and pos.accuracy) then { color: "red", class: "btn-danger disabled", strength: "weak" }
+    else if pos.accuracy > 12 then { color: "red", class: "btn-danger disabled", strength: "weak" }
+    else if pos.accuracy > 10 then { color: "yellow", class: "btn-warning", strength: "fair"}
+    else { color: "green", class: "btn-success", strength: "strong" }
 
 module.exports = LocationView
+
 
 getRelativeLocation = (from, to) ->
   x1 = from.longitude
