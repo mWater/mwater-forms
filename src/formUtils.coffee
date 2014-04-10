@@ -1,11 +1,21 @@
 _ = require 'underscore'
 
-# Create uid that starts with c, d, e or f
+# Create ~ 128-bit uid that starts with c, d, e or f
 exports.createUid = -> 
   'zxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace /[xyz]/g, (c) ->
     r = Math.random()*16|0
     v = if c == 'x' then r else if c == 'y' then (r&0x3|0x8) else (r|0xC)
     return v.toString(16)
+
+# Create short unique id, with ~42 bits randomness to keep unique amoung a few choices
+exports.createShortUid = ->
+    chrs = "abcdefghjklmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ123456789"
+    loop 
+      id = ""
+      for i in [1..7]
+        id = id + chrs[_.random(0, chrs.length - 1)]
+      if not _.find(@model, { id: id })? then break
+    return id
 
 exports.isQuestion = (item) ->
   return item._type? and item._type.match(/Question$/)
