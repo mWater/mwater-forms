@@ -87,6 +87,17 @@ module.exports = ->
 
       assert.equal @model.get("q1234").alternate, "dontknow"
 
+    it "allows alternate for required", ->
+      @q.alternates = {na: true}
+      @qview = @compiler.compileQuestion(@q).render()
+
+      assert @qview.validate()
+
+      @qview.$("#na").click()
+
+      assert not @qview.validate()
+
+
 class MockLocationFinder
   constructor:  ->
     _.extend @, Backbone.Events
