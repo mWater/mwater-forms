@@ -2,7 +2,6 @@ $ = require 'jquery'
 Backbone = require 'backbone'
 _ = require 'underscore'
 LocationFinder = require './LocationFinder'
-htmlPreserver = require('pojo-backbone-view').htmlPreserver
 
 # Question types are subclasses that implement renderAnswer and updateAnswer
 # See methods for more detail
