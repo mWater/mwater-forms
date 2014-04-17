@@ -5,7 +5,7 @@ $ = require 'jquery'
 module.exports = class RadioQuestion extends Question
   events:
     "click .answer .touch-radio" : "checked"
-    "input .specify-input": "specifyChange"
+    "change .specify-input": "specifyChange"
 
   checked: (e) ->
     # Ignore if readonly
@@ -32,7 +32,7 @@ module.exports = class RadioQuestion extends Question
     specify[$(e.currentTarget).data('id')] = $(e.currentTarget).val()
     @setAnswerField('specify', specify)
 
-  renderAnswer: (answerEl) ->
+  updateAnswer: (answerEl) ->
     answerEl.html _.template("<div class=\"touch-radio-group\"><%=renderRadioOptions()%></div>", this)
     answerEl.find(".radio-group").addClass "readonly"  if @options.readonly
 

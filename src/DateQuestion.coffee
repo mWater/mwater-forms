@@ -36,7 +36,7 @@ module.exports = class DateQuestion extends Question
   changed: ->
     @setAnswerValue(@toIso(@$el.find("input[name=\"date\"]").val()))
 
-  renderAnswer: (answerEl) ->
+  updateAnswer: (answerEl) ->
     answerEl.html _.template("<input class=\"needsclick\" name=\"date\" />", this)
     answerEl.find("input").val(@fromIso(@getAnswerValue()))
 

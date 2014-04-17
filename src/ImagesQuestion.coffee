@@ -9,7 +9,7 @@ module.exports = class ImagesQuestion extends Question
     "click #add": "addClick"
     "click .image": "thumbnailClick"
 
-  renderAnswer: (answerEl) ->
+  updateAnswer: (answerEl) ->
     # Render image using image manager
     if not @ctx.imageManager
       answerEl.html '''<div class="text-error">Images not available</div>'''

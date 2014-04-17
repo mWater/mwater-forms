@@ -11,6 +11,7 @@ module.exports = Question.extend
       decimal: @options.decimal,
       prefixOrSuffix: @options.prefix or @options.suffix)
 
+  updateAnswer: (answerEl) ->
     answerEl.find("input").val @getAnswerValue()
 
   events:

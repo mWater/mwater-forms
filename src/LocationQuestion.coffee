@@ -4,7 +4,8 @@ LocationView = require './LocationView'
 # Stores data in value: { latitude, longitude, accuracy, altitude?, altitudeAccuracy? }
 
 module.exports = class LocationQuestion extends Question
-  renderAnswer: (answerEl) ->
+  # TODO could be faster to render once and then update location finder
+  updateAnswer: (answerEl) ->
     # Remove old location view
     if @locationView?
       @locationView.remove()

@@ -11,15 +11,54 @@ module.exports = class TextListQuestion extends Question
     "click .remove" : "removeItem"
 
   renderAnswer: (answerEl) ->
+    # Create base table
+    answerEl.html '''
+<table style="width:100%">
+</table>
+    '''
+
+  updateAnswer: (answerEl) ->
     items = @getAnswerValue() or []
 
-    # Perform a render
-    boxes = []
-    for i in [0...items.length]
-      boxes.push { index: i, position: i+1, text: items[i] } 
+    # Check that correct number of rows present (1 extra for prompt)
+    while @$("tr").length < items.length + 1
+      index = @$("tr").length
+      @$("table").append $(_.template('''
+  <tr id="row_<%=index%>">
+    <td id="position_<%=index%>"></td>
+    <td>
+      <div class="input-group">
+        <input type="text" id="input_<%=index%>" class="form-control box">
+        <span class="input-group-btn">
+          <button class="btn btn-link remove" id="remove_<%=index%>" data-index="<%=index%>" type="button">
+            <span class="glyphicon glyphicon-remove"></span>
+          </button>
+        </span>
+      </div>
+    </td>
+  </tr>        
+        ''', { index: index }))
 
-    answerEl.html(require('./templates/TextListQuestion.hbs')({
-      boxes: boxes, length: boxes.length}))
+    # Remove extra rows
+    while @$("tr").length > items.length + 1
+      @$("tr:last-child").remove()
+
+    # Set text fields
+    for i in [0...items.length]
+      @$("input#" + i).val(items[i])
+
+    # Set position fields
+    for i in [0...items.length]
+      @$("#position_" + i).html(_.template("<b><%=position%>.&nbsp;</b>", { position: i + 1 }))
+
+    @$("#position_" + items.length).html("")
+
+    # Set remove visibility
+    for i in [0...items.length]
+      @$("#remove_" + i).css('visibility', 'visible')
+
+    @$("#remove_" + items.length).css('visibility', 'hidden')
+    
 
   record: ->
     # Save to data

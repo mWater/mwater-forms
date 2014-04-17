@@ -4,48 +4,10 @@ _ = require 'underscore'
 LocationFinder = require './LocationFinder'
 htmlPreserver = require('pojo-backbone-view').htmlPreserver
 
+# Question types are subclasses that implement renderAnswer and updateAnswer
+# See methods for more detail
 module.exports = class Question extends Backbone.View
   className: "question"
-
-  # Validate the question. Returns string of error if not valid or true if not valid but no specific error
-  # Returns falsy if no error.
-  validate: ->
-    val = undefined
-    
-    # Check required # TODO localize required
-    # TODO non-answers/alternates are ok
-    val = true  if not @getAnswerValue()? or @getAnswerValue() is ""  if @required
-    
-    # Check internal validation
-    val = @validateInternal()  if not val and @validateInternal
-    
-    # Check custom validation
-    val = @options.validate()  if not val and @options.validate
-    
-    # Show validation results 
-    if val
-      @$el.addClass "invalid"
-      if typeof(val) == "string"
-        @$(".validation-message").text(val)
-      else
-        @$(".validation-message").text("")
-    else
-      @$el.removeClass "invalid"
-      @$(".validation-message").text("")
-    return val
-
-  updateVisibility: (e) ->
-    
-    # slideUp/slideDown
-    @$el.slideDown()  if @shouldBeVisible() and not @visible
-    @$el.slideUp()  if not @shouldBeVisible() and @visible
-    @visible = @shouldBeVisible()
-
-  shouldBeVisible: ->
-    return true  unless @options.conditional
-    
-    # Test equality to handle undefined more gracefully
-    return @options.conditional(@model) is true
 
   initialize: (options) ->
     # Save options
@@ -94,28 +56,65 @@ module.exports = class Question extends Backbone.View
         @setAnswerValue(@cachedAnswer)
         @setAnswerField('alternate', null)
 
-  update: ->
-    # Default is to re-render
-    @render()
-
-  render: ->
-    # Render question
-    question = $("<div>" + require("./Question.hbs")(this) + "</div>")
-
-    # Render answer
-    @renderAnswer question.find(".answer")
-
-    # TODO Tabular controls will have display:table-row replaced with block
-    unless @shouldBeVisible()
-      @$el.hide()
-      @visible = false
+  # Validate the question. Returns string of error if not valid or true if not valid but no specific error
+  # Returns falsy if no error.
+  validate: ->
+    val = undefined
     
-    # Replace element, preserving html
-    htmlPreserver.preserveFocus =>
-      htmlPreserver.replaceHtml(@$el, question.contents())
+    # Check required # TODO localize required
+    # TODO non-answers/alternates are ok
+    val = true  if not @getAnswerValue()? or @getAnswerValue() is ""  if @required
+    
+    # Check internal validation
+    val = @validateInternal()  if not val and @validateInternal
+    
+    # Check custom validation
+    val = @options.validate()  if not val and @options.validate
+    
+    # Show validation results 
+    if val
+      @$el.addClass "invalid"
+      if typeof(val) == "string"
+        @$(".validation-message").text(val)
+      else
+        @$(".validation-message").text("")
+    else
+      @$el.removeClass "invalid"
+      @$(".validation-message").text("")
+    return val
 
-    # Fill comments
-    @$("#comments").val(@getAnswerField('comments'))
+  # Update question visibility
+  updateVisibility: (e) ->
+    # slideUp/slideDown
+    @$el.slideDown()  if @shouldBeVisible() and not @visible
+    @$el.slideUp()  if not @shouldBeVisible() and @visible
+    @visible = @shouldBeVisible()
+
+  shouldBeVisible: ->
+    return true  unless @options.conditional
+    
+    # Test equality to handle undefined more gracefully
+    return @options.conditional(@model) is true
+
+  # Should fill answer element appropriately. Will only be called once
+  renderAnswer: (answerEl) ->
+    # Default does nothing
+    return
+
+  # Should update answer element appropriately. Called on each change to model value
+  updateAnswer: (answerEl) ->
+    # Default does nothing
+    return
+
+  update: ->
+    # Update answer if changed
+    if not _.isEqual(@getAnswerValue(), @currentAnswer)
+      @updateAnswer @$(".answer")
+      @currentAnswer = @getAnswerValue()
+
+    # Update comments
+    if @options.commentsField    
+      @$("#comments").val(@getAnswerField('comments'))
 
     # Set checked status of alternates
     if @options.alternates
@@ -125,7 +124,27 @@ module.exports = class Question extends Backbone.View
       # If alternate is selected and value is present, erase alternate
       if @getAnswerValue()? and @getAnswerField('alternate')
         @setAnswerField('alternate', null)
-    
+
+  # Render is called only once automatically from the constructor
+  # The question is self-updating from then on via listening to the model
+  render: ->
+    # Render question
+    @$el.html require("./Question.hbs")(this)
+
+    # TODO Tabular controls will have display:table-row replaced with block
+    unless @shouldBeVisible()
+      @$el.hide()
+      @visible = false
+
+    # Render answer
+    @renderAnswer @$(".answer")
+
+    # Update answer
+    @updateAnswer @$(".answer")
+
+    # Save current answer to avoid spurious answer updates
+    @currentAnswer = @getAnswerValue()
+
     return this
 
   # Sets answer field in the model

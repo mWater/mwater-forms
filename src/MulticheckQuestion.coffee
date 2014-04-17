@@ -30,7 +30,8 @@ module.exports = class MulticheckQuestion extends Question
     specify[$(e.currentTarget).data('id')] = $(e.currentTarget).val()
     @setAnswerField('specify', specify)
 
-  renderAnswer: (answerEl) ->
+  updateAnswer: (answerEl) ->
+    answerEl.empty()
     for i in [0...@options.choices.length]
       checked = @getAnswerValue() and _.contains(@getAnswerValue(), @options.choices[i].id)
       data = {

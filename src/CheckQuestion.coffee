@@ -10,9 +10,8 @@ module.exports = class CheckQuestion extends Question
     # Get checked
     @setAnswerValue(not @getAnswerValue())
 
-  renderAnswer: (answerEl) ->
-    i = undefined
-    answerEl.append $(_.template("<div id=\"check\" class=\"touch-checkbox <%=checked%>\"><%=label%></div>",
+  updateAnswer: (answerEl) ->
+    answerEl.html $(_.template("<div id=\"check\" class=\"touch-checkbox <%=checked%>\"><%=label%></div>",
       label: @options.label
       checked: (if @getAnswerValue() then "checked" else "")
     ))

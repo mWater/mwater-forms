@@ -17,7 +17,7 @@ module.exports = class UnitsQuestion extends Question
       units: units, prefix: @options.unitsPosition == "prefix",
       defaultUnits: @options.defaultUnits)
 
-    # Set values
+  updateAnswer: (answerEl) ->
     answerEl.find("#value").val(@getAnswerValue())
     answerEl.find("#units").val(@getAnswerField("units") || @options.defaultUnits)
 

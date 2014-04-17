@@ -5,7 +5,7 @@ $ = require 'jquery'
 module.exports = class DropdownQuestion extends Question
   events:
     "change select": "changed"
-    "input .specify-input": "specifyChange"
+    "change .specify-input": "specifyChange"
 
   setOptions: (options) ->
     @options.choices = options
@@ -30,7 +30,7 @@ module.exports = class DropdownQuestion extends Question
     specify[$(e.currentTarget).data('id')] = $(e.currentTarget).val()
     @setAnswerField('specify', specify)
 
-  renderAnswer: (answerEl) ->
+  updateAnswer: (answerEl) ->
     html = _.template("<select class=\"form-control\"><%=renderDropdownOptions()%></select>", this)
 
     # Add specify

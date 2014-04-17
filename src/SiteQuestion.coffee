@@ -12,9 +12,11 @@ module.exports = class SiteQuestion extends Question
         <span class="input-group-btn"><button class="btn btn-default" id="select" type="button">Select</button></span>
       </div>
       '''
-    answerEl.find("input").val @getAnswerValue()
     if not @ctx.selectSite?
       @$("#select").attr("disabled", "disabled")
+
+  updateAnswer: (answerEl) ->
+    answerEl.find("input").val @getAnswerValue()
 
   events:
     'change' : 'changed'
