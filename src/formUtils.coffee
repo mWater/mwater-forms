@@ -135,6 +135,35 @@ exports.changeQuestionType = (question, newType) ->
 
   return question
 
+# Gets type of the answer: text, number, choice, choices, date, units, boolean, location, image, images, texts, site
+exports.getAnswerType = (q) ->
+  switch q._type
+    when "TextQuestion"
+      return "text"
+    when "NumberQuestion"
+      return "number"
+    when "DropdownQuestion", "RadioQuestion"
+      return "choice"
+    when "MulticheckQuestion"
+      return "choices"
+    when "DateQuestion" # , "DateTimeQuestion"??
+      return "date"
+    when "UnitsQuestion"
+      return "units"
+    when "CheckQuestion"
+      return "boolean"
+    when "LocationQuestion"
+      return "location"
+    when "ImageQuestion"
+      return "image"
+    when "ImagesQuestion"
+      return "images"
+    when "TextListQuestion"
+      return "texts"
+    when "SiteQuestion"
+      return "site"
+    else throw new Error("Unknown question type")
+
 # Check if a form is all sections
 exports.isSectioned = (form) ->
   return form.contents.length > 0 and _.every form.contents, (item) -> item._type == "Section"
