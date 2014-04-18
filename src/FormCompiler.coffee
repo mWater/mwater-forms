@@ -22,7 +22,7 @@ Instructions = require './Instructions'
 Section = require './Section'
 Sections = require './Sections'
 FormView = require './FormView'
-
+FormControls = require './FormControls'
 
 module.exports = class FormCompiler
   constructor: (options) ->
@@ -274,8 +274,14 @@ module.exports = class FormCompiler
       contents = [sectionsView]
 
     else
-      # Compile simple contents
+      # Compile into FormControls
       contents = _.map form.contents, @compileItem
+      formControls = new FormControls({
+        contents: contents
+        model: @model
+        ctx: ctx
+        })
+      contents = [formControls]
 
     options = {
       model: @model
