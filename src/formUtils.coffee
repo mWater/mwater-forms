@@ -1,4 +1,4 @@
-_ = require 'underscore'
+_ = require 'lodash'
 
 # Create ~ 128-bit uid that starts with c, d, e or f
 exports.createUid = -> 
@@ -54,13 +54,14 @@ exports.localizeString = (str, locale) ->
   return str[str._base] || ""
 
 # Gets all questions in form before reference item specified
+# refItem can be null for all questions
 # TODO should handle arbitrary nesting
 exports.priorQuestions = (form, refItem) ->
   # List contents until current
   priors = []
   for item in form.contents
     # If ids match
-    if item._id == refItem._id
+    if refItem? and item._id == refItem._id
       return priors
 
     if exports.isQuestion(item)
@@ -69,7 +70,7 @@ exports.priorQuestions = (form, refItem) ->
     if item._type == "Section"
       for item2 in item.contents
         # If ids match
-        if item2._id == refItem._id
+        if refItem? and item2._id == refItem._id
           return priors
 
         if exports.isQuestion(item2)
@@ -188,3 +189,18 @@ exports.getAnswerType = (q) ->
 # Check if a form is all sections
 exports.isSectioned = (form) ->
   return form.contents.length > 0 and _.every form.contents, (item) -> item._type == "Section"
+
+# Duplicates an item (form design, section or question)
+exports.duplicateItem = (item) ->
+  dup = _.cloneDeep(item)
+
+  # Set up id
+  if dup._id
+    dup._basedOn = dup._id
+    dup._id = exports.createUid()
+
+  # Duplicate contents
+  if dup.contents
+    dup.contents = _.map dup.contents, exports.duplicateItem
+
+  return dup

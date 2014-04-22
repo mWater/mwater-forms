@@ -100,5 +100,33 @@ describe "FormUtils", ->
       formUtils.changeQuestionType(@question, "DateQuestion")
       assert.equal @question.format, "YYYY-MM-DD" 
       
+  describe "duplicateItem", ->
+    describe "duplicate question", ->
+      before ->
+        @duplicate = formUtils.duplicateItem(simpleForm.contents[0])
 
+      it "sets new id", ->
+        assert.notEqual @duplicate._id, simpleForm.contents[0]._id
 
+      it "sets _basedOn", ->
+        assert.equal @duplicate._basedOn, simpleForm.contents[0]._id
+
+    describe "duplicate section", ->
+      before ->
+        @duplicate = formUtils.duplicateItem(sectionedForm.contents[0])
+
+      it "sets new id", ->
+        assert.notEqual @duplicate._id, sectionedForm.contents[0]._id
+
+      it "sets _basedOn", ->
+        assert.equal @duplicate._basedOn, sectionedForm.contents[0]._id
+
+      it "duplicates questions", ->
+        assert.equal @duplicate.contents[0]._basedOn, sectionedForm.contents[0].contents[0]._id
+
+    describe "duplicate form", ->
+      before ->
+        @duplicate = formUtils.duplicateItem(simpleForm)
+
+      it "duplicates questions", ->
+        assert.equal @duplicate.contents[0]._basedOn, simpleForm.contents[0]._id
