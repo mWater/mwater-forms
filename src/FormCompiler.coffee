@@ -246,7 +246,7 @@ module.exports = class FormCompiler
 
   compileSection: (section, ctx={}) =>
     # Compile contents
-    contents = _.map section.contents, @compileItem
+    contents = _.map section.contents, (item) => @compileItem(item, ctx)
 
     options = {
       model: @model
@@ -263,7 +263,7 @@ module.exports = class FormCompiler
     # Compile contents
     if formUtils.isSectioned(form) 
       # Compile sections
-      sections = _.map form.contents, @compileSection
+      sections = _.map form.contents, (item) => @compileSection(item, ctx)
 
       # Create Sections view
       sectionsView = new Sections({ 
@@ -275,7 +275,7 @@ module.exports = class FormCompiler
 
     else
       # Compile into FormControls
-      contents = _.map form.contents, @compileItem
+      contents = _.map form.contents, (item) => @compileItem(item, ctx)
       formControls = new FormControls({
         contents: contents
         model: @model
