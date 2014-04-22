@@ -115,13 +115,14 @@ module.exports = class Question extends Backbone.View
       @$("#comments").val(@getAnswerField('comments'))
 
     # Set checked status of alternates
+    @$(".alternate").removeClass("checked")
     if @options.alternates
-      if @getAnswerField('alternate')
-        @$("#" + @getAnswerField('alternate')).addClass("checked")
-
       # If alternate is selected and value is present, erase alternate
       if @getAnswerValue()? and @getAnswerField('alternate')
         @setAnswerField('alternate', null)
+
+      if @getAnswerField('alternate')
+        @$("#" + @getAnswerField('alternate')).addClass("checked")
 
   # Render is called only once automatically from the constructor
   # The question is self-updating from then on via listening to the model
