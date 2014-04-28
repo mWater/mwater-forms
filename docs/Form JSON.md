@@ -7,8 +7,7 @@ This documents the JSON used to describe forms, including questions, sections, c
 The top-level element is a Form element. It contains basic information about the form and a list of contents
 
 Fields:
-
-*_id*: UUID of the form
-*_type*: "Form" 
+* **_id**: UUID of the form
+* **_type**: "Form" 
 
 
