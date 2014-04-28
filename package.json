@@ -4,7 +4,8 @@
   "description": "Form controls for mWater",
   "main": "lib/index.js",
   "directories": {
-    "test": "test"
+    "test": "test",
+    "prepublish": "grunt coffee copy"
   },
   "repository": "git@github.com:mWater/mwater-forms.git",
   "scripts": {
