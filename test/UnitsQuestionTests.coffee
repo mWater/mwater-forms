@@ -28,31 +28,31 @@ describe "UnitsQuestion", ->
   commonQuestionTests.call(this)
 
   it "allows changing of units", ->
-    @qview.$el.find("#value").val("123.4").change()
+    @qview.$el.find("#quantity").val("123.4").change()
     @qview.$el.find("#units").val("a").change()
-    assert.equal @model.get("q1234").units, "a"
+    assert.equal @model.get("q1234").value.units, "a"
 
     @qview.$el.find("#units").val("b").change()
-    assert.equal @model.get("q1234").units, "b"
+    assert.equal @model.get("q1234").value.units, "b"
 
   it "defaults unit", ->
     @q.defaultUnits = "b"
     @qview = @compiler.compileQuestion(@q).render()
 
-    @qview.$el.find("#value").val("123.4").change()
-    assert.equal @model.get("q1234").units, "b"
+    @qview.$el.find("#quantity").val("123.4").change()
+    assert.equal @model.get("q1234").value.units, "b"
 
   it "records decimal number", ->
-    @qview.$el.find("#value").val("123.4").change()
+    @qview.$el.find("#quantity").val("123.4").change()
     @qview.$el.find("#units").val("a").change()
-    assert.equal @model.get("q1234").value, 123.4
+    assert.equal @model.get("q1234").value.quantity, 123.4
 
   it "records whole number", ->
     @q.decimal = false
     @qview = @compiler.compileQuestion(@q).render()
 
-    @qview.$el.find("#value").val("123.4").change()
-    assert.equal @model.get("q1234").value, 123
+    @qview.$el.find("#quantity").val("123.4").change()
+    assert.equal @model.get("q1234").value.quantity, 123
 
   it "enforces required", ->
     assert @qview.validate()
@@ -62,18 +62,18 @@ describe "UnitsQuestion", ->
     assert not @qview.validate()
 
   it "enforces required on blank answer", ->
-    @qview.$el.find("#value").val("response").change()
-    @qview.$el.find("#value").val("").change()
+    @qview.$el.find("#quantity").val("response").change()
+    @qview.$el.find("#quantity").val("").change()
     @qview.$el.find("#units").val("a").change()
     assert @qview.validate()
 
   it "allows 0 on required", ->
-    @qview.$el.find("#value").val("0").change()
+    @qview.$el.find("#quantity").val("0").change()
     @qview.$el.find("#units").val("a").change()
     assert not @qview.validate()
 
   it "requires unit to be specified", ->
-    @qview.$el.find("#value").val("0").change()
+    @qview.$el.find("#quantity").val("0").change()
     assert @qview.validate()
 
     @qview.$el.find("#units").val("a").change()
@@ -90,6 +90,6 @@ describe "UnitsQuestion", ->
     ]
     @qview = @compiler.compileQuestion(@q).render()
 
-    @qview.$el.find("#value").val("7").change()
+    @qview.$el.find("#quantity").val("7").change()
     @qview.$el.find("#units").val("a").change()
     assert.equal @qview.validate(), "message"

@@ -55,13 +55,19 @@ module.exports = class Question extends Backbone.View
         @setAnswerValue(@cachedAnswer)
         @setAnswerField('alternate', null)
 
+  # Default checks falsy values
+  isAnswered: ->
+    return @getAnswerValue()? and @getAnswerValue() != ""
+
   # Validate the question. Returns string of error if not valid or true if not valid but no specific error
   # Returns falsy if no error.
   validate: ->
     val = undefined
     
-    # Check required # TODO localize required
-    val = true  if (not @getAnswerValue()? or @getAnswerValue() is "") and not @getAnswerField('alternate') if @required
+    # Check required and answered # TODO localize required
+    if @required
+      if not @isAnswered() and not @getAnswerField('alternate') 
+        val = true
     
     # Check internal validation
     val = @validateInternal()  if not val and @validateInternal

@@ -6,7 +6,7 @@ _ = require 'underscore'
 
 module.exports = class UnitsQuestion extends Question
   events:
-    "change #value": "changed"
+    "change #quantity": "changed"
     "change #units": "changed"
 
   renderAnswer: (answerEl) ->
@@ -18,34 +18,44 @@ module.exports = class UnitsQuestion extends Question
       defaultUnits: @options.defaultUnits)
 
   updateAnswer: (answerEl) ->
-    answerEl.find("#value").val(@getAnswerValue())
-    answerEl.find("#units").val(@getAnswerField("units") || @options.defaultUnits)
+    val = @getAnswerValue() || {}
+    answerEl.find("#quantity").val(val.quantity)
+    answerEl.find("#units").val(val.units || @options.defaultUnits)
+
+  isAnswered: ->
+    val = @getAnswerValue()
+    if not val?
+      return false
+
+    if not val.quantity? or not val.units
+      return false
+
+    return true
 
   setUnits: (units) ->
     @options.units = units
     @render()
 
-  changed: (e) ->
-    val = if @options.decimal then parseFloat(@$("#value").val()) else parseInt(@$("#value").val())
+  changed: ->
+    quantity = if @options.decimal then parseFloat(@$("#quantity").val()) else parseInt(@$("#quantity").val())
     units = @$("#units").val()
+    units = if units then units else @options.defaultUnits
 
-    if isNaN(val)
-      val = null
-    @setAnswerValue(val)
+    if isNaN(quantity)
+      quantity = null
 
     # Set answer
-    @setAnswerValue(val)
-    @setAnswerField("units", if units then units else @options.defaultUnits)
+    @setAnswerValue { units: units, quantity: quantity }
 
   validateInternal: ->
-    val = @$("#value").val()
-    if @options.decimal and val.length > 0
-      if isNaN(parseFloat(val))
+    quantity = @$("#quantity").val()
+    if @options.decimal and quantity.length > 0
+      if isNaN(parseFloat(quantity))
         return true # TODO localize
-    else if val.length > 0
-      if not val.match(/^-?\d+$/)
+    else if quantity.length > 0
+      if not quantity.match(/^-?\d+$/)
         return true # TODO localize
 
-    if val and not @$("#units").val()
+    if quantity and not @$("#units").val()
       return true # TODO localize
     return null

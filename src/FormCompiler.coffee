@@ -67,6 +67,10 @@ module.exports = class FormCompiler
       when "range"
         return (answer) =>
           value = if answer? and answer.value? then answer.value else 0
+          # For units question, get quantity
+          if value.quantity?
+            value = value.quantity
+            
           if val.rhs.literal.min? and value < val.rhs.literal.min
             return @compileValidationMessage(val)
           if val.rhs.literal.max? and value > val.rhs.literal.max

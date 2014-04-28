@@ -32,6 +32,4 @@ module.exports = class TextQuestion extends Question
         return false
       return true
 
-
-
     return false
