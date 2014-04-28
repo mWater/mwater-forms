@@ -75,12 +75,11 @@ class LocationView extends Backbone.View
     # Disable edit if readonly
     @$("#location_edit").attr("disabled", @readonly)
 
-    accuracy = @getAccuracyAttributes(@currentLoc)
+    accuracy = @getAccuracyStrength(@currentLoc)
+    @$("#location_relative").append("<div class='gps_strength #{accuracy.class}'>#{accuracy.text}</div>");
     # Disable set if setting or readonly
     @$("#location_set").attr("disabled", @settingLocation || @readonly).removeClass("disabled btn-danger btn-warning btn-success").addClass(accuracy.class);
 
-    console.log accuracy.strength
-    if accuracy.strength == "weak" then @$("#location_set").text("Waiting for GPS...")
   clearLocation: ->
     @trigger('locationset', null)
  
@@ -153,11 +152,11 @@ class LocationView extends Backbone.View
   cancelEditLocation: ->
     @$("#location_edit_controls").slideUp() 
 
-  getAccuracyAttributes: (pos) =>
-    if not (pos and pos.accuracy) then { color: "red", class: "btn-danger disabled", strength: "weak" }
-    else if pos.accuracy > 12 then { color: "red", class: "btn-danger disabled", strength: "weak" }
-    else if pos.accuracy > 10 then { color: "yellow", class: "btn-warning", strength: "fair"}
-    else { color: "green", class: "btn-success", strength: "strong" }
+  getAccuracyStrength: (pos) =>
+    if not (pos and pos.accuracy) then { color: "red", class: "text-danger", strength: "weak", text: "Waiting for GPS" }
+    else if pos.accuracy > 12000 then { color: "red", class: "text-danger", strength: "weak", text: "Waiting for GPS" }
+    else if pos.accuracy > 10000 then { color: "yellow", class: "text-warning", strength: "fair", text: "Low accuracy GPS"}
+    else { color: "green", class: "text-success", strength: "strong", text: "GPS Acquired" }
 
 module.exports = LocationView
 

@@ -1,26 +1,29 @@
 <div>
-	<button id="location_set" class="btn btn-default"><span class="glyphicon glyphicon-screenshot"></span> Set</button>
-	<button id="location_clear" class="btn btn-default"><span class="glyphicon glyphicon-remove"></span> Clear</button>
-	<button id="location_map" class="btn btn-default"><span class="glyphicon glyphicon-map-marker"></span> Map</button>
-	<button id="location_edit" class="btn btn-default"><span class="glyphicon glyphicon-edit"></span> Edit</button>
-	<span class="buttoned">
-		<span id="location_absolute"> </span> (<span id="location_relative"></span>)
-	</span>
+  <button id="location_set" class="btn btn-default"><span class="glyphicon glyphicon-screenshot"></span> Set</button>
+  <button id="location_clear" class="btn btn-default"><span class="glyphicon glyphicon-remove"></span> Clear</button>
+  <button id="location_map" class="btn btn-default"><span class="glyphicon glyphicon-map-marker"></span> Map</button>
+  <button id="location_edit" class="btn btn-default"><span class="glyphicon glyphicon-edit"></span> Edit</button>
 </div>
+<div id='location_relative'></div>
 <div id="location_edit_controls" class="form" style="margin-top: 5px; display:none;">
-	<div class="form-group">
-		<label for="latitude">Latitude</label>
-		<input type="number" class="form-control" id="latitude" step="any"/> 
-	</div>
-	<div class="form-group">
-		<label for="longitude">Longitude</label>
-		<input type="number" class="form-control" id="longitude" step="any"/> 
-	</div>
-	<button id="save_button" type="button" class="btn btn-primary">Save</button>	
-	<button id="cancel_button" type="button" class="btn btn-default">Cancel</button>	
+  <div class="form-group">
+    <label for="latitude">Latitude</label>
+    <input type="number" class="form-control" id="latitude" step="any"/> 
+  </div>
+  <div class="form-group">
+    <label for="longitude">Longitude</label>
+    <input type="number" class="form-control" id="longitude" step="any"/> 
+  </div>
+  <button id="save_button" type="button" class="btn btn-primary">Save</button>  
+  <button id="cancel_button" type="button" class="btn btn-default">Cancel</button>
 </div>
-
+<div id='location_absolute' class='muted'>
+<div id='notification' style='display: none'></div>
+</div>
 <style>
+#location_relative {
+  display: inline;
+}
 @-webkit-keyframes 'blink' {
     0% { opacity: .7 }
     50% { opacity: .9 }

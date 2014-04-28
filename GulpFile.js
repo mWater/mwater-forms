@@ -59,6 +59,7 @@ gulp.task('copy', function() {
 
 gulp.task('watch', function() {
 	gulp.watch('./lib/demo.js', ['browserify']);
+	gulp.watch('./demo/demo.html', ['browserify']);
 	gulp.watch('./src/*.coffee', ['coffee', 'copy', 'libs', 'browserify']);
 	gulp.watch('./src/templates/*.hbs', ['coffee', 'copy', 'libs', 'browserify']);
 });
