@@ -1,7 +1,8 @@
 var LocationView = require("./LocationView");
+//Mexico
 var location = {
-  latitude: 45,
-  longitude: -88,
+  latitude: 19.432,
+  longitude: -99.1,
   accuracy: 70
 };
 
@@ -20,7 +21,6 @@ $(function() {
     locationView.render();
   });
 });
-
 
 //create demo folder
 //move bundle.js in there and add index.html

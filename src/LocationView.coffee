@@ -1,6 +1,7 @@
 Backbone = require 'backbone'
 Backbone.$ = require 'jquery'
 LocationFinder = require './LocationFinder'
+orientationPublisher = require './orientationPublisher'
 _ = require 'underscore'
 
 # Shows the relative location of a point and allows setting it
@@ -18,10 +19,14 @@ class LocationView extends Backbone.View
     @disableMap = options.disableMap
     @settingLocation = false
     @locationFinder = options.locationFinder || new LocationFinder()
+    orientationPublisher.init();
 
     # Listen to location events
     @listenTo(@locationFinder, 'found', @locationFound)
     @listenTo(@locationFinder, 'error', @locationError)
+
+    # Listen to orientation events
+    @listenTo(orientationPublisher, 'orientationChange', @compassChange)
 
     # Start tracking location if set
     if @loc
@@ -55,7 +60,8 @@ class LocationView extends Backbone.View
     else if not @currentLoc
       @$("#location_relative").text("Waiting for GPS...")
     else
-      @$("#location_relative").text(getRelativeLocation(@currentLoc, @loc).bearing)
+      relativeLocation = getRelativeLocation(@currentLoc, @loc);
+      @$("#location_relative").text(relativeLocation.distance + " " + relativeLocation.cardinalDirection )
 
     if @loc and not @settingLocation
       @$("#location_absolute").text("#{this.loc.latitude.toFixed(6)}, #{this.loc.longitude.toFixed(6)}")
@@ -89,7 +95,7 @@ class LocationView extends Backbone.View
         timeout = setTimeout( ->
             @$("#notification").fadeOut 500
             return
-        , 2000)
+        , 3000)
 
   clearLocation: ->
     @trigger('locationset', null)
@@ -106,14 +112,13 @@ class LocationView extends Backbone.View
     @errorFindingLocation = false
 
     locationSuccess = (pos) =>
-
-
       # Extract location
       @loc = @convertPosToLoc(pos)
       # Set location
       @currentLoc = @convertPosToLoc(pos)
       accuracy = @getAccuracyStrength @currentLoc
-      #the first time the 'lowAccuracy' event fires, settingLocation will still be true
+
+      #the first time (when settingLocation is still true) is usually the 'lowAccuracy' event firing
       if @settingLocation and accuracy.strength != 'strong'
         @displayNotification "Temporarily Set Rough Location", "alert-warning", true
       else
@@ -129,6 +134,7 @@ class LocationView extends Backbone.View
       @errorFindingLocation = true
       @displayNotification "Unable to set Location", "alert-danger", true
 
+    #display an red warning
     accuracy = @getAccuracyStrength @currentLoc
     if accuracy.strength == "weak"
       @displayNotification "Waiting for GPS", "alert-warning"
@@ -138,6 +144,17 @@ class LocationView extends Backbone.View
     @locationFinder.getLocation locationSuccess, locationError
 
     @render()
+
+  compassChange: (values) =>
+    console.log values
+    accuracy = @getAccuracyStrength @currentLoc
+    if accuracy.strength != 'weak'
+      relativeLocation = getRelativeLocation @currentLoc, @loc
+      arrowRotation = relativeLocation.bearing - (-1 * values.normalized.alpha)
+      prefixes = ["", "Webkit", "Moz", "ms", "O"];
+      elem = @$("#source_pointer")[0]
+      prefixes.forEach (prefix) ->
+          elem.style[prefix + "Transform"] = "rotate(" + arrowRotation + "deg)";
 
   locationFound: (pos) =>
     console.log pos

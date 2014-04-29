@@ -165,8 +165,8 @@ LocationFinder = (function() {
 
 module.exports = LocationFinder;
 
-},{"backbone":5,"underscore":15}],2:[function(require,module,exports){
-var Backbone, LocationFinder, LocationView, getRelativeLocation, _,
+},{"backbone":6,"underscore":16}],2:[function(require,module,exports){
+var Backbone, LocationFinder, LocationView, getRelativeLocation, orientationPublisher, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -176,6 +176,8 @@ Backbone = require('backbone');
 Backbone.$ = require('jquery');
 
 LocationFinder = require('./LocationFinder');
+
+orientationPublisher = require('./orientationPublisher');
 
 _ = require('underscore');
 
@@ -187,6 +189,7 @@ LocationView = (function(_super) {
     this.mapClicked = __bind(this.mapClicked, this);
     this.locationError = __bind(this.locationError, this);
     this.locationFound = __bind(this.locationFound, this);
+    this.compassChange = __bind(this.compassChange, this);
     LocationView.__super__.constructor.call(this);
     this.loc = options.loc;
     this.readonly = options.readonly;
@@ -194,8 +197,10 @@ LocationView = (function(_super) {
     this.disableMap = options.disableMap;
     this.settingLocation = false;
     this.locationFinder = options.locationFinder || new LocationFinder();
+    orientationPublisher.init();
     this.listenTo(this.locationFinder, 'found', this.locationFound);
     this.listenTo(this.locationFinder, 'error', this.locationError);
+    this.listenTo(orientationPublisher, 'orientationChange', this.compassChange);
     if (this.loc) {
       this.locationFinder.startWatch();
     }
@@ -218,7 +223,7 @@ LocationView = (function(_super) {
   };
 
   LocationView.prototype.render = function() {
-    var accuracy;
+    var accuracy, relativeLocation;
     if (this.errorFindingLocation) {
       this.$("#location_relative").text("Cannot find location");
     } else if (!this.loc && !this.settingLocation) {
@@ -228,7 +233,8 @@ LocationView = (function(_super) {
     } else if (!this.currentLoc) {
       this.$("#location_relative").text("Waiting for GPS...");
     } else {
-      this.$("#location_relative").text(getRelativeLocation(this.currentLoc, this.loc).bearing);
+      relativeLocation = getRelativeLocation(this.currentLoc, this.loc);
+      this.$("#location_relative").text(relativeLocation.distance + " " + relativeLocation.cardinalDirection);
     }
     if (this.loc && !this.settingLocation) {
       this.$("#location_absolute").text("" + (this.loc.latitude.toFixed(6)) + ", " + (this.loc.longitude.toFixed(6)));
@@ -255,7 +261,7 @@ LocationView = (function(_super) {
       if (shouldFadeOut) {
         return timeout = setTimeout(function() {
           this.$("#notification").fadeOut(500);
-        }, 2000);
+        }, 3000);
       }
     });
   };
@@ -308,6 +314,21 @@ LocationView = (function(_super) {
     }
     this.locationFinder.getLocation(locationSuccess, locationError);
     return this.render();
+  };
+
+  LocationView.prototype.compassChange = function(values) {
+    var accuracy, arrowRotation, elem, prefixes, relativeLocation;
+    console.log(values);
+    accuracy = this.getAccuracyStrength(this.currentLoc);
+    if (accuracy.strength !== 'weak') {
+      relativeLocation = getRelativeLocation(this.currentLoc, this.loc);
+      arrowRotation = relativeLocation.bearing - (-1 * values.normalized.alpha);
+      prefixes = ["", "Webkit", "Moz", "ms", "O"];
+      elem = this.$("#source_pointer")[0];
+      return prefixes.forEach(function(prefix) {
+        return elem.style[prefix + "Transform"] = "rotate(" + arrowRotation + "deg)";
+      });
+    }
   };
 
   LocationView.prototype.locationFound = function(pos) {
@@ -421,11 +442,12 @@ getRelativeLocation = function(from, to) {
   };
 };
 
-},{"./LocationFinder":1,"./templates/LocationView.hbs":4,"backbone":5,"jquery":14,"underscore":15}],3:[function(require,module,exports){
+},{"./LocationFinder":1,"./orientationPublisher":4,"./templates/LocationView.hbs":5,"backbone":6,"jquery":15,"underscore":16}],3:[function(require,module,exports){
 var LocationView = require("./LocationView");
+//Mexico
 var location = {
-  latitude: 45,
-  longitude: -88,
+  latitude: 19.432,
+  longitude: -99.1,
   accuracy: 70
 };
 
@@ -445,10 +467,116 @@ $(function() {
   });
 });
 
-
 //create demo folder
 //move bundle.js in there and add index.html
 },{"./LocationView":2}],4:[function(require,module,exports){
+var Backbone, orientationPublisher, _;
+
+Backbone = require('backbone');
+
+_ = require('underscore');
+
+orientationPublisher = {
+  active: false
+};
+
+_.extend(orientationPublisher, Backbone.Events);
+
+orientationPublisher.init = function() {
+  if (window.DeviceOrientationEvent && !orientationPublisher.active) {
+    window.addEventListener("deviceorientation", orientationPublisher.orientationChange, false);
+    return orientationPublisher.active = true;
+  }
+};
+
+orientationPublisher.getNormalizerKey = function(ua) {
+  var userAgent;
+  userAgent = ua || window.navigator.userAgent;
+  if (userAgent.match(/(iPad|iPhone|iPod)/i)) {
+    return "ios";
+  } else if (userAgent.match(/Firefox/i)) {
+    return "firefox";
+  } else if (userAgent.match(/Opera/i)) {
+    return "opera";
+  } else if (userAgent.match(/Android/i)) {
+    if (userAgent.match(/Chrome/i)) {
+      return "android_chrome";
+    } else {
+      return "android_stock";
+    }
+  } else {
+    return "unknown";
+  }
+};
+
+orientationPublisher.cloneEvent = function(e) {
+  return {
+    alpha: e.alpha,
+    beta: e.beta,
+    gamma: e.gamma,
+    absolute: e.absolute
+  };
+};
+
+orientationPublisher.normalizers = {
+  firefox: function(e) {
+    var normalized;
+    normalized = orientationPublisher.cloneEvent(e);
+    normalized.alpha = normalized.alpha * -1;
+    normalized.alpha = normalized.alpha - (window.orientation || 0);
+    return normalized;
+  },
+  android_stock: function(e) {
+    var normalized;
+    normalized = orientationPublisher.cloneEvent(e);
+    normalized.alpha = (normalized.alpha + 270) % 360;
+    normalized.alpha = normalized.alpha - (window.orientation || 0);
+    return normalized;
+  },
+  android_chrome: function(e) {
+    var normalized;
+    normalized = orientationPublisher.cloneEvent(e);
+    normalized.alpha = normalized.alpha - (window.orientation || 0);
+    return normalized;
+  },
+  opera: function(e) {
+    var normalized;
+    normalized = orientationPublisher.cloneEvent(e);
+    normalized.alpha = normalized.alpha - (window.orientation || 0);
+    return normalized;
+  },
+  ios: function(e) {
+    var normalized;
+    normalized = orientationPublisher.cloneEvent(e);
+    if (e.webkitCompassHeading) {
+      normalized.alpha = e.webkitCompassHeading;
+    }
+    normalized.alpha = (normalized.alpha * -1) - (window.orientation || 0);
+    return normalized;
+  },
+  unknown: function(e) {
+    var normalized;
+    normalized = orientationPublisher.cloneEvent(e);
+    normalized.alpha = normalized.alpha * -1;
+    return normalized;
+  }
+};
+
+orientationPublisher.orientationChange = function(e, ua) {
+  var normalizedValues, normalizerKey;
+  normalizerKey = orientationPublisher.getNormalizerKey(ua);
+  normalizedValues = orientationPublisher.normalizers[normalizerKey](e);
+  return orientationPublisher.trigger("orientationChange", {
+    orientation: window.orientation || 0,
+    normalizerKey: normalizerKey,
+    raw: orientationPublisher.cloneEvent(e),
+    normalized: normalizedValues
+  });
+};
+
+module.exports = orientationPublisher;
+
+},{"backbone":6,"underscore":16}],5:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var Handlebars = require('hbsfy/runtime');
 module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
@@ -457,10 +585,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<div class='row'>\r\n  <div class='col-xs-7 row toolbar'>\r\n    <div class='row'>\r\n      <div class='col-xs-6'><button id=\"location_set\" class=\"btn\"><span class=\"glyphicon glyphicon-screenshot\"></span> Set</button></div>\r\n      <div class='col-xs-6'><button id=\"location_clear\" class=\"btn btn-default\"><span class=\"glyphicon glyphicon-remove\"></span> Clear</button></div>\r\n    </div>\r\n    <div class='row'>\r\n      <div class='col-xs-6'><button id=\"location_map\" class=\"btn btn-default\"><span class=\"glyphicon glyphicon-map-marker\"></span> Map</button></div>\r\n      <div class='col-xs-6'><button id=\"location_edit\" class=\"btn btn-default\"><span class=\"glyphicon glyphicon-edit\"></span> Edit</button></div>\r\n    </div>\r\n\r\n  </div>\r\n  <div class='col-xs-5'>\r\n    <div id='location_relative'></div>\r\n  </div>\r\n</div>\r\n<div class='row'>\r\n  <div id='location_absolute' class='col-xs-7 text-muted'></div>\r\n</div>\r\n<div id='notification' class='alert' style='display: none'></div>\r\n<div id=\"location_edit_controls\" class=\"form\" style=\"margin-top: 5px; display:none;\">\r\n  <div class=\"form-group\">\r\n    <label for=\"latitude\">Latitude</label>\r\n    <input type=\"number\" class=\"form-control\" id=\"latitude\" step=\"any\"/> \r\n  </div>\r\n  <div class=\"form-group\">\r\n    <label for=\"longitude\">Longitude</label>\r\n    <input type=\"number\" class=\"form-control\" id=\"longitude\" step=\"any\"/> \r\n  </div>\r\n  <button id=\"save_button\" type=\"button\" class=\"btn btn-primary\">Save</button>  \r\n  <button id=\"cancel_button\" type=\"button\" class=\"btn btn-default\">Cancel</button>\r\n</div>\r\n\r\n\r\n<style>\r\n.row {\r\n  margin:0;\r\n}\r\n.row.toolbar {\r\n  padding: 0;\r\n}\r\n.toolbar .btn {\r\n  margin:0;\r\n  width:100%;\r\n  background-color: #fff;\r\n  border-color: #ccc;\r\n}\r\n.toolbar .col-xs-6 {\r\n  padding:5px;\r\n}\r\n#location_absolute {\r\n  text-align: center;\r\n  margin-top:5px;\r\n}\r\n#location_relative {\r\n  text-align: center;\r\n}\r\n@-webkit-keyframes 'blink' {\r\n    0% { opacity: .4 }\r\n    50% { opacity: 1 }\r\n    100% { opacity: .4 }\r\n}\r\n.gps_strength.text-danger {\r\n    -webkit-animation-direction: normal;\r\n    -webkit-animation-duration: 1.2s;\r\n    -webkit-animation-iteration-count: infinite;\r\n    -webkit-animation-name: blink;\r\n    -webkit-animation-timing-function: ease;  \r\n}\r\n</style>";
+  return "<div class='row'>\r\n  <div class='col-xs-7 row toolbar'>\r\n    <div class='row'>\r\n      <div class='col-xs-6'><button id=\"location_set\" class=\"btn\"><span class=\"glyphicon glyphicon-screenshot\"></span> Set</button></div>\r\n      <div class='col-xs-6'><button id=\"location_clear\" class=\"btn btn-default\"><span class=\"glyphicon glyphicon-remove\"></span> Clear</button></div>\r\n    </div>\r\n    <div class='row'>\r\n      <div class='col-xs-6'><button id=\"location_map\" class=\"btn btn-default\"><span class=\"glyphicon glyphicon-map-marker\"></span> Map</button></div>\r\n      <div class='col-xs-6'><button id=\"location_edit\" class=\"btn btn-default\"><span class=\"glyphicon glyphicon-edit\"></span> Edit</button></div>\r\n    </div>\r\n  </div>\r\n  <div class='col-xs-5'>\r\n    <div id='source_pointer'><span class='glyphicon glyphicon-arrow-up'><span></div>\r\n    <div id='location_relative'></div>\r\n  </div>\r\n</div>\r\n<div class='row'>\r\n  <div id='location_absolute' class='col-xs-7 text-muted'></div>\r\n</div>\r\n<div id='notification' class='alert' style='display: none'></div>\r\n<div id=\"location_edit_controls\" class=\"form\" style=\"margin-top: 5px; display:none;\">\r\n  <div class=\"form-group\">\r\n    <label for=\"latitude\">Latitude</label>\r\n    <input type=\"number\" class=\"form-control\" id=\"latitude\" step=\"any\"/> \r\n  </div>\r\n  <div class=\"form-group\">\r\n    <label for=\"longitude\">Longitude</label>\r\n    <input type=\"number\" class=\"form-control\" id=\"longitude\" step=\"any\"/> \r\n  </div>\r\n  <button id=\"save_button\" type=\"button\" class=\"btn btn-primary\">Save</button>  \r\n  <button id=\"cancel_button\" type=\"button\" class=\"btn btn-default\">Cancel</button>\r\n</div>\r\n\r\n\r\n<style>\r\n#source_pointer {\r\n  font-size: 3em;\r\n  text-align: center;\r\n}\r\n.row {\r\n  margin:0;\r\n}\r\n.row.toolbar {\r\n  padding: 0;\r\n}\r\n.toolbar .btn {\r\n  margin:0;\r\n  width:100%;\r\n  background-color: #fff;\r\n  border-color: #ccc;\r\n}\r\n.toolbar .col-xs-6 {\r\n  padding:5px;\r\n}\r\n#location_absolute {\r\n  text-align: center;\r\n  margin-top:5px;\r\n}\r\n#location_relative {\r\n  text-align: center;\r\n}\r\n@-webkit-keyframes 'blink' {\r\n    0% { opacity: .4 }\r\n    50% { opacity: 1 }\r\n    100% { opacity: .4 }\r\n}\r\n.gps_strength.text-danger {\r\n    -webkit-animation-direction: normal;\r\n    -webkit-animation-duration: 1.2s;\r\n    -webkit-animation-iteration-count: infinite;\r\n    -webkit-animation-name: blink;\r\n    -webkit-animation-timing-function: ease;  \r\n}\r\n</style>";
   });
 
-},{"hbsfy/runtime":13}],5:[function(require,module,exports){
+},{"hbsfy/runtime":14}],6:[function(require,module,exports){
 //     Backbone.js 1.1.2
 
 //     (c) 2010-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -2070,7 +2198,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 }));
 
-},{"underscore":15}],6:[function(require,module,exports){
+},{"underscore":16}],7:[function(require,module,exports){
 "use strict";
 /*globals Handlebars: true */
 var base = require("./handlebars/base");
@@ -2103,7 +2231,7 @@ var Handlebars = create();
 Handlebars.create = create;
 
 exports["default"] = Handlebars;
-},{"./handlebars/base":7,"./handlebars/exception":8,"./handlebars/runtime":9,"./handlebars/safe-string":10,"./handlebars/utils":11}],7:[function(require,module,exports){
+},{"./handlebars/base":8,"./handlebars/exception":9,"./handlebars/runtime":10,"./handlebars/safe-string":11,"./handlebars/utils":12}],8:[function(require,module,exports){
 "use strict";
 var Utils = require("./utils");
 var Exception = require("./exception")["default"];
@@ -2284,7 +2412,7 @@ exports.log = log;var createFrame = function(object) {
   return obj;
 };
 exports.createFrame = createFrame;
-},{"./exception":8,"./utils":11}],8:[function(require,module,exports){
+},{"./exception":9,"./utils":12}],9:[function(require,module,exports){
 "use strict";
 
 var errorProps = ['description', 'fileName', 'lineNumber', 'message', 'name', 'number', 'stack'];
@@ -2313,7 +2441,7 @@ function Exception(message, node) {
 Exception.prototype = new Error();
 
 exports["default"] = Exception;
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 "use strict";
 var Utils = require("./utils");
 var Exception = require("./exception")["default"];
@@ -2451,7 +2579,7 @@ exports.program = program;function invokePartial(partial, name, context, helpers
 exports.invokePartial = invokePartial;function noop() { return ""; }
 
 exports.noop = noop;
-},{"./base":7,"./exception":8,"./utils":11}],10:[function(require,module,exports){
+},{"./base":8,"./exception":9,"./utils":12}],11:[function(require,module,exports){
 "use strict";
 // Build out our basic SafeString type
 function SafeString(string) {
@@ -2463,7 +2591,7 @@ SafeString.prototype.toString = function() {
 };
 
 exports["default"] = SafeString;
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 "use strict";
 /*jshint -W004 */
 var SafeString = require("./safe-string")["default"];
@@ -2540,15 +2668,15 @@ exports.escapeExpression = escapeExpression;function isEmpty(value) {
 }
 
 exports.isEmpty = isEmpty;
-},{"./safe-string":10}],12:[function(require,module,exports){
+},{"./safe-string":11}],13:[function(require,module,exports){
 // Create a simple path alias to allow browserify to resolve
 // the runtime on a supported path.
 module.exports = require('./dist/cjs/handlebars.runtime');
 
-},{"./dist/cjs/handlebars.runtime":6}],13:[function(require,module,exports){
+},{"./dist/cjs/handlebars.runtime":7}],14:[function(require,module,exports){
 module.exports = require("handlebars/runtime")["default"];
 
-},{"handlebars/runtime":12}],14:[function(require,module,exports){
+},{"handlebars/runtime":13}],15:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.1.0
  * http://jquery.com/
@@ -11661,7 +11789,7 @@ return jQuery;
 
 }));
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 //     Underscore.js 1.6.0
 //     http://underscorejs.org
 //     (c) 2009-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
