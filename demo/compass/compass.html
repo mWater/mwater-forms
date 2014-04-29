@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+<head>
+	<title>Compass Demo</title>
+	<script src="jquery.min.js"></script>
+	<script src='OrientationPublisher.js'></script>
+	<script src='jquery.compass.js'></script>
+	<style>
+	.compass {
+		transform-origin: 50% 50%;
+		-webkit-transform-origin: 50% 50%;
+		-moz-transform-origin: 50% 50%;
+	}
+	#sourcePointer {
+		width: 100px;
+	}
+	#compass {
+		width:300px;
+	}
+	.compass img {
+		width:100%;
+	}
+	</style>
+</head>
+<body>
+	<div class='compass' id='compass'>
+		<img src='compass.png' />
+	</div>
+
+	<div class='compass' id='sourcePointer'>
+		<img src='arrow.png' />
+	</div>
+	<div id='debug'></div>
+	<script>
+	$("#compass").compass();
+	$("#sourcePointer").compass({ sourceBearing: 270 });
+	</script>
+</body>
+</html>
+
+
