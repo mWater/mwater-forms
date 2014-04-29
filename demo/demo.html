@@ -2,10 +2,22 @@
 <html>
 <head>
   <title>mWater Forms Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
   <script type="text/javascript" src='bundle.js'></script>
 </head>
 <body>
   <div id='content'></div>
+  <hr/>
+  <form class="form-horizontal" style='margin-top:30px'>
+    <div class='form-group'>
+      <label class='control-label col-xs-2'>Accuracy</label>
+      <div class='col-xs-8'>
+        <input class='form-control' id="accuracySlider" type="range" min="0" max="75" step="3" />
+      </div>
+      <label class='control-label col-xs-2' id='accuracy'>70</label>
+    </div>
+  </form>
 </body>
 </html>

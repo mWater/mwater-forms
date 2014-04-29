@@ -1,10 +1,23 @@
-<div>
-  <button id="location_set" class="btn btn-default"><span class="glyphicon glyphicon-screenshot"></span> Set</button>
-  <button id="location_clear" class="btn btn-default"><span class="glyphicon glyphicon-remove"></span> Clear</button>
-  <button id="location_map" class="btn btn-default"><span class="glyphicon glyphicon-map-marker"></span> Map</button>
-  <button id="location_edit" class="btn btn-default"><span class="glyphicon glyphicon-edit"></span> Edit</button>
+<div class='row'>
+  <div class='col-xs-7 row toolbar'>
+    <div class='row'>
+      <div class='col-xs-6'><button id="location_set" class="btn"><span class="glyphicon glyphicon-screenshot"></span> Set</button></div>
+      <div class='col-xs-6'><button id="location_clear" class="btn btn-default"><span class="glyphicon glyphicon-remove"></span> Clear</button></div>
+    </div>
+    <div class='row'>
+      <div class='col-xs-6'><button id="location_map" class="btn btn-default"><span class="glyphicon glyphicon-map-marker"></span> Map</button></div>
+      <div class='col-xs-6'><button id="location_edit" class="btn btn-default"><span class="glyphicon glyphicon-edit"></span> Edit</button></div>
+    </div>
+
+  </div>
+  <div class='col-xs-5'>
+    <div id='location_relative'></div>
+  </div>
 </div>
-<div id='location_relative'></div>
+<div class='row'>
+  <div id='location_absolute' class='col-xs-7 text-muted'></div>
+</div>
+<div id='notification' class='alert' style='display: none'></div>
 <div id="location_edit_controls" class="form" style="margin-top: 5px; display:none;">
   <div class="form-group">
     <label for="latitude">Latitude</label>
@@ -17,21 +30,39 @@
   <button id="save_button" type="button" class="btn btn-primary">Save</button>  
   <button id="cancel_button" type="button" class="btn btn-default">Cancel</button>
 </div>
-<div id='location_absolute' class='muted'>
-<div id='notification' style='display: none'></div>
-</div>
+
+
 <style>
+.row {
+  margin:0;
+}
+.row.toolbar {
+  padding: 0;
+}
+.toolbar .btn {
+  margin:0;
+  width:100%;
+  background-color: #fff;
+  border-color: #ccc;
+}
+.toolbar .col-xs-6 {
+  padding:5px;
+}
+#location_absolute {
+  text-align: center;
+  margin-top:5px;
+}
 #location_relative {
-  display: inline;
+  text-align: center;
 }
 @-webkit-keyframes 'blink' {
-    0% { opacity: .7 }
-    50% { opacity: .9 }
-    100% { opacity: .7 }
+    0% { opacity: .4 }
+    50% { opacity: 1 }
+    100% { opacity: .4 }
 }
-#location_set.btn-danger {
+.gps_strength.text-danger {
     -webkit-animation-direction: normal;
-    -webkit-animation-duration: 1.5s;
+    -webkit-animation-duration: 1.2s;
     -webkit-animation-iteration-count: infinite;
     -webkit-animation-name: blink;
     -webkit-animation-timing-function: ease;  

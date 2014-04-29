@@ -228,7 +228,7 @@ LocationView = (function(_super) {
     } else if (!this.currentLoc) {
       this.$("#location_relative").text("Waiting for GPS...");
     } else {
-      this.$("#location_relative").text(getRelativeLocation(this.currentLoc, this.loc));
+      this.$("#location_relative").text(getRelativeLocation(this.currentLoc, this.loc).bearing);
     }
     if (this.loc && !this.settingLocation) {
       this.$("#location_absolute").text("" + (this.loc.latitude.toFixed(6)) + ", " + (this.loc.longitude.toFixed(6)));
@@ -243,7 +243,21 @@ LocationView = (function(_super) {
     this.$("#location_edit").attr("disabled", this.readonly);
     accuracy = this.getAccuracyStrength(this.currentLoc);
     this.$("#location_relative").append("<div class='gps_strength " + accuracy["class"] + "'>" + accuracy.text + "</div>");
-    return this.$("#location_set").attr("disabled", this.settingLocation || this.readonly).removeClass("disabled btn-danger btn-warning btn-success").addClass(accuracy["class"]);
+    return this.$("#location_set").removeClass("text-danger text-warning text-success").addClass(accuracy["class"]);
+  };
+
+  LocationView.prototype.displayNotification = function(message, className, shouldFadeOut) {
+    var timeout;
+    timeout = timeout || 0;
+    clearTimeout(timeout);
+    this.$("#notification")[0].className = "";
+    return this.$("#notification").hide().addClass("alert " + className).text(message).fadeIn(200, function() {
+      if (shouldFadeOut) {
+        return timeout = setTimeout(function() {
+          this.$("#notification").fadeOut(500);
+        }, 2000);
+      }
+    });
   };
 
   LocationView.prototype.clearLocation = function() {
@@ -258,16 +272,23 @@ LocationView = (function(_super) {
   };
 
   LocationView.prototype.setLocation = function() {
-    var locationError, locationSuccess;
+    var accuracy, locationError, locationSuccess;
     console.log("setting location");
     this.settingLocation = true;
     this.errorFindingLocation = false;
     locationSuccess = (function(_this) {
       return function(pos) {
-        _this.settingLocation = false;
-        _this.errorFindingLocation = false;
+        var accuracy;
         _this.loc = _this.convertPosToLoc(pos);
         _this.currentLoc = _this.convertPosToLoc(pos);
+        accuracy = _this.getAccuracyStrength(_this.currentLoc);
+        if (_this.settingLocation && accuracy.strength !== 'strong') {
+          _this.displayNotification("Temporarily Set Rough Location", "alert-warning", true);
+        } else {
+          _this.displayNotification("Location Set Successfully", "alert-success", true);
+        }
+        _this.settingLocation = false;
+        _this.errorFindingLocation = false;
         _this.trigger('locationset', _this.loc);
         return _this.render();
       };
@@ -276,14 +297,21 @@ LocationView = (function(_super) {
       return function(err) {
         _this.settingLocation = false;
         _this.errorFindingLocation = true;
-        return _this.render();
+        return _this.displayNotification("Unable to set Location", "alert-danger", true);
       };
     })(this);
+    accuracy = this.getAccuracyStrength(this.currentLoc);
+    if (accuracy.strength === "weak") {
+      this.displayNotification("Waiting for GPS", "alert-warning");
+    } else {
+      this.displayNotification("Setting Location...", "alert-warning");
+    }
     this.locationFinder.getLocation(locationSuccess, locationError);
     return this.render();
   };
 
   LocationView.prototype.locationFound = function(pos) {
+    console.log(pos);
     this.currentLoc = this.convertPosToLoc(pos);
     return this.render();
   };
@@ -331,16 +359,16 @@ LocationView = (function(_super) {
         color: "red",
         "class": "text-danger",
         strength: "weak",
-        text: "Waiting for GPS"
+        text: "Waiting for GPS..."
       };
-    } else if (pos.accuracy > 12000) {
+    } else if (pos.accuracy > 50) {
       return {
         color: "red",
         "class": "text-danger",
         strength: "weak",
-        text: "Waiting for GPS"
+        text: "Waiting for GPS..."
       };
-    } else if (pos.accuracy > 10000) {
+    } else if (pos.accuracy > 10) {
       return {
         color: "yellow",
         "class": "text-warning",
@@ -364,7 +392,7 @@ LocationView = (function(_super) {
 module.exports = LocationView;
 
 getRelativeLocation = function(from, to) {
-  var angle, compassDir, compassStrs, dist, dx, dy, x1, x2, y1, y2;
+  var angle, compassDir, compassStrs, dist, distance, dx, dy, x1, x2, y1, y2;
   x1 = from.longitude;
   y1 = from.latitude;
   x2 = to.longitude;
@@ -382,10 +410,15 @@ getRelativeLocation = function(from, to) {
   compassDir = (Math.floor((angle + 22.5) / 45)) % 8;
   compassStrs = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
   if (dist > 1000) {
-    return (dist / 1000).toFixed(1) + "km " + compassStrs[compassDir];
+    distance = (dist / 1000).toFixed(1) + "km ";
   } else {
-    return dist.toFixed(0) + "m " + compassStrs[compassDir];
+    distance = dist.toFixed(0) + "m ";
   }
+  return {
+    distance: distance,
+    cardinalDirection: compassStrs[compassDir],
+    bearing: angle
+  };
 };
 
 },{"./LocationFinder":1,"./templates/LocationView.hbs":4,"backbone":5,"jquery":14,"underscore":15}],3:[function(require,module,exports){
@@ -393,7 +426,7 @@ var LocationView = require("./LocationView");
 var location = {
   latitude: 45,
   longitude: -88,
-  accuracy: 12
+  accuracy: 70
 };
 
 var locationView = new LocationView({
@@ -403,6 +436,13 @@ var locationView = new LocationView({
 
 $(function() {
   $("#content").append(locationView.el);
+  $("#accuracySlider").val(location.accuracy).on("change", function(){
+    var val = $(this).val();
+    $("#accuracy").html(val);
+    var pos = locationView.currentLoc;
+    pos.accuracy = val;
+    locationView.render();
+  });
 });
 
 
@@ -417,7 +457,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<div>\r\n  <button id=\"location_set\" class=\"btn btn-default\"><span class=\"glyphicon glyphicon-screenshot\"></span> Set</button>\r\n  <button id=\"location_clear\" class=\"btn btn-default\"><span class=\"glyphicon glyphicon-remove\"></span> Clear</button>\r\n  <button id=\"location_map\" class=\"btn btn-default\"><span class=\"glyphicon glyphicon-map-marker\"></span> Map</button>\r\n  <button id=\"location_edit\" class=\"btn btn-default\"><span class=\"glyphicon glyphicon-edit\"></span> Edit</button>\r\n</div>\r\n<div id='location_relative'></div>\r\n<div id=\"location_edit_controls\" class=\"form\" style=\"margin-top: 5px; display:none;\">\r\n  <div class=\"form-group\">\r\n    <label for=\"latitude\">Latitude</label>\r\n    <input type=\"number\" class=\"form-control\" id=\"latitude\" step=\"any\"/> \r\n  </div>\r\n  <div class=\"form-group\">\r\n    <label for=\"longitude\">Longitude</label>\r\n    <input type=\"number\" class=\"form-control\" id=\"longitude\" step=\"any\"/> \r\n  </div>\r\n  <button id=\"save_button\" type=\"button\" class=\"btn btn-primary\">Save</button>  \r\n  <button id=\"cancel_button\" type=\"button\" class=\"btn btn-default\">Cancel</button>\r\n</div>\r\n<div id='location_absolute' class='muted'>\r\n<div id='notification' style='display: none'></div>\r\n</div>\r\n<style>\r\n#location_relative {\r\n  display: inline;\r\n}\r\n@-webkit-keyframes 'blink' {\r\n    0% { opacity: .7 }\r\n    50% { opacity: .9 }\r\n    100% { opacity: .7 }\r\n}\r\n#location_set.btn-danger {\r\n    -webkit-animation-direction: normal;\r\n    -webkit-animation-duration: 1.5s;\r\n    -webkit-animation-iteration-count: infinite;\r\n    -webkit-animation-name: blink;\r\n    -webkit-animation-timing-function: ease;  \r\n}\r\n</style>";
+  return "<div class='row'>\r\n  <div class='col-xs-7 row toolbar'>\r\n    <div class='row'>\r\n      <div class='col-xs-6'><button id=\"location_set\" class=\"btn\"><span class=\"glyphicon glyphicon-screenshot\"></span> Set</button></div>\r\n      <div class='col-xs-6'><button id=\"location_clear\" class=\"btn btn-default\"><span class=\"glyphicon glyphicon-remove\"></span> Clear</button></div>\r\n    </div>\r\n    <div class='row'>\r\n      <div class='col-xs-6'><button id=\"location_map\" class=\"btn btn-default\"><span class=\"glyphicon glyphicon-map-marker\"></span> Map</button></div>\r\n      <div class='col-xs-6'><button id=\"location_edit\" class=\"btn btn-default\"><span class=\"glyphicon glyphicon-edit\"></span> Edit</button></div>\r\n    </div>\r\n\r\n  </div>\r\n  <div class='col-xs-5'>\r\n    <div id='location_relative'></div>\r\n  </div>\r\n</div>\r\n<div class='row'>\r\n  <div id='location_absolute' class='col-xs-7 text-muted'></div>\r\n</div>\r\n<div id='notification' class='alert' style='display: none'></div>\r\n<div id=\"location_edit_controls\" class=\"form\" style=\"margin-top: 5px; display:none;\">\r\n  <div class=\"form-group\">\r\n    <label for=\"latitude\">Latitude</label>\r\n    <input type=\"number\" class=\"form-control\" id=\"latitude\" step=\"any\"/> \r\n  </div>\r\n  <div class=\"form-group\">\r\n    <label for=\"longitude\">Longitude</label>\r\n    <input type=\"number\" class=\"form-control\" id=\"longitude\" step=\"any\"/> \r\n  </div>\r\n  <button id=\"save_button\" type=\"button\" class=\"btn btn-primary\">Save</button>  \r\n  <button id=\"cancel_button\" type=\"button\" class=\"btn btn-default\">Cancel</button>\r\n</div>\r\n\r\n\r\n<style>\r\n.row {\r\n  margin:0;\r\n}\r\n.row.toolbar {\r\n  padding: 0;\r\n}\r\n.toolbar .btn {\r\n  margin:0;\r\n  width:100%;\r\n  background-color: #fff;\r\n  border-color: #ccc;\r\n}\r\n.toolbar .col-xs-6 {\r\n  padding:5px;\r\n}\r\n#location_absolute {\r\n  text-align: center;\r\n  margin-top:5px;\r\n}\r\n#location_relative {\r\n  text-align: center;\r\n}\r\n@-webkit-keyframes 'blink' {\r\n    0% { opacity: .4 }\r\n    50% { opacity: 1 }\r\n    100% { opacity: .4 }\r\n}\r\n.gps_strength.text-danger {\r\n    -webkit-animation-direction: normal;\r\n    -webkit-animation-duration: 1.2s;\r\n    -webkit-animation-iteration-count: infinite;\r\n    -webkit-animation-name: blink;\r\n    -webkit-animation-timing-function: ease;  \r\n}\r\n</style>";
   });
 
 },{"hbsfy/runtime":13}],5:[function(require,module,exports){

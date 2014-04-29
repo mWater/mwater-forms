@@ -55,7 +55,7 @@ class LocationView extends Backbone.View
     else if not @currentLoc
       @$("#location_relative").text("Waiting for GPS...")
     else
-      @$("#location_relative").text(getRelativeLocation(@currentLoc, @loc))
+      @$("#location_relative").text(getRelativeLocation(@currentLoc, @loc).bearing)
 
     if @loc and not @settingLocation
       @$("#location_absolute").text("#{this.loc.latitude.toFixed(6)}, #{this.loc.longitude.toFixed(6)}")
@@ -78,7 +78,18 @@ class LocationView extends Backbone.View
     accuracy = @getAccuracyStrength(@currentLoc)
     @$("#location_relative").append("<div class='gps_strength #{accuracy.class}'>#{accuracy.text}</div>");
     # Disable set if setting or readonly
-    @$("#location_set").attr("disabled", @settingLocation || @readonly).removeClass("disabled btn-danger btn-warning btn-success").addClass(accuracy.class);
+    @$("#location_set").removeClass("text-danger text-warning text-success").addClass(accuracy.class);
+
+  displayNotification: (message, className, shouldFadeOut) ->
+    timeout = timeout || 0;
+    clearTimeout timeout
+    @$("#notification")[0].className = "";
+    @$("#notification").hide().addClass("alert " + className).text(message).fadeIn 200, ->
+      if shouldFadeOut
+        timeout = setTimeout( ->
+            @$("#notification").fadeOut 500
+            return
+        , 2000)
 
   clearLocation: ->
     @trigger('locationset', null)
@@ -95,25 +106,41 @@ class LocationView extends Backbone.View
     @errorFindingLocation = false
 
     locationSuccess = (pos) =>
-      @settingLocation = false
-      @errorFindingLocation = false
+
 
       # Extract location
       @loc = @convertPosToLoc(pos)
       # Set location
       @currentLoc = @convertPosToLoc(pos)
+      accuracy = @getAccuracyStrength @currentLoc
+      #the first time the 'lowAccuracy' event fires, settingLocation will still be true
+      if @settingLocation and accuracy.strength != 'strong'
+        @displayNotification "Temporarily Set Rough Location", "alert-warning", true
+      else
+        @displayNotification "Location Set Successfully", "alert-success", true
+      
+      @settingLocation = false
+      @errorFindingLocation = false
       @trigger('locationset', @loc)
       @render()
 
     locationError = (err) =>
       @settingLocation = false
       @errorFindingLocation = true
-      @render()
+      @displayNotification "Unable to set Location", "alert-danger", true
+
+    accuracy = @getAccuracyStrength @currentLoc
+    if accuracy.strength == "weak"
+      @displayNotification "Waiting for GPS", "alert-warning"
+    else 
+      @displayNotification "Setting Location...", "alert-warning"
 
     @locationFinder.getLocation locationSuccess, locationError
+
     @render()
 
   locationFound: (pos) =>
+    console.log pos
     @currentLoc = @convertPosToLoc(pos)
     @render()
 
@@ -153,13 +180,12 @@ class LocationView extends Backbone.View
     @$("#location_edit_controls").slideUp() 
 
   getAccuracyStrength: (pos) =>
-    if not (pos and pos.accuracy) then { color: "red", class: "text-danger", strength: "weak", text: "Waiting for GPS" }
-    else if pos.accuracy > 12000 then { color: "red", class: "text-danger", strength: "weak", text: "Waiting for GPS" }
-    else if pos.accuracy > 10000 then { color: "yellow", class: "text-warning", strength: "fair", text: "Low accuracy GPS"}
+    if not (pos and pos.accuracy) then { color: "red", class: "text-danger", strength: "weak", text: "Waiting for GPS..." }
+    else if pos.accuracy > 50 then { color: "red", class: "text-danger", strength: "weak", text: "Waiting for GPS..." }
+    else if pos.accuracy > 10 then { color: "yellow", class: "text-warning", strength: "fair", text: "Low accuracy GPS"}
     else { color: "green", class: "text-success", strength: "strong", text: "GPS Acquired" }
 
 module.exports = LocationView
-
 
 getRelativeLocation = (from, to) ->
   x1 = from.longitude
@@ -180,7 +206,14 @@ getRelativeLocation = (from, to) ->
   # Get approximate direction
   compassDir = (Math.floor((angle + 22.5) / 45)) % 8
   compassStrs = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
+
   if dist > 1000
-    (dist / 1000).toFixed(1) + "km " + compassStrs[compassDir]
+    distance = (dist / 1000).toFixed(1) + "km "
   else
-    (dist).toFixed(0) + "m " + compassStrs[compassDir]
+    distance = (dist).toFixed(0) + "m "
+
+  return {
+    distance: distance,
+    cardinalDirection: compassStrs[compassDir],
+    bearing: angle
+  }

@@ -35,7 +35,6 @@
     "vinyl-source-stream": "~0.1.1",
     "express": "~3.5.1",
     "gulp-open": "~0.2.8",
-    "ngrok": "~0.1.92",
-    "gulp-clean": "~0.2.4"
+    "ngrok": "~0.1.92"
   }
 }

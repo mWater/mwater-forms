@@ -2,7 +2,7 @@ var LocationView = require("./LocationView");
 var location = {
   latitude: 45,
   longitude: -88,
-  accuracy: 12
+  accuracy: 70
 };
 
 var locationView = new LocationView({
@@ -12,6 +12,13 @@ var locationView = new LocationView({
 
 $(function() {
   $("#content").append(locationView.el);
+  $("#accuracySlider").val(location.accuracy).on("change", function(){
+    var val = $(this).val();
+    $("#accuracy").html(val);
+    var pos = locationView.currentLoc;
+    pos.accuracy = val;
+    locationView.render();
+  });
 });
 
 
