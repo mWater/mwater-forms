@@ -185,7 +185,7 @@ LocationView = (function(_super) {
   __extends(LocationView, _super);
 
   function LocationView(options) {
-    this.getAccuracyStrength = __bind(this.getAccuracyStrength, this);
+    this.updateAccuracyStrength = __bind(this.updateAccuracyStrength, this);
     this.mapClicked = __bind(this.mapClicked, this);
     this.locationError = __bind(this.locationError, this);
     this.locationFound = __bind(this.locationFound, this);
@@ -223,7 +223,6 @@ LocationView = (function(_super) {
   };
 
   LocationView.prototype.render = function() {
-    var accuracy, relativeLocation;
     if (this.errorFindingLocation) {
       this.$("#location_relative").text("Cannot find location");
     } else if (!this.loc && !this.settingLocation) {
@@ -233,8 +232,7 @@ LocationView = (function(_super) {
     } else if (!this.currentLoc) {
       this.$("#location_relative").text("Waiting for GPS...");
     } else {
-      relativeLocation = getRelativeLocation(this.currentLoc, this.loc);
-      this.$("#location_relative").text(relativeLocation.distance + " " + relativeLocation.cardinalDirection);
+      this.$("#location_relative").text(this.relativeLocation.distance + " " + this.relativeLocation.cardinalDirection);
     }
     if (this.loc && !this.settingLocation) {
       this.$("#location_absolute").text("" + (this.loc.latitude.toFixed(6)) + ", " + (this.loc.longitude.toFixed(6)));
@@ -247,9 +245,9 @@ LocationView = (function(_super) {
     this.$("#location_map").attr("disabled", !this.loc || this.disableMap);
     this.$("#location_clear").attr("disabled", !this.loc || this.readonly);
     this.$("#location_edit").attr("disabled", this.readonly);
-    accuracy = this.getAccuracyStrength(this.currentLoc);
-    this.$("#location_relative").append("<div class='gps_strength " + accuracy["class"] + "'>" + accuracy.text + "</div>");
-    return this.$("#location_set").removeClass("text-danger text-warning text-success").addClass(accuracy["class"]);
+    this.updateAccuracyStrength(this.currentLoc);
+    this.$("#location_relative").append("<div class='gps_strength " + this.accuracy["class"] + "'>" + this.accuracy.text + "</div>");
+    return this.$("#location_set").removeClass("text-danger text-warning text-success").addClass(this.accuracy["class"]);
   };
 
   LocationView.prototype.displayNotification = function(message, className, shouldFadeOut) {
@@ -267,6 +265,7 @@ LocationView = (function(_super) {
   };
 
   LocationView.prototype.clearLocation = function() {
+    this.relativeLocation = getRelativeLocation(this.currentLoc, this.loc);
     return this.trigger('locationset', null);
   };
 
@@ -278,17 +277,17 @@ LocationView = (function(_super) {
   };
 
   LocationView.prototype.setLocation = function() {
-    var accuracy, locationError, locationSuccess;
+    var locationError, locationSuccess;
     console.log("setting location");
     this.settingLocation = true;
     this.errorFindingLocation = false;
     locationSuccess = (function(_this) {
       return function(pos) {
-        var accuracy;
         _this.loc = _this.convertPosToLoc(pos);
         _this.currentLoc = _this.convertPosToLoc(pos);
-        accuracy = _this.getAccuracyStrength(_this.currentLoc);
-        if (_this.settingLocation && accuracy.strength !== 'strong') {
+        _this.relativeLocation = getRelativeLocation(_this.currentLoc, _this.loc);
+        _this.updateAccuracyStrength(_this.currentLoc);
+        if (_this.settingLocation && _this.accuracy.strength !== 'strong') {
           _this.displayNotification("Temporarily Set Rough Location", "alert-warning", true);
         } else {
           _this.displayNotification("Location Set Successfully", "alert-success", true);
@@ -306,8 +305,7 @@ LocationView = (function(_super) {
         return _this.displayNotification("Unable to set Location", "alert-danger", true);
       };
     })(this);
-    accuracy = this.getAccuracyStrength(this.currentLoc);
-    if (accuracy.strength === "weak") {
+    if (this.accuracy.strength === "weak") {
       this.displayNotification("Waiting for GPS", "alert-warning");
     } else {
       this.displayNotification("Setting Location...", "alert-warning");
@@ -317,14 +315,11 @@ LocationView = (function(_super) {
   };
 
   LocationView.prototype.compassChange = function(values) {
-    var accuracy, arrowRotation, elem, prefixes, relativeLocation;
-    console.log(values);
-    accuracy = this.getAccuracyStrength(this.currentLoc);
-    if (accuracy.strength !== 'weak') {
-      relativeLocation = getRelativeLocation(this.currentLoc, this.loc);
-      arrowRotation = relativeLocation.bearing - (-1 * values.normalized.alpha);
+    var arrowRotation, elem, prefixes;
+    if (this.accuracy.strength !== 'weak') {
+      arrowRotation = this.relativeLocation.bearing + values.normalized.alpha;
       prefixes = ["", "Webkit", "Moz", "ms", "O"];
-      elem = this.$("#source_pointer")[0];
+      elem = this.$("#source_pointer .glyphicon")[0];
       return prefixes.forEach(function(prefix) {
         return elem.style[prefix + "Transform"] = "rotate(" + arrowRotation + "deg)";
       });
@@ -332,8 +327,9 @@ LocationView = (function(_super) {
   };
 
   LocationView.prototype.locationFound = function(pos) {
-    console.log(pos);
     this.currentLoc = this.convertPosToLoc(pos);
+    this.updateAccuracyStrength(this.currentLoc);
+    this.relativeLocation = getRelativeLocation(this.currentLoc, this.loc);
     return this.render();
   };
 
@@ -365,6 +361,7 @@ LocationView = (function(_super) {
       longitude: parseFloat(this.$("#longitude").val()),
       accuracy: 0
     };
+    this.relativeLocation = getRelativeLocation(this.currentLoc, this.loc);
     this.trigger('locationset', this.loc);
     this.$("#location_edit_controls").slideUp();
     return this.render();
@@ -374,30 +371,30 @@ LocationView = (function(_super) {
     return this.$("#location_edit_controls").slideUp();
   };
 
-  LocationView.prototype.getAccuracyStrength = function(pos) {
+  LocationView.prototype.updateAccuracyStrength = function(pos) {
     if (!(pos && pos.accuracy)) {
-      return {
+      return this.accuracy = {
         color: "red",
         "class": "text-danger",
         strength: "weak",
         text: "Waiting for GPS..."
       };
     } else if (pos.accuracy > 50) {
-      return {
+      return this.accuracy = {
         color: "red",
         "class": "text-danger",
         strength: "weak",
         text: "Waiting for GPS..."
       };
     } else if (pos.accuracy > 10) {
-      return {
+      return this.accuracy = {
         color: "yellow",
         "class": "text-warning",
         strength: "fair",
         text: "Low accuracy GPS"
       };
     } else {
-      return {
+      return this.accuracy = {
         color: "green",
         "class": "text-success",
         strength: "strong",
@@ -585,7 +582,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<div class='row'>\r\n  <div class='col-xs-7 row toolbar'>\r\n    <div class='row'>\r\n      <div class='col-xs-6'><button id=\"location_set\" class=\"btn\"><span class=\"glyphicon glyphicon-screenshot\"></span> Set</button></div>\r\n      <div class='col-xs-6'><button id=\"location_clear\" class=\"btn btn-default\"><span class=\"glyphicon glyphicon-remove\"></span> Clear</button></div>\r\n    </div>\r\n    <div class='row'>\r\n      <div class='col-xs-6'><button id=\"location_map\" class=\"btn btn-default\"><span class=\"glyphicon glyphicon-map-marker\"></span> Map</button></div>\r\n      <div class='col-xs-6'><button id=\"location_edit\" class=\"btn btn-default\"><span class=\"glyphicon glyphicon-edit\"></span> Edit</button></div>\r\n    </div>\r\n  </div>\r\n  <div class='col-xs-5'>\r\n    <div id='source_pointer'><span class='glyphicon glyphicon-arrow-up'><span></div>\r\n    <div id='location_relative'></div>\r\n  </div>\r\n</div>\r\n<div class='row'>\r\n  <div id='location_absolute' class='col-xs-7 text-muted'></div>\r\n</div>\r\n<div id='notification' class='alert' style='display: none'></div>\r\n<div id=\"location_edit_controls\" class=\"form\" style=\"margin-top: 5px; display:none;\">\r\n  <div class=\"form-group\">\r\n    <label for=\"latitude\">Latitude</label>\r\n    <input type=\"number\" class=\"form-control\" id=\"latitude\" step=\"any\"/> \r\n  </div>\r\n  <div class=\"form-group\">\r\n    <label for=\"longitude\">Longitude</label>\r\n    <input type=\"number\" class=\"form-control\" id=\"longitude\" step=\"any\"/> \r\n  </div>\r\n  <button id=\"save_button\" type=\"button\" class=\"btn btn-primary\">Save</button>  \r\n  <button id=\"cancel_button\" type=\"button\" class=\"btn btn-default\">Cancel</button>\r\n</div>\r\n\r\n\r\n<style>\r\n#source_pointer {\r\n  font-size: 3em;\r\n  text-align: center;\r\n}\r\n.row {\r\n  margin:0;\r\n}\r\n.row.toolbar {\r\n  padding: 0;\r\n}\r\n.toolbar .btn {\r\n  margin:0;\r\n  width:100%;\r\n  background-color: #fff;\r\n  border-color: #ccc;\r\n}\r\n.toolbar .col-xs-6 {\r\n  padding:5px;\r\n}\r\n#location_absolute {\r\n  text-align: center;\r\n  margin-top:5px;\r\n}\r\n#location_relative {\r\n  text-align: center;\r\n}\r\n@-webkit-keyframes 'blink' {\r\n    0% { opacity: .4 }\r\n    50% { opacity: 1 }\r\n    100% { opacity: .4 }\r\n}\r\n.gps_strength.text-danger {\r\n    -webkit-animation-direction: normal;\r\n    -webkit-animation-duration: 1.2s;\r\n    -webkit-animation-iteration-count: infinite;\r\n    -webkit-animation-name: blink;\r\n    -webkit-animation-timing-function: ease;  \r\n}\r\n</style>";
+  return "<div class='row'>\r\n  <div class='col-xs-7 row toolbar'>\r\n    <div class='row'>\r\n      <div class='col-xs-6'><button id=\"location_set\" class=\"btn\"><span class=\"glyphicon glyphicon-screenshot\"></span> Set</button></div>\r\n      <div class='col-xs-6'><button id=\"location_clear\" class=\"btn btn-default\"><span class=\"glyphicon glyphicon-remove\"></span> Clear</button></div>\r\n    </div>\r\n    <div class='row'>\r\n      <div class='col-xs-6'><button id=\"location_map\" class=\"btn btn-default\"><span class=\"glyphicon glyphicon-map-marker\"></span> Map</button></div>\r\n      <div class='col-xs-6'><button id=\"location_edit\" class=\"btn btn-default\"><span class=\"glyphicon glyphicon-edit\"></span> Edit</button></div>\r\n    </div>\r\n  </div>\r\n  <div class='col-xs-5'>\r\n    <div id='source_pointer'><span class='glyphicon glyphicon-arrow-up'><span></div>\r\n    <div id='location_relative'></div>\r\n  </div>\r\n</div>\r\n<div class='row'>\r\n  <div id='location_absolute' class='col-xs-7 text-muted'></div>\r\n</div>\r\n<div id='notification' class='alert' style='display: none'></div>\r\n<div id=\"location_edit_controls\" class=\"form\" style=\"margin-top: 5px; display:none;\">\r\n  <div class=\"form-group\">\r\n    <label for=\"latitude\">Latitude</label>\r\n    <input type=\"number\" class=\"form-control\" id=\"latitude\" step=\"any\"/> \r\n  </div>\r\n  <div class=\"form-group\">\r\n    <label for=\"longitude\">Longitude</label>\r\n    <input type=\"number\" class=\"form-control\" id=\"longitude\" step=\"any\"/> \r\n  </div>\r\n  <button id=\"save_button\" type=\"button\" class=\"btn btn-primary\">Save</button>  \r\n  <button id=\"cancel_button\" type=\"button\" class=\"btn btn-default\">Cancel</button>\r\n</div>\r\n\r\n\r\n<style>\r\n#source_pointer {\r\n  font-size: 3em;\r\n  text-align: center;\r\n  line-height: .8;\r\n  padding-top: 5px;\r\n}\r\n.row {\r\n  margin:0;\r\n}\r\n.row.toolbar {\r\n  padding: 0;\r\n}\r\n.toolbar .btn {\r\n  margin:0;\r\n  width:100%;\r\n  background-color: #fff;\r\n  border-color: #ccc;\r\n}\r\n.toolbar .col-xs-6 {\r\n  padding:5px;\r\n}\r\n#location_absolute {\r\n  text-align: center;\r\n  margin-top:5px;\r\n}\r\n#location_relative {\r\n  text-align: center;\r\n}\r\n@-webkit-keyframes 'blink' {\r\n    0% { opacity: .4 }\r\n    50% { opacity: 1 }\r\n    100% { opacity: .4 }\r\n}\r\n.gps_strength.text-danger {\r\n    -webkit-animation-direction: normal;\r\n    -webkit-animation-duration: 1.2s;\r\n    -webkit-animation-iteration-count: infinite;\r\n    -webkit-animation-name: blink;\r\n    -webkit-animation-timing-function: ease;  \r\n}\r\n</style>";
   });
 
 },{"hbsfy/runtime":14}],6:[function(require,module,exports){

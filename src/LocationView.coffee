@@ -25,7 +25,7 @@ class LocationView extends Backbone.View
     @listenTo(@locationFinder, 'found', @locationFound)
     @listenTo(@locationFinder, 'error', @locationError)
 
-    # Listen to orientation events
+    # Listen to device orientation events
     @listenTo(orientationPublisher, 'orientationChange', @compassChange)
 
     # Start tracking location if set
@@ -60,8 +60,7 @@ class LocationView extends Backbone.View
     else if not @currentLoc
       @$("#location_relative").text("Waiting for GPS...")
     else
-      relativeLocation = getRelativeLocation(@currentLoc, @loc);
-      @$("#location_relative").text(relativeLocation.distance + " " + relativeLocation.cardinalDirection )
+      @$("#location_relative").text(@relativeLocation.distance + " " + @relativeLocation.cardinalDirection )
 
     if @loc and not @settingLocation
       @$("#location_absolute").text("#{this.loc.latitude.toFixed(6)}, #{this.loc.longitude.toFixed(6)}")
@@ -81,10 +80,10 @@ class LocationView extends Backbone.View
     # Disable edit if readonly
     @$("#location_edit").attr("disabled", @readonly)
 
-    accuracy = @getAccuracyStrength(@currentLoc)
-    @$("#location_relative").append("<div class='gps_strength #{accuracy.class}'>#{accuracy.text}</div>");
+    @updateAccuracyStrength @currentLoc
+    @$("#location_relative").append("<div class='gps_strength #{@accuracy.class}'>#{@accuracy.text}</div>");
     # Disable set if setting or readonly
-    @$("#location_set").removeClass("text-danger text-warning text-success").addClass(accuracy.class);
+    @$("#location_set").removeClass("text-danger text-warning text-success").addClass(@accuracy.class);
 
   displayNotification: (message, className, shouldFadeOut) ->
     timeout = timeout || 0;
@@ -98,6 +97,7 @@ class LocationView extends Backbone.View
         , 3000)
 
   clearLocation: ->
+    @relativeLocation = getRelativeLocation @currentLoc, @loc
     @trigger('locationset', null)
  
   # Takes out relevant coords from html5 position
@@ -116,10 +116,11 @@ class LocationView extends Backbone.View
       @loc = @convertPosToLoc(pos)
       # Set location
       @currentLoc = @convertPosToLoc(pos)
-      accuracy = @getAccuracyStrength @currentLoc
+      @relativeLocation = getRelativeLocation @currentLoc, @loc
 
+      @updateAccuracyStrength @currentLoc
       #the first time (when settingLocation is still true) is usually the 'lowAccuracy' event firing
-      if @settingLocation and accuracy.strength != 'strong'
+      if @settingLocation and @accuracy.strength != 'strong'
         @displayNotification "Temporarily Set Rough Location", "alert-warning", true
       else
         @displayNotification "Location Set Successfully", "alert-success", true
@@ -135,8 +136,7 @@ class LocationView extends Backbone.View
       @displayNotification "Unable to set Location", "alert-danger", true
 
     #display an red warning
-    accuracy = @getAccuracyStrength @currentLoc
-    if accuracy.strength == "weak"
+    if @accuracy.strength == "weak"
       @displayNotification "Waiting for GPS", "alert-warning"
     else 
       @displayNotification "Setting Location...", "alert-warning"
@@ -146,19 +146,17 @@ class LocationView extends Backbone.View
     @render()
 
   compassChange: (values) =>
-    console.log values
-    accuracy = @getAccuracyStrength @currentLoc
-    if accuracy.strength != 'weak'
-      relativeLocation = getRelativeLocation @currentLoc, @loc
-      arrowRotation = relativeLocation.bearing - (-1 * values.normalized.alpha)
+    if @accuracy.strength != 'weak'
+      arrowRotation = @relativeLocation.bearing + values.normalized.alpha
       prefixes = ["", "Webkit", "Moz", "ms", "O"];
-      elem = @$("#source_pointer")[0]
+      elem = @$("#source_pointer .glyphicon")[0]
       prefixes.forEach (prefix) ->
           elem.style[prefix + "Transform"] = "rotate(" + arrowRotation + "deg)";
 
   locationFound: (pos) =>
-    console.log pos
     @currentLoc = @convertPosToLoc(pos)
+    @updateAccuracyStrength @currentLoc;
+    @relativeLocation = getRelativeLocation @currentLoc, @loc
     @render()
 
   locationError: =>
@@ -187,6 +185,7 @@ class LocationView extends Backbone.View
       longitude: parseFloat(@$("#longitude").val())
       accuracy: 0  # Perfectly accurate when entered
     }
+    @relativeLocation = getRelativeLocation @currentLoc, @loc
     @trigger('locationset', @loc)
 
     # Hide editing controls and re-render
@@ -196,11 +195,11 @@ class LocationView extends Backbone.View
   cancelEditLocation: ->
     @$("#location_edit_controls").slideUp() 
 
-  getAccuracyStrength: (pos) =>
-    if not (pos and pos.accuracy) then { color: "red", class: "text-danger", strength: "weak", text: "Waiting for GPS..." }
-    else if pos.accuracy > 50 then { color: "red", class: "text-danger", strength: "weak", text: "Waiting for GPS..." }
-    else if pos.accuracy > 10 then { color: "yellow", class: "text-warning", strength: "fair", text: "Low accuracy GPS"}
-    else { color: "green", class: "text-success", strength: "strong", text: "GPS Acquired" }
+  updateAccuracyStrength: (pos) =>
+    if not (pos and pos.accuracy) then @accuracy = { color: "red", class: "text-danger", strength: "weak", text: "Waiting for GPS..." }
+    else if pos.accuracy > 50 then @accuracy = { color: "red", class: "text-danger", strength: "weak", text: "Waiting for GPS..." }
+    else if pos.accuracy > 10 then @accuracy = { color: "yellow", class: "text-warning", strength: "fair", text: "Low accuracy GPS"}
+    else @accuracy = { color: "green", class: "text-success", strength: "strong", text: "GPS Acquired" }
 
 module.exports = LocationView
 

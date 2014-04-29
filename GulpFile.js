@@ -29,7 +29,6 @@ gulp.task('browserifyDemo', function() {
 		.pipe(streamConvert('bundle.js'))
 		.pipe(gulp.dest('./demo'));
 });
-
 gulp.task('startExpress', function() {
 	var express = require("express");
 	var app = express();
@@ -38,7 +37,6 @@ gulp.task('startExpress', function() {
 	app.listen(EXPRESS_PORT);
 	console.log("Server started on port " + EXPRESS_PORT);
 });
-
 gulp.task('watch', function() {
 	gulp.watch('./src/demo.js', ['compile', 'browserifyDemo']);
 	gulp.watch(['./src/*.coffee', './test/*.coffee', './src/templates/*.hbs'], ['compile', 'browserifyDemo']);
@@ -56,4 +54,3 @@ gulp.task('openBrowser', function() {
 gulp.task('compile', ['coffee', 'copy']);
 gulp.task('demo', ['compile', 'browserifyDemo', 'startExpress', 'watch', 'ngrok', 'openBrowser']);
 gulp.task('default', ['demo']);
-gulp.task('test', ['browserifyTests', 'watch']);
