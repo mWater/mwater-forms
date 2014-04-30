@@ -14,8 +14,6 @@
         OrientationPublisher.init();
         $(document).on("orientationChange", function(event, values){
             var degrees = values.normalized.alpha;
-            
-            $("#debug").text(JSON.stringify(values));
 
             if (opts.sourceBearing) {
                 degrees = options.sourceBearing - (-1 * degrees);

@@ -19,7 +19,7 @@ class LocationView extends Backbone.View
     @disableMap = options.disableMap
     @settingLocation = false
     @locationFinder = options.locationFinder || new LocationFinder()
-    @orientationFinder = options.locationFinder || new OrientationFinder()
+    @orientationFinder = options.orientationFinder || new OrientationFinder()
     @orientationFinder.startWatch()
     # Listen to location events
     @listenTo(@locationFinder, 'found', @locationFound)
@@ -161,6 +161,7 @@ class LocationView extends Backbone.View
         @settingLocation = false
         @errorFindingLocation = false
         @trigger('locationset', @loc)
+        alert ("SET STRONG")
         @render()
       else if @accuracy.strength == "weak" and not alertDisplayed
         # The accuracy is undesirable
