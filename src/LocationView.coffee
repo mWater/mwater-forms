@@ -86,13 +86,18 @@ class LocationView extends Backbone.View
     @$("#location_set").removeClass("text-danger text-warning text-success").addClass(@accuracy.class);
 
   displayNotification: (message, className, shouldFadeOut) ->
+    # Cancel the fadeout if timer on any preexisting alerts
     timeout = timeout || 0;
     clearTimeout timeout
-    @$("#notification")[0].className = "";
-    @$("#notification").hide().addClass("alert " + className).text(message).fadeIn 200, ->
+
+    $notification = @$("#notification")
+    $notification[0].className = "alert";
+
+    # If it is a temporary notification setup a fadeout timer
+    $notification.text(message).addClass(className).text(message).fadeIn 200, ->
       if shouldFadeOut
         timeout = setTimeout( ->
-            @$("#notification").fadeOut 500
+            $notification.fadeOut 500
             return
         , 3000)
 
@@ -110,6 +115,8 @@ class LocationView extends Backbone.View
     console.log "setting location"
     @settingLocation = true
     @errorFindingLocation = false
+    alertDebouncer = 0
+    alertDisplayed = false
 
     locationSuccess = (pos) =>
       # Extract location
@@ -117,32 +124,56 @@ class LocationView extends Backbone.View
       # Set location
       @currentLoc = @convertPosToLoc(pos)
       @relativeLocation = getRelativeLocation @currentLoc, @loc
-
       @updateAccuracyStrength @currentLoc
-      #the first time (when settingLocation is still true) is usually the 'lowAccuracy' event firing
-      if @settingLocation and @accuracy.strength != 'strong'
-        @displayNotification "Temporarily Set Rough Location", "alert-warning", true
-      else
-        @displayNotification "Location Set Successfully", "alert-success", true
-      
-      @settingLocation = false
-      @errorFindingLocation = false
-      @trigger('locationset', @loc)
-      @render()
+
+      # The first time is usually the 'lowAccuracy' event firing, 
+      # Give high accuracy time to come back instead of immediately alerting user of low accuracy success
+      if @accuracy.strength == "fair" and not alertDisplayed
+        alertDebouncer = setTimeout (=>
+          alertDisplayed = true
+          # Ask the user if they want to use the low accuracy position
+          if window.confirm "Low GPS Strength - Do you want to use anyway?"
+            @displayNotification "Location Set Successfully", "alert-success", true
+            @settingLocation = false
+            @errorFindingLocation = false
+            @trigger('locationset', @loc)
+            @render()
+            return
+          
+          return
+        ), 5000
+      else if @accuracy.strength == "strong"
+        # If the low accuracy event hasn't already alerted the user
+        if not alertDisplayed
+          # Cancel the low accuracy alert
+          clearTimeout alertDebouncer
+          alertDisplayed = true
+          @displayNotification "Location Set Successfully", "alert-success", true
+        # Even if the user has been alerted, save the more accurate location
+        @settingLocation = false
+        @errorFindingLocation = false
+        @trigger('locationset', @loc)
+        @render()
+      else if not alertDisplayed
+        # The accuracy is undesirable
+        @displayNotification "Low GPS Strength - Unable to set accurate location", "alert-danger", true
+
 
     locationError = (err) =>
       @settingLocation = false
       @errorFindingLocation = true
-      @displayNotification "Unable to set Location", "alert-danger", true
+      # Verify the low accuracy attempt hasn't already succeeded and alerted the user
+      if not alertDisplayed
+        @displayNotification "Unable to set Location", "alert-danger", true
 
-    #display an red warning
+    @updateAccuracyStrength @currentLoc
+    # Display a red warning if GPS is unusable
     if @accuracy.strength == "weak"
-      @displayNotification "Waiting for GPS", "alert-warning"
-    else 
+      @displayNotification "Waiting for GPS", "alert-danger"
+    else
       @displayNotification "Setting Location...", "alert-warning"
 
     @locationFinder.getLocation locationSuccess, locationError
-
     @render()
 
   compassChange: (values) =>
