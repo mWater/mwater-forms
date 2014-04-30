@@ -1,7 +1,7 @@
 Backbone = require 'backbone'
 Backbone.$ = require 'jquery'
 LocationFinder = require './LocationFinder'
-orientationPublisher = require './orientationPublisher'
+OrientationFinder = require './OrientationFinder'
 _ = require 'underscore'
 
 # Shows the relative location of a point and allows setting it
@@ -19,14 +19,14 @@ class LocationView extends Backbone.View
     @disableMap = options.disableMap
     @settingLocation = false
     @locationFinder = options.locationFinder || new LocationFinder()
-    orientationPublisher.init();
-
+    @orientationFinder = options.locationFinder || new OrientationFinder()
+    @orientationFinder.startWatch()
     # Listen to location events
     @listenTo(@locationFinder, 'found', @locationFound)
     @listenTo(@locationFinder, 'error', @locationError)
 
     # Listen to device orientation events
-    @listenTo(orientationPublisher, 'orientationChange', @compassChange)
+    @listenTo(@orientationFinder, 'orientationChange', @compassChange)
 
     # Start tracking location if set
     if @loc
@@ -47,6 +47,7 @@ class LocationView extends Backbone.View
 
   remove: ->
     @locationFinder.stopWatch()
+    @orientationFinder.stopWatch()
     super()
 
   render: ->

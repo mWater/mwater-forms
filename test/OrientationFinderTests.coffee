@@ -1,7 +1,9 @@
-OrientationPublisher = require('../src/OrientationPublisher')
+OrientationFinder = require('../src/OrientationFinder')
 assert = require('chai').assert
+orientationFinder = new OrientationFinder()
 
-describe "OrientationPublisher", ->
+console.log orientationFinder
+describe "OrientationFinder", ->
 
   beforeEach -> 
     @event = { 
@@ -24,40 +26,40 @@ describe "OrientationPublisher", ->
 
   describe "getNormalizerKey", ->
     it "should return ios when an IPhone user agent is passed in", ->
-      key = OrientationPublisher.getNormalizerKey(userAgents.iphone)
+      key = orientationFinder.getNormalizerKey(userAgents.iphone)
       assert.equal key, 'ios'
 
     it "should return ios when an IPad user agent is passed in", ->
-      key = OrientationPublisher.getNormalizerKey(userAgents.ipad)
+      key = orientationFinder.getNormalizerKey(userAgents.ipad)
       assert.equal key, 'ios'
 
     it "should return opera when an Opera user agent is passed in", ->
-      key = OrientationPublisher.getNormalizerKey(userAgents.opera)
+      key = orientationFinder.getNormalizerKey(userAgents.opera)
       assert.equal key, 'opera'
 
     it "should return android_chrome when Chrome for Android user agent is passed in", ->
-      key = OrientationPublisher.getNormalizerKey(userAgents.androidChrome)
+      key = orientationFinder.getNormalizerKey(userAgents.androidChrome)
       assert.equal key, 'android_chrome'
 
     it "should return android_stock when stock Android browser user agent is passed in", ->
-      key = OrientationPublisher.getNormalizerKey(userAgents.androidStock)
+      key = orientationFinder.getNormalizerKey(userAgents.androidStock)
       assert.equal key, 'android_stock'
 
     it "should return unknown when IE mobile user agent is passed in", ->
-      key = OrientationPublisher.getNormalizerKey(userAgents.IEMobile)
+      key = orientationFinder.getNormalizerKey(userAgents.IEMobile)
       assert.equal key, 'unknown'
 
     it "should return unknown when Chrome desktop user agent is passed in", ->
-      key = OrientationPublisher.getNormalizerKey(userAgents.chromeDesktop)
+      key = orientationFinder.getNormalizerKey(userAgents.chromeDesktop)
       assert.equal key, 'unknown'
 
     it "should return unknown when IE8 user agent is passed in", ->
-      key = OrientationPublisher.getNormalizerKey(userAgents.IE8Desktop)
+      key = orientationFinder.getNormalizerKey(userAgents.IE8Desktop)
       assert.equal key, 'unknown'
 
   describe "cloneEvent", ->
     it "should copy the alpha, beta, gamma, and absolute properties", ->
-      clone = OrientationPublisher.cloneEvent @event
+      clone = orientationFinder.cloneEvent @event
       assert.property clone, "alpha"
       assert.property clone, "beta"
       assert.property clone, "gamma"
@@ -69,37 +71,37 @@ describe "OrientationPublisher", ->
 
     describe "Firefox", -> 
       it "should negate the alpha value", ->
-        e = OrientationPublisher.normalizers.firefox @event
+        e = orientationFinder.normalize "firefox", @event
         assert.equal e.alpha, -90
 
     describe "Android Stock", ->
       it "should compensate for starting facing West", ->
         #passing in 90 means it should normalize to North
-        e = OrientationPublisher.normalizers.android_stock @event
+        e = orientationFinder.normalize "android_stock", @event
         assert.equal e.alpha, 0
 
         #passing in zero means it should normalize to West
         @event.alpha = 0
-        e = OrientationPublisher.normalizers.android_stock @event
+        e = orientationFinder.normalize "android_stock", @event
         assert.equal e.alpha, 270
 
     describe "Android Chrome", ->
       it "should stay the same", ->
-        e = OrientationPublisher.normalizers.android_chrome @event
+        e = orientationFinder.normalize "android_chrome", @event
         assert.equal e.alpha, 90
 
     describe "Opera", ->
       it "should stay the same", ->
-        e = OrientationPublisher.normalizers.opera @event
+        e = orientationFinder.normalize "opera", @event
         assert.equal e.alpha, 90
 
     describe "IOS", ->
       it "should use the custom property instead of alpha and negate it", ->
         @event.webkitCompassHeading = 180;
-        e = OrientationPublisher.normalizers.ios @event
+        e = orientationFinder.normalize "ios", @event
         assert.equal e.alpha, -180
 
-  describe "init", -> 
+  describe "startWatch", -> 
     it "should only add the deviceorientation event listener once", ->
       count = 0
       addEvent = window.addEventListener
@@ -109,9 +111,9 @@ describe "OrientationPublisher", ->
         addEvent name, handler
 
       assert.equal count, 0
-      OrientationPublisher.init()
+      orientationFinder.startWatch()
       assert.equal count, 1
-      OrientationPublisher.init()
+      orientationFinder.startWatch()
       assert.equal count, 1
 
       window.addEventListener = addEvent
@@ -119,25 +121,39 @@ describe "OrientationPublisher", ->
   describe "orientationChange (DeviceOrientationEvent handler)", ->
     
     it "should trigger an 'orientationChange' event", (done) ->
-      OrientationPublisher.on 'orientationChange', ->
+      orientationFinder.on 'orientationChange', ->
         assert.isTrue true, "The orientationChange event was triggered"
-        OrientationPublisher.off 'orientationChange'
+        orientationFinder.off 'orientationChange'
         done()
 
-      OrientationPublisher.orientationChange @event
+      orientationFinder.orientationChange @event
 
     it "should return the orientation, raw values, and normalized values", (done) ->
-      OrientationPublisher.on 'orientationChange', (values) =>
+      orientationFinder.on 'orientationChange', (values) =>
         assert.property values, "orientation"
         assert.property values, "raw";
         assert.deepEqual values.raw, @event
         assert.isString values.normalizerKey
         console.log values.normalizerKey
-        manuallyNormalized = OrientationPublisher.normalizers[values.normalizerKey] @event
+        manuallyNormalized = orientationFinder.normalize values.normalizerKey, @event
         assert.deepEqual values.normalized, manuallyNormalized
-        OrientationPublisher.off 'orientationChange'
+        orientationFinder.off 'orientationChange'
         done()
 
-      OrientationPublisher.orientationChange @event, userAgents.chromeDesktop + "test"
+      orientationFinder.orientationChange @event, userAgents.chromeDesktop + "test"
 
+  describe "stopWatch", ->
+    it "should call window.removeEventListener for the 'deviceorientation' event", ->
+      count = 0
+      removeEvent = window.removeEventListener
+      window.removeEventListener = (name, handler) -> 
+        if name is "deviceorientation"
+          count++
+        removeEvent name, handler
 
+      orientationFinder.stopWatch()
+      assert.equal 1, count
+
+    it "should be able to call stopWatch twice without erroring", ->
+      orientationFinder.stopWatch()
+      orientationFinder.stopWatch()
