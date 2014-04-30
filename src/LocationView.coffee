@@ -57,10 +57,10 @@ class LocationView extends Backbone.View
       @$("#location_relative").text("Unspecified location")
     else if @settingLocation
       @$("#location_relative").text("Setting location...")
-    else if not @currentLoc
-      @$("#location_relative").text("Waiting for GPS...")
-    else
+    else if @relativeLocation
       @$("#location_relative").text(@relativeLocation.distance + " " + @relativeLocation.cardinalDirection )
+    else 
+      @$("#location_relative").text("")
 
     if @loc and not @settingLocation
       @$("#location_absolute").text("#{this.loc.latitude.toFixed(6)}, #{this.loc.longitude.toFixed(6)}")
@@ -81,8 +81,10 @@ class LocationView extends Backbone.View
     @$("#location_edit").attr("disabled", @readonly)
 
     @updateAccuracyStrength @currentLoc
-    @$("#location_relative").append("<div class='gps_strength #{@accuracy.class}'>#{@accuracy.text}</div>");
-    # Disable set if setting or readonly
+    @$("#gps_strength")[0].className = @accuracy.class
+    @$("#gps_strength").text @accuracy.text
+
+    # Color Set button
     @$("#location_set").removeClass("text-danger text-warning text-success").addClass(@accuracy.class);
 
   displayNotification: (message, className, shouldFadeOut) ->
@@ -139,7 +141,12 @@ class LocationView extends Backbone.View
             @trigger('locationset', @loc)
             @render()
             return
-          
+          else 
+            # The accuracy is undesirable
+            @settingLocation = false
+            alertDisplayed = true
+            @displayNotification "Low GPS Strength - Unable to set accurate location", "alert-danger", true
+            @render()
           return
         ), 5000
       else if @accuracy.strength == "strong"
@@ -154,10 +161,12 @@ class LocationView extends Backbone.View
         @errorFindingLocation = false
         @trigger('locationset', @loc)
         @render()
-      else if not alertDisplayed
+      else if @accuracy.strength == "weak" and not alertDisplayed
         # The accuracy is undesirable
+        @settingLocation = false
+        alertDisplayed = true
         @displayNotification "Low GPS Strength - Unable to set accurate location", "alert-danger", true
-
+        @render()
 
     locationError = (err) =>
       @settingLocation = false
@@ -177,12 +186,17 @@ class LocationView extends Backbone.View
     @render()
 
   compassChange: (values) =>
-    if @accuracy.strength != 'weak'
+    # Only display the compass if we can accurately calculate relative direction
+    $sourcePointer = @$("#source_pointer .glyphicon")
+    if @relativeLocation and @accuracy.strength != 'weak' 
+      $sourcePointer.show()
       arrowRotation = @relativeLocation.bearing + values.normalized.alpha
       prefixes = ["", "Webkit", "Moz", "ms", "O"];
-      elem = @$("#source_pointer .glyphicon")[0]
+      elem = $sourcePointer[0]
       prefixes.forEach (prefix) ->
           elem.style[prefix + "Transform"] = "rotate(" + arrowRotation + "deg)";
+    else 
+      $sourcePointer.hide()
 
   locationFound: (pos) =>
     @currentLoc = @convertPosToLoc(pos)
