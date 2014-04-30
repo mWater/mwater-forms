@@ -21,9 +21,15 @@
 {{/if}}
 <div class="answer"></div>
 
-{{#each options.alternates}}
-<div id="{{id}}" class="touch-radio alternate">{{label}}</div>
-{{/each}}
+{{#if options.radioAlternates}}
+	{{#each options.alternates}}
+	<div id="{{id}}" class="touch-radio alternate">{{label}}</div>
+	{{/each}}
+{{else}}
+	{{#each options.alternates}}
+	<div id="{{id}}" class="touch-checkbox alternate">{{label}}</div>
+	{{/each}}
+{{/if}}
 
 <div class="validation-message text-danger"></div>
 {{#if options.commentsField}}
