@@ -4,12 +4,12 @@
   "description": "Form controls for mWater",
   "main": "lib/index.js",
   "directories": {
-    "test": "test",
-    "prepublish": "grunt coffee copy"
+    "test": "test"
   },
   "repository": "git@github.com:mWater/mwater-forms.git",
   "scripts": {
-    "test": "testem ci"
+    "test": "testem ci",
+    "prepublish": "grunt coffee copy"
   },
   "browserify": {
     "transform": [
