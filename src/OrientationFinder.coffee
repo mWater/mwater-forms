@@ -92,6 +92,7 @@ class OrientationFinder
 
   # Normalize based on user agent
   orientationChange: (e, ua) =>
+    if e.alpha == null then @active = false
     normalizerKey = @getNormalizerKey ua
     normalizedValues = @normalize normalizerKey, e
     

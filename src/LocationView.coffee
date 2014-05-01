@@ -97,7 +97,7 @@ class LocationView extends Backbone.View
     $notification[0].className = "alert";
 
     # If it is a temporary notification setup a fadeout timer
-    $notification.text(message).addClass(className).text(message).fadeIn 200, ->
+    $notification.addClass(className).html(message).fadeIn 200, ->
       if shouldFadeOut
         timeout = setTimeout( ->
             $notification.fadeOut 500
@@ -122,47 +122,37 @@ class LocationView extends Backbone.View
     alertDisplayed = false
 
     locationSuccess = (pos) =>
-      # Extract location
-      @loc = @convertPosToLoc(pos)
-      # Set location
-      @currentLoc = @convertPosToLoc(pos)
-      @relativeLocation = getRelativeLocation @currentLoc, @loc
-      @updateAccuracyStrength @currentLoc
+
+      usePosition = => 
+        # Extract location
+        @loc = @convertPosToLoc(pos)
+        # Set location
+        @currentLoc = @convertPosToLoc(pos)
+        @relativeLocation = getRelativeLocation @currentLoc, @loc
+        alertDisplayed = true
+        @displayNotification "Location Set Successfully", "alert-success", true
+        @settingLocation = false
+        @errorFindingLocation = false
+        @trigger('locationset', @loc)
+        @render()  
+        return 
+
+      @updateAccuracyStrength @convertPosToLoc(pos)
 
       # The first time is usually the 'lowAccuracy' event firing, 
       # Give high accuracy time to come back instead of immediately alerting user of low accuracy success
       if @accuracy.strength == "fair" and not alertDisplayed
+        alertDisplayed = true
         alertDebouncer = setTimeout (=>
-          alertDisplayed = true
           # Ask the user if they want to use the low accuracy position
-          if window.confirm "Low GPS Strength - Do you want to use anyway?"
-            @displayNotification "Location Set Successfully", "alert-success", true
-            @settingLocation = false
-            @errorFindingLocation = false
-            @trigger('locationset', @loc)
-            @render()
-            return
-          else 
-            # The accuracy is undesirable
-            @settingLocation = false
-            alertDisplayed = true
-            @displayNotification "Low GPS Strength - Unable to set accurate location", "alert-danger", true
-            @render()
+          @displayNotification "Low GPS Strength <div id='use-anyway' class='btn btn-sm btn-warning' style='margin-left:5px'>Use Anyway</div>", "alert-warning"
+          @$("#notification").on("click", "#use-anyway", usePosition);
           return
-        ), 5000
+        ), 3000
       else if @accuracy.strength == "strong"
-        # If the low accuracy event hasn't already alerted the user
-        if not alertDisplayed
-          # Cancel the low accuracy alert
-          clearTimeout alertDebouncer
-          alertDisplayed = true
-          @displayNotification "Location Set Successfully", "alert-success", true
-        # Even if the user has been alerted, save the more accurate location
-        @settingLocation = false
-        @errorFindingLocation = false
-        @trigger('locationset', @loc)
-        alert ("SET STRONG")
-        @render()
+        # Cancel the low accuracy alert
+        clearTimeout alertDebouncer
+        usePosition()
       else if @accuracy.strength == "weak" and not alertDisplayed
         # The accuracy is undesirable
         @settingLocation = false
@@ -190,7 +180,7 @@ class LocationView extends Backbone.View
   compassChange: (values) =>
     # Only display the compass if we can accurately calculate relative direction
     $sourcePointer = @$("#source_pointer .glyphicon")
-    if @relativeLocation and @accuracy.strength != 'weak' 
+    if @relativeLocation and @accuracy.strength != 'weak' and @orientationFinder.active
       $sourcePointer.show()
       arrowRotation = @relativeLocation.bearing + values.normalized.alpha
       prefixes = ["", "Webkit", "Moz", "ms", "O"];
