@@ -30,7 +30,7 @@ describe 'LocationView', ->
 
     it 'allows setting location', ->
       @locationFinder.getLocation = (success, error) =>
-        success({ coords: { latitude: 2, longitude: 3, accuracy: 10}})
+        success({ coords: { latitude: 2, longitude: 3, accuracy: 10}, timestamp: new Date().getTime()})
 
       setPos = null
       @locationView.on 'locationset', (pos) ->
@@ -63,7 +63,7 @@ describe 'LocationView', ->
       assert.include(@ui.text(), 'Waiting')
 
     it 'displays relative', ->
-      @locationFinder.trigger 'found', { coords: { latitude: 21, longitude: 10, accuracy: 10}}
+      @locationFinder.trigger 'found', { coords: { latitude: 21, longitude: 10, accuracy: 10}, timestamp: new Date().getTime()}
       assert.include(@ui.text(), '111.2 km S')
 
   context 'With set location', ->

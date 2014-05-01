@@ -10,7 +10,7 @@ _ = require 'underscore'
 # options hideMap is true to hide map
 # options locationFinder overrides default LocationFinder
 # Location is stored format { latitude, longitude, accuracy, altitude?, altitudeAccuracy? }
-class LocationView extends Backbone.View
+module.exports = class LocationView extends Backbone.View
   constructor: (options) ->
     super()
     @loc = options.loc
@@ -59,8 +59,10 @@ class LocationView extends Backbone.View
       @$("#location_relative").text("Unspecified location")
     else if @settingLocation
       @$("#location_relative").text("Setting location...")
-    else if @relativeLocation
-      @$("#location_relative").text(@relativeLocation.distance + " " + @relativeLocation.cardinalDirection )
+    else if @loc and @currentPos
+      # Calculate relative location
+      relativeLocation = getRelativeLocation @currentPos.coords, @loc
+      @$("#location_relative").text(relativeLocation.distance + " " + relativeLocation.cardinalDirection )
     else 
       @$("#location_relative").text("")
 
@@ -85,9 +87,9 @@ class LocationView extends Backbone.View
     # Disable edit if readonly
     @$("#location_edit").attr("disabled", @readonly)
 
-    @updateAccuracyStrength @currentLoc
-    @$("#gps_strength")[0].className = @accuracy.class
-    @$("#gps_strength").text @accuracy.text
+    accuracy = getAccuracyStrength @currentPos
+    @$("#gps_strength")[0].className = accuracy.class
+    @$("#gps_strength").text accuracy.text
 
   displayNotification: (message, className, shouldFadeOut) ->
     # Cancel the fadeout if timer on any preexisting alerts
@@ -107,7 +109,6 @@ class LocationView extends Backbone.View
 
   clearLocation: ->
     @loc = null
-    @relativeLocation = getRelativeLocation @currentLoc, @loc
     @trigger('locationset', null)
     @render()
  
@@ -125,13 +126,12 @@ class LocationView extends Backbone.View
     alertDisplayed = false
 
     locationSuccess = (pos) =>
-
+      # Function to use the position last returned
       usePosition = => 
         # Extract location
         @loc = @convertPosToLoc(pos)
-        # Set location
-        @currentLoc = @convertPosToLoc(pos)
-        @relativeLocation = getRelativeLocation @currentLoc, @loc
+        # Set current position
+        @currentPos = pos
         alertDisplayed = true
         @displayNotification "Location Set Successfully", "alert-success", true
         @settingLocation = false
@@ -140,12 +140,11 @@ class LocationView extends Backbone.View
         @render()  
         return 
 
-      @updateAccuracyStrength @convertPosToLoc(pos)
+      accuracy = getAccuracyStrength(pos)
 
       # The first time is usually the 'lowAccuracy' event firing, 
       # Give high accuracy time to come back instead of immediately alerting user of low accuracy success
-      console.dir @accuracy
-      if @accuracy.strength == "fair" and not alertDisplayed
+      if accuracy.strength == "fair" and not alertDisplayed
         alertDisplayed = true
         alertDebouncer = setTimeout (=>
           # Ask the user if they want to use the low accuracy position
@@ -154,11 +153,11 @@ class LocationView extends Backbone.View
           @$("#use_anyway").on("click", usePosition)
           return
         ), 3000
-      else if @accuracy.strength == "strong"
+      else if accuracy.strength == "strong"
         # Cancel the low accuracy alert
         clearTimeout alertDebouncer
         usePosition()
-      else if @accuracy.strength == "weak"
+      else if accuracy.strength == "weak"
         # The accuracy is undesirable
         @displayNotification "Low GPS Strength. Waiting for better signal...", "alert-danger", false
         @render()
@@ -170,20 +169,17 @@ class LocationView extends Backbone.View
       if not alertDisplayed
         @displayNotification "Unable to set Location", "alert-danger", true
 
-    @updateAccuracyStrength @currentLoc
-    # Display a red warning if GPS is unusable
-    if @accuracy.strength == "weak"
-      @displayNotification "Waiting for GPS", "alert-danger"
-    else
-      @displayNotification "Setting Location...", "alert-warning"
+    @displayNotification "Setting Location...", "alert-warning"
 
     @locationFinder.getLocation locationSuccess, locationError
     @render()
 
   compassChange: (values) =>
+    accuracy = getAccuracyStrength @currentPos
+
     # Only display the compass if we can accurately calculate relative direction
     $sourcePointer = @$("#source_pointer .glyphicon")
-    if @relativeLocation and @accuracy.strength != 'weak' and @orientationFinder.active
+    if @relativeLocation and accuracy.strength != 'weak' and @orientationFinder.active
       $sourcePointer.show()
       arrowRotation = @relativeLocation.bearing + values.normalized.alpha
       prefixes = ["", "Webkit", "Moz", "ms", "O"]
@@ -194,12 +190,12 @@ class LocationView extends Backbone.View
       $sourcePointer.hide()
 
   locationFound: (pos) =>
-    @currentLoc = @convertPosToLoc(pos)
-    @updateAccuracyStrength @currentLoc
-    @relativeLocation = getRelativeLocation @currentLoc, @loc
+    @currentPos = pos
+    @errorFindingLocation = false
     @render()
 
   locationError: =>
+    @errorFindingLocation = true
     @render()
 
   mapClicked: =>
@@ -225,7 +221,6 @@ class LocationView extends Backbone.View
       longitude: parseFloat(@$("#longitude").val())
       accuracy: 0  # Perfectly accurate when entered
     }
-    @relativeLocation = getRelativeLocation @currentLoc, @loc
     @trigger('locationset', @loc)
 
     # Hide editing controls and re-render
@@ -235,22 +230,22 @@ class LocationView extends Backbone.View
   cancelEditLocation: ->
     @$("#location_edit_controls").slideUp() 
 
-  updateAccuracyStrength: (pos) =>
-    if not (pos and pos.accuracy) then 
-      @accuracy = { color: "red", class: "text-danger", strength: "weak", text: "Waiting for GPS..." }
-      return
+getAccuracyStrength = (pos) =>
+  if not (pos and pos.coords and pos.coords.accuracy?)
+    return { color: "red", class: "text-danger", strength: "weak", text: "Waiting for GPS..." }
 
-    # Calculate age
-    if pos.accuracy > 50 then @accuracy = { color: "red", class: "text-danger", strength: "weak", text: "Waiting for GPS..." }
-    else if pos.accuracy > 10 then @accuracy = { color: "yellow", class: "text-warning", strength: "fair", text: "Low accuracy GPS"}
-    else @accuracy = { color: "green", class: "text-success", strength: "strong", text: "GPS Acquired" }
+  # Calculate age
+  age = new Date().getTime() - pos.timestamp
 
-module.exports = LocationView
+  # If inaccurate or old (> 30 sec)
+  if pos.coords.accuracy > 50 or age > 30*1000
+    return { color: "red", class: "text-danger", strength: "weak", text: "Waiting for GPS..." }
+  else if pos.coords.accuracy > 10 
+    return { color: "yellow", class: "text-warning", strength: "fair", text: "Low accuracy GPS"}
+  else 
+    return { color: "green", class: "text-success", strength: "strong", text: "GPS Acquired" }
 
 getRelativeLocation = (from, to) ->
-  if not from or not to
-    return null
-
   x1 = from.longitude
   y1 = from.latitude
   x2 = to.longitude
