@@ -9,7 +9,7 @@
   "repository": "git@github.com:mWater/mwater-forms.git",
   "scripts": {
     "test": "testem ci",
-    "prepublish": "grunt coffee copy"
+    "prepublish": "gulp"
   },
   "browserify": {
     "transform": [
@@ -34,9 +34,6 @@
   "devDependencies": {
     "browserify": "^3.44.2",
     "express": "~3.5.1",
-    "grunt": "~0.4.4",
-    "grunt-contrib-coffee": "^0.10.1",
-    "grunt-contrib-copy": "~0.5.0",
     "gulp": "^3.6.2",
     "gulp-coffee": "^1.4.2",
     "gulp-concat": "^2.2.0",
