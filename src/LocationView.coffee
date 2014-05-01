@@ -21,6 +21,7 @@ class LocationView extends Backbone.View
     @locationFinder = options.locationFinder || new LocationFinder()
     @orientationFinder = options.orientationFinder || new OrientationFinder()
     @orientationFinder.startWatch()
+
     # Listen to location events
     @listenTo(@locationFinder, 'found', @locationFound)
     @listenTo(@locationFinder, 'error', @locationError)
@@ -77,6 +78,9 @@ class LocationView extends Backbone.View
 
     # Disable clear if location not set or readonly
     @$("#location_clear").attr("disabled", not @loc || @readonly)
+
+    # Disable set if setting location or readonly
+    @$("#location_set").attr("disabled", @settingLocation || @readonly)
 
     # Disable edit if readonly
     @$("#location_edit").attr("disabled", @readonly)
@@ -138,24 +142,25 @@ class LocationView extends Backbone.View
 
       @updateAccuracyStrength @convertPosToLoc(pos)
 
+      #cancelButtonHtml = ' <button id="use_anyway" type="button" class="btn btn-sm btn-warning" style="margin-left:5px">Use Anyway</button>'
+
       # The first time is usually the 'lowAccuracy' event firing, 
       # Give high accuracy time to come back instead of immediately alerting user of low accuracy success
       if @accuracy.strength == "fair" and not alertDisplayed
         alertDisplayed = true
         alertDebouncer = setTimeout (=>
           # Ask the user if they want to use the low accuracy position
-          @displayNotification "Low GPS Strength <div id='use-anyway' class='btn btn-sm btn-warning' style='margin-left:5px'>Use Anyway</div>", "alert-warning"
-          @$("#notification").on("click", "#use-anyway", usePosition)
+          useAnywayButtonHtml = ' <button id="use_anyway" type="button" class="btn btn-sm btn-default" style="margin-left:5px">Use Anyway</button>'
+          @displayNotification 'Low GPS Accuracy' + useAnywayButtonHtml, "alert-warning"
+          @$("#use_anyway").on("click", usePosition)
           return
         ), 3000
       else if @accuracy.strength == "strong"
         # Cancel the low accuracy alert
         clearTimeout alertDebouncer
         usePosition()
-      else if @accuracy.strength == "weak" and not alertDisplayed
+      else if @accuracy.strength == "weak"
         # The accuracy is undesirable
-        @settingLocation = false
-        alertDisplayed = true
         @displayNotification "Low GPS Strength. Waiting for better signal...", "alert-danger", false
         @render()
 
