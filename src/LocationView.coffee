@@ -86,15 +86,15 @@ class LocationView extends Backbone.View
     @$("#gps_strength").text @accuracy.text
 
     # Color Set button
-    @$("#location_set").removeClass("text-danger text-warning text-success").addClass(@accuracy.class);
+    @$("#location_set").removeClass("text-danger text-warning text-success").addClass(@accuracy.class)
 
   displayNotification: (message, className, shouldFadeOut) ->
     # Cancel the fadeout if timer on any preexisting alerts
-    timeout = timeout || 0;
+    timeout = timeout || 0
     clearTimeout timeout
 
     $notification = @$("#notification")
-    $notification[0].className = "alert";
+    $notification[0].className = "alert"
 
     # If it is a temporary notification setup a fadeout timer
     $notification.addClass(className).html(message).fadeIn 200, ->
@@ -146,7 +146,7 @@ class LocationView extends Backbone.View
         alertDebouncer = setTimeout (=>
           # Ask the user if they want to use the low accuracy position
           @displayNotification "Low GPS Strength <div id='use-anyway' class='btn btn-sm btn-warning' style='margin-left:5px'>Use Anyway</div>", "alert-warning"
-          @$("#notification").on("click", "#use-anyway", usePosition);
+          @$("#notification").on("click", "#use-anyway", usePosition)
           return
         ), 3000
       else if @accuracy.strength == "strong"
@@ -157,7 +157,7 @@ class LocationView extends Backbone.View
         # The accuracy is undesirable
         @settingLocation = false
         alertDisplayed = true
-        @displayNotification "Low GPS Strength - Unable to set accurate location", "alert-danger", true
+        @displayNotification "Low GPS Strength", "alert-danger", true
         @render()
 
     locationError = (err) =>
@@ -183,16 +183,16 @@ class LocationView extends Backbone.View
     if @relativeLocation and @accuracy.strength != 'weak' and @orientationFinder.active
       $sourcePointer.show()
       arrowRotation = @relativeLocation.bearing + values.normalized.alpha
-      prefixes = ["", "Webkit", "Moz", "ms", "O"];
+      prefixes = ["", "Webkit", "Moz", "ms", "O"]
       elem = $sourcePointer[0]
       prefixes.forEach (prefix) ->
-          elem.style[prefix + "Transform"] = "rotate(" + arrowRotation + "deg)";
+          elem.style[prefix + "Transform"] = "rotate(" + arrowRotation + "deg)"
     else 
       $sourcePointer.hide()
 
   locationFound: (pos) =>
     @currentLoc = @convertPosToLoc(pos)
-    @updateAccuracyStrength @currentLoc;
+    @updateAccuracyStrength @currentLoc
     @relativeLocation = getRelativeLocation @currentLoc, @loc
     @render()
 
