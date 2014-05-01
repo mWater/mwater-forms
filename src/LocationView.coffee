@@ -107,6 +107,9 @@ module.exports = class LocationView extends Backbone.View
             return
         , 3000)
 
+  clearNotification: () ->
+    $notification = @$("#notification").empty().removeClass("alert")
+
   clearLocation: ->
     @loc = null
     @trigger('locationset', null)
@@ -123,7 +126,18 @@ module.exports = class LocationView extends Backbone.View
     @settingLocation = true
     @errorFindingLocation = false
 
+    cancelButtonHtml = ' <button id="cancel_set" type="button" class="btn btn-sm btn-default" style="margin-left:5px">Cancel</button>'
+
+    cancelSetting = =>
+      @settingLocation = false
+      @clearNotification()
+      @render()
+
     locationSuccess = (pos) =>
+      # If no longer setting location, ignore
+      if not @settingLocation
+        return
+
       # Function to use the position last returned
       usePosition = => 
         # Extract location
@@ -144,25 +158,29 @@ module.exports = class LocationView extends Backbone.View
       if accuracy.strength == "fair"
         # Ask the user if they want to use the low accuracy position
         useAnywayButtonHtml = ' <button id="use_anyway" type="button" class="btn btn-sm btn-default" style="margin-left:5px">Use Anyway</button>'
-        @displayNotification 'Low GPS Accuracy' + useAnywayButtonHtml, "alert-warning"
+        @displayNotification 'Low GPS Accuracy' + useAnywayButtonHtml + cancelButtonHtml, "alert-warning"
         @$("#use_anyway").on("click", usePosition)
+        @$("#cancel_set").on("click", cancelSetting)
       else if accuracy.strength == "strong"
         usePosition()
       else if accuracy.strength == "weak"
         # The accuracy is undesirable
-        @displayNotification "Very Low GPS Accuracy. Waiting for better signal...", "alert-danger", false
+        @displayNotification "Very Low GPS Accuracy. Waiting for better signal..." + cancelButtonHtml, "alert-danger", false
+        @$("#cancel_set").on("click", cancelSetting)
         @render()
 
     locationError = (err) =>
-      # Check that location hasn't been set already
-      if @settingLocation
-        @displayNotification "Unable to set Location", "alert-danger", true
+      # If no longer setting location, ignore
+      if not @settingLocation
+        return
 
+      @displayNotification "Unable to set Location", "alert-danger", true
       @settingLocation = false
       @errorFindingLocation = true
       @render()
 
-    @displayNotification "Setting Location...", "alert-warning"
+    @displayNotification "Setting Location..." + cancelButtonHtml, "alert-warning"
+    @$("#cancel_set").on("click", cancelSetting)
 
     @locationFinder.getLocation locationSuccess, locationError
     @render()
