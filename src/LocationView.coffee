@@ -160,6 +160,7 @@ module.exports = class LocationView extends Backbone.View
 
       @settingLocation = false
       @errorFindingLocation = true
+      @render()
 
     @displayNotification "Setting Location...", "alert-warning"
 
