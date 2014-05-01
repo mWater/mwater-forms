@@ -12,14 +12,16 @@ class OrientationFinder
     @active = false
 
   startWatch: =>
-    if window.DeviceOrientationEvent and not @active
+    if window.DeviceOrientationEvent and not @listening
       window.addEventListener "deviceorientation", @orientationChange, false
+      @listening = true
     # Do not set active unless functional event arrives
 
   stopWatch: ->
     if window.DeviceOrientationEvent
       window.removeEventListener "deviceorientation", @orientationChange, false
       @active = false
+      @listening = false
 
   getNormalizerKey: (ua) ->
     userAgent = ua or window.navigator.userAgent

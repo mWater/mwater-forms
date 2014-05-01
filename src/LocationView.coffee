@@ -122,17 +122,15 @@ module.exports = class LocationView extends Backbone.View
     console.log "setting location"
     @settingLocation = true
     @errorFindingLocation = false
-    alertDebouncer = 0
-    alertDisplayed = false
 
     locationSuccess = (pos) =>
       # Function to use the position last returned
       usePosition = => 
         # Extract location
         @loc = @convertPosToLoc(pos)
+
         # Set current position
         @currentPos = pos
-        alertDisplayed = true
         @displayNotification "Location Set Successfully", "alert-success", true
         @settingLocation = false
         @errorFindingLocation = false
@@ -143,19 +141,12 @@ module.exports = class LocationView extends Backbone.View
       accuracy = getAccuracyStrength(pos)
 
       # The first time is usually the 'lowAccuracy' event firing, 
-      # Give high accuracy time to come back instead of immediately alerting user of low accuracy success
-      if accuracy.strength == "fair" and not alertDisplayed
-        alertDisplayed = true
-        alertDebouncer = setTimeout (=>
-          # Ask the user if they want to use the low accuracy position
-          useAnywayButtonHtml = ' <button id="use_anyway" type="button" class="btn btn-sm btn-default" style="margin-left:5px">Use Anyway</button>'
-          @displayNotification 'Low GPS Accuracy' + useAnywayButtonHtml, "alert-warning"
-          @$("#use_anyway").on("click", usePosition)
-          return
-        ), 3000
+      if accuracy.strength == "fair"
+        # Ask the user if they want to use the low accuracy position
+        useAnywayButtonHtml = ' <button id="use_anyway" type="button" class="btn btn-sm btn-default" style="margin-left:5px">Use Anyway</button>'
+        @displayNotification 'Low GPS Accuracy' + useAnywayButtonHtml, "alert-warning"
+        @$("#use_anyway").on("click", usePosition)
       else if accuracy.strength == "strong"
-        # Cancel the low accuracy alert
-        clearTimeout alertDebouncer
         usePosition()
       else if accuracy.strength == "weak"
         # The accuracy is undesirable
@@ -163,11 +154,12 @@ module.exports = class LocationView extends Backbone.View
         @render()
 
     locationError = (err) =>
+      # Check that location hasn't been set already
+      if @settingLocation
+        @displayNotification "Unable to set Location", "alert-danger", true
+
       @settingLocation = false
       @errorFindingLocation = true
-      # Verify the low accuracy attempt hasn't already succeeded and alerted the user
-      if not alertDisplayed
-        @displayNotification "Unable to set Location", "alert-danger", true
 
     @displayNotification "Setting Location...", "alert-warning"
 
