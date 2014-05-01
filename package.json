@@ -32,13 +32,18 @@
     "lodash": "~2.4.1"
   },
   "devDependencies": {
-    "sinon": "~1.8.2",
-    "grunt": "~0.4.4",
-    "grunt-contrib-copy": "~0.5.0",
-    "grunt-contrib-coffee": "^0.10.1",
-    "vinyl-source-stream": "~0.1.1",
+    "browserify": "^3.44.2",
     "express": "~3.5.1",
+    "grunt": "~0.4.4",
+    "grunt-contrib-coffee": "^0.10.1",
+    "grunt-contrib-copy": "~0.5.0",
+    "gulp": "^3.6.2",
+    "gulp-coffee": "^1.4.2",
+    "gulp-concat": "^2.2.0",
     "gulp-open": "~0.2.8",
-    "ngrok": "~0.1.92"
+    "gulp-util": "^2.2.14",
+    "ngrok": "~0.1.92",
+    "sinon": "~1.8.2",
+    "vinyl-source-stream": "~0.1.1"
   }
 }

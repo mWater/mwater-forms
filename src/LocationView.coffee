@@ -85,9 +85,6 @@ class LocationView extends Backbone.View
     @$("#gps_strength")[0].className = @accuracy.class
     @$("#gps_strength").text @accuracy.text
 
-    # Color Set button
-    @$("#location_set").removeClass("text-danger text-warning text-success").addClass(@accuracy.class)
-
   displayNotification: (message, className, shouldFadeOut) ->
     # Cancel the fadeout if timer on any preexisting alerts
     timeout = timeout || 0
@@ -157,7 +154,7 @@ class LocationView extends Backbone.View
         # The accuracy is undesirable
         @settingLocation = false
         alertDisplayed = true
-        @displayNotification "Low GPS Strength", "alert-danger", true
+        @displayNotification "Low GPS Strength. Waiting for better signal", "alert-danger", false
         @render()
 
     locationError = (err) =>
