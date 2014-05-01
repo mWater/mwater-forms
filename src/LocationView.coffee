@@ -102,8 +102,10 @@ class LocationView extends Backbone.View
         , 3000)
 
   clearLocation: ->
+    @loc = null
     @relativeLocation = getRelativeLocation @currentLoc, @loc
     @trigger('locationset', null)
+    @render()
  
   # Takes out relevant coords from html5 position
   convertPosToLoc: (pos) ->
@@ -238,6 +240,9 @@ class LocationView extends Backbone.View
 module.exports = LocationView
 
 getRelativeLocation = (from, to) ->
+  if not from or not to
+    return null
+
   x1 = from.longitude
   y1 = from.latitude
   x2 = to.longitude
