@@ -14,7 +14,7 @@ class OrientationFinder
   startWatch: =>
     if window.DeviceOrientationEvent and not @active
       window.addEventListener "deviceorientation", @orientationChange, false
-      @active = true
+    # Do not set active unless functional event arrives
 
   stopWatch: ->
     if window.DeviceOrientationEvent
@@ -92,7 +92,11 @@ class OrientationFinder
 
   # Normalize based on user agent
   orientationChange: (e, ua) =>
-    if e.alpha == null then @active = false
+    if e.alpha == null 
+      @active = false
+      return
+
+    @active = true
     normalizerKey = @getNormalizerKey ua
     normalizedValues = @normalize normalizerKey, e
     
