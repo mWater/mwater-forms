@@ -40,6 +40,8 @@ describe 'LocationView', ->
 
       assert.equal setPos.latitude, 2
 
+    it 'allows cancelling setting location'
+
     it 'Displays error', ->
       @locationFinder.getLocation = (success, error) =>
         error()
