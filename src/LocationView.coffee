@@ -144,6 +144,7 @@ class LocationView extends Backbone.View
 
       # The first time is usually the 'lowAccuracy' event firing, 
       # Give high accuracy time to come back instead of immediately alerting user of low accuracy success
+      console.dir @accuracy
       if @accuracy.strength == "fair" and not alertDisplayed
         alertDisplayed = true
         alertDebouncer = setTimeout (=>
@@ -235,8 +236,12 @@ class LocationView extends Backbone.View
     @$("#location_edit_controls").slideUp() 
 
   updateAccuracyStrength: (pos) =>
-    if not (pos and pos.accuracy) then @accuracy = { color: "red", class: "text-danger", strength: "weak", text: "Waiting for GPS..." }
-    else if pos.accuracy > 50 then @accuracy = { color: "red", class: "text-danger", strength: "weak", text: "Waiting for GPS..." }
+    if not (pos and pos.accuracy) then 
+      @accuracy = { color: "red", class: "text-danger", strength: "weak", text: "Waiting for GPS..." }
+      return
+
+    # Calculate age
+    if pos.accuracy > 50 then @accuracy = { color: "red", class: "text-danger", strength: "weak", text: "Waiting for GPS..." }
     else if pos.accuracy > 10 then @accuracy = { color: "yellow", class: "text-warning", strength: "fair", text: "Low accuracy GPS"}
     else @accuracy = { color: "green", class: "text-success", strength: "strong", text: "GPS Acquired" }
 
@@ -266,9 +271,9 @@ getRelativeLocation = (from, to) ->
   compassStrs = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
 
   if dist > 1000
-    distance = (dist / 1000).toFixed(1) + " km "
+    distance = (dist / 1000).toFixed(1) + " km"
   else
-    distance = (dist).toFixed(0) + " m "
+    distance = (dist).toFixed(0) + " m"
 
   return {
     distance: distance,

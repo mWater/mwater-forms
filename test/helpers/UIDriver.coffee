@@ -28,6 +28,9 @@ class UIDriver
   text: ->
     return @el.text()
       
+  html: ->
+    return @el.html()
+    
   wait: (after) ->
     setTimeout after, 10
 
