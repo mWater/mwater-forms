@@ -46,7 +46,7 @@ module.exports = class ImagesQuestion extends Question
     # Call imageAcquirer
     @ctx.imageAcquirer.acquire (id) =>
       # Add to model
-      images = @model.get(@id) || []
+      images = @getAnswerValue() || []
 
       # Make copy to force a model change
       images = images.slice(0)
@@ -60,7 +60,7 @@ module.exports = class ImagesQuestion extends Question
     # Create onRemove callback if not readonly
     if not @options.readonly
       remove = () => 
-        images = @model.get(@id) || []
+        images = @getAnswerValue() || []
         images = _.reject images, (img) =>
           img.id == id
         @setAnswerValue(images)
