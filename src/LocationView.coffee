@@ -54,7 +54,7 @@ module.exports = class LocationView extends Backbone.View
   render: ->
     # Set location string
     if @errorFindingLocation
-      @$("#location_relative").text("Cannot find location")
+      @$("#location_relative").text("GPS not available")
     else if not @loc and not @settingLocation 
       @$("#location_relative").text("Unspecified location")
     else if @settingLocation
@@ -159,7 +159,7 @@ module.exports = class LocationView extends Backbone.View
         usePosition()
       else if accuracy.strength == "weak"
         # The accuracy is undesirable
-        @displayNotification "Low GPS Strength. Waiting for better signal...", "alert-danger", false
+        @displayNotification "Very Low GPS Accuracy. Waiting for better signal...", "alert-danger", false
         @render()
 
     locationError = (err) =>
