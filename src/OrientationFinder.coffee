@@ -14,7 +14,7 @@ class OrientationFinder
   startWatch: =>
     if window.DeviceOrientationEvent and not @active
       window.addEventListener "deviceorientation", @orientationChange, false
-      @active = true;
+      @active = true
 
   stopWatch: ->
     if window.DeviceOrientationEvent
@@ -48,14 +48,14 @@ class OrientationFinder
       # Firefox rotates counter clockwise
       firefox: (e) =>
         normalized = @cloneEvent e
-        normalized.alpha = normalized.alpha * -1;
+        normalized.alpha = normalized.alpha * -1
         normalized.alpha = normalized.alpha - ( window.orientation or 0)
         return normalized
 
       # Android stock starts facing West
       android_stock: (e) =>
         normalized = @cloneEvent e
-        normalized.alpha = (normalized.alpha + 270) % 360;
+        normalized.alpha = (normalized.alpha + 270) % 360
         normalized.alpha = normalized.alpha - ( window.orientation or 0)
         return normalized
 
@@ -73,19 +73,19 @@ class OrientationFinder
 
       # IOS uses a custom property and rotates counter clockwise
       ios: (e) =>
-        normalized = @cloneEvent e;
+        normalized = @cloneEvent e
         # Use the custom IOS property otherwise it will be relative
         if e.webkitCompassHeading
-          normalized.alpha = e.webkitCompassHeading;
+          normalized.alpha = e.webkitCompassHeading
 
         # IOS is counter clockwise
-        normalized.alpha = (normalized.alpha * -1) - ( window.orientation or 0);
+        normalized.alpha = (normalized.alpha * -1) - ( window.orientation or 0)
         return normalized
 
       # Fall through to normalize based on Chrome Desktop
       unknown: (e) =>
         normalized = @cloneEvent e
-        normalized.alpha = normalized.alpha * -1;
+        normalized.alpha = normalized.alpha * -1
         return normalized
     }
     return normalizers[key](eventData)
@@ -103,4 +103,4 @@ class OrientationFinder
       normalized: normalizedValues
     }
 
-module.exports = OrientationFinder;
+module.exports = OrientationFinder
