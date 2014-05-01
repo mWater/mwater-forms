@@ -13,7 +13,7 @@ module.exports = class MulticheckQuestion extends Question
     opts = @options.choices
     $(e.currentTarget).toggleClass("checked")
 
-    @$(".touch-checkbox").each (index, el) ->
+    @$(".choice").each (index, el) ->
       pos = parseInt($(el).data("value"))
       if $(this).hasClass("checked")
         value.push opts[pos].id

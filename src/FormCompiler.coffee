@@ -197,6 +197,7 @@ module.exports = class FormCompiler
         return new NumberQuestion(options)
       when "RadioQuestion"
         options.choices = @compileChoices(q.choices)
+        options.radioAlternates = true  # Use radio button
         return new RadioQuestion(options)
       when "DropdownQuestion"
         options.choices = @compileChoices(q.choices)

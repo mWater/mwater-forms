@@ -5,6 +5,17 @@ LocationFinder = require './LocationFinder'
 
 # Question types are subclasses that implement renderAnswer and updateAnswer
 # See methods for more detail
+# Common options include:
+# radioAlternates: true to use radio buttons for alternates, not checkboxes
+# alternates: array of {id: id of alternate, label: label of alternate}
+# required: true to make question required
+# conditional: function to determine visibility. Passed model
+# style: optional style of question. Default is default which maps to .question-default
+# validate: custom validation function
+# commentsField: true to include comment field
+# recordTimestamp: true to record timestamp when completed
+# recordLocation: true to record location when completed
+# ctx: context of question. See Forms Context.md docs.
 module.exports = class Question extends Backbone.View
   className: "question"
 
