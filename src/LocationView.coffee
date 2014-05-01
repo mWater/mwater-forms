@@ -6,8 +6,10 @@ _ = require 'underscore'
 
 # Shows the relative location of a point and allows setting it
 # Fires events locationset, map, both with 
+# options loc is initial location. (latitude, longitude, accuracy, etc.)
 # options readonly makes it non-editable
 # options hideMap is true to hide map
+# options disableMap is true to disable map
 # options locationFinder overrides default LocationFinder
 # Location is stored format { latitude, longitude, accuracy, altitude?, altitudeAccuracy? }
 module.exports = class LocationView extends Backbone.View
@@ -186,13 +188,19 @@ module.exports = class LocationView extends Backbone.View
     @render()
 
   compassChange: (values) =>
+    if not @currentPos or not @loc
+      return
+
     accuracy = getAccuracyStrength @currentPos
+    $sourcePointer = @$("#source_pointer .glyphicon")
+
+    # Calculate relative location
+    relativeLocation = getRelativeLocation @currentPos.coords, @loc
 
     # Only display the compass if we can accurately calculate relative direction
-    $sourcePointer = @$("#source_pointer .glyphicon")
-    if @relativeLocation and accuracy.strength != 'weak' and @orientationFinder.active
+    if relativeLocation and accuracy.strength != 'weak' and @orientationFinder.active
       $sourcePointer.show()
-      arrowRotation = @relativeLocation.bearing + values.normalized.alpha
+      arrowRotation = relativeLocation.bearing + values.normalized.alpha
       prefixes = ["", "Webkit", "Moz", "ms", "O"]
       elem = $sourcePointer[0]
       prefixes.forEach (prefix) ->
