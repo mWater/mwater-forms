@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+<head>
+	<title>Compass Demo</title>
+	<script src="jquery.min.js"></script>
+	<script src='OrientationPublisher.js'></script>
+	<script src='jquery.compass.js'></script>
+	<style>
+	.compass {
+		transform-origin: 50% 50%;
+		-webkit-transform-origin: 50% 50%;
+		-moz-transform-origin: 50% 50%;
+	}
+	#sourcePointer {
+		width: 100px;
+	}
+	#compass {
+		width:300px;
+	}
+	.compass img {
+		width:100%;
+	}
+	</style>
+</head>
+<body>
+	<div class='compass' id='compass'>
+		<img src='compass.png' />
+	</div>
+
+<!-- 	<div class='compass' id='sourcePointer'>
+		<img src='arrow.png' />
+	</div> -->
+	<div id='errors' style='color:#d11; font-size:1.5em'>
+		<ul></ul>
+	</div>
+	<div style='margin-top: 30px'>
+		<h1>Orientation: <span id='orientation'></span></h1>
+		<h1>Alpha: <span id='alpha'></span></h1>
+		<h1>Beta: <span id='beta'></span></h1>
+		<h1>Gamma: <span id='gamma'></span></h1>
+		<h1>Absolute: <span id='absolute'></span></h1>
+		<h3>Normalization Key: <span id='key'></span></h3>
+		<h3>User Agent: <br/><span id='user-agent'></span></h3>
+	</div>
+	<script>
+	window.onerror = function(msg, url, lineNumber) {
+		$("#errors ul").append("<li>" + msg + "</li>");
+	}
+	if (!window.DeviceOrientationEvent) {
+		throw new Error ("Device Orientation is not supported");
+	}
+	$("#compass").compass();
+	// $("#sourcePointer").compass({ sourceBearing: 270 });
+
+
+
+	$(document).on("orientationChange", function (e, values) {
+		$("#orientation").text(values.orientation);
+		$("#alpha").text(values.raw.alpha);
+		$("#beta").text(values.raw.beta);
+		$("#gamma").text(values.raw.gamma);
+		$("#absolute").text(values.raw.absolute);
+		$("#key").text(values.normalizerKey);
+		$("#user-agent").text(window.navigator.userAgent);
+	});
+
+	throw new Error ("Errors look like this");
+
+	</script>
+</body>
+</html>
+
+
