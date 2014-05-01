@@ -142,8 +142,6 @@ class LocationView extends Backbone.View
 
       @updateAccuracyStrength @convertPosToLoc(pos)
 
-      #cancelButtonHtml = ' <button id="use_anyway" type="button" class="btn btn-sm btn-warning" style="margin-left:5px">Use Anyway</button>'
-
       # The first time is usually the 'lowAccuracy' event firing, 
       # Give high accuracy time to come back instead of immediately alerting user of low accuracy success
       if @accuracy.strength == "fair" and not alertDisplayed
