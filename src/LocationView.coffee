@@ -89,9 +89,12 @@ module.exports = class LocationView extends Backbone.View
     # Disable edit if readonly
     @$("#location_edit").attr("disabled", @readonly)
 
-    accuracy = getAccuracyStrength @currentPos
-    @$("#gps_strength")[0].className = accuracy.class
-    @$("#gps_strength").text accuracy.text
+    if @loc or @settingLocation
+      accuracy = getAccuracyStrength @currentPos
+      @$("#gps_strength")[0].className = accuracy.class
+      @$("#gps_strength").text accuracy.text
+    else
+      @$("#gps_strength").text ""
 
   displayNotification: (message, className, shouldFadeOut) ->
     # Cancel the fadeout if timer on any preexisting alerts
