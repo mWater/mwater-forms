@@ -3,6 +3,6 @@ var app = express();
 
 app.use(express.static(__dirname));
 
-app.listen(8080, function() {
-	console.log("On port 8080");
+app.listen(8082, function() {
+	console.log("On port 8082");
 });

@@ -22,14 +22,14 @@ module.exports = class LocationView extends Backbone.View
     @settingLocation = false
     @locationFinder = options.locationFinder || new LocationFinder()
     @orientationFinder = options.orientationFinder || new OrientationFinder()
-    @orientationFinder.startWatch()
+    #@orientationFinder.startWatch() TODO reenable some day
 
     # Listen to location events
     @listenTo(@locationFinder, 'found', @locationFound)
     @listenTo(@locationFinder, 'error', @locationError)
 
-    # Listen to device orientation events
-    @listenTo(@orientationFinder, 'orientationChange', @compassChange)
+    # Listen to device orientation events TODO reenable some day
+    #@listenTo(@orientationFinder, 'orientationChange', @compassChange)
 
     # Start tracking location if set
     if @loc
