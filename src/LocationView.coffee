@@ -64,7 +64,7 @@ class LocationView extends Backbone.View
       @$("#location_relative").text("")
 
     if @loc and not @settingLocation
-      @$("#location_absolute").text("#{this.loc.latitude.toFixed(6)}, #{this.loc.longitude.toFixed(6)}")
+      @$("#location_absolute").text("Latitude: #{this.loc.latitude.toFixed(6)}, Longitude: #{this.loc.longitude.toFixed(6)}")
     else
       @$("#location_absolute").text("")
 
@@ -154,7 +154,7 @@ class LocationView extends Backbone.View
         # The accuracy is undesirable
         @settingLocation = false
         alertDisplayed = true
-        @displayNotification "Low GPS Strength. Waiting for better signal", "alert-danger", false
+        @displayNotification "Low GPS Strength. Waiting for better signal...", "alert-danger", false
         @render()
 
     locationError = (err) =>
@@ -258,9 +258,9 @@ getRelativeLocation = (from, to) ->
   compassStrs = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
 
   if dist > 1000
-    distance = (dist / 1000).toFixed(1) + "km "
+    distance = (dist / 1000).toFixed(1) + " km "
   else
-    distance = (dist).toFixed(0) + "m "
+    distance = (dist).toFixed(0) + " m "
 
   return {
     distance: distance,
