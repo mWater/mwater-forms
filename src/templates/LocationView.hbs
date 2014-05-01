@@ -1,24 +1,28 @@
-<div class='row'>
-  <div class='col-xs-7 row toolbar'>
-    <div class='row'>
-      <div class='col-xs-6'><button id="location_set" class="btn"><span class="glyphicon glyphicon-screenshot"></span> Set</button></div>
-      <div class='col-xs-6'><button id="location_clear" class="btn btn-default"><span class="glyphicon glyphicon-remove"></span> Clear</button></div>
-    </div>
-    <div class='row'>
-      <div class='col-xs-6'><button id="location_map" class="btn btn-default"><span class="glyphicon glyphicon-map-marker"></span> Map</button></div>
-      <div class='col-xs-6'><button id="location_edit" class="btn btn-default"><span class="glyphicon glyphicon-edit"></span> Edit</button></div>
-    </div>
-  </div>
-  <div class='col-xs-5'>
-    <div id='source_pointer'><span class='glyphicon glyphicon-arrow-up' style='display:none'><span></div>
-    <div id='location_relative'></div>
-    <div id='gps_strength'></div>
-  </div>
-</div>
-<div class='row'>
-  <div id='location_absolute' class='col-xs-7 text-muted'></div>
-</div>
-<div id='notification' class='alert' style='display: none'></div>
+<table class="table-noborder">
+  <tr>
+    <td class="toolbar">
+      <button id="location_set" class="btn"><span class="glyphicon glyphicon-screenshot"></span> Set</button>
+    </td>
+    <td class="toolbar">
+      <button id="location_clear" class="btn btn-default"><span class="glyphicon glyphicon-remove"></span> Clear</button>
+    </td>
+    <td rowspan="2">
+      <div id="source_pointer"><span class="glyphicon glyphicon-arrow-up" style="display:none"><span></div>
+      <div id="location_relative"></div>
+      <div id="gps_strength"></div>
+    </td>
+  </tr>
+  <tr>
+    <td class="toolbar">
+      <button id="location_map" class="btn btn-default"><span class="glyphicon glyphicon-map-marker"></span> Map</button>
+    </td>
+    <td class="toolbar">
+      <button id="location_edit" class="btn btn-default"><span class="glyphicon glyphicon-edit"></span> Edit</button>
+    </td>
+  </tr>
+</table>
+<div id="location_absolute" class="text-muted"></div>
+<div id="notification" class="alert" style="display: none"></div>
 <div id="location_edit_controls" class="form" style="margin-top: 5px; display:none;">
   <div class="form-group">
     <label for="latitude">Latitude</label>
@@ -40,11 +44,15 @@
   line-height: .8;
   padding-top: 5px;
 }
-.row {
-  margin:0;
+.table-noborder {
+  width: 100%;
 }
-.row.toolbar {
-  padding: 0;
+.table-noborder td {
+  padding: 5px;
+}
+
+.toolbar {
+  width: 30px;
 }
 .toolbar .btn {
   margin:0;

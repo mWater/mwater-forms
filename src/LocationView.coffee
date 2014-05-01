@@ -160,7 +160,7 @@ module.exports = class LocationView extends Backbone.View
       if accuracy.strength == "fair"
         # Ask the user if they want to use the low accuracy position
         useAnywayButtonHtml = ' <button id="use_anyway" type="button" class="btn btn-sm btn-default" style="margin-left:5px">Use Anyway</button>'
-        @displayNotification 'Low GPS Accuracy' + useAnywayButtonHtml + cancelButtonHtml, "alert-warning"
+        @displayNotification 'Low GPS Accuracy ' + useAnywayButtonHtml + cancelButtonHtml, "alert-warning"
         @$("#use_anyway").on("click", usePosition)
         @$("#cancel_set").on("click", cancelSetting)
       else if accuracy.strength == "strong"
@@ -260,7 +260,7 @@ getAccuracyStrength = (pos) =>
   if pos.coords.accuracy > 50 or age > 30*1000
     return { color: "red", class: "text-danger", strength: "weak", text: "Waiting for GPS..." }
   else if pos.coords.accuracy > 10 
-    return { color: "yellow", class: "text-warning", strength: "fair", text: "Low accuracy GPS"}
+    return { color: "yellow", class: "text-warning", strength: "fair", text: "Low accuracy GPS ±" + pos.coords.accuracy.toFixed(0) + "m"}
   else 
     return { color: "green", class: "text-success", strength: "strong", text: "GPS Acquired" }
 
