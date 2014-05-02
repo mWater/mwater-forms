@@ -11,3 +11,10 @@ Fields:
 * **_type**: "Form" 
 
 
+## Questions
+
+Fields:
+* **_type**: "[specific-type]Question"
+* **recordTimestamp**: true to record time when question was answered in timestamp field
+* **recordLocation**: true to record location where question was answered in location field (latitude:..., longitude:..., etc.)
+* **sticky**: true to re-use answer on next response by default

@@ -24,6 +24,9 @@ Sections = require './Sections'
 FormView = require './FormView'
 FormControls = require './FormControls'
 
+# Compiles from Form JSON to a form control. 
+# Constructor must be passed 'model': <Backbone.Model> to use for storing responses
+# 'locale' is an option to constructor too (e.g. "en")
 module.exports = class FormCompiler
   constructor: (options) ->
     @model = options.model
@@ -172,6 +175,7 @@ module.exports = class FormCompiler
       commentsField: q.commentsField
       recordTimestamp: q.recordTimestamp
       recordLocation: q.recordLocation
+      sticky: q.sticky
       validate: =>
         # Get answer
         answer = @model.get(q._id)

@@ -122,3 +122,33 @@ describe "TextQuestion", ->
     # Add input
     @qview.$el.find("input").val("response").change()
     assert not @model.get("q1234").alternate
+
+  it "is sticky", ->
+    @q.sticky = true
+    data = {}
+    ctx = {
+      stickyStorage: {
+        get: (key) ->
+          return data[key]
+        set: (key, value) ->
+          data[key] = value
+      }
+    }
+
+    # Compile question and set value
+    qview = @compiler.compileQuestion(@q, ctx).render()
+    qview.$el.find("input").val("response").change()
+
+    # Check that stored
+    assert.equal data[@q._id], "response"
+
+    # Create new model
+    model = new Backbone.Model()
+    compiler = new FormCompiler(model: model, locale: "es")
+
+    # Compile fresh question and make sure that answer is pre-loaded
+    qview = compiler.compileQuestion(@q, ctx).render()
+    assert.equal qview.$el.find("input").val(), "response"
+
+    # Make sure stored in model
+    assert.equal model.get(@q._id).value, "response"

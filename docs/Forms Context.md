@@ -40,3 +40,9 @@ Used by LocationQuestion
 
 Function which takes location object ( latitude, longitude, accuracy, altitude?, altitudeAccuracy? )
 Opens a map to the location
+
+## stickyStorage
+
+Stores key-value pairs for sticky questions. Object with two functions:
+get(keyname) : gets object stored under keyname. null/undefined if none
+set(keyname, value) : saves object as keyname

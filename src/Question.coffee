@@ -41,6 +41,13 @@ module.exports = class Question extends Backbone.View
     
     # Save context
     @ctx = @options.ctx or {}
+
+    # If sticky, set initial value
+    if @options.sticky and @ctx.stickyStorage
+      value = @ctx.stickyStorage.get(@id)
+      if value?
+        @setAnswerField("value", value)
+
     @render()
 
     # Listen to comment changes 
@@ -183,6 +190,10 @@ module.exports = class Question extends Backbone.View
       locationFinder.getLocation (loc) =>
         if loc?
           @setAnswerField('location', loc.coords)
+
+    # If sticky, save value
+    if @options.sticky and @ctx.stickyStorage
+      @ctx.stickyStorage.set(@id, val)
 
   # Gets answer field in the model
   getAnswerField: (field) ->

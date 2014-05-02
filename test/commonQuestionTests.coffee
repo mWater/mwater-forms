@@ -71,8 +71,6 @@ module.exports = ->
       @qview.setAnswerValue(null)
       assert.deepEqual @model.get("q1234").location, { latitude: 2, longitude: 3, accuracy: 10}
 
-    it "is sticky"
-
     it "records alternate na", ->
       @q.alternates = {na: true}
       @qview = @compiler.compileQuestion(@q).render()
