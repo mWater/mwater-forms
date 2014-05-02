@@ -12,7 +12,7 @@ module.exports = class ImagesQuestion extends Question
   updateAnswer: (answerEl) ->
     # Render image using image manager
     if not @ctx.imageManager
-      answerEl.html '''<div class="text-danger">Images not available</div>'''
+      answerEl.html '''<div class="text-warning">Images not available on this platform</div>'''
     else
       images = @getAnswerValue()
 

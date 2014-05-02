@@ -12,14 +12,12 @@ var DEMO_PAGE = "/demo/demo.html";
 // Compilation
 gulp.task('coffee', function() {
 	gulp.src('./src/*.coffee')
-		.pipe(coffee({
-			bare: true
-		}).on('error', gutil.log))
+		.pipe(coffee({ bare: true }).on('error', gutil.log))
 		.pipe(gulp.dest('./lib/'));
 });
 
 gulp.task('copy', function() {
-	gulp.src(['./src/**/*.js', './src/*.css', './src/**/*.hbs'])
+	gulp.src(['./src/**/*.js', './src/**/*.css', './src/**/*.hbs'])
 		.pipe(gulp.dest('./lib/'));
 });
 
