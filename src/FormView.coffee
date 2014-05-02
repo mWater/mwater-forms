@@ -35,7 +35,7 @@ module.exports = class FormView extends Backbone.View
     @model.clear()
 
     # Apply defaults 
-    @model.set(_.defaults(_.cloneDeep(data || {}), @options.defaults || {}))
+    @model.set(_.cloneDeep(data))
 
   save: ->
     return @model.toJSON()
