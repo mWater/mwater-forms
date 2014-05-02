@@ -152,3 +152,24 @@ describe "TextQuestion", ->
 
     # Make sure stored in model
     assert.equal model.get(@q._id).value, "response"
+
+  it "sticky doesn't override value", ->
+    @q.sticky = true
+    data = {}
+    ctx = {
+      stickyStorage: {
+        get: (key) ->
+          return data[key]
+        set: (key, value) ->
+          data[key] = value
+      }
+    }
+    data[@q._id] = "stored"
+    @model.set(@q._id, { value: "model" })
+
+    # Compile question and set value
+    qview = @compiler.compileQuestion(@q, ctx).render()
+    assert.equal qview.$el.find("input").val(), "model"
+
+    # Make sure stored in model
+    assert.equal @model.get(@q._id).value, "model"

@@ -43,7 +43,7 @@ module.exports = class Question extends Backbone.View
     @ctx = @options.ctx or {}
 
     # If sticky, set initial value
-    if @options.sticky and @ctx.stickyStorage
+    if @options.sticky and @ctx.stickyStorage and not @model.get(@id)?
       value = @ctx.stickyStorage.get(@id)
       if value?
         @setAnswerField("value", value)
