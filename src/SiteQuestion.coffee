@@ -16,18 +16,20 @@ module.exports = class SiteQuestion extends Question
       @$("#select").attr("disabled", "disabled")
 
   updateAnswer: (answerEl) ->
-    answerEl.find("input").val @getAnswerValue()
+    val = @getAnswerValue()
+    if val then val = val.code
+    answerEl.find("input").val val
 
   events:
     'change' : 'changed'
     'click #select' : 'selectSite'
 
   changed: ->
-    @setAnswerValue(@$("input").val())
+    @setAnswerValue(code: @$("input").val())
 
   selectSite: ->
     @ctx.selectSite (siteCode)=>
-      @setAnswerValue(siteCode)
+      @setAnswerValue(code: siteCode)
 
   validateInternal: ->
     if not @$("input").val()

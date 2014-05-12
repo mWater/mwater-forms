@@ -9,7 +9,7 @@ describe "SiteQuestion", ->
   beforeEach ->
     @ctx = {
       selectSite: (success) ->
-        success(10014)
+        success("10014")
     }
 
     @model = new Backbone.Model()
@@ -26,14 +26,14 @@ describe "SiteQuestion", ->
 
   it "allows valid site codes", ->
     @qview.$el.find("input").val("10007").change()
-    assert.equal @model.get("q1234").value, "10007"
+    assert.deepEqual @model.get("q1234").value, { code: "10007" }
     assert not @qview.validate()
 
   it "rejects invalid site codes", ->
     @qview.$el.find("input").val("10008").change()
-    assert.equal @model.get("q1234").value, "10008"
+    assert.deepEqual @model.get("q1234").value, { code: "10008" }
     assert @qview.validate()
 
   it "calls selectSite", ->
     @qview.$el.find("#select").click()
-    assert.equal @model.get("q1234").value, "10014"
+    assert.deepEqual @model.get("q1234").value, { code: "10014" }
