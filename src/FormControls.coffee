@@ -1,5 +1,6 @@
 Backbone = require 'backbone'
 _ = require 'underscore'
+ezlocalize = require 'ez-localize'
 
 # Displays form controls (Save, Complete, Discard)
 module.exports = class FormControls extends Backbone.View
@@ -9,6 +10,10 @@ module.exports = class FormControls extends Backbone.View
     # Save options
     @options = options or {}
     @contents = @options.contents
+
+    # Save T
+    @T = options.T or ezlocalize.defaultT
+    
     @render()
 
   events:
