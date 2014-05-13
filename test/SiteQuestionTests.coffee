@@ -13,13 +13,13 @@ describe "SiteQuestion", ->
     }
 
     @model = new Backbone.Model()
-    @compiler = new FormCompiler(model: @model, locale: "es")
+    @compiler = new FormCompiler(model: @model, locale: "es", ctx: @ctx)
     @q = {
       _id: "q1234"
       _type: "SiteQuestion"
       text: { _base: "en", en: "English", es: "Spanish" }
     }
-    @qview = @compiler.compileQuestion(@q, @ctx).render()
+    @qview = @compiler.compileQuestion(@q).render()
 
   # Run common tests
   commonQuestionTests.call(this)

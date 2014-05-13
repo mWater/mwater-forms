@@ -2,6 +2,7 @@ _ = require 'underscore'
 Backbone = require 'backbone'
 chai = require 'chai'
 assert = require('chai').assert
+FormCompiler = require '../src/FormCompiler'
 
 # Tests that should run on all questions
 # Assumes question is @q and compiler is @compiler
@@ -66,7 +67,8 @@ module.exports = ->
       ctx.locationFinder.getLocation = (success, error) =>
         success({ coords: { latitude: 2, longitude: 3, accuracy: 10}})
 
-      @qview = @compiler.compileQuestion(@q, ctx).render()
+      @compiler = new FormCompiler(model: @model, locale: "es", ctx: ctx)
+      @qview = @compiler.compileQuestion(@q).render()
 
       @qview.setAnswerValue(null)
       assert.deepEqual @model.get("q1234").location, { latitude: 2, longitude: 3, accuracy: 10}

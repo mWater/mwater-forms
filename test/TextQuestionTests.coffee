@@ -136,7 +136,8 @@ describe "TextQuestion", ->
     }
 
     # Compile question and set value
-    qview = @compiler.compileQuestion(@q, ctx).render()
+    @compiler = new FormCompiler(model: @model, locale: "es", ctx: ctx)
+    qview = @compiler.compileQuestion(@q).render()
     qview.$el.find("input").val("response").change()
 
     # Check that stored
@@ -144,10 +145,10 @@ describe "TextQuestion", ->
 
     # Create new model
     model = new Backbone.Model()
-    compiler = new FormCompiler(model: model, locale: "es")
+    compiler = new FormCompiler(model: model, locale: "es", ctx: ctx)
 
     # Compile fresh question and make sure that answer is pre-loaded
-    qview = compiler.compileQuestion(@q, ctx).render()
+    qview = compiler.compileQuestion(@q).render()
     assert.equal qview.$el.find("input").val(), "response"
 
     # Make sure stored in model
@@ -168,7 +169,8 @@ describe "TextQuestion", ->
     @model.set(@q._id, { value: "model" })
 
     # Compile question and set value
-    qview = @compiler.compileQuestion(@q, ctx).render()
+    @compiler = new FormCompiler(model: @model, locale: "es", ctx: ctx)
+    qview = @compiler.compileQuestion(@q).render()
     assert.equal qview.$el.find("input").val(), "model"
 
     # Make sure stored in model

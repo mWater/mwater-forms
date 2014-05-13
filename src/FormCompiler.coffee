@@ -25,12 +25,15 @@ FormView = require './FormView'
 FormControls = require './FormControls'
 
 # Compiles from Form JSON to a form control. 
-# Constructor must be passed 'model': <Backbone.Model> to use for storing responses
-# 'locale' is an option to constructor too (e.g. "en")
+# Constructor must be passed:
+# 'model': <Backbone.Model> to use for storing responses
+# 'locale': optional locale to use (e.g. "en")
+# 'ctx': context for forms. See docs/Forms Context.md
 module.exports = class FormCompiler
   constructor: (options) ->
     @model = options.model
-    @locale = options.locale
+    @locale = options.locale or "en"
+    @ctx = options.ctx or {}
 
   compileString: (str) =>
     # If no base or null, return null
@@ -161,7 +164,7 @@ module.exports = class FormCompiler
       return true
 
   # Compile a question with the given form context
-  compileQuestion: (q, ctx={}) =>
+  compileQuestion: (q) =>
     # Compile validations
     compiledValidations = @compileValidations(q.validations)
 
@@ -181,7 +184,7 @@ module.exports = class FormCompiler
         answer = @model.get(q._id)
         return compiledValidations(answer)
       conditional: if q.conditions and q.conditions.length > 0 then @compileConditions(q.conditions)
-      ctx: ctx
+      ctx: @ctx
     }
     
     # Add alternates
@@ -234,33 +237,33 @@ module.exports = class FormCompiler
 
     throw new Error("Unknown question type")
 
-  compileInstructions: (item, ctx={}) =>
+  compileInstructions: (item) =>
     options = {
       model: @model
       id: item._id
       html: if @compileString(item.text) then markdown.toHTML(@compileString(item.text))
       conditional: if item.conditions and item.conditions.length > 0 then @compileConditions(item.conditions)
-      ctx: ctx
+      ctx: @ctx
     }
     return new Instructions(options)
 
-  compileItem: (item, ctx={}) =>
+  compileItem: (item) =>
     if formUtils.isQuestion(item)
-      return @compileQuestion(item, ctx)
+      return @compileQuestion(item, @ctx)
 
     if item._type == "Instructions"
-      return @compileInstructions(item, ctx)
+      return @compileInstructions(item, @ctx)
 
     throw new Error("Unknown item type: " + item._type)
 
-  compileSection: (section, ctx={}) =>
+  compileSection: (section) =>
     # Compile contents
-    contents = _.map section.contents, (item) => @compileItem(item, ctx)
+    contents = _.map section.contents, (item) => @compileItem(item, @ctx)
 
     options = {
       model: @model
       id: section._id
-      ctx: ctx
+      ctx: @ctx
       name: @compileString(section.name)
       contents: contents
       conditional: if section.conditions and section.conditions.length > 0 then @compileConditions(section.conditions)
@@ -268,34 +271,34 @@ module.exports = class FormCompiler
 
     return new Section(options)
 
-  compileForm: (form, ctx={}) ->
+  compileForm: (form) ->
     # Compile contents
     if formUtils.isSectioned(form) 
       # Compile sections
-      sections = _.map form.contents, (item) => @compileSection(item, ctx)
+      sections = _.map form.contents, (item) => @compileSection(item, @ctx)
 
       # Create Sections view
       sectionsView = new Sections({ 
         sections: sections
         model: @model
-        ctx: ctx
+        ctx: @ctx
       })
       contents = [sectionsView]
 
     else
       # Compile into FormControls
-      contents = _.map form.contents, (item) => @compileItem(item, ctx)
+      contents = _.map form.contents, (item) => @compileItem(item, @ctx)
       formControls = new FormControls({
         contents: contents
         model: @model
-        ctx: ctx
+        ctx: @ctx
         })
       contents = [formControls]
 
     options = {
       model: @model
       id: form._id
-      ctx: ctx
+      ctx: @ctx
       name: @compileString(form.name)
       contents: contents
     }

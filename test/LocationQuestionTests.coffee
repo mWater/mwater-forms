@@ -19,7 +19,15 @@ describe "LocationQuestion", ->
   beforeEach ->
     @locationFinder = new MockLocationFinder()
     @model = new Backbone.Model()
-    @compiler = new FormCompiler(model: @model, locale: "es")
+    ctx = {
+      locationFinder: new MockLocationFinder()
+      displayMap: (loc) =>
+        @mapDisplayed = loc
+    }
+    ctx.locationFinder.getLocation = (success) ->
+      success(coords: { latitude: 1, longitude: 2, accuracy: 0 })
+
+    @compiler = new FormCompiler(model: @model, locale: "es", ctx: ctx)
     @q = {
       _id: "q1234"
       _type: "LocationQuestion"
@@ -30,15 +38,8 @@ describe "LocationQuestion", ->
         { id: "c", label: { _base: "en", es: "CC" }, specify: true }
       ]
     }
-    ctx = {
-      locationFinder: new MockLocationFinder()
-      displayMap: (loc) =>
-        @mapDisplayed = loc
-    }
-    ctx.locationFinder.getLocation = (success) ->
-      success(coords: { latitude: 1, longitude: 2, accuracy: 0 })
 
-    @qview = @compiler.compileQuestion(@q, ctx).render()
+    @qview = @compiler.compileQuestion(@q).render()
     @ui = new UIDriver(@qview.el)
 
 
