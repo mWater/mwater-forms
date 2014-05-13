@@ -5,6 +5,9 @@ var browserify = require('browserify');
 var concat = require('gulp-concat');
 var open = require('gulp-open');
 var streamConvert = require('vinyl-source-stream');
+var extractor = require('ez-localize/extractor');
+var coffeeify = require('coffeeify');
+var hbsfy = require('hbsfy');
 
 var EXPRESS_PORT = 8081;
 var DEMO_PAGE = "/demo/demo.html";
@@ -19,6 +22,13 @@ gulp.task('coffee', function() {
 gulp.task('copy', function() {
 	gulp.src(['./src/**/*.js', './src/**/*.css', './src/**/*.hbs'])
 		.pipe(gulp.dest('./lib/'));
+});
+
+gulp.task('localize', function(done) {
+	var options = { extensions: ['.js', '.coffee'], transform: [coffeeify, hbsfy] };
+	extractor.updateLocalizationFile("src/index.coffee", "localizations.json", options, function() { 
+		done();
+	});
 });
 
 // Demo
@@ -54,6 +64,6 @@ gulp.task('openBrowser', function() {
 	gulp.src("." + DEMO_PAGE).pipe(open("", options));
 });
 
-gulp.task('compile', ['coffee', 'copy']);
+gulp.task('compile', ['coffee', 'copy', 'localize']);
 gulp.task('demo', ['compile', 'browserifyDemo', 'startExpress', 'watch', 'ngrok', 'openBrowser']);
 gulp.task('default', ['compile']);
