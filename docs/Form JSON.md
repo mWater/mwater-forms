@@ -9,7 +9,14 @@ The top-level element is a Form element. It contains basic information about the
 Fields:
 * **_id**: UUID of the form
 * **_type**: "Form" 
+* **locales**: Array of locales
+* **localizedStrings**: Form-level localizations for strings that are not user-defined
 
+## Locale
+
+Represents a single locale of the form. Object:
+* **code**: ISO language code (e.g. "es")
+* **name**: Language name localized (e.g. "English")
 
 ## Questions
 

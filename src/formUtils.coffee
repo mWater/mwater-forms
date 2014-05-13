@@ -1,4 +1,5 @@
 _ = require 'lodash'
+localizations = require '../localizations.json'
 
 # Create ~ 128-bit uid that starts with c, d, e or f
 exports.createUid = -> 
@@ -204,3 +205,19 @@ exports.duplicateItem = (item) ->
     dup.contents = _.map dup.contents, exports.duplicateItem
 
   return dup
+
+exports.updateLocalizations = (form) ->
+  form.localizedStrings = form.localizedStrings or []
+
+  # Map existing ones in form
+  existing = {}
+  for str in form.localizedStrings
+    if str.en
+      existing[str.en] = true
+
+  # Add new localizations
+  for str in localizations.strings
+    if str.en and not existing[str.en]
+      form.localizedStrings.push str
+      existing[str.en] = true
+

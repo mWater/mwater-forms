@@ -83,5 +83,16 @@ describe "Sections", ->
     @ui.click("Next")
     assert.equal @view.$(".question:contains('Section2q1')").closest(".section").css('display'), 'none'
     assert.equal @view.$(".question:contains('Section3q1')").closest(".section").css('display'), 'block'
-    
 
+  it "localizes", ->
+    form = _.cloneDeep(sectionedForm)
+    form.localizedStrings = [
+      {
+        _base: "en"
+        en: "Discard"
+        es: "Borrar"
+      }
+    ]
+    @view = @compiler.compileForm(form).render()
+
+    assert.match @view.$el.html(), /Borrar/, "Should be in Spanish"

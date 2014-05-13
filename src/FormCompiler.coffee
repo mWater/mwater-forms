@@ -1,5 +1,6 @@
 _ = require 'underscore'
 markdown = require("markdown").markdown
+ezlocalize = require 'ez-localize'
 
 formUtils = require './formUtils'
 
@@ -164,7 +165,9 @@ module.exports = class FormCompiler
       return true
 
   # Compile a question with the given form context
-  compileQuestion: (q) =>
+  compileQuestion: (q, T) =>
+    T = T or ezlocalize.defaultT
+
     # Compile validations
     compiledValidations = @compileValidations(q.validations)
 
@@ -185,15 +188,16 @@ module.exports = class FormCompiler
         return compiledValidations(answer)
       conditional: if q.conditions and q.conditions.length > 0 then @compileConditions(q.conditions)
       ctx: @ctx
+      T: T
     }
     
     # Add alternates
     if q.alternates 
       options.alternates = []
       if q.alternates.na
-        options.alternates.push { id: "na", label: "N/A" }  # TODO localize
+        options.alternates.push { id: "na", label: T("N/A") } 
       if q.alternates.dontknow
-        options.alternates.push { id: "dontknow", label: "Don't know" }  # TODO localize
+        options.alternates.push { id: "dontknow", label: T("Don't know") } 
 
     switch q._type
       when "TextQuestion"
@@ -237,33 +241,39 @@ module.exports = class FormCompiler
 
     throw new Error("Unknown question type")
 
-  compileInstructions: (item) =>
+  compileInstructions: (item, T) =>
+    T = T or ezlocalize.defaultT
+
     options = {
       model: @model
       id: item._id
       html: if @compileString(item.text) then markdown.toHTML(@compileString(item.text))
       conditional: if item.conditions and item.conditions.length > 0 then @compileConditions(item.conditions)
       ctx: @ctx
+      T: T
     }
     return new Instructions(options)
 
-  compileItem: (item) =>
+  compileItem: (item, T) =>
     if formUtils.isQuestion(item)
-      return @compileQuestion(item, @ctx)
+      return @compileQuestion(item, T)
 
     if item._type == "Instructions"
-      return @compileInstructions(item, @ctx)
+      return @compileInstructions(item, T)
 
     throw new Error("Unknown item type: " + item._type)
 
-  compileSection: (section) =>
+  compileSection: (section, T) =>
+    T = T or ezlocalize.defaultT
+
     # Compile contents
-    contents = _.map section.contents, (item) => @compileItem(item, @ctx)
+    contents = _.map section.contents, (item) => @compileItem(item, T)
 
     options = {
       model: @model
       id: section._id
       ctx: @ctx
+      T: T
       name: @compileString(section.name)
       contents: contents
       conditional: if section.conditions and section.conditions.length > 0 then @compileConditions(section.conditions)
@@ -272,26 +282,36 @@ module.exports = class FormCompiler
     return new Section(options)
 
   compileForm: (form) ->
+    # Create localizer
+    localizedStrings = form.localizedStrings or []
+    localizerData = {
+      locales: form.locales
+      strings: localizedStrings
+    }
+    T = new ezlocalize.Localizer(localizerData, @locale).T
+
     # Compile contents
     if formUtils.isSectioned(form) 
       # Compile sections
-      sections = _.map form.contents, (item) => @compileSection(item, @ctx)
+      sections = _.map form.contents, (item) => @compileSection(item, T)
 
       # Create Sections view
       sectionsView = new Sections({ 
         sections: sections
         model: @model
         ctx: @ctx
+        T: T
       })
       contents = [sectionsView]
 
     else
       # Compile into FormControls
-      contents = _.map form.contents, (item) => @compileItem(item, @ctx)
+      contents = _.map form.contents, (item) => @compileItem(item, T)
       formControls = new FormControls({
         contents: contents
         model: @model
         ctx: @ctx
+        T: T
         })
       contents = [formControls]
 
@@ -299,6 +319,7 @@ module.exports = class FormCompiler
       model: @model
       id: form._id
       ctx: @ctx
+      T: T
       name: @compileString(form.name)
       contents: contents
     }

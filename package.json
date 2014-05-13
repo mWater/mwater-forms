@@ -1,6 +1,6 @@
 {
   "name": "mwater-forms",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "description": "Form controls for mWater",
   "main": "lib/index.js",
   "directories": {
@@ -36,6 +36,7 @@
     "coffeeify": "^0.6.0",
     "express": "~3.5.1",
     "ez-localize": "^0.3.3",
+    "glob": "^3.2.9",
     "gulp": "^3.6.2",
     "gulp-coffee": "^1.4.2",
     "gulp-concat": "^2.2.0",

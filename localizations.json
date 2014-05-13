@@ -5,5 +5,162 @@
       "name": "English"
     }
   ],
-  "strings": []
+  "strings": [
+    {
+      "_base": "en",
+      "en": "Save"
+    },
+    {
+      "_base": "en",
+      "en": "Cancel"
+    },
+    {
+      "_base": "en",
+      "en": "Select"
+    },
+    {
+      "_base": "en",
+      "en": "Images not available on this platform"
+    },
+    {
+      "_base": "en",
+      "en": "N/A"
+    },
+    {
+      "_base": "en",
+      "en": "Don't know"
+    },
+    {
+      "_base": "en",
+      "en": "GPS not available"
+    },
+    {
+      "_base": "en",
+      "en": "Unspecified location"
+    },
+    {
+      "_base": "en",
+      "en": "Setting location..."
+    },
+    {
+      "_base": "en",
+      "en": "Latitude"
+    },
+    {
+      "_base": "en",
+      "en": "Longitude"
+    },
+    {
+      "_base": "en",
+      "en": "Location Set Successfully"
+    },
+    {
+      "_base": "en",
+      "en": "Use Anyway"
+    },
+    {
+      "_base": "en",
+      "en": "Low GPS Accuracy"
+    },
+    {
+      "_base": "en",
+      "en": "Very Low GPS Accuracy. Waiting for better signal..."
+    },
+    {
+      "_base": "en",
+      "en": "Setting Location..."
+    },
+    {
+      "_base": "en",
+      "en": "N"
+    },
+    {
+      "_base": "en",
+      "en": "NE"
+    },
+    {
+      "_base": "en",
+      "en": "E"
+    },
+    {
+      "_base": "en",
+      "en": "SE"
+    },
+    {
+      "_base": "en",
+      "en": "S"
+    },
+    {
+      "_base": "en",
+      "en": "SW"
+    },
+    {
+      "_base": "en",
+      "en": "W"
+    },
+    {
+      "_base": "en",
+      "en": "NW"
+    },
+    {
+      "_base": "en",
+      "en": "km"
+    },
+    {
+      "_base": "en",
+      "en": "m"
+    },
+    {
+      "_base": "en",
+      "en": "Discard"
+    },
+    {
+      "_base": "en",
+      "en": "Save for Later"
+    },
+    {
+      "_base": "en",
+      "en": "Back"
+    },
+    {
+      "_base": "en",
+      "en": "Next"
+    },
+    {
+      "_base": "en",
+      "en": "Finish"
+    },
+    {
+      "_base": "en",
+      "en": "No images present"
+    },
+    {
+      "_base": "en",
+      "en": "Taking photos not supported on this platform"
+    },
+    {
+      "_base": "en",
+      "en": "Select units"
+    },
+    {
+      "_base": "en",
+      "en": "Set"
+    },
+    {
+      "_base": "en",
+      "en": "Clear"
+    },
+    {
+      "_base": "en",
+      "en": "Map"
+    },
+    {
+      "_base": "en",
+      "en": "Edit"
+    },
+    {
+      "_base": "en",
+      "en": "Comments"
+    }
+  ]
 }

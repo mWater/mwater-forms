@@ -8,6 +8,7 @@ var streamConvert = require('vinyl-source-stream');
 var extractor = require('ez-localize/extractor');
 var coffeeify = require('coffeeify');
 var hbsfy = require('hbsfy');
+var glob = require('glob');
 
 var EXPRESS_PORT = 8081;
 var DEMO_PAGE = "/demo/demo.html";
@@ -29,6 +30,17 @@ gulp.task('localize', function(done) {
 	extractor.updateLocalizationFile("src/index.coffee", "localizations.json", options, function() { 
 		done();
 	});
+});
+
+gulp.task('prepareTests', function() {
+	var files = glob.sync("./test/*Tests.coffee");
+	console.dir(files);
+	var bundler = browserify({ entries: files, extensions: [".js", ".coffee"] });
+	var stream = bundler.bundle()
+		.on('error', gutil.log)
+		.pipe(streamConvert('browserified.js'))
+		.pipe(gulp.dest('./test'))
+	return stream;
 });
 
 // Demo

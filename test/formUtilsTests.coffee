@@ -1,4 +1,4 @@
-_ = require 'underscore'
+_ = require 'lodash'
 assert = require("chai").assert
 formUtils = require '../src/formUtils'
 simpleForm = require './simpleForm'
@@ -130,3 +130,11 @@ describe "FormUtils", ->
 
       it "duplicates questions", ->
         assert.equal @duplicate.contents[0]._basedOn, simpleForm.contents[0]._id
+
+  describe "update localizations", ->
+    it "adds form-level localizations", ->
+      form = _.cloneDeep(simpleForm)
+
+      formUtils.updateLocalizations(form)
+      assert form.localizedStrings.length > 5
+
