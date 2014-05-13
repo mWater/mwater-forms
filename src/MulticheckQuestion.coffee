@@ -44,5 +44,5 @@ module.exports = class MulticheckQuestion extends Question
         specifyValue: if @model.get(@id)? and @model.get(@id).specify? then @model.get(@id).specify[@options.choices[i].id]
       }
 
-      html = require("./templates/MulticheckQuestionChoice.hbs")(data)
+      html = require("./templates/MulticheckQuestionChoice.hbs")(data, helpers: { T: @T })
       answerEl.append $(html)

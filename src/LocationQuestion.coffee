@@ -16,7 +16,9 @@ module.exports = class LocationQuestion extends Question
       loc: loc
       readonly: @options.readonly
       disableMap: not @ctx.displayMap?
-      locationFinder: @ctx.locationFinder})
+      locationFinder: @ctx.locationFinder
+      T: @T
+    })
 
     @locationView.on 'map', (loc) =>
       if @ctx.displayMap?

@@ -69,6 +69,6 @@ module.exports = class DropdownQuestion extends Question
         hint: @options.choices[i].hint
       }
 
-      html += require("./templates/DropdownQuestionChoice.hbs")(data)
+      html += require("./templates/DropdownQuestionChoice.hbs")(data, helpers: { T: @T })
 
     return html

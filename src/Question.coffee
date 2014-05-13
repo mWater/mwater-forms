@@ -2,6 +2,7 @@ $ = require 'jquery'
 Backbone = require 'backbone'
 _ = require 'underscore'
 LocationFinder = require './LocationFinder'
+ezlocalize = require 'ez-localize'
 
 # Question types are subclasses that implement renderAnswer and updateAnswer
 # See methods for more detail
@@ -15,7 +16,9 @@ LocationFinder = require './LocationFinder'
 # commentsField: true to include comment field
 # recordTimestamp: true to record timestamp when completed
 # recordLocation: true to record location when completed
+#
 # ctx: context of question. See Forms Context.md docs.
+# T: localizer function to use. See ez-localize module for more details. If not passed, uses default
 module.exports = class Question extends Backbone.View
   className: "question"
 
@@ -23,6 +26,9 @@ module.exports = class Question extends Backbone.View
     # Save options
     @options = options or {}
     
+    # Save T
+    @T = options.T or ezlocalize.defaultT
+
     # Set class based on style
     @$el.addClass "question-" + (@options.style or "default")
     
@@ -152,7 +158,7 @@ module.exports = class Question extends Backbone.View
   # The question is self-updating from then on via listening to the model
   render: ->
     # Render question
-    @$el.html require("./Question.hbs")(this)
+    @$el.html require("./Question.hbs")(this, helpers: { T: @T })
 
     # TODO Tabular controls will have display:table-row replaced with block
     unless @shouldBeVisible()

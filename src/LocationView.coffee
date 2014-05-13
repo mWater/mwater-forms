@@ -3,6 +3,7 @@ Backbone.$ = require 'jquery'
 LocationFinder = require './LocationFinder'
 OrientationFinder = require './OrientationFinder'
 _ = require 'underscore'
+ezlocalize = require 'ez-localize'
 
 # Shows the relative location of a point and allows setting it
 # Fires events locationset, map, both with 
@@ -11,6 +12,7 @@ _ = require 'underscore'
 # options hideMap is true to hide map
 # options disableMap is true to disable map
 # options locationFinder overrides default LocationFinder
+# options T is the localizer to use
 # Location is stored format { latitude, longitude, accuracy, altitude?, altitudeAccuracy? }
 module.exports = class LocationView extends Backbone.View
   constructor: (options) ->
@@ -24,6 +26,8 @@ module.exports = class LocationView extends Backbone.View
     @orientationFinder = options.orientationFinder || new OrientationFinder()
     #@orientationFinder.startWatch() TODO reenable some day
 
+    @T = options.T or ezlocalize.defaultT
+
     # Listen to location events
     @listenTo(@locationFinder, 'found', @locationFound)
     @listenTo(@locationFinder, 'error', @locationError)
@@ -36,7 +40,7 @@ module.exports = class LocationView extends Backbone.View
       @locationFinder.startWatch()
 
     # Do not re-render template as it would destroy input fields
-    @$el.html require('./templates/LocationView.hbs')()
+    @$el.html require('./templates/LocationView.hbs')({}, helpers: { T: @T })
 
     @render()
 
@@ -56,20 +60,20 @@ module.exports = class LocationView extends Backbone.View
   render: ->
     # Set location string
     if @errorFindingLocation
-      @$("#location_relative").text("GPS not available")
+      @$("#location_relative").text(@T("GPS not available"))
     else if not @loc and not @settingLocation 
-      @$("#location_relative").text("Unspecified location")
+      @$("#location_relative").text(@T("Unspecified location"))
     else if @settingLocation
-      @$("#location_relative").text("Setting location...")
+      @$("#location_relative").text(@T("Setting location..."))
     else if @loc and @currentPos
       # Calculate relative location
-      relativeLocation = getRelativeLocation @currentPos.coords, @loc
+      relativeLocation = @getRelativeLocation @currentPos.coords, @loc
       @$("#location_relative").text(relativeLocation.distance + " " + relativeLocation.cardinalDirection )
     else 
       @$("#location_relative").text("")
 
     if @loc and not @settingLocation
-      @$("#location_absolute").text("Latitude: #{this.loc.latitude.toFixed(6)}, Longitude: #{this.loc.longitude.toFixed(6)}")
+      @$("#location_absolute").text(@T("Latitude") + ": #{this.loc.latitude.toFixed(6)}, " + @T("Longitude") + ": #{this.loc.longitude.toFixed(6)}")
     else
       @$("#location_absolute").text("")
 
@@ -90,7 +94,7 @@ module.exports = class LocationView extends Backbone.View
     @$("#location_edit").attr("disabled", @readonly)
 
     if @loc or @settingLocation
-      accuracy = getAccuracyStrength @currentPos
+      accuracy = @getAccuracyStrength @currentPos
       @$("#gps_strength")[0].className = accuracy.class
       @$("#gps_strength").text accuracy.text
     else
@@ -131,7 +135,7 @@ module.exports = class LocationView extends Backbone.View
     @settingLocation = true
     @errorFindingLocation = false
 
-    cancelButtonHtml = ' <button id="cancel_set" type="button" class="btn btn-sm btn-default" style="margin-left:5px">Cancel</button>'
+    cancelButtonHtml = ' <button id="cancel_set" type="button" class="btn btn-sm btn-default" style="margin-left:5px">' + @T('Cancel') + '</button>'
 
     cancelSetting = =>
       @settingLocation = false
@@ -150,27 +154,27 @@ module.exports = class LocationView extends Backbone.View
 
         # Set current position
         @currentPos = pos
-        @displayNotification "Location Set Successfully", "alert-success", true
+        @displayNotification @T("Location Set Successfully"), "alert-success", true
         @settingLocation = false
         @errorFindingLocation = false
         @trigger('locationset', @loc)
         @render()  
         return 
 
-      accuracy = getAccuracyStrength(pos)
+      accuracy = @getAccuracyStrength(pos)
 
       # The first time is usually the 'lowAccuracy' event firing, 
       if accuracy.strength == "fair"
         # Ask the user if they want to use the low accuracy position
-        useAnywayButtonHtml = ' <button id="use_anyway" type="button" class="btn btn-sm btn-default" style="margin-left:5px">Use Anyway</button>'
-        @displayNotification 'Low GPS Accuracy ' + useAnywayButtonHtml + cancelButtonHtml, "alert-warning"
+        useAnywayButtonHtml = ' <button id="use_anyway" type="button" class="btn btn-sm btn-default" style="margin-left:5px">' + @T("Use Anyway") + '</button>'
+        @displayNotification @T('Low GPS Accuracy') + useAnywayButtonHtml + cancelButtonHtml, "alert-warning"
         @$("#use_anyway").on("click", usePosition)
         @$("#cancel_set").on("click", cancelSetting)
       else if accuracy.strength == "strong"
         usePosition()
       else if accuracy.strength == "weak"
         # The accuracy is undesirable
-        @displayNotification "Very Low GPS Accuracy. Waiting for better signal..." + cancelButtonHtml, "alert-danger", false
+        @displayNotification @T("Very Low GPS Accuracy. Waiting for better signal...") + cancelButtonHtml, "alert-danger", false
         @$("#cancel_set").on("click", cancelSetting)
         @render()
 
@@ -184,7 +188,7 @@ module.exports = class LocationView extends Backbone.View
       @errorFindingLocation = true
       @render()
 
-    @displayNotification "Setting Location..." + cancelButtonHtml, "alert-warning"
+    @displayNotification @T("Setting Location...") + cancelButtonHtml, "alert-warning"
     @$("#cancel_set").on("click", cancelSetting)
 
     @locationFinder.getLocation locationSuccess, locationError
@@ -194,7 +198,7 @@ module.exports = class LocationView extends Backbone.View
     if not @currentPos or not @loc
       return
 
-    accuracy = getAccuracyStrength @currentPos
+    accuracy = @getAccuracyStrength @currentPos
     $sourcePointer = @$("#source_pointer .glyphicon")
 
     # Calculate relative location
@@ -252,48 +256,48 @@ module.exports = class LocationView extends Backbone.View
   cancelEditLocation: ->
     @$("#location_edit_controls").slideUp() 
 
-getAccuracyStrength = (pos) =>
-  if not (pos and pos.coords and pos.coords.accuracy?)
-    return { color: "red", class: "text-danger", strength: "weak", text: "Waiting for GPS..." }
+  getAccuracyStrength: (pos) =>
+    if not (pos and pos.coords and pos.coords.accuracy?)
+      return { color: "red", class: "text-danger", strength: "weak", text: "Waiting for GPS..." }
 
-  # Calculate age
-  age = new Date().getTime() - pos.timestamp
+    # Calculate age
+    age = new Date().getTime() - pos.timestamp
 
-  # If inaccurate or old (> 30 sec)
-  if pos.coords.accuracy > 50 or age > 30*1000
-    return { color: "red", class: "text-danger", strength: "weak", text: "Waiting for GPS..." }
-  else if pos.coords.accuracy > 10 
-    return { color: "yellow", class: "text-warning", strength: "fair", text: "Low accuracy GPS ±" + pos.coords.accuracy.toFixed(0) + "m"}
-  else 
-    return { color: "green", class: "text-success", strength: "strong", text: "GPS Acquired" }
+    # If inaccurate or old (> 30 sec)
+    if pos.coords.accuracy > 50 or age > 30*1000
+      return { color: "red", class: "text-danger", strength: "weak", text: "Waiting for GPS..." }
+    else if pos.coords.accuracy > 10 
+      return { color: "yellow", class: "text-warning", strength: "fair", text: "Low accuracy GPS ±" + pos.coords.accuracy.toFixed(0) + "m"}
+    else 
+      return { color: "green", class: "text-success", strength: "strong", text: "GPS Acquired" }
 
-getRelativeLocation = (from, to) ->
-  x1 = from.longitude
-  y1 = from.latitude
-  x2 = to.longitude
-  y2 = to.latitude
-  
-  # Convert to relative position (approximate)
-  dy = (y2 - y1) / 57.3 * 6371000
-  dx = Math.cos(y1 / 57.3) * (x2 - x1) / 57.3 * 6371000
-  
-  # Determine direction and angle
-  dist = Math.sqrt(dx * dx + dy * dy)
-  angle = 90 - (Math.atan2(dy, dx) * 57.3)
-  angle += 360 if angle < 0
-  angle -= 360 if angle > 360
-  
-  # Get approximate direction
-  compassDir = (Math.floor((angle + 22.5) / 45)) % 8
-  compassStrs = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
+  getRelativeLocation: (from, to) =>
+    x1 = from.longitude
+    y1 = from.latitude
+    x2 = to.longitude
+    y2 = to.latitude
+    
+    # Convert to relative position (approximate)
+    dy = (y2 - y1) / 57.3 * 6371000
+    dx = Math.cos(y1 / 57.3) * (x2 - x1) / 57.3 * 6371000
+    
+    # Determine direction and angle
+    dist = Math.sqrt(dx * dx + dy * dy)
+    angle = 90 - (Math.atan2(dy, dx) * 57.3)
+    angle += 360 if angle < 0
+    angle -= 360 if angle > 360
+    
+    # Get approximate direction
+    compassDir = (Math.floor((angle + 22.5) / 45)) % 8
+    compassStrs = [@T("N"), @T("NE"), @T("E"), @T("SE"), @T("S"), @T("SW"), @T("W"), @T("NW")]
 
-  if dist > 1000
-    distance = (dist / 1000).toFixed(1) + " km"
-  else
-    distance = (dist).toFixed(0) + " m"
+    if dist > 1000
+      distance = (dist / 1000).toFixed(1) + " " + @T("km")
+    else
+      distance = (dist).toFixed(0) + " " + @T("m")
 
-  return {
-    distance: distance,
-    cardinalDirection: compassStrs[compassDir],
-    bearing: angle
-  }
+    return {
+      distance: distance,
+      cardinalDirection: compassStrs[compassDir],
+      bearing: angle
+    }

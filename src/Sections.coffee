@@ -1,6 +1,7 @@
 Backbone = require 'backbone'
 _ = require 'underscore'
 require './jquery-scrollintoview'
+ezlocalize = require 'ez-localize'
 
 module.exports = class Sections extends Backbone.View
   className: "survey"
@@ -9,6 +10,9 @@ module.exports = class Sections extends Backbone.View
     # Save options
     @options = options or {}
     @sections = @options.sections
+
+    @T = options.T or ezlocalize.defaultT
+
     @render()
     
     # Adjust next/prev based on model
@@ -75,10 +79,11 @@ module.exports = class Sections extends Backbone.View
     visibleSections = _.filter(_.first(@sections, index + 1), (s) ->
       s.shouldBeVisible()
     )
-    @$(".breadcrumb").html require('./templates/Sections_breadcrumbs.hbs')(
+    data = {
       sections: _.initial(visibleSections)
       lastSection: _.last(visibleSections)
-    )
+    }
+    @$(".breadcrumb").html require('./templates/Sections_breadcrumbs.hbs')(data, helpers: { T: @T })
     @renderNextPrev()
     
     # Scroll into view
@@ -91,7 +96,7 @@ module.exports = class Sections extends Backbone.View
     @$(".finish").toggle not @getNextSectionIndex()?
 
   render: ->
-    @$el.html require('./templates/Sections.hbs')()
+    @$el.html require('./templates/Sections.hbs')({}, helpers: { T: @T })
     
     # Add sections
     sectionsEl = @$(".sections")

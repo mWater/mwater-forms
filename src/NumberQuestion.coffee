@@ -5,11 +5,13 @@ Question = require './Question'
 
 module.exports = Question.extend
   renderAnswer: (answerEl) ->
-    answerEl.html require('./templates/NumberQuestion.hbs')(
+    data = {
       prefix: @options.prefix, 
       suffix: @options.suffix, 
       decimal: @options.decimal,
-      prefixOrSuffix: @options.prefix or @options.suffix)
+      prefixOrSuffix: @options.prefix or @options.suffix
+    }
+    answerEl.html require('./templates/NumberQuestion.hbs')(data, helpers: { T: @T })
 
   updateAnswer: (answerEl) ->
     answerEl.find("input").val @getAnswerValue()

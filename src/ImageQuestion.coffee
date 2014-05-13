@@ -11,7 +11,7 @@ module.exports = class ImageQuestion extends Question
   updateAnswer: (answerEl) ->
     # Render image using image manager
     if not @ctx.imageManager
-      answerEl.html '''<div class="text-warning">Images not available on this platform</div>'''
+      answerEl.html '''<div class="text-warning">''' + @T("Images not available on this platform") + '''</div>'''
     else
       image = @getAnswerValue()
 
@@ -29,7 +29,13 @@ module.exports = class ImageQuestion extends Question
       noImage = not canAdd and not image and not notSupported
 
       # Render images
-      answerEl.html require('./templates/ImageQuestion.hbs')(image: image, canAdd: canAdd, noImage: noImage, notSupported: notSupported)
+      data = {
+        image: image
+        canAdd: canAdd
+        noImage: noImage
+        notSupported: notSupported
+      }
+      answerEl.html require('./templates/ImageQuestion.hbs')(data, helpers: { T: @T })
 
       # Set source
       if image

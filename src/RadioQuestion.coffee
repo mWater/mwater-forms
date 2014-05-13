@@ -50,6 +50,6 @@ module.exports = class RadioQuestion extends Question
         specifyValue: if @model.get(@id)? and @model.get(@id).specify? then @model.get(@id).specify[@options.choices[i].id]
       }
 
-      html += require("./templates/RadioQuestionChoice.hbs")(data)
+      html += require("./templates/RadioQuestionChoice.hbs")(data, helpers: { T: @T })
 
     return html

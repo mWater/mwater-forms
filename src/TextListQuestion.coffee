@@ -58,7 +58,6 @@ module.exports = class TextListQuestion extends Question
       @$("#remove_" + i).css('visibility', 'visible')
 
     @$("#remove_" + items.length).css('visibility', 'hidden')
-    
 
   record: ->
     # Save to data

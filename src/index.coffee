@@ -46,6 +46,7 @@ exports.templateView = (template) ->
 
 exports.SurveyView = class SurveyView extends exports.FormView
 
+# TODO localize and perhaps remove
 exports.WaterTestEditView = class WaterTestEditView extends exports.FormView
   initialize: (options) ->
     super(options)

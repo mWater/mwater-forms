@@ -1,5 +1,6 @@
 # Form that has save and cancel buttons that fire save and cancel events.
 # Save event will only be fired if validates
+ezlocalize = require 'ez-localize'
 
 Backbone = require 'backbone'
 _ = require 'underscore'
@@ -8,6 +9,9 @@ module.exports = Backbone.View.extend
   initialize: (options) ->
     # Save options
     @options = options || {}
+
+    # Save T
+    @T = options.T or ezlocalize.defaultT
 
     @contents = @options.contents
     @render()
@@ -28,9 +32,9 @@ module.exports = Backbone.View.extend
   render: ->
     @$el.html '''<div id="contents"></div>
     <div>
-        <button id="save_button" type="button" class="btn btn-primary margined">Save</button>
+        <button id="save_button" type="button" class="btn btn-primary margined">''' + @T("Save") + '''</button>
         &nbsp;
-        <button id="cancel_button" type="button" class="btn btn-default margined">Cancel</button>
+        <button id="cancel_button" type="button" class="btn btn-default margined">''' + @T("Cancel") + '''</button>
     </div>'''
     
     # Add contents (questions, mostly)

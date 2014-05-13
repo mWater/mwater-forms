@@ -43,7 +43,7 @@ module.exports = class FormControls extends Backbone.View
     @trigger "discard"
 
   render: ->
-    @$el.html require('./templates/FormControls.hbs')()
+    @$el.html require('./templates/FormControls.hbs')({}, helpers: { T: @T })
     
     # Add contents 
     _.each @contents, (c) => @$("#contents").append c.$el

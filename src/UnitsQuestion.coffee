@@ -13,9 +13,12 @@ module.exports = class UnitsQuestion extends Question
     # Convert units to maps
     units = _.map @options.units, (item) => { id: item.id, value: item.label }
 
-    answerEl.html require('./templates/UnitsQuestion.hbs')(
-      units: units, prefix: @options.unitsPosition == "prefix",
-      defaultUnits: @options.defaultUnits)
+    data = {
+      units: units
+      prefix: @options.unitsPosition == "prefix"
+      defaultUnits: @options.defaultUnits
+    }
+    answerEl.html require('./templates/UnitsQuestion.hbs')(data, helpers: { T: @T })
 
   updateAnswer: (answerEl) ->
     val = @getAnswerValue() || {}
