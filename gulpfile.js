@@ -34,7 +34,6 @@ gulp.task('localize', function(done) {
 
 gulp.task('prepareTests', function() {
 	var files = glob.sync("./test/*Tests.coffee");
-	console.dir(files);
 	var bundler = browserify({ entries: files, extensions: [".js", ".coffee"] });
 	var stream = bundler.bundle()
 		.on('error', gutil.log)
