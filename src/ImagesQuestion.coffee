@@ -46,7 +46,10 @@ module.exports = class ImagesQuestion extends Question
   setThumbnailUrl: (elem, id) ->
     success = (url) =>
       elem.attr("src", url)
-    @ctx.imageManager.getImageThumbnailUrl id, success, @error
+    error = =>
+      # Display this image on error
+      elem.attr("src", "img/no-image-icon.jpg")
+    @ctx.imageManager.getImageThumbnailUrl id, success, error
 
   addClick: ->
     # Call imageAcquirer
