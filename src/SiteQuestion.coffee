@@ -28,7 +28,7 @@ module.exports = class SiteQuestion extends Question
     @setAnswerValue(code: @$("input").val())
 
   selectSite: ->
-    @ctx.selectSite (siteCode)=>
+    @ctx.selectSite (siteCode) =>
       @setAnswerValue(code: siteCode)
 
   validateInternal: ->

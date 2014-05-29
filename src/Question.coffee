@@ -195,7 +195,7 @@ module.exports = class Question extends Backbone.View
       locationFinder = @ctx.locationFinder or new LocationFinder()
       locationFinder.getLocation (loc) =>
         if loc?
-          @setAnswerField('location', loc.coords)
+          @setAnswerField('location', _.pick(loc.coords, "latitude", "longitude", "accuracy", "altitude", "altitudeAccuracy"))
 
     # If sticky, save value
     if @options.sticky and @ctx.stickyStorage
