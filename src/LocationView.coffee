@@ -53,6 +53,7 @@ module.exports = class LocationView extends Backbone.View
     'click #cancel_button' : 'cancelEditLocation'
 
   remove: ->
+    @settingLocation = false
     @locationFinder.stopWatch()
     @orientationFinder.stopWatch()
     super()
