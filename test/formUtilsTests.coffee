@@ -124,12 +124,28 @@ describe "FormUtils", ->
       it "duplicates questions", ->
         assert.equal @duplicate.contents[0]._basedOn, sectionedForm.contents[0].contents[0]._id
 
+      it "maps references in conditions", ->
+        assert.equal @duplicate.contents[2].conditions[0].lhs.question, @duplicate.contents[1]._id
+
+      it "handles OR conditions"  
+      it "handles AND conditions"  
+
+    it "removes conditions which reference non-present questions", ->
+      @duplicate = formUtils.duplicateItem(sectionedForm.contents[1])
+      assert.equal @duplicate.contents[0].conditions.length, 0
+
     describe "duplicate form", ->
       before ->
-        @duplicate = formUtils.duplicateItem(simpleForm)
+        @duplicate = formUtils.duplicateItem(sectionedForm)
+
+      it "sets _basedOn", ->
+        assert.equal @duplicate.contents[0]._basedOn, sectionedForm.contents[0]._id
 
       it "duplicates questions", ->
-        assert.equal @duplicate.contents[0]._basedOn, simpleForm.contents[0]._id
+        assert.equal @duplicate.contents[0].contents[0]._basedOn, sectionedForm.contents[0].contents[0]._id
+
+      it "maps references across sections", ->
+        assert.equal @duplicate.contents[1].contents[0].conditions[0].lhs.question, @duplicate.contents[0].contents[2]._id
 
   describe "update localizations", ->
     it "adds form-level localizations", ->

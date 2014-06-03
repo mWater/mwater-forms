@@ -192,17 +192,45 @@ exports.isSectioned = (form) ->
   return form.contents.length > 0 and _.every form.contents, (item) -> item._type == "Section"
 
 # Duplicates an item (form design, section or question)
-exports.duplicateItem = (item) ->
+# idMap is a map of old _ids to new _ids. If any not present, new uid will be used
+exports.duplicateItem = (item, idMap) ->
+  # If form or section and ids not mapped, map ids
+  if not idMap and item._type in ["Form", "Section"]
+    idMap = {}
+    console.log "hi"
+    for question in exports.priorQuestions(item)
+      idMap[question._id] = exports.createUid()
+
   dup = _.cloneDeep(item)
 
   # Set up id
   if dup._id
     dup._basedOn = dup._id
-    dup._id = exports.createUid()
+    if idMap and idMap[dup._id]
+      dup._id = idMap[dup._id]
+    else
+      dup._id = exports.createUid()
+
+  # Fix condition references, or remove conditions
+  if dup.conditions
+    dup.conditions = _.filter dup.conditions, (cond) =>
+      if cond.lhs and cond.lhs.question
+        # Check if in id
+        if idMap and idMap[cond.lhs.question]
+          # Map id
+          cond.lhs.question = idMap[cond.lhs.question]
+          return true
+        # Could not be mapped
+        return false
+
+      # For future AND and OR TODO
+      return true
+
 
   # Duplicate contents
   if dup.contents
-    dup.contents = _.map dup.contents, exports.duplicateItem
+    dup.contents = _.map dup.contents, (item) =>
+      exports.duplicateItem(item, idMap)
 
   return dup
 

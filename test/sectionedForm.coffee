@@ -28,7 +28,9 @@ questions1 = [
       { id: "cat", label: { _base:"en", en: "Cat"}}
       { id: "fish", label: { _base:"en", en: "Fish"}}
     ]
-    conditions: []
+    conditions: [
+      { lhs: { question: "0002"}, op: "is", rhs: { literal: "yes" } }
+    ]
   },
   {
     _id: "0004"
@@ -52,7 +54,9 @@ questions2 = [
     _id: "0005"
     _type: "TextQuestion"
     text: { _base: "en", en: "Section2q1" } 
-    conditions: []
+    conditions: [
+      { lhs: { question: "0003"}, op: "is", rhs: { literal: "dog" } }
+    ]
   }
 ]
 
