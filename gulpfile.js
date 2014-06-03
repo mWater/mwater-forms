@@ -36,7 +36,6 @@ gulp.task('prepareTests', function() {
 	var files = glob.sync("./test/*Tests.coffee");
 	var bundler = browserify({ entries: files, extensions: [".js", ".coffee"] });
 	var stream = bundler.bundle()
-		.on('error', gutil.log)
 		.pipe(streamConvert('browserified.js'))
 		.pipe(gulp.dest('./test'))
 	return stream;
