@@ -13,7 +13,9 @@ class MockLocationFinder
 
   getLocation: (success, error) ->
   startWatch: ->
+    @watching = true
   stopWatch: ->
+    @watching = false
 
 describe 'LocationView', ->
   context 'With no set location', ->
