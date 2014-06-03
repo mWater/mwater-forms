@@ -75,14 +75,14 @@ class LocationFinder
     , 250
 
   startWatch: ->
+    # If already watching, continue silently
+    if @locationWatchId?
+      return
+
     # If no geolocation, send error immediately
     if not navigator.geolocation
       error("No geolocation available")
       return
-
-    # Allow one watch at most
-    if @locationWatchId?
-      @stopWatch()
 
     highAccuracyFired = false
     lowAccuracyFired = false
