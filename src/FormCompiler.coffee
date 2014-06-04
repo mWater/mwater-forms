@@ -30,6 +30,7 @@ FormControls = require './FormControls'
 # 'model': <Backbone.Model> to use for storing responses
 # 'locale': optional locale to use (e.g. "en")
 # 'ctx': context for forms. See docs/Forms Context.md
+# Items returned do not need @render() called. The constructor does it automatically
 module.exports = class FormCompiler
   constructor: (options) ->
     @model = options.model
@@ -282,6 +283,14 @@ module.exports = class FormCompiler
     return new Section(options)
 
   compileForm: (form) ->
+    # Check schema version
+    if not form._schema
+      form._schema = require('index').schemaVersion # TODO remove this and prev line by Sept 2014
+    if form._schema < require('index').minSchemaVersion
+      throw new Error("Schema version to low")
+    if form._schema > require('index').schemaVersion
+      throw new Error("Schema version to high")
+
     # Create localizer
     localizedStrings = form.localizedStrings or []
     localizerData = {
