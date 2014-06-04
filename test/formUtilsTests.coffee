@@ -147,6 +147,9 @@ describe "FormUtils", ->
       it "maps references across sections", ->
         assert.equal @duplicate.contents[1].contents[0].conditions[0].lhs.question, @duplicate.contents[0].contents[2]._id
 
+      it "duplicates locales", ->
+        assert.equal @duplicate.locales[0].code, "en"
+
   describe "update localizations", ->
     it "adds form-level localizations", ->
       form = _.cloneDeep(simpleForm)

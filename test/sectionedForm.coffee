@@ -88,4 +88,7 @@ module.exports = {
   _type: "Form"
   name: { _base: "en", en: "Form" } 
   contents: [section1, section2, section3]
+  locales: [
+    { code: "en", name: "English" }
+  ]
 }
