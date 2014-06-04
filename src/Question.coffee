@@ -33,10 +33,11 @@ module.exports = class Question extends Backbone.View
     @$el.addClass "question-" + (@options.style or "default")
     
     # Adjust visibility based on model
-    @model.on "change", @updateVisibility, this  if @options.conditional
+    if @options.conditional
+      @listenTo(@model, "change", @updateVisibility) 
     
     # Update based on model changes
-    @model.on "change:" + @id, @update, this
+    @listenTo(@model, "change:" + @id, @update)
     @required = @options.required
     
     # Starts visible

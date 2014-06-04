@@ -12,7 +12,7 @@ module.exports = Backbone.View.extend
 
     # Adjust visibility based on model if model present
     if @model?
-      @model.on("change", @updateVisibility, @)
+      @listenTo(@model, "change", @updateVisibility)
 
     # Starts visible
     @visible = true
