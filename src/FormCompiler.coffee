@@ -285,10 +285,10 @@ module.exports = class FormCompiler
   compileForm: (form) ->
     # Check schema version
     if not form._schema
-      form._schema = require('index').schemaVersion # TODO remove this and prev line by Sept 2014
-    if form._schema < require('index').minSchemaVersion
+      form._schema = require('./index').schemaVersion # TODO remove this and prev line by Sept 2014
+    if form._schema < require('./index').minSchemaVersion
       throw new Error("Schema version to low")
-    if form._schema > require('index').schemaVersion
+    if form._schema > require('./index').schemaVersion
       throw new Error("Schema version to high")
 
     # Create localizer
