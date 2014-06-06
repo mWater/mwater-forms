@@ -265,9 +265,9 @@ module.exports = class LocationView extends Backbone.View
     age = new Date().getTime() - pos.timestamp
 
     # If inaccurate or old (> 30 sec)
-    if pos.coords.accuracy > 50 or age > 30*1000
+    if pos.coords.accuracy > 100 or age > 30*1000
       return { color: "red", class: "text-danger", strength: "weak", text: "Waiting for GPS..." }
-    else if pos.coords.accuracy > 10 
+    else if pos.coords.accuracy > 25
       return { color: "yellow", class: "text-warning", strength: "fair", text: "Low accuracy GPS ±" + pos.coords.accuracy.toFixed(0) + "m"}
     else 
       return { color: "green", class: "text-success", strength: "strong", text: "GPS Acquired" }
