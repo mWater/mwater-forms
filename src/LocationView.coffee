@@ -96,7 +96,7 @@ module.exports = class LocationView extends Backbone.View
 
     if @loc or @settingLocation
       accuracy = @getAccuracyStrength @currentPos
-      @$("#gps_strength")[0].className = accuracy.class
+      @$("#gps_strength").attr("class", accuracy.class)
       @$("#gps_strength").text accuracy.text
     else
       @$("#gps_strength").text ""
@@ -107,7 +107,7 @@ module.exports = class LocationView extends Backbone.View
     clearTimeout timeout
 
     $notification = @$("#notification")
-    $notification[0].className = "alert"
+    $notification.attr("class", "alert")
 
     # If it is a temporary notification setup a fadeout timer
     $notification.addClass(className).html(message).fadeIn 200, ->
