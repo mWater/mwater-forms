@@ -31,7 +31,8 @@ class LocationFinder
 
     # Both failures are required to trigger error
     triggerLocationError = _.after 2, =>
-      error()
+      if error
+        error()
 
     lowAccuracyError = (err) =>
       console.error "Low accuracy location error: #{err}"

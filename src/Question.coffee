@@ -197,6 +197,8 @@ module.exports = class Question extends Backbone.View
       locationFinder.getLocation (loc) =>
         if loc?
           @setAnswerField('location', _.pick(loc.coords, "latitude", "longitude", "accuracy", "altitude", "altitudeAccuracy"))
+      , ->
+        console.log "Location not found for recordLocation in Question"
 
     # If sticky, save value
     if @options.sticky and @ctx.stickyStorage
