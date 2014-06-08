@@ -41,6 +41,7 @@ Fields:
 * **hint**: Localized string of a hint to be displayed
 * **help**: Localized string of longer help text in markdown
 * **required**: true if question requires an answer
+* **validations**: Array of validations to check answer to question
 * **conditions**: Array of conditions to make question visible
 * **commentsField**: true show a comments box with question
 * **recordTimestamp**: true to record time when question was answered in timestamp field
@@ -64,15 +65,44 @@ defaultUnit
 
 Fields:
 
-* **lhs**: { question: "<question id>" }
-* **op**: "<operation>"
+* **lhs**: { question: "*question id*" }
+* **op**: "*operation*"
 * **rhs**: { literal: <some literal value> }
 
 TODO all conditions
 
 #### Condition operations
 
-## Validations
+* **present**:
+* **!present**:
+* **contains**:
+* **!contains**:
+* **=**:
+* **>**:
+* **<**:
+* **!=**:
+* **is**:
+* **isnt**:
+* **includes**:
+* **!includes**:
+* **before**:
+* **after**:
+* **true**:
+* **false**:
+
+TODO
+
+### Validations
+
+Fields:
+* **op**: "*operation*"
+* **rhs**: { literal: *some literal value* }
+
+#### Validation Operations
+
+**range**: Takes a literal `min` and `max`, each of which is optional
+**lengthRange**: Takes a literal `min` and `max`, each of which is optional to constrain number of characters
+**regex**: Takes a regular expression to validate
 
 TODO
 

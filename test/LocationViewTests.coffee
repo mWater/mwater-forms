@@ -79,16 +79,16 @@ describe 'LocationView', ->
     it 'displays Waiting', ->
       assert.include(@ui.text(), 'Waiting')
 
-    it 'Set shows Use Anyway if recent >10 <50m accuracy', ->
+    it 'Set shows Use Anyway if recent >25 <100m accuracy', ->
       @locationFinder.getLocation = (success, error) =>
-        success({ coords: { latitude: 2, longitude: 3, accuracy: 20}, timestamp: new Date().getTime()})
+        success({ coords: { latitude: 2, longitude: 3, accuracy: 30}, timestamp: new Date().getTime()})
       @ui.click ("Set")
 
       assert.include(@ui.text(), 'Use Anyway') 
 
-    it "Set doesn't shows Use Anyway if not recent >10 <50m accuracy", ->
+    it "Set doesn't shows Use Anyway if not recent >25 <100m accuracy", ->
       @locationFinder.getLocation = (success, error) =>
-        success({ coords: { latitude: 2, longitude: 3, accuracy: 20}, timestamp: new Date().getTime() - 1000*35})
+        success({ coords: { latitude: 2, longitude: 3, accuracy: 30}, timestamp: new Date().getTime() - 1000*35})
       @ui.click ("Set")
 
       # Doesn't show use anyway
@@ -96,7 +96,7 @@ describe 'LocationView', ->
 
     it 'Use Anyway uses location', ->
       @locationFinder.getLocation = (success, error) =>
-        success({ coords: { latitude: 2, longitude: 3, accuracy: 20}, timestamp: new Date().getTime()})
+        success({ coords: { latitude: 2, longitude: 3, accuracy: 30}, timestamp: new Date().getTime()})
 
       setPos = null
       @locationView.on 'locationset', (pos) ->

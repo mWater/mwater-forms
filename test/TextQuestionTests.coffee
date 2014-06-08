@@ -93,6 +93,20 @@ describe "TextQuestion", ->
     @qview.$el.find("input").val("1234567").change()
     assert.equal @qview.validate(), "message"
 
+  it "allows non-valid blank answer if not required", ->
+    @q.validations = [
+      {
+        op: "lengthRange"
+        rhs: { literal: { min: 4, max: 6 } }
+        message: { _base: "es", es: "message" }
+      }
+    ]
+    @qview = @compiler.compileQuestion(@q).render()
+
+    @qview.$el.find("input").val("").change()
+    assert not @qview.validate()
+
+
   it "erases value on alternate selected", ->
     @q.alternates = {dontknow: true, na: true}
     @qview = @compiler.compileQuestion(@q).render()

@@ -98,7 +98,7 @@ module.exports = class Question extends Backbone.View
     val = @validateInternal()  if not val and @validateInternal
     
     # Check custom validation
-    val = @options.validate()  if not val and @options.validate
+    val = @options.validate()  if not val and @options.validate and @isAnswered()
     
     # Show validation results 
     if val
