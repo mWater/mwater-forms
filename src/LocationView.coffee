@@ -164,18 +164,26 @@ module.exports = class LocationView extends Backbone.View
 
       accuracy = @getAccuracyStrength(pos)
 
+      useAnywayButtonHtml = ' <button id="use_anyway" type="button" class="btn btn-sm btn-default" style="margin-left:5px">' + @T("Use Anyway") + '</button>'
+
       # The first time is usually the 'lowAccuracy' event firing, 
       if accuracy.strength == "fair"
         # Ask the user if they want to use the low accuracy position
-        useAnywayButtonHtml = ' <button id="use_anyway" type="button" class="btn btn-sm btn-default" style="margin-left:5px">' + @T("Use Anyway") + '</button>'
-        @displayNotification @T('Low GPS Accuracy') + useAnywayButtonHtml + cancelButtonHtml, "alert-warning"
+        @displayNotification @T('Low GPS Accuracy') + useAnywayButtonHtml + cancelButtonHtml, "alert-warning", false
         @$("#use_anyway").on("click", usePosition)
         @$("#cancel_set").on("click", cancelSetting)
+        @render()
       else if accuracy.strength == "strong"
         usePosition()
       else if accuracy.strength == "weak"
+        # Ask the user if they want to use the low accuracy position
+        @displayNotification @T('Very Low GPS Accuracy') + useAnywayButtonHtml + cancelButtonHtml, "alert-warning", false
+        @$("#use_anyway").on("click", usePosition)
+        @$("#cancel_set").on("click", cancelSetting)
+        @render()
+      else if accuracy.strength == "none"
         # The accuracy is undesirable
-        @displayNotification @T("Very Low GPS Accuracy. Waiting for better signal...") + cancelButtonHtml, "alert-danger", false
+        @displayNotification @T("Waiting for GPS...") + cancelButtonHtml, "alert-danger", false
         @$("#cancel_set").on("click", cancelSetting)
         @render()
 
@@ -206,7 +214,7 @@ module.exports = class LocationView extends Backbone.View
     relativeLocation = getRelativeLocation @currentPos.coords, @loc
 
     # Only display the compass if we can accurately calculate relative direction
-    if relativeLocation and accuracy.strength != 'weak' and @orientationFinder.active
+    if relativeLocation and (accuracy.strength != 'weak' and accuracy.strength != 'none') and @orientationFinder.active # TODO 'none' shoudl be here!!!
       $sourcePointer.show()
       arrowRotation = relativeLocation.bearing + values.normalized.alpha
       prefixes = ["", "Webkit", "Moz", "ms", "O"]
@@ -259,7 +267,7 @@ module.exports = class LocationView extends Backbone.View
 
   getAccuracyStrength: (pos) =>
     if not (pos and pos.coords and pos.coords.accuracy?)
-      return { color: "red", class: "text-danger", strength: "weak", text: "Waiting for GPS..." }
+      return { color: "red", class: "text-danger", strength: "none", text: "Waiting for GPS..." }
 
     # Calculate age
     age = new Date().getTime() - pos.timestamp
