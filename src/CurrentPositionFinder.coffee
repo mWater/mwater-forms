@@ -1,0 +1,98 @@
+_ = require 'underscore'
+Backbone = require 'backbone'
+LocationFinder = require './LocationFinder'
+
+initialDelay = 15000
+goodDelay = 5000
+excellentAcc = 5
+goodAcc = 10
+fairAcc = 50
+recentThreshold = 30000
+
+# Uses an algorithm to accurately find current position (coords + timestamp). Fires status events and found event. 
+module.exports = class CurrentPositionFinder
+  constructor: (options) ->
+    # Add events
+    _.extend @, Backbone.Events 
+
+    @locationFinder = options.locationFinder or new LocationFinder()
+    @listenTo @locationFinder, "found", @found
+    @running = false
+    @initialDelayComplete = false
+    @goodDelayRunning = false
+
+  start: ->
+    @running = true
+    @locationFinder.startWatch()
+
+    # Update status
+    @updateStatus()
+
+    setTimeout @afterInitialDelay, initialDelay
+
+  stop: ->
+    @running = false
+    @locationFinder.stopWatch()
+    @stopListening()
+
+  found: (pos) =>
+    # Calculate strength of new position
+    newStrength = @calcStrength(pos)
+
+    # If none, do nothing
+    if newStrength == "none"
+      return
+
+    # Replace position if better
+    if not @pos or pos.coords.accuracy <= @pos.coords.accuracy
+      @pos = pos
+
+    # Update status
+    @updateStatus()
+
+    # Start good delay if needed
+    if not @goodDelayRunning and @status.strength == "good"
+      setTimeout @afterGoodDelay, goodDelay
+
+    # Set position if excellent
+    if @status.strength == "excellent"
+      @stop()
+      @trigger 'found', @pos
+
+  updateStatus: ->
+    strength = @calcStrength(@pos)
+    useable = (@initialDelayComplete and strength in ["fair", "poor"]) or strength == "good"
+    @status = { strength: strength, pos: @pos, useable: useable }
+
+    # Trigger status
+    @trigger 'status', @status
+
+  afterInitialDelay: =>
+    # Set useable if strength is not none
+    @initialDelayComplete = true
+    if @running 
+      @updateStatus()
+
+  afterGoodDelay: =>
+    if @running
+      @stop()
+      @trigger 'found', @pos
+
+  calcStrength: (pos) ->
+    if not pos
+      return "none"
+
+    # If old, accuracy is none
+    if pos.timestamp < new Date().getTime() - recentThreshold
+      return "none"
+
+    if pos.coords.accuracy <= excellentAcc
+      return "excellent"
+
+    if pos.coords.accuracy <= goodAcc
+      return "good"
+
+    if pos.coords.accuracy <= fairAcc
+      return "fair"
+
+    return "poor"
