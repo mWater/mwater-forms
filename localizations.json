@@ -60,15 +60,18 @@
     },
     {
       "_base": "en",
-      "en": "Low GPS Accuracy"
+      "en": "Low GPS Accuracy",
+      "_unused": true
     },
     {
       "_base": "en",
-      "en": "Very Low GPS Accuracy. Waiting for better signal..."
+      "en": "Very Low GPS Accuracy. Waiting for better signal...",
+      "_unused": true
     },
     {
       "_base": "en",
-      "en": "Setting Location..."
+      "en": "Setting Location...",
+      "_unused": true
     },
     {
       "_base": "en",
@@ -161,6 +164,49 @@
     {
       "_base": "en",
       "en": "Comments"
+    },
+    {
+      "_base": "en",
+      "en": "Waiting for GPS..."
+    },
+    {
+      "_base": "en",
+      "en": "Very low GPS Accuracy",
+      "_unused": true
+    },
+    {
+      "_base": "en",
+      "en": "Cannot set location"
+    },
+    {
+      "_base": "en",
+      "en": "Very Low GPS Accuracy ±{0}m"
+    },
+    {
+      "_base": "en",
+      "en": "Low GPS Accuracy ±{0}m"
+    },
+    {
+      "_base": "en",
+      "en": "Good GPS Accuracy ±{0}m"
+    },
+    {
+      "_base": "en",
+      "en": "Very low GPS Accuracy...",
+      "_unused": true
+    },
+    {
+      "_base": "en",
+      "en": "Low GPS Accuracy...",
+      "_unused": true
+    },
+    {
+      "_base": "en",
+      "en": "Very low GPS Accuracy (±{0}m)..."
+    },
+    {
+      "_base": "en",
+      "en": "Low GPS Accuracy (±{0}m)..."
     }
   ]
 }
