@@ -4,6 +4,7 @@ LocationFinder = require './LocationFinder'
 OrientationFinder = require './OrientationFinder'
 _ = require 'underscore'
 ezlocalize = require 'ez-localize'
+CurrentPositionFinder = require './CurrentPositionFinder'
 
 # Shows the relative location of a point and allows setting it
 # Fires events locationset, map, both with 
@@ -24,6 +25,7 @@ module.exports = class LocationView extends Backbone.View
     @settingLocation = false
     @locationFinder = options.locationFinder || new LocationFinder()
     @orientationFinder = options.orientationFinder || new OrientationFinder()
+    @currentPositionFinder = options.currentPositionFinder || new CurrentPositionFinder()
     #@orientationFinder.startWatch() TODO reenable some day
 
     @T = options.T or ezlocalize.defaultT
@@ -31,6 +33,11 @@ module.exports = class LocationView extends Backbone.View
     # Listen to location events
     @listenTo(@locationFinder, 'found', @locationFound)
     @listenTo(@locationFinder, 'error', @locationError)
+
+    # Listen to current position events (for setting location)
+    @listenTo(@currentPositionFinder, 'found', @currentPositionFound)
+    @listenTo(@currentPositionFinder, 'error', @currentPositionError)
+    @listenTo(@currentPositionFinder, 'status', @render)
 
     # Listen to device orientation events TODO reenable some day
     #@listenTo(@orientationFinder, 'orientationChange', @compassChange)
@@ -51,29 +58,32 @@ module.exports = class LocationView extends Backbone.View
     'click #location_edit' : 'editLocation'
     'click #save_button' : 'saveEditLocation'
     'click #cancel_button' : 'cancelEditLocation'
+    'click #cancel_set': "cancelSet"
+    'click #use_anyway': "useAnyway"
 
   remove: ->
     @settingLocation = false
     @locationFinder.stopWatch()
     @orientationFinder.stopWatch()
+    @currentPositionFinder.stop()
     super()
 
   render: ->
     # Set location string
     if @errorFindingLocation
       @$("#location_relative").text(@T("GPS not available"))
-    else if not @loc and not @settingLocation 
+    else if not @loc and not @currentPositionFinder.running 
       @$("#location_relative").text(@T("Unspecified location"))
-    else if @settingLocation
+    else if @currentPositionFinder.running 
       @$("#location_relative").text(@T("Setting location..."))
     else if @loc and @currentPos
       # Calculate relative location
       relativeLocation = @getRelativeLocation @currentPos.coords, @loc
-      @$("#location_relative").text(relativeLocation.distance + " " + relativeLocation.cardinalDirection )
+      @$("#location_relative").text(relativeLocation.distance + " " + relativeLocation.cardinalDirection)
     else 
       @$("#location_relative").text("")
 
-    if @loc and not @settingLocation
+    if @loc and not @currentPositionFinder.running
       @$("#location_absolute").text(@T("Latitude") + ": #{this.loc.latitude.toFixed(6)}, " + @T("Longitude") + ": #{this.loc.longitude.toFixed(6)}")
     else
       @$("#location_absolute").text("")
@@ -94,12 +104,30 @@ module.exports = class LocationView extends Backbone.View
     # Disable edit if readonly
     @$("#location_edit").attr("disabled", @readonly)
 
-    if @loc or @settingLocation
-      accuracy = @getAccuracyStrength @currentPos
+    if @loc or @currentPositionFinder.running
+      accuracy = @getAccuracyStrength(@currentPos)
       @$("#gps_strength").attr("class", accuracy.class)
       @$("#gps_strength").text accuracy.text
     else
       @$("#gps_strength").text ""
+
+    # Display set location controls
+    if @currentPositionFinder.running
+      @$("#location_setter").show()
+      @$("#use_anyway").toggle(@currentPositionFinder.useable and @currentPositionFinder.strength != "good")
+
+      switch @currentPositionFinder.strength
+        when "none"
+          msg = @T('Waiting for GPS...')
+        when "poor"
+          msg = @T('Very low GPS Accuracy')
+        when "fair"
+          msg = @T('Low GPS Accuracy')
+        when "good"
+          msg = @T('Setting location...')
+      @$("#location_setter_msg").text(msg)
+    else
+      @$("#location_setter").hide()
 
   displayNotification: (message, className, shouldFadeOut) ->
     # Cancel the fadeout if timer on any preexisting alerts
@@ -132,97 +160,50 @@ module.exports = class LocationView extends Backbone.View
     return _.pick(pos.coords, "latitude", "longitude", "accuracy", "altitude", "altitudeAccuracy")
 
   setLocation: ->
-    console.log "setting location"
-    @settingLocation = true
-    @errorFindingLocation = false
+    console.log "Setting location"
+    @currentPositionFinder.start()
 
-    cancelButtonHtml = ' <button id="cancel_set" type="button" class="btn btn-sm btn-default" style="margin-left:5px">' + @T('Cancel') + '</button>'
+  currentPositionFound: (pos) ->
+    # Extract location
+    @loc = @convertPosToLoc(pos)
 
-    cancelSetting = =>
-      @settingLocation = false
-      @clearNotification()
-      @render()
+    # Set current position
+    @currentPos = pos
+    @displayNotification @T("Location Set Successfully"), "alert-success", true
+    @trigger('locationset', @loc)
+    @render()  
 
-    locationSuccess = (pos) =>
-      # If no longer setting location, ignore
-      if not @settingLocation
-        return
+  currentPositionError: (err) ->
+    @displayNotification @T("Cannot set location"), "alert-danger", true
 
-      # Function to use the position last returned
-      usePosition = => 
-        # Extract location
-        @loc = @convertPosToLoc(pos)
-
-        # Set current position
-        @currentPos = pos
-        @displayNotification @T("Location Set Successfully"), "alert-success", true
-        @settingLocation = false
-        @errorFindingLocation = false
-        @trigger('locationset', @loc)
-        @render()  
-        return 
-
-      accuracy = @getAccuracyStrength(pos)
-
-      useAnywayButtonHtml = ' <button id="use_anyway" type="button" class="btn btn-sm btn-default" style="margin-left:5px">' + @T("Use Anyway") + '</button>'
-
-      # The first time is usually the 'lowAccuracy' event firing, 
-      if accuracy.strength == "fair"
-        # Ask the user if they want to use the low accuracy position
-        @displayNotification @T('Low GPS Accuracy') + useAnywayButtonHtml + cancelButtonHtml, "alert-warning", false
-        @$("#use_anyway").on("click", usePosition)
-        @$("#cancel_set").on("click", cancelSetting)
-        @render()
-      else if accuracy.strength == "strong"
-        usePosition()
-      else if accuracy.strength == "weak"
-        # Ask the user if they want to use the low accuracy position
-        @displayNotification @T('Very Low GPS Accuracy') + useAnywayButtonHtml + cancelButtonHtml, "alert-warning", false
-        @$("#use_anyway").on("click", usePosition)
-        @$("#cancel_set").on("click", cancelSetting)
-        @render()
-      else if accuracy.strength == "none"
-        # The accuracy is undesirable
-        @displayNotification @T("Waiting for GPS...") + cancelButtonHtml, "alert-danger", false
-        @$("#cancel_set").on("click", cancelSetting)
-        @render()
-
-    locationError = (err) =>
-      # If no longer setting location, ignore
-      if not @settingLocation
-        return
-
-      @displayNotification "Unable to set Location", "alert-danger", true
-      @settingLocation = false
-      @errorFindingLocation = true
-      @render()
-
-    @displayNotification @T("Setting Location...") + cancelButtonHtml, "alert-warning"
-    @$("#cancel_set").on("click", cancelSetting)
-
-    @locationFinder.getLocation locationSuccess, locationError
+  cancelSetting: ->
+    @currentPositionFinder.stop()
     @render()
 
-  compassChange: (values) =>
-    if not @currentPos or not @loc
-      return
+  useAnyway: ->
+    if @currentPositionFinder.running
+      @currentPositionFound(@currentPositionFinder.pos)
 
-    accuracy = @getAccuracyStrength @currentPos
-    $sourcePointer = @$("#source_pointer .glyphicon")
+  # compassChange: (values) =>
+  #   if not @currentPos or not @loc
+  #     return
 
-    # Calculate relative location
-    relativeLocation = getRelativeLocation @currentPos.coords, @loc
+  #   accuracy = @getAccuracyStrength @currentPos
+  #   $sourcePointer = @$("#source_pointer .glyphicon")
 
-    # Only display the compass if we can accurately calculate relative direction
-    if relativeLocation and (accuracy.strength != 'weak' and accuracy.strength != 'none') and @orientationFinder.active # TODO 'none' shoudl be here!!!
-      $sourcePointer.show()
-      arrowRotation = relativeLocation.bearing + values.normalized.alpha
-      prefixes = ["", "Webkit", "Moz", "ms", "O"]
-      elem = $sourcePointer[0]
-      prefixes.forEach (prefix) ->
-          elem.style[prefix + "Transform"] = "rotate(" + arrowRotation + "deg)"
-    else 
-      $sourcePointer.hide()
+  #   # Calculate relative location
+  #   relativeLocation = getRelativeLocation @currentPos.coords, @loc
+
+  #   # Only display the compass if we can accurately calculate relative direction
+  #   if relativeLocation and (accuracy.strength != 'weak' and accuracy.strength != 'none') and @orientationFinder.active # TODO 'none' shoudl be here!!!
+  #     $sourcePointer.show()
+  #     arrowRotation = relativeLocation.bearing + values.normalized.alpha
+  #     prefixes = ["", "Webkit", "Moz", "ms", "O"]
+  #     elem = $sourcePointer[0]
+  #     prefixes.forEach (prefix) ->
+  #         elem.style[prefix + "Transform"] = "rotate(" + arrowRotation + "deg)"
+  #   else 
+  #     $sourcePointer.hide()
 
   locationFound: (pos) =>
     @currentPos = pos
@@ -266,19 +247,22 @@ module.exports = class LocationView extends Backbone.View
     @$("#location_edit_controls").slideUp() 
 
   getAccuracyStrength: (pos) =>
-    if not (pos and pos.coords and pos.coords.accuracy?)
-      return { color: "red", class: "text-danger", strength: "none", text: "Waiting for GPS..." }
-
-    # Calculate age
-    age = new Date().getTime() - pos.timestamp
-
-    # If inaccurate or old (> 30 sec)
-    if pos.coords.accuracy > 100 or age > 30*1000
-      return { color: "red", class: "text-danger", strength: "weak", text: "Waiting for GPS..." }
-    else if pos.coords.accuracy > 25
-      return { color: "yellow", class: "text-warning", strength: "fair", text: "Low accuracy GPS ±" + pos.coords.accuracy.toFixed(0) + "m"}
-    else 
-      return { color: "green", class: "text-success", strength: "strong", text: "GPS Acquired" }
+    strength = @currentPositionFinder.calcStrength(pos)
+    switch strength
+      when "none"
+        text = @T('Waiting for GPS...')
+        textClass = 'text-danger'
+      when "poor"
+        text = @T('Very Low GPS Accuracy ±{0}m', pos.coords.accuracy.toFixed(0))
+        textClass = 'text-warning'
+      when "fair"
+        text = @T('Low GPS Accuracy ±{0}m', pos.coords.accuracy.toFixed(0))
+        textClass = 'text-warning'
+      when "good", "excellent"
+        text = @T('Good GPS Accuracy ±{0}m', pos.coords.accuracy.toFixed(0))
+        textClass = 'text-success'
+      
+    return { class: textClass, text: text }
 
   getRelativeLocation: (from, to) =>
     x1 = from.longitude

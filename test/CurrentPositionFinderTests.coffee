@@ -168,6 +168,7 @@ describe "CurrentPositionFinder", ->
 
     @locationFinder.trigger 'error', "some error"
     assert.equal error, 'some error'
+    assert.equal @posFinder.error, 'some error'
 
   it "stops if location finder reports error", ->
     @locationFinder.trigger 'error', "some error"

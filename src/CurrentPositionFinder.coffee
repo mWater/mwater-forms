@@ -11,12 +11,11 @@ recentThreshold = 30000
 
 # Uses an algorithm to accurately find current position (coords + timestamp). Fires status events and found event. 
 module.exports = class CurrentPositionFinder
-  constructor: (options) ->
+  constructor: (options={}) ->
     # Add events
     _.extend @, Backbone.Events 
 
     @locationFinder = options.locationFinder or new LocationFinder()
-
     @_reset()
 
   _reset: ->
@@ -32,8 +31,8 @@ module.exports = class CurrentPositionFinder
     @_reset()
 
     @running = true
-    @listenTo @locationFinder, "found", @found
-    @listenTo @locationFinder, "error", @error
+    @listenTo @locationFinder, "found", @locationFinderFound
+    @listenTo @locationFinder, "error", @locationFinderError
     @locationFinder.startWatch()
 
     # Update status
@@ -46,7 +45,7 @@ module.exports = class CurrentPositionFinder
     @locationFinder.stopWatch()
     @stopListening()
 
-  found: (pos) =>
+  locationFinderFound: (pos) =>
     # Calculate strength of new position
     newStrength = @calcStrength(pos)
 
@@ -70,8 +69,9 @@ module.exports = class CurrentPositionFinder
       @stop()
       @trigger 'found', @pos
 
-  error: (err) =>
+  locationFinderError: (err) =>
     @stop()
+    @error = err
     @trigger 'error', err
 
   updateStatus: ->

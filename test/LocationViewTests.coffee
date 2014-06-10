@@ -6,6 +6,7 @@ assert = require('chai').assert
 forms = require '../src'
 LocationView = forms.LocationView
 UIDriver = require './helpers/UIDriver'
+CurrentPositionFinder = require '../src/CurrentPositionFinder'
 
 class MockLocationFinder
   constructor:  ->
@@ -17,11 +18,26 @@ class MockLocationFinder
   stopWatch: ->
     @watching = false
 
+class MockCurrentPositionFinder extends CurrentPositionFinder
+  constructor:  ->
+    _.extend @, Backbone.Events
+
+  start: ->
+    @running = true
+    @strength = 'none'
+
+  stopWatch: ->
+    @running = false
+
 describe 'LocationView', ->
   context 'With no set location', ->
     beforeEach ->
       @locationFinder = new MockLocationFinder()
-      @locationView = new LocationView(loc:null, locationFinder: @locationFinder)
+      @currentPositionFinder = new MockCurrentPositionFinder()
+      @locationView = new LocationView({
+        loc:null, 
+        locationFinder: @locationFinder, 
+        currentPositionFinder: @currentPositionFinder})
       @ui = new UIDriver(@locationView.el)
 
     it 'displays Unspecified', ->
@@ -60,7 +76,11 @@ describe 'LocationView', ->
   context 'With set location', ->
     beforeEach ->
       @locationFinder = new MockLocationFinder()
-      @locationView = new LocationView(loc: { latitude: 20, longitude: 10, accuracy: 0}, locationFinder: @locationFinder)
+      @currentPositionFinder = new MockCurrentPositionFinder()
+      @locationView = new LocationView({
+        loc: { latitude: 20, longitude: 10, accuracy: 0}, 
+        locationFinder: @locationFinder, 
+        currentPositionFinder: @currentPositionFinder})
       @ui = new UIDriver(@locationView.el)
 
     it 'displays Waiting', ->
@@ -73,30 +93,37 @@ describe 'LocationView', ->
   context 'With set location', ->
     beforeEach ->
       @locationFinder = new MockLocationFinder()
-      @locationView = new LocationView(loc: { latitude: 20, longitude: 10, accuracy: 0}, locationFinder: @locationFinder)
+      @currentPositionFinder = new MockCurrentPositionFinder()
+      @locationView = new LocationView({ 
+        loc: { latitude: 20, longitude: 10, accuracy: 0}, 
+        locationFinder: @locationFinder,
+        currentPositionFinder: @currentPositionFinder})
       @ui = new UIDriver(@locationView.el)
 
     it 'displays Waiting', ->
       assert.include(@ui.text(), 'Waiting')
+      assert not @locationView.$("#use_anyway").is(":visible")
 
-    it 'Set shows Use Anyway if recent >25 <100m accuracy', ->
-      @locationFinder.getLocation = (success, error) =>
-        success({ coords: { latitude: 2, longitude: 3, accuracy: 30}, timestamp: new Date().getTime()})
+    it 'Set shows Use Anyway if recent fair accuracy', ->
       @ui.click ("Set")
+      @currentPositionFinder.strength = 'fair'
+      @currentPositionFinder.trigger 'status', { strength: 'fair' }
 
-      assert.include(@ui.text(), 'Use Anyway') 
+      assert.equal @locationView.$("#use_anyway").css('display'), 'inline-block'
 
-    it "Set doesn't shows Use Anyway if not recent >25 <100m accuracy", ->
-      @locationFinder.getLocation = (success, error) =>
-        success({ coords: { latitude: 2, longitude: 3, accuracy: 30}, timestamp: new Date().getTime() - 1000*35})
-      @ui.click ("Set")
+    # it "Set doesn't shows Use Anyway if not recent >25 <100m accuracy", ->
+    #   @locationFinder.getLocation = (success, error) =>
+    #     success({ coords: { latitude: 2, longitude: 3, accuracy: 30}, timestamp: new Date().getTime() - 1000*35})
+    #   @ui.click ("Set")
 
-      # Doesn't show use anyway
-      assert.notInclude(@ui.text(), 'Use Anyway')
+    #   # Doesn't show use anyway
+    #   assert.notInclude(@ui.text(), 'Use Anyway')
 
     it 'Use Anyway uses location', ->
-      @locationFinder.getLocation = (success, error) =>
-        success({ coords: { latitude: 2, longitude: 3, accuracy: 30}, timestamp: new Date().getTime()})
+      @ui.click ("Set")
+      @currentPositionFinder.strength = 'fair'
+      @currentPositionFinder.trigger 'status', { strength: 'fair' }
+      @currentPositionFinder.pos = { coords: { latitude: 2, longitude: 3, accuracy: 30}, timestamp: new Date().getTime()}
 
       setPos = null
       @locationView.on 'locationset', (pos) ->
