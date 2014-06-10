@@ -161,6 +161,18 @@ describe "CurrentPositionFinder", ->
     assert.equal @status.useable, true
     assert.deepEqual @status.pos, pos1
 
+  it "fires error if location finder reports error", ->
+    error = ''
+    @posFinder.on 'error', (err) ->
+      error = err
+
+    @locationFinder.trigger 'error', "some error"
+    assert.equal error, 'some error'
+
+  it "stops if location finder reports error", ->
+    @locationFinder.trigger 'error', "some error"
+    assert.equal @posFinder.running, false
+
 class MockLocationFinder
   constructor:  ->
     _.extend @, Backbone.Events

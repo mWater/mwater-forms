@@ -16,7 +16,6 @@ module.exports = class CurrentPositionFinder
     _.extend @, Backbone.Events 
 
     @locationFinder = options.locationFinder or new LocationFinder()
-    @listenTo @locationFinder, "found", @found
 
     @_reset()
 
@@ -33,6 +32,8 @@ module.exports = class CurrentPositionFinder
     @_reset()
 
     @running = true
+    @listenTo @locationFinder, "found", @found
+    @listenTo @locationFinder, "error", @error
     @locationFinder.startWatch()
 
     # Update status
@@ -68,6 +69,10 @@ module.exports = class CurrentPositionFinder
     if @strength == "excellent"
       @stop()
       @trigger 'found', @pos
+
+  error: (err) =>
+    @stop()
+    @trigger 'error', err
 
   updateStatus: ->
     @strength = @calcStrength(@pos)
