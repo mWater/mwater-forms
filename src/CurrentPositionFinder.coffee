@@ -17,11 +17,21 @@ module.exports = class CurrentPositionFinder
 
     @locationFinder = options.locationFinder or new LocationFinder()
     @listenTo @locationFinder, "found", @found
+
+    @_reset()
+
+  _reset: ->
     @running = false
     @initialDelayComplete = false
     @goodDelayRunning = false
 
+    @strength = 'none'
+    @pos = null
+    @useable = false
+
   start: ->
+    @_reset()
+
     @running = true
     @locationFinder.startWatch()
 
@@ -51,21 +61,20 @@ module.exports = class CurrentPositionFinder
     @updateStatus()
 
     # Start good delay if needed
-    if not @goodDelayRunning and @status.strength == "good"
+    if not @goodDelayRunning and @strength == "good"
       setTimeout @afterGoodDelay, goodDelay
 
     # Set position if excellent
-    if @status.strength == "excellent"
+    if @strength == "excellent"
       @stop()
       @trigger 'found', @pos
 
   updateStatus: ->
-    strength = @calcStrength(@pos)
-    useable = (@initialDelayComplete and strength in ["fair", "poor"]) or strength == "good"
-    @status = { strength: strength, pos: @pos, useable: useable }
-
+    @strength = @calcStrength(@pos)
+    @useable = (@initialDelayComplete and @strength in ["fair", "poor"]) or @strength == "good"
+    
     # Trigger status
-    @trigger 'status', @status
+    @trigger 'status', { strength: @strength, pos: @pos, useable: @useable }
 
   afterInitialDelay: =>
     # Set useable if strength is not none

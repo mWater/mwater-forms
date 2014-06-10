@@ -131,6 +131,7 @@ describe "CurrentPositionFinder", ->
     pos1 = createPos(fairAcc - 1)
     @locationFinder.fire(pos1)
     assert.equal @status.strength, "fair"
+    assert.equal @posFinder.strength, "fair"
   
   it "useable false immediately if poor", ->
     pos1 = createPos(fairAcc + 1)
