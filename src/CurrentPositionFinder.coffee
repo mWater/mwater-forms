@@ -2,7 +2,7 @@ _ = require 'underscore'
 Backbone = require 'backbone'
 LocationFinder = require './LocationFinder'
 
-initialDelay = 15000
+initialDelay = 10000
 goodDelay = 5000
 excellentAcc = 5
 goodAcc = 10

@@ -6,7 +6,7 @@ sinon = require 'sinon'
 CurrentPositionFinder = require '../src/CurrentPositionFinder'
 
 
-initialDelay = 15000
+initialDelay = 10000
 goodDelay = 5000
 excellentAcc = 5
 goodAcc = 10

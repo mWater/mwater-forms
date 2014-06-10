@@ -23,9 +23,11 @@
 </table>
 <div id="location_absolute" class="text-muted"></div>
 <div id="location_setter" class="alert alert-warning">
-  <b><span id="location_setter_msg"></span></b>
-  <button id="use_anyway" type="button" class="btn btn-sm btn-default" style="margin-left:5px">{{T "Use Anyway"}}</button>
-  <button id="cancel_set" type="button" class="btn btn-sm btn-default" style="margin-left:5px">{{T 'Cancel'}}</button>
+  <div><b><span id="location_setter_msg"></span></b></div>
+  <div>
+    <button id="use_anyway" type="button" class="btn btn-sm btn-default" style="margin-left:5px">{{T "Use Anyway"}}</button>
+    <button id="cancel_set" type="button" class="btn btn-sm btn-default" style="margin-left:5px">{{T 'Cancel'}}</button>
+  </div>
 </div>
 <div id="notification" class="alert" style="display: none"></div>
 <div id="location_edit_controls" class="form" style="margin-top: 5px; display:none;">
@@ -40,7 +42,6 @@
   <button id="save_button" type="button" class="btn btn-primary">{{T "Save"}}</button>  
   <button id="cancel_button" type="button" class="btn btn-default">{{T "Cancel"}}</button>
 </div>
-
 
 <style>
 #source_pointer {

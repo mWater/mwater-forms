@@ -104,7 +104,7 @@ module.exports = class LocationView extends Backbone.View
     # Disable edit if readonly
     @$("#location_edit").attr("disabled", @readonly)
 
-    if @loc or @currentPositionFinder.running
+    if @loc and not @currentPositionFinder.running
       accuracy = @getAccuracyStrength(@currentPos)
       @$("#gps_strength").attr("class", accuracy.class)
       @$("#gps_strength").text accuracy.text
@@ -120,9 +120,9 @@ module.exports = class LocationView extends Backbone.View
         when "none"
           msg = @T('Waiting for GPS...')
         when "poor"
-          msg = @T('Very low GPS Accuracy')
+          msg = @T('Very low GPS Accuracy (±{0}m)...', @currentPositionFinder.pos.coords.accuracy.toFixed(0))
         when "fair"
-          msg = @T('Low GPS Accuracy')
+          msg = @T('Low GPS Accuracy (±{0}m)...', @currentPositionFinder.pos.coords.accuracy.toFixed(0))
         when "good"
           msg = @T('Setting location...')
       @$("#location_setter_msg").text(msg)
@@ -176,7 +176,7 @@ module.exports = class LocationView extends Backbone.View
   currentPositionError: (err) ->
     @displayNotification @T("Cannot set location"), "alert-danger", true
 
-  cancelSetting: ->
+  cancelSet: ->
     @currentPositionFinder.stop()
     @render()
 
