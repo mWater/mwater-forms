@@ -17,6 +17,7 @@ module.exports = class LocationQuestion extends Question
       readonly: @options.readonly
       disableMap: not @ctx.displayMap?
       locationFinder: @ctx.locationFinder
+      currentPositionFinder: @ctx.currentPositionFinder
       T: @T
     })
 

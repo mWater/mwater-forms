@@ -182,7 +182,11 @@ module.exports = class LocationView extends Backbone.View
 
   useAnyway: ->
     if @currentPositionFinder.running
-      @currentPositionFound(@currentPositionFinder.pos)
+      if @currentPositionFinder.strength == "poor"
+        if confirm(T("Use location with very low accuracy (±{0}m)?", @currentPositionFinder.pos.coords.accuracy.toFixed(0)))
+          @currentPositionFound(@currentPositionFinder.pos)
+      else
+        @currentPositionFound(@currentPositionFinder.pos)
 
   # compassChange: (values) =>
   #   if not @currentPos or not @loc

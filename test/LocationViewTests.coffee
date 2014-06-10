@@ -26,7 +26,7 @@ class MockCurrentPositionFinder extends CurrentPositionFinder
     @running = true
     @strength = 'none'
 
-  stopWatch: ->
+  stop: ->
     @running = false
 
 describe 'LocationView', ->
@@ -46,32 +46,32 @@ describe 'LocationView', ->
     it 'disables map', ->
       assert.isTrue @ui.getDisabled("Map") 
 
-    it 'allows setting location', ->
-      @locationFinder.getLocation = (success, error) =>
-        success({ coords: { latitude: 2, longitude: 3, accuracy: 5}, timestamp: new Date().getTime()})
+    # it 'allows setting location', ->
+    #   @locationFinder.getLocation = (success, error) =>
+    #     success({ coords: { latitude: 2, longitude: 3, accuracy: 5}, timestamp: new Date().getTime()})
 
-      setPos = null
-      @locationView.on 'locationset', (pos) ->
-        setPos = pos
+    #   setPos = null
+    #   @locationView.on 'locationset', (pos) ->
+    #     setPos = pos
 
-      @ui.click('Set')
+    #   @ui.click('Set')
 
-      assert.equal setPos.latitude, 2
+    #   assert.equal setPos.latitude, 2
 
-    it 'allows cancelling setting location'
+    # it 'allows cancelling setting location'
 
-    it 'Displays error', ->
-      @locationFinder.getLocation = (success, error) =>
-        error()
+    # it 'Displays error', ->
+    #   @locationFinder.getLocation = (success, error) =>
+    #     error()
 
-      setPos = null
-      @locationView.on 'locationset', (pos) ->
-        setPos = pos
+    #   setPos = null
+    #   @locationView.on 'locationset', (pos) ->
+    #     setPos = pos
 
-      @ui.click('Set')
+    #   @ui.click('Set')
 
-      assert.equal setPos, null
-      assert.include(@ui.text(), 'Unable')
+    #   assert.equal setPos, null
+    #   assert.include(@ui.text(), 'Unable')
 
   context 'With set location', ->
     beforeEach ->
@@ -107,7 +107,8 @@ describe 'LocationView', ->
     it 'Set shows Use Anyway if recent fair accuracy', ->
       @ui.click ("Set")
       @currentPositionFinder.strength = 'fair'
-      @currentPositionFinder.trigger 'status', { strength: 'fair' }
+      @currentPositionFinder.pos = { coords: { latitude: 2, longitude: 3, accuracy: 20}, timestamp: new Date().getTime()}
+      @currentPositionFinder.trigger 'status', { strength: 'fair', pos: @currentPositionFinder.pos }
 
       assert.equal @locationView.$("#use_anyway").css('display'), 'inline-block'
 
@@ -122,8 +123,8 @@ describe 'LocationView', ->
     it 'Use Anyway uses location', ->
       @ui.click ("Set")
       @currentPositionFinder.strength = 'fair'
-      @currentPositionFinder.trigger 'status', { strength: 'fair' }
       @currentPositionFinder.pos = { coords: { latitude: 2, longitude: 3, accuracy: 30}, timestamp: new Date().getTime()}
+      @currentPositionFinder.trigger 'status', { strength: 'fair', pos: @currentPositionFinder.pos }
 
       setPos = null
       @locationView.on 'locationset', (pos) ->
