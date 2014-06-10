@@ -5,7 +5,6 @@ _ = require 'underscore'
 class LocationFinder
   constructor: ->
     _.extend @, Backbone.Events
-    throw "asdfasdf"
 
   cacheLocation = (pos) ->
     window.localStorage['LocationFinder.lastPosition'] = JSON.stringify(pos)
