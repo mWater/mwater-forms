@@ -207,6 +207,10 @@
     {
       "_base": "en",
       "en": "Low GPS Accuracy (±{0}m)..."
+    },
+    {
+      "_base": "en",
+      "en": "Use location with very low accuracy (±{0}m)?"
     }
   ]
 }
