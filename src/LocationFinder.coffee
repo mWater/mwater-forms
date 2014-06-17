@@ -24,7 +24,7 @@ class LocationFinder
   getLocation: (success, error) ->
     # If no geolocation, send error immediately
     if not navigator.geolocation
-      error("No geolocation available")
+      if error then error("No geolocation available")
       return
 
     console.log "Getting location"
