@@ -11,7 +11,7 @@
 * **"text"**
     - {value: "text"}
 * **"number"**
-    - {value: "number"}
+    - {value: "float"}
 * **"choice"**
     - {value: "choice_ID"}
 * **"choices"**
@@ -24,7 +24,7 @@
     - {value: {quantity:"12", units:"cm"}}
     - Legacy: {value: "12", units:"cm"}
 * **"location"**
-    - {value: {accuracy:"int", altitude:"decimal", altitudeAccuracy:"int", longitude:"decimal", latitude:"decimal"}}
+    - {value: {accuracy:"float", altitude:"float", altitudeAccuracy:"float", longitude:"float", latitude:"float"}}
 * **"image"**
     - {value: {id:"image_ID"}}
 * **"images"**
