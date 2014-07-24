@@ -1,8 +1,8 @@
 dedup Locationfinder, LocationView
 
-add displayImage to context
+DONE add displayImage to context
 
-add selectSite to context
+DONE add selectSite to context
 
 remove checkbox mobile behaviour
 
@@ -16,8 +16,8 @@ radio buttons no longer have events attached automatically
 
 checkboxes no longer have events attached automatically
 
-GeoJSON removed!
+DONE GeoJSON removed!
 
 LocationView uses { latitude, longitude, accuracy, etc. }
 
-Remove scrollintoview plugin from app
+DONE Remove scrollintoview plugin from app

@@ -40,6 +40,9 @@ describe "CurrentPositionFinder", ->
 
     @posFinder.start()
 
+  afterEach ->
+    @clock.restore()
+
   it "starts location finder", ->
     assert.isTrue @locationFinder.watching
 

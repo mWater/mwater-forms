@@ -197,7 +197,6 @@ exports.duplicateItem = (item, idMap) ->
   # If form or section and ids not mapped, map ids
   if not idMap and item._type in ["Form", "Section"]
     idMap = {}
-    console.log "hi"
     for question in exports.priorQuestions(item)
       idMap[question._id] = exports.createUid()
 

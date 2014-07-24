@@ -24,7 +24,8 @@
     },
     {
       "_base": "en",
-      "en": "N/A"
+      "en": "N/A",
+      "_unused": true
     },
     {
       "_base": "en",
@@ -211,6 +212,10 @@
     {
       "_base": "en",
       "en": "Use location with very low accuracy (±{0}m)?"
+    },
+    {
+      "_base": "en",
+      "en": "Not Applicable"
     }
   ]
 }
