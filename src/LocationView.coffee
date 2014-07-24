@@ -5,6 +5,7 @@ OrientationFinder = require './OrientationFinder'
 _ = require 'underscore'
 ezlocalize = require 'ez-localize'
 CurrentPositionFinder = require './CurrentPositionFinder'
+utils = require './utils'
 
 # Shows the relative location of a point and allows setting it
 # Fires events locationset, map, both with 
@@ -78,8 +79,8 @@ module.exports = class LocationView extends Backbone.View
       @$("#location_relative").text(@T("Setting location..."))
     else if @loc and @currentPos
       # Calculate relative location
-      relativeLocation = @getRelativeLocation @currentPos.coords, @loc
-      @$("#location_relative").text(relativeLocation.distance + " " + relativeLocation.cardinalDirection)
+      relativeLocation = utils.getRelativeLocation(@currentPos.coords, @loc)
+      @$("#location_relative").text(utils.formatRelativeLocation(relativeLocation, @T))
     else 
       @$("#location_relative").text("")
 
@@ -105,9 +106,9 @@ module.exports = class LocationView extends Backbone.View
     @$("#location_edit").attr("disabled", @readonly)
 
     if @loc and not @currentPositionFinder.running
-      accuracy = @getAccuracyStrength(@currentPos)
-      @$("#gps_strength").attr("class", accuracy.class)
-      @$("#gps_strength").text accuracy.text
+      strength = utils.formatGPSStrength(@currentPos, @T)
+      @$("#gps_strength").attr("class", strength.class)
+      @$("#gps_strength").text strength.text
     else
       @$("#gps_strength").text ""
 
@@ -249,52 +250,3 @@ module.exports = class LocationView extends Backbone.View
 
   cancelEditLocation: ->
     @$("#location_edit_controls").slideUp() 
-
-  getAccuracyStrength: (pos) =>
-    strength = @currentPositionFinder.calcStrength(pos)
-    switch strength
-      when "none"
-        text = @T('Waiting for GPS...')
-        textClass = 'text-danger'
-      when "poor"
-        text = @T('Very Low GPS Accuracy ±{0}m', pos.coords.accuracy.toFixed(0))
-        textClass = 'text-warning'
-      when "fair"
-        text = @T('Low GPS Accuracy ±{0}m', pos.coords.accuracy.toFixed(0))
-        textClass = 'text-warning'
-      when "good", "excellent"
-        text = @T('Good GPS Accuracy ±{0}m', pos.coords.accuracy.toFixed(0))
-        textClass = 'text-success'
-      
-    return { class: textClass, text: text }
-
-  getRelativeLocation: (from, to) =>
-    x1 = from.longitude
-    y1 = from.latitude
-    x2 = to.longitude
-    y2 = to.latitude
-    
-    # Convert to relative position (approximate)
-    dy = (y2 - y1) / 57.3 * 6371000
-    dx = Math.cos(y1 / 57.3) * (x2 - x1) / 57.3 * 6371000
-    
-    # Determine direction and angle
-    dist = Math.sqrt(dx * dx + dy * dy)
-    angle = 90 - (Math.atan2(dy, dx) * 57.3)
-    angle += 360 if angle < 0
-    angle -= 360 if angle > 360
-    
-    # Get approximate direction
-    compassDir = (Math.floor((angle + 22.5) / 45)) % 8
-    compassStrs = [@T("N"), @T("NE"), @T("E"), @T("SE"), @T("S"), @T("SW"), @T("W"), @T("NW")]
-
-    if dist > 1000
-      distance = (dist / 1000).toFixed(1) + " " + @T("km")
-    else
-      distance = (dist).toFixed(0) + " " + @T("m")
-
-    return {
-      distance: distance,
-      cardinalDirection: compassStrs[compassDir],
-      bearing: angle
-    }

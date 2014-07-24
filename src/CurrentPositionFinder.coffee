@@ -1,13 +1,10 @@
 _ = require 'underscore'
 Backbone = require 'backbone'
 LocationFinder = require './LocationFinder'
+utils = require './utils'
 
 initialDelay = 10000
 goodDelay = 5000
-excellentAcc = 5
-goodAcc = 10
-fairAcc = 50
-recentThreshold = 30000
 
 # Uses an algorithm to accurately find current position (coords + timestamp). Fires status events and found event. 
 module.exports = class CurrentPositionFinder
@@ -47,7 +44,7 @@ module.exports = class CurrentPositionFinder
 
   locationFinderFound: (pos) =>
     # Calculate strength of new position
-    newStrength = @calcStrength(pos)
+    newStrength = utils.calculateGPSStrength(pos)
 
     # If none, do nothing
     if newStrength == "none"
@@ -75,7 +72,7 @@ module.exports = class CurrentPositionFinder
     @trigger 'error', err
 
   updateStatus: ->
-    @strength = @calcStrength(@pos)
+    @strength = utils.calculateGPSStrength(@pos)
     @useable = (@initialDelayComplete and @strength in ["fair", "poor"]) or @strength == "good"
     
     # Trigger status
@@ -91,22 +88,3 @@ module.exports = class CurrentPositionFinder
     if @running
       @stop()
       @trigger 'found', @pos
-
-  calcStrength: (pos) ->
-    if not pos
-      return "none"
-
-    # If old, accuracy is none
-    if pos.timestamp < new Date().getTime() - recentThreshold
-      return "none"
-
-    if pos.coords.accuracy <= excellentAcc
-      return "excellent"
-
-    if pos.coords.accuracy <= goodAcc
-      return "good"
-
-    if pos.coords.accuracy <= fairAcc
-      return "fair"
-
-    return "poor"
