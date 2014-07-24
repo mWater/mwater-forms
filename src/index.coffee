@@ -28,6 +28,7 @@ exports.FormCompiler = require './FormCompiler'
 exports.LocationView = require './LocationView'
 exports.FormView = require './FormView'
 exports.utils = require './utils'
+exports.LocationFinder = require './LocationFinder'
 
 exports.schemaVersion = 1 # Version of the schema that this package supports (cannot compile if higher)
 exports.minSchemaVersion = 1 # Minimim version of forms schema that can be compiled
