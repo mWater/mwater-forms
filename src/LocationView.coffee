@@ -1,7 +1,6 @@
 Backbone = require 'backbone'
 Backbone.$ = require 'jquery'
 LocationFinder = require './LocationFinder'
-OrientationFinder = require './OrientationFinder'
 _ = require 'underscore'
 ezlocalize = require 'ez-localize'
 CurrentPositionFinder = require './CurrentPositionFinder'
@@ -25,9 +24,7 @@ module.exports = class LocationView extends Backbone.View
     @disableMap = options.disableMap
     @settingLocation = false
     @locationFinder = options.locationFinder || new LocationFinder()
-    @orientationFinder = options.orientationFinder || new OrientationFinder()
     @currentPositionFinder = options.currentPositionFinder || new CurrentPositionFinder()
-    #@orientationFinder.startWatch() TODO reenable some day
 
     @T = options.T or ezlocalize.defaultT
 
@@ -39,9 +36,6 @@ module.exports = class LocationView extends Backbone.View
     @listenTo(@currentPositionFinder, 'found', @currentPositionFound)
     @listenTo(@currentPositionFinder, 'error', @currentPositionError)
     @listenTo(@currentPositionFinder, 'status', @render)
-
-    # Listen to device orientation events TODO reenable some day
-    #@listenTo(@orientationFinder, 'orientationChange', @compassChange)
 
     # Start tracking location if set
     if @loc
@@ -65,7 +59,6 @@ module.exports = class LocationView extends Backbone.View
   remove: ->
     @settingLocation = false
     @locationFinder.stopWatch()
-    @orientationFinder.stopWatch()
     @currentPositionFinder.stop()
     super()
 
@@ -184,31 +177,10 @@ module.exports = class LocationView extends Backbone.View
   useAnyway: ->
     if @currentPositionFinder.running
       if @currentPositionFinder.strength == "poor"
-        if confirm(T("Use location with very low accuracy (±{0}m)?", @currentPositionFinder.pos.coords.accuracy.toFixed(0)))
+        if confirm(@T("Use location with very low accuracy (±{0}m)?", @currentPositionFinder.pos.coords.accuracy.toFixed(0)))
           @currentPositionFound(@currentPositionFinder.pos)
       else
         @currentPositionFound(@currentPositionFinder.pos)
-
-  # compassChange: (values) =>
-  #   if not @currentPos or not @loc
-  #     return
-
-  #   accuracy = @getAccuracyStrength @currentPos
-  #   $sourcePointer = @$("#source_pointer .glyphicon")
-
-  #   # Calculate relative location
-  #   relativeLocation = getRelativeLocation @currentPos.coords, @loc
-
-  #   # Only display the compass if we can accurately calculate relative direction
-  #   if relativeLocation and (accuracy.strength != 'weak' and accuracy.strength != 'none') and @orientationFinder.active # TODO 'none' shoudl be here!!!
-  #     $sourcePointer.show()
-  #     arrowRotation = relativeLocation.bearing + values.normalized.alpha
-  #     prefixes = ["", "Webkit", "Moz", "ms", "O"]
-  #     elem = $sourcePointer[0]
-  #     prefixes.forEach (prefix) ->
-  #         elem.style[prefix + "Transform"] = "rotate(" + arrowRotation + "deg)"
-  #   else 
-  #     $sourcePointer.hide()
 
   locationFound: (pos) =>
     @currentPos = pos
