@@ -11,7 +11,7 @@ goodDelay = 5000
 excellentAcc = 5
 goodAcc = 10
 fairAcc = 50
-recentThreshold = 30000
+recentThreshold = 90000
 
 createPos = (accuracy, timeago = 0) ->
   return {

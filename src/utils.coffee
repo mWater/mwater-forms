@@ -39,7 +39,8 @@ exports.calculateGPSStrength = (pos) ->
   excellentAcc = 5
   goodAcc = 10
   fairAcc = 50
-  recentThreshold = 30000
+  # Recent is 90 seconds because some devices update only once per minute if no movement
+  recentThreshold = 90000
 
   if not pos
     return "none"
