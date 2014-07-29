@@ -28,6 +28,10 @@
   display:table-cell;
 }
 
+.question-code {
+  color: #888;
+}
+
 .prompt {
 }
 

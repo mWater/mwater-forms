@@ -177,6 +177,7 @@ module.exports = class FormCompiler
       id: q._id
       required: q.required
       prompt: @compileString(q.text)
+      code: q.code
       hint: @compileString(q.hint)
       help: if @compileString(q.help) then markdown.toHTML(@compileString(q.help))
       commentsField: q.commentsField

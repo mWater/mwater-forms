@@ -1,5 +1,8 @@
 {{#if options.prompt}}
 	<div class="prompt">
+		{{#if options.code}}
+			<span class="question-code">{{options.code}}:</span>
+		{{/if}}
 		{{options.prompt}}
 		{{#if options.required}}
 			<span class="required">*</span>
