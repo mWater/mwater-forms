@@ -120,6 +120,10 @@ class LocationFinder
         enableHighAccuracy : true
     })  
 
+    # Listen for pause events to stop watching
+    document.addEventListener "pause", @pause
+    document.addEventListener "resume", @resume
+
     console.log "Starting location watch #{this.locationWatchId}"
 
     # Fire stored one within short time
@@ -135,5 +139,20 @@ class LocationFinder
       console.log "Stopping location watch #{this.locationWatchId}"
       navigator.geolocation.clearWatch(@locationWatchId)
       @locationWatchId = undefined
+
+    # Listen for pause events to stop watching
+    document.removeEventListener "pause", @pause
+    document.removeEventListener "resume", @resume
+
+  pause: =>
+    if @locationWatchId?
+      navigator.geolocation.clearWatch(@locationWatchId)
+      @locationWatchId = undefined
+
+  resume: =>
+    if not @locationWatchId?
+      @locationWatchId = navigator.geolocation.watchPosition(highAccuracy, highAccuracyError, {
+          enableHighAccuracy : true
+      })  
 
 module.exports = LocationFinder  
