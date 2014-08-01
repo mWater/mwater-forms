@@ -100,7 +100,6 @@ class LocationFinder
       console.error "Low accuracy watch location error: #{err}"
 
     highAccuracy = (pos) =>
-      console.log "High accuracy watch location: " + JSON.stringify(pos)
       highAccuracyFired = true
       cacheLocation(pos)
       @trigger 'found', pos
@@ -150,6 +149,14 @@ class LocationFinder
       @locationWatchId = undefined
 
   resume: =>
+    highAccuracy = (pos) =>
+      cacheLocation(pos)
+      @trigger 'found', pos
+
+    highAccuracyError = (err) =>
+      console.error "High accuracy watch location error: #{err}"
+      @trigger 'error'
+
     if not @locationWatchId?
       @locationWatchId = navigator.geolocation.watchPosition(highAccuracy, highAccuracyError, {
           enableHighAccuracy : true
