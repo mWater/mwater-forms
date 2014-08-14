@@ -149,7 +149,8 @@
     },
     {
       "_base": "en",
-      "en": "Set"
+      "en": "Set",
+      "_unused": true
     },
     {
       "_base": "en",
@@ -157,7 +158,8 @@
     },
     {
       "_base": "en",
-      "en": "Map"
+      "en": "Map",
+      "_unused": true
     },
     {
       "_base": "en",
@@ -221,6 +223,14 @@
     {
       "_base": "en",
       "en": "meters"
+    },
+    {
+      "_base": "en",
+      "en": "Set To Current Location"
+    },
+    {
+      "_base": "en",
+      "en": "Set Using Map"
     }
   ]
 }
