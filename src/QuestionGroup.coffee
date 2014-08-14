@@ -9,6 +9,7 @@ module.exports = class QuestionGroup extends Backbone.View
     @contents = options.contents
     @render()
 
+  # Returns true if validates ok
   validate: ->
     # Get all visible items
     items = _.filter(@contents, (c) ->

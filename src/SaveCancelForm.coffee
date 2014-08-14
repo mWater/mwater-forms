@@ -20,6 +20,7 @@ module.exports = Backbone.View.extend
     'click #save_button': 'save'
     'click #cancel_button': 'cancel'
 
+  # Returns true if validates ok
   validate: ->
     # Get all visible items
     items = _.filter(@contents, (c) ->

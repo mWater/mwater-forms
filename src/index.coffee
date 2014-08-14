@@ -74,6 +74,7 @@ exports.WaterTestEditView = class WaterTestEditView extends exports.FormView
     "click #complete_button" : "complete"
 
   # TODO refactor with SaveCancelForm
+  # Returns true if validates ok
   validate: ->
     # Get all visible items
     items = _.filter(@contents, (c) ->

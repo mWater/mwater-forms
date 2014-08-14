@@ -21,6 +21,7 @@ module.exports = class FormControls extends Backbone.View
     "click #close": "close"
     "click .finish": "finish"
 
+  # Returns true if validates ok
   validate: ->
     # Get all visible items
     items = _.filter @contents, (c) ->

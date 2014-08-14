@@ -21,6 +21,7 @@ module.exports = class Section extends Backbone.View
     return true unless @options.conditional
     @options.conditional @model
 
+  # Returns true if validates ok
   validate: ->
     # Get all visible items
     items = _.filter @contents, (c) ->
