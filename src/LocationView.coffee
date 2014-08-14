@@ -87,7 +87,7 @@ module.exports = class LocationView extends Backbone.View
       @$("#location_map").hide()
       
     # Disable map if location not set
-    @$("#location_map").attr("disabled", not @loc or @disableMap)
+    @$("#location_map").attr("disabled", @disableMap || @readonly)
 
     # Disable clear if location not set or readonly
     @$("#location_clear").attr("disabled", not @loc || @readonly)
