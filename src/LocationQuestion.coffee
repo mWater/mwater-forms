@@ -23,7 +23,9 @@ module.exports = class LocationQuestion extends Question
 
     @locationView.on 'map', (loc) =>
       if @ctx.displayMap?
-        @ctx.displayMap(loc)
+        @ctx.displayMap(loc, (newLoc) =>
+          @setAnswerValue(newLoc)
+        )
 
     @locationView.on "locationset", (loc) =>
       if loc?
