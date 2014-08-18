@@ -51,8 +51,8 @@ module.exports = class LocationView extends Backbone.View
     'click #location_set' : 'setLocation'
     'click #location_clear' : 'clearLocation'
     'click #location_edit' : 'editLocation'
-    'click #save_button' : 'saveEditLocation'
-    'click #cancel_button' : 'cancelEditLocation'
+    'click #save_edit_button' : 'saveEditLocation'
+    'click #cancel_edit_button' : 'cancelEditLocation'
     'click #cancel_set': "cancelSet"
     'click #use_anyway': "useAnyway"
 

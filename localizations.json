@@ -226,11 +226,21 @@
     },
     {
       "_base": "en",
-      "en": "Set To Current Location"
+      "en": "Set To Current Location",
+      "_unused": true
     },
     {
       "_base": "en",
-      "en": "Set Using Map"
+      "en": "Set Using Map",
+      "_unused": true
+    },
+    {
+      "_base": "en",
+      "en": "Current Location"
+    },
+    {
+      "_base": "en",
+      "en": "Use Map"
     }
   ]
 }
