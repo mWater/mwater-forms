@@ -41,6 +41,7 @@
     "gulp-concat": "^2.2.0",
     "gulp-open": "~0.2.8",
     "gulp-util": "^2.2.14",
+    "jjv": "^1.0.0",
     "ngrok": "~0.1.92",
     "sinon": "^1.10.2",
     "vinyl-source-stream": "~0.1.1"
