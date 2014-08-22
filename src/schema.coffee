@@ -241,15 +241,24 @@ module.exports = {
     TextQuestion: {
       properties: extendQuestionProperties({
         _type: { enum: ["TextQuestion"] }
-        format: "string" # TODO
+
+        # Format of the text field
+        format: { enum: [
+          "singleline" # single line of text
+          "multiline" # paragraph of text
+          "email" # valid email address
+          "url" # valid URL
+        ] }
       })
+      required: ["format"]
       additionalProperties: false
     }
 
     NumberQuestion: {
       properties: extendQuestionProperties({
         _type: { enum: ["NumberQuestion"] }
-        # TODO
+
+        # True to allow decimals
         decimal: "boolean"
       })
       required: ["decimal"]
@@ -258,25 +267,34 @@ module.exports = {
 
     DropdownQuestion: {
       type: "object"
-      properties: {
+      properties: extendQuestionProperties({
         _type: { enum: ["DropdownQuestion"] }
-      }
-      additionalProperties: true
+
+        # Choices of the dropdown
+        choices: { $ref: "#/definitions/choices" }
+      })
+      additionalProperties: false
     }
 
     RadioQuestion: {
       type: "object"
-      properties: {
+      properties: extendQuestionProperties({
         _type: { enum: ["RadioQuestion"] }
-      }
-      additionalProperties: true
+
+        # Choices of the radio buttons
+        choices: { $ref: "#/definitions/choices" }
+      })
+      additionalProperties: false
     }
 
     MulticheckQuestion: {
       type: "object"
-      properties: {
+      properties: extendQuestionProperties({
         _type: { enum: ["MulticheckQuestion"] }
-      }
+
+        # Choices of the radio buttons
+        choices: { $ref: "#/definitions/choices" }
+      })
       additionalProperties: true
     }
 
@@ -344,6 +362,11 @@ module.exports = {
         _type: { enum: ["SiteQuestion"] }
       }
       additionalProperties: true
+    }
+
+    # TODO
+    choices: {
+      type: "array"
     }
   }
 }
