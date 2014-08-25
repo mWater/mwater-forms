@@ -11,6 +11,12 @@ describe "SiteQuestion", ->
       selectSite: (siteTypes, success) ->
         assert.deepEqual siteTypes, ["Water point"]
         success("10014")
+
+      getSite: (siteCode, success) ->
+        success({
+          name: "Somename"
+          type: ["Water point", "Protected dug well"]
+        })
     }
 
     @model = new Backbone.Model()
@@ -39,3 +45,9 @@ describe "SiteQuestion", ->
   it "calls selectSite with site types", ->
     @qview.$el.find("#select").click()
     assert.deepEqual @model.get("q1234").value, { code: "10014" }
+
+  it "displays site information", ->
+    @qview.$el.find("input").val("10007").change()
+    assert.include(@qview.$el.text(), 'Somename')
+    assert.include(@qview.$el.text(), 'Water point')
+    assert.include(@qview.$el.text(), 'Protected dug well')

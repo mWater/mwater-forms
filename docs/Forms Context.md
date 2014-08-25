@@ -30,6 +30,14 @@ Function which takes siteTypes and success parameters. Success is called with co
 
 siteTypes is array of acceptable site types or null for all
 
+### getSite
+
+Used by SiteQuestion
+
+Function which takes site code, success, error. Success is called with site document.
+ 
+(optional)
+
 ### locationFinder
 
 Used by all questions. Optional.
