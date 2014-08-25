@@ -135,6 +135,10 @@ exports.prepareQuestion = (q) ->
       knownFields.push "unitsPosition"
     when "CheckQuestion"
       knownFields.push "label"
+    when "SiteQuestion"
+      knownFields.push "siteTypes"
+    when "ImageQuestion", "ImagesQuestion"
+      knownFields.push "consentPrompt"
 
   # Strip unknown fields
   for key in _.keys(q)
