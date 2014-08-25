@@ -2,7 +2,7 @@ Question = require './Question'
 _ = require 'underscore'
 
 # Requires context (ctx) to have displayImage function
-# which takes { id: <image id>, remove: <function called when image deleted> } as parameter
+# which takes { id: <image id>, remove: <function called when image deleted>, setCover: <called to make image cover> } as parameter
 
 module.exports = class ImagesQuestion extends Question
   events:
@@ -71,15 +71,25 @@ module.exports = class ImagesQuestion extends Question
   thumbnailClick: (ev) ->
     id = ev.currentTarget.id
 
-    # Create onRemove callback if not readonly
+    # Create remove and setCover callbacks if not readonly
     if not @options.readonly
       remove = () => 
         images = @getAnswerValue() || []
         images = _.reject images, (img) =>
           img.id == id
         @setAnswerValue(images)
+      setCover = () =>
+        images = @getAnswerValue() || []
+        for image in images
+          if image.cover?
+            delete image.cover
+          if image.id == id
+            image.cover = true
+        @setAnswerValue(images)
+
     else
       remove = null
+      setCover = null
 
     if @ctx.displayImage?
-      @ctx.displayImage({ id: id, remove: remove })
+      @ctx.displayImage({ id: id, remove: remove, setCover: setCover })

@@ -69,6 +69,15 @@ describe 'ImagesQuestion', ->
       @qview.$("img.img-thumbnail").click()
       assert.equal @qview.$("img#add").length, 0
 
+    it 'allows setting cover', ->
+      @model.set(q1234: {value: [{id: "1234"}, {id: "5678", cover: true}]})
+      @ctx.displayImage = (options) ->
+        options.setCover()
+
+      @qview.$("img.img-thumbnail").first().click()
+
+      assert.deepEqual @model.get("q1234").value, [{id: "1234", cover: true}, {id: "5678"}]
+
     it 'displays no add', ->
       assert.equal @qview.$("img#add").length, 0
 

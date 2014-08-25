@@ -6,7 +6,7 @@ Fields:
 
 Used by ImageQuestion and ImagesQuestion
 
-Function which takes { id: image id, remove: function called when image deleted } as single parameter
+Function which takes { id: image id, remove: function called when image deleted, makeCover: function called to set image cover } as single parameter
 
 ### imageManager
 
