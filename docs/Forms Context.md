@@ -26,7 +26,9 @@ Success is called with id of image, error with error message
 
 Used by SiteQuestion
 
-Function which takes success parameter. Success is called with code of site
+Function which takes siteTypes and success parameters. Success is called with code of site.
+
+siteTypes is array of acceptable site types or null for all
 
 ### locationFinder
 

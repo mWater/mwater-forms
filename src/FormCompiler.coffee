@@ -245,6 +245,7 @@ module.exports = class FormCompiler
       when "TextListQuestion"
         return new TextListQuestion(options)
       when "SiteQuestion"
+        options.siteTypes = q.siteTypes
         return new SiteQuestion(options)
 
     throw new Error("Unknown question type")

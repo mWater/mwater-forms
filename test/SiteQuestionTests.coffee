@@ -8,7 +8,8 @@ commonQuestionTests = require './commonQuestionTests'
 describe "SiteQuestion", ->
   beforeEach ->
     @ctx = {
-      selectSite: (success) ->
+      selectSite: (siteTypes, success) ->
+        assert.deepEqual siteTypes, ["Water point"]
         success("10014")
     }
 
@@ -18,6 +19,7 @@ describe "SiteQuestion", ->
       _id: "q1234"
       _type: "SiteQuestion"
       text: { _base: "en", en: "English", es: "Spanish" }
+      siteTypes: ["Water point"]
     }
     @qview = @compiler.compileQuestion(@q).render()
 
@@ -34,6 +36,6 @@ describe "SiteQuestion", ->
     assert.deepEqual @model.get("q1234").value, { code: "10008" }
     assert @qview.validate()
 
-  it "calls selectSite", ->
+  it "calls selectSite with site types", ->
     @qview.$el.find("#select").click()
     assert.deepEqual @model.get("q1234").value, { code: "10014" }

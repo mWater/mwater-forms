@@ -2,8 +2,9 @@ Question = require './Question'
 siteCodes = require './siteCodes'
 
 # Allows user to select an mWater site
-# Context should have selectSite(function(siteCode)) to use select button
-
+# options.siteTypes is array of acceptable site types. null/undefined for all
+# Context should have selectSite(siteTypes, function(siteCode)) to use select button
+# siteTypes is optional list of acceptable top-level site types. Null/undefined for all
 module.exports = class SiteQuestion extends Question
   renderAnswer: (answerEl) ->
     answerEl.html '''
@@ -28,7 +29,7 @@ module.exports = class SiteQuestion extends Question
     @setAnswerValue(code: @$("input").val())
 
   selectSite: ->
-    @ctx.selectSite (siteCode) =>
+    @ctx.selectSite @options.siteTypes, (siteCode) =>
       @setAnswerValue(code: siteCode)
 
   validateInternal: ->
