@@ -52,6 +52,11 @@ module.exports = class ImagesQuestion extends Question
     @ctx.imageManager.getImageThumbnailUrl id, success, error
 
   addClick: ->
+    # Check consent
+    if @options.consentPrompt
+      if not confirm(@options.consentPrompt)
+        return
+
     # Call imageAcquirer
     @ctx.imageAcquirer.acquire (id) =>
       # Add to model

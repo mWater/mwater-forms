@@ -230,8 +230,14 @@ module.exports = class FormCompiler
       when "LocationQuestion"
         return new LocationQuestion(options)
       when "ImageQuestion"
+        if q.consentPrompt
+          options.consentPrompt = @compileString(q.consentPrompt)
+
         return new ImageQuestion(options)
       when "ImagesQuestion"
+        if q.consentPrompt
+          options.consentPrompt = @compileString(q.consentPrompt)
+
         return new ImagesQuestion(options)
       when "CheckQuestion"
         options.label = @compileString(q.label)
