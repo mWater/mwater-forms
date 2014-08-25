@@ -238,6 +238,7 @@ module.exports = {
 # "TextListQuestion"
 # "SiteQuestion"
 
+    # Simple text question, single or multi-line
     TextQuestion: {
       properties: extendQuestionProperties({
         _type: { enum: ["TextQuestion"] }
@@ -254,6 +255,7 @@ module.exports = {
       additionalProperties: false
     }
 
+    # Number question, integer or decimal
     NumberQuestion: {
       properties: extendQuestionProperties({
         _type: { enum: ["NumberQuestion"] }
@@ -265,6 +267,7 @@ module.exports = {
       additionalProperties: false
     }
 
+    # Displays choices in a dropdown
     DropdownQuestion: {
       type: "object"
       properties: extendQuestionProperties({
@@ -273,9 +276,11 @@ module.exports = {
         # Choices of the dropdown
         choices: { $ref: "#/definitions/choices" }
       })
+      required: ['choices']
       additionalProperties: false
     }
 
+    # Displays choices as radio buttons
     RadioQuestion: {
       type: "object"
       properties: extendQuestionProperties({
@@ -284,6 +289,7 @@ module.exports = {
         # Choices of the radio buttons
         choices: { $ref: "#/definitions/choices" }
       })
+      required: ['choices']
       additionalProperties: false
     }
 
@@ -295,24 +301,39 @@ module.exports = {
         # Choices of the radio buttons
         choices: { $ref: "#/definitions/choices" }
       })
-      additionalProperties: true
+      required: ['choices']
+      additionalProperties: false
     }
 
     DateQuestion: {
       type: "object"
-      properties: {
+      properties: extendQuestionProperties({
         _type: { enum: ["DateQuestion"] }
-      }
-      additionalProperties: true
+
+        # Format of the displayed date (is always stored in YYYY-MM-DD)
+        format: { enum: ["YYYY-MM-DD", "MM/DD/YYYY"]}
+      })
+      required: ['format']
+      additionalProperties: false
     }
 
     UnitsQuestion: {
       type: "object"
-      properties: {
+      properties: extendQuestionProperties({
         _type: { enum: ["UnitsQuestion"] }
+        decimal: "boolean"
+
+        # List of units displayed
         units: "array" # TODO
-      }
-      additionalProperties: true
+
+        # Whether units are before or after quantity
+        unitsPosition: { enum: ["prefix", "suffix"] }
+
+        # Default units (id)
+        defaultUnits: "string"
+      })
+      required: ['decimal', 'units', 'unitsPosition']
+      additionalProperties: false
     }
 
     CheckQuestion: {
