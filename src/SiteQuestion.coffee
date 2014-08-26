@@ -26,7 +26,7 @@ module.exports = class SiteQuestion extends Question
 
     # Lookup site information
     if @ctx.getSite and val
-      @ctx.getSite @getAnswerValue(), (site) =>
+      @ctx.getSite val, (site) =>
         type = _.map(site.type, @T).join(" - ")
         @$("#site_name").text((site.name or ""))
         @$("#site_type").text(type)

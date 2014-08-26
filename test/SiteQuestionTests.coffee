@@ -13,10 +13,12 @@ describe "SiteQuestion", ->
         success("10014")
 
       getSite: (siteCode, success) ->
-        success({
-          name: "Somename"
-          type: ["Water point", "Protected dug well"]
-        })
+        if siteCode == "10007"
+          success({
+            code: siteCode
+            name: "Somename"
+            type: ["Water point", "Protected dug well"]
+          })
     }
 
     @model = new Backbone.Model()
