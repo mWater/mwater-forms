@@ -78,6 +78,13 @@ describe 'ImagesQuestion', ->
 
       assert.deepEqual @model.get("q1234").value, [{id: "1234", cover: true}, {id: "5678"}]
 
+    it 'cannot double-set cover', ->
+      @model.set(q1234: {value: [{id: "1234", cover: true}, {id: "5678"}]})
+      @ctx.displayImage = (options) ->
+        assert not options.setCover?
+
+      @qview.$("img.img-thumbnail").first().click()
+
     it 'displays no add', ->
       assert.equal @qview.$("img#add").length, 0
 

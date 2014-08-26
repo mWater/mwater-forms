@@ -72,24 +72,26 @@ module.exports = class ImagesQuestion extends Question
     id = ev.currentTarget.id
 
     # Create remove and setCover callbacks if not readonly
+    remove = null
+    setCover = null
     if not @options.readonly
       remove = () => 
         images = @getAnswerValue() || []
         images = _.reject images, (img) =>
           img.id == id
         @setAnswerValue(images)
-      setCover = () =>
-        images = @getAnswerValue() || []
-        for image in images
-          if image.cover?
-            delete image.cover
-          if image.id == id
-            image.cover = true
-        @setAnswerValue(images)
 
-    else
-      remove = null
-      setCover = null
+      # Only setCover if not already
+      cover = _.findWhere(@getAnswerValue(), { id: id }).cover
+      if not cover
+        setCover = () =>
+          images = @getAnswerValue() || []
+          for image in images
+            if image.cover?
+              delete image.cover
+            if image.id == id
+              image.cover = true
+          @setAnswerValue(images)
 
     if @ctx.displayImage?
       @ctx.displayImage({ id: id, remove: remove, setCover: setCover })
