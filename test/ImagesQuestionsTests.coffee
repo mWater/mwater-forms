@@ -105,9 +105,9 @@ describe 'ImagesQuestion', ->
       }
       @qview = @compiler.compileQuestion(@q).render()
 
-    it 'gets an image', ->
+    it 'gets an image, setting cover', ->
       @qview.$("img#add").click()
-      assert.isTrue _.isEqual(@model.get("q1234"), {value: [{id:"1234"}]}), @model.get("q1234")
+      assert.isTrue _.isEqual(@model.get("q1234"), {value: [{id:"1234", cover: true}]}), @model.get("q1234")
 
     it "gets consent before photo taken", ->
       @q.consentPrompt = { _base: "en", en: "Do you consent?" }
@@ -133,7 +133,7 @@ describe 'ImagesQuestion', ->
       confirmed = false
       @qview.$("img#add").click()
       assert.isTrue confirmed, "Not confirmed"
-      assert.isTrue _.isEqual(@model.get("q1234"), {value: [{id:"1234"}]}), @model.get("q1234")
+      assert.isTrue _.isEqual(@model.get("q1234"), {value: [{id:"1234", cover: true}]}), @model.get("q1234")
 
       window.confirm = _oldConfirm
 

@@ -65,6 +65,11 @@ module.exports = class ImagesQuestion extends Question
       # Make copy to force a model change
       images = images.slice(0)
       images.push { id: id }
+
+      # Set cover if first
+      if images.length == 1
+        images[0].cover = true
+        
       @setAnswerValue(images)
     , @ctx.error
 
