@@ -13,8 +13,10 @@ module.exports = class SiteQuestion extends Question
         <input type="tel" class="form-control">
         <span class="input-group-btn"><button class="btn btn-default" id="select" type="button">''' + @T("Select") + '''</button></span>
       </div>
-      <div id="site_type" class="text-muted"></div>
-      <div id="site_name" class="text-muted"></div>
+      <div class="text-muted">
+        <span id="site_type"></span> 
+        <span id="site_name"></span>
+      </div>
       '''
     if not @ctx.selectSite?
       @$("#select").attr("disabled", "disabled")
@@ -25,11 +27,14 @@ module.exports = class SiteQuestion extends Question
     answerEl.find("input").val val
 
     # Lookup site information
+    @$("#site_name").text("")
+    @$("#site_type").text("")
     if @ctx.getSite and val
       @ctx.getSite val, (site) =>
-        type = _.map(site.type, @T).join(" - ")
-        @$("#site_name").text((site.name or ""))
-        @$("#site_type").text(type)
+        if site
+          type = _.map(site.type, @T).join(" - ")
+          @$("#site_name").text((site.name or ""))
+          @$("#site_type").text(type + ": ")
 
   events:
     'change' : 'changed'
