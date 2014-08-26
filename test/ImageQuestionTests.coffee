@@ -94,4 +94,33 @@ describe 'ImageQuestion', ->
       @qview.$("img#add").click()
       assert.equal @qview.$("img#add").length, 0
 
+    it "gets consent before photo taken", ->
+      @q.consentPrompt = { _base: "en", en: "Do you consent?" }
+      @qview = @compiler.compileQuestion(@q).render()
+
+      confirmed = false
+
+      _oldConfirm = window.confirm
+      window.confirm = (msg) =>
+        confirmed = true
+        assert.equal msg, @q.consentPrompt.en
+        return false
+
+      @qview.$("img#add").click()
+      assert.isTrue confirmed, "Not confirmed"
+      assert.isUndefined @model.get("q1234"), JSON.stringify(@model.get("q1234"))
+
+      window.confirm = (msg) =>
+        confirmed = true
+        assert.equal msg, @q.consentPrompt.en
+        return true
+
+      confirmed = false
+      @qview.$("img#add").click()
+      assert.isTrue confirmed, "Not confirmed"
+      assert.isTrue _.isEqual(@model.get("q1234"), { value: {id: "1234"} })
+
+      window.confirm = _oldConfirm
+
+
     

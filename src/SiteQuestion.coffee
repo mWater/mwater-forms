@@ -1,15 +1,21 @@
 Question = require './Question'
 siteCodes = require './siteCodes'
+_ = require 'lodash'
 
 # Allows user to select an mWater site
-# Context should have selectSite(function(siteCode)) to use select button
-
+# options.siteTypes is array of acceptable site types. null/undefined for all
+# Context should have selectSite(siteTypes, function(siteCode)) to use select button
+# siteTypes is optional list of acceptable top-level site types. Null/undefined for all
 module.exports = class SiteQuestion extends Question
   renderAnswer: (answerEl) ->
     answerEl.html '''
       <div class="input-group">
         <input type="tel" class="form-control">
         <span class="input-group-btn"><button class="btn btn-default" id="select" type="button">''' + @T("Select") + '''</button></span>
+      </div>
+      <div class="text-muted">
+        <span id="site_type"></span> 
+        <span id="site_name"></span>
       </div>
       '''
     if not @ctx.selectSite?
@@ -20,6 +26,16 @@ module.exports = class SiteQuestion extends Question
     if val then val = val.code
     answerEl.find("input").val val
 
+    # Lookup site information
+    @$("#site_name").text("")
+    @$("#site_type").text("")
+    if @ctx.getSite and val
+      @ctx.getSite val, (site) =>
+        if site
+          type = _.map(site.type, @T).join(" - ")
+          @$("#site_name").text((site.name or ""))
+          @$("#site_type").text(type + ": ")
+
   events:
     'change' : 'changed'
     'click #select' : 'selectSite'
@@ -28,7 +44,7 @@ module.exports = class SiteQuestion extends Question
     @setAnswerValue(code: @$("input").val())
 
   selectSite: ->
-    @ctx.selectSite (siteCode) =>
+    @ctx.selectSite @options.siteTypes, (siteCode) =>
       @setAnswerValue(code: siteCode)
 
   validateInternal: ->

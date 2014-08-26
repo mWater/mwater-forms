@@ -2,7 +2,7 @@ Question = require './Question'
 _ = require 'underscore'
 
 # Requires context (ctx) to have displayImage function
-# which takes { id: <image id>, remove: <function called when image deleted> } as parameter
+# which takes { id: <image id>, remove: <function called when image deleted>, setCover: <called to make image cover> } as parameter
 
 module.exports = class ImagesQuestion extends Question
   events:
@@ -52,6 +52,11 @@ module.exports = class ImagesQuestion extends Question
     @ctx.imageManager.getImageThumbnailUrl id, success, error
 
   addClick: ->
+    # Check consent
+    if @options.consentPrompt
+      if not confirm(@options.consentPrompt)
+        return
+
     # Call imageAcquirer
     @ctx.imageAcquirer.acquire (id) =>
       # Add to model
@@ -60,21 +65,38 @@ module.exports = class ImagesQuestion extends Question
       # Make copy to force a model change
       images = images.slice(0)
       images.push { id: id }
+
+      # Set cover if first
+      if images.length == 1
+        images[0].cover = true
+        
       @setAnswerValue(images)
     , @ctx.error
 
   thumbnailClick: (ev) ->
     id = ev.currentTarget.id
 
-    # Create onRemove callback if not readonly
+    # Create remove and setCover callbacks if not readonly
+    remove = null
+    setCover = null
     if not @options.readonly
       remove = () => 
         images = @getAnswerValue() || []
         images = _.reject images, (img) =>
           img.id == id
         @setAnswerValue(images)
-    else
-      remove = null
+
+      # Only setCover if not already
+      cover = _.findWhere(@getAnswerValue(), { id: id }).cover
+      if not cover
+        setCover = () =>
+          images = @getAnswerValue() || []
+          for image in images
+            if image.cover?
+              delete image.cover
+            if image.id == id
+              image.cover = true
+          @setAnswerValue(images)
 
     if @ctx.displayImage?
-      @ctx.displayImage({ id: id, remove: remove })
+      @ctx.displayImage({ id: id, remove: remove, setCover: setCover })

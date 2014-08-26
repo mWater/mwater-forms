@@ -69,6 +69,22 @@ describe 'ImagesQuestion', ->
       @qview.$("img.img-thumbnail").click()
       assert.equal @qview.$("img#add").length, 0
 
+    it 'allows setting cover', ->
+      @model.set(q1234: {value: [{id: "1234"}, {id: "5678", cover: true}]})
+      @ctx.displayImage = (options) ->
+        options.setCover()
+
+      @qview.$("img.img-thumbnail").first().click()
+
+      assert.deepEqual @model.get("q1234").value, [{id: "1234", cover: true}, {id: "5678"}]
+
+    it 'cannot double-set cover', ->
+      @model.set(q1234: {value: [{id: "1234", cover: true}, {id: "5678"}]})
+      @ctx.displayImage = (options) ->
+        assert not options.setCover?
+
+      @qview.$("img.img-thumbnail").first().click()
+
     it 'displays no add', ->
       assert.equal @qview.$("img#add").length, 0
 
@@ -89,8 +105,37 @@ describe 'ImagesQuestion', ->
       }
       @qview = @compiler.compileQuestion(@q).render()
 
-    it 'gets an image', ->
+    it 'gets an image, setting cover', ->
       @qview.$("img#add").click()
-      assert.isTrue _.isEqual(@model.get("q1234"), {value: [{id:"1234"}]}), @model.get("q1234")
+      assert.isTrue _.isEqual(@model.get("q1234"), {value: [{id:"1234", cover: true}]}), @model.get("q1234")
 
-    
+    it "gets consent before photo taken", ->
+      @q.consentPrompt = { _base: "en", en: "Do you consent?" }
+      @qview = @compiler.compileQuestion(@q).render()
+
+      confirmed = false
+
+      _oldConfirm = window.confirm
+      window.confirm = (msg) =>
+        confirmed = true
+        assert.equal msg, @q.consentPrompt.en
+        return false
+
+      @qview.$("img#add").click()
+      assert.isTrue confirmed, "Not confirmed"
+      assert.isUndefined @model.get("q1234"), JSON.stringify(@model.get("q1234"))
+
+      window.confirm = (msg) =>
+        confirmed = true
+        assert.equal msg, @q.consentPrompt.en
+        return true
+
+      confirmed = false
+      @qview.$("img#add").click()
+      assert.isTrue confirmed, "Not confirmed"
+      assert.isTrue _.isEqual(@model.get("q1234"), {value: [{id:"1234", cover: true}]}), @model.get("q1234")
+
+      window.confirm = _oldConfirm
+
+
+        
