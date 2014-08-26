@@ -14,7 +14,7 @@ var EXPRESS_PORT = 8081;
 var DEMO_PAGE = "/demo/demo.html";
 
 // Compilation
-gulp.task('coffee', function() {
+gulp.task('coffee', ['localize'], function() {
 	gulp.src('./src/*.coffee')
 		.pipe(coffee({ bare: true }).on('error', gutil.log))
 		.pipe(gulp.dest('./lib/'));
@@ -74,6 +74,6 @@ gulp.task('openBrowser', function() {
 	gulp.src("." + DEMO_PAGE).pipe(open("", options));
 });
 
-gulp.task('compile', ['coffee', 'copy', 'localize']);
+gulp.task('compile', ['coffee', 'copy']);
 gulp.task('demo', ['compile', 'browserifyDemo', 'startExpress', 'watch', 'ngrok', 'openBrowser']);
 gulp.task('default', ['compile']);

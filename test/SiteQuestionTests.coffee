@@ -8,8 +8,17 @@ commonQuestionTests = require './commonQuestionTests'
 describe "SiteQuestion", ->
   beforeEach ->
     @ctx = {
-      selectSite: (success) ->
+      selectSite: (siteTypes, success) ->
+        assert.deepEqual siteTypes, ["Water point"]
         success("10014")
+
+      getSite: (siteCode, success) ->
+        if siteCode == "10007"
+          success({
+            code: siteCode
+            name: "Somename"
+            type: ["Water point", "Protected dug well"]
+          })
     }
 
     @model = new Backbone.Model()
@@ -18,6 +27,7 @@ describe "SiteQuestion", ->
       _id: "q1234"
       _type: "SiteQuestion"
       text: { _base: "en", en: "English", es: "Spanish" }
+      siteTypes: ["Water point"]
     }
     @qview = @compiler.compileQuestion(@q).render()
 
@@ -34,6 +44,12 @@ describe "SiteQuestion", ->
     assert.deepEqual @model.get("q1234").value, { code: "10008" }
     assert @qview.validate()
 
-  it "calls selectSite", ->
+  it "calls selectSite with site types", ->
     @qview.$el.find("#select").click()
     assert.deepEqual @model.get("q1234").value, { code: "10014" }
+
+  it "displays site information", ->
+    @qview.$el.find("input").val("10007").change()
+    assert.include(@qview.$el.text(), 'Somename')
+    assert.include(@qview.$el.text(), 'Water point')
+    assert.include(@qview.$el.text(), 'Protected dug well')

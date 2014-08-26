@@ -6,7 +6,7 @@ Fields:
 
 Used by ImageQuestion and ImagesQuestion
 
-Function which takes { id: image id, remove: function called when image deleted } as single parameter
+Function which takes { id: image id, remove: function called when image deleted, setCover: function called to set image cover } as single parameter
 
 ### imageManager
 
@@ -26,7 +26,17 @@ Success is called with id of image, error with error message
 
 Used by SiteQuestion
 
-Function which takes success parameter. Success is called with code of site
+Function which takes siteTypes and success parameters. Success is called with code of site.
+
+siteTypes is array of acceptable site types or null for all
+
+### getSite
+
+Used by SiteQuestion
+
+Function which takes site code, success, error. Success is called with site document.
+ 
+(optional)
 
 ### locationFinder
 

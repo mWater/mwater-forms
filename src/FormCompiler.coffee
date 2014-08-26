@@ -230,8 +230,14 @@ module.exports = class FormCompiler
       when "LocationQuestion"
         return new LocationQuestion(options)
       when "ImageQuestion"
+        if q.consentPrompt
+          options.consentPrompt = @compileString(q.consentPrompt)
+
         return new ImageQuestion(options)
       when "ImagesQuestion"
+        if q.consentPrompt
+          options.consentPrompt = @compileString(q.consentPrompt)
+
         return new ImagesQuestion(options)
       when "CheckQuestion"
         options.label = @compileString(q.label)
@@ -239,6 +245,7 @@ module.exports = class FormCompiler
       when "TextListQuestion"
         return new TextListQuestion(options)
       when "SiteQuestion"
+        options.siteTypes = q.siteTypes
         return new SiteQuestion(options)
 
     throw new Error("Unknown question type")

@@ -2,6 +2,7 @@ Question = require './Question'
 
 # Requires context (ctx) to have displayImage function
 # which takes { id: <image id>, remove: <function called when image deleted> } as parameter
+# options.consent is a string to ask for consent before photo is taken
 
 module.exports = class ImageQuestion extends Question
   events:
@@ -50,6 +51,11 @@ module.exports = class ImageQuestion extends Question
     @ctx.imageManager.getImageThumbnailUrl id, success, error
 
   addClick: ->
+    # Check consent
+    if @options.consentPrompt
+      if not confirm(@options.consentPrompt)
+        return
+        
     # Call imageAcquirer
     @ctx.imageAcquirer.acquire (id) =>
       # Add to model
