@@ -201,17 +201,20 @@ module.exports = class LocationView extends Backbone.View
     @$("#location_edit_controls").slideDown()
 
   saveEditLocation: ->
-    if isNaN(parseFloat(@$("#latitude").val()))
-      alert("Invalid latitude")
+    latitude = parseFloat(@$("#latitude").val())
+    longitude = parseFloat(@$("#longitude").val())
+
+    if isNaN(latitude) or latitude < -90 or latitude > 90
+      alert("Invalid latitude. Must be a value between -90 and 90.")
       return
-    if isNaN(parseFloat(@$("#longitude").val()))
-      alert("Invalid longitude")
+    if isNaN(longitude) or longitude < -180 or longitude > 180
+      alert("Invalid longitude. Must be a value between -180 and 180.")
       return
 
     # Set location
     @loc = {
-      latitude: parseFloat(@$("#latitude").val())
-      longitude: parseFloat(@$("#longitude").val())
+      latitude: latitude
+      longitude: longitude
       accuracy: 0  # Perfectly accurate when entered
     }
     @trigger('locationset', @loc)
