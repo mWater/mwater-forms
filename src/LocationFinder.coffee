@@ -80,9 +80,10 @@ class LocationFinder
     if @locationWatchId?
       return
 
-    # If no geolocation, send error immediately
+    # If no geolocation, trigger error
     if not navigator.geolocation
-      error("No geolocation available")
+      console.error "No geolocation available"
+      @trigger 'error'
       return
 
     highAccuracyFired = false
