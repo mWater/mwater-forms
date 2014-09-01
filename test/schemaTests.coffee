@@ -4,7 +4,7 @@ jjv = require 'jjv'
 _ = require 'lodash'
 
 schemaEnv = jjv()
-schemaEnv.addSchema("form-design", schema)
+schemaEnv.addSchema("form-design", schema.design)
 
 allforms = require './allforms.js'
 

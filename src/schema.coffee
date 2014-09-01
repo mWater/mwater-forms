@@ -4,11 +4,12 @@ _  = require 'lodash'
 # all basic properties but still use additionalProperties: false
 extendQuestionProperties = (properties) ->
   return _.defaults properties, {
-    _id: {}, code: {}, text: {}, required: {}, conditions: {}, validations: {}, hint: {}, help: {}, sticky: {}
+    _id: {}, code: {}, text: {}, required: {}, conditions: {}, hint: {}, help: {}, sticky: {}
     alternates: {}, commentsField: {}, recordTimestamp: {}, recordLocation: {}, sensor: {}, _basedOn: {}
   } 
 
-module.exports = {
+# This is the design of a form which is stored in the "design" field of forms in mWater
+exports.design = {
   "$schema": "http://json-schema.org/draft-04/schema#"
   type: "object"
   properties: {
@@ -52,6 +53,7 @@ module.exports = {
   definitions: {
     # A localized string has a base language code (_base) and then each localization as a property
     # with the language code (two character) as the key
+    # If no _base, then unspecified and should be rendered as ""
     localizedString: {
       type: "object"
       properties: {
@@ -65,8 +67,6 @@ module.exports = {
         # Language code as the key and localized string as the value
         "^[a-z]{2}$": { type: "string" }
       }
-      # TODO can no _base mean not specified?
-      required: []
       additionalProperties: false
     }
 
@@ -110,7 +110,7 @@ module.exports = {
         # Contains a list of items
         contents: {
           type: "array"
-          #items: { $ref: "#/definitions/item" }
+          items: { $ref: "#/definitions/item" }
         }
 
         # Conditions for visibility of the section
@@ -132,7 +132,7 @@ module.exports = {
       ]
     }
 
-    # TODO
+    # Question of various types which records an answer in the response
     question: {
       type: "object"
       properties: {
@@ -145,8 +145,7 @@ module.exports = {
 
         # Text (prompt of the question)
         # TODO sometimes missing
-        # TODO sometimes empty "{}"
-        #text: { $ref: "#/definitions/localizedString" } 
+        text: { $ref: "#/definitions/localizedString" } 
 
         # True if the question is required to be answered
         required: "boolean"
@@ -175,10 +174,25 @@ module.exports = {
         # True if text field contains a sensor id TODO remove?
         sensor: "boolean"
 
-        # TODO
-        alternates: {}
+        # Id used for exporting responses
+        exportId: "string"
 
-        # validations: "array" # TODO
+        # Alternative answers that are non-answers to the specific question
+        # such as "Don't know" or "Not Applicable"
+        alternates: {
+          type: "object"
+          properties: {
+            na: "boolean"  # True to display Not Applicable option
+            dontknow: "boolean" # True to display Don't Know option
+          }
+          additionalProperties: false
+        }
+
+        # Validations that are question-specific
+        validations: {
+          type: "array"
+          items: { $ref: "#/definitions/validations/common" }
+        }
 
         # _id of the item that this item is a duplicate of
         _basedOn : { $ref: "#/definitions/uuid" }
@@ -237,6 +251,53 @@ module.exports = {
 # "ImagesQuestion"
 # "TextListQuestion"
 # "SiteQuestion"
+    
+    validations: {
+      # Validations are a condition that the answer must pass
+      # The type is specific to the question type, but have a 
+      # common structure
+      common: {
+        type: "object"
+        properties: {
+          # Operation of the validation
+          op: "string"
+
+          # Right hand side of the validation operation
+          # The left hand side is the question's answer
+          # For some ops there may be no rhs
+          rhs: {
+            type: "object"
+            properties: {
+              # Only literal values are supported for now
+              literal: {}
+            }
+            additionalProperties: false
+            required: ["literal"]
+          }
+
+          # Message to be displayed when the validation fails
+          message: { $ref: "#/definitions/localizedString" } 
+        }
+        additionalProperties: false
+        required: ["op", "message"]
+      }
+
+      lengthRange: {
+        type: "object"
+        properties: {
+          op: { enum: ["lengthRange"] }
+          rhs: {}
+        }
+      }
+
+      regex: {
+        type: "object"
+        properties: {
+          op: { enum: ["regex"] }
+          rhs: {}
+        }
+      }        
+    }
 
     # Simple text question, single or multi-line
     TextQuestion: {
@@ -250,6 +311,16 @@ module.exports = {
           "email" # valid email address
           "url" # valid URL
         ] }
+
+        validations: {
+          type: "array"
+          items: {
+            oneOf: [
+              { $ref: "#/definitions/validations/lengthRange" }
+              { $ref: "#/definitions/validations/regex" }
+            ]
+          }
+        }
       })
       required: ["format"]
       additionalProperties: false
@@ -262,6 +333,8 @@ module.exports = {
 
         # True to allow decimals
         decimal: "boolean"
+
+        validations: {} # TODO
       })
       required: ["decimal"]
       additionalProperties: false
@@ -275,6 +348,8 @@ module.exports = {
 
         # Choices of the dropdown
         choices: { $ref: "#/definitions/choices" }
+
+        validations: {} # TODO
       })
       required: ['choices']
       additionalProperties: false
@@ -288,6 +363,8 @@ module.exports = {
 
         # Choices of the radio buttons
         choices: { $ref: "#/definitions/choices" }
+
+        validations: {} # TODO
       })
       required: ['choices']
       additionalProperties: false
@@ -300,6 +377,8 @@ module.exports = {
 
         # Choices of the radio buttons
         choices: { $ref: "#/definitions/choices" }
+
+        validations: {} # TODO
       })
       required: ['choices']
       additionalProperties: false
@@ -312,6 +391,8 @@ module.exports = {
 
         # Format of the displayed date (is always stored in YYYY-MM-DD)
         format: { enum: ["YYYY-MM-DD", "MM/DD/YYYY"]}
+
+        validations: {} # TODO
       })
       required: ['format']
       additionalProperties: false
@@ -331,6 +412,8 @@ module.exports = {
 
         # Default units (id)
         defaultUnits: "string"
+
+        validations: {} # TODO
       })
       required: ['decimal', 'units', 'unitsPosition']
       additionalProperties: false
