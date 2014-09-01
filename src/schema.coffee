@@ -58,14 +58,15 @@ exports.design = {
       type: "object"
       properties: {
         # Base language code of localized string
-        _base: "string"
+        _base: { type: "string" }
         
         # True if no longer used
-        _unused: "boolean"
+        _unused: { type: "boolean" }
       }
       patternProperties: {
         # Language code as the key and localized string as the value
-        "^[a-z]{2}$": { type: "string" }
+        # TODO some integers are here due to import. Fix and tighten
+        "^[a-z]{2}$": { type: ["string", "integer"] }
       }
       additionalProperties: false
     }
@@ -79,10 +80,10 @@ exports.design = {
         type: "object"
         properties: {
           # Language code
-          code: "string"
+          code: { type: "string" }
 
           # Localized name of language
-          name: "string"
+          name: { type: "string" }
         }
         required: ["code", "name"]
         additionalProperties: false
@@ -141,14 +142,13 @@ exports.design = {
 
         # Question code which is displayed before the question in the survey
         # and is used for export column header
-        code: "string"
+        code: { type: "string" }
 
         # Text (prompt of the question)
-        # TODO sometimes missing
         text: { $ref: "#/definitions/localizedString" } 
 
         # True if the question is required to be answered
-        required: "boolean"
+        required: { type: "boolean" }
 
         # Conditions for visibility of the instructions
         conditions: { $ref: "#/definitions/conditions" }
@@ -160,30 +160,30 @@ exports.design = {
         help: { $ref: "#/definitions/localizedString" } 
 
         # True to copy answer from previous time form was filled
-        sticky: "boolean"
+        sticky: { type: "boolean" }
 
         # True to record location where question was first answered
-        recordLocation: "boolean"
+        recordLocation: { type: "boolean" }
 
         # True to record timestamp when question was first answered
-        recordTimestamp: "boolean"
+        recordTimestamp: { type: "boolean" }
 
         # True to include a comment field with question
-        commentsField: "boolean"
+        commentsField: { type: "boolean" }
 
         # True if text field contains a sensor id TODO remove?
-        sensor: "boolean"
+        sensor: { type: "boolean" }
 
         # Id used for exporting responses
-        exportId: "string"
+        exportId: { type: "string" }
 
         # Alternative answers that are non-answers to the specific question
         # such as "Don't know" or "Not Applicable"
         alternates: {
           type: "object"
           properties: {
-            na: "boolean"  # True to display Not Applicable option
-            dontknow: "boolean" # True to display Don't Know option
+            na: { type: "boolean" }  # True to display Not Applicable option
+            dontknow: { type: "boolean" } # True to display Don't Know option
           }
           additionalProperties: false
         }
@@ -197,8 +197,7 @@ exports.design = {
         # _id of the item that this item is a duplicate of
         _basedOn : { $ref: "#/definitions/uuid" }
       }
-      # TODO make text required
-      required: ["_id", "_type", "conditions"]
+      required: ["_id", "_type", "text", "conditions", "validations"]
 
       oneOf: [
         { $ref: "#/definitions/TextQuestion" }
@@ -260,7 +259,7 @@ exports.design = {
         type: "object"
         properties: {
           # Operation of the validation
-          op: "string"
+          op: { type: "string" }
 
           # Right hand side of the validation operation
           # The left hand side is the question's answer
@@ -282,11 +281,51 @@ exports.design = {
         required: ["op", "message"]
       }
 
+      # Validation which constrains length of text field in characters
       lengthRange: {
         type: "object"
         properties: {
           op: { enum: ["lengthRange"] }
-          rhs: {}
+          rhs: {
+            type: "object"
+            properties: {
+              # Literal contains min and max length
+              literal: {
+                type: "object"
+                properties: {
+                  # Minimum length of the string
+                  min: { type: "integer" }
+                  # Maximum length of the string
+                  max: { type: "integer" }
+                }
+                additionalProperties: false
+              }
+            }
+          }
+        }
+      }
+
+      # Validation which constrains range of a number answer. Range is inclusive
+      range: {
+        type: "object"
+        properties: {
+          op: { enum: ["range"] }
+          rhs: {
+            type: "object"
+            properties: {
+              # Literal contains min and max value
+              literal: {
+                type: "object"
+                properties: {
+                  # Minimum value
+                  min: { type: "integer" }
+                  # Maximum value
+                  max: { type: "integer" }
+                }
+                additionalProperties: false
+              }
+            }
+          }
         }
       }
 
@@ -294,7 +333,14 @@ exports.design = {
         type: "object"
         properties: {
           op: { enum: ["regex"] }
-          rhs: {}
+          rhs: {
+            type: "object"
+            properties: {
+              # Literal contains regex string to match
+              literal: { type: "string" }
+            }
+            required: ["literal"]
+          }
         }
       }        
     }
@@ -332,9 +378,12 @@ exports.design = {
         _type: { enum: ["NumberQuestion"] }
 
         # True to allow decimals
-        decimal: "boolean"
+        decimal: { type: "boolean" }
 
-        validations: {} # TODO
+        validations: {
+          type: "array"
+          items: { $ref: "#/definitions/validations/range" }
+        }
       })
       required: ["decimal"]
       additionalProperties: false
@@ -349,7 +398,8 @@ exports.design = {
         # Choices of the dropdown
         choices: { $ref: "#/definitions/choices" }
 
-        validations: {} # TODO
+        # No validation available
+        validations: { type: "array", maxItems: 0 } 
       })
       required: ['choices']
       additionalProperties: false
@@ -364,7 +414,8 @@ exports.design = {
         # Choices of the radio buttons
         choices: { $ref: "#/definitions/choices" }
 
-        validations: {} # TODO
+        # No validation available
+        validations: { type: "array", maxItems: 0 } 
       })
       required: ['choices']
       additionalProperties: false
@@ -378,7 +429,8 @@ exports.design = {
         # Choices of the radio buttons
         choices: { $ref: "#/definitions/choices" }
 
-        validations: {} # TODO
+        # No validation available
+        validations: { type: "array", maxItems: 0 } 
       })
       required: ['choices']
       additionalProperties: false
@@ -392,7 +444,8 @@ exports.design = {
         # Format of the displayed date (is always stored in YYYY-MM-DD)
         format: { enum: ["YYYY-MM-DD", "MM/DD/YYYY"]}
 
-        validations: {} # TODO
+        # No validation available
+        validations: { type: "array", maxItems: 0 } 
       })
       required: ['format']
       additionalProperties: false
@@ -402,18 +455,21 @@ exports.design = {
       type: "object"
       properties: extendQuestionProperties({
         _type: { enum: ["UnitsQuestion"] }
-        decimal: "boolean"
+        decimal: { type: "boolean" }
 
         # List of units displayed
-        units: "array" # TODO
+        units: { type: "array" } # TODO
 
         # Whether units are before or after quantity
         unitsPosition: { enum: ["prefix", "suffix"] }
 
-        # Default units (id)
-        defaultUnits: "string"
+        # Default units (id) or null
+        defaultUnits: { type: ["string", "null"] }
 
-        validations: {} # TODO
+        validations: {
+          type: "array"
+          items: { $ref: "#/definitions/validations/range" }
+        }
       })
       required: ['decimal', 'units', 'unitsPosition']
       additionalProperties: false
@@ -421,51 +477,72 @@ exports.design = {
 
     CheckQuestion: {
       type: "object"
-      properties: {
+      properties: extendQuestionProperties({
         _type: { enum: ["CheckQuestion"] }
-      }
-      additionalProperties: true
+
+        # Label to display next to checkbox
+        label: { $ref: "#/definitions/localizedString" } 
+
+        # No validation available
+        validations: { type: "array", maxItems: 0 } 
+      })
+      required: ["label"]
+      additionalProperties: false
     }
 
     LocationQuestion: {
       type: "object"
-      properties: {
+      properties: extendQuestionProperties({
         _type: { enum: ["LocationQuestion"] }
-      }
-      additionalProperties: true
+
+        # No validation available
+        validations: { type: "array", maxItems: 0 } 
+      })
+      additionalProperties: false
     }
 
     ImageQuestion: {
       type: "object"
-      properties: {
+      properties: extendQuestionProperties({
         _type: { enum: ["ImageQuestion"] }
-      }
-      additionalProperties: true
+
+        # No validation available
+        validations: { type: "array", maxItems: 0 } 
+      })
+      additionalProperties: false
     }
 
     ImagesQuestion: {
       type: "object"
-      properties: {
+      properties: extendQuestionProperties({
         _type: { enum: ["ImagesQuestion"] }
-      }
-      additionalProperties: true
+
+        # No validation available
+        validations: { type: "array", maxItems: 0 } 
+      })
+      additionalProperties: false
     }
 
     TextListQuestion: {
       type: "object"
-      properties: {
+      properties: extendQuestionProperties({
         _type: { enum: ["TextListQuestion"] }
-      }
-      additionalProperties: true
+
+        # No validation available
+        validations: { type: "array", maxItems: 0 } 
+      })
+      additionalProperties: false
     }
 
     SiteQuestion: {
       type: "object"
-      properties: {
-        _id: {}, required: {}, conditions: {}, validations: {}
+      properties: extendQuestionProperties({
         _type: { enum: ["SiteQuestion"] }
-      }
-      additionalProperties: true
+
+        # No validation available
+        validations: { type: "array", maxItems: 0 } 
+      })
+      additionalProperties: false
     }
 
     # TODO
