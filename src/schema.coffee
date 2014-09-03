@@ -234,25 +234,152 @@ exports.design = {
       required: ["_id", "_type", "text", "conditions"]
     }
 
-    # TODO
+    # Conditions on an item or section that determine if it is visible.
+    # All must be true to be visible
     conditions: {
       type: "array"
+      items: { $ref: "#/definitions/condition" }
     }
 
-# "TextQuestion"
-# "NumberQuestion"
-# "DropdownQuestion"
-# "RadioQuestion"
-# "MulticheckQuestion"
-# "DateQuestion"
-# "UnitsQuestion"
-# "CheckQuestion"
-# "LocationQuestion"
-# "ImageQuestion"
-# "ImagesQuestion"
-# "TextListQuestion"
-# "SiteQuestion"
-    
+    # Condition that depends on the answer to another question
+    condition: {
+      type: "object"
+      properties: {
+        # Left-hand side of the condition inequality
+        lhs: {
+          type: "object"
+          properties: {
+            # Question whose answer to use as left-hand side of the condition inequality
+            question: { $ref: "#/definitions/uuid" }
+          }
+          required: ["question"]
+          additionalProperties: false
+        }
+
+        # Operation
+        op: { type: "string" }
+
+        # Optional right-hand side of the inequality. Unary operators will not have one
+        rhs: { 
+          type: "object"
+          properties: {
+            # Literal value of the right hand side. See individual conditions
+            literal: {}
+          }
+          required: ["literal"]
+          additionalProperties: false
+        }
+      }
+      required: ["lhs", "op"]
+      additionalProperties: false
+
+      oneOf: [
+        { $ref: "#/definitions/conditionTypes/unary" }
+        { $ref: "#/definitions/conditionTypes/text" }
+        { $ref: "#/definitions/conditionTypes/number" }
+        { $ref: "#/definitions/conditionTypes/choice" }
+        { $ref: "#/definitions/conditionTypes/date" }
+      ]
+    }
+
+    conditionTypes: {
+      # Unary type conditions
+      unary: {
+        type: "object"
+        properties: {
+          op: { enum: [
+            "present"   # If question was answered
+            "!present"  # If question was not answered
+            "true"      # If answer is true
+            "false"     # If answer is false
+          ]}
+          lhs: {}
+        }
+        additionalProperties: false
+      }
+
+      # Conditions with text as right-hand side
+      text: {
+        type: "object"
+        properties: {
+          op: { enum: [
+            "contains"    # If answer contains text in RHS
+            "!contains"   # If answer does not contain text in RHS
+          ]}
+          rhs: {
+            type: "object"
+            properties: {
+              literal: { type: "string" }
+            }
+          } 
+        }
+        required: ["rhs"]
+      }
+
+      # Conditions with number as right-hand side
+      number: {
+        type: "object"
+        properties: {
+          op: { enum: [
+            "="    # If answer equals a value
+            "!="   # If answer does not equal a value
+            ">"    # If answer is greater than
+            "<"    # If answer is less than
+          ]}
+
+          rhs: {
+            type: "object"
+            properties: {
+              literal: { type: "integer" }
+            }
+          } 
+        }
+        required: ["rhs"]
+      }
+
+      # Conditions with choice as right-hand side
+      choice: {
+        type: "object"
+        properties: {
+          op: { enum: [
+            "is"        # If answer is a certain choice
+            "isnt"      # If answer is not a choice
+            "includes"  # If answer is includes a choice (multi-check)
+            "!includes" # If answer doesn't include a choice (multi-check)  
+          ]}
+
+          rhs: {
+            type: "object"
+            properties: {
+              # Id of the choice
+              literal: { type: "string" }
+            }
+          } 
+        }
+        required: ["rhs"]
+      }
+      
+      # Conditions with date as right-hand side
+      date: {
+        type: "object"
+        properties: {
+          op: { enum: [
+            "before"     # If answer is before a date
+            "after"      # If answer is after a date
+          ]}
+
+          rhs: {
+            type: "object"
+            properties: {
+              # Date in YYYY-MM-DD
+              literal: { pattern: "^\d\d\d\d-\d\d-\d\d$" }
+            }
+          } 
+        }
+        required: ["rhs"]
+      }
+    }
+
     validations: {
       # Validations are a condition that the answer must pass
       # The type is specific to the question type, but have a 
@@ -460,7 +587,27 @@ exports.design = {
         decimal: { type: "boolean" }
 
         # List of units displayed
-        units: { type: "array" } # TODO
+        units: { 
+          type: "array" 
+          items: { 
+            type: "object"
+            properties: {
+              # Unique (within the question) id of the unit
+              id: { type: "string" }
+
+              # Code, unique within the question that should be used for exporting
+              code: { type: "string" }
+
+              # Label of the unit, localized
+              label: { $ref: "#/definitions/localizedString" } 
+
+              # Hint associated with a unit
+              hint: { $ref: "#/definitions/localizedString" } 
+            }
+            required: ["id", "label"]
+            additionalProperties: false
+          } 
+        }
 
         # Whether units are before or after quantity
         unitsPosition: { enum: ["prefix", "suffix"] }
