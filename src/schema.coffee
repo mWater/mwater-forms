@@ -53,7 +53,7 @@ exports.design = {
   definitions: {
     # A localized string has a base language code (_base) and then each localization as a property
     # with the language code (two character) as the key
-    # If no _base, then unspecified and should be rendered as ""
+    # If no _base, then unspecified and should be rendered as empty string
     localizedString: {
       type: "object"
       properties: {
@@ -79,10 +79,10 @@ exports.design = {
       items: { 
         type: "object"
         properties: {
-          # Language code
+          # Language code (2 character)
           code: { type: "string" }
 
-          # Localized name of language
+          # Localized name of language (e.g. Kiswahili)
           name: { type: "string" }
         }
         required: ["code", "name"]
@@ -90,7 +90,7 @@ exports.design = {
       }
     }
 
-    # UUID for items
+    # UUID for items. UUID 4 without dashes usually
     uuid: {
       type: "string"
       pattern: "^[a-f0-9]+$"
@@ -138,6 +138,8 @@ exports.design = {
       type: "object"
       properties: {
         _id: { $ref: "#/definitions/uuid" }
+
+        # All question types end in "Question"
         _type: { type: "string", pattern: "Question$" }
 
         # Question code which is displayed before the question in the survey
@@ -545,9 +547,33 @@ exports.design = {
       additionalProperties: false
     }
 
-    # TODO
+    # List of choices for a dropdown, radio or multicheck
     choices: {
       type: "array"
+      items: {
+        type: "object"
+
+        properties: {
+          # Unique (within the question) id of the choice
+          id: { type: "string" }
+
+          # Code, unique within the question that should be used for exporting
+          code: { type: "string" }
+
+          # Label of the choice, localized
+          label: { $ref: "#/definitions/localizedString" } 
+
+          # Hint associated with a choice
+          hint: { $ref: "#/definitions/localizedString" } 
+
+          # True to require a text field to specify the value when selected
+          # Usually used for "Other" options.
+          # Value is stored in specify[id]
+          specify: { type: "boolean" }
+        }
+        required: ["id", "label"]
+        additionalProperties: false
+      }
     }
   }
 }
