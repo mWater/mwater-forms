@@ -16,8 +16,9 @@ exports.design = {
     # Specifies that this is the root Form element
     _type: { enum: ["Form"] }
 
-    # Version of the schema of this form design
-    _schema: { enum: [1] }
+    # Version of the schema of this form design 
+    # Schema 2 just added siteTypes to SiteQuestion and exportId to questions
+    _schema: { enum: [1, 2] }
 
     # Name of the form
     name: { $ref: "#/definitions/localizedString" } 
@@ -46,8 +47,7 @@ exports.design = {
     }
   }
 
-  # TODO Set all _schema to 1 and make required
-  required: ["_type", "name", "contents", "locales"]
+  required: ["_type", "_schema", "name", "contents", "locales"]
   additionalProperties: false
 
   definitions: {
@@ -65,8 +65,7 @@ exports.design = {
       }
       patternProperties: {
         # Language code as the key and localized string as the value
-        # TODO some integers are here due to import. Fix and tighten
-        "^[a-z]{2}$": { type: ["string", "integer"] }
+        "^[a-z]{2}$": { type: "string" }
       }
       additionalProperties: false
     }
@@ -372,7 +371,7 @@ exports.design = {
             type: "object"
             properties: {
               # Date in YYYY-MM-DD
-              literal: { pattern: "^\d\d\d\d-\d\d-\d\d$" }
+              literal: { type: "date" }
             }
           } 
         }
@@ -687,6 +686,21 @@ exports.design = {
       type: "object"
       properties: extendQuestionProperties({
         _type: { enum: ["SiteQuestion"] }
+
+        # Optional list of site types to include
+        siteTypes : {
+          type: "array"
+          items: { 
+            enum: [
+              "Water point"
+              "Sanitation facility"
+              "Household"
+              "Community"
+              "School"
+              "Health facility"
+            ]
+          }
+        }                        
 
         # No validation available
         validations: { type: "array", maxItems: 0 } 
