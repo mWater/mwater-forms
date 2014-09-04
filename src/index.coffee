@@ -33,8 +33,8 @@ exports.LocationFinder = require './LocationFinder'
 exports.schemaVersion = 2 # Version of the schema that this package supports (cannot compile if higher)
 exports.minSchemaVersion = 1 # Minimum version of forms schema that can be compiled
 
-# JSON schema of form design
-exports.designSchema = require('./schema').design
+# # JSON schema of form design # Explicitly import for now
+# exports.designSchema = require('./schema').design
 
 # Simple form that displays a template based on loaded data
 exports.templateView = (template) -> 
