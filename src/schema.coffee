@@ -17,7 +17,7 @@ exports.design = {
     _type: { enum: ["Form"] }
 
     # Version of the schema of this form design 
-    # Schema 2 just added siteTypes to SiteQuestion and exportId to questions
+    # Schema 2 just added siteTypes to SiteQuestion and exportId to questions and consentPrompt to image questions
     _schema: { enum: [1, 2] }
 
     # Name of the form
@@ -654,6 +654,10 @@ exports.design = {
       properties: extendQuestionProperties({
         _type: { enum: ["ImageQuestion"] }
 
+        # Optional yes/no question asked before an image is registered
+        # As in "Does the subject consent to the photo?"
+        consentPrompt: { $ref: "#/definitions/localizedString" }
+
         # No validation available
         validations: { type: "array", maxItems: 0 } 
       })
@@ -664,6 +668,10 @@ exports.design = {
       type: "object"
       properties: extendQuestionProperties({
         _type: { enum: ["ImagesQuestion"] }
+
+        # Optional yes/no question asked before an image is registered
+        # As in "Does the subject consent to the photo?"
+        consentPrompt: { $ref: "#/definitions/localizedString" }
 
         # No validation available
         validations: { type: "array", maxItems: 0 } 
