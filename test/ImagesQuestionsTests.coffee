@@ -66,17 +66,27 @@ describe 'ImagesQuestion', ->
       @ctx.displayImage = (options) ->
         options.remove()
 
+      changed = false
+      @model.on "change", ->
+        changed = true
+
       @qview.$("img.img-thumbnail").click()
       assert.equal @qview.$("img#add").length, 0
+      assert.isTrue changed, "Should fire changed"
 
     it 'allows setting cover', ->
       @model.set(q1234: {value: [{id: "1234"}, {id: "5678", cover: true}]})
       @ctx.displayImage = (options) ->
         options.setCover()
 
+      changed = false
+      @model.on "change", ->
+        changed = true
+
       @qview.$("img.img-thumbnail").first().click()
 
       assert.deepEqual @model.get("q1234").value, [{id: "1234", cover: true}, {id: "5678"}]
+      assert.isTrue changed, "Should fire changed"
 
     it 'cannot double-set cover', ->
       @model.set(q1234: {value: [{id: "1234", cover: true}, {id: "5678"}]})
@@ -106,8 +116,13 @@ describe 'ImagesQuestion', ->
       @qview = @compiler.compileQuestion(@q).render()
 
     it 'gets an image, setting cover', ->
+      changed = false
+      @model.on "change", ->
+        changed = true
+
       @qview.$("img#add").click()
       assert.isTrue _.isEqual(@model.get("q1234"), {value: [{id:"1234", cover: true}]}), @model.get("q1234")
+      assert.isTrue changed, "Should fire changed"
 
     it "gets consent before photo taken", ->
       @q.consentPrompt = { _base: "en", en: "Do you consent?" }

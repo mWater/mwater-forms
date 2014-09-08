@@ -91,6 +91,10 @@ module.exports = class ImagesQuestion extends Question
       if not cover
         setCover = () =>
           images = @getAnswerValue() || []
+
+          # Make copy to force a model change
+          images = _.map(images, _.clone)
+
           for image in images
             if image.cover?
               delete image.cover
