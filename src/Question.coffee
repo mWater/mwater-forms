@@ -22,9 +22,9 @@ ezlocalize = require 'ez-localize'
 module.exports = class Question extends Backbone.View
   className: "question"
 
-  initialize: (options) ->
+  initialize: (options={}) ->
     # Save options
-    @options = options or {}
+    @options = options
     
     # Save T
     @T = options.T or ezlocalize.defaultT
