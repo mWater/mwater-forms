@@ -3,7 +3,7 @@ $ = require 'jquery'
 Question = require './Question'
 
 moment = require 'moment'
-require('bootstrap-datetimepicker')
+require('./bootstrap-datetimepicker/bootstrap-datetimepicker.min')
 
 
 # Date question. Options include:
