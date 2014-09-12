@@ -117,3 +117,6 @@ module.exports = class DateQuestion extends Question
         @$("#date_input").val("")
     else
       @$('#datetimepicker').data("DateTimePicker").setDate(value)
+
+  validateInternal: ->
+    return @$(".form-group").hasClass("has-error")
