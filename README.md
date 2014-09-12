@@ -14,3 +14,21 @@ The schema is stored in _schema field of the form and is an integer.
 
 The package exports `schemaVersion` which is the current (and maximum) version that it compiles.
 It also exports `minSchemaVersion` which is the earliest version supported
+
+### Schema versioning checklist
+
+* Change schema 
+* Increment schema version in index.coffee
+* Add new version to acceptable _schema enum in schema
+* Publish with new major number
+* Increment version in mwater-form-designer
+* npm install new version of mwater-forms in mwater-form-designer
+* Publish mwater-form-designer
+* npm install new version of mwater-forms in mwater-server
+* Push new server
+* npm install new version of mwater-forms in mwater-app
+* Deploy new app
+* npm install new version of mwater-forms in mwater-portal
+* npm install new version of mwater-form-designer in mwater-portal
+* Deploy new portal
+ 
