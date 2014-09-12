@@ -18,7 +18,8 @@ exports.design = {
 
     # Version of the schema of this form design 
     # Schema 2 just added siteTypes to SiteQuestion and exportId to questions and consentPrompt to image questions
-    _schema: { enum: [1, 2] }
+    # Schema 3 added moment formats for date questions
+    _schema: { enum: [1, 2, 3] }
 
     # Name of the form
     name: { $ref: "#/definitions/localizedString" } 
@@ -569,8 +570,8 @@ exports.design = {
       properties: extendQuestionProperties({
         _type: { enum: ["DateQuestion"] }
 
-        # Format of the displayed date (is always stored in YYYY-MM-DD)
-        format: { enum: ["YYYY-MM-DD", "MM/DD/YYYY"]}
+        # moment.js format of the displayed date (is always stored in ISO 8601)
+        format: { type: "string" }
 
         # No validation available
         validations: { type: "array", maxItems: 0 } 
