@@ -51,7 +51,6 @@ module.exports = class DateQuestion extends Question
       # Error if not blank
       if @$("#date_input").val()
         @$(".form-group").addClass("has-error")
-      @save()
 
   save: ->
     # Get date
