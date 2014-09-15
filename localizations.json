@@ -133,7 +133,8 @@
     },
     {
       "_base": "en",
-      "en": "Finish"
+      "en": "Finish",
+      "_unused": true
     },
     {
       "_base": "en",
@@ -241,6 +242,10 @@
     {
       "_base": "en",
       "en": "Use Map"
+    },
+    {
+      "_base": "en",
+      "en": "Submit"
     }
   ]
 }
