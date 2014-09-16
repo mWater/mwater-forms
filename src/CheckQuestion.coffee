@@ -12,6 +12,6 @@ module.exports = class CheckQuestion extends Question
 
   updateAnswer: (answerEl) ->
     answerEl.html $(_.template("<div id=\"check\" class=\"touch-checkbox <%=checked%>\"><%=label%></div>",
-      label: @options.label
+      label: if @options.label then @options.label else "&nbsp;"
       checked: (if @getAnswerValue() then "checked" else "")
     ))
