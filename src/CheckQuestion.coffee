@@ -2,17 +2,28 @@ Question = require './Question'
 _ = require 'underscore'
 $ = require 'jquery'
 
+# Check question that has either a checkbox next to the question prompt, 
+# or next to a label, if present
 module.exports = class CheckQuestion extends Question
   events:
-    "click #check": "checked"
+    "click .prompt": "checked"
 
-  checked: (e) ->
+  checked: (e) =>
+    # Skip if help button was clicked
+    if @$("#toggle_help").length > 0 and $.contains(@$("#toggle_help")[0], e.target)
+      return
+
     # Get checked
     @setAnswerValue(not @getAnswerValue())
 
+  renderAnswer: ->
+    # Make a checkbox
+    @$(".prompt").addClass("touch-checkbox")
+
   updateAnswer: (answerEl) ->
-    answerEl.html $(_.template("<div id=\"check\" class=\"touch-checkbox <%=checked%>\"><%-label%><%=filler%></div>",
-      label: @options.label
-      checked: (if @getAnswerValue() then "checked" else "")
-      filler: (if not @options.label then "&nbsp;" else "")
-    ))
+    # Check or uncheck question prompt
+    if @getAnswerValue() 
+      @$(".prompt").addClass("checked")
+    else
+      @$(".prompt").removeClass("checked")
+

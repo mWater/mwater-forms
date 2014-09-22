@@ -18,7 +18,7 @@ exports.design = {
 
     # Version of the schema of this form design 
     # Schema 2 just added siteTypes to SiteQuestion and exportId to questions and consentPrompt to image questions
-    # Schema 3 added moment formats for date questions
+    # Schema 3 added moment formats for date questions. Label for checkbox is deprecated and no longer used.
     _schema: { enum: [1, 2, 3] }
 
     # Name of the form
@@ -629,13 +629,13 @@ exports.design = {
       properties: extendQuestionProperties({
         _type: { enum: ["CheckQuestion"] }
 
-        # Label to display next to checkbox
+        # Label to display next to checkbox. DEPRECATED AND NOT DISPLAYED
+        # TODO: remove
         label: { $ref: "#/definitions/localizedString" } 
 
         # No validation available
         validations: { type: "array", maxItems: 0 } 
       })
-      required: ["label"]
       additionalProperties: false
     }
 
