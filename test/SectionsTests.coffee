@@ -54,13 +54,13 @@ describe "Sections", ->
     @ui.click("Discard")
     assert @done
 
-  it "triggers 'complete' when Finish clicked", ->
+  it "triggers 'complete' when Submit clicked", ->
     @view.on 'complete', =>
       @done = true
 
     @ui.click("Next")
     @ui.click("Next")
-    @ui.click("Finish")
+    @ui.click("Submit")
     assert @done
 
   it "allows going back with breadcrumbs", ->

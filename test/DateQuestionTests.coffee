@@ -31,7 +31,13 @@ describe "DateQuestion", ->
     @model.set("q1234", { value: "2013-12-31"})
     assert.equal @qview.$el.find("input").val(), "12/31/2013"
 
-  it "handles arbitrary date formats in Moment.js format"
+  it "handles arbitrary date formats in Moment.js format", ->
+    @q.format = "MMDDYYYY"
+    @qview = @compiler.compileQuestion(@q).render()
+
+    @model.set("q1234", { value: "2013-12-31"})
+    assert.equal @qview.$el.find("input").val(), "12312013"
+
 
   it "pops up calendar control with current date"
   it "records calendar control selection"

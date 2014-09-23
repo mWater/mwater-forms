@@ -84,7 +84,6 @@ module.exports = class DateQuestion extends Question
     if @options.readonly
       answerEl.find("input").attr('readonly', 'readonly')
     else
-
       pickerOptions = {
         pickTime: @detailLevel > 2
         format: @options.format
@@ -104,10 +103,11 @@ module.exports = class DateQuestion extends Question
     # Parse using isoFormat to avoid timezone wrapping
     value = @getAnswerValue()
 
-    if @isoFormat
-      value = moment(value, @isoFormat)
-    else
-      value = moment(value, moment.ISO_8601)
+    if value
+      if @isoFormat
+        value = moment(value, @isoFormat)
+      else
+        value = moment(value, moment.ISO_8601)
 
     # Handle readonly case
     if @options.readonly
