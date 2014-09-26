@@ -38,6 +38,5 @@ describe "DateQuestion", ->
     @model.set("q1234", { value: "2013-12-31"})
     assert.equal @qview.$el.find("input").val(), "12312013"
 
-
   it "pops up calendar control with current date"
   it "records calendar control selection"
