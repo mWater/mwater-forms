@@ -5,7 +5,7 @@ _  = require 'lodash'
 extendQuestionProperties = (properties) ->
   return _.defaults properties, {
     _id: {}, code: {}, text: {}, required: {}, conditions: {}, hint: {}, help: {}, sticky: {}
-    alternates: {}, commentsField: {}, recordTimestamp: {}, recordLocation: {}, sensor: {}, _basedOn: {}
+    alternates: {}, commentsField: {}, recordTimestamp: {}, recordLocation: {}, sensor: {}, _basedOn: {}, exportId: {}
   } 
 
 # This is the design of a form which is stored in the "design" field of forms in mWater
