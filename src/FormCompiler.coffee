@@ -147,6 +147,12 @@ module.exports = class FormCompiler
       when "!includes"
         return () =>
           return not _.contains(getValue(), cond.rhs.literal)
+      when "isoneof"
+        return () =>
+          return _.contains(cond.rhs.literal, getValue())
+      when "isntoneof"
+        return () =>
+          return not _.contains(cond.rhs.literal, getValue())
       when "true"
         return () =>
           return getValue() == true

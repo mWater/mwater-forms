@@ -104,6 +104,15 @@ describe "Condition compiler", ->
     @testFalse(undefined, "false")
     @testFalse(null, "false")
 
+  it "compiles isoneof", ->
+    @testTrue("abc", "isoneof", ["abc", "def"])
+    @testTrue("def", "isoneof", ["abc", "def"])
+    @testFalse("xyz", "isoneof", ["abc", "def"])
+
+  it "compiles isntoneof", ->
+    @testFalse("abc", "isntoneof", ["abc", "def"])
+    @testTrue("xyz", "isntoneof", ["abc", "def"])
+
 describe "Conditions compiler", ->
   beforeEach ->
     @model = new Backbone.Model()

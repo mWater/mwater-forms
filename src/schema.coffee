@@ -19,7 +19,8 @@ exports.design = {
     # Version of the schema of this form design 
     # Schema 2 just added siteTypes to SiteQuestion and exportId to questions and consentPrompt to image questions
     # Schema 3 added moment formats for date questions. Label for checkbox is deprecated and no longer used.
-    _schema: { enum: [1, 2, 3] }
+    # Schema 4 added isoneof and isntoneof conditions
+    _schema: { enum: [1, 2, 3, 4] }
 
     # Name of the form
     name: { $ref: "#/definitions/localizedString" } 
@@ -278,6 +279,7 @@ exports.design = {
         { $ref: "#/definitions/conditionTypes/text" }
         { $ref: "#/definitions/conditionTypes/number" }
         { $ref: "#/definitions/conditionTypes/choice" }
+        { $ref: "#/definitions/conditionTypes/choices" }
         { $ref: "#/definitions/conditionTypes/date" }
       ]
     }
@@ -353,6 +355,26 @@ exports.design = {
             properties: {
               # Id of the choice
               literal: { type: "string" }
+            }
+          } 
+        }
+        required: ["rhs"]
+      }
+
+      # Conditions with choices as right-hand side
+      choices: {
+        type: "object"
+        properties: {
+          op: { enum: [
+            "isoneof"   # If answer is in a list of choices
+            "isntoneof" # If answer is not in a list of choice
+          ]}
+
+          rhs: {
+            type: "object"
+            properties: {
+              # Ids of the choices
+              literal: { type: "array", items: { type: "string" } }
             }
           } 
         }
