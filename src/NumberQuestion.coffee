@@ -3,6 +3,10 @@ Question = require './Question'
 # Number question with optional prefix and suffix. Set prefix option or suffix option
 # to a string to appear before/after box.
 
+# Validation on mobile HTML5 is a mess.
+# type="number" puts a numeric keypad, but allows letters to be typed and then silently strips them, 
+# not from display but from the val().
+# Using type="text" for decimal, type="tel" for integer for now
 module.exports = Question.extend
   renderAnswer: (answerEl) ->
     data = {
@@ -17,20 +21,39 @@ module.exports = Question.extend
     answerEl.find("input").val @getAnswerValue()
 
   events:
-    change: "changed"
+    "change .answer input": "changed"
+    "input .answer input": "checkValidation"
 
   validateInternal: ->
-    val = @$("input").val()
-    if @options.decimal and val.length > 0
-      if isNaN(parseFloat(val))
-        return true # TODO localize
-    else if val.length > 0
-      if not val.match(/^-?\d+$/)
-        return true # TODO localize
-    return null
+    val = @$(".answer input").val()
+    if @isValid(val)
+      return null
+    else
+      return true
+
+  # Check regex matching of numbers
+  isValid: (val) ->
+    if val.length == 0
+      return true
+
+    if @options.decimal
+      return val.match(/^-?[0-9]*\.?[0-9]+$/) and not isNaN(parseFloat(val))
+    else
+      return val.match(/^-?\d+$/)
+
+  checkValidation: ->
+    # Check if valid number
+    val = @$(".answer input").val()
+
+    # Always validate immediately at input box level
+    @$(".answer").toggleClass("has-error", not @isValid(val))
 
   changed: ->
-    val = if @options.decimal then parseFloat(@$("input").val()) else parseInt(@$("input").val())
-    if isNaN(val)
-      val = null
-    @setAnswerValue(val)
+    # Check if valid number
+    val = @$(".answer input").val()
+
+    if @isValid(val)
+      val = if @options.decimal then parseFloat(val) else parseInt(val)
+      if isNaN(val)
+        val = null
+      @setAnswerValue(val)

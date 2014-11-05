@@ -19,6 +19,8 @@ ezlocalize = require 'ez-localize'
 #
 # ctx: context of question. See Forms Context.md docs.
 # T: localizer function to use. See ez-localize module for more details. If not passed, uses default
+# 
+# Implement validateInternal() to return null if valid or true/<error string> if invalid
 module.exports = class Question extends Backbone.View
   className: "question"
 

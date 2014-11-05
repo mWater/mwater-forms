@@ -24,14 +24,27 @@ describe "NumberQuestion", ->
 
     it "records decimal number", ->
       @qview.$el.find("input").val("123.4").change()
+      assert not @qview.validate()
       assert @model.get("q1234").value == 123.4
 
     it "records whole number", ->
       @q.decimal = false
       @qview = @compiler.compileQuestion(@q).render()
 
-      @qview.$el.find("input").val("123.4").change()
+      @qview.$el.find("input").val("123").change()
+      assert not @qview.validate()
       assert.equal @model.get("q1234").value, 123
+
+    it "enforces decimal number", ->
+      @qview.$el.find("input").val("123.4abc").change()
+      assert @qview.validate()
+
+    it "enforces whole number", ->
+      @q.decimal = false
+      @qview = @compiler.compileQuestion(@q).render()
+
+      @qview.$el.find("input").val("123.4").change()
+      assert @qview.validate()
 
     it "enforces required", ->
       assert @qview.validate()
