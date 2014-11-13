@@ -31,3 +31,11 @@ describe "TextListQuestion", ->
 
   it "empty and required is not ok", ->
     assert @qview.validate()
+
+  it "loads existing values", ->
+    # Set first value
+    @model.set(@q._id, { value: ["entry1"]})
+
+    # Add second value
+    $(@qview.$el.find("input")[1]).val("entry2").trigger('input')
+    assert.deepEqual @model.get('q1234').value, ["entry1", "entry2"]    

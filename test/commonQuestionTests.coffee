@@ -56,8 +56,8 @@ module.exports = ->
       before = new Date().toISOString()
       @qview.setAnswerValue(null)
       after = new Date().toISOString()
-      assert @model.get("q1234").timestamp >= before
-      assert @model.get("q1234").timestamp <= after
+      assert @model.get("q1234").timestamp >= before, "Not after: " + @model.get("q1234").timestamp
+      assert @model.get("q1234").timestamp <= after, "Not before: " + @model.get("q1234").timestamp
 
     it "records location", ->
       @q.recordLocation = true

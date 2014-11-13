@@ -45,7 +45,7 @@ module.exports = class TextListQuestion extends Question
 
     # Set text fields
     for i in [0...items.length]
-      @$("input#" + i).val(items[i])
+      @$("#input_" + i).val(items[i])
 
     # Set position fields
     for i in [0...items.length]
