@@ -137,9 +137,11 @@ module.exports = class Question extends Backbone.View
     # Default does nothing
     return
 
-  update: ->
+  # Update the answer and comments and alternates. If initial is true, force update of answer
+  # as some question types always need updateAnswer called at least once 
+  update: (initial=false) ->
     # Update answer if changed
-    if not _.isEqual(@getAnswerValue(), @currentAnswer)
+    if initial or not _.isEqual(@getAnswerValue(), @currentAnswer)
       @updateAnswer @$(".answer")
       @currentAnswer = @getAnswerValue()
 
@@ -171,8 +173,8 @@ module.exports = class Question extends Backbone.View
     # Render answer
     @renderAnswer @$(".answer")
 
-    # Update answer
-    @updateAnswer @$(".answer")
+    # Update question
+    @update(true)
 
     # Save current answer to avoid spurious answer updates
     @currentAnswer = @getAnswerValue()
