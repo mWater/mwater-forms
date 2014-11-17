@@ -301,9 +301,9 @@ module.exports = class FormCompiler
     if not form._schema
       form._schema = require('./index').schemaVersion # TODO remove this and prev line by Sept 2014
     if form._schema < require('./index').minSchemaVersion
-      throw new Error("Schema version to low")
+      throw new Error("Schema version too low")
     if form._schema > require('./index').schemaVersion
-      throw new Error("Schema version to high")
+      throw new Error("Schema version too high")
 
     # Create localizer
     localizedStrings = form.localizedStrings or []
