@@ -3,13 +3,15 @@ Backbone = require 'backbone'
 Backbone.$ = $
 assert = require('chai').assert
 FormCompiler = require '../src/FormCompiler'
+_ = require 'lodash'
 
 describe "Condition compiler", ->
   beforeEach ->
     @model = new Backbone.Model()
     @compiler = new FormCompiler(model: @model, locale: "es")
-    @testTrue = (lhs, op, rhs) =>
-      @model.set("lhsid", { value: lhs })
+    # lhsExtras is stuff to add to answer of lhs question
+    @testTrue = (lhs, op, rhs, lhsExtras={}) =>
+      @model.set("lhsid", _.extend({ value: lhs }, lhsExtras))
       cond = { 
         lhs: { question: "lhsid" }
         op: op
@@ -18,8 +20,9 @@ describe "Condition compiler", ->
       cond = @compiler.compileCondition(cond)
       assert.isTrue cond()
 
-    @testFalse = (lhs, op, rhs) =>
-      @model.set("lhsid", { value: lhs })
+    # lhsExtras is stuff to add to answer of lhs question
+    @testFalse = (lhs, op, rhs, lhsExtras={}) =>
+      @model.set("lhsid", _.extend({ value: lhs }, lhsExtras))
       cond = { 
         lhs: { question: "lhsid" }
         op: op
@@ -112,6 +115,25 @@ describe "Condition compiler", ->
   it "compiles isntoneof", ->
     @testFalse("abc", "isntoneof", ["abc", "def"])
     @testTrue("xyz", "isntoneof", ["abc", "def"])
+
+  it "compiles is alternate", ->
+    @testTrue(null, "is", "na", { alternate: "na" })
+    @testTrue(null, "is", "dontknow", { alternate: "dontknow" })
+    @testFalse(null, "is", "dontknow", { alternate: "na" })
+
+  it "compiles isnt alternate", ->
+    @testFalse(null, "isnt", "na", { alternate: "na" })
+    @testFalse(null, "isnt", "dontknow", { alternate: "dontknow" })
+    @testTrue(null, "isnt", "dontknow", { alternate: "na" })
+
+  it "compiles isoneof alternate", ->
+    @testTrue("abc", "isoneof", ["abc", "def"])
+    @testTrue(null, "isoneof", ["abc", "na"], { alternate: "na" } )
+    @testFalse(null, "isoneof", ["abc", "def"], { alternate: "na" } )
+
+  it "compiles isntoneof alternate", ->
+    @testFalse(null, "isntoneof", ["na", "def"], { alternate: "na"})
+    @testTrue(null, "isntoneof", ["abc", "def"], { alternate: "na"})
 
 describe "Conditions compiler", ->
   beforeEach ->

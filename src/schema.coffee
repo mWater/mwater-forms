@@ -746,7 +746,7 @@ exports.design = {
         type: "object"
 
         properties: {
-          # Unique (within the question) id of the choice
+          # Unique (within the question) id of the choice. Cannot be "na" or "dontknow" as they are reserved for alternates
           id: { type: "string" }
 
           # Code, unique within the question that should be used for exporting

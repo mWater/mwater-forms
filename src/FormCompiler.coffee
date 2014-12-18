@@ -87,7 +87,6 @@ module.exports = class FormCompiler
       else
         throw new Error("Unknown validation op " + val.op)
 
-
   compileValidations: (vals) =>
     compVals = _.map(vals, @compileValidation)
     return (answer) =>
@@ -114,6 +113,10 @@ module.exports = class FormCompiler
       answer = @model.get(cond.lhs.question) || {}
       return answer.value
 
+    getAlternate = =>
+      answer = @model.get(cond.lhs.question) || {}
+      return answer.alternate
+
     switch cond.op
       when "present"
         return () =>
@@ -129,7 +132,7 @@ module.exports = class FormCompiler
       when "!contains"
         return () =>
           return getValue().indexOf(cond.rhs.literal) == -1
-      when "=", "is"
+      when "="
         return () =>
           return getValue() == cond.rhs.literal
       when ">", "after"
@@ -138,7 +141,7 @@ module.exports = class FormCompiler
       when "<", "before"
         return () =>
           return getValue() < cond.rhs.literal
-      when "!=", "isnt"
+      when "!="
         return () =>
           return getValue() != cond.rhs.literal
       when "includes"
@@ -147,12 +150,18 @@ module.exports = class FormCompiler
       when "!includes"
         return () =>
           return not _.contains(getValue(), cond.rhs.literal)
+      when "is"
+        return () =>
+          return getValue() == cond.rhs.literal or getAlternate() == cond.rhs.literal
+      when "isnt"
+        return () =>
+          return getValue() != cond.rhs.literal and getAlternate() != cond.rhs.literal
       when "isoneof"
         return () =>
-          return _.contains(cond.rhs.literal, getValue())
+          return _.contains(cond.rhs.literal, getValue()) or _.contains(cond.rhs.literal, getAlternate()) 
       when "isntoneof"
         return () =>
-          return not _.contains(cond.rhs.literal, getValue())
+          return not _.contains(cond.rhs.literal, getValue()) and not _.contains(cond.rhs.literal, getAlternate())
       when "true"
         return () =>
           return getValue() == true
