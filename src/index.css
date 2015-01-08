@@ -79,6 +79,10 @@ select {
   background-position: 8px -112px;
 }
 
+.question > .prompt.touch-checkbox {
+    font-size: 10.5pt;
+}
+
 .checkbox-choice-hint {
   font-size: 10pt;
   font-weight: normal;
