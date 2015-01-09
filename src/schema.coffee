@@ -85,6 +85,9 @@ exports.design = {
 
           # Localized name of language (e.g. Kiswahili)
           name: { type: "string" }
+
+          # True if code and name are not from the official locales list
+          custom: { type: "boolean" }
         }
         required: ["code", "name"]
         additionalProperties: false
