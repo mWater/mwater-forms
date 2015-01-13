@@ -1,6 +1,6 @@
 {
   "name": "mwater-forms",
-  "version": "3.2.8",
+  "version": "3.2.9",
   "description": "Form controls for mWater",
   "main": "lib/index.js",
   "directories": {
