@@ -112,3 +112,7 @@ select {
   font-weight: normal;
   color: gray;
 }
+
+.form-controls button {
+  margin-bottom: 12px;
+}
