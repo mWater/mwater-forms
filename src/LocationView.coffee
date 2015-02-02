@@ -114,9 +114,9 @@ module.exports = class LocationView extends Backbone.View
         when "none"
           msg = @T('Waiting for GPS...')
         when "poor"
-          msg = @T('Very low GPS Accuracy (±{0}m)...', @currentPositionFinder.pos.coords.accuracy.toFixed(0))
+          msg = @T('Very weak GPS signal (±{0}m)...', @currentPositionFinder.pos.coords.accuracy.toFixed(0))
         when "fair"
-          msg = @T('Low GPS Accuracy (±{0}m)...', @currentPositionFinder.pos.coords.accuracy.toFixed(0))
+          msg = @T('Weak GPS signal (±{0}m)...', @currentPositionFinder.pos.coords.accuracy.toFixed(0))
         when "good"
           msg = @T('Setting location...')
       @$("#location_setter_msg").text(msg)
