@@ -68,13 +68,13 @@ exports.formatGPSStrength = (pos, T) =>
       text = T('Waiting for GPS...')
       textClass = 'text-danger'
     when "poor"
-      text = T('Very Low GPS Accuracy ±{0}m', pos.coords.accuracy.toFixed(0))
+      text = T('Very Low GPS Signal ±{0}m', pos.coords.accuracy.toFixed(0))
       textClass = 'text-warning'
     when "fair"
-      text = T('Low GPS Accuracy ±{0}m', pos.coords.accuracy.toFixed(0))
+      text = T('Low GPS Signal ±{0}m', pos.coords.accuracy.toFixed(0))
       textClass = 'text-warning'
     when "good", "excellent"
-      text = T('Good GPS Accuracy ±{0}m', pos.coords.accuracy.toFixed(0))
+      text = T('Good GPS Signal ±{0}m', pos.coords.accuracy.toFixed(0))
       textClass = 'text-success'
       
   return { class: textClass, text: text } 

@@ -185,15 +185,18 @@
     },
     {
       "_base": "en",
-      "en": "Very Low GPS Accuracy ±{0}m"
+      "en": "Very Low GPS Accuracy ±{0}m",
+      "_unused": true
     },
     {
       "_base": "en",
-      "en": "Low GPS Accuracy ±{0}m"
+      "en": "Low GPS Accuracy ±{0}m",
+      "_unused": true
     },
     {
       "_base": "en",
-      "en": "Good GPS Accuracy ±{0}m"
+      "en": "Good GPS Accuracy ±{0}m",
+      "_unused": true
     },
     {
       "_base": "en",
@@ -207,11 +210,13 @@
     },
     {
       "_base": "en",
-      "en": "Very low GPS Accuracy (±{0}m)..."
+      "en": "Very low GPS Accuracy (±{0}m)...",
+      "_unused": true
     },
     {
       "_base": "en",
-      "en": "Low GPS Accuracy (±{0}m)..."
+      "en": "Low GPS Accuracy (±{0}m)...",
+      "_unused": true
     },
     {
       "_base": "en",
@@ -246,6 +251,26 @@
     {
       "_base": "en",
       "en": "Submit"
+    },
+    {
+      "_base": "en",
+      "en": "Very weak GPS signal (±{0}m)..."
+    },
+    {
+      "_base": "en",
+      "en": "Weak GPS signal (±{0}m)..."
+    },
+    {
+      "_base": "en",
+      "en": "Very Low GPS Signal ±{0}m"
+    },
+    {
+      "_base": "en",
+      "en": "Low GPS Signal ±{0}m"
+    },
+    {
+      "_base": "en",
+      "en": "Good GPS Signal ±{0}m"
     }
   ]
 }
