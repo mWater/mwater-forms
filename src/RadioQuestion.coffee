@@ -33,7 +33,7 @@ module.exports = class RadioQuestion extends Question
     @setAnswerField('specify', specify)
 
   updateAnswer: (answerEl) ->
-    answerEl.html _.template("<div class=\"touch-radio-group\"><%=renderRadioOptions()%></div>", this)
+    answerEl.html _.template("<div class=\"touch-radio-group\"><%=renderRadioOptions()%></div>")(this)
     answerEl.find(".radio-group").addClass "readonly"  if @options.readonly
 
   renderRadioOptions: ->

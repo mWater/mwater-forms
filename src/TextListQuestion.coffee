@@ -37,7 +37,7 @@ module.exports = class TextListQuestion extends Question
       </div>
     </td>
   </tr>        
-        ''', { index: index }))
+        ''')({ index: index }))
 
     # Remove extra rows
     while @$("tr").length > items.length + 1
@@ -49,7 +49,7 @@ module.exports = class TextListQuestion extends Question
 
     # Set position fields
     for i in [0...items.length]
-      @$("#position_" + i).html(_.template("<b><%=position%>.&nbsp;</b>", { position: i + 1 }))
+      @$("#position_" + i).html(_.template("<b><%=position%>.&nbsp;</b>")({ position: i + 1 }))
 
     @$("#position_" + items.length).html("")
 

@@ -3,8 +3,7 @@ $ = require 'jquery'
 Question = require './Question'
 
 moment = require 'moment'
-require('./bootstrap-datetimepicker/bootstrap-datetimepicker.min')
-
+require('../bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min')
 
 # Date question. Options include:
 # format: Any moment.js format
@@ -54,7 +53,7 @@ module.exports = class DateQuestion extends Question
 
   save: ->
     # Get date
-    date = @$('#datetimepicker').data("DateTimePicker").getDate()
+    date = @$('#datetimepicker').data("DateTimePicker").date()
     if not date
       @setAnswerValue(null)
       return
@@ -85,10 +84,7 @@ module.exports = class DateQuestion extends Question
       answerEl.find("input").attr('readonly', 'readonly')
     else
       pickerOptions = {
-        pickTime: @detailLevel > 2
         format: @options.format
-        useMinutes: @detailLevel > 3
-        useSeconds: @detailLevel > 4
         useCurrent: false
       }
 
@@ -116,10 +112,7 @@ module.exports = class DateQuestion extends Question
       else
         @$("#date_input").val("")
     else
-      # On the Moto E at least, sometimes the date picker is not loaded. Defer
-      # in order to allow DOM to load
-      _.defer () =>
-        @$('#datetimepicker').data("DateTimePicker").setDate(value)
+      @$('#datetimepicker').data("DateTimePicker").date(value or null)
 
   validateInternal: ->
     return @$(".form-group").hasClass("has-error")

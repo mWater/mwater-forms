@@ -1,4 +1,4 @@
-@import "./bootstrap-datetimepicker/bootstrap-datetimepicker.css";
+@import "../bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css";
 
 .section {
   margin-bottom: 15px;
