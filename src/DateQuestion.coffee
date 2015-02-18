@@ -108,7 +108,13 @@ module.exports = class DateQuestion extends Question
       else
         @$("#date_input").val("")
     else
-      @$('#datetimepicker').data("DateTimePicker").date(value or null)
+      # Sometimes datepicker does not load in time. Defer to allow it to in this case
+      dateTimePicker = @$('#datetimepicker').data("DateTimePicker")
+      if dateTimePicker
+        @$('#datetimepicker').data("DateTimePicker").date(value or null)
+      else
+        _.defer () =>
+          @$('#datetimepicker').data("DateTimePicker").date(value or null)
 
   validateInternal: ->
     return @$(".form-group").hasClass("has-error")
