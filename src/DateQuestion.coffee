@@ -116,7 +116,10 @@ module.exports = class DateQuestion extends Question
       else
         @$("#date_input").val("")
     else
-      @$('#datetimepicker').data("DateTimePicker").setDate(value)
+      # On the Moto E at least, sometimes the date picker is not loaded. Defer
+      # in order to allow DOM to load
+      _.defer () =>
+        @$('#datetimepicker').data("DateTimePicker").setDate(value)
 
   validateInternal: ->
     return @$(".form-group").hasClass("has-error")

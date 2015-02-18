@@ -1,6 +1,5 @@
 _ = require 'underscore'
 Backbone = require 'backbone'
-chai = require 'chai'
 assert = require('chai').assert
 FormCompiler = require '../src/FormCompiler'
 

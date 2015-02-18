@@ -1,4 +1,5 @@
 gulp = require 'gulp'
+gutil = require 'gulp-util'
 coffee = require 'gulp-coffee' 
 glob = require 'glob'
 extractor = require('ez-localize/extractor')
@@ -25,9 +26,11 @@ gulp.task 'localize', (cb) ->
 
 # Compile tests
 gulp.task 'prepareTests', ->
-  files = glob.sync("./test/*Tests.coffee");
+  files = glob.sync("./test/*.coffee");
   bundler = browserify({ entries: files, extensions: [".js", ".coffee"] })
   stream = bundler.bundle()
+    .on('error', gutil.log)
+    .on('error', -> throw "Failed")
     .pipe(source('browserified.js'))
     .pipe(gulp.dest('./test/'))
   return stream
