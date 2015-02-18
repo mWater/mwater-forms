@@ -7,7 +7,7 @@ forms = require '../src'
 UIDriver = require './helpers/UIDriver'
 sinon = require 'sinon'
 FormCompiler = require '../src/FormCompiler'
-commonQuestionTests = require './commonQuestionTests'
+commonQuestionTestList = require './commonQuestionTestList'
 
 class MockImageManager 
   getImageThumbnailUrl: (imageUid, success, error) ->
@@ -42,7 +42,7 @@ describe 'ImagesQuestion', ->
       @qview = @compiler.compileQuestion(@q).render()
 
     # Run common tests
-    commonQuestionTests.call(this)
+    commonQuestionTestList.call(this)
 
     it 'displays no image', ->
       @model.set(q1234: { value: [] })

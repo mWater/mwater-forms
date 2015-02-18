@@ -3,7 +3,7 @@ Backbone = require 'backbone'
 Backbone.$ = $
 assert = require('chai').assert
 FormCompiler = require '../src/FormCompiler'
-commonQuestionTests = require './commonQuestionTests'
+commonQuestionTestList = require './commonQuestionTestList'
 
 describe "RadioQuestion", ->
   beforeEach ->
@@ -22,7 +22,7 @@ describe "RadioQuestion", ->
     @qview = @compiler.compileQuestion(@q).render()
 
     # Run common tests
-  commonQuestionTests.call(this)
+  commonQuestionTestList.call(this)
 
   it "displays choices", ->
     assert.match @qview.el.outerHTML, /AA/

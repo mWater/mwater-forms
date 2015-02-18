@@ -3,7 +3,7 @@ Backbone = require 'backbone'
 Backbone.$ = $
 assert = require('chai').assert
 FormCompiler = require '../src/FormCompiler'
-commonQuestionTests = require './commonQuestionTests'
+commonQuestionTestList = require './commonQuestionTestList'
 
 describe "TextListQuestion", ->
   beforeEach ->
@@ -18,7 +18,7 @@ describe "TextListQuestion", ->
     @qview = @compiler.compileQuestion(@q).render()
 
   # Run common tests
-  commonQuestionTests.call(this)
+  commonQuestionTestList.call(this)
 
   it "records add", ->
     $(@qview.$el.find("input")[0]).val("entry1").trigger('input')

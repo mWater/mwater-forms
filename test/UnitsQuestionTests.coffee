@@ -3,7 +3,7 @@ Backbone = require 'backbone'
 Backbone.$ = $
 assert = require('chai').assert
 FormCompiler = require '../src/FormCompiler'
-commonQuestionTests = require './commonQuestionTests'
+commonQuestionTestList = require './commonQuestionTestList'
 
 describe "UnitsQuestion", ->
   beforeEach ->
@@ -25,7 +25,7 @@ describe "UnitsQuestion", ->
     @qview = @compiler.compileQuestion(@q).render()
 
   # Run common tests
-  commonQuestionTests.call(this)
+  commonQuestionTestList.call(this)
 
   it "allows changing of units", ->
     @qview.$el.find("#quantity").val("123.4").change()

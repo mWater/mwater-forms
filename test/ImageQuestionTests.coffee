@@ -5,7 +5,7 @@ Backbone = require 'backbone'
 _ = require 'underscore'
 sinon = require 'sinon'
 FormCompiler = require '../src/FormCompiler'
-commonQuestionTests = require './commonQuestionTests'
+commonQuestionTestList = require './commonQuestionTestList'
 
 class MockImageManager 
   getImageThumbnailUrl: (imageUid, success, error) ->
@@ -40,7 +40,7 @@ describe 'ImageQuestion', ->
       @qview = @compiler.compileQuestion(@q).render()
 
     # Run common tests
-    commonQuestionTests.call(this)
+    commonQuestionTestList.call(this)
 
     it 'displays no image', ->
       assert.isTrue true

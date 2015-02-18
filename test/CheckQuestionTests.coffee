@@ -3,7 +3,7 @@ Backbone = require 'backbone'
 Backbone.$ = $
 assert = require('chai').assert
 FormCompiler = require '../src/FormCompiler'
-commonQuestionTests = require './commonQuestionTests'
+commonQuestionTestList = require './commonQuestionTestList'
 
 describe "CheckQuestion", ->
   beforeEach ->
@@ -18,7 +18,7 @@ describe "CheckQuestion", ->
     @qview = @compiler.compileQuestion(@q).render()
 
   # Run common tests
-  commonQuestionTests.call(this)
+  commonQuestionTestList.call(this)
 
   it "records check", ->
     @qview.$el.find(".prompt").trigger("click")

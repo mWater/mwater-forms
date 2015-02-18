@@ -3,7 +3,7 @@ Backbone = require 'backbone'
 Backbone.$ = $
 assert = require('chai').assert
 FormCompiler = require '../src/FormCompiler'
-commonQuestionTests = require './commonQuestionTests'
+commonQuestionTestList = require './commonQuestionTestList'
 
 describe "NumberQuestion", ->
   context "compiled question", ->
@@ -20,7 +20,7 @@ describe "NumberQuestion", ->
       @qview = @compiler.compileQuestion(@q).render()
 
     # Run common tests
-    commonQuestionTests.call(this)
+    commonQuestionTestList.call(this)
 
     it "records decimal number", ->
       @qview.$el.find("input").val("123.4").change()

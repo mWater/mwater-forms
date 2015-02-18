@@ -3,7 +3,7 @@ Backbone = require 'backbone'
 Backbone.$ = $
 assert = require('chai').assert
 FormCompiler = require '../src/FormCompiler'
-commonQuestionTests = require './commonQuestionTests'
+commonQuestionTestList = require './commonQuestionTestList'
 
 describe 'DropdownQuestion', ->
   beforeEach ->
@@ -22,7 +22,7 @@ describe 'DropdownQuestion', ->
     @qview = @compiler.compileQuestion(@q).render()
 
   # Run common tests
-  commonQuestionTests.call(this)
+  commonQuestionTestList.call(this)
 
   it 'accepts known value', ->
     @model.set("q1234": { value: 'a' })

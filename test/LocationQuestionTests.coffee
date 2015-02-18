@@ -4,7 +4,7 @@ Backbone = require 'backbone'
 Backbone.$ = $
 assert = require('chai').assert
 FormCompiler = require '../src/FormCompiler'
-commonQuestionTests = require './commonQuestionTests'
+commonQuestionTestList = require './commonQuestionTestList'
 UIDriver = require './helpers/UIDriver'
 CurrentPositionFinder = require '../src/CurrentPositionFinder'
 class MockLocationFinder
@@ -56,7 +56,7 @@ describe "LocationQuestion", ->
 
 
   # Run common tests
-  commonQuestionTests.call(this)
+  commonQuestionTestList.call(this)
 
   it "records location when set is clicked" #, ->
     # @ui.click("Set")

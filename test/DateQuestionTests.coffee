@@ -3,7 +3,7 @@ Backbone = require 'backbone'
 Backbone.$ = $
 assert = require('chai').assert
 FormCompiler = require '../src/FormCompiler'
-commonQuestionTests = require './commonQuestionTests'
+commonQuestionTestList = require './commonQuestionTestList'
 
 describe "DateQuestion", ->
   beforeEach ->
@@ -18,7 +18,7 @@ describe "DateQuestion", ->
     @qview = @compiler.compileQuestion(@q).render()
 
   # Run common tests
-  commonQuestionTests.call(this)
+  commonQuestionTestList.call(this)
 
   it "displays format YYYY-MM-DD", ->
     @model.set("q1234", { value: "2013-12-31"})
