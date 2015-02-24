@@ -3,23 +3,26 @@ _ = require 'underscore'
 
 # Improved location finder. Triggers found event with HTML5 position object (containing coords, etc).
 class LocationFinder
-  constructor: ->
+  constructor: (options = {}) ->
     _.extend @, Backbone.Events
+    @storage = options.storage
 
   cacheLocation = (pos) ->
-    window.localStorage['LocationFinder.lastPosition'] = JSON.stringify(pos)
+    if @storage?
+      @storage.set('LocationFinder.lastPosition', JSON.stringify(pos))
 
   getCachedLocation = () ->
-    if window.localStorage['LocationFinder.lastPosition']
-      pos = JSON.parse(window.localStorage['LocationFinder.lastPosition'])
+    if @storage?
+      if @storage.get('LocationFinder.lastPosition')
+        pos = JSON.parse(@storage.get('LocationFinder.lastPosition'))
 
-      # Check that valid position (unreproducible bug)
-      if not pos.coords
-        return
+        # Check that valid position (unreproducible bug)
+        if not pos.coords
+          return
 
-      # Accuracy is down since cached
-      pos.coords.accuracy = 10000 # 10 km
-      return pos
+        # Accuracy is down since cached
+        pos.coords.accuracy = 10000 # 10 km
+        return pos
     
   getLocation: (success, error) ->
     # If no geolocation, send error immediately
