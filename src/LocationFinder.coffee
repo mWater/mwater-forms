@@ -2,6 +2,7 @@ Backbone = require 'backbone'
 _ = require 'underscore'
 
 # Improved location finder. Triggers found event with HTML5 position object (containing coords, etc).
+# Pass storage as option (implementing localStorage API) to get caching of position
 class LocationFinder
   constructor: (options = {}) ->
     _.extend @, Backbone.Events
