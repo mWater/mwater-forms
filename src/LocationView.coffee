@@ -25,8 +25,8 @@ module.exports = class LocationView extends Backbone.View
     @hideMap = options.hideMap
     @disableMap = options.disableMap
     @settingLocation = false
-    @locationFinder = options.locationFinder || new LocationFinder(options)
-    @currentPositionFinder = options.currentPositionFinder || new CurrentPositionFinder(options)
+    @locationFinder = options.locationFinder || new LocationFinder({ storage: options.storage })
+    @currentPositionFinder = options.currentPositionFinder || new CurrentPositionFinder({ storage: options.storage })
 
     @T = options.T or ezlocalize.defaultT
 
