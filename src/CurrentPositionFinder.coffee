@@ -13,7 +13,7 @@ module.exports = class CurrentPositionFinder
     # Add events
     _.extend @, Backbone.Events 
 
-    @locationFinder = options.locationFinder or new LocationFinder(options)
+    @locationFinder = options.locationFinder or new LocationFinder({ storage: options.storage })
     @_reset()
 
   _reset: ->
