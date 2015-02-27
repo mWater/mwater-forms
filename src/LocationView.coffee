@@ -14,6 +14,7 @@ utils = require './utils'
 # options disableMap is true to disable map
 # options locationFinder overrides default LocationFinder
 # options T is the localizer to use
+# options storage allows using of cached location if locationFinder not passed
 # Location is stored format { latitude, longitude, accuracy, altitude?, altitudeAccuracy? }
 module.exports = class LocationView extends Backbone.View
   constructor: (options) ->
