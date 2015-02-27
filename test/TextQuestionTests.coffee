@@ -189,3 +189,14 @@ describe "TextQuestion", ->
 
     # Make sure stored in model
     assert.equal @model.get(@q._id).value, "model"
+
+  describe "barcode input", ->
+    it "shows scan button"
+
+    it "does not show clear button if no text"
+
+    it "scans when scan pressed showing text"
+
+    it "shows clear when text present"
+
+    it "clears when clear pressed"
