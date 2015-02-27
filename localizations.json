@@ -271,6 +271,34 @@
     {
       "_base": "en",
       "en": "Good GPS Signal ±{0}m"
+    },
+    {
+      "_base": "en",
+      "en": "Not supported on this platform"
+    },
+    {
+      "_base": "en",
+      "en": "Change...",
+      "_unused": true
+    },
+    {
+      "_base": "en",
+      "en": "None selected",
+      "_unused": true
+    },
+    {
+      "_base": "en",
+      "en": "Select...",
+      "_unused": true
+    },
+    {
+      "_base": "en",
+      "en": "Change",
+      "_unused": true
+    },
+    {
+      "_base": "en",
+      "en": "Loading..."
     }
   ]
 }

@@ -1,0 +1,19 @@
+{{#if entity}}
+	{{#if properties}}
+		{{#each properties}}
+		<div><span class="text-muted">{{name}}</span>: {{value}}</div>
+		{{/each}}
+	{{else}}
+		<div class="text-muted">{{T "Loading..."}}</div>
+	{{/if}}
+	<button id="change_entity_button" type="button" class="btn btn-default btn-sm">
+		<span class="glyphicon glyphicon-pencil"></span>
+		{{selectText}}
+	</button>
+{{else}}
+	<button id="select_entity_button" type="button" class="btn btn-default btn-sm">
+		<span class="glyphicon glyphicon-ok"></span>
+		{{selectText}}
+	</button>
+{{/if}}
+

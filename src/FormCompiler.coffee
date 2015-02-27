@@ -17,6 +17,7 @@ ImagesQuestion = require './ImagesQuestion'
 CheckQuestion = require './CheckQuestion'
 TextListQuestion = require './TextListQuestion'
 SiteQuestion = require './SiteQuestion'
+EntityQuestion = require './EntityQuestion'
 
 Instructions = require './Instructions'
 
@@ -262,6 +263,14 @@ module.exports = class FormCompiler
       when "SiteQuestion"
         options.siteTypes = q.siteTypes
         return new SiteQuestion(options)
+      when "EntityQuestion"
+        options.entityType = q.entityType
+        options.entityFilter = q.entityFilter
+        options.displayProperties = q.displayProperties
+        options.selectProperties = q.selectProperties
+        options.mapProperty = q.mapProperty
+        options.selectText = @compileString(q.selectText)
+        return new EntityQuestion(options)
 
     throw new Error("Unknown question type")
 
