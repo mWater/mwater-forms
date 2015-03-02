@@ -9,6 +9,7 @@ _ = require 'lodash'
 #  selectProperties: properties of entity to display when selecting
 #  mapProperty: geo property if selection should use a map to select
 #  selectText: text of select button
+#  locale: current locale
 #
 # Context should have selectEntity(<options>)
 # selectEntity options:
@@ -16,24 +17,39 @@ _ = require 'lodash'
 #  type: entity type
 #  filter: optional filter of entities that are acceptable
 #  selectProperties: properties to display in the list when selecting
-#  callback: called with _id of entity
+#  callback: called with entity selected
 #
-# Context should have getEntityProperties(<options>)
-# getEntityProperties options:
-#  entity: _id of the entity
-#  properties: properties to get
-#  locale: locale to localize properties into
-#  callback: called with list of { id, name, value, type }
-#   where id is id of property (e.g. "p243")
-#   and name is localized name of property
-#   and value is localized value of property
-#   and type is type of property (integer, decimal, text, enum)
+# Context should have getEntity(_id, callback)
+# getEntity options:
+#  callback: called with an entity e.g. { a: "abc", b: 123 }
 #  or callback null if entity not found
 # 
 module.exports = class EntityQuestion extends Question
+  events:
+    'click #change_entity_button' : 'selectEntity'
+    'click #select_entity_button' : 'selectEntity'
+
+  changed: ->
+    @setAnswerValue(code: @$("input").val())
+
+  # Called to select an entity using an external mechanism (calls @ctx.selectEntity)
+  selectEntity: ->
+    if not @ctx.selectEntity
+      return alert(@T("Not supported on this platform"))
+
+    @ctx.selectEntity { 
+      title: @options.selectText
+      type: @options.entityType
+      filter: @options.entityFilter
+      selectProperties: @options.selectProperties
+      mapProperty: @options.mapProperty
+      callback: (entity) =>
+        @setAnswerValue(entity._id)
+    }
+
   updateAnswer: (answerEl) ->
     # Check if entities supported
-    if not @ctx.getEntityProperties or not @ctx.selectEntity
+    if not @ctx.getEntity
       answerEl.html('<div class="text-warning">' + @T("Not supported on this platform") + '</div>')
       return
 
@@ -47,39 +63,57 @@ module.exports = class EntityQuestion extends Question
       }
       answerEl.html require('./templates/EntityQuestion.hbs')(data, helpers: { T: @T })
 
-      @ctx.getEntityProperties({
-        entity: val
-        properties: @options.displayProperties
-        locale: @ctx.locale
-        callback: (properties) =>
+      @ctx.getEntity val, (entity) =>
+        if entity
+          # Fill linked answers
+          @fillLinkedAnswers(entity)
+
+          # Display entity
+          properties = @formatEntityProperties(entity)
           data = {
             entity: val
             properties: properties
             selectText: @options.selectText
           }
           answerEl.html require('./templates/EntityQuestion.hbs')(data, helpers: { T: @T }) 
-        })
+        else
+          # Entity not found
+          data = {
+            entity: entity
+            propertiesError: @T("Data Not Found")
+            selectText: @options.selectText
+          }
+          answerEl.html require('./templates/EntityQuestion.hbs')(data, helpers: { T: @T }) 
     else
-      data = {
-        selectText: @options.selectText
-      }
+      # No entity selected
+      data = { selectText: @options.selectText }
       answerEl.html require('./templates/EntityQuestion.hbs')(data, helpers: { T: @T })
 
-  events:
-    'click #change_entity_button' : 'selectEntity'
-    'click #select_entity_button' : 'selectEntity'
+  # Format entity properties for display. Return array of name, value
+  formatEntityProperties: (entity) ->
+    # Localize to locale, or English as fallback
+    localize = (str) =>
+      return str[@options.locale] or str.en
 
-  changed: ->
-    @setAnswerValue(code: @$("input").val())
+    # Get properties and format    
+    properties = []
+    for prop in @options.displayProperties
+      name = localize(prop.name)
+      switch prop.type
+        when "text", "integer", "decimal"
+          properties.push({ name: name, value: entity[prop.code]})
+        when "enum"
+          enumVal = entity[prop.code]
+          propValue = _.findWhere(prop.values, { code: enumVal })
+          if propValue
+            properties.push({ name: name, value: localize(propValue.name)})
+          else
+            properties.push({ name: name, value: "???"})  # TODO
+        else
+          properties.push({ name: name, value: "???"}) # TODO
 
-  selectEntity: ->
-    @ctx.selectEntity { 
-      title: @options.selectText
-      type: @options.entityType
-      filter: @options.entityFilter
-      selectProperties: @options.selectProperties
-      mapProperty: @options.mapProperty
-      callback: (entityId) =>
-        @setAnswerValue(entityId)
-    }
+    return properties
+
+  fillLinkedAnswers: (entity) ->
+    # TODO
 

@@ -264,6 +264,7 @@ module.exports = class FormCompiler
         options.siteTypes = q.siteTypes
         return new SiteQuestion(options)
       when "EntityQuestion"
+        options.locale = @locale
         options.entityType = q.entityType
         options.entityFilter = q.entityFilter
         options.displayProperties = q.displayProperties

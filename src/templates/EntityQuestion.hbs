@@ -4,7 +4,11 @@
 		<div><span class="text-muted">{{name}}</span>: {{value}}</div>
 		{{/each}}
 	{{else}}
-		<div class="text-muted">{{T "Loading..."}}</div>
+		{{#if propertiesError}}
+			<div class="text-error">{{propertiesError}}</div>
+		{{else}}
+			<div class="text-muted">{{T "Loading..."}}</div>
+		{{/if}}
 	{{/if}}
 	<button id="change_entity_button" type="button" class="btn btn-default btn-sm">
 		<span class="glyphicon glyphicon-pencil"></span>
