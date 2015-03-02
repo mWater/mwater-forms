@@ -10,7 +10,7 @@ _ = require 'lodash'
 #  mapProperty: geo property if selection should use a map to select
 #  selectText: text of select button
 #  locale: current locale
-#  updateLinkedAnswers: function that updates any linked answers when an entity is selected. Called with entity
+#  loadLinkedAnswers: function that loads any linked answers when an entity is selected. Called with entity
 #
 # Context should have selectEntity(<options>)
 # selectEntity options:
@@ -47,9 +47,9 @@ module.exports = class EntityQuestion extends Question
       callback: (entity) =>
         @setAnswerValue(entity._id)
 
-        # Update answers linked to properties
-        if @options.updateLinkedAnswers
-          @options.updateLinkedAnswers(entity)
+        # Load answers linked to properties
+        if @options.loadLinkedAnswers
+          @options.loadLinkedAnswers(entity)
     }
 
   updateAnswer: (answerEl) ->

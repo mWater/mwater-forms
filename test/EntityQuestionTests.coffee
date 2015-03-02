@@ -3,7 +3,7 @@ FormCompiler = require '../src/FormCompiler'
 
 describe "EntityQuestion", ->
   before ->
-    # Create a sample properties
+    # Create sample properties
     @propText = { id: 1, code: "text", type: "text", name: { en: "Text" } }
     @propInteger = { id: 2, code: "integer", type: "integer", name: { en: "Integer" } }
     @propDecimal = { id: 3, code: "decimal", type: "decimal", name: { en: "Decimal" } }
@@ -107,7 +107,7 @@ describe "EntityQuestion", ->
         mapProperty: null
         selectText: { en: "Select" }
         propertyLinks: [
-          { property: @propA, direction: "both", question: "q2" }
+          { property: @propA, direction: "both", question: "q2", type: "direct" }
         ]
       }
       @qview = @compiler.compileQuestion(@q).render()

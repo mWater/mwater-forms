@@ -181,8 +181,8 @@ module.exports = class FormCompiler
 
       return true
 
-  # Compile property links into a function that updates answers
-  compileUpdateLinkedAnswers: (propertyLinks) ->
+  # Compile property links into a function that loads answers
+  compileLoadLinkedAnswers: (propertyLinks) ->
     return (entity) =>
       if not propertyLinks
         return
@@ -192,17 +192,99 @@ module.exports = class FormCompiler
         if not propLink.direction in ["load", "both"]
           continue
 
-        # Get old answer
-        answer = @model.get(propLink.question) or {}
+        switch propLink.type
+          when "direct"
+            val = entity[propLink.property.code]
+            if not val?
+              continue
 
-        # Copy property to question value if not set
-        if answer.value == "" or not answer.value?
-          answer.value = entity[propLink.property.code]
+            # Get old answer
+            answer = @model.get(propLink.question) or {}
 
-        @model.set(propLink.question, answer)
+            # Copy property to question value if not set
+            if answer.value == "" or not answer.value?
+              answer.value = val
+              @model.set(propLink.question, answer)
+          when "enum:choice"
+            val = entity[propLink.property.code]
+            if not val?
+              continue
+
+            # Find the from value
+            mapping = _.findWhere(propLink.mappings, { from: val})
+            if mapping
+              # Get old answer
+              answer = @model.get(propLink.question) or {}
+
+              # Copy property to question value if not set
+              if answer.value == "" or not answer.value?
+                answer.value = mapping.to
+                @model.set(propLink.question, answer)
+          when "boolean:choices"
+            val = entity[propLink.property.code]
+            if not val?
+              continue
+
+            # Get old answer
+            answer = @model.get(propLink.question) or {}
+            answer.value = answer.value or []
+
+            # Make sure choice is selected
+            if val == true
+              if not _.contains(answer.value, propLink.choice)
+                answer.value.push(propLink.choice)
+                @model.set(propLink.question, answer)
+            else 
+              if _.contains(answer.value, propLink.choice)
+                answer.value = _.without(answer.value, propLink.choice)
+                @model.set(propLink.question, answer)
+          else
+            throw new Error("Unknown link type #{propLink.type}")
+
+  # Compile property links into a function that sa
+  compileSaveLinkedAnswers: (propertyLinks, form) ->
+    return () =>
+      entity = {}
+
+      for propLink in propertyLinks
+        # Only if direction is "save" or "both"
+        if not propLink.direction in ["save", "both"]
+          continue
+
+        # Check if question is visible if form provided
+        if form
+          question = formUtils.findItem(form, propLink.question)
+          if not @compileConditions(question.conditions)()
+            continue
+
+        switch propLink.type
+          when "direct"
+            # Get answer
+            answer = @model.get(propLink.question) or {}
+            if answer.value? 
+              entity[propLink.property.code] = answer.value
+
+          when "enum:choice"
+            # Get answer
+            answer = @model.get(propLink.question) or {}
+            # Find the to value
+            mapping = _.findWhere(propLink.mappings, { to: answer.value })
+            if mapping
+              # Set the property
+              entity[propLink.property.code] = mapping.from
+
+          when "boolean:choices"
+            # Get answer
+            answer = @model.get(propLink.question) or {}
+
+            # Check if choice present
+            if _.isArray(answer.value)
+              entity[propLink.property.code] = _.contains(answer.value, propLink.choice)
+
+      return entity
 
   # Compile a question with the given form context
-  compileQuestion: (q, T) =>
+  compileQuestion: (q, T, form) =>
     T = T or ezlocalize.defaultT
 
     # Compile validations
@@ -291,7 +373,7 @@ module.exports = class FormCompiler
         options.selectProperties = q.selectProperties
         options.mapProperty = q.mapProperty
         options.selectText = @compileString(q.selectText)
-        options.updateLinkedAnswers = @compileUpdateLinkedAnswers(q.propertyLinks)
+        options.loadLinkedAnswers = @compileLoadLinkedAnswers(q.propertyLinks)
         return new EntityQuestion(options)
 
     throw new Error("Unknown question type")
@@ -309,20 +391,20 @@ module.exports = class FormCompiler
     }
     return new Instructions(options)
 
-  compileItem: (item, T) =>
+  compileItem: (item, T, form) =>
     if formUtils.isQuestion(item)
-      return @compileQuestion(item, T)
+      return @compileQuestion(item, T, form)
 
     if item._type == "Instructions"
-      return @compileInstructions(item, T)
+      return @compileInstructions(item, T, form)
 
     throw new Error("Unknown item type: " + item._type)
 
-  compileSection: (section, T) =>
+  compileSection: (section, T, form) =>
     T = T or ezlocalize.defaultT
 
     # Compile contents
-    contents = _.map section.contents, (item) => @compileItem(item, T)
+    contents = _.map section.contents, (item) => @compileItem(item, T, form)
 
     options = {
       model: @model
@@ -356,7 +438,7 @@ module.exports = class FormCompiler
     # Compile contents
     if formUtils.isSectioned(form) 
       # Compile sections
-      sections = _.map form.contents, (item) => @compileSection(item, T)
+      sections = _.map form.contents, (item) => @compileSection(item, T, form)
 
       # Create Sections view
       sectionsView = new Sections({ 
@@ -369,7 +451,7 @@ module.exports = class FormCompiler
 
     else
       # Compile into FormControls
-      contents = _.map form.contents, (item) => @compileItem(item, T)
+      contents = _.map form.contents, (item) => @compileItem(item, T form)
       formControls = new FormControls({
         contents: contents
         model: @model
