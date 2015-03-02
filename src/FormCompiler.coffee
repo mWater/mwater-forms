@@ -181,6 +181,26 @@ module.exports = class FormCompiler
 
       return true
 
+  # Compile property links into a function that updates answers
+  compileUpdateLinkedAnswers: (propertyLinks) ->
+    return (entity) =>
+      if not propertyLinks
+        return
+
+      for propLink in propertyLinks
+        # Only if direction is "load" or "both"
+        if not propLink.direction in ["load", "both"]
+          continue
+
+        # Get old answer
+        answer = @model.get(propLink.question) or {}
+
+        # Copy property to question value if not set
+        if answer.value == "" or not answer.value?
+          answer.value = entity[propLink.property.code]
+
+        @model.set(propLink.question, answer)
+
   # Compile a question with the given form context
   compileQuestion: (q, T) =>
     T = T or ezlocalize.defaultT
@@ -271,6 +291,7 @@ module.exports = class FormCompiler
         options.selectProperties = q.selectProperties
         options.mapProperty = q.mapProperty
         options.selectText = @compileString(q.selectText)
+        options.updateLinkedAnswers = @compileUpdateLinkedAnswers(q.propertyLinks)
         return new EntityQuestion(options)
 
     throw new Error("Unknown question type")

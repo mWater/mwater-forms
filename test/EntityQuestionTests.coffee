@@ -112,6 +112,12 @@ describe "EntityQuestion", ->
       }
       @qview = @compiler.compileQuestion(@q).render()
 
+    it "pre-selected entity does not set linked empty answer", ->
+      @model.set("q1", { value: "1234" })
+
+      # Check that linked question is not set
+      assert not @model.get("q2")?
+
     it "selecting entity sets linked empty answer", ->
       # Set callback to select entity with property A set
       @ctx.selectEntity = (options) -> options.callback({ a: "newtext" })

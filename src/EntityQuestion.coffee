@@ -10,6 +10,7 @@ _ = require 'lodash'
 #  mapProperty: geo property if selection should use a map to select
 #  selectText: text of select button
 #  locale: current locale
+#  updateLinkedAnswers: function that updates any linked answers when an entity is selected. Called with entity
 #
 # Context should have selectEntity(<options>)
 # selectEntity options:
@@ -45,6 +46,10 @@ module.exports = class EntityQuestion extends Question
       mapProperty: @options.mapProperty
       callback: (entity) =>
         @setAnswerValue(entity._id)
+
+        # Update answers linked to properties
+        if @options.updateLinkedAnswers
+          @options.updateLinkedAnswers(entity)
     }
 
   updateAnswer: (answerEl) ->
@@ -65,9 +70,6 @@ module.exports = class EntityQuestion extends Question
 
       @ctx.getEntity val, (entity) =>
         if entity
-          # Fill linked answers
-          @fillLinkedAnswers(entity)
-
           # Display entity
           properties = @formatEntityProperties(entity)
           data = {
@@ -113,7 +115,3 @@ module.exports = class EntityQuestion extends Question
           properties.push({ name: name, value: "???"}) # TODO
 
     return properties
-
-  fillLinkedAnswers: (entity) ->
-    # TODO
-
