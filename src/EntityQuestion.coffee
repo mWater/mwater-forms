@@ -101,17 +101,36 @@ module.exports = class EntityQuestion extends Question
     properties = []
     for prop in @options.displayProperties
       name = localize(prop.name)
-      switch prop.type
-        when "text", "integer", "decimal"
-          properties.push({ name: name, value: entity[prop.code]})
-        when "enum"
-          enumVal = entity[prop.code]
-          propValue = _.findWhere(prop.values, { code: enumVal })
-          if propValue
-            properties.push({ name: name, value: localize(propValue.name)})
+      value = entity[prop.code]
+      if not value?
+        properties.push({ name: name, value: "-" })
+      else
+        switch prop.type
+          when "text", "integer", "decimal", "date", "entity"
+            properties.push({ name: name, value: value })
+          when "enum"
+            propValue = _.findWhere(prop.values, { code: value })
+            if propValue
+              properties.push({ name: name, value: localize(propValue.name)})
+            else
+              properties.push({ name: name, value: "???"})  
+          when "boolean"
+            properties.push({ name: name, value: if value then "true" else "false" })
+          when "geometry"
+            if value.type == "Point"
+              properties.push({ name: name, value: value.coordinates[1] + ", " + value.coordinates[0] })
+          when "measurement"
+            propUnit = _.findWhere(prop.units, { code: value.unit })
+            if propUnit
+              properties.push({ name: name, value: value.magnitude + " " + propUnit.symbol})
+            else
+              properties.push({ name: name, value: value.magnitude + " " + "???"})  
+
+          # TO ADD:
+          # image, imagelist, measurement 
           else
-            properties.push({ name: name, value: "???"})  # TODO
-        else
-          properties.push({ name: name, value: "???"}) # TODO
+            properties.push({ name: name, value: "???"}) 
+
+
 
     return properties

@@ -451,7 +451,7 @@ module.exports = class FormCompiler
 
     else
       # Compile into FormControls
-      contents = _.map form.contents, (item) => @compileItem(item, T form)
+      contents = _.map form.contents, (item) => @compileItem(item, T, form)
       formControls = new FormControls({
         contents: contents
         model: @model
@@ -468,5 +468,51 @@ module.exports = class FormCompiler
       name: @compileString(form.name)
       contents: contents
     }
+
+    # Entity of form
+    formViewEntity = null
+
+    # If form-level entity, setup setEntity
+    options.setEntity = (entity) =>
+      # Save entity
+      formViewEntity = entity
+
+      # Load into form level linked answers
+      if form.entitySettings
+        @compileLoadLinkedAnswers(form.entitySettings.propertyLinks)(entity)
+      else
+        throw new Error("No entity settings")
+
+    options.getEntityCreates = () =>
+      # If no entity was set (then it would be update, not create) and is set to create entity
+      if form.entitySettings and not formViewEntity?
+        entity = { type: form.entitySettings.type }
+        _.extend(entity, @compileSaveLinkedAnswers(form.entitySettings.propertyLinks)())
+
+        return [entity]
+      else
+        return []
+
+    options.getEntityUpdates = () =>
+      updates = []
+      # If entity was set 
+      if form.entitySettings and formViewEntity?
+        updates.push({ 
+          _id: formViewEntity._id, 
+          updates: @compileSaveLinkedAnswers(form.entitySettings.propertyLinks)()
+        })
+
+      # Go through all entity questions
+      for question in formUtils.priorQuestions(form)
+        # If entity question with property links
+        if question._type == "EntityQuestion" and question.propertyLinks
+          # If value is set
+          if @model.get(question._id) and @model.get(question._id).value
+            # Get updates from that entity question
+            updates.push({
+              _id: @model.get(question._id).value,
+              updates: @compileSaveLinkedAnswers(question.propertyLinks)()
+            })
+      return updates
 
     return new FormView(options)

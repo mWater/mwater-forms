@@ -11,6 +11,14 @@ describe "EntityQuestion", ->
       { code: "x", name: { en: "X", es: "Xes" }}
       { code: "y", name: { en: "Y" }}
     ] } 
+    @propGeometry = { id: 5, code: "geometry", type: "geometry", name: { en: "Geometry" } }
+    @propBoolean = { id: 6, code: "boolean", type: "boolean", name: { en: "Boolean" } }
+    @propDate = { id: 7, code: "date", type: "date", name: { en: "Date" } }
+    @propEntity = { id: 8, code: "entity", type: "entity", name: { en: "Entity" } }
+    @propMeasurement = { id: 9, code: "measurement", type: "measurement", name: { en: "Measurement" }, units:[
+      { code: "degF", symbol: "oF", name: { "Fahrenheit" }}
+      { code: "degC", symbol: "oC", name: { "Celsius" }}
+      ] }
 
   describe "with multiple displayed properties", ->
     beforeEach ->
@@ -20,13 +28,17 @@ describe "EntityQuestion", ->
         integer: 123
         decimal: 123.4
         enum: "x"
+        geometry: { type: "Point", coordinates: [3, 4]}
+        boolean: true
+        date: "2014-12-31"
+        entity: "abc123"
+        measurement: { magnitude: 21, unit: "degC" }
       }
 
       # Create a context which selects a sample entity
       @ctx = {
         selectEntity: (options) => options.callback(@entity)
         getEntity: (_id, callback) => 
-          console.log _id
           if _id == "1234" 
             callback(@entity) 
           else 
@@ -42,7 +54,7 @@ describe "EntityQuestion", ->
         text: { _base: "en", en: "English" }
         entityType: "type1"
         entityFilter: {}
-        displayProperties: [@propText, @propInteger, @propDecimal, @propEnum]
+        displayProperties: [@propText, @propInteger, @propDecimal, @propEnum, @propGeometry, @propBoolean, @propDate, @propEntity, @propMeasurement]
         selectProperties: [@propText]
         mapProperty: null
         selectText: { en: "Select" }
@@ -52,14 +64,24 @@ describe "EntityQuestion", ->
     it "displays entity if loaded", ->
       @model.set("q1", { value: "1234" })
 
-      assert.match(@qview.$el.html(), /Text/)
-      assert.match(@qview.$el.html(), /abc/)
-      assert.match(@qview.$el.html(), /Integer/)
-      assert.match(@qview.$el.html(), /123/)
-      assert.match(@qview.$el.html(), /Decimal/)
-      assert.match(@qview.$el.html(), /123\.4/)
-      assert.match(@qview.$el.html(), /Enum/)
-      assert.match(@qview.$el.html(), /X/)
+      assert.match(@qview.$el.text(), /Text/)
+      assert.match(@qview.$el.text(), /abc/)
+      assert.match(@qview.$el.text(), /Integer/)
+      assert.match(@qview.$el.text(), /123/)
+      assert.match(@qview.$el.text(), /Decimal/)
+      assert.match(@qview.$el.text(), /123\.4/)
+      assert.match(@qview.$el.text(), /Enum/)
+      assert.match(@qview.$el.text(), /X/)
+      assert.match(@qview.$el.text(), /Geometry/)
+      assert.match(@qview.$el.text(), /4, 3/)
+      assert.match(@qview.$el.text(), /Boolean/)
+      assert.match(@qview.$el.text(), /true/)
+      assert.match(@qview.$el.text(), /Date/)
+      assert.match(@qview.$el.text(), /2014-12-31/)
+      assert.match(@qview.$el.text(), /Entity/)
+      assert.match(@qview.$el.text(), /abc123/)
+      assert.match(@qview.$el.text(), /Measurement/)
+      assert.match(@qview.$el.text(), /oC/)
 
     it "displays localized entity", ->
       @model = new Backbone.Model()
@@ -76,12 +98,6 @@ describe "EntityQuestion", ->
 
       assert.match(@qview.$el.html(), /Text/)
       assert.match(@qview.$el.html(), /abc/)
-      assert.match(@qview.$el.html(), /Integer/)
-      assert.match(@qview.$el.html(), /123/)
-      assert.match(@qview.$el.html(), /Decimal/)
-      assert.match(@qview.$el.html(), /123\.4/)
-      assert.match(@qview.$el.html(), /Enum/)
-      assert.match(@qview.$el.html(), /X/)
 
   describe "with linked questions", ->
     beforeEach ->

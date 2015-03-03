@@ -32,3 +32,11 @@ It also exports `minSchemaVersion` which is the earliest version supported
 * npm install new version of mwater-form-designer in mwater-portal
 * Deploy new portal
  
+## Entity support
+
+Questions can be linked to entities to support a variety of scenarios:
+
+* Form creates an entity of a certain type with properties mapped to questions
+* Form creates an entity of a certain type with properties mapped to questions
+* Selecting an entity in an entity question pre-fills answers
+* Selecting an entity in an entity question causes other answers to be used to update the entity selected
