@@ -34,6 +34,8 @@
 * **"site"**
     -  {value: {code: "siteCode"}}
     - Legacy: {value: "siteCode"}
+* **"entity"** 
+    - {value: "entity _id"}
 
 ##Alternates:
 * {alternate = "na" or "dontknow"}

@@ -116,6 +116,8 @@ exports.prepareQuestion = (q) ->
       _.defaults q, { units: [], defaultUnits: null, unitsPosition: "suffix", decimal: true  }
     when "CheckQuestion"
       _.defaults q, { label: {} }
+    when "EntityQuestion"
+      _.defaults q, { entityFilter: {}, displayProperties: [], selectionMode: "external", selectProperties: [], selectText: { _base: "en", en: "Select" }, propertyLinks: [] }
 
   # Get known fields
   knownFields = ['_id', '_type', 'text', 'conditions', 'validations', 
@@ -139,6 +141,15 @@ exports.prepareQuestion = (q) ->
       knownFields.push "siteTypes"
     when "ImageQuestion", "ImagesQuestion"
       knownFields.push "consentPrompt"
+    when "EntityQuestion"
+      knownFields.push "entityType"
+      knownFields.push "entityFilter"
+      knownFields.push "displayProperties"
+      knownFields.push "selectionMode"
+      knownFields.push "selectProperties"
+      knownFields.push "mapProperty"
+      knownFields.push "selectText"
+      knownFields.push "propertyLinks"
 
   # Strip unknown fields
   for key in _.keys(q)
@@ -162,7 +173,7 @@ exports.changeQuestionType = (question, newType) ->
 
   return question
 
-# Gets type of the answer: text, number, choice, choices, date, units, boolean, location, image, images, texts, site
+# Gets type of the answer: text, number, choice, choices, date, units, boolean, location, image, images, texts, site, entity
 exports.getAnswerType = (q) ->
   switch q._type
     when "TextQuestion"
@@ -189,6 +200,8 @@ exports.getAnswerType = (q) ->
       return "texts"
     when "SiteQuestion"
       return "site"
+    when "EntityQuestion"
+      return "entity"
     else throw new Error("Unknown question type")
 
 # Check if a form is all sections
@@ -228,7 +241,6 @@ exports.duplicateItem = (item, idMap) ->
 
       # For future AND and OR TODO
       return true
-
 
   # Duplicate contents
   if dup.contents

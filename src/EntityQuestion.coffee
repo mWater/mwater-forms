@@ -6,6 +6,7 @@ _ = require 'lodash'
 #  entityType: type of entity
 #  entityFilter: filter for entities chosen
 #  displayProperties: properties of entity to display when chosen
+#  selectionMode: "external" (for external selection of entity)
 #  selectProperties: properties of entity to display when selecting
 #  mapProperty: geo property if selection should use a map to select
 #  selectText: text of select button

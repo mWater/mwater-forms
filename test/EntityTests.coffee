@@ -99,8 +99,6 @@ describe "Entities", ->
       ]
 
 
-
-
   describe "property links loading", ->
     it "copies direct links", ->
       compiled = @compiler.compileLoadLinkedAnswers([

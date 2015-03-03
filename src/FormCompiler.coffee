@@ -211,7 +211,7 @@ module.exports = class FormCompiler
               continue
 
             # Find the from value
-            mapping = _.findWhere(propLink.mappings, { from: val})
+            mapping = _.findWhere(propLink.mappings, { from: val })
             if mapping
               # Get old answer
               answer = @model.get(propLink.question) or {}
@@ -370,6 +370,7 @@ module.exports = class FormCompiler
         options.entityType = q.entityType
         options.entityFilter = q.entityFilter
         options.displayProperties = q.displayProperties
+        options.selectionMode = q.selectionMode
         options.selectProperties = q.selectProperties
         options.mapProperty = q.mapProperty
         options.selectText = @compileString(q.selectText)
