@@ -20,7 +20,8 @@ exports.design = {
     # Schema 2 just added siteTypes to SiteQuestion and exportId to questions and consentPrompt to image questions
     # Schema 3 added moment formats for date questions. Label for checkbox is deprecated and no longer used.
     # Schema 4 added isoneof and isntoneof conditions
-    _schema: { enum: [1, 2, 3, 4] }
+    # Schema 10 adds entity questions and linking
+    _schema: { enum: [1, 2, 3, 4, 10] }
 
     # Name of the form
     name: { $ref: "#/definitions/localizedString" } 
@@ -46,6 +47,22 @@ exports.design = {
     localizedStrings: { 
       type: "array" 
       items: { $ref: "#/definitions/localizedString" } 
+    }
+
+    entitySettings: {
+      type: "object"
+      properties: {
+        # Entity type that this form can create/update
+        type: { type: "string" }
+
+        # Property links that connect questions to properties
+        propertyLinks: { 
+          type: "array",
+          items: { $ref: "#/definitions/propertyLink" }
+        }
+      }
+      required: ["type", "propertyLinks"]
+      additionalProperties: false
     }
   }
 
@@ -98,6 +115,20 @@ exports.design = {
     uuid: {
       type: "string"
       pattern: "^[a-f0-9]+$"
+    }
+
+    # Links between a property and either a question or a calculation
+    propertyLink: {
+      type: "object"
+      properties: {
+        # { property: @propBoolean, type: "boolean:choices", direction: "load", question: "q1", choice: "xx"}
+        # { property: @propText, type: "direct", direction: "load", question: "q1" }
+        # { property: @propEnum, type: "enum:choice", direction: "load", question: "q1", mappings: [
+        #  { from: "x", to: "xx" }
+        #  { from: "y", to: "yy" }
+        # ] }
+        # Also "save" and "both" for direction
+      }
     }
 
     # A section of a form has a name and a series of items (questions, etc.) that validate as a group
@@ -219,6 +250,7 @@ exports.design = {
         { $ref: "#/definitions/ImagesQuestion" }
         { $ref: "#/definitions/TextListQuestion" }
         { $ref: "#/definitions/SiteQuestion" }
+        { $ref: "#/definitions/EntityQuestion" }
       ]
     }
 
@@ -739,6 +771,48 @@ exports.design = {
         # No validation available
         validations: { type: "array", maxItems: 0 } 
       })
+      additionalProperties: false
+    }
+
+    EntityQuestion: {
+      type: "object"
+      properties: extendQuestionProperties({
+        _type: { enum: ["EntityQuestion"] }
+
+        # Entity type that can be selected
+        entityType:  { type: "string" }
+
+        # Filter for the entities that can be chosen. MongoDb-style
+        entityFilter: { type: "object" }
+
+        # Properties that should be displayed when an entity is chosen
+        displayProperties: { 
+          type: "array"
+          items: { $ref: "#/definitions/property" } 
+        }
+
+        # Properties that should be used to select the entity
+        selectProperties: {
+          type: "array"
+          items: { $ref: "#/definitions/property" }           
+        }
+
+        # Geometry property (optional) that should be displayed on a map for choosing an entity
+        mapProperty: { $ref: "#/definitions/property" } 
+        
+        # Text of select button
+        selectText: { $ref: "#/definitions/localizedString" } 
+        
+        # Property links that connect questions to properties
+        propertyLinks: { 
+          type: "array",
+          items: { $ref: "#/definitions/propertyLink" }
+        }
+
+        # No validation available
+        validations: { type: "array", maxItems: 0 } 
+      })
+      required: ["entityType", "entityFilter", "displayProperties"]
       additionalProperties: false
     }
 

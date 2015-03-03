@@ -127,7 +127,7 @@ module.exports = class EntityQuestion extends Question
               properties.push({ name: name, value: value.magnitude + " " + "???"})  
 
           # TO ADD:
-          # image, imagelist, measurement 
+          # image, imagelist
           else
             properties.push({ name: name, value: "???"}) 
 
