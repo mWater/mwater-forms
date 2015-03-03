@@ -3,8 +3,7 @@ $ = require 'jquery'
 Question = require './Question'
 
 moment = require 'moment'
-# require('../bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min')
-require('../bower_components/eonasdan-bootstrap-datetimepicker/src/js/bootstrap-datetimepicker')
+require('bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min')
 
 # Date question. Options include:
 # format: Any moment.js format
