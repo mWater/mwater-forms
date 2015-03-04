@@ -1,0 +1,15 @@
+{{#each images}}
+  <img id="{{id}}" class="img-thumbnail image" src="img/image-loading.png" style="max-height: 100px" onError="this.onerror=null;this.src='img/no-image-icon.jpg';" />
+{{/each}}
+{{#if canAdd}}
+  <img src="img/camera-icon-add.jpg" id="add" class="img-rounded" style="max-height: 100px"/>
+{{/if}}
+
+
+{{#if noImage}}
+<div class="text-muted">{{T "No images present"}}</div>
+{{/if}}
+
+{{#if notSupported}}
+<div class="text-warning">{{T "Taking photos not supported on this platform"}}</div>
+{{/if}}
