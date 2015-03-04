@@ -61,7 +61,7 @@ exports.design = {
           items: { $ref: "#/definitions/propertyLink" }
         }
       }
-      required: ["type", "propertyLinks"]
+      required: ["entityType", "propertyLinks"]
       additionalProperties: false
     }
   }
