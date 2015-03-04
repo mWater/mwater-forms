@@ -29,7 +29,7 @@ describe "Entities", ->
           }
         ]
         entitySettings: {
-          type: "type1"
+          entityType: "type1"
           propertyLinks: [
             { property: @propText, type: "direct", direction: "load", question: "q1" }
           ]

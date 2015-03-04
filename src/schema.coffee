@@ -53,7 +53,7 @@ exports.design = {
       type: "object"
       properties: {
         # Entity type that this form can create/update
-        type: { type: "string" }
+        entityType: { type: "string" }
 
         # Property links that connect questions to properties
         propertyLinks: { 
