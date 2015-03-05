@@ -128,7 +128,14 @@ exports.design = {
         #  { from: "y", to: "yy" }
         # ] }
         # Also "save" and "both" for direction
+        # TODO document
       }
+    }
+
+    # Property of an entity
+    property: {
+      type: "object"
+      # TODO document
     }
 
     # A section of a form has a name and a series of items (questions, etc.) that validate as a group
