@@ -816,6 +816,9 @@ exports.design = {
           items: { $ref: "#/definitions/propertyLink" }
         }
 
+        # How selection is made
+        selectionMode: { $enum: ['external'] }
+
         # No validation available
         validations: { type: "array", maxItems: 0 } 
       })
