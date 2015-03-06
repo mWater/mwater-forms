@@ -56,3 +56,17 @@ Opens a map to the location
 Stores key-value pairs for sticky questions. Object with two functions:
 get(keyname) : gets object stored under keyname. null/undefined if none
 set(keyname, value) : saves object as keyname
+
+## selectEntity(<options>)
+
+Function which takes options:
+title: title of popup screen
+type: entity type
+filter: optional filter of entities that are acceptable
+selectProperties: properties to display in the list when selecting
+mapProperty: optional property to map with
+callback: called with _id of entity selected
+
+## getEntity(_id, callback)
+
+callback: called with an entity e.g. { a: "abc", b: 123 } or callback null if entity not found

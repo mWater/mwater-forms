@@ -37,7 +37,7 @@ describe "EntityQuestion", ->
 
       # Create a context which selects a sample entity
       @ctx = {
-        selectEntity: (options) => options.callback(@entity)
+        selectEntity: (options) => options.callback("1234")
         getEntity: (_id, callback) => 
           if _id == "1234" 
             callback(@entity) 
@@ -106,7 +106,8 @@ describe "EntityQuestion", ->
 
       # Create a context which supports entity selection
       @ctx = {
-        selectEntity: (options) -> return null
+        selectEntity: (options) -> options.callback("1234")
+        getEntity: (id, callback) -> return null
       }
 
       # Create an entity question
@@ -136,7 +137,7 @@ describe "EntityQuestion", ->
 
     it "selecting entity sets linked empty answer", ->
       # Set callback to select entity with property A set
-      @ctx.selectEntity = (options) -> options.callback({ a: "newtext" })
+      @ctx.getEntity = (_id, callback) -> callback({  a: "newtext" })
       @qview.selectEntity()
 
       # Check that linked question is set
@@ -146,7 +147,7 @@ describe "EntityQuestion", ->
       @model.set("q2", { value: "oldtext" })
 
       # Set callback to select entity with property A set
-      @ctx.selectEntity = (options) -> options.callback({ a: "newtext" })
+      @ctx.getEntity = (_id, callback) -> callback({ a: "newtext" })
       @qview.selectEntity()
 
       # Check that linked question is not set

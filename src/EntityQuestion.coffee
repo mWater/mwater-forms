@@ -13,19 +13,7 @@ _ = require 'lodash'
 #  locale: current locale
 #  loadLinkedAnswers: function that loads any linked answers when an entity is selected. Called with entity
 #
-# Context should have selectEntity(<options>)
-# selectEntity options:
-#  title: title of popup screen
-#  type: entity type
-#  filter: optional filter of entities that are acceptable
-#  selectProperties: properties to display in the list when selecting
-#  callback: called with entity selected
-#
-# Context should have getEntity(_id, callback)
-# getEntity options:
-#  callback: called with an entity e.g. { a: "abc", b: 123 }
-#  or callback null if entity not found
-# 
+# Context should have selectEntity(<options>) and getEntity(id, callback). See docs/Forms Context.md
 module.exports = class EntityQuestion extends Question
   events:
     'click #change_entity_button' : 'selectEntity'
@@ -45,12 +33,13 @@ module.exports = class EntityQuestion extends Question
       filter: @options.entityFilter
       selectProperties: @options.selectProperties
       mapProperty: @options.mapProperty
-      callback: (entity) =>
-        @setAnswerValue(entity._id)
+      callback: (entityId) =>
+        @setAnswerValue(entityId)
 
         # Load answers linked to properties
-        if @options.loadLinkedAnswers
-          @options.loadLinkedAnswers(entity)
+        @ctx.getEntity entityId, (entity) =>
+          if entity and @options.loadLinkedAnswers
+            @options.loadLinkedAnswers(entity)
     }
 
   updateAnswer: (answerEl) ->
