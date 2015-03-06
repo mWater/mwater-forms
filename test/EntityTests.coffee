@@ -17,6 +17,10 @@ describe "Entities", ->
     ] } 
     @propBoolean = { id: 5, code: "boolean", type: "boolean", name: { en: "Boolean" } } 
     @propGeometry = { id: 6, code: "geometry", type: "geometry", name: { en: "Geometry" } } 
+    @propMeasurement = { id: 7, code: "measurement", type: "measurement", name: { en: "Measurement" }, units: [
+      { code: "degF", symbol: "oF", name: { "Fahrenheit" }}
+      { code: "degC", symbol: "oC", name: { "Celsius" }}
+    ] } 
 
   describe "form-level entity creation", ->
     beforeEach ->
@@ -146,6 +150,17 @@ describe "Entities", ->
       compiled(boolean: false)
       assert.deepEqual @model.get("q1").value, []
 
+    it "translates measurement:units links", ->
+      compiled = @compiler.compileLoadLinkedAnswers([
+        { property: @propMeasurement, type: "measurement:units", direction: "load", question: "q1", mappings: [
+          { from: "degC", to: "C" }
+          { from: "degF", to: "F" }
+          ] }
+        ])
+
+      compiled({ measurement: { magnitude: 3, unit: "degC" }})
+      assert.deepEqual @model.get("q1").value, { quantity: 3, units: "C" }
+
   describe "property links saving", ->
     it "copies direct links", ->
       compiled = @compiler.compileSaveLinkedAnswers([
@@ -219,8 +234,17 @@ describe "Entities", ->
       @model.set("q1", { value: []})
       assert.deepEqual compiled(), { boolean: false }
 
+    it "translates measurement:units links", ->
+      compiled = @compiler.compileSaveLinkedAnswers([
+        { property: @propMeasurement, type: "measurement:units", direction: "save", question: "q1", mappings: [
+          { from: "degC", to: "C" }
+          { from: "degF", to: "F" }
+          ] }
+        ])
 
-
+      @model.set("q1", { value: { units: "C", quantity: 3 }})
+      assert.deepEqual compiled().measurement, { magnitude: 3, unit: "degC" }
+      
 #     before ->
 #       # Create an entity question
 #       @model = new Backbone.Model()

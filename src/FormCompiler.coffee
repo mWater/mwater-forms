@@ -244,6 +244,21 @@ module.exports = class FormCompiler
               if _.contains(answer.value, propLink.choice)
                 answer.value = _.without(answer.value, propLink.choice)
                 @model.set(propLink.question, answer)
+          when "measurement:units"
+            val = entity[propLink.property.code]
+            if not val?
+              continue
+
+            # Find the from value
+            mapping = _.findWhere(propLink.mappings, { from: val.unit })
+            if mapping
+              # Get old answer
+              answer = @model.get(propLink.question) or {}
+
+              # Copy property to question value if not set
+              if answer.value == "" or not answer.value?
+                answer.value = { quantity: val.magnitude, units: mapping.to }
+                @model.set(propLink.question, answer)
           else
             throw new Error("Unknown link type #{propLink.type}")
 
@@ -291,6 +306,16 @@ module.exports = class FormCompiler
             # Check if choice present
             if _.isArray(answer.value)
               entity[propLink.property.code] = _.contains(answer.value, propLink.choice)
+
+          when "measurement:units"
+            # Get answer
+            answer = @model.get(propLink.question) or {}
+            if answer.value?
+              # Find the to value
+              mapping = _.findWhere(propLink.mappings, { to: answer.value.units })
+              if mapping
+                # Set the property
+                entity[propLink.property.code] = { magnitude: answer.value.quantity, unit: mapping.from }
 
       return entity
 
