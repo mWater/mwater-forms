@@ -547,7 +547,7 @@ module.exports = class FormCompiler
     options.getEntityCreates = () =>
       # If no entity was set (then it would be update, not create) and is set to create entity
       if form.entitySettings and not formViewEntity?
-        entity = { type: form.entitySettings.entityType }
+        entity = { type: form.entitySettings.entityType.split(":") }
         _.extend(entity, @compileSaveLinkedAnswers(form.entitySettings.propertyLinks)())
 
         return [entity]

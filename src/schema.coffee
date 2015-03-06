@@ -52,7 +52,7 @@ exports.design = {
     entitySettings: {
       type: "object"
       properties: {
-        # Entity type that this form can create/update
+        # Entity type that this form can create/update. colon delimited (e.g. site:surface_water)
         entityType: { type: "string" }
 
         # Property links that connect questions to properties
