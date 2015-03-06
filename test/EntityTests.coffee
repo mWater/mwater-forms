@@ -16,6 +16,7 @@ describe "Entities", ->
       { code: "y", name: { en: "Y" }}
     ] } 
     @propBoolean = { id: 5, code: "boolean", type: "boolean", name: { en: "Boolean" } } 
+    @propGeometry = { id: 6, code: "geometry", type: "geometry", name: { en: "Geometry" } } 
 
   describe "form-level entity creation", ->
     beforeEach ->
@@ -114,6 +115,15 @@ describe "Entities", ->
       compiled({ integer: 123 })
       assert.equal @model.get("q2").value, 123
 
+    it "translates direct location links", ->
+      compiled = @compiler.compileLoadLinkedAnswers([
+        { property: @propGeometry, type: "direct", direction: "load", question: "q1" }
+        ])
+
+      # Load point
+      compiled({ geometry: { type: "Point", coordinates: [1,2]}})
+      assert.deepEqual @model.get("q1").value, { latitude: 2, longitude: 1 }
+
     it "translates enum:choice links", ->
       compiled = @compiler.compileLoadLinkedAnswers([
         { property: @propEnum, type: "enum:choice", direction: "load", question: "q1", mappings: [
@@ -145,6 +155,15 @@ describe "Entities", ->
       # Save text
       @model.set("q1", { value: "sometext"})
       assert.deepEqual compiled(), { text: "sometext" }
+
+    it "translates direct location links", ->
+      compiled = @compiler.compileSaveLinkedAnswers([
+        { property: @propGeometry, type: "direct", direction: "load", question: "q1" }
+        ])
+
+      # Save text
+      @model.set("q1", { value: { latitude: 1, longitude: 2 }})
+      assert.deepEqual compiled(), { geometry: { type: "Point", coordinates: [2, 1]} }
 
     it "doesn't copy if question not visible", ->
       form = { 

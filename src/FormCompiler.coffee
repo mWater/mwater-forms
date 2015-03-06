@@ -203,7 +203,13 @@ module.exports = class FormCompiler
 
             # Copy property to question value if not set
             if answer.value == "" or not answer.value?
-              answer.value = val
+              # Handle by type
+              switch propLink.property.type
+                when "geometry"
+                  if val.type == "Point"
+                    answer.value = { latitude: val.coordinates[1], longitude: val.coordinates[0] }
+                else
+                  answer.value = val
               @model.set(propLink.question, answer)
           when "enum:choice"
             val = entity[propLink.property.code]
@@ -262,7 +268,12 @@ module.exports = class FormCompiler
             # Get answer
             answer = @model.get(propLink.question) or {}
             if answer.value? 
-              entity[propLink.property.code] = answer.value
+              # Handle by type
+              switch propLink.property.type
+                when "geometry"
+                  entity[propLink.property.code] = { type: "Point", coordinates: [answer.value.longitude, answer.value.latitude] }
+                else
+                  entity[propLink.property.code] = answer.value
 
           when "enum:choice"
             # Get answer
