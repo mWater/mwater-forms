@@ -161,6 +161,14 @@ describe "Entities", ->
       compiled({ measurement: { magnitude: 3, unit: "degC" }})
       assert.deepEqual @model.get("q1").value, { quantity: 3, units: "C" }
 
+    it "translates text:specify links", ->
+      compiled = @compiler.compileLoadLinkedAnswers([
+        { property: @propText, type: "text:specify", direction: "load", question: "q1", choice: "xx"}
+        ])
+
+      compiled(text: "abc")
+      assert.deepEqual @model.get("q1").specify, { "xx": "abc" }
+
   describe "property links saving", ->
     it "copies direct links", ->
       compiled = @compiler.compileSaveLinkedAnswers([
@@ -244,6 +252,14 @@ describe "Entities", ->
 
       @model.set("q1", { value: { units: "C", quantity: 3 }})
       assert.deepEqual compiled().measurement, { magnitude: 3, unit: "degC" }
+
+    it "translates text:specify links", ->
+      compiled = @compiler.compileSaveLinkedAnswers([
+        { property: @propText, type: "text:specify", direction: "save", question: "q1", choice: "xx"}
+        ])
+
+      @model.set("q1", { specify: { "xx": "abc" }})
+      assert.deepEqual compiled().text, "abc"
       
 #     before ->
 #       # Create an entity question

@@ -259,6 +259,19 @@ module.exports = class FormCompiler
               if answer.value == "" or not answer.value?
                 answer.value = { quantity: val.magnitude, units: mapping.to }
                 @model.set(propLink.question, answer)
+          when "text:specify"
+            val = entity[propLink.property.code]
+            if not val?
+              continue
+
+            # Get old answer
+            answer = @model.get(propLink.question) or {}
+
+            # Copy property to question specify if not set
+            answer.specify = answer.specify or {}
+            if not answer.specify[propLink.choice]
+              answer.specify[propLink.choice] = val
+              @model.set(propLink.question, answer)
           else
             throw new Error("Unknown link type #{propLink.type}")
 
@@ -316,6 +329,17 @@ module.exports = class FormCompiler
               if mapping
                 # Set the property
                 entity[propLink.property.code] = { magnitude: answer.value.quantity, unit: mapping.from }
+
+          when "text:specify"
+            # Get answer
+            answer = @model.get(propLink.question) or {}
+
+            # Check if choice present
+            if answer.specify and answer.specify[propLink.choice]?
+              entity[propLink.property.code] = answer.specify[propLink.choice]
+
+          else
+            throw new Error("Unknown link type #{propLink.type}")
 
       return entity
 
