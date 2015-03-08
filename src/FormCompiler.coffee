@@ -302,6 +302,8 @@ module.exports = class FormCompiler
                   entity[propLink.property.code] = { type: "Point", coordinates: [answer.value.longitude, answer.value.latitude] }
                 else
                   entity[propLink.property.code] = answer.value
+            else
+              entity[propLink.property.code] = null
 
           when "enum:choice"
             # Get answer
@@ -563,6 +565,7 @@ module.exports = class FormCompiler
           updates: @compileSaveLinkedAnswers(form.entitySettings.propertyLinks)()
         })
 
+      # TODO Null response handling. Include? Currently yes
       # Go through all entity questions
       for question in formUtils.priorQuestions(form)
         # If entity question with property links

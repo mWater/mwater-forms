@@ -53,8 +53,8 @@ describe "Entities", ->
       @model.set('q1', {value: "sometext"})
       entities = @formView.getEntityCreates()
       assert.deepEqual entities, [
-        { type: "type1", text: "sometext" }
-      ]
+        { type: ["type1"], text: "sometext" }
+      ], JSON.stringify(entities)
 
       entities = @formView.getEntityUpdates()
       assert.deepEqual entities, []
