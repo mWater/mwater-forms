@@ -303,6 +303,14 @@
     {
       "_base": "en",
       "en": "Data Not Found"
+    },
+    {
+      "_base": "en",
+      "en": "Scan"
+    },
+    {
+      "_base": "en",
+      "en": "Barcode scanning not supported on this platform"
     }
   ]
 }
