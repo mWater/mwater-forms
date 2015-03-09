@@ -271,6 +271,14 @@
     {
       "_base": "en",
       "en": "Good GPS Signal ±{0}m"
+    },
+    {
+      "_base": "en",
+      "en": "Scan"
+    },
+    {
+      "_base": "en",
+      "en": "Barcode scanning not supported on this platform"
     }
   ]
 }
