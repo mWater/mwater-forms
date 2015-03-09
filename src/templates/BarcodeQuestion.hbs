@@ -1,13 +1,10 @@
 {{#if value}}
-<div class="input-group">
-	<input type="text" class="form-control" id="value" readonly value="{{value}}">
-	<span class="input-group-btn">
+	<pre><p>{{value}}</p></pre>
+	<div>
 		<button class="btn btn-default" id="clear" type="button">
-			<span class="glyphicon glyphicon-remove"><span>
-			{{T "Clear"}}
+			<span class="glyphicon glyphicon-remove"></span> {{T "Clear"}}
 		</button>
-	</span>
-</div>
+	</div>
 {{else}}
 	{{#if supported}}
 	<div>
