@@ -21,7 +21,7 @@ exports.design = {
     # Schema 3 added moment formats for date questions. Label for checkbox is deprecated and no longer used.
     # Schema 4 added isoneof and isntoneof conditions
     # Schema 10 adds entity questions and linking
-    _schema: { enum: [1, 2, 3, 4, 10] }
+    _schema: { enum: [1, 2, 3, 4, 5, 10] }
 
     # Name of the form
     name: { $ref: "#/definitions/localizedString" } 
@@ -257,6 +257,7 @@ exports.design = {
         { $ref: "#/definitions/ImagesQuestion" }
         { $ref: "#/definitions/TextListQuestion" }
         { $ref: "#/definitions/SiteQuestion" }
+        { $ref: "#/definitions/BarcodeQuestion" }
         { $ref: "#/definitions/EntityQuestion" }
       ]
     }
@@ -774,6 +775,17 @@ exports.design = {
             ]
           }
         }                        
+
+        # No validation available
+        validations: { type: "array", maxItems: 0 } 
+      })
+      additionalProperties: false
+    }
+
+    BarcodeQuestion: {
+      type: "object"
+      properties: extendQuestionProperties({
+        _type: { enum: ["BarcodeQuestion"] }
 
         # No validation available
         validations: { type: "array", maxItems: 0 } 

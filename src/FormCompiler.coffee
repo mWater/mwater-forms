@@ -17,8 +17,8 @@ ImagesQuestion = require './ImagesQuestion'
 CheckQuestion = require './CheckQuestion'
 TextListQuestion = require './TextListQuestion'
 SiteQuestion = require './SiteQuestion'
+BarcodeQuestion = require './BarcodeQuestion'
 EntityQuestion = require './EntityQuestion'
-
 Instructions = require './Instructions'
 
 Section = require './Section'
@@ -452,6 +452,8 @@ module.exports = class FormCompiler
       when "SiteQuestion"
         options.siteTypes = q.siteTypes
         return new SiteQuestion(options)
+      when "BarcodeQuestion"
+        return new BarcodeQuestion(options)
       when "EntityQuestion"
         options.locale = @locale
         options.entityType = q.entityType

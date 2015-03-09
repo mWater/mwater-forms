@@ -1,0 +1,22 @@
+{{#if value}}
+<div class="input-group">
+	<input type="text" class="form-control" id="value" readonly value="{{value}}">
+	<span class="input-group-btn">
+		<button class="btn btn-default" id="clear" type="button">
+			<span class="glyphicon glyphicon-remove"><span>
+			{{T "Clear"}}
+		</button>
+	</span>
+</div>
+{{else}}
+	{{#if supported}}
+	<div>
+		<button class="btn btn-default" id="scan" type="button">
+			<span class="glyphicon glyphicon-qrcode"><span>
+			{{T "Scan"}}
+		</button>
+	</div>
+	{{else}}
+	<div class="text-warning">{{T "Barcode scanning not supported on this platform"}}</div>
+	{{/if}}
+{{/if}}

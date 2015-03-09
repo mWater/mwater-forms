@@ -200,6 +200,8 @@ exports.getAnswerType = (q) ->
       return "texts"
     when "SiteQuestion"
       return "site"
+    when "BarcodeQuestion"
+      return "text"
     when "EntityQuestion"
       return "entity"
     else throw new Error("Unknown question type")
