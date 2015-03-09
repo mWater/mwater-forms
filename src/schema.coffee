@@ -751,7 +751,6 @@ exports.design = {
         # No validation available
         validations: { type: "array", maxItems: 0 } 
       })
-      required: ['format']
       additionalProperties: false
     }
 
