@@ -189,26 +189,3 @@ describe "TextQuestion", ->
 
     # Make sure stored in model
     assert.equal @model.get(@q._id).value, "model"
-
-  describe "barcode input", ->
-    beforeEach ->
-      # Compile question with barcode
-      @q.input = "barcode"
-      @qview = @compiler.compileQuestion(@q).render()
-
-    it "shows text if not supported", ->
-      assert.match(@qview.$el.html(), /Scan/)
-
-    it "shows scan button", ->
-      assert.match(@qview.$el.html(), /Scan/)
-
-    it "does not show clear button if no text", ->
-      assert.notMmatch(@qview.$el.html(), /Clear/)
-
-    it "scans when scan pressed showing text", ->
-      # Create barcode scanner
-      cordova.plugins.barcodeScanner.scan
-
-    it "shows clear when text present"
-
-    it "clears when clear pressed"

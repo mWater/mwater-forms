@@ -189,6 +189,8 @@ exports.getAnswerType = (q) ->
       return "texts"
     when "SiteQuestion"
       return "site"
+    when "BarcodeQuestion"
+      return "text"
     else throw new Error("Unknown question type")
 
 # Check if a form is all sections

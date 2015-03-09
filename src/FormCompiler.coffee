@@ -17,7 +17,7 @@ ImagesQuestion = require './ImagesQuestion'
 CheckQuestion = require './CheckQuestion'
 TextListQuestion = require './TextListQuestion'
 SiteQuestion = require './SiteQuestion'
-
+BarcodeQuestion = require './BarcodeQuestion'
 Instructions = require './Instructions'
 
 Section = require './Section'
@@ -262,6 +262,8 @@ module.exports = class FormCompiler
       when "SiteQuestion"
         options.siteTypes = q.siteTypes
         return new SiteQuestion(options)
+      when "BarcodeQuestion"
+        return new BarcodeQuestion(options)
 
     throw new Error("Unknown question type")
 

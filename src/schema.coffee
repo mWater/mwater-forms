@@ -219,6 +219,7 @@ exports.design = {
         { $ref: "#/definitions/ImagesQuestion" }
         { $ref: "#/definitions/TextListQuestion" }
         { $ref: "#/definitions/SiteQuestion" }
+        { $ref: "#/definitions/BarcodeQuestion" }
       ]
     }
 
@@ -739,6 +740,18 @@ exports.design = {
         # No validation available
         validations: { type: "array", maxItems: 0 } 
       })
+      additionalProperties: false
+    }
+
+    BarcodeQuestion: {
+      type: "object"
+      properties: extendQuestionProperties({
+        _type: { enum: ["BarcodeQuestion"] }
+
+        # No validation available
+        validations: { type: "array", maxItems: 0 } 
+      })
+      required: ['format']
       additionalProperties: false
     }
 

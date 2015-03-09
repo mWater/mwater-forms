@@ -56,3 +56,7 @@ Opens a map to the location
 Stores key-value pairs for sticky questions. Object with two functions:
 get(keyname) : gets object stored under keyname. null/undefined if none
 set(keyname, value) : saves object as keyname
+
+## scanBarcode
+
+Scans a barcode. Calls options.success with string if successful
