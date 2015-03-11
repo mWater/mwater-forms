@@ -86,6 +86,7 @@ module.exports = class DateQuestion extends Question
       pickerOptions = {
         format: @options.format
         useCurrent: false
+        showTodayButton: true
       }
 
       @$('#datetimepicker').datetimepicker(pickerOptions)

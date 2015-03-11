@@ -30,7 +30,7 @@ exports.formatRelativeLocation = (relLoc, T) ->
   if relLoc.distance > 1000
     distance = (relLoc.distance / 1000).toFixed(1) + " " + T("km")
   else
-    distance = (relLoc.distance).toFixed(0) + " " + T("meters")
+    distance = (relLoc.distance).toFixed(0) + " " + T("m")
 
   return distance + " " + exports.getCompassBearing(relLoc.angle, T)
 
