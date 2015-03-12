@@ -350,7 +350,7 @@ module.exports = class FormCompiler
           when "measurement:units"
             # Get answer
             answer = @model.get(propLink.question) or {}
-            if answer.value?
+            if answer.value? and answer.value.quantity?
               # Find the to value
               mapping = _.findWhere(propLink.mappings, { to: answer.value.units })
               if mapping
