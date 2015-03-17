@@ -1,0 +1,98 @@
+<table class="table-noborder">
+  <tr>
+    <td class="toolbar" colspan="2">
+      <button id="location_set" type="button" class="btn btn-default"><span class="glyphicon glyphicon-screenshot"></span> {{T "Current Location"}}</button>
+    </td>
+    <td rowspan="3">
+      <div id="source_pointer"><span class="glyphicon glyphicon-arrow-up" style="display:none"><span></div>
+      <div id="location_relative"></div>
+      <div id="gps_strength"></div>
+    </td>
+  </tr>
+  <tr>
+    <td class="toolbar" colspan="2">
+      <button id="location_map" type="button" class="btn btn-default"><span class="glyphicon glyphicon-map-marker"></span> {{T "Use Map"}}</button>
+    </td>
+  </tr>
+  <tr>
+    <td class="toolbar">
+      <button id="location_clear" type="button" class="btn btn-default"><span class="glyphicon glyphicon-remove"></span> {{T "Clear"}}</button>
+    </td>
+    <td class="toolbar">
+      <button id="location_edit" type="button" class="btn btn-default"><span class="glyphicon glyphicon-edit"></span> {{T "Edit"}}</button>
+    </td>
+  </tr>
+</table>
+<div id="location_absolute" class="text-muted"></div>
+<div id="location_setter" class="alert alert-warning">
+  <div><b><span id="location_setter_msg"></span></b></div>
+  <div>
+    <button id="use_anyway" type="button" class="btn btn-sm btn-default" style="margin-left:5px">{{T "Use Anyway"}}</button>
+    <button id="cancel_set" type="button" class="btn btn-sm btn-default" style="margin-left:5px">{{T "Cancel"}}</button>
+  </div>
+</div>
+<div id="notification" class="alert" style="display: none"></div>
+<div id="location_edit_controls" class="form" style="margin-top: 5px; display:none;">
+  <div class="form-group">
+    <label for="latitude">{{T "Latitude"}}</label>
+    <input type="number" class="form-control" id="latitude" step="any"/> 
+  </div>
+  <div class="form-group">
+    <label for="longitude">{{T "Longitude"}}</label>
+    <input type="number" class="form-control" id="longitude" step="any"/> 
+  </div>
+  <button id="save_edit_button" type="button" class="btn btn-primary">{{T "Save"}}</button>  
+  <button id="cancel_edit_button" type="button" class="btn btn-default">{{T "Cancel"}}</button>
+</div>
+
+<style>
+#source_pointer {
+  font-size: 3em;
+  text-align: center;
+  line-height: .8;
+  padding-top: 5px;
+}
+.table-noborder {
+  width: 100%;
+}
+.table-noborder td {
+  padding: 5px;
+}
+
+.toolbar {
+  width: 30px;
+}
+.toolbar .btn {
+  margin:0;
+  width:100%;
+  background-color: #fff;
+  border-color: #ccc;
+}
+.toolbar .col-xs-6 {
+  padding:5px;
+}
+#location_absolute {
+  margin-top:5px;
+}
+#location_relative,
+#gps_strength {
+  text-align: center;
+}
+
+#location_relative {
+  font-size: 12pt;
+  font-weight: bold;
+}
+@-webkit-keyframes 'blink' {
+    0% { opacity: .4 }
+    50% { opacity: 1 }
+    100% { opacity: .4 }
+}
+.gps_strength.text-danger {
+    -webkit-animation-direction: normal;
+    -webkit-animation-duration: 1.2s;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-name: blink;
+    -webkit-animation-timing-function: ease;  
+}
+</style>

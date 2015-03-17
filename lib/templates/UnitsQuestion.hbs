@@ -1,0 +1,25 @@
+<table>
+	<tr>
+		{{#unless prefix}}
+		<td width="100%">
+			<input id="quantity" class="form-control" type="number" step="any" />
+		</td>
+		{{/unless}}
+		<td>
+			<select id="units" class="form-control" style="width:auto">
+				{{#if defaultUnits}}{{else}}
+				<option value="">{{T "Select units"}}</option>
+				{{/if}}
+				{{#each units}}
+					<option value="{{id}}">{{value}}</option>
+				{{/each}}
+			</select>
+		</td>
+		{{#if prefix}}
+		<td width="100%">
+			<input id="quantity" class="form-control" type="number" step="any" />
+		</td>
+	{{/if}}
+
+	</tr>
+</table>
