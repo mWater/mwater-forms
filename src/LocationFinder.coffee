@@ -51,12 +51,12 @@ class LocationFinder
     lowAccuracy = (pos) =>
       if not highAccuracyFired
         lowAccuracyFired = true
-        cacheLocation(pos)
+        @cacheLocation(pos)
         success(pos)
 
     highAccuracy = (pos) =>
       highAccuracyFired = true
-      cacheLocation(pos)
+      @cacheLocation(pos)
       success(pos)
 
     # Get both high and low accuracy, as low is sufficient for initial display
@@ -73,7 +73,7 @@ class LocationFinder
 
     # Fire stored one within short time
     setTimeout =>
-      cachedLocation = getCachedLocation()
+      cachedLocation = @getCachedLocation()
       if cachedLocation and not lowAccuracyFired and not highAccuracyFired
         success(cachedLocation)
     , 250
@@ -96,7 +96,7 @@ class LocationFinder
     lowAccuracy = (pos) =>
       if not highAccuracyFired
         lowAccuracyFired = true
-        cacheLocation(pos)
+        @cacheLocation(pos)
         @trigger 'found', pos
 
     lowAccuracyError = (err) =>
@@ -105,7 +105,7 @@ class LocationFinder
 
     highAccuracy = (pos) =>
       highAccuracyFired = true
-      cacheLocation(pos)
+      @cacheLocation(pos)
       @trigger 'found', pos
 
     highAccuracyError = (err) =>
@@ -131,7 +131,7 @@ class LocationFinder
 
     # Fire stored one within short time
     setTimeout =>
-      cachedLocation = getCachedLocation()
+      cachedLocation = @getCachedLocation()
       if cachedLocation and not lowAccuracyFired and not highAccuracyFired
         cachedFired = true
         @trigger 'found', cachedLocation
@@ -154,7 +154,7 @@ class LocationFinder
 
   resume: =>
     highAccuracy = (pos) =>
-      cacheLocation(pos)
+      @cacheLocation(pos)
       @trigger 'found', pos
 
     highAccuracyError = (err) =>
