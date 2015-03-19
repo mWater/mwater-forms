@@ -129,10 +129,10 @@ module.exports = class FormCompiler
           return (not value) or (value instanceof Array and value.length == 0)
       when "contains"
         return () =>
-          return getValue().indexOf(cond.rhs.literal) != -1
+          return (getValue() or "").indexOf(cond.rhs.literal) != -1
       when "!contains"
         return () =>
-          return getValue().indexOf(cond.rhs.literal) == -1
+          return (getValue() or "").indexOf(cond.rhs.literal) == -1
       when "="
         return () =>
           return getValue() == cond.rhs.literal
@@ -147,10 +147,10 @@ module.exports = class FormCompiler
           return getValue() != cond.rhs.literal
       when "includes"
         return () =>
-          return _.contains(getValue(), cond.rhs.literal)
+          return _.contains(getValue() or [], cond.rhs.literal)
       when "!includes"
         return () =>
-          return not _.contains(getValue(), cond.rhs.literal)
+          return not _.contains(getValue() or [], cond.rhs.literal)
       when "is"
         return () =>
           return getValue() == cond.rhs.literal or getAlternate() == cond.rhs.literal
