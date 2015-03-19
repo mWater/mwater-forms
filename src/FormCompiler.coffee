@@ -1,4 +1,4 @@
-_ = require 'underscore'
+_ = require 'lodash'
 markdown = require("markdown").markdown
 ezlocalize = require 'ez-localize'
 
@@ -192,14 +192,16 @@ module.exports = class FormCompiler
         if not propLink.direction in ["load", "both"]
           continue
 
+
+        # Get old answer, cloning to make sure backbone recognizes as changed
+        answer = @model.get(propLink.question) or {}
+        answer = _.cloneDeep(answer)
+
         switch propLink.type
           when "direct"
             val = entity[propLink.property.code]
             if not val?
               continue
-
-            # Get old answer
-            answer = @model.get(propLink.question) or {}
 
             # Copy property to question value if not set
             if answer.value == "" or not answer.value?
@@ -219,9 +221,6 @@ module.exports = class FormCompiler
             # Find the from value
             mapping = _.findWhere(propLink.mappings, { from: val })
             if mapping
-              # Get old answer
-              answer = @model.get(propLink.question) or {}
-
               # Copy property to question value if not set
               if answer.value == "" or not answer.value?
                 answer.value = mapping.to
@@ -231,8 +230,6 @@ module.exports = class FormCompiler
             if not val?
               continue
 
-            # Get old answer
-            answer = @model.get(propLink.question) or {}
             answer.value = answer.value or []
 
             # Make sure choice is selected
@@ -243,7 +240,7 @@ module.exports = class FormCompiler
             else 
               if _.contains(answer.value, propLink.choice)
                 answer.value = _.without(answer.value, propLink.choice)
-                @model.set(propLink.question, answer)
+                @model.set(propLink.question, _.cloneDeep(answer)) # Needed to cause change in backbone
           when "boolean:choice"
             val = entity[propLink.property.code]
             if not val?
@@ -252,9 +249,6 @@ module.exports = class FormCompiler
             # Find the from value
             mapping = _.findWhere(propLink.mappings, { from: (if val then "true" else "false") })
             if mapping
-              # Get old answer
-              answer = @model.get(propLink.question) or {}
-
               # Copy property to question value if not set
               if not answer.value?
                 answer.value = mapping.to
@@ -267,9 +261,6 @@ module.exports = class FormCompiler
             # Find the from value
             mapping = _.findWhere(propLink.mappings, { from: val.unit })
             if mapping
-              # Get old answer
-              answer = @model.get(propLink.question) or {}
-
               # Copy property to question value if not set
               if answer.value == "" or not answer.value?
                 answer.value = { quantity: val.magnitude, units: mapping.to }
@@ -279,9 +270,6 @@ module.exports = class FormCompiler
             if not val?
               continue
 
-            # Get old answer
-            answer = @model.get(propLink.question) or {}
-
             # Copy property to question specify if not set
             answer.specify = answer.specify or {}
             if not answer.specify[propLink.choice]
@@ -290,7 +278,7 @@ module.exports = class FormCompiler
           else
             throw new Error("Unknown link type #{propLink.type}")
 
-  # Compile property links into a function that sa
+  # Compile property links into a function that saves linked values
   compileSaveLinkedAnswers: (propertyLinks, form) ->
     return () =>
       entity = {}

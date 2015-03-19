@@ -16,6 +16,7 @@ describe "Entities", ->
       { code: "y", name: { en: "Y" }}
     ] } 
     @propBoolean = { id: 5, code: "boolean", type: "boolean", name: { en: "Boolean" } } 
+    @propBoolean2 = { id: 8, code: "boolean2", type: "boolean", name: { en: "Boolean2" } } 
     @propGeometry = { id: 6, code: "geometry", type: "geometry", name: { en: "Geometry" } } 
     @propMeasurement = { id: 7, code: "measurement", type: "measurement", name: { en: "Measurement" }, units: [
       { code: "degF", symbol: "oF", name: { "Fahrenheit" }}
@@ -105,7 +106,7 @@ describe "Entities", ->
 
 
   describe "property links loading", ->
-    it "copies direct links", ->
+    it "loads direct links", ->
       compiled = @compiler.compileLoadLinkedAnswers([
         { property: @propText, type: "direct", direction: "load", question: "q1" }
         { property: @propInteger, type: "direct", direction: "load", question: "q2" }
@@ -119,7 +120,7 @@ describe "Entities", ->
       compiled({ integer: 123 })
       assert.equal @model.get("q2").value, 123
 
-    it "translates direct location links", ->
+    it "loads direct location links", ->
       compiled = @compiler.compileLoadLinkedAnswers([
         { property: @propGeometry, type: "direct", direction: "load", question: "q1" }
         ])
@@ -128,7 +129,7 @@ describe "Entities", ->
       compiled({ geometry: { type: "Point", coordinates: [1,2]}})
       assert.deepEqual @model.get("q1").value, { latitude: 2, longitude: 1 }
 
-    it "translates enum:choice links", ->
+    it "loads enum:choice links", ->
       compiled = @compiler.compileLoadLinkedAnswers([
         { property: @propEnum, type: "enum:choice", direction: "load", question: "q1", mappings: [
           { from: "x", to: "xx" }
@@ -139,18 +140,22 @@ describe "Entities", ->
       compiled({ enum: "x"})
       assert.equal @model.get("q1").value, "xx"
 
-    it "translates boolean:choices links", ->
+    it "loads boolean:choices links", ->
       compiled = @compiler.compileLoadLinkedAnswers([
         { property: @propBoolean, type: "boolean:choices", direction: "load", question: "q1", choice: "xx"}
+        { property: @propBoolean2, type: "boolean:choices", direction: "load", question: "q1", choice: "yy"}
         ])
 
       compiled(boolean: true)
       assert.deepEqual @model.get("q1").value, ["xx"]
 
-      compiled(boolean: false)
+      compiled(boolean: true, boolean2: true)
+      assert.deepEqual @model.get("q1").value, ["xx", "yy"]
+
+      compiled(boolean: false, boolean2: false)
       assert.deepEqual @model.get("q1").value, []
 
-    it "translates boolean:choice links", ->
+    it "loads boolean:choice links", ->
       compiled = @compiler.compileLoadLinkedAnswers([
         { property: @propBoolean, type: "boolean:choice", direction: "load", question: "q1", mappings: [
           { from: "true", to: "T" }
@@ -166,7 +171,7 @@ describe "Entities", ->
       compiled(boolean: false)
       assert.deepEqual @model.get("q1").value, "F"
 
-    it "translates measurement:units links", ->
+    it "loads measurement:units links", ->
       compiled = @compiler.compileLoadLinkedAnswers([
         { property: @propMeasurement, type: "measurement:units", direction: "load", question: "q1", mappings: [
           { from: "degC", to: "C" }
@@ -177,7 +182,7 @@ describe "Entities", ->
       compiled({ measurement: { magnitude: 3, unit: "degC" }})
       assert.deepEqual @model.get("q1").value, { quantity: 3, units: "C" }
 
-    it "translates text:specify links", ->
+    it "loads text:specify links", ->
       compiled = @compiler.compileLoadLinkedAnswers([
         { property: @propText, type: "text:specify", direction: "load", question: "q1", choice: "xx"}
         ])
@@ -250,13 +255,17 @@ describe "Entities", ->
     it "saves boolean:choices links", ->
       compiled = @compiler.compileSaveLinkedAnswers([
         { property: @propBoolean, type: "boolean:choices", direction: "load", question: "q1", choice: "xx"}
+        { property: @propBoolean2, type: "boolean:choices", direction: "load", question: "q1", choice: "yy"}
         ])
 
       @model.set("q1", { value: ["xx"]})
-      assert.deepEqual compiled(), { boolean: true }
+      assert.deepEqual compiled(), { boolean: true, boolean2: false }
+
+      @model.set("q1", { value: ["xx", "yy"]})
+      assert.deepEqual compiled(), { boolean: true, boolean2: true }
 
       @model.set("q1", { value: []})
-      assert.deepEqual compiled(), { boolean: false }
+      assert.deepEqual compiled(), { boolean: false, boolean2: false }
 
     it "saves boolean:choices link", ->
       compiled = @compiler.compileSaveLinkedAnswers([
