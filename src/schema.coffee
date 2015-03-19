@@ -473,9 +473,9 @@ exports.design = {
                 type: "object"
                 properties: {
                   # Minimum value
-                  min: { type: "integer" }
+                  min: { type: "number" }
                   # Maximum value
-                  max: { type: "integer" }
+                  max: { type: "number" }
                 }
                 additionalProperties: false
               }
