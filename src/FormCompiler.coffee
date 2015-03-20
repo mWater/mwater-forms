@@ -189,7 +189,7 @@ module.exports = class FormCompiler
 
       for propLink in propertyLinks
         # Only if direction is "load" or "both"
-        if not propLink.direction in ["load", "both"]
+        if propLink.direction not in ["load", "both"]
           continue
 
 
@@ -285,7 +285,7 @@ module.exports = class FormCompiler
 
       for propLink in propertyLinks
         # Only if direction is "save" or "both"
-        if not propLink.direction in ["save", "both"]
+        if propLink.direction not in ["save", "both"]
           continue
 
         # Check if question is visible if form provided
@@ -588,10 +588,13 @@ module.exports = class FormCompiler
           # If value is set
           if @model.get(question._id) and @model.get(question._id).value
             # Get updates from that entity question
-            updates.push({
-              _id: @model.get(question._id).value,
-              updates: @compileSaveLinkedAnswers(question.propertyLinks)()
-            })
+            propertyUpdates = @compileSaveLinkedAnswers(question.propertyLinks)()
+            if _.keys(propertyUpdates).length > 0
+              console.log propertyUpdates
+              updates.push({
+                _id: @model.get(question._id).value,
+                updates: propertyUpdates
+              })
       return updates
 
     return new FormView(options)

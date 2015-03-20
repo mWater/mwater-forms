@@ -37,7 +37,7 @@ describe "Entities", ->
         entitySettings: {
           entityType: "type1"
           propertyLinks: [
-            { property: @propText, type: "direct", direction: "load", question: "q1" }
+            { property: @propText, type: "direct", direction: "both", question: "q1" }
           ]
         }
       }
@@ -103,6 +103,36 @@ describe "Entities", ->
       assert.deepEqual entities, [
         { _id: "1234", updates: { text: "answer" } }
       ]
+
+    it "does not include empty entity updates from EntityQuestions", ->
+      # Add entity question
+      @form.contents.push({
+        _id: "q2"
+        _type: "EntityQuestion"
+        text: { _base: "en", en: "English" }
+        entityType: "type1"
+        entityFilter: {}
+        displayProperties: [@propText, @propInteger, @propDecimal, @propEnum]
+        selectProperties: [@propText]
+        mapProperty: null
+        selectText: { en: "Select" }
+        propertyLinks: [
+          { property: @propText, direction: "load", question: "q1", type: "direct" }
+        ]
+      })
+
+      # Recompile form
+      @formView = @compiler.compileForm(@form)
+
+      # Set entity for entity question
+      @model.set('q2', { value: "1234"})
+
+      # Set text value for q1
+      @model.set('q1', { value: "answer"})
+
+      # Get updates
+      entities = @formView.getEntityUpdates()
+      assert.deepEqual entities, []
 
 
   describe "property links loading", ->
@@ -193,7 +223,7 @@ describe "Entities", ->
   describe "property links saving", ->
     it "saves direct links", ->
       compiled = @compiler.compileSaveLinkedAnswers([
-        { property: @propText, type: "direct", direction: "load", question: "q1" }
+        { property: @propText, type: "direct", direction: "save", question: "q1" }
         ])
 
       # Save text
@@ -202,7 +232,7 @@ describe "Entities", ->
 
     it "saves direct location links", ->
       compiled = @compiler.compileSaveLinkedAnswers([
-        { property: @propGeometry, type: "direct", direction: "load", question: "q1" }
+        { property: @propGeometry, type: "direct", direction: "save", question: "q1" }
         ])
 
       # Save text
@@ -229,7 +259,7 @@ describe "Entities", ->
       }
 
       compiled = @compiler.compileSaveLinkedAnswers([
-        { property: @propText, type: "direct", direction: "load", question: "q2" }
+        { property: @propText, type: "direct", direction: "save", question: "q2" }
         ], form)
 
       # Save text
@@ -254,8 +284,8 @@ describe "Entities", ->
 
     it "saves boolean:choices links", ->
       compiled = @compiler.compileSaveLinkedAnswers([
-        { property: @propBoolean, type: "boolean:choices", direction: "load", question: "q1", choice: "xx"}
-        { property: @propBoolean2, type: "boolean:choices", direction: "load", question: "q1", choice: "yy"}
+        { property: @propBoolean, type: "boolean:choices", direction: "save", question: "q1", choice: "xx"}
+        { property: @propBoolean2, type: "boolean:choices", direction: "save", question: "q1", choice: "yy"}
         ])
 
       @model.set("q1", { value: ["xx"]})
@@ -269,7 +299,7 @@ describe "Entities", ->
 
     it "saves boolean:choices link", ->
       compiled = @compiler.compileSaveLinkedAnswers([
-        { property: @propBoolean, type: "boolean:choice", direction: "load", question: "q1", mappings: [
+        { property: @propBoolean, type: "boolean:choice", direction: "save", question: "q1", mappings: [
           { from: "true", to: "T" }
           { from: "false", to: "F" }
         ]}
