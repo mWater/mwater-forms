@@ -13,7 +13,7 @@ _ = require 'lodash'
 #  locale: current locale
 #  loadLinkedAnswers: function that loads any linked answers when an entity is selected. Called with entity
 #
-# Context should have selectEntity(<options>) and getEntity(id, callback). See docs/Forms Context.md
+# Context should have selectEntity(<options>) and getEntity(type, id, callback). See docs/Forms Context.md
 module.exports = class EntityQuestion extends Question
   events:
     'click #change_entity_button' : 'selectEntity'
@@ -37,7 +37,7 @@ module.exports = class EntityQuestion extends Question
         @setAnswerValue(entityId)
 
         # Load answers linked to properties
-        @ctx.getEntity entityId, (entity) =>
+        @ctx.getEntity @options.entityType, entityId, (entity) =>
           if entity and @options.loadLinkedAnswers
             @options.loadLinkedAnswers(entity)
     }
@@ -58,7 +58,7 @@ module.exports = class EntityQuestion extends Question
       }
       answerEl.html require('./templates/EntityQuestion.hbs')(data, helpers: { T: @T })
 
-      @ctx.getEntity val, (entity) =>
+      @ctx.getEntity @options.entityType, val, (entity) =>
         if entity
           # Display entity
           properties = @formatEntityProperties(entity)

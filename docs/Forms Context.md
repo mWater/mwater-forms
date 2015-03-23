@@ -71,6 +71,6 @@ selectProperties: properties to display in the list when selecting
 mapProperty: optional property to map with
 callback: called with _id of entity selected
 
-## getEntity(_id, callback)
+## getEntity(type, _id, callback)
 
 callback: called with an entity e.g. { a: "abc", b: 123 } or callback null if entity not found
