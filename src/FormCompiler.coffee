@@ -564,10 +564,10 @@ module.exports = class FormCompiler
     options.getEntityCreates = () =>
       # If no entity was set (then it would be update, not create) and is set to create entity
       if form.entitySettings and not formViewEntity?
-        entity = { type: form.entitySettings.entityType.split(":") }
-        _.extend(entity, @compileSaveLinkedAnswers(form.entitySettings.propertyLinks)())
-
-        return [entity]
+        return [{ 
+          type: _.last(form.entitySettings.entityType.split(":")), 
+          entity: @compileSaveLinkedAnswers(form.entitySettings.propertyLinks)()
+        }]
       else
         return []
 
@@ -577,6 +577,7 @@ module.exports = class FormCompiler
       if form.entitySettings and formViewEntity?
         updates.push({ 
           _id: formViewEntity._id, 
+          type: _.last(form.entitySettings.entityType.split(":")), 
           updates: @compileSaveLinkedAnswers(form.entitySettings.propertyLinks)()
         })
 
@@ -590,9 +591,9 @@ module.exports = class FormCompiler
             # Get updates from that entity question
             propertyUpdates = @compileSaveLinkedAnswers(question.propertyLinks)()
             if _.keys(propertyUpdates).length > 0
-              console.log propertyUpdates
               updates.push({
                 _id: @model.get(question._id).value,
+                type: question.entityType,
                 updates: propertyUpdates
               })
       return updates

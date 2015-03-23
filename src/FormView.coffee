@@ -6,8 +6,8 @@ Backbone = require 'backbone'
 # contents (array of views)
 # Optional:
 # setEntity: sets the active entity
-# getEntityCreates: gets entities that have been created. array of { entity attributes }
-# getEntityUpdates: gets entities that have been updated. array of { _id: <id of entity>, updates: { attributes to update }}
+# getEntityCreates: gets entities that have been created. array of { type: type of entity, entity: entity attributes }
+# getEntityUpdates: gets entities that have been updated. array of { type: type of entity, _id: <id of entity>, updates: { attributes to update }}
 module.exports = class FormView extends Backbone.View
   initialize: (options) ->
     # Save options

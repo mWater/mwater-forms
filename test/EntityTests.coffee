@@ -53,9 +53,9 @@ describe "Entities", ->
     it "creates entities", ->
       @model.set('q1', {value: "sometext"})
       entities = @formView.getEntityCreates()
-      assert.deepEqual entities, [
-        { type: ["type1"], text: "sometext" }
-      ], JSON.stringify(entities)
+      assert.isTrue _.isEqual(entities, [
+        { type: "type1", entity: { text: "sometext" } }
+      ]), JSON.stringify(entities)
 
       entities = @formView.getEntityUpdates()
       assert.deepEqual entities, []
@@ -65,9 +65,9 @@ describe "Entities", ->
 
       @model.set('q1', {value: "sometext2"})
       entities = @formView.getEntityUpdates()
-      assert.deepEqual entities, [
-        { _id: "1234", updates: { text: "sometext2" } }
-      ]
+      assert.isTrue _.isEqual(entities, [
+        { _id: "1234", type: "type1", updates: { text: "sometext2" } }
+        ])
 
       entities = @formView.getEntityCreates()
       assert.deepEqual entities, []
@@ -101,7 +101,7 @@ describe "Entities", ->
       # Get updates
       entities = @formView.getEntityUpdates()
       assert.deepEqual entities, [
-        { _id: "1234", updates: { text: "answer" } }
+        { _id: "1234", type: "type1", updates: { text: "answer" } }
       ]
 
     it "does not include empty entity updates from EntityQuestions", ->
