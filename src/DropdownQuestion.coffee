@@ -31,7 +31,7 @@ module.exports = class DropdownQuestion extends Question
     @setAnswerField('specify', specify)
 
   updateAnswer: (answerEl) ->
-    html = _.template("<select class=\"form-control\"><%=renderDropdownOptions()%></select>")(this)
+    html = _.template("<select class=\"form-control\" style=\"width: auto;\"><%=renderDropdownOptions()%></select>")(this)
 
     # Add specify
     choice = _.findWhere(@options.choices, { id: @getAnswerValue() })

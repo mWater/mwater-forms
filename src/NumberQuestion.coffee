@@ -6,7 +6,7 @@ Question = require './Question'
 # Validation on mobile HTML5 is a mess.
 # type="number" puts a numeric keypad, but allows letters to be typed and then silently strips them, 
 # not from display but from the val().
-# Using type="text" for decimal, type="tel" for integer for now
+# Was using type="text" for decimal, but awkward on mobile, type="tel" for integer for now
 module.exports = Question.extend
   renderAnswer: (answerEl) ->
     data = {
