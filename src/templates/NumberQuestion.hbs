@@ -4,9 +4,9 @@
 	<span class="input-group-addon">{{prefix}}</span>
 	{{/if}}
 	{{#if decimal}}
-		<input class="form-control" type="text"/>
+		<input class="form-control" type="number" style="width: 12em;"/>
 	{{else}}
-		<input class="form-control" type="tel"/>
+		<input class="form-control" type="tel" style="width: 12em;"/>
 	{{/if}}
 	{{#if suffix}}
 	<span class="input-group-addon">{{suffix}}</span>
@@ -14,8 +14,8 @@
 </div>
 {{else}}
 	{{#if decimal}}
-		<input class="form-control" type="text"/>
+		<input class="form-control" type="number" style="width: 12em;"/>
 	{{else}}
-		<input class="form-control" type="tel"/>
+		<input class="form-control" type="tel" style="width: 12em;"/>
 	{{/if}}
 {{/if}}
