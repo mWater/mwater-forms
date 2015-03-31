@@ -137,7 +137,7 @@ describe "EntityQuestion", ->
 
     it "selecting entity sets linked empty answer", ->
       # Set callback to select entity with property A set
-      @ctx.getEntity = (_id, callback) -> callback({  a: "newtext" })
+      @ctx.getEntity = (type, _id, callback) -> callback({  a: "newtext" })
       @qview.selectEntity()
 
       # Check that linked question is set
