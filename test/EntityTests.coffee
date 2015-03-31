@@ -150,9 +150,18 @@ describe "Entities", ->
       compiled({ integer: 123 })
       assert.equal @model.get("q2").value, 123
 
-    it "loads direct location links", ->
+    it "loads direct location links (legacy)", ->
       compiled = @compiler.compileLoadLinkedAnswers([
         { property: @propGeometry, type: "direct", direction: "load", question: "q1" }
+        ])
+
+      # Load point
+      compiled({ geometry: { type: "Point", coordinates: [1,2]}})
+      assert.deepEqual @model.get("q1").value, { latitude: 2, longitude: 1 }
+
+    it "loads geometry:location links", ->
+      compiled = @compiler.compileLoadLinkedAnswers([
+        { property: @propGeometry, type: "geometry:location", direction: "load", question: "q1" }
         ])
 
       # Load point
@@ -232,6 +241,16 @@ describe "Entities", ->
       compiled(text: "abc")
       assert.deepEqual @model.get("q1").specify, { "xx": "abc" }
 
+    it "loads decimal:location_accuracy links", ->
+      compiled = @compiler.compileLoadLinkedAnswers([
+        { property: @propGeometry, type: "direct", direction: "load", question: "q1" }
+        { property: @propDecimal, type: "decimal:location_accuracy", direction: "load", question: "q1" }
+        ])
+
+      # Load point
+      compiled({ geometry: { type: "Point", coordinates: [1,2]}, decimal: 23 })
+      assert.deepEqual @model.get("q1").value, { latitude: 2, longitude: 1, accuracy: 23 }
+
   describe "property links saving", ->
     it "saves direct links", ->
       compiled = @compiler.compileSaveLinkedAnswers([
@@ -242,9 +261,18 @@ describe "Entities", ->
       @model.set("q1", { value: "sometext"})
       assert.deepEqual compiled(), { text: "sometext" }
 
-    it "saves direct location links", ->
+    it "saves direct location links (legacy)", ->
       compiled = @compiler.compileSaveLinkedAnswers([
         { property: @propGeometry, type: "direct", direction: "save", question: "q1" }
+        ])
+
+      # Save text
+      @model.set("q1", { value: { latitude: 1, longitude: 2 }})
+      assert.deepEqual compiled(), { geometry: { type: "Point", coordinates: [2, 1]} }
+
+    it "saves geometry:location links", ->
+      compiled = @compiler.compileSaveLinkedAnswers([
+        { property: @propGeometry, type: "geometry:location", direction: "save", question: "q1" }
         ])
 
       # Save text
@@ -357,7 +385,7 @@ describe "Entities", ->
         ])
 
       @model.set("q1", { value: { units: "C", quantity: null }})
-      assert.deepEqual compiled().measurement, undefined
+      assert.deepEqual compiled().measurement, null
 
     it "saves text:specify links", ->
       compiled = @compiler.compileSaveLinkedAnswers([
@@ -366,7 +394,18 @@ describe "Entities", ->
 
       @model.set("q1", { specify: { "xx": "abc" }})
       assert.deepEqual compiled().text, "abc"
-      
+
+    it "saves location accuracy links", ->
+      compiled = @compiler.compileSaveLinkedAnswers([
+        { property: @propGeometry, type: "direct", direction: "save", question: "q1" }
+        { property: @propDecimal, type: "decimal:location_accuracy", direction: "save", question: "q1" }
+        ])
+
+      # Save text
+      @model.set("q1", { value: { latitude: 1, longitude: 2, accuracy: 23 }})
+      assert.deepEqual compiled(), { geometry: { type: "Point", coordinates: [2, 1]}, decimal: 23 }
+
+     
 #     before ->
 #       # Create an entity question
 #       @model = new Backbone.Model()

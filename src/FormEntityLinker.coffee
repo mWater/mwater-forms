@@ -21,36 +21,42 @@ module.exports = class FormEntityLinker
     answer = @model.get(propLink.question) or {}
     answer = _.cloneDeep(answer)
 
+    val = @entity[propLink.property.code]
+    if not val?
+      return
+
     switch propLink.type
       when "direct"
-        val = @entity[propLink.property.code]
-        if not val?
-          return
-
         # Handle by type
         switch propLink.property.type
           when "geometry"
             if val.type == "Point"
-              answer.value = { latitude: val.coordinates[1], longitude: val.coordinates[0] }
+              if not answer.value? 
+                answer.value = {}
+             answer.value.latitude = val.coordinates[1]
+             answer.value.longitude = val.coordinates[0] 
           else
             answer.value = val
         @model.set(propLink.question, answer)
-      when "enum:choice"
-        val = @entity[propLink.property.code]
-        if not val?
-          return
 
+      when "geometry:location"
+        if val.type == "Point"
+          if not answer.value? 
+            answer.value = {}
+          answer.value.latitude = val.coordinates[1]
+          answer.value.longitude = val.coordinates[0] 
+
+          @model.set(propLink.question, answer)
+
+      when "enum:choice"
         # Find the from value
         mapping = _.findWhere(propLink.mappings, { from: val })
         if mapping
           # Copy property to question value 
           answer.value = mapping.to
           @model.set(propLink.question, answer)
-      when "boolean:choices"
-        val = @entity[propLink.property.code]
-        if not val?
-          return
 
+      when "boolean:choices"
         answer.value = answer.value or []
 
         # Make sure choice is selected
@@ -62,47 +68,42 @@ module.exports = class FormEntityLinker
           if _.contains(answer.value, propLink.choice)
             answer.value = _.without(answer.value, propLink.choice)
             @model.set(propLink.question, _.cloneDeep(answer)) # Needed to cause change in backbone
-      when "boolean:choice"
-        val = @entity[propLink.property.code]
-        if not val?
-          return
 
+      when "boolean:choice"
         # Find the from value
         mapping = _.findWhere(propLink.mappings, { from: (if val then "true" else "false") })
         if mapping
           # Copy property to question value 
           answer.value = mapping.to
           @model.set(propLink.question, answer)
-      when "boolean:alternate"
-        val = @entity[propLink.property.code]
-        if not val?
-          return
 
+      when "boolean:alternate"
         if val
           answer.alternate = propLink.alternate
         else
           answer.alternate = null
 
         @model.set(propLink.question, answer)
-      when "measurement:units"
-        val = @entity[propLink.property.code]
-        if not val?
-          return
 
+      when "measurement:units"
         # Find the from value
         mapping = _.findWhere(propLink.mappings, { from: val.unit })
         if mapping
           # Copy property to question value
           answer.value = { quantity: val.magnitude, units: mapping.to }
           @model.set(propLink.question, answer)
-      when "text:specify"
-        val = @entity[propLink.property.code]
-        if not val?
-          return
 
+      when "text:specify"
         # Copy property to question specify
         answer.specify = answer.specify or {}
         answer.specify[propLink.choice] = val
+        @model.set(propLink.question, answer)
+
+      when "decimal:location_accuracy"
+        if not answer.value
+          answer.value = {}
+
+        answer.value.accuracy = val
         @model.set(propLink.question, answer)
       else
         throw new Error("Unknown link type #{propLink.type}")
@@ -118,10 +119,11 @@ module.exports = class FormEntityLinker
       if not @isQuestionVisible(propLink.question)
         return
 
+    # Get answer
+    answer = @model.get(propLink.question) or {}
+
     switch propLink.type
       when "direct"
-        # Get answer
-        answer = @model.get(propLink.question) or {}
         if answer.value? 
           # Handle by type
           switch propLink.property.type
@@ -132,9 +134,11 @@ module.exports = class FormEntityLinker
         else
           @entity[propLink.property.code] = null
 
+      when "geometry:location"
+        if answer.value? and answer.value.longitude? and answer.value.latitude?
+          @entity[propLink.property.code] = { type: "Point", coordinates: [answer.value.longitude, answer.value.latitude] }
+
       when "enum:choice"
-        # Get answer
-        answer = @model.get(propLink.question) or {}
         # Find the to value
         mapping = _.findWhere(propLink.mappings, { to: answer.value })
         if mapping
@@ -142,17 +146,11 @@ module.exports = class FormEntityLinker
           @entity[propLink.property.code] = mapping.from
 
       when "boolean:choices"
-        # Get answer
-        answer = @model.get(propLink.question) or {}
-
         # Check if choice present
         if _.isArray(answer.value)
           @entity[propLink.property.code] = _.contains(answer.value, propLink.choice)
 
       when "boolean:choice"
-        # Get answer
-        answer = @model.get(propLink.question) or {}
-
         # Find the to value
         mapping = _.findWhere(propLink.mappings, { to: answer.value })
         if mapping
@@ -160,27 +158,27 @@ module.exports = class FormEntityLinker
           @entity[propLink.property.code] = mapping.from == "true"
 
       when "boolean:alternate"
-        # Get answer
-        answer = @model.get(propLink.question) or {}
         @entity[propLink.property.code] = answer.alternate == propLink.alternate
 
       when "measurement:units"
-        # Get answer
-        answer = @model.get(propLink.question) or {}
-        if answer.value? and answer.value.quantity?
+        if answer.value?
           # Find the to value
           mapping = _.findWhere(propLink.mappings, { to: answer.value.units })
-          if mapping
+          if mapping  and answer.value.quantity?
             # Set the property
             @entity[propLink.property.code] = { magnitude: answer.value.quantity, unit: mapping.from }
+          else 
+            @entity[propLink.property.code] = null
+
 
       when "text:specify"
-        # Get answer
-        answer = @model.get(propLink.question) or {}
-
         # Check if choice present
         if answer.specify and answer.specify[propLink.choice]?
           @entity[propLink.property.code] = answer.specify[propLink.choice]
+
+      when "decimal:location_accuracy"
+        if answer.value?
+          @entity[propLink.property.code] = answer.value.accuracy
 
       else
         throw new Error("Unknown link type #{propLink.type}")
