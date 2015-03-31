@@ -26,6 +26,8 @@ Sections = require './Sections'
 FormView = require './FormView'
 FormControls = require './FormControls'
 
+FormEntityLinker = require './FormEntityLinker'
+
 # Compiles from Form JSON to a form control. 
 # Constructor must be passed:
 # 'model': <Backbone.Model> to use for storing responses
@@ -187,174 +189,26 @@ module.exports = class FormCompiler
       if not propertyLinks
         return
 
+      formEntityLinker = new FormEntityLinker(entity, @model)
       for propLink in propertyLinks
-        # Only if direction is "load" or "both"
-        if propLink.direction not in ["load", "both"]
-          continue
-
-
-        # Get old answer, cloning to make sure backbone recognizes as changed
-        answer = @model.get(propLink.question) or {}
-        answer = _.cloneDeep(answer)
-
-        switch propLink.type
-          when "direct"
-            val = entity[propLink.property.code]
-            if not val?
-              continue
-
-            # Copy property to question value if not set
-            if answer.value == "" or not answer.value?
-              # Handle by type
-              switch propLink.property.type
-                when "geometry"
-                  if val.type == "Point"
-                    answer.value = { latitude: val.coordinates[1], longitude: val.coordinates[0] }
-                else
-                  answer.value = val
-              @model.set(propLink.question, answer)
-          when "enum:choice"
-            val = entity[propLink.property.code]
-            if not val?
-              continue
-
-            # Find the from value
-            mapping = _.findWhere(propLink.mappings, { from: val })
-            if mapping
-              # Copy property to question value if not set
-              if answer.value == "" or not answer.value?
-                answer.value = mapping.to
-                @model.set(propLink.question, answer)
-          when "boolean:choices"
-            val = entity[propLink.property.code]
-            if not val?
-              continue
-
-            answer.value = answer.value or []
-
-            # Make sure choice is selected
-            if val == true
-              if not _.contains(answer.value, propLink.choice)
-                answer.value.push(propLink.choice)
-                @model.set(propLink.question, answer)
-            else 
-              if _.contains(answer.value, propLink.choice)
-                answer.value = _.without(answer.value, propLink.choice)
-                @model.set(propLink.question, _.cloneDeep(answer)) # Needed to cause change in backbone
-          when "boolean:choice"
-            val = entity[propLink.property.code]
-            if not val?
-              continue
-
-            # Find the from value
-            mapping = _.findWhere(propLink.mappings, { from: (if val then "true" else "false") })
-            if mapping
-              # Copy property to question value if not set
-              if not answer.value?
-                answer.value = mapping.to
-                @model.set(propLink.question, answer)
-          when "measurement:units"
-            val = entity[propLink.property.code]
-            if not val?
-              continue
-
-            # Find the from value
-            mapping = _.findWhere(propLink.mappings, { from: val.unit })
-            if mapping
-              # Copy property to question value if not set
-              if answer.value == "" or not answer.value?
-                answer.value = { quantity: val.magnitude, units: mapping.to }
-                @model.set(propLink.question, answer)
-          when "text:specify"
-            val = entity[propLink.property.code]
-            if not val?
-              continue
-
-            # Copy property to question specify if not set
-            answer.specify = answer.specify or {}
-            if not answer.specify[propLink.choice]
-              answer.specify[propLink.choice] = val
-              @model.set(propLink.question, answer)
-          else
-            throw new Error("Unknown link type #{propLink.type}")
+        formEntityLinker.loadToForm(propLink)
 
   # Compile property links into a function that saves linked values
   compileSaveLinkedAnswers: (propertyLinks, form) ->
     return () =>
       entity = {}
 
-      for propLink in propertyLinks
-        # Only if direction is "save" or "both"
-        if propLink.direction not in ["save", "both"]
-          continue
-
-        # Check if question is visible if form provided
-        if form
+      if form
+        isQuestionVisible = (question) =>
           question = formUtils.findItem(form, propLink.question)
-          if not @compileConditions(question.conditions)()
-            continue
+          return @compileConditions(question.conditions)()
+      else
+        isQuestionVisible = null
 
-        switch propLink.type
-          when "direct"
-            # Get answer
-            answer = @model.get(propLink.question) or {}
-            if answer.value? 
-              # Handle by type
-              switch propLink.property.type
-                when "geometry"
-                  entity[propLink.property.code] = { type: "Point", coordinates: [answer.value.longitude, answer.value.latitude] }
-                else
-                  entity[propLink.property.code] = answer.value
-            else
-              entity[propLink.property.code] = null
+      formEntityLinker = new FormEntityLinker(entity, @model, isQuestionVisible)
 
-          when "enum:choice"
-            # Get answer
-            answer = @model.get(propLink.question) or {}
-            # Find the to value
-            mapping = _.findWhere(propLink.mappings, { to: answer.value })
-            if mapping
-              # Set the property
-              entity[propLink.property.code] = mapping.from
-
-          when "boolean:choices"
-            # Get answer
-            answer = @model.get(propLink.question) or {}
-
-            # Check if choice present
-            if _.isArray(answer.value)
-              entity[propLink.property.code] = _.contains(answer.value, propLink.choice)
-
-          when "boolean:choice"
-            # Get answer
-            answer = @model.get(propLink.question) or {}
-
-            # Find the to value
-            mapping = _.findWhere(propLink.mappings, { to: answer.value })
-            if mapping
-              # Set the property
-              entity[propLink.property.code] = mapping.from == "true"
-
-          when "measurement:units"
-            # Get answer
-            answer = @model.get(propLink.question) or {}
-            if answer.value? and answer.value.quantity?
-              # Find the to value
-              mapping = _.findWhere(propLink.mappings, { to: answer.value.units })
-              if mapping
-                # Set the property
-                entity[propLink.property.code] = { magnitude: answer.value.quantity, unit: mapping.from }
-
-          when "text:specify"
-            # Get answer
-            answer = @model.get(propLink.question) or {}
-
-            # Check if choice present
-            if answer.specify and answer.specify[propLink.choice]?
-              entity[propLink.property.code] = answer.specify[propLink.choice]
-
-          else
-            throw new Error("Unknown link type #{propLink.type}")
+      for propLink in propertyLinks
+        formEntityLinker.saveFromForm(propLink)
 
       return entity
 
