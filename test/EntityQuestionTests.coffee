@@ -143,15 +143,15 @@ describe "EntityQuestion", ->
       # Check that linked question is set
       assert.equal @model.get("q2").value, "newtext"
 
-    it "selecting entity does not overwrite linked filled answer", ->
+    it "selecting entity does overwrites linked filled answer", ->
       @model.set("q2", { value: "oldtext" })
 
       # Set callback to select entity with property A set
       @ctx.getEntity = (type, _id, callback) -> callback({ a: "newtext" })
       @qview.selectEntity()
 
-      # Check that linked question is not set
-      assert.equal @model.get("q2").value, "oldtext"
+      # Check that linked question is set
+      assert.equal @model.get("q2").value, "newtext"
 
   describe "with answer", ->
     describe "linked question answered", ->

@@ -1,6 +1,7 @@
 _ = require 'lodash'
 
 # Translates entity properties into answers and vice-versa
+# See docs/Property Links.md
 module.exports = class FormEntityLinker
   # entity: entity to load properties to/from
   # formModel: Backbone model of the form
@@ -26,16 +27,14 @@ module.exports = class FormEntityLinker
         if not val?
           return
 
-        # Copy property to question value if not set
-        if answer.value == "" or not answer.value?
-          # Handle by type
-          switch propLink.property.type
-            when "geometry"
-              if val.type == "Point"
-                answer.value = { latitude: val.coordinates[1], longitude: val.coordinates[0] }
-            else
-              answer.value = val
-          @model.set(propLink.question, answer)
+        # Handle by type
+        switch propLink.property.type
+          when "geometry"
+            if val.type == "Point"
+              answer.value = { latitude: val.coordinates[1], longitude: val.coordinates[0] }
+          else
+            answer.value = val
+        @model.set(propLink.question, answer)
       when "enum:choice"
         val = @entity[propLink.property.code]
         if not val?
@@ -44,10 +43,9 @@ module.exports = class FormEntityLinker
         # Find the from value
         mapping = _.findWhere(propLink.mappings, { from: val })
         if mapping
-          # Copy property to question value if not set
-          if answer.value == "" or not answer.value?
-            answer.value = mapping.to
-            @model.set(propLink.question, answer)
+          # Copy property to question value 
+          answer.value = mapping.to
+          @model.set(propLink.question, answer)
       when "boolean:choices"
         val = @entity[propLink.property.code]
         if not val?
@@ -72,10 +70,9 @@ module.exports = class FormEntityLinker
         # Find the from value
         mapping = _.findWhere(propLink.mappings, { from: (if val then "true" else "false") })
         if mapping
-          # Copy property to question value if not set
-          if not answer.value?
-            answer.value = mapping.to
-            @model.set(propLink.question, answer)
+          # Copy property to question value 
+          answer.value = mapping.to
+          @model.set(propLink.question, answer)
       when "measurement:units"
         val = @entity[propLink.property.code]
         if not val?
@@ -84,20 +81,18 @@ module.exports = class FormEntityLinker
         # Find the from value
         mapping = _.findWhere(propLink.mappings, { from: val.unit })
         if mapping
-          # Copy property to question value if not set
-          if answer.value == "" or not answer.value?
-            answer.value = { quantity: val.magnitude, units: mapping.to }
-            @model.set(propLink.question, answer)
+          # Copy property to question value
+          answer.value = { quantity: val.magnitude, units: mapping.to }
+          @model.set(propLink.question, answer)
       when "text:specify"
         val = @entity[propLink.property.code]
         if not val?
           return
 
-        # Copy property to question specify if not set
+        # Copy property to question specify
         answer.specify = answer.specify or {}
-        if not answer.specify[propLink.choice]
-          answer.specify[propLink.choice] = val
-          @model.set(propLink.question, answer)
+        answer.specify[propLink.choice] = val
+        @model.set(propLink.question, answer)
       else
         throw new Error("Unknown link type #{propLink.type}")
 
