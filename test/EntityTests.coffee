@@ -201,6 +201,18 @@ describe "Entities", ->
       compiled(boolean: false)
       assert.deepEqual @model.get("q1").value, "F"
 
+    it "loads boolean:alternate links", ->
+      compiled = @compiler.compileLoadLinkedAnswers([
+        { property: @propBoolean, type: "boolean:alternate", direction: "load", question: "q1", alternate: "dontknow"}])
+
+      compiled(boolean: true)
+      assert.deepEqual @model.get("q1").alternate, "dontknow"
+
+      @model.set("q1", null)
+
+      compiled(boolean: false)
+      assert.deepEqual @model.get("q1").alternate, null
+
     it "loads measurement:units links", ->
       compiled = @compiler.compileLoadLinkedAnswers([
         { property: @propMeasurement, type: "measurement:units", direction: "load", question: "q1", mappings: [
@@ -296,6 +308,20 @@ describe "Entities", ->
 
       @model.set("q1", { value: []})
       assert.deepEqual compiled(), { boolean: false, boolean2: false }
+
+    it "saves boolean:alternate links", ->
+      compiled = @compiler.compileSaveLinkedAnswers([
+        { property: @propBoolean, type: "boolean:alternate", direction: "save", question: "q1", alternate: "dontknow"}
+        ])
+
+      @model.set("q1", { alternate: "dontknow"})
+      assert.deepEqual compiled(), { boolean: true }
+
+      @model.set("q1", { value: ["xx", "yy"]})
+      assert.deepEqual compiled(), { boolean: false }
+
+      @model.set("q1", { alternate: "na"})
+      assert.deepEqual compiled(), { boolean: false }
 
     it "saves boolean:choices link", ->
       compiled = @compiler.compileSaveLinkedAnswers([

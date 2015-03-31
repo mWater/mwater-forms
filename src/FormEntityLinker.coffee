@@ -73,6 +73,17 @@ module.exports = class FormEntityLinker
           # Copy property to question value 
           answer.value = mapping.to
           @model.set(propLink.question, answer)
+      when "boolean:alternate"
+        val = @entity[propLink.property.code]
+        if not val?
+          return
+
+        if val
+          answer.alternate = propLink.alternate
+        else
+          answer.alternate = null
+
+        @model.set(propLink.question, answer)
       when "measurement:units"
         val = @entity[propLink.property.code]
         if not val?
@@ -147,6 +158,11 @@ module.exports = class FormEntityLinker
         if mapping
           # Set the property
           @entity[propLink.property.code] = mapping.from == "true"
+
+      when "boolean:alternate"
+        # Get answer
+        answer = @model.get(propLink.question) or {}
+        @entity[propLink.property.code] = answer.alternate == propLink.alternate
 
       when "measurement:units"
         # Get answer
