@@ -29,10 +29,10 @@ describe 'DropdownQuestion', ->
     assert.deepEqual @model.get("q1234"), { value: 'a'}
     assert.isFalse @qview.$("select").is(":disabled")
 
-  it 'is disabled with unknown value', ->
+  it 'is not disabled with unknown value', ->
     @model.set("q1234": { value: 'x' })
     assert.deepEqual @model.get("q1234"), { value: 'x' }
-    assert.isTrue @qview.$("select").is(":disabled")
+    assert.isFalse @qview.$("select").is(":disabled")
 
   it 'is not disabled with empty value', ->
     @model.set("q1234": null)

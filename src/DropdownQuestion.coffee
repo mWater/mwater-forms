@@ -50,10 +50,6 @@ module.exports = class DropdownQuestion extends Question
 
     answerEl.html(html)
 
-    # Check if answer present 
-    if not _.any(@options.choices, (opt) => opt.id == @getAnswerValue()) and @getAnswerValue()?
-      answerEl.find("select").attr('disabled', 'disabled')
-
   renderDropdownOptions: ->
     html = ""
     
