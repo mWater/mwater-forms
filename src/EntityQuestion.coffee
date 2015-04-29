@@ -11,6 +11,7 @@ _ = require 'lodash'
 #  mapProperty: geo property if selection should use a map to select
 #  selectText: text of select button
 #  locale: current locale
+#  hidden: true to always hide
 #  loadLinkedAnswers: function that loads any linked answers when an entity is selected. Called with entity
 #
 # Context should have selectEntity(<options>) and getEntity(type, id, callback). See docs/Forms Context.md
@@ -18,9 +19,6 @@ module.exports = class EntityQuestion extends Question
   events:
     'click #change_entity_button' : 'selectEntity'
     'click #select_entity_button' : 'selectEntity'
-
-  changed: ->
-    @setAnswerValue(code: @$("input").val())
 
   # Called to select an entity using an external mechanism (calls @ctx.selectEntity)
   selectEntity: ->
@@ -34,13 +32,19 @@ module.exports = class EntityQuestion extends Question
       selectProperties: @options.selectProperties
       mapProperty: @options.mapProperty
       callback: (entityId) =>
-        @setAnswerValue(entityId)
+        @setAnswerValue({ _id: entityId })
 
         # Load answers linked to properties
         @ctx.getEntity @options.entityType, entityId, (entity) =>
           if entity and @options.loadLinkedAnswers
             @options.loadLinkedAnswers(entity)
     }
+
+  shouldBeVisible: ->
+    if @options.hidden
+      return false
+
+    return super()
 
   updateAnswer: (answerEl) ->
     # Check if entities supported
@@ -50,15 +54,20 @@ module.exports = class EntityQuestion extends Question
 
     # If entity, get properties
     val = @getAnswerValue()
-    if val
+
+    # Legacy support. TODO Remove AUG 2015
+    if _.isString(val)
+      val = { _id: val }
+
+    if val and val._id
       # Display right away first in case loading takes time
       data = {
-        entity: val
+        entity: val._id
         selectText: @options.selectText
       }
       answerEl.html require('./templates/EntityQuestion.hbs')(data, helpers: { T: @T })
 
-      @ctx.getEntity @options.entityType, val, (entity) =>
+      @ctx.getEntity @options.entityType, val._id, (entity) =>
         if entity
           # Display entity
           properties = @formatEntityProperties(entity)
@@ -71,7 +80,7 @@ module.exports = class EntityQuestion extends Question
         else
           # Entity not found
           data = {
-            entity: entity
+            entity: entity._id
             propertiesError: @T("Data Not Found")
             selectText: @options.selectText
           }
@@ -120,7 +129,5 @@ module.exports = class EntityQuestion extends Question
           # image, imagelist
           else
             properties.push({ name: name, value: "???"}) 
-
-
 
     return properties

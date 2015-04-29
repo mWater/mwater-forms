@@ -5,9 +5,10 @@ Backbone = require 'backbone'
 # model (backbone model) 
 # contents (array of views)
 # Optional:
-# setEntity: sets the active entity
-# getEntityCreates: gets entities that have been created. array of { type: type of entity, entity: entity attributes }
-# getEntityUpdates: gets entities that have been updated. array of { type: type of entity, _id: <id of entity>, updates: { attributes to update }}
+# setEntity: sets the active entity. (entity type, entity id, optional question id. picks first if not specified)
+# getEntityCreates: gets entities that have been created. (array of { type: type of entity, entity: entity attributes, question: id of question that created entity })
+# getEntityUpdates: gets entities that have been updated. (array of { type: type of entity, _id: <id of entity>, updates: { attributes to update }, question: id of question that updated entity })
+# markEntityCreated: marks that an entity has been created. (question id, entity)
 module.exports = class FormView extends Backbone.View
   initialize: (options) ->
     # Save options
@@ -18,6 +19,7 @@ module.exports = class FormView extends Backbone.View
     @setEntity = options.setEntity or (-> throw new Error("Not supported"))
     @getEntityCreates = options.getEntityCreates or (-> return [])
     @getEntityUpdates = options.getEntityUpdates or (-> return [])
+    @markEntityCreated = options.markEntityCreated or (->)
     
     # Add contents and listen to events
     for content in options.contents

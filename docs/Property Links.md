@@ -2,7 +2,6 @@
 
 These are connections between a form answer and a property of an entity. They allow loading and saving of these values, translating them appropriately.
 
-
 ## Format
 
 A property link has the following properties:

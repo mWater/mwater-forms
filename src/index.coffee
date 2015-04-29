@@ -32,7 +32,7 @@ exports.FormView = require './FormView'
 exports.utils = require './utils'
 exports.LocationFinder = require './LocationFinder'
 
-exports.schemaVersion = 10 # Version of the schema that this package supports (cannot compile if higher)
+exports.schemaVersion = 11 # Version of the schema that this package supports (cannot compile if higher)
 exports.minSchemaVersion = 1 # Minimum version of forms schema that can be compiled
 
 # # JSON schema of form design # Explicitly import for now
@@ -45,14 +45,6 @@ exports.templateView = (template) ->
     load: (data) ->
       $(@el).html template(data)
   }
-
-  # class TemplateView extends Backbone.View
-  # constructor: (template) ->
-  #   @template = template
-
-  # load: (data) ->
-  #   @$el.html @template(data)
-
 
 exports.SurveyView = class SurveyView extends exports.FormView
 

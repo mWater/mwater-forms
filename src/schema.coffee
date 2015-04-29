@@ -21,6 +21,7 @@ exports.design = {
     # Schema 3 added moment formats for date questions. Label for checkbox is deprecated and no longer used.
     # Schema 4 added isoneof and isntoneof conditions
     # Schema 10 adds entity questions and linking
+    # Schema 11 deprecates form-level entity settings and adds hidden entity questions
     _schema: { enum: [1, 2, 3, 4, 5, 10] }
 
     # Name of the form
@@ -49,6 +50,7 @@ exports.design = {
       items: { $ref: "#/definitions/localizedString" } 
     }
 
+    # Deprecated!!
     entitySettings: {
       type: "object"
       properties: {
@@ -830,6 +832,12 @@ exports.design = {
 
         # How selection is made
         selectionMode: { $enum: ['external'] }
+
+        # True if hidden always
+        hidden: { type: "boolean" }
+
+        # True to create an entity if one is not selected
+        createEntity: { type: "boolean" }
 
         # No validation available
         validations: { type: "array", maxItems: 0 } 

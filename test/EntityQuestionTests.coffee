@@ -62,7 +62,7 @@ describe "EntityQuestion", ->
       @qview = @compiler.compileQuestion(@q).render()
 
     it "displays entity if loaded", ->
-      @model.set("q1", { value: "1234" })
+      @model.set("q1", { value: { _id: "1234" }})
 
       assert.match(@qview.$el.text(), /Text/)
       assert.match(@qview.$el.text(), /abc/)
@@ -88,7 +88,7 @@ describe "EntityQuestion", ->
       @compiler = new FormCompiler(model: @model, locale: "es", ctx: @ctx)
       @qview = @compiler.compileQuestion(@q).render()
 
-      @model.set("q1", { value: "1234" })
+      @model.set("q1", { value: { _id: "1234" }})
       # Shows Spanish instead
       assert.match(@qview.$el.html(), /Enumes/)
       assert.match(@qview.$el.html(), /Xes/)
@@ -130,7 +130,7 @@ describe "EntityQuestion", ->
       @qview = @compiler.compileQuestion(@q).render()
 
     it "pre-selected entity does not set linked empty answer", ->
-      @model.set("q1", { value: "1234" })
+      @model.set("q1", { value: { _id: "1234" }})
 
       # Check that linked question is not set
       assert not @model.get("q2")?
@@ -143,7 +143,7 @@ describe "EntityQuestion", ->
       # Check that linked question is set
       assert.equal @model.get("q2").value, "newtext"
 
-    it "selecting entity does overwrites linked filled answer", ->
+    it "selecting entity overwrites linked filled answer", ->
       @model.set("q2", { value: "oldtext" })
 
       # Set callback to select entity with property A set
@@ -152,6 +152,28 @@ describe "EntityQuestion", ->
 
       # Check that linked question is set
       assert.equal @model.get("q2").value, "newtext"
+
+  describe "hidden", ->
+    before ->
+      # Create a hidden entity question 
+      @model = new Backbone.Model()
+      @compiler = new FormCompiler(model: @model, locale: "en", ctx: @ctx)
+      @q = {
+        _id: "q1"
+        _type: "EntityQuestion"
+        text: { _base: "en", en: "English" }
+        entityType: "type1"
+        entityFilter: {}
+        displayProperties: []
+        selectProperties: []
+        mapProperty: null
+        selectText: { en: "Select" }
+        hidden: true
+      }
+      @qview = @compiler.compileQuestion(@q).render()
+
+    it "does not display", ->
+      assert.isFalse @qview.shouldBeVisible()
 
   describe "with answer", ->
     describe "linked question answered", ->

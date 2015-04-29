@@ -306,6 +306,7 @@ module.exports = class FormCompiler
         options.mapProperty = q.mapProperty
         options.selectText = @compileString(q.selectText)
         options.loadLinkedAnswers = @compileLoadLinkedAnswers(q.propertyLinks)
+        options.hidden = q.hidden
         return new EntityQuestion(options)
 
     throw new Error("Unknown question type")
@@ -405,28 +406,70 @@ module.exports = class FormCompiler
     formViewEntity = null
 
     # If form-level entity, setup setEntity
-    options.setEntity = (entity) =>
-      # Save entity
-      formViewEntity = entity
-
-      # Load into form level linked answers
+    options.setEntity = (entityType, entity, questionId) =>
+      # Load into form level linked answers. DEPRECATED
       if form.entitySettings
+        # Save entity
+        formViewEntity = entity
         @compileLoadLinkedAnswers(form.entitySettings.propertyLinks)(entity)
+        return
+
+      # Find entity question
+      if questionId
+        question = formUtils.findItem(form, questionId)
       else
-        throw new Error("No entity settings")
+        # Pick first matching
+        question = _.find(formUtils.priorQuestions(form), (q) -> q._type == "EntityQuestion" and q.entityType == entityType)
+
+      # Check entity question
+      if not question
+        throw new Error("Entity question not found")
+      if question._type != "EntityQuestion" 
+        throw new Error("Not entity question")
+      if question.entityType != entityType
+        throw new Error("Wrong entity type")
+
+      # Load data
+      @compileLoadLinkedAnswers(question.propertyLinks)(entity)
+
+      # Set entity
+      entry = @model.get(question._id) || {}
+      entry = _.clone(entry)
+      entry.value = { _id: entity._id }
+      @model.set(question._id, entry)
 
     options.getEntityCreates = () =>
+      creates = []
+
+      # DEPRECATED!!!
       # If no entity was set (then it would be update, not create) and is set to create entity
       if form.entitySettings and not formViewEntity?
-        return [{ 
+        creates.push { 
           type: _.last(form.entitySettings.entityType.split(":")), 
           entity: @compileSaveLinkedAnswers(form.entitySettings.propertyLinks)()
-        }]
-      else
-        return []
+        }
+      # END DEPRECATED
+
+      # TODO Null response handling. Include? Currently yes
+      # Go through all entity questions
+      for question in formUtils.priorQuestions(form)
+        # If entity question with property links and createEntity is true
+        if question._type == "EntityQuestion" and question.propertyLinks and question.createEntity
+          # If value is *not* set
+          if not @model.get(question._id) or not @model.get(question._id).value
+            # Get data from that entity question
+            entity = @compileSaveLinkedAnswers(question.propertyLinks)()
+            creates.push({
+              type: question.entityType,
+              entity: entity
+              question: question._id
+            })
+
+      return creates
 
     options.getEntityUpdates = () =>
       updates = []
+      # DEPRECATED!!!
       # If entity was set 
       if form.entitySettings and formViewEntity?
         updates.push({ 
@@ -434,6 +477,7 @@ module.exports = class FormCompiler
           type: _.last(form.entitySettings.entityType.split(":")), 
           updates: @compileSaveLinkedAnswers(form.entitySettings.propertyLinks)()
         })
+      # END DEPRECATED
 
       # TODO Null response handling. Include? Currently yes
       # Go through all entity questions
@@ -441,15 +485,24 @@ module.exports = class FormCompiler
         # If entity question with property links
         if question._type == "EntityQuestion" and question.propertyLinks
           # If value is set
-          if @model.get(question._id) and @model.get(question._id).value
+          if @model.get(question._id) and @model.get(question._id).value and @model.get(question._id).value._id
             # Get updates from that entity question
             propertyUpdates = @compileSaveLinkedAnswers(question.propertyLinks)()
             if _.keys(propertyUpdates).length > 0
               updates.push({
-                _id: @model.get(question._id).value,
+                _id: @model.get(question._id).value._id,
                 type: question.entityType,
                 updates: propertyUpdates
+                question: question._id
               })
+
       return updates
+
+    options.markEntityCreated = (questionId, entity) ->
+      # Clone existing model entry
+      entry = @model.get(questionId) || {}
+      entry = _.clone(entry)
+      entry.value = { _id: entity._id }
+      @model.set(questionId, entry)
 
     return new FormView(options)
