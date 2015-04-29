@@ -21,5 +21,5 @@ type:
 * `boolean:choice` : maps a boolean property to a choice item. Needs `mappings` array of { from: "true"/"false", to: <choice id> }
 * `boolean:alternate` : maps a boolean property to an alternate (e.g. Don't Know) answer. Needs `alternate` (e.g. "dontknow")
 * `measurement:units` : maps an measurement property to a unit item. Needs `mappings` array of { from: <entity unit id>, to: <question units id> }
-* `text:specify` : maps a text property to a specify (e.g. other) answer. Needs `choice`
+* `text:specify` : maps a text property to a specify (e.g. other) answer. Needs `choice` or `choices`
 * `decimal:location_accuracy`: maps decimal property to location accuracy

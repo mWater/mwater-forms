@@ -435,7 +435,7 @@ module.exports = class FormCompiler
       # Set entity
       entry = @model.get(question._id) || {}
       entry = _.clone(entry)
-      entry.value = { _id: entity._id }
+      entry.value = entity._id
       @model.set(question._id, entry)
 
     options.getEntityCreates = () =>
@@ -462,7 +462,7 @@ module.exports = class FormCompiler
             creates.push({
               type: question.entityType,
               entity: entity
-              question: question._id
+              questionId: question._id
             })
 
       return creates
@@ -485,15 +485,15 @@ module.exports = class FormCompiler
         # If entity question with property links
         if question._type == "EntityQuestion" and question.propertyLinks
           # If value is set
-          if @model.get(question._id) and @model.get(question._id).value and @model.get(question._id).value._id
+          if @model.get(question._id) and @model.get(question._id).value 
             # Get updates from that entity question
             propertyUpdates = @compileSaveLinkedAnswers(question.propertyLinks)()
             if _.keys(propertyUpdates).length > 0
               updates.push({
-                _id: @model.get(question._id).value._id,
+                _id: @model.get(question._id).value,
                 type: question.entityType,
                 updates: propertyUpdates
-                question: question._id
+                questionId: question._id
               })
 
       return updates
@@ -502,7 +502,7 @@ module.exports = class FormCompiler
       # Clone existing model entry
       entry = @model.get(questionId) || {}
       entry = _.clone(entry)
-      entry.value = { _id: entity._id }
+      entry.value = entity._id
       @model.set(questionId, entry)
 
     return new FormView(options)

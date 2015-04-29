@@ -106,11 +106,11 @@ describe "Entities", ->
     it "loads property links", ->
       @formView.setEntity("type1", { _id: "1234", text: "sometext"})
       assert.equal @model.get('q1').value, "sometext"
-      assert.deepEqual @model.get('q2').value, { _id: "1234" }
+      assert.equal @model.get('q2').value, "1234"
 
     it "includes entity update", ->
       # Set entity for entity question
-      @model.set("q2", { value: { _id: "1234" }})
+      @model.set("q2", { value: "1234" })
 
       # Set text value for q1
       @model.set('q1', { value: "answer" })
@@ -118,7 +118,7 @@ describe "Entities", ->
       # Get updates
       entities = @formView.getEntityUpdates()
       assert.deepEqual entities, [
-        { _id: "1234", type: "type1", updates: { text: "answer" }, question: "q2" }
+        { _id: "1234", type: "type1", updates: { text: "answer" }, questionId: "q2" }
       ], JSON.stringify(entities)
 
     it "does not include empty entity updates", ->
@@ -129,7 +129,7 @@ describe "Entities", ->
       @formView = @compiler.compileForm(@form)
 
       # Set entity for entity question
-      @model.set("q2", { value: { _id: "1234" }})
+      @model.set("q2", { value: "1234" })
 
       # Set text value for q1
       @model.set('q1', { value: "answer"})
@@ -153,7 +153,7 @@ describe "Entities", ->
       # One create
       entities = @formView.getEntityCreates()
       assert.isTrue _.isEqual(entities, [
-        { type: "type1", entity: { text: "answer" }, question: "q2" }
+        { type: "type1", entity: { text: "answer" }, questionId: "q2" }
       ]), JSON.stringify(entities)      
 
     it "does not include entity creates from blank EntityQuestions with createEntity false", ->
@@ -175,7 +175,7 @@ describe "Entities", ->
       # Mark created
       @formView.markEntityCreated("q2", { _id: "1234", text: "abc" })
 
-      assert.deepEqual @model.get('q2').value, { _id: "1234" }
+      assert.deepEqual @model.get('q2').value, "1234"
 
   describe "property links loading", ->
     it "loads direct links", ->

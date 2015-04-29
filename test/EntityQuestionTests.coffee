@@ -62,7 +62,7 @@ describe "EntityQuestion", ->
       @qview = @compiler.compileQuestion(@q).render()
 
     it "displays entity if loaded", ->
-      @model.set("q1", { value: { _id: "1234" }})
+      @model.set("q1", { value: "1234" })
 
       assert.match(@qview.$el.text(), /Text/)
       assert.match(@qview.$el.text(), /abc/)
@@ -88,7 +88,7 @@ describe "EntityQuestion", ->
       @compiler = new FormCompiler(model: @model, locale: "es", ctx: @ctx)
       @qview = @compiler.compileQuestion(@q).render()
 
-      @model.set("q1", { value: { _id: "1234" }})
+      @model.set("q1", { value: "1234" })
       # Shows Spanish instead
       assert.match(@qview.$el.html(), /Enumes/)
       assert.match(@qview.$el.html(), /Xes/)
@@ -130,7 +130,7 @@ describe "EntityQuestion", ->
       @qview = @compiler.compileQuestion(@q).render()
 
     it "pre-selected entity does not set linked empty answer", ->
-      @model.set("q1", { value: { _id: "1234" }})
+      @model.set("q1", { value: "1234" })
 
       # Check that linked question is not set
       assert not @model.get("q2")?

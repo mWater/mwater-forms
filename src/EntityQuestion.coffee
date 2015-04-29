@@ -32,7 +32,7 @@ module.exports = class EntityQuestion extends Question
       selectProperties: @options.selectProperties
       mapProperty: @options.mapProperty
       callback: (entityId) =>
-        @setAnswerValue({ _id: entityId })
+        @setAnswerValue(entityId)
 
         # Load answers linked to properties
         @ctx.getEntity @options.entityType, entityId, (entity) =>
@@ -54,20 +54,15 @@ module.exports = class EntityQuestion extends Question
 
     # If entity, get properties
     val = @getAnswerValue()
-
-    # Legacy support. TODO Remove AUG 2015
-    if _.isString(val)
-      val = { _id: val }
-
-    if val and val._id
+    if val
       # Display right away first in case loading takes time
       data = {
-        entity: val._id
+        entity: val
         selectText: @options.selectText
       }
       answerEl.html require('./templates/EntityQuestion.hbs')(data, helpers: { T: @T })
 
-      @ctx.getEntity @options.entityType, val._id, (entity) =>
+      @ctx.getEntity @options.entityType, val, (entity) =>
         if entity
           # Display entity
           properties = @formatEntityProperties(entity)
@@ -80,7 +75,7 @@ module.exports = class EntityQuestion extends Question
         else
           # Entity not found
           data = {
-            entity: entity._id
+            entity: entity
             propertiesError: @T("Data Not Found")
             selectText: @options.selectText
           }
