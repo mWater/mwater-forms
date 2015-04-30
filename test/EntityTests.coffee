@@ -4,24 +4,29 @@ FormCompiler = require '../src/FormCompiler'
 # Tests related to the entities connections with forms
 describe "Entities", ->
   beforeEach ->
-    @model = new Backbone.Model()
-    @compiler = new FormCompiler(model: @model)
-
     # Create sample properties
-    @propText = { id: 1, code: "text", type: "text", name: { en: "Text" } }
-    @propInteger = { id: 2, code: "integer", type: "integer", name: { en: "Integer" } }
-    @propDecimal = { id: 3, code: "decimal", type: "decimal", name: { en: "Decimal" } }
-    @propEnum = { id: 4, code: "enum", type: "enum", name: { en: "Enum", es: "Enumes" }, values: [
+    @propText = { _id: "1", code: "text", type: "text", name: { en: "Text" } }
+    @propInteger = { _id: "2", code: "integer", type: "integer", name: { en: "Integer" } }
+    @propDecimal = { _id: "3", code: "decimal", type: "decimal", name: { en: "Decimal" } }
+    @propEnum = { _id: "4", code: "enum", type: "enum", name: { en: "Enum", es: "Enumes" }, values: [
       { code: "x", name: { en: "X", es: "Xes" }}
       { code: "y", name: { en: "Y" }}
     ] } 
-    @propBoolean = { id: 5, code: "boolean", type: "boolean", name: { en: "Boolean" } } 
-    @propBoolean2 = { id: 8, code: "boolean2", type: "boolean", name: { en: "Boolean2" } } 
-    @propGeometry = { id: 6, code: "geometry", type: "geometry", name: { en: "Geometry" } } 
-    @propMeasurement = { id: 7, code: "measurement", type: "measurement", name: { en: "Measurement" }, units: [
+    @propBoolean = { _id: "5", code: "boolean", type: "boolean", name: { en: "Boolean" } } 
+    @propBoolean2 = { _id: "8", code: "boolean2", type: "boolean", name: { en: "Boolean2" } } 
+    @propGeometry = { _id: "6", code: "geometry", type: "geometry", name: { en: "Geometry" } } 
+    @propMeasurement = { _id: "7", code: "measurement", type: "measurement", name: { en: "Measurement" }, units: [
       { code: "degF", symbol: "oF", name: { "Fahrenheit" }}
       { code: "degC", symbol: "oC", name: { "Celsius" }}
     ] } 
+
+    @props = [@propText, @propInteger, @propDecimal, @propEnum, @propGeometry, @propBoolean, @propBoolean2, @propMeasurement]
+
+    ctx = {
+      getProperty: (id) => _.findWhere(@props, { _id: id })
+    }
+    @model = new Backbone.Model()
+    @compiler = new FormCompiler(ctx: ctx, model: @model)
 
   describe "(deprecated) form-level entity creation", ->
     beforeEach ->
@@ -37,13 +42,16 @@ describe "Entities", ->
         entitySettings: {
           entityType: "type1"
           propertyLinks: [
-            { property: @propText, type: "direct", direction: "both", question: "q1" }
+            { propertyId: @propText._id, type: "direct", direction: "both", questionId: "q1" }
           ]
         }
       }
 
+      ctx = {
+        getProperty: (id) => _.findWhere(@props, { _id: id })
+      }
       @model = new Backbone.Model()
-      @compiler = new FormCompiler(model: @model)
+      @compiler = new FormCompiler(ctx: ctx, model: @model)
       @formView = @compiler.compileForm(@form)
 
     it "loads property links at FormView level", ->
@@ -93,14 +101,17 @@ describe "Entities", ->
             mapProperty: null
             selectText: { en: "Select" }
             propertyLinks: [
-              { property: @propText, direction: "both", question: "q1", type: "direct" }
+              { propertyId: @propText._id, direction: "both", questionId: "q1", type: "direct" }
             ]
           }          
         ]
       }
 
+      ctx = {
+        getProperty: (id) => _.findWhere(@props, { _id: id })
+      }
       @model = new Backbone.Model()
-      @compiler = new FormCompiler(model: @model)
+      @compiler = new FormCompiler(ctx: ctx, model: @model)
       @formView = @compiler.compileForm(@form)
 
     it "loads property links", ->
@@ -180,8 +191,8 @@ describe "Entities", ->
   describe "property links loading", ->
     it "loads direct links", ->
       compiled = @compiler.compileLoadLinkedAnswers([
-        { property: @propText, type: "direct", direction: "load", question: "q1" }
-        { property: @propInteger, type: "direct", direction: "load", question: "q2" }
+        { propertyId: @propText._id, type: "direct", direction: "load", questionId: "q1" }
+        { propertyId: @propInteger._id, type: "direct", direction: "load", questionId: "q2" }
         ])
 
       # Load text
@@ -192,18 +203,9 @@ describe "Entities", ->
       compiled({ integer: 123 })
       assert.equal @model.get("q2").value, 123
 
-    it "loads direct location links (legacy)", ->
-      compiled = @compiler.compileLoadLinkedAnswers([
-        { property: @propGeometry, type: "direct", direction: "load", question: "q1" }
-        ])
-
-      # Load point
-      compiled({ geometry: { type: "Point", coordinates: [1,2]}})
-      assert.deepEqual @model.get("q1").value, { latitude: 2, longitude: 1 }
-
     it "loads geometry:location links", ->
       compiled = @compiler.compileLoadLinkedAnswers([
-        { property: @propGeometry, type: "geometry:location", direction: "load", question: "q1" }
+        { propertyId: @propGeometry._id, type: "geometry:location", direction: "load", questionId: "q1" }
         ])
 
       # Load point
@@ -212,7 +214,7 @@ describe "Entities", ->
 
     it "loads enum:choice links", ->
       compiled = @compiler.compileLoadLinkedAnswers([
-        { property: @propEnum, type: "enum:choice", direction: "load", question: "q1", mappings: [
+        { propertyId: @propEnum._id, type: "enum:choice", direction: "load", questionId: "q1", mappings: [
           { from: "x", to: "xx" }
           { from: "y", to: "yy" }
           ] }
@@ -223,8 +225,8 @@ describe "Entities", ->
 
     it "loads boolean:choices links", ->
       compiled = @compiler.compileLoadLinkedAnswers([
-        { property: @propBoolean, type: "boolean:choices", direction: "load", question: "q1", choice: "xx"}
-        { property: @propBoolean2, type: "boolean:choices", direction: "load", question: "q1", choice: "yy"}
+        { propertyId: @propBoolean._id, type: "boolean:choices", direction: "load", questionId: "q1", choice: "xx"}
+        { propertyId: @propBoolean2._id, type: "boolean:choices", direction: "load", questionId: "q1", choice: "yy"}
         ])
 
       compiled(boolean: true)
@@ -238,7 +240,7 @@ describe "Entities", ->
 
     it "loads boolean:choice links", ->
       compiled = @compiler.compileLoadLinkedAnswers([
-        { property: @propBoolean, type: "boolean:choice", direction: "load", question: "q1", mappings: [
+        { propertyId: @propBoolean._id, type: "boolean:choice", direction: "load", questionId: "q1", mappings: [
           { from: "true", to: "T" }
           { from: "false", to: "F" }
         ]}
@@ -254,7 +256,7 @@ describe "Entities", ->
 
     it "loads boolean:alternate links", ->
       compiled = @compiler.compileLoadLinkedAnswers([
-        { property: @propBoolean, type: "boolean:alternate", direction: "load", question: "q1", alternate: "dontknow"}])
+        { propertyId: @propBoolean._id, type: "boolean:alternate", direction: "load", questionId: "q1", alternate: "dontknow"}])
 
       compiled(boolean: true)
       assert.deepEqual @model.get("q1").alternate, "dontknow"
@@ -266,7 +268,7 @@ describe "Entities", ->
 
     it "loads measurement:units links", ->
       compiled = @compiler.compileLoadLinkedAnswers([
-        { property: @propMeasurement, type: "measurement:units", direction: "load", question: "q1", mappings: [
+        { propertyId: @propMeasurement._id, type: "measurement:units", direction: "load", questionId: "q1", mappings: [
           { from: "degC", to: "C" }
           { from: "degF", to: "F" }
           ] }
@@ -277,7 +279,7 @@ describe "Entities", ->
 
     it "loads text:specify links", ->
       compiled = @compiler.compileLoadLinkedAnswers([
-        { property: @propText, type: "text:specify", direction: "load", question: "q1", choice: "xx"}
+        { propertyId: @propText._id, type: "text:specify", direction: "load", questionId: "q1", choice: "xx"}
         ])
 
       compiled(text: "abc")
@@ -285,8 +287,8 @@ describe "Entities", ->
 
     it "loads decimal:location_accuracy links", ->
       compiled = @compiler.compileLoadLinkedAnswers([
-        { property: @propGeometry, type: "direct", direction: "load", question: "q1" }
-        { property: @propDecimal, type: "decimal:location_accuracy", direction: "load", question: "q1" }
+        { propertyId: @propGeometry._id, type: "geometry:location", direction: "load", questionId: "q1" }
+        { propertyId: @propDecimal._id, type: "decimal:location_accuracy", direction: "load", questionId: "q1" }
         ])
 
       # Load point
@@ -296,25 +298,16 @@ describe "Entities", ->
   describe "property links saving", ->
     it "saves direct links", ->
       compiled = @compiler.compileSaveLinkedAnswers([
-        { property: @propText, type: "direct", direction: "save", question: "q1" }
+        { propertyId: @propText._id, type: "direct", direction: "save", questionId: "q1" }
         ])
 
       # Save text
       @model.set("q1", { value: "sometext"})
       assert.deepEqual compiled(), { text: "sometext" }
 
-    it "saves direct location links (legacy)", ->
-      compiled = @compiler.compileSaveLinkedAnswers([
-        { property: @propGeometry, type: "direct", direction: "save", question: "q1" }
-        ])
-
-      # Save text
-      @model.set("q1", { value: { latitude: 1, longitude: 2 }})
-      assert.deepEqual compiled(), { geometry: { type: "Point", coordinates: [2, 1]} }
-
     it "saves geometry:location links", ->
       compiled = @compiler.compileSaveLinkedAnswers([
-        { property: @propGeometry, type: "geometry:location", direction: "save", question: "q1" }
+        { propertyId: @propGeometry._id, type: "geometry:location", direction: "save", questionId: "q1" }
         ])
 
       # Save text
@@ -341,7 +334,7 @@ describe "Entities", ->
       }
 
       compiled = @compiler.compileSaveLinkedAnswers([
-        { property: @propText, type: "direct", direction: "save", question: "q2" }
+        { propertyId: @propText._id, type: "direct", direction: "save", questionId: "q2" }
         ], form)
 
       # Save text
@@ -354,7 +347,7 @@ describe "Entities", ->
 
     it "saves enum:choice links", ->
       compiled = @compiler.compileSaveLinkedAnswers([
-        { property: @propEnum, type: "enum:choice", direction: "save", question: "q1", mappings: [
+        { propertyId: @propEnum._id, type: "enum:choice", direction: "save", questionId: "q1", mappings: [
           { from: "x", to: "xx" }
           { from: "y", to: "yy" }
           ] }
@@ -366,8 +359,8 @@ describe "Entities", ->
 
     it "saves boolean:choices links", ->
       compiled = @compiler.compileSaveLinkedAnswers([
-        { property: @propBoolean, type: "boolean:choices", direction: "save", question: "q1", choice: "xx"}
-        { property: @propBoolean2, type: "boolean:choices", direction: "save", question: "q1", choice: "yy"}
+        { propertyId: @propBoolean._id, type: "boolean:choices", direction: "save", questionId: "q1", choice: "xx"}
+        { propertyId: @propBoolean2._id, type: "boolean:choices", direction: "save", questionId: "q1", choice: "yy"}
         ])
 
       @model.set("q1", { value: ["xx"]})
@@ -381,7 +374,7 @@ describe "Entities", ->
 
     it "saves boolean:alternate links", ->
       compiled = @compiler.compileSaveLinkedAnswers([
-        { property: @propBoolean, type: "boolean:alternate", direction: "save", question: "q1", alternate: "dontknow"}
+        { propertyId: @propBoolean._id, type: "boolean:alternate", direction: "save", questionId: "q1", alternate: "dontknow"}
         ])
 
       @model.set("q1", { alternate: "dontknow"})
@@ -395,7 +388,7 @@ describe "Entities", ->
 
     it "saves boolean:choices link", ->
       compiled = @compiler.compileSaveLinkedAnswers([
-        { property: @propBoolean, type: "boolean:choice", direction: "save", question: "q1", mappings: [
+        { propertyId: @propBoolean._id, type: "boolean:choice", direction: "save", questionId: "q1", mappings: [
           { from: "true", to: "T" }
           { from: "false", to: "F" }
         ]}
@@ -409,7 +402,7 @@ describe "Entities", ->
 
     it "saves measurement:units links", ->
       compiled = @compiler.compileSaveLinkedAnswers([
-        { property: @propMeasurement, type: "measurement:units", direction: "save", question: "q1", mappings: [
+        { propertyId: @propMeasurement._id, type: "measurement:units", direction: "save", questionId: "q1", mappings: [
           { from: "degC", to: "C" }
           { from: "degF", to: "F" }
           ] }
@@ -420,7 +413,7 @@ describe "Entities", ->
 
     it "saves measurement:units null links", ->
       compiled = @compiler.compileSaveLinkedAnswers([
-        { property: @propMeasurement, type: "measurement:units", direction: "save", question: "q1", mappings: [
+        { propertyId: @propMeasurement._id, type: "measurement:units", direction: "save", questionId: "q1", mappings: [
           { from: "degC", to: "C" }
           { from: "degF", to: "F" }
           ] }
@@ -431,7 +424,7 @@ describe "Entities", ->
 
     it "saves text:specify links", ->
       compiled = @compiler.compileSaveLinkedAnswers([
-        { property: @propText, type: "text:specify", direction: "save", question: "q1", choice: "xx"}
+        { propertyId: @propText._id, type: "text:specify", direction: "save", questionId: "q1", choice: "xx"}
         ])
 
       @model.set("q1", { specify: { "xx": "abc" }})
@@ -439,8 +432,8 @@ describe "Entities", ->
 
     it "saves location accuracy links", ->
       compiled = @compiler.compileSaveLinkedAnswers([
-        { property: @propGeometry, type: "direct", direction: "save", question: "q1" }
-        { property: @propDecimal, type: "decimal:location_accuracy", direction: "save", question: "q1" }
+        { propertyId: @propGeometry._id, type: "geometry:location", direction: "save", questionId: "q1" }
+        { propertyId: @propDecimal._id, type: "decimal:location_accuracy", direction: "save", questionId: "q1" }
         ])
 
       # Save text

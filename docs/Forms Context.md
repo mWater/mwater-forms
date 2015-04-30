@@ -73,4 +73,8 @@ callback: called with _id of entity selected
 
 ## getEntity(type, _id, callback)
 
-callback: called with an entity e.g. { a: "abc", b: 123 } or callback null if entity not found
+callback: called with an entity e.g. { _id: some id, a: "abc", b: 123 } or callback null if entity not found
+
+## getProperty(id)
+
+Gets a property by _id. Note: synchronous call!

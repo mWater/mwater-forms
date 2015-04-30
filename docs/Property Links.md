@@ -6,11 +6,11 @@ These are connections between a form answer and a property of an entity. They al
 
 A property link has the following properties:
 
-property: property to link (includes code, type, etc.)
+propertyId: id of property to link
 
 direction: `load`/`save`/`both`
 
-question: id of question
+questionId: id of question
 
 type: 
 

@@ -93,7 +93,17 @@ module.exports = class EntityQuestion extends Question
 
     # Get properties and format    
     properties = []
-    for prop in @options.displayProperties
+    for propId in @options.displayProperties
+      # TODO REMOVE THIS JULY 2015
+      # Handle old style embedded properties
+      if _.isObject(propId)
+        propId = propId._id
+
+      # Get property
+      prop = @ctx.getProperty(propId)
+      if not prop
+        throw new Error("Property #{propId} not found")
+
       name = localize(prop.name)
       value = entity[prop.code]
       if not value?

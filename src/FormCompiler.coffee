@@ -189,7 +189,7 @@ module.exports = class FormCompiler
       if not propertyLinks
         return
 
-      formEntityLinker = new FormEntityLinker(entity, @model)
+      formEntityLinker = new FormEntityLinker(entity, @ctx.getProperty, @model)
       for propLink in propertyLinks
         formEntityLinker.loadToForm(propLink)
 
@@ -199,13 +199,13 @@ module.exports = class FormCompiler
       entity = {}
 
       if form
-        isQuestionVisible = (question) =>
-          question = formUtils.findItem(form, propLink.question)
+        isQuestionVisible = (questionId) =>
+          question = formUtils.findItem(form, questionId)
           return @compileConditions(question.conditions)()
       else
         isQuestionVisible = null
 
-      formEntityLinker = new FormEntityLinker(entity, @model, isQuestionVisible)
+      formEntityLinker = new FormEntityLinker(entity, @ctx.getProperty, @model, isQuestionVisible)
 
       for propLink in propertyLinks
         formEntityLinker.saveFromForm(propLink)
