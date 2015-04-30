@@ -22,7 +22,7 @@ exports.design = {
     # Schema 4 added isoneof and isntoneof conditions
     # Schema 10 adds entity questions and linking
     # Schema 11 deprecates form-level entity settings and adds hidden entity questions
-    _schema: { enum: [1, 2, 3, 4, 5, 10] }
+    _schema: { enum: [1, 2, 3, 4, 5, 10, 11] }
 
     # Name of the form
     name: { $ref: "#/definitions/localizedString" } 
@@ -120,24 +120,25 @@ exports.design = {
     }
 
     # Links between a property and either a question or a calculation
+    # TODO document
     propertyLink: {
       type: "object"
       properties: {
-        # { property: @propBoolean, type: "boolean:choices", direction: "load", question: "q1", choice: "xx"}
-        # { property: @propText, type: "direct", direction: "load", question: "q1" }
-        # { property: @propEnum, type: "enum:choice", direction: "load", question: "q1", mappings: [
-        #  { from: "x", to: "xx" }
-        #  { from: "y", to: "yy" }
-        # ] }
-        # Also "save" and "both" for direction
-        # TODO document
+        type: { type: "string" }
+        propertyId: { type: "string" }
+        direction: { enum: ["load", "save", "both"] }
+        questionId: { type: "string" }
+        mappings: { } 
+        alternate: { type: "string" }
+        choice: { type: "string" }
+        property: {} # Deprecated!
+        question: {} # Deprecated!
       }
     }
 
     # Property of an entity
-    property: {
-      type: "object"
-      # TODO document
+    propertyId: {
+      # TODO document. Used to be object, now string
     }
 
     # A section of a form has a name and a series of items (questions, etc.) that validate as a group
@@ -809,17 +810,17 @@ exports.design = {
         # Properties that should be displayed when an entity is chosen
         displayProperties: { 
           type: "array"
-          items: { $ref: "#/definitions/property" } 
+          items: { $ref: "#/definitions/propertyId" }
         }
 
         # Properties that should be used to select the entity
         selectProperties: {
           type: "array"
-          items: { $ref: "#/definitions/property" }           
+          items: { $ref: "#/definitions/propertyId" }
         }
 
-        # Geometry property (optional) that should be displayed on a map for choosing an entity
-        mapProperty: { $ref: "#/definitions/property" } 
+        # Geometry property (optional) that should be displayed on a map for choosing an entity. Deprecated
+        mapProperty: { $ref: "#/definitions/propertyId" } 
         
         # Text of select button
         selectText: { $ref: "#/definitions/localizedString" } 
@@ -842,7 +843,7 @@ exports.design = {
         # No validation available
         validations: { type: "array", maxItems: 0 } 
       })
-      required: ["entityType", "entityFilter", "displayProperties"]
+      required: ["entityType"]
       additionalProperties: false
     }
 
