@@ -244,6 +244,21 @@ exports.duplicateItem = (item, idMap) ->
       # For future AND and OR TODO
       return true
 
+  if dup.propertyLinks
+    dup.propertyLinks = _.filter dup.propertyLinks, (link) =>
+      if link.questionId
+        # Check if in id
+        if idMap and idMap[link.questionId]
+          # Map id
+          link.questionId = idMap[link.questionId]
+          return true
+        # Could not be mapped
+        return false
+
+      # For future AND and OR TODO
+      return true
+
+
   # Duplicate contents
   if dup.contents
     dup.contents = _.map dup.contents, (item) =>

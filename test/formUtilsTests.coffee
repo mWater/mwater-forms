@@ -3,6 +3,7 @@ assert = require("chai").assert
 formUtils = require '../src/formUtils'
 simpleForm = require './simpleForm'
 sectionedForm = require './sectionedForm'
+propertyLinksForm = require './propertyLinksForm'
 
 describe "FormUtils", ->
   describe "priorQuestions", ->
@@ -149,6 +150,20 @@ describe "FormUtils", ->
 
       it "duplicates locales", ->
         assert.equal @duplicate.locales[0].code, "en"
+
+    describe "duplicate form with propertyLinks", ->
+      before ->
+        @duplicate = formUtils.duplicateItem(propertyLinksForm)
+
+      it.only "updates the propertyLinks with the cloned question ids", ->
+        content = @duplicate.contents[0]
+        textQuestion = content.contents[0]
+        entityQuestion = content.contents[1]
+        textQuestionId = textQuestion._id
+        propertyLinkQuestionId = entityQuestion.propertyLinks[0].questionId
+        console.log textQuestionId
+        console.log propertyLinkQuestionId
+        assert.equal textQuestionId, propertyLinkQuestionId
 
   describe "update localizations", ->
     it "adds form-level localizations", ->
