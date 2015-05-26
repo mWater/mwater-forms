@@ -32,6 +32,9 @@ exports.FormView = require './FormView'
 exports.utils = require './utils'
 exports.LocationFinder = require './LocationFinder'
 
+exports.FormModel = require './FormModel'
+exports.ResponseModel = require './ResponseModel'
+
 exports.schemaVersion = 11 # Version of the schema that this package supports (cannot compile if higher)
 exports.minSchemaVersion = 1 # Minimum version of forms schema that can be compiled
 
