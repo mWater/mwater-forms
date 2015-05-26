@@ -15,7 +15,7 @@ questionId: id of question
 type: 
 
 * `direct` : direct map (deprecated: unless location which converts to geometry)
-* `geometry:location` : maps a geometry property to a location question
+* `geometry:location` : maps a geometry property to a location question. 
 * `enum:choice` : maps an enum property to a choice item. Needs `mappings` array of { from: <enum code>, to: <choice id> }
 * `boolean:choices` : maps a boolean property to a choices item. Needs `choice`
 * `boolean:choice` : maps a boolean property to a choice item. Needs `mappings` array of { from: "true"/"false", to: <choice id> }
