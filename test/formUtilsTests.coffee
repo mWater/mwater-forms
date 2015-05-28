@@ -3,7 +3,7 @@ assert = require("chai").assert
 formUtils = require '../src/formUtils'
 simpleForm = require './simpleForm'
 sectionedForm = require './sectionedForm'
-propertyLinksForm = require './propertyLinksForm'
+propertyLinksFormDesign = require './propertyLinksFormDesign'
 
 describe "FormUtils", ->
   describe "priorQuestions", ->
@@ -153,7 +153,7 @@ describe "FormUtils", ->
 
     describe "duplicate form with propertyLinks", ->
       before ->
-        @duplicate = formUtils.duplicateItem(propertyLinksForm)
+        @duplicate = formUtils.duplicateItem(propertyLinksFormDesign)
 
       it "updates the propertyLinks with the cloned question ids", ->
         content = @duplicate.contents[0]
