@@ -124,7 +124,7 @@ module.exports = class EntityQuestion extends Question
             if value.type == "Point"
               properties.push({ name: name, value: value.coordinates[1] + ", " + value.coordinates[0] })
           when "measurement"
-            propUnit = _.findWhere(prop.units, { code: value.unit })
+            propUnit = @ctx.getUnit(value.unit)
             if propUnit
               properties.push({ name: name, value: value.magnitude + " " + propUnit.symbol})
             else

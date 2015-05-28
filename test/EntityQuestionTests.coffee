@@ -16,11 +16,13 @@ describe "EntityQuestion", ->
     @propBoolean = { _id: "6", code: "boolean", type: "boolean", name: { en: "Boolean" } }
     @propDate = { _id: "7", code: "date", type: "date", name: { en: "Date" } }
     @propEntity = { _id: "8", code: "entity", type: "entity", name: { en: "Entity" } }
-    @propMeasurement = { _id: "9", code: "measurement", type: "measurement", name: { en: "Measurement" }, units:[
+    @propMeasurement = { _id: "9", code: "measurement", type: "measurement", name: { en: "Measurement" }, units:['degC', 'degF'] }
+    @props = [@propText, @propInteger, @propDecimal, @propEnum, @propGeometry, @propBoolean, @propDate, @propEntity, @propMeasurement]
+
+    @units = [
       { code: "degF", symbol: "oF", name: { "Fahrenheit" }}
       { code: "degC", symbol: "oC", name: { "Celsius" }}
-      ] }
-    @props = [@propText, @propInteger, @propDecimal, @propEnum, @propGeometry, @propBoolean, @propDate, @propEntity, @propMeasurement]
+    ]
 
   describe "EntityQuestion", ->
     describe "with multiple displayed properties", ->
@@ -47,6 +49,7 @@ describe "EntityQuestion", ->
             else 
               callback(null)
           getProperty: (id) => _.findWhere(@props, { _id: id })
+          getUnit: (code) => _.findWhere(@units, { code: code }) 
         }
 
         # Create an entity question which displays all properties
@@ -112,7 +115,8 @@ describe "EntityQuestion", ->
           selectEntity: (options) -> options.callback("1234")
           getEntity: (type, id, callback) -> return null
           getProperty: (id) => if id == "1" then @propA
-      }
+          getUnit: (code) => _.findWhere(@units, { code: code }) 
+        }
 
         # Create an entity question
         @model = new Backbone.Model()
@@ -182,6 +186,7 @@ describe "EntityQuestion", ->
             else 
               callback(null)
           getProperty: (id) => _.findWhere(@props, { _id: id })
+          getUnit: (code) => _.findWhere(@units, { code: code }) 
         }
 
         # Create an entity question which displays all properties
@@ -248,6 +253,7 @@ describe "EntityQuestion", ->
           selectEntity: (options) -> options.callback("1234")
           getEntity: (type, id, callback) -> return null
           getProperty: (id) => if id == "1" then @propA
+          getUnit: (code) => _.findWhere(@units, { code: code }) 
         }
 
         # Create an entity question

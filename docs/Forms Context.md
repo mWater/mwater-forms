@@ -78,3 +78,7 @@ callback: called with an entity e.g. { _id: some id, a: "abc", b: 123 } or callb
 ## getProperty(id)
 
 Gets a property by _id. Note: synchronous call!
+
+## getUnit(code)
+
+Gets a unit by code. Note: synchronous call!
