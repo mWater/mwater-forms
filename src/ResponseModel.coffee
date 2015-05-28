@@ -2,12 +2,19 @@ _ = require 'lodash'
 formUtils = require './formUtils'
 
 # Model of a response object that allows manipulation and asking of questions
+# Options are:
+# response: response object. Required
+# form: form object. Required
+# user: current username. Required
+# groups: group names of user
+# formCtx: form context. getProperty is required for submitting forms with entity questions
 module.exports = class ResponseModel
-  constructor: (response, form, user, groups) ->
-    @response = response
-    @form = form
-    @user = user
-    @groups = groups
+  constructor: (options) ->
+    @response = options.response
+    @form = options.form
+    @user = options.user
+    @groups = options.groups or []
+    @formCtx = options.formCtx or {}
 
   # Setup draft
   draft: ->

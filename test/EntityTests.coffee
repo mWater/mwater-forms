@@ -54,10 +54,6 @@ describe "Entities", ->
       @compiler = new FormCompiler(ctx: ctx, model: @model)
       @formView = @compiler.compileForm(@form)
 
-    it "loads property links at FormView level", ->
-      @formView.setEntity("type1", { _id: "1234", text: "sometext"})
-      assert.equal @model.get('q1').value, "sometext"
-
     it "creates entities", ->
       @model.set('q1', {value: "sometext"})
       entities = @formView.getEntityCreates()
@@ -113,11 +109,6 @@ describe "Entities", ->
       @model = new Backbone.Model()
       @compiler = new FormCompiler(ctx: ctx, model: @model)
       @formView = @compiler.compileForm(@form)
-
-    it "loads property links", ->
-      @formView.setEntity("type1", { _id: "1234", text: "sometext"})
-      assert.equal @model.get('q1').value, "sometext"
-      assert.equal @model.get('q2').value, "1234"
 
     it "includes entity update", ->
       # Set entity for entity question
