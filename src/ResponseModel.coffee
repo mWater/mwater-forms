@@ -1,7 +1,5 @@
 _ = require 'lodash'
-
-createUid = require('./formUtils').createUid
-createBase32TimeCode = require('./formUtils').createBase32TimeCode
+formUtils = require './formUtils'
 
 # Model of a response object that allows manipulation and asking of questions
 module.exports = class ResponseModel
@@ -14,7 +12,7 @@ module.exports = class ResponseModel
   # Setup draft
   draft: ->
     if not @response._id
-      @response._id = createUid()
+      @response._id = formUtils.createUid()
       @response.form = @form._id
       @response.user = @user
       @response.startedOn = new Date().toISOString()
@@ -22,7 +20,7 @@ module.exports = class ResponseModel
       @response.approvals = []
   
       # Create code. Not unique, but unique per user if logged in once.
-      @response.code = @user + "-" + createBase32TimeCode(new Date())
+      @response.code = @user + "-" + formUtils.createBase32TimeCode(new Date())
     
     @response.formRev = @form._rev
     @response.status = "draft"
@@ -37,6 +35,7 @@ module.exports = class ResponseModel
     @response.deployment = deployment._id
 
     @fixRoles()
+    @updateEntities()
 
   # Submit (either to final or pending as appropriate)
   submit: ->
@@ -54,6 +53,7 @@ module.exports = class ResponseModel
       @response.approvals = []
 
     @fixRoles()
+    @updateEntities()
 
   # Approve response
   approve: ->
@@ -81,6 +81,7 @@ module.exports = class ResponseModel
       @response.status = "final"
 
     @fixRoles()
+    @updateEntities()
 
   # Reject a response with a specific rejection message
   reject: (message) ->
@@ -96,6 +97,17 @@ module.exports = class ResponseModel
     @response.approvals = []
 
     @fixRoles()
+    @updateEntities()
+
+  # Updates entities field
+  updateEntities: ->
+    entities = []
+    for question in formUtils.priorQuestions(@form.design)    
+      if question._type == "EntityQuestion"
+        if @response.data and @response.data[question._id] and @response.data[question._id].value
+          entities.push({ questionId: question._id, entityType: question.entityType, entityId: @response.data[question._id].value })
+
+    @response.entities = entities
 
   # Fixes roles to reflect status and approved fields
   fixRoles: ->

@@ -6,6 +6,7 @@ ResponseModel = require '../src/ResponseModel'
 sampleForm = {
   _id: "formid"
   _rev: 3
+  design: { contents: [] }
   deployments: [
     {
       _id: "dep1"
@@ -477,3 +478,50 @@ describe "ResponseModel", ->
       @model = new ResponseModel(@response, @form, "user", ["dep2en1"])
       assert.throws ->
         @model.draft()
+
+  describe "entities field", ->
+    beforeEach ->
+      # Create form with entity question
+      @response = { }
+      @form = _.cloneDeep(sampleForm)
+      @form.design = {
+        contents: [
+          {
+            _id: "q1"
+            _type: "EntityQuestion"
+            text: { _base: "en", en: "English" }
+            entityType: "type1"
+          }
+        ]
+      }
+
+    it "sets entities", ->
+      @model = new ResponseModel(@response, @form, "user2", ["dep2en1"])
+      @model.draft()
+
+      # Set entity question value
+      @response.data = { q1: { value: "entityid123" } }
+      @model.submit()
+
+      # Check that entities was filled out
+      assert.deepEqual @response.entities, [
+        { questionId: "q1", entityType: "type1", entityId: "entityid123" }
+      ]
+
+    it "resets entities", ->
+      @model = new ResponseModel(@response, @form, "user2", ["dep2en1"])
+      @model.draft()
+
+      # Set entity question value
+      @response.data = { q1: { value: "entityid123" } }
+      @model.submit()
+
+      # Reset 
+      @model.draft()
+      @response.data = { q1: { value: "" } }
+      @model.submit()
+
+      # Check that entities was not filled out
+      assert.deepEqual @response.entities, []
+
+ 

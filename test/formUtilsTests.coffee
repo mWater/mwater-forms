@@ -155,7 +155,7 @@ describe "FormUtils", ->
       before ->
         @duplicate = formUtils.duplicateItem(propertyLinksForm)
 
-      it.only "updates the propertyLinks with the cloned question ids", ->
+      it "updates the propertyLinks with the cloned question ids", ->
         content = @duplicate.contents[0]
         textQuestion = content.contents[0]
         entityQuestion = content.contents[1]
