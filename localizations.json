@@ -293,7 +293,8 @@
     },
     {
       "_base": "en",
-      "en": "Change"
+      "en": "Change",
+      "_unused": true
     },
     {
       "_base": "en",
@@ -310,6 +311,10 @@
     {
       "_base": "en",
       "en": "Barcode scanning not supported on this platform"
+    },
+    {
+      "_base": "en",
+      "en": "Change Selection"
     }
   ]
 }
