@@ -2,6 +2,7 @@ _ = require 'lodash'
 formUtils = require './formUtils'
 FormCompiler = require './FormCompiler'
 uuid = require 'node-uuid'
+Backbone = require 'backbone'
 
 # Model of a response object that allows manipulation and asking of questions
 # Options are:
