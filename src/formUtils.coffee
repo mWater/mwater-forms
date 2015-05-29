@@ -150,6 +150,8 @@ exports.prepareQuestion = (q) ->
       knownFields.push "mapProperty"
       knownFields.push "selectText"
       knownFields.push "propertyLinks"
+      knownFields.push "hidden"
+      knownFields.push "createEntity"
 
   # Strip unknown fields
   for key in _.keys(q)
