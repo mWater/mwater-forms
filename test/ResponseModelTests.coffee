@@ -679,7 +679,7 @@ describe "ResponseModel", ->
         assert.equal create.entity._id, @response.data.q2.value, "Should set entity question value"
 
         # Sets default roles (admin to enumerator, view to all)
-        assert.deepEqual create._roles, [{ to: "user:user", role: "admin" }, { to: "all", role: "view" }]
+        assert.deepEqual create.entity._roles, [{ to: "user:user", role: "admin" }, { to: "all", role: "view" }]
 
       it "unsets create entity questions on un-finalize", ->
         @response.data = { q1: { value: "abc" } }
@@ -704,7 +704,7 @@ describe "ResponseModel", ->
 
           @response.data = { q1: { value: "abc" } }
           @finalizeForm()
-          @create = @response.pendingEntityCreates[0]
+          @create = @response.pendingEntityCreates[0].entity
 
         it "sets _roles", ->
           # Should have no duplicates

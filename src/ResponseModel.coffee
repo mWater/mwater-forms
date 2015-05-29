@@ -147,9 +147,10 @@ module.exports = class ResponseModel
     if @form.design.entitySettings and not @formCtx.formEntity?
       creates.push { 
         entityType: _.last(@form.design.entitySettings.entityType.split(":")), 
-        entity: _.extend(compiler.compileSaveLinkedAnswers(@form.design.entitySettings.propertyLinks)(), { _id: uuid.v4() })
-        # Default roles to protected
-        _roles: [{ to: "user:#{@user}", role: "admin" }, { to: "all", role: "view" }]
+        entity: _.extend(compiler.compileSaveLinkedAnswers(@form.design.entitySettings.propertyLinks)(), { 
+          _id: uuid.v4(),
+          _roles: [{ to: "user:#{@user}", role: "admin" }, { to: "all", role: "view" }] # Default roles to protected
+        })
       }
     # END DEPRECATED
 
@@ -165,6 +166,7 @@ module.exports = class ResponseModel
 
           # Add _id
           entity._id = uuid.v4()
+          entity._roles = [{ to: "user:#{@user}", role: "admin" }, { to: "all", role: "view" }]
 
           # Set question value
           @response.data[question._id] = { value: entity._id }
@@ -173,7 +175,6 @@ module.exports = class ResponseModel
             entityType: question.entityType,
             entity: entity
             questionId: question._id
-            _roles: [{ to: "user:#{@user}", role: "admin" }, { to: "all", role: "view" }]
           }
 
           # Get deployment to override _roles and _created_for
@@ -181,7 +182,7 @@ module.exports = class ResponseModel
           if deployment.entityCreationSettings
             settings = _.findWhere(deployment.entityCreationSettings, { questionId: question._id })
             if settings.createdFor
-              create._created_for = settings.createdFor
+              create.entity._created_for = settings.createdFor
 
             roles = []
 
@@ -195,7 +196,7 @@ module.exports = class ResponseModel
                 if not _.findWhere(roles, to: role.id)
                   roles.push({ to: role.id, role: role.role })
 
-            create._roles = roles
+            create.entity._roles = roles
 
           creates.push(create)
 
