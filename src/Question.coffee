@@ -121,7 +121,7 @@ module.exports = class Question extends Backbone.View
     @$el.slideUp()  if not @shouldBeVisible() and @visible
     @visible = @shouldBeVisible()
 
-  shouldBeVisible: ->
+  shouldBeVisible: =>
     return true  unless @options.conditional
     
     # Test equality to handle undefined more gracefully
