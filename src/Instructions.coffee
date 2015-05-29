@@ -1,7 +1,7 @@
 Backbone = require 'backbone'
 _ = require 'underscore'
 
-module.exports = Backbone.View.extend
+module.exports = class Instructions extends Backbone.View
   initialize: (options) ->
     # Save options
     @options = options || {}
@@ -21,16 +21,16 @@ module.exports = Backbone.View.extend
       @visible = false
 
   updateVisibility: (e) ->
-      # slideUp/slideDown
-      if @shouldBeVisible() and not @visible
-          @$el.slideDown()
-      if not @shouldBeVisible() and @visible
-          @$el.slideUp()
-      @visible = @shouldBeVisible()
+    # slideUp/slideDown
+    if @shouldBeVisible() and not @visible
+        @$el.slideDown()
+    if not @shouldBeVisible() and @visible
+        @$el.slideUp()
+    @visible = @shouldBeVisible()
 
   shouldBeVisible: =>
-      if not this.options.conditional
-          return true
-      # Test equality to handle undefined more gracefully
-      return @options.conditional(this.model) == true
+    if not this.options.conditional
+        return true
+    # Test equality to handle undefined more gracefully
+    return @options.conditional(this.model) == true
   
