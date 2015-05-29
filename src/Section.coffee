@@ -17,7 +17,7 @@ module.exports = class Section extends Backbone.View
     @render()
     return
 
-  shouldBeVisible: ->
+  shouldBeVisible: =>
     return true unless @options.conditional
     @options.conditional @model
 

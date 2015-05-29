@@ -28,7 +28,7 @@ module.exports = Backbone.View.extend
           @$el.slideUp()
       @visible = @shouldBeVisible()
 
-  shouldBeVisible: ->
+  shouldBeVisible: =>
       if not this.options.conditional
           return true
       # Test equality to handle undefined more gracefully
