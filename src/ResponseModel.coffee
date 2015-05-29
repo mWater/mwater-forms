@@ -1,5 +1,7 @@
 _ = require 'lodash'
 formUtils = require './formUtils'
+FormCompiler = require './FormCompiler'
+uuid = require 'node-uuid'
 
 # Model of a response object that allows manipulation and asking of questions
 # Options are:
@@ -18,6 +20,9 @@ module.exports = class ResponseModel
 
   # Setup draft
   draft: ->
+    # Unfinalize if final
+    if @response.status == "final" then @_unfinalize()
+
     if not @response._id
       @response._id = formUtils.createUid()
       @response.form = @form._id
@@ -42,7 +47,7 @@ module.exports = class ResponseModel
     @response.deployment = deployment._id
 
     @fixRoles()
-    @updateEntities()
+    @_updateEntities()
 
   # Submit (either to final or pending as appropriate)
   submit: ->
@@ -54,13 +59,13 @@ module.exports = class ResponseModel
 
     # If no approval stages
     if deployment.approvalStages.length == 0
-      @response.status = "final"    
+      @_finalize()
     else
       @response.status = "pending"
       @response.approvals = []
 
     @fixRoles()
-    @updateEntities()
+    @_updateEntities()
 
   # Approve response
   approve: ->
@@ -85,10 +90,10 @@ module.exports = class ResponseModel
 
     # Check if last stage
     if @response.approvals.length >= deployment.approvalStages.length
-      @response.status = "final"
+      @_finalize()
 
     @fixRoles()
-    @updateEntities()
+    @_updateEntities()
 
   # Reject a response with a specific rejection message
   reject: (message) ->
@@ -99,15 +104,120 @@ module.exports = class ResponseModel
     if not deployment
       throw new Error("No matching deployments")
 
+    # Unfinalize if final
+    if @response.status == "final" then @_unfinalize()
+
     @response.status = "rejected"
     @response.rejectionMessage = message
     @response.approvals = []
 
     @fixRoles()
-    @updateEntities()
+    @_updateEntities()
+
+  # Performs special operation when a response becomes final. Also sets status
+  _finalize: ->
+    # Set response status
+    @response.status = "final"
+
+    # Get any entity creates/updates. Updates first, since generating creates adds answers to entity questions
+    # that would make them look like updates
+    @response.pendingEntityUpdates = @_generateEntityUpdates()
+    @response.pendingEntityCreates = @_generateEntityCreates()
+
+  # Performs special operation when a response goes from final to other
+  _unfinalize: ->
+    # Unset any entity questions that were set because a create happened
+    if @response.pendingEntityCreates
+      for create in @response.pendingEntityCreates
+        @response.data[create.questionId].value = null
+
+    # Remove any pending entity operations
+    @response.pendingEntityUpdates = []
+    @response.pendingEntityCreates = []
+
+  _generateEntityCreates: ->
+    creates = []
+
+    # Create form compiler
+    model = new Backbone.Model(@response.data)
+    compiler = new FormCompiler(model: model, ctx: @formCtx)
+
+    # DEPRECATED!!!
+    # If no entity was set (then it would be update, not create) and is set to create entity
+    if @form.design.entitySettings and not @formCtx.formEntity?
+      creates.push { 
+        entityType: _.last(@form.design.entitySettings.entityType.split(":")), 
+        entity: _.extend(compiler.compileSaveLinkedAnswers(@form.design.entitySettings.propertyLinks)(), { _id: uuid.v4() })
+        # Default roles to protected
+        _roles: [{ to: "user:#{@user}", role: "admin" }, { to: "all", role: "view" }]
+      }
+    # END DEPRECATED
+
+    # TODO Null response handling. Include? Currently yes
+    # Go through all entity questions
+    for question in formUtils.priorQuestions(@form.design)
+      # If entity question with property links and createEntity is true
+      if question._type == "EntityQuestion" and question.propertyLinks and question.createEntity
+        # If value is *not* set
+        if not model.get(question._id) or not model.get(question._id).value
+          # Get data from that entity question
+          entity = compiler.compileSaveLinkedAnswers(question.propertyLinks)()
+
+          # Add _id
+          entity._id = uuid.v4()
+
+          # Set question value
+          @response.data[question._id] = { value: entity._id }
+
+          creates.push({
+            entityType: question.entityType,
+            entity: entity
+            questionId: question._id
+            _created_for: "???"
+            _roles: "???"
+          })
+
+    return creates
+
+  _generateEntityUpdates: ->
+    updates = []
+
+    # Create form compiler
+    model = new Backbone.Model(@response.data)
+    compiler = new FormCompiler(model: model, ctx: @formCtx)
+
+    # DEPRECATED!!!
+    # If entity was set 
+    if @form.design.entitySettings and @formCtx.formEntity?
+      updates.push({ 
+        questionId: null
+        entityId: @formCtx.formEntity._id, 
+        entityType: _.last(@form.design.entitySettings.entityType.split(":")), 
+        updates: compiler.compileSaveLinkedAnswers(@form.design.entitySettings.propertyLinks)()
+      })
+    # END DEPRECATED
+
+    # TODO Null response handling. Include? Currently yes
+    # Go through all entity questions
+    for question in formUtils.priorQuestions(@form.design)
+      # If entity question with property links
+      if question._type == "EntityQuestion" and question.propertyLinks
+        # If value is set
+        if model.get(question._id) and model.get(question._id).value 
+          # Get updates from that entity question
+          propertyUpdates = compiler.compileSaveLinkedAnswers(question.propertyLinks)()
+          if _.keys(propertyUpdates).length > 0
+            updates.push({
+              entityId: model.get(question._id).value,
+              entityType: question.entityType,
+              updates: propertyUpdates
+              questionId: question._id
+            })
+
+    return updates
 
   # Updates entities field
-  updateEntities: ->
+  _updateEntities: ->
     entities = []
     for question in formUtils.priorQuestions(@form.design)    
       if question._type == "EntityQuestion"
@@ -125,7 +235,7 @@ module.exports = class ResponseModel
 
     # If pending and more or equal approvals than approval stages, response is final
     if @response.status == "pending" and @response.approvals? and @response.approvals.length >= deployment.approvalStages.length
-      @response.status = "final"
+      @_finalize()
 
     # User is always admin, unless final, then viewer
     if @response.status == 'final'

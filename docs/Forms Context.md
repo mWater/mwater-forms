@@ -82,3 +82,7 @@ Gets a property by _id. Note: synchronous call!
 ## getUnit(code)
 
 Gets a unit by code. Note: synchronous call!
+
+## formEntity --- deprecated!!
+
+Entity set at form level. Entire entity object
