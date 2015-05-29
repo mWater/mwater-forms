@@ -525,8 +525,67 @@ describe "ResponseModel", ->
       assert.deepEqual @response.entities, []
 
   describe "(deprecated) form-level entity creation", ->
-    it "adds pendingEntityCreates on finalize"
-    it "adds pendingEntityUpdates on finalize"
+    beforeEach ->
+      # Create sample property
+      @propText = { _id: "1", code: "text", type: "text", name: { en: "Text" } }
+
+      formDesign = {
+        contents: [
+          {
+            _id: "q1"
+            _type: "TextQuestion"
+            text: { _base: "en", en: "English", es: "Spanish" }
+            format: "singleline"
+          }
+        ]
+        entitySettings: {
+          entityType: "type1"
+          propertyLinks: [
+            { propertyId: @propText._id, type: "direct", direction: "both", questionId: "q1" }
+          ]
+        }
+      }
+
+      @finalizeForm = =>
+        @model.submit()
+        @model = new ResponseModel(response: @response, form: @form, user: "user", groups: ["dep2en1"], formCtx: @ctx)
+        @model.approve()
+
+      # Create a form with the above designs
+      @form = _.cloneDeep(sampleForm)
+      @form.design = formDesign
+      
+      @ctx = {
+        getProperty: (id) => if id == "1" then return @propText
+      }
+
+      @response = {}
+      @model = new ResponseModel(response: @response, form: @form, user: "user", groups: ["dep2en1"], formCtx: @ctx)
+      @model.draft()
+
+    it "adds pendingEntityCreates on finalize", ->
+      # Set entity and text
+      @response.data = { q1: { value: "abc" } }
+      @finalizeForm()
+
+      assert.equal @response.pendingEntityCreates.length, 1
+      assert.equal @response.pendingEntityUpdates.length, 0, "Should have no updates"
+      create = @response.pendingEntityCreates[0]
+      assert not create.questionId
+      assert.equal create.entityType, "type1"
+      assert.equal create.entity.text, "abc"
+      assert create.entity._id.length > 10 # uuid
+
+    it "adds pendingEntityUpdates on finalize", ->
+      # Set entity and text
+      @response.data = { q1: { value: "abc" } }
+      @ctx.formEntity = { _id: "1234", text: "abc" }
+      @finalizeForm()
+
+      assert.deepEqual @response.pendingEntityUpdates, [
+        { questionId: null, entityType: "type1", entityId: "1234", updates: { text: "abc" } }
+      ]
+      assert.equal @response.pendingEntityCreates.length, 0
 
   describe "pendingEntity operations", ->
     beforeEach ->
@@ -620,177 +679,13 @@ describe "ResponseModel", ->
       @model.draft()
       assert.equal @response.pendingEntityUpdates.length, 0
 
-    it "does not include empty entity updates"
-    it "includes entity creates from blank EntityQuestions with createEntity true"
-    it "does not include entity creates from blank EntityQuestions with createEntity false"
+    it "does not include empty entity updates", ->
+      @response.data = { q1: { value: "abc" }, q2: { value: "1234" } }
+      # Set property link to load only, so no updates
+      @form.design.contents[1].propertyLinks[0].direction = "load"
 
-#   it "includes entity creates from blank EntityQuestions with createEntity true", ->
-  #     @form.contents[1].createEntity = true
+      @finalizeForm()
 
-  #     # Recompile form
-  #     @formView = @compiler.compileForm(@form)
+      assert.equal @response.pendingEntityCreates.length, 0
+      assert.equal @response.pendingEntityUpdates.length, 0
 
-  #     # Set text value for q1
-  #     @model.set('q1', { value: "answer"})
-
-  #     # Zero updates
-  #     assert.deepEqual @formView.getEntityUpdates(), []
-
-  #     # One create
-  #     entities = @formView.getEntityCreates()
-  #     assert.isTrue _.isEqual(entities, [
-  #       { type: "type1", entity: { text: "answer" }, questionId: "q2" }
-  #     ]), JSON.stringify(entities)      
-
-  #   it "does not include entity creates from blank EntityQuestions with createEntity false", ->
-  
-  # describe "(deprecated) form-level entity creation", ->
-  #   beforeEach ->
-  #     @form = {
-  #       contents: [
-  #         {
-  #           _id: "q1"
-  #           _type: "TextQuestion"
-  #           text: { _base: "en", en: "English", es: "Spanish" }
-  #           format: "singleline"
-  #         }
-  #       ]
-  #       entitySettings: {
-  #         entityType: "type1"
-  #         propertyLinks: [
-  #           { propertyId: @propText._id, type: "direct", direction: "both", questionId: "q1" }
-  #         ]
-  #       }
-  #     }
-
-  #     ctx = {
-  #       getProperty: (id) => _.findWhere(@props, { _id: id })
-  #     }
-  #     @model = new Backbone.Model()
-  #     @compiler = new FormCompiler(ctx: ctx, model: @model)
-  #     @formView = @compiler.compileForm(@form)
-
-  #   it "creates entities", ->
-  #     @model.set('q1', {value: "sometext"})
-  #     entities = @formView.getEntityCreates()
-  #     assert.isTrue _.isEqual(entities, [
-  #       { type: "type1", entity: { text: "sometext" } }
-  #     ]), JSON.stringify(entities)
-
-  #     entities = @formView.getEntityUpdates()
-  #     assert.deepEqual entities, []
-
-  #   it "updates entity if was set", ->
-  #     @formView.setEntity("type1", { _id: "1234", text: "sometext1"})
-
-  #     @model.set('q1', {value: "sometext2"})
-  #     entities = @formView.getEntityUpdates()
-  #     assert.isTrue _.isEqual(entities, [
-  #       { _id: "1234", type: "type1", updates: { text: "sometext2" } }
-  #       ])
-
-  #     entities = @formView.getEntityCreates()
-  #     assert.deepEqual entities, []
-  
-  # describe "EntityQuestions", ->
-  #   beforeEach ->
-  #     @form = {
-  #       contents: [
-  #         {
-  #           _id: "q1"
-  #           _type: "TextQuestion"
-  #           text: { _base: "en", en: "English", es: "Spanish" }
-  #           format: "singleline"
-  #         }
-  #         {
-  #           _id: "q2"
-  #           _type: "EntityQuestion"
-  #           text: { _base: "en", en: "English" }
-  #           entityType: "type1"
-  #           entityFilter: {}
-  #           displayProperties: [@propText, @propInteger, @propDecimal, @propEnum]
-  #           selectProperties: [@propText]
-  #           mapProperty: null
-  #           selectText: { en: "Select" }
-  #           propertyLinks: [
-  #             { propertyId: @propText._id, direction: "both", questionId: "q1", type: "direct" }
-  #           ]
-  #         }          
-  #       ]
-  #     }
-
-  #     ctx = {
-  #       getProperty: (id) => _.findWhere(@props, { _id: id })
-  #     }
-  #     @model = new Backbone.Model()
-  #     @compiler = new FormCompiler(ctx: ctx, model: @model)
-  #     @formView = @compiler.compileForm(@form)
-
-  #   it "includes entity update", ->
-  #     # Set entity for entity question
-  #     @model.set("q2", { value: "1234" })
-
-  #     # Set text value for q1
-  #     @model.set('q1', { value: "answer" })
-
-  #     # Get updates
-  #     entities = @formView.getEntityUpdates()
-  #     assert.deepEqual entities, [
-  #       { _id: "1234", type: "type1", updates: { text: "answer" }, questionId: "q2" }
-  #     ], JSON.stringify(entities)
-
-  #   it "does not include empty entity updates", ->
-  #     # Set property link to load only, so no updates
-  #     @form.contents[1].propertyLinks[0].direction = "load"
-
-  #     # Recompile form
-  #     @formView = @compiler.compileForm(@form)
-
-  #     # Set entity for entity question
-  #     @model.set("q2", { value: "1234" })
-
-  #     # Set text value for q1
-  #     @model.set('q1', { value: "answer"})
-
-  #     # Get updates
-  #     entities = @formView.getEntityUpdates()
-  #     assert.deepEqual entities, []
-
-  #   it "includes entity creates from blank EntityQuestions with createEntity true", ->
-  #     @form.contents[1].createEntity = true
-
-  #     # Recompile form
-  #     @formView = @compiler.compileForm(@form)
-
-  #     # Set text value for q1
-  #     @model.set('q1', { value: "answer"})
-
-  #     # Zero updates
-  #     assert.deepEqual @formView.getEntityUpdates(), []
-
-  #     # One create
-  #     entities = @formView.getEntityCreates()
-  #     assert.isTrue _.isEqual(entities, [
-  #       { type: "type1", entity: { text: "answer" }, questionId: "q2" }
-  #     ]), JSON.stringify(entities)      
-
-  #   it "does not include entity creates from blank EntityQuestions with createEntity false", ->
-  #     # Set text value for q1
-  #     @model.set('q1', { value: "answer"})
-
-  #     # Zero updates
-  #     assert.deepEqual @formView.getEntityUpdates(), []
-
-  #     # Zero creates
-  #     assert.deepEqual @formView.getEntityCreates(), []
-
-  #   it "marks created entities", ->
-  #     @form.contents[1].createEntity = true
-
-  #     # Recompile form
-  #     @formView = @compiler.compileForm(@form)
-
-  #     # Mark created
-  #     @formView.markEntityCreated("q2", { _id: "1234", text: "abc" })
-
-  #     assert.deepEqual @model.get('q2').value, "1234"
