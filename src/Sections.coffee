@@ -1,6 +1,7 @@
 Backbone = require 'backbone'
 _ = require 'underscore'
-require './jquery-scrollintoview'
+if process.browser
+  require './jquery-scrollintoview'
 ezlocalize = require 'ez-localize'
 
 module.exports = class Sections extends Backbone.View
