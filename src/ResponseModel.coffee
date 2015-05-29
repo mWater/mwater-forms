@@ -169,13 +169,35 @@ module.exports = class ResponseModel
           # Set question value
           @response.data[question._id] = { value: entity._id }
 
-          creates.push({
+          create = {
             entityType: question.entityType,
             entity: entity
             questionId: question._id
-            _created_for: "???"
-            _roles: "???"
-          })
+            _roles: [{ to: "user:#{@user}", role: "admin" }, { to: "all", role: "view" }]
+          }
+
+          # Get deployment to override _roles and _created_for
+          deployment = _.findWhere(@form.deployments, { _id: @response.deployment })
+          if deployment.entityCreationSettings
+            settings = _.findWhere(deployment.entityCreationSettings, { questionId: question._id })
+            if settings.createdFor
+              create._created_for = settings.createdFor
+
+            roles = []
+
+            # Set enumerator role
+            if settings.enumeratorRole
+              roles.push({ to: "user:#{@response.user}", role: settings.enumeratorRole })
+
+            # Add other roles
+            if settings.otherRoles
+              for role in settings.otherRoles
+                if not _.findWhere(roles, to: role.id)
+                  roles.push({ to: role.id, role: role.role })
+
+            create._roles = roles
+
+          creates.push(create)
 
     return creates
 

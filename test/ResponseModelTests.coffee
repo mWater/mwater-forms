@@ -643,6 +643,23 @@ describe "ResponseModel", ->
         { questionId: "q2", entityType: "type1", entityId: "1234", updates: { text: "abc" } }
       ]
 
+    it "removes any pending operations on un-finalize", ->
+      @response.data = { q1: { value: "abc" }, q2: { value: "1234" } }
+      @finalizeForm()
+      @model.draft()
+      assert.equal @response.pendingEntityUpdates.length, 0
+
+    it "does not include empty entity updates", ->
+      @response.data = { q1: { value: "abc" }, q2: { value: "1234" } }
+      # Set property link to load only, so no updates
+      @form.design.contents[1].propertyLinks[0].direction = "load"
+
+      @finalizeForm()
+
+      assert.equal @response.pendingEntityCreates.length, 0
+      assert.equal @response.pendingEntityUpdates.length, 0
+
+
     describe "with entity creating question", ->
       beforeEach ->
         @form.design.contents[1].createEntity = true
@@ -661,6 +678,9 @@ describe "ResponseModel", ->
         assert create.entity._id.length > 10 # uuid
         assert.equal create.entity._id, @response.data.q2.value, "Should set entity question value"
 
+        # Sets default roles (admin to enumerator, view to all)
+        assert.deepEqual create._roles, [{ to: "user:user", role: "admin" }, { to: "all", role: "view" }]
+
       it "unsets create entity questions on un-finalize", ->
         @response.data = { q1: { value: "abc" } }
         @finalizeForm()
@@ -669,23 +689,30 @@ describe "ResponseModel", ->
         assert not @response.data.q2.value
 
       describe "with roles set in deployment", ->
-        it "sets enumerator role"
-        it "sets other roles"
-        it "prevents duplicates"
+        beforeEach ->
+          @form.deployments[1].entityCreationSettings = [
+            {
+              questionId: "q2"
+              enumeratorRole: "edit"
+              createdFor: "somegroup"
+              otherRoles: [
+                { id: "user:bob", role: "admin" }
+                { id: "user:user", role: "view" }
+              ]
+            }
+          ]
 
-    it "removes any pending operations on un-finalize", ->
-      @response.data = { q1: { value: "abc" }, q2: { value: "1234" } }
-      @finalizeForm()
-      @model.draft()
-      assert.equal @response.pendingEntityUpdates.length, 0
+          @response.data = { q1: { value: "abc" } }
+          @finalizeForm()
+          @create = @response.pendingEntityCreates[0]
 
-    it "does not include empty entity updates", ->
-      @response.data = { q1: { value: "abc" }, q2: { value: "1234" } }
-      # Set property link to load only, so no updates
-      @form.design.contents[1].propertyLinks[0].direction = "load"
+        it "sets _roles", ->
+          # Should have no duplicates
+          assert.deepEqual @create._roles, [
+            { to: "user:user", role: "edit" }
+            { to: "user:bob", role: "admin" }
+          ]
 
-      @finalizeForm()
-
-      assert.equal @response.pendingEntityCreates.length, 0
-      assert.equal @response.pendingEntityUpdates.length, 0
+        it "sets _created_for", ->
+          assert.equal @create._created_for, "somegroup"
 
