@@ -40,7 +40,7 @@ module.exports = class EntityQuestion extends Question
             @options.loadLinkedAnswers(entity)
     }
 
-  shouldBeVisible: ->
+  shouldBeVisible: =>
     if @options.hidden
       return false
 
