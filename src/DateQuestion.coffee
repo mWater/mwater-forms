@@ -3,7 +3,10 @@ $ = require 'jquery'
 Question = require './Question'
 
 moment = require 'moment'
-require('bootstrap-datetimepicker/src/js/bootstrap-datetimepicker')
+
+# This only works in browser
+if process.browser
+  require('bootstrap-datetimepicker/src/js/bootstrap-datetimepicker')
 
 # Date question. Options include:
 # format: Any moment.js format
