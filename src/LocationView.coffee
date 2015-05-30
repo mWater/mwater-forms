@@ -206,8 +206,8 @@ module.exports = class LocationView extends Backbone.View
     latitude = parseFloat(@$("#latitude").val())
     longitude = parseFloat(@$("#longitude").val())
 
-    if isNaN(latitude) or latitude < -90 or latitude > 90
-      alert("Invalid latitude. Must be a value between -90 and 90.")
+    if isNaN(latitude) or latitude < -85 or latitude > 85
+      alert("Invalid latitude. Must be a value between -85 and 85.")
       return
     if isNaN(longitude) or longitude < -180 or longitude > 180
       alert("Invalid longitude. Must be a value between -180 and 180.")
