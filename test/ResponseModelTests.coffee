@@ -98,7 +98,6 @@ describe "ResponseModel", ->
       assert @response.submittedOn
 
     it "leaves self as viewer", ->
-      console.log(JSON.stringify(@response))
       assert.equal _.where(@response.roles, { id: "user:user2", role: "view"}).length, 1
 
     it "includes admins of deployment as admins", ->
@@ -109,6 +108,19 @@ describe "ResponseModel", ->
 
     it "includes viewers of deployment as viewers", ->
       assert.equal _.where(@response.roles, { id: "group:dep2view1"}).length, 1
+
+  describe "submit when no approval stages with enumeratorAdminFinal", ->
+    beforeEach ->
+      @response = { }
+      @form = _.cloneDeep(sampleForm)
+      @form.deployments[1].approvalStages = []
+      @form.deployments[1].enumeratorAdminFinal = true
+      @model = new ResponseModel(response: @response, form: @form, user: "user2", groups: ["dep2en1"])
+      @model.draft()
+      @model.submit()
+
+    it "leaves self as admin", ->
+      assert.equal _.where(@response.roles, { id: "user:user2", role: "admin"}).length, 1
 
   describe "submit when approval stages", ->
     beforeEach ->

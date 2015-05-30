@@ -1,5 +1,6 @@
 assert = require('chai').assert
 FormCompiler = require '../src/FormCompiler'
+Backbone = require 'backbone'
 
 # Tests related to the entities connections with forms
 describe "Entities", ->

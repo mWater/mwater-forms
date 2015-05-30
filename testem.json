@@ -1,9 +1,7 @@
 {
     "framework": "mocha",
     "serve_files": [ 
-        "bower_components/jquery/dist/jquery.js",
         "bower_components/underscore/underscore.js",
-        "bower_components/backbone/backbone.js",
         "test/browserified.js"
      ],
     "src_files": [

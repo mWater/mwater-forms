@@ -5,6 +5,10 @@ assert = require('chai').assert
 FormCompiler = require '../src/FormCompiler'
 commonQuestionTestList = require './commonQuestionTestList'
 
+######################
+# Current fails due to two copies of jQuery floating around. No idea
+# how to fix it.
+######################
 describe "DateQuestion", ->
   beforeEach ->
     @model = new Backbone.Model()

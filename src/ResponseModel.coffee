@@ -261,8 +261,8 @@ module.exports = class ResponseModel
     if @response.status == "pending" and @response.approvals? and @response.approvals.length >= deployment.approvalStages.length
       @_finalize()
 
-    # User is always admin, unless final, then viewer
-    if @response.status == 'final'
+    # User is always admin, unless final and not enumeratorAdminFinal flag, then viewer
+    if @response.status == 'final' and not deployment.enumeratorAdminFinal
       admins = []
       viewers = ["user:" + @response.user]
     else

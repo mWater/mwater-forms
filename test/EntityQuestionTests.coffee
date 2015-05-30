@@ -1,4 +1,4 @@
-
+Backbone = require 'backbone'
 assert = require('chai').assert
 FormCompiler = require '../src/FormCompiler'
 
