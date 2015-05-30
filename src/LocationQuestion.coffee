@@ -24,6 +24,17 @@ module.exports = class LocationQuestion extends Question
     @locationView.on 'map', (loc) =>
       if @ctx.displayMap?
         @ctx.displayMap(loc, (newLoc) =>
+          # Wrap to -180, 180
+          while newLoc.longitude < -180
+            newLoc.longitude += 360
+          while newLoc.longitude > 180
+            newLoc.longitude -= 360
+
+          # Clip to -85, 85 (for Webmercator)
+          if newLoc.latitude > 85
+            newLoc.latitude = 85
+          if newLoc.latitude < -85
+            newLoc.latitude = -85
           @setAnswerValue(newLoc)
         )
 
