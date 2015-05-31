@@ -64,4 +64,4 @@ module.exports = class FormModel
       # Add new ones
       for qid in questionIds
         if not _.any(deployment.entityCreationSettings, (ecs) => ecs.questionId == qid)
-          deployment.entityCreationSettings.push({ questionId: qid, enumeratorRole: "admin", otherRoles: []})
+          deployment.entityCreationSettings.push({ questionId: qid, enumeratorRole: "admin", otherRoles: [{ id: "all", role: "view" }]})

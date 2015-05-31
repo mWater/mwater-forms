@@ -123,7 +123,7 @@ describe "FormModel", ->
         { enumerators: [] }
         { 
           entityCreationSettings: [
-            { questionId: "q1", enumeratorRole: "limited" }
+            { questionId: "q1", enumeratorRole: "limited", otherRoles: [] }
           ]
         }
       ]
@@ -137,10 +137,12 @@ describe "FormModel", ->
     assert.equal form.deployments[0].entityCreationSettings[0].questionId, "q1"
     assert.equal form.deployments[0].entityCreationSettings[0].enumeratorRole, "admin"
     assert not form.deployments[0].entityCreationSettings[0].createdFor
-    assert.equal form.deployments[0].entityCreationSettings[0].otherRoles.length, 0
+    # Default to showing all
+    assert.deepEqual form.deployments[0].entityCreationSettings[0].otherRoles, [{ id: "all", role: "view" }]
 
     # Should not overwrite second one
     assert.equal form.deployments[1].entityCreationSettings.length, 1
     assert.equal form.deployments[1].entityCreationSettings[0].questionId, "q1"
     assert.equal form.deployments[1].entityCreationSettings[0].enumeratorRole, "limited"
+    assert.equal form.deployments[1].entityCreationSettings[0].otherRoles.length, 0
 
