@@ -1,5 +1,4 @@
 assert = require("chai").assert
-
 FormModel = require '../src/FormModel'
 
 describe "FormModel", ->
@@ -93,7 +92,7 @@ describe "FormModel", ->
     assert !model.canChangeRole({ id: "a", role: "admin" })
     assert model.canChangeRole({ id: "b", role: "view" })
 
-  it  "checks admin for user", ->
+  it "checks admin for user", ->
     form = {
       roles: [
         { id: "user:a", role: "admin" }
@@ -107,3 +106,41 @@ describe "FormModel", ->
     assert model.amAdmin("a", [])
     assert model.amAdmin("x", "b")
     assert not model.amAdmin("x", "c")
+
+  it "fixes entityCreationSettings in deployments", ->
+    form = {
+      design: {
+        contents: [
+          { 
+            _id: "q1"
+            _type: "EntityQuestion"
+            createEntity: true
+          }
+        ]
+      }
+
+      deployments: [
+        { enumerators: [] }
+        { 
+          entityCreationSettings: [
+            { questionId: "q1", enumeratorRole: "limited" }
+          ]
+        }
+      ]
+    }
+
+    model = new FormModel(form)
+    model.correctDeployments()
+
+    # Should have entityCreationSettings on first one
+    assert.equal form.deployments[0].entityCreationSettings.length, 1
+    assert.equal form.deployments[0].entityCreationSettings[0].questionId, "q1"
+    assert.equal form.deployments[0].entityCreationSettings[0].enumeratorRole, "admin"
+    assert not form.deployments[0].entityCreationSettings[0].createdFor
+    assert.equal form.deployments[0].entityCreationSettings[0].otherRoles.length, 0
+
+    # Should not overwrite second one
+    assert.equal form.deployments[1].entityCreationSettings.length, 1
+    assert.equal form.deployments[1].entityCreationSettings[0].questionId, "q1"
+    assert.equal form.deployments[1].entityCreationSettings[0].enumeratorRole, "limited"
+

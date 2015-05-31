@@ -1,4 +1,5 @@
 _ = require 'lodash'
+formUtils = require './formUtils'
 
 # Model of a form object that allows manipulation and asking of questions
 module.exports = class FormModel
@@ -44,3 +45,23 @@ module.exports = class FormModel
 
     return _.intersection(admins, subjects).length > 0
 
+  # Correct deployments to include entityCreationSettings
+  correctDeployments: ->
+    # Get list of entity creating questions
+    questionIds = []
+    for q in formUtils.priorQuestions(@form.design)
+      if q._type == "EntityQuestion" and q.createEntity
+        questionIds.push(q._id)
+
+    for deployment in (@form.deployments or [])
+      if not deployment.entityCreationSettings
+        deployment.entityCreationSettings = []
+
+      # Remove non-existant ones
+      deployment.entityCreationSettings = _.filter(deployment.entityCreationSettings, (ecs) =>
+        ecs.questionId in questionIds)
+
+      # Add new ones
+      for qid in questionIds
+        if not _.any(deployment.entityCreationSettings, (ecs) => ecs.questionId == qid)
+          deployment.entityCreationSettings.push({ questionId: qid, enumeratorRole: "admin", otherRoles: []})
