@@ -181,23 +181,38 @@ module.exports = class ResponseModel
           # Get deployment to override _roles and _created_for
           deployment = _.findWhere(@form.deployments, { _id: @response.deployment })
           if deployment.entityCreationSettings
-            settings = _.findWhere(deployment.entityCreationSettings, { questionId: question._id })
-            if settings.createdFor
-              create.entity._created_for = settings.createdFor
+            # Find first matching setting (right question and conditions true)
+            settings = _.find(deployment.entityCreationSettings, (ecs) =>
+              # Question must match
+              if ecs.questionId != question._id 
+                return false
 
-            roles = []
+              # Conditions must be true or non-existant
+              if ecs.conditions
+                if not compiler.compileConditions(ecs.conditions)()
+                  return false
 
-            # Set enumerator role
-            if settings.enumeratorRole
-              roles.push({ to: "user:#{@response.user}", role: settings.enumeratorRole })
+              return true
+            )
 
-            # Add other roles
-            if settings.otherRoles
-              for role in settings.otherRoles
-                if not _.findWhere(roles, to: role.id)
-                  roles.push({ to: role.id, role: role.role })
+            # Apply settings if match found
+            if settings
+              if settings.createdFor
+                create.entity._created_for = settings.createdFor
 
-            create.entity._roles = roles
+              roles = []
+
+              # Set enumerator role
+              if settings.enumeratorRole
+                roles.push({ to: "user:#{@response.user}", role: settings.enumeratorRole })
+
+              # Add other roles
+              if settings.otherRoles
+                for role in settings.otherRoles
+                  if not _.findWhere(roles, to: role.to)
+                    roles.push({ to: role.to, role: role.role })
+
+              create.entity._roles = roles
 
           creates.push(create)
 

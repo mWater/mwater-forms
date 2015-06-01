@@ -671,7 +671,6 @@ describe "ResponseModel", ->
       assert.equal @response.pendingEntityCreates.length, 0
       assert.equal @response.pendingEntityUpdates.length, 0
 
-
     describe "with entity creating question", ->
       beforeEach ->
         @form.design.contents[1].createEntity = true
@@ -708,8 +707,8 @@ describe "ResponseModel", ->
               enumeratorRole: "edit"
               createdFor: "somegroup"
               otherRoles: [
-                { id: "user:bob", role: "admin" }
-                { id: "user:user", role: "view" }
+                { to: "user:bob", role: "admin" }
+                { to: "user:user", role: "view" }
               ]
             }
           ]
@@ -728,3 +727,36 @@ describe "ResponseModel", ->
         it "sets _created_for", ->
           assert.equal @create._created_for, "somegroup"
 
+
+      describe "with conditional roles set in deployment", ->
+        beforeEach ->
+          @form.deployments[1].entityCreationSettings = [
+            {
+              questionId: "q2"
+              enumeratorRole: "edit"
+              conditions: [
+                { lhs: { question: "q1" }, op: "contains", rhs: { literal: "abc" }} # Conditional on abc in question 1
+              ]
+              createdFor: "somegroup"
+              otherRoles: [
+                { to: "user:bob", role: "admin" }
+                { to: "user:user", role: "view" }
+              ]
+            }
+          ]
+
+        it "sets if conditions match", ->
+          @response.data = { q1: { value: "abc" } }
+          @finalizeForm()
+          create = @response.pendingEntityCreates[0].entity
+
+          assert.deepEqual create._roles, [
+            { to: "user:user", role: "edit" }
+            { to: "user:bob", role: "admin" }
+          ]
+
+        it "defaults if doesn't match", ->
+          @response.data = { q1: { value: "xyz" } }
+          @finalizeForm()
+          create = @response.pendingEntityCreates[0].entity
+          assert.deepEqual create._roles, [{ to: "user:user", role: "admin" }, { to: "all", role: "view" }]

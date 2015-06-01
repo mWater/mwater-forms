@@ -44,27 +44,3 @@ module.exports = class FormModel
     admins = _.pluck(_.where(@form.roles, { role: "admin"}), "id")
 
     return _.intersection(admins, subjects).length > 0
-
-  # Correct deployments to include entityCreationSettings
-  correctDeployments: ->
-    for deployment in (@form.deployments or [])
-      @correctDeployment(deployment)
-
-  correctDeployment: (deployment) ->
-    # Get list of entity creating questions
-    questionIds = []
-    for q in formUtils.priorQuestions(@form.design)
-      if q._type == "EntityQuestion" and q.createEntity
-        questionIds.push(q._id)
-
-    if not deployment.entityCreationSettings
-      deployment.entityCreationSettings = []
-
-    # Remove non-existant ones
-    deployment.entityCreationSettings = _.filter(deployment.entityCreationSettings, (ecs) =>
-      ecs.questionId in questionIds)
-
-    # Add new ones
-    for qid in questionIds
-      if not _.any(deployment.entityCreationSettings, (ecs) => ecs.questionId == qid)
-        deployment.entityCreationSettings.push({ questionId: qid, enumeratorRole: "admin", otherRoles: [{ id: "all", role: "view" }]})
