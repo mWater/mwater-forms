@@ -5,7 +5,7 @@ Backbone = require 'backbone'
 # model (backbone model) 
 # contents (array of views)
 # Optional:
-# setEntity: sets the active entity. (entity type, entity id, optional question id. picks first if not specified)
+# setEntity: sets the active entity. (entity type, entity object, optional question id. picks first if not specified)
 module.exports = class FormView extends Backbone.View
   initialize: (options) ->
     # Save options

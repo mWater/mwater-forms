@@ -413,6 +413,7 @@ module.exports = class FormCompiler
         formViewEntity = entity
         @compileLoadLinkedAnswers(form.entitySettings.propertyLinks)(entity)
         return
+      # END DEPRECATED
 
       # Find entity question
       if questionId
