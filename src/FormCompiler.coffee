@@ -170,7 +170,7 @@ module.exports = class FormCompiler
           return getValue() == true
       when "false"
         return () =>
-          return getValue() == false
+          return getValue() != true
       else
         throw new Error("Unknown condition op " + cond.op)
 
