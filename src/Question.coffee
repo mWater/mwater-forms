@@ -51,11 +51,8 @@ module.exports = class Question extends Backbone.View
     # Save context
     @ctx = @options.ctx or {}
 
-    # If sticky, set initial value
-    if @options.sticky and @ctx.stickyStorage and not @model.get(@id)?
-      value = @ctx.stickyStorage.get(@id)
-      if value?
-        @setAnswerField("value", value)
+    # Set true once shown at least once
+    @shownOnce = false
 
     @render()
 
@@ -81,6 +78,14 @@ module.exports = class Question extends Backbone.View
         # Restore cached answer
         @setAnswerValue(@cachedAnswer)
         @setAnswerField('alternate', null)
+
+  # Called when shown first time
+  shownFirstTime: ->
+    # If sticky, set initial value
+    if @options.sticky and @ctx.stickyStorage and not @model.get(@id)?
+      value = @ctx.stickyStorage.get(@id)
+      if value?
+        @setAnswerField("value", value)
 
   # Default checks falsy values
   isAnswered: ->
@@ -120,6 +125,10 @@ module.exports = class Question extends Backbone.View
     @$el.slideDown()  if @shouldBeVisible() and not @visible
     @$el.slideUp()  if not @shouldBeVisible() and @visible
     @visible = @shouldBeVisible()
+
+    if @visible and not @shownOnce
+      @shownOnce = true
+      @shownFirstTime()
 
   shouldBeVisible: =>
     return true  unless @options.conditional
@@ -169,6 +178,10 @@ module.exports = class Question extends Backbone.View
     unless @shouldBeVisible()
       @$el.hide()
       @visible = false
+
+    if @visible and not @shownOnce
+      @shownOnce = true
+      @shownFirstTime()
 
     # Render answer
     @renderAnswer @$(".answer")
