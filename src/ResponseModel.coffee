@@ -381,8 +381,8 @@ module.exports = class ResponseModel
   # database. See minimongo for a spec.
   # Calls callback with results with:
   # { 
-  #  creates: [array of entities]
-  #  updates: [array of entities]
+  #  creates: [array of { entity, entityType }]
+  #  updates: [array of { entity, entityType }]
   #  error: error if present or null
   # }
   processEntityOperations: (db, cb) ->
@@ -404,7 +404,7 @@ module.exports = class ResponseModel
               @response.pendingEntityUpdates = _.without(@response.pendingEntityUpdates, update)
   
               # Call callback with update
-              cb(null, { update: successEntity })
+              cb(null, { update: { entity: successEntity, entityType: update.entityType } })
             , cb)
           , cb)
 
@@ -417,7 +417,7 @@ module.exports = class ResponseModel
             @response.pendingEntityCreates = _.without(@response.pendingEntityCreates, create)
 
             # Call callback with create
-            cb(null, { create: successEntity })
+            cb(null, { create: { entity: successEntity, entityType: create.entityType } })
           , cb)
 
     # Execute all tasks, then upsert

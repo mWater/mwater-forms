@@ -796,7 +796,7 @@ describe "ResponseModel", ->
       @model.processEntityOperations(db, (results) =>
         assert.equal @response.pendingEntityCreates.length, 0
         assert.equal upsert, entity
-        assert.deepEqual results, { updates: [], creates: [upsert], error: null }
+        assert.deepEqual results, { updates: [], creates: [{ entity: upsert, entityType: "test_type" }], error: null }
         done())
 
     it "processes updates", (done) ->
@@ -822,7 +822,7 @@ describe "ResponseModel", ->
         assert.equal @response.pendingEntityUpdates.length, 0
         assert.deepEqual upsertDoc, { _id: "1234", a: "text", b: "other" }
         assert.deepEqual upsertBase, base
-        expectedResults = { creates: [], updates: [upsertDoc], error: null }
+        expectedResults = { creates: [], updates: [{ entity: upsertDoc, entityType: "test_type" }], error: null }
         assert _.isEqual(results, expectedResults), JSON.stringify(results) + " vs " + JSON.stringify(expectedResults)
         done())
 
