@@ -21,6 +21,7 @@
   "author": "Clayton Grassick",
   "license": "GPLv3",
   "dependencies": {
+    "async": "^1.2.0",
     "backbone": "~1.1.2",
     "bootstrap-datetimepicker": "git+http://github.com/mWater/bootstrap-datetimepicker.git#Fix848",
     "coffeeify": "^1.0.0",

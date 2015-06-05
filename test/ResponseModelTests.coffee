@@ -768,3 +768,77 @@ describe "ResponseModel", ->
           @finalizeForm()
           create = @response.pendingEntityCreates[0].entity
           assert.deepEqual create._roles, [{ to: "user:user", role: "admin" }, { to: "all", role: "view" }]
+
+  describe "processEntityOperations", ->
+    beforeEach ->
+      @form = _.cloneDeep(sampleForm)
+      @response = {}
+      @model = new ResponseModel(response: @response, form: @form, user: "user", groups: ["dep2en1"], formCtx: {})
+
+    it "is ok with nulls", (done) ->
+      db = {}
+      @model.processEntityOperations(db, () =>
+        done())
+
+    it "processes creates", (done) ->
+      upsert = null
+      db = {
+        test_type: {
+          upsert: (doc, success, error) =>
+            upsert = doc
+            success(doc)
+        }
+      }
+
+      entity = { _id: "1234", a: "text" }
+      @response.pendingEntityCreates = [{ entity: entity, entityType: "test_type" }]
+
+      @model.processEntityOperations(db, (results) =>
+        assert.equal @response.pendingEntityCreates.length, 0
+        assert.equal upsert, entity
+        assert.deepEqual results, { updates: [], creates: [upsert], error: null }
+        done())
+
+    it "processes updates", (done) ->
+      upsertDoc = null
+      upsertBase = null
+
+      base = { _id: "1234", a: "base", b: "other" }
+      db = {
+        test_type: {
+          upsert: (doc, base, success, error) =>
+            upsertDoc = doc
+            upsertBase = base
+            success(doc)
+          findOne: (selector, options, success, error) =>
+            assert.deepEqual selector, { _id: "1234" }, "Should look up existing"
+            success(base)
+        }
+      }
+
+      @response.pendingEntityUpdates = [{ entityId: "1234", updates: { a: "text"}, entityType: "test_type" }]
+
+      @model.processEntityOperations(db, (results) =>
+        assert.equal @response.pendingEntityUpdates.length, 0
+        assert.deepEqual upsertDoc, { _id: "1234", a: "text", b: "other" }
+        assert.deepEqual upsertBase, base
+        expectedResults = { creates: [], updates: [upsertDoc], error: null }
+        assert _.isEqual(results, expectedResults), JSON.stringify(results) + " vs " + JSON.stringify(expectedResults)
+        done())
+
+    it "leaves in place if failed to process", (done) ->
+      upsert = null
+      db = {
+        test_type: {
+          upsert: (doc, success, error) =>
+            error("some error")
+        }
+      }
+
+      entity = { _id: "1234", a: "text" }
+      @response.pendingEntityCreates = [{ entity: entity, entityType: "test_type" }]
+
+      @model.processEntityOperations(db, (results) => 
+        assert.equal @response.pendingEntityCreates.length, 1
+        assert.deepEqual results, { updates: [], creates: [], error: "some error" }
+        done())

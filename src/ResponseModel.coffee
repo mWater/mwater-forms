@@ -3,6 +3,7 @@ formUtils = require './formUtils'
 FormCompiler = require './FormCompiler'
 uuid = require 'node-uuid'
 Backbone = require 'backbone'
+async = require 'async'
 
 # Model of a response object that allows manipulation and asking of questions
 # Options are:
@@ -376,3 +377,63 @@ module.exports = class ResponseModel
 
       return _.intersection(admins, subjects).length > 0
 
+  # Process any pending entity operations using the specified mongo-style 
+  # database. See minimongo for a spec.
+  # Calls callback with results with:
+  # { 
+  #  creates: [array of entities]
+  #  updates: [array of entities]
+  #  error: error if present or null
+  # }
+  processEntityOperations: (db, cb) ->
+    tasks = []
+    if @response.pendingEntityUpdates
+      for update in @response.pendingEntityUpdates
+        # Create an async task 
+        tasks.push (cb) =>
+          db[update.entityType].findOne({ _id: update.entityId }, { interim: false }, (entity) =>
+            # If not found, continue
+            if not entity
+              return cb()
+
+            # Update entity
+            updated = _.extend({}, entity, update.updates)
+
+            db[update.entityType].upsert(updated, entity, (successEntity) =>
+              # Remove from pending list
+              @response.pendingEntityUpdates = _.without(@response.pendingEntityUpdates, update)
+  
+              # Call callback with update
+              cb(null, { update: successEntity })
+            , cb)
+          , cb)
+
+    if @response.pendingEntityCreates
+      for create in @response.pendingEntityCreates
+        # Create an async task 
+        tasks.push (cb) =>
+          db[create.entityType].upsert(create.entity, (successEntity) =>
+            # Remove from pending list
+            @response.pendingEntityCreates = _.without(@response.pendingEntityCreates, create)
+
+            # Call callback with create
+            cb(null, { create: successEntity })
+          , cb)
+
+    # Execute all tasks, then upsert
+    async.series tasks, (err, res) =>
+      # Create results object
+      results = {
+        error: err
+        creates: []
+        updates: []
+      }
+
+      # Add creates and updates
+      for r in res
+        if r and r.create
+          results.creates.push(r.create)
+        if r and r.update
+          results.updates.push(r.update)
+
+      cb(results)
