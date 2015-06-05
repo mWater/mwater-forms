@@ -692,12 +692,20 @@ describe "ResponseModel", ->
         # Sets default roles (admin to enumerator, view to all)
         assert.deepEqual create.entity._roles, [{ to: "user:user", role: "admin" }, { to: "all", role: "view" }]
 
-      it "unsets create entity questions on un-finalize", ->
+      it "unsets create entity questions on un-finalize if creation pending", ->
         @response.data = { q1: { value: "abc" } }
         @finalizeForm()
 
         @model.draft()
         assert not @response.data.q2.value
+
+      it "leaves create entity questions alone on un-finalize if creation already completed", ->
+        @response.data = { q1: { value: "abc" } }
+        @finalizeForm()
+        @response.pendingEntityCreates = []
+
+        @model.draft()
+        assert @response.data.q2.value
 
       describe "with roles set in deployment", ->
         beforeEach ->
