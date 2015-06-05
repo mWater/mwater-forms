@@ -7,6 +7,11 @@ Mobile-friendly survey/form components, compiled from a XForms-inspired JSON sch
 * 12+ Question types
 * Conditions & validations
 * Full localization of surveys
+* Entity references
+
+## Response Lifecycle
+
+See [Response Lifecycle](docs/Response Lifecycle.md)
 
 ### Schema versioning
 
