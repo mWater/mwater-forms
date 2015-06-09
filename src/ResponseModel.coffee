@@ -146,7 +146,7 @@ module.exports = class ResponseModel
 
     # DEPRECATED!!!
     # If no entity was set (then it would be update, not create) and is set to create entity
-    if @form.design.entitySettings and not @formCtx.formEntity?
+    if @form.design.entitySettings and @form.design.entitySettings.entityType and not @formCtx.formEntity?
       creates.push { 
         entityType: _.last(@form.design.entitySettings.entityType.split(":")), 
         entity: _.extend(compiler.compileSaveLinkedAnswers(@form.design.entitySettings.propertyLinks)(), { 
@@ -228,7 +228,7 @@ module.exports = class ResponseModel
 
     # DEPRECATED!!!
     # If entity was set 
-    if @form.design.entitySettings and @formCtx.formEntity?
+    if @form.design.entitySettings and @form.design.entitySettings.entityType and @formCtx.formEntity?
       updates.push({ 
         questionId: null
         entityId: @formCtx.formEntity._id, 
