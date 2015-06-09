@@ -43,8 +43,8 @@ exports.isQuestion = (item) ->
   return item._type? and item._type.match(/Question$/)
 
 exports.localizeString = (str, locale) ->
-  # If no base or null, return empty string
-  if not str? or not str._base
+  # If null, return empty string
+  if not str? 
     return ""
 
   # Return for locale if present
@@ -52,7 +52,10 @@ exports.localizeString = (str, locale) ->
     return str[locale || "en"]
 
   # Return base if present
-  return str[str._base] || ""
+  if str._base
+    return str[str._base] || ""
+    
+  return ""
 
 # Gets all questions in form before reference item specified
 # refItem can be null for all questions

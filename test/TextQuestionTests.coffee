@@ -189,3 +189,34 @@ describe "TextQuestion", ->
 
     # Make sure stored in model
     assert.equal @model.get(@q._id).value, "model"
+
+  it "sticky doesn't fill until visible", ->
+    @q.sticky = true
+    @q.conditions = [
+      { lhs: { question: "qother"}, op: "present" }
+    ]
+    data = {}
+    ctx = {
+      stickyStorage: {
+        get: (key) ->
+          return data[key]
+        set: (key, value) ->
+          data[key] = value
+      }
+    }
+    data[@q._id] = "stored"
+
+    # Compile question 
+    @compiler = new FormCompiler(model: @model, locale: "es", ctx: ctx)
+    qview = @compiler.compileQuestion(@q).render()
+
+    # Should not be filled as is invisible
+    assert not @model.get(@q._id) or not @model.get(@q._id).value
+    assert.equal qview.$el.find("input").val(), ""
+
+    # Make visible by setting other response
+    @model.set("qother", { value: "abc" })
+
+    # Make sure stored in model
+    assert.equal @model.get(@q._id).value, "stored"
+    assert.equal qview.$el.find("input").val(), "stored"

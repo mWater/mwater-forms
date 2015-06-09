@@ -104,8 +104,8 @@ describe "Condition compiler", ->
   it "compiles false", ->
     @testTrue(false, "false")
     @testFalse(true, "false")
-    @testFalse(undefined, "false")
-    @testFalse(null, "false")
+    @testTrue(undefined, "false")
+    @testTrue(null, "false")
 
   it "compiles isoneof", ->
     @testTrue("abc", "isoneof", ["abc", "def"])

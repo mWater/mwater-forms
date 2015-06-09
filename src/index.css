@@ -116,3 +116,7 @@ select {
 .form-controls button {
   margin-bottom: 12px;
 }
+
+.specify-input {
+  margin-top: 3px;
+}

@@ -3,6 +3,7 @@ formUtils = require './formUtils'
 FormCompiler = require './FormCompiler'
 uuid = require 'node-uuid'
 Backbone = require 'backbone'
+async = require 'async'
 
 # Model of a response object that allows manipulation and asking of questions
 # Options are:
@@ -145,7 +146,7 @@ module.exports = class ResponseModel
 
     # DEPRECATED!!!
     # If no entity was set (then it would be update, not create) and is set to create entity
-    if @form.design.entitySettings and not @formCtx.formEntity?
+    if @form.design.entitySettings and @form.design.entitySettings.entityType and not @formCtx.formEntity?
       creates.push { 
         entityType: _.last(@form.design.entitySettings.entityType.split(":")), 
         entity: _.extend(compiler.compileSaveLinkedAnswers(@form.design.entitySettings.propertyLinks)(), { 
@@ -181,23 +182,38 @@ module.exports = class ResponseModel
           # Get deployment to override _roles and _created_for
           deployment = _.findWhere(@form.deployments, { _id: @response.deployment })
           if deployment.entityCreationSettings
-            settings = _.findWhere(deployment.entityCreationSettings, { questionId: question._id })
-            if settings.createdFor
-              create.entity._created_for = settings.createdFor
+            # Find first matching setting (right question and conditions true)
+            settings = _.find(deployment.entityCreationSettings, (ecs) =>
+              # Question must match
+              if ecs.questionId != question._id 
+                return false
 
-            roles = []
+              # Conditions must be true or non-existant
+              if ecs.conditions
+                if not compiler.compileConditions(ecs.conditions)()
+                  return false
 
-            # Set enumerator role
-            if settings.enumeratorRole
-              roles.push({ to: "user:#{@response.user}", role: settings.enumeratorRole })
+              return true
+            )
 
-            # Add other roles
-            if settings.otherRoles
-              for role in settings.otherRoles
-                if not _.findWhere(roles, to: role.id)
-                  roles.push({ to: role.id, role: role.role })
+            # Apply settings if match found
+            if settings
+              if settings.createdFor
+                create.entity._created_for = settings.createdFor
 
-            create.entity._roles = roles
+              roles = []
+
+              # Set enumerator role
+              if settings.enumeratorRole
+                roles.push({ to: "user:#{@response.user}", role: settings.enumeratorRole })
+
+              # Add other roles
+              if settings.otherRoles
+                for role in settings.otherRoles
+                  if not _.findWhere(roles, to: role.to)
+                    roles.push({ to: role.to, role: role.role })
+
+              create.entity._roles = roles
 
           creates.push(create)
 
@@ -212,7 +228,7 @@ module.exports = class ResponseModel
 
     # DEPRECATED!!!
     # If entity was set 
-    if @form.design.entitySettings and @formCtx.formEntity?
+    if @form.design.entitySettings and @form.design.entitySettings.entityType and @formCtx.formEntity?
       updates.push({ 
         questionId: null
         entityId: @formCtx.formEntity._id, 
@@ -361,3 +377,63 @@ module.exports = class ResponseModel
 
       return _.intersection(admins, subjects).length > 0
 
+  # Process any pending entity operations using the specified mongo-style 
+  # database. See minimongo for a spec.
+  # Calls callback with results with:
+  # { 
+  #  creates: [array of { entity, entityType }]
+  #  updates: [array of { entity, entityType }]
+  #  error: error if present or null
+  # }
+  processEntityOperations: (db, cb) ->
+    tasks = []
+    if @response.pendingEntityUpdates
+      for update in @response.pendingEntityUpdates
+        # Create an async task 
+        tasks.push (cb) =>
+          db[update.entityType].findOne({ _id: update.entityId }, { interim: false }, (entity) =>
+            # If not found, continue
+            if not entity
+              return cb()
+
+            # Update entity
+            updated = _.extend({}, entity, update.updates)
+
+            db[update.entityType].upsert(updated, entity, (successEntity) =>
+              # Remove from pending list
+              @response.pendingEntityUpdates = _.without(@response.pendingEntityUpdates, update)
+  
+              # Call callback with update
+              cb(null, { update: { entity: successEntity, entityType: update.entityType } })
+            , cb)
+          , cb)
+
+    if @response.pendingEntityCreates
+      for create in @response.pendingEntityCreates
+        # Create an async task 
+        tasks.push (cb) =>
+          db[create.entityType].upsert(create.entity, (successEntity) =>
+            # Remove from pending list
+            @response.pendingEntityCreates = _.without(@response.pendingEntityCreates, create)
+
+            # Call callback with create
+            cb(null, { create: { entity: successEntity, entityType: create.entityType } })
+          , cb)
+
+    # Execute all tasks, then upsert
+    async.series tasks, (err, res) =>
+      # Create results object
+      results = {
+        error: err
+        creates: []
+        updates: []
+      }
+
+      # Add creates and updates
+      for r in res
+        if r and r.create
+          results.creates.push(r.create)
+        if r and r.update
+          results.updates.push(r.update)
+
+      cb(results)

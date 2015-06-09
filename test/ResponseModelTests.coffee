@@ -671,7 +671,6 @@ describe "ResponseModel", ->
       assert.equal @response.pendingEntityCreates.length, 0
       assert.equal @response.pendingEntityUpdates.length, 0
 
-
     describe "with entity creating question", ->
       beforeEach ->
         @form.design.contents[1].createEntity = true
@@ -693,12 +692,20 @@ describe "ResponseModel", ->
         # Sets default roles (admin to enumerator, view to all)
         assert.deepEqual create.entity._roles, [{ to: "user:user", role: "admin" }, { to: "all", role: "view" }]
 
-      it "unsets create entity questions on un-finalize", ->
+      it "unsets create entity questions on un-finalize if creation pending", ->
         @response.data = { q1: { value: "abc" } }
         @finalizeForm()
 
         @model.draft()
         assert not @response.data.q2.value
+
+      it "leaves create entity questions alone on un-finalize if creation already completed", ->
+        @response.data = { q1: { value: "abc" } }
+        @finalizeForm()
+        @response.pendingEntityCreates = []
+
+        @model.draft()
+        assert @response.data.q2.value
 
       describe "with roles set in deployment", ->
         beforeEach ->
@@ -708,8 +715,8 @@ describe "ResponseModel", ->
               enumeratorRole: "edit"
               createdFor: "somegroup"
               otherRoles: [
-                { id: "user:bob", role: "admin" }
-                { id: "user:user", role: "view" }
+                { to: "user:bob", role: "admin" }
+                { to: "user:user", role: "view" }
               ]
             }
           ]
@@ -728,3 +735,110 @@ describe "ResponseModel", ->
         it "sets _created_for", ->
           assert.equal @create._created_for, "somegroup"
 
+
+      describe "with conditional roles set in deployment", ->
+        beforeEach ->
+          @form.deployments[1].entityCreationSettings = [
+            {
+              questionId: "q2"
+              enumeratorRole: "edit"
+              conditions: [
+                { lhs: { question: "q1" }, op: "contains", rhs: { literal: "abc" }} # Conditional on abc in question 1
+              ]
+              createdFor: "somegroup"
+              otherRoles: [
+                { to: "user:bob", role: "admin" }
+                { to: "user:user", role: "view" }
+              ]
+            }
+          ]
+
+        it "sets if conditions match", ->
+          @response.data = { q1: { value: "abc" } }
+          @finalizeForm()
+          create = @response.pendingEntityCreates[0].entity
+
+          assert.deepEqual create._roles, [
+            { to: "user:user", role: "edit" }
+            { to: "user:bob", role: "admin" }
+          ]
+
+        it "defaults if doesn't match", ->
+          @response.data = { q1: { value: "xyz" } }
+          @finalizeForm()
+          create = @response.pendingEntityCreates[0].entity
+          assert.deepEqual create._roles, [{ to: "user:user", role: "admin" }, { to: "all", role: "view" }]
+
+  describe "processEntityOperations", ->
+    beforeEach ->
+      @form = _.cloneDeep(sampleForm)
+      @response = {}
+      @model = new ResponseModel(response: @response, form: @form, user: "user", groups: ["dep2en1"], formCtx: {})
+
+    it "is ok with nulls", (done) ->
+      db = {}
+      @model.processEntityOperations(db, () =>
+        done())
+
+    it "processes creates", (done) ->
+      upsert = null
+      db = {
+        test_type: {
+          upsert: (doc, success, error) =>
+            upsert = doc
+            success(doc)
+        }
+      }
+
+      entity = { _id: "1234", a: "text" }
+      @response.pendingEntityCreates = [{ entity: entity, entityType: "test_type" }]
+
+      @model.processEntityOperations(db, (results) =>
+        assert.equal @response.pendingEntityCreates.length, 0
+        assert.equal upsert, entity
+        assert.deepEqual results, { updates: [], creates: [{ entity: upsert, entityType: "test_type" }], error: null }
+        done())
+
+    it "processes updates", (done) ->
+      upsertDoc = null
+      upsertBase = null
+
+      base = { _id: "1234", a: "base", b: "other" }
+      db = {
+        test_type: {
+          upsert: (doc, base, success, error) =>
+            upsertDoc = doc
+            upsertBase = base
+            success(doc)
+          findOne: (selector, options, success, error) =>
+            assert.deepEqual selector, { _id: "1234" }, "Should look up existing"
+            success(base)
+        }
+      }
+
+      @response.pendingEntityUpdates = [{ entityId: "1234", updates: { a: "text"}, entityType: "test_type" }]
+
+      @model.processEntityOperations(db, (results) =>
+        assert.equal @response.pendingEntityUpdates.length, 0
+        assert.deepEqual upsertDoc, { _id: "1234", a: "text", b: "other" }
+        assert.deepEqual upsertBase, base
+        expectedResults = { creates: [], updates: [{ entity: upsertDoc, entityType: "test_type" }], error: null }
+        assert _.isEqual(results, expectedResults), JSON.stringify(results) + " vs " + JSON.stringify(expectedResults)
+        done())
+
+    it "leaves in place if failed to process", (done) ->
+      upsert = null
+      db = {
+        test_type: {
+          upsert: (doc, success, error) =>
+            error("some error")
+        }
+      }
+
+      entity = { _id: "1234", a: "text" }
+      @response.pendingEntityCreates = [{ entity: entity, entityType: "test_type" }]
+
+      @model.processEntityOperations(db, (results) => 
+        assert.equal @response.pendingEntityCreates.length, 1
+        assert.deepEqual results, { updates: [], creates: [], error: "some error" }
+        done())

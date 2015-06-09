@@ -75,6 +75,8 @@ callback: called with _id of entity selected
 
 callback: called with an entity e.g. { _id: some id, a: "abc", b: 123 } or callback null if entity not found
 
+entity includes pseudo-property `_editable` (true/false) to indicate if entity can be edited. Default is false
+
 ## getProperty(id)
 
 Gets a property by _id. Note: synchronous call!
@@ -86,3 +88,7 @@ Gets a unit by code. Note: synchronous call!
 ## formEntity --- deprecated!!
 
 Entity set at form level. Entire entity object
+
+## editEntity(type, _id, callback)
+
+callback: is called when update is complete

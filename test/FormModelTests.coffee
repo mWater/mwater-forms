@@ -1,5 +1,4 @@
 assert = require("chai").assert
-
 FormModel = require '../src/FormModel'
 
 describe "FormModel", ->
@@ -93,7 +92,7 @@ describe "FormModel", ->
     assert !model.canChangeRole({ id: "a", role: "admin" })
     assert model.canChangeRole({ id: "b", role: "view" })
 
-  it  "checks admin for user", ->
+  it "checks admin for user", ->
     form = {
       roles: [
         { id: "user:a", role: "admin" }

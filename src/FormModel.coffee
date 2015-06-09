@@ -1,4 +1,5 @@
 _ = require 'lodash'
+formUtils = require './formUtils'
 
 # Model of a form object that allows manipulation and asking of questions
 module.exports = class FormModel
@@ -43,4 +44,3 @@ module.exports = class FormModel
     admins = _.pluck(_.where(@form.roles, { role: "admin"}), "id")
 
     return _.intersection(admins, subjects).length > 0
-

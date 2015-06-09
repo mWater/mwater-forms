@@ -170,7 +170,7 @@ module.exports = class FormCompiler
           return getValue() == true
       when "false"
         return () =>
-          return getValue() == false
+          return getValue() != true
       else
         throw new Error("Unknown condition op " + cond.op)
 
@@ -413,6 +413,7 @@ module.exports = class FormCompiler
         formViewEntity = entity
         @compileLoadLinkedAnswers(form.entitySettings.propertyLinks)(entity)
         return
+      # END DEPRECATED
 
       # Find entity question
       if questionId
