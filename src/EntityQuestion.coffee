@@ -69,7 +69,7 @@ module.exports = class EntityQuestion extends Question
 
   updateAnswer: (answerEl) ->
     # Check if entities supported
-    if not @ctx.getEntity
+    if not @ctx.getEntity?
       answerEl.html('<div class="text-warning">' + @T("Not supported on this platform") + '</div>')
       return
 
@@ -89,7 +89,7 @@ module.exports = class EntityQuestion extends Question
           properties = @formatEntityProperties(entity)
           data = {
             entity: entity
-            editable: entity._editable and @ctx.editEntity
+            editable: entity._editable and @ctx.editEntity?
             properties: properties
             selectText: @options.selectText
           }
