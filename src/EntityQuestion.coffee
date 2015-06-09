@@ -19,6 +19,8 @@ module.exports = class EntityQuestion extends Question
   events:
     'click #change_entity_button' : 'selectEntity'
     'click #select_entity_button' : 'selectEntity'
+    'click #clear_entity_button' : 'clearEntity'
+    'click #edit_entity_button' : 'editEntity'
 
   # Called to select an entity using an external mechanism (calls @ctx.selectEntity)
   selectEntity: ->
@@ -39,6 +41,25 @@ module.exports = class EntityQuestion extends Question
           if entity and @options.loadLinkedAnswers
             @options.loadLinkedAnswers(entity)
     }
+
+  clearEntity: ->
+    @setAnswerValue(null)
+
+  editEntity: ->
+    if not @ctx.editEntity
+      return alert(@T("Not supported on this platform"))
+
+    entityId = @getAnswerValue()
+    @ctx.editEntity @options.entityType, entityId, =>
+      # Set to null and back to force a change
+      @setAnswerValue(null)
+      @setAnswerValue(entityId)
+
+      # Load answers linked to properties
+      @ctx.getEntity @options.entityType, entityId, (entity) =>
+        if entity and @options.loadLinkedAnswers
+          @options.loadLinkedAnswers(entity)
+
 
   shouldBeVisible: =>
     if @options.hidden
@@ -67,7 +88,8 @@ module.exports = class EntityQuestion extends Question
           # Display entity
           properties = @formatEntityProperties(entity)
           data = {
-            entity: val
+            entity: entity
+            editable: entity._editable and @ctx.editEntity
             properties: properties
             selectText: @options.selectText
           }

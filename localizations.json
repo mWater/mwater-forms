@@ -315,6 +315,14 @@
     {
       "_base": "en",
       "en": "Change Selection"
+    },
+    {
+      "_base": "en",
+      "en": "Clear Selection"
+    },
+    {
+      "_base": "en",
+      "en": "Edit Selection"
     }
   ]
 }

@@ -75,7 +75,7 @@ callback: called with _id of entity selected
 
 callback: called with an entity e.g. { _id: some id, a: "abc", b: 123 } or callback null if entity not found
 
-entity includes pseudo-property _editable (true/false) to indicate if entity can be edited
+entity includes pseudo-property `_editable` (true/false) to indicate if entity can be edited. Default is false
 
 ## getProperty(id)
 
