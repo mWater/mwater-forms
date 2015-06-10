@@ -156,7 +156,6 @@ module.exports = class LocationView extends Backbone.View
     return _.pick(pos.coords, "latitude", "longitude", "accuracy", "altitude", "altitudeAccuracy")
 
   setLocation: ->
-    console.log "Setting location"
     @currentPositionFinder.start()
 
   currentPositionFound: (pos) ->

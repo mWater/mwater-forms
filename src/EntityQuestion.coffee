@@ -1,5 +1,9 @@
 Question = require './Question'
 _ = require 'lodash'
+React = require 'react'
+H = React.DOM
+EntityDisplayComponent = require './EntityDisplayComponent'
+EntityLoadingComponent = require './EntityLoadingComponent'
 
 # Allows user to select an entity
 # Options for EntityQuestion
@@ -22,8 +26,15 @@ module.exports = class EntityQuestion extends Question
     'click #clear_entity_button' : 'clearEntity'
     'click #edit_entity_button' : 'editEntity'
 
+  # Loads properties into linked answers
+  loadLinkedAnswers: (entityId) =>
+    # Load answers linked to properties
+    @ctx.getEntity @options.entityType, entityId, (entity) =>
+      if entity and @options.loadLinkedAnswers
+        @options.loadLinkedAnswers(entity)
+
   # Called to select an entity using an external mechanism (calls @ctx.selectEntity)
-  selectEntity: ->
+  selectEntity: =>
     if not @ctx.selectEntity
       return alert(@T("Not supported on this platform"))
 
@@ -37,15 +48,13 @@ module.exports = class EntityQuestion extends Question
         @setAnswerValue(entityId)
 
         # Load answers linked to properties
-        @ctx.getEntity @options.entityType, entityId, (entity) =>
-          if entity and @options.loadLinkedAnswers
-            @options.loadLinkedAnswers(entity)
+        @loadLinkedAnswers(entityId)
     }
 
-  clearEntity: ->
+  clearEntity: =>
     @setAnswerValue(null)
 
-  editEntity: ->
+  editEntity: =>
     if not @ctx.editEntity
       return alert(@T("Not supported on this platform"))
 
@@ -56,10 +65,7 @@ module.exports = class EntityQuestion extends Question
       @setAnswerValue(entityId)
 
       # Load answers linked to properties
-      @ctx.getEntity @options.entityType, entityId, (entity) =>
-        if entity and @options.loadLinkedAnswers
-          @options.loadLinkedAnswers(entity)
-
+      @loadLinkedAnswers(entityId)
 
   shouldBeVisible: =>
     if @options.hidden
@@ -68,93 +74,65 @@ module.exports = class EntityQuestion extends Question
     return super()
 
   updateAnswer: (answerEl) ->
+    # Save answer element to unmount
+    @answerEl = answerEl
+
     # Check if entities supported
     if not @ctx.getEntity?
-      answerEl.html('<div class="text-warning">' + @T("Not supported on this platform") + '</div>')
-      return
-
-    # If entity, get properties
-    val = @getAnswerValue()
-    if val
-      # Display right away first in case loading takes time
-      data = {
-        entity: val
-        selectText: @options.selectText
-      }
-      answerEl.html require('./templates/EntityQuestion.hbs')(data, helpers: { T: @T })
-
-      @ctx.getEntity @options.entityType, val, (entity) =>
-        if entity
-          # Display entity
-          properties = @formatEntityProperties(entity)
-          data = {
-            entity: entity
-            editable: entity._editable and @ctx.editEntity?
-            properties: properties
-            selectText: @options.selectText
-          }
-          answerEl.html require('./templates/EntityQuestion.hbs')(data, helpers: { T: @T }) 
-        else
-          # Entity not found
-          data = {
-            entity: entity
-            propertiesError: @T("Data Not Found")
-            selectText: @options.selectText
-          }
-          answerEl.html require('./templates/EntityQuestion.hbs')(data, helpers: { T: @T }) 
+      elem = H.div className: "text-warning", @T("Not supported on this platform")
     else
-      # No entity selected
-      data = { selectText: @options.selectText }
-      answerEl.html require('./templates/EntityQuestion.hbs')(data, helpers: { T: @T })
+      entityId = @getAnswerValue()
+  
+      elem = React.createElement(EntityLoadingComponent, {
+        formCtx: @ctx
+        entityId: entityId
+        entityType: @options.entityType
+        T: @T },
+        React.createElement(EntityAnswerComponent, {
+          onSelectEntity: @selectEntity
+          onClearEntity: @clearEntity
+          onEditEntity: @editEntity
+          formCtx: @ctx
+          displayProperties: @options.displayProperties
+          locale: @options.locale
+          T: @T
+        }))
+        
+    React.render(elem, answerEl.get(0))
 
-  # Format entity properties for display. Return array of name, value
-  formatEntityProperties: (entity) ->
-    # Localize to locale, or English as fallback
-    localize = (str) =>
-      return str[@options.locale] or str.en
+  remove: ->
+    if @answerEl
+      React.unmountComponentAtNode(@answerEl.get(0))
+    super
 
-    # Get properties and format    
-    properties = []
-    for propId in @options.displayProperties
-      # TODO REMOVE THIS JULY 2015
-      # Handle old style embedded properties
-      if _.isObject(propId)
-        propId = propId._id
+class EntityAnswerComponent extends React.Component
+  renderEntityButtons: ->
+    H.div null,
+      H.button type: "button", className: "btn btn-link btn-sm", onClick: @props.onSelectEntity,
+        H.span className: "glyphicon glyphicon-ok"
+        @props.T("Change Selection")
+      H.button type: "button", className: "btn btn-link btn-sm", onClick: @props.onClearEntity,
+        H.span className: "glyphicon glyphicon-remove"
+        @props.T("Clear Selection")
+      if @props.entity._editable and @props.formCtx.editEntity?
+        H.button type: "button", className: "btn btn-link btn-sm", onClick: @props.onEditEntity,
+          H.span className: "glyphicon glyphicon-pencil"
+          @props.T("Edit Selection")
 
-      # Get property
-      prop = @ctx.getProperty(propId)
-      if not prop
-        throw new Error("Property #{propId} not found")
+  render: ->
+    # If entity to render
+    if @props.entity
+      return H.div null,
+        React.createElement(EntityDisplayComponent, 
+          entity: @props.entity
+          formCtx: @props.formCtx
+          propertyIds: @props.displayProperties
+          locale: @props.locale
+          T: @props.T
+          )
+        @renderEntityButtons()
 
-      name = localize(prop.name)
-      value = entity[prop.code]
-      if not value?
-        properties.push({ name: name, value: "-" })
-      else
-        switch prop.type
-          when "text", "integer", "decimal", "date", "entity"
-            properties.push({ name: name, value: value })
-          when "enum"
-            propValue = _.findWhere(prop.values, { code: value })
-            if propValue
-              properties.push({ name: name, value: localize(propValue.name)})
-            else
-              properties.push({ name: name, value: "???"})  
-          when "boolean"
-            properties.push({ name: name, value: if value then "true" else "false" })
-          when "geometry"
-            if value.type == "Point"
-              properties.push({ name: name, value: value.coordinates[1] + ", " + value.coordinates[0] })
-          when "measurement"
-            propUnit = @ctx.getUnit(value.unit)
-            if propUnit
-              properties.push({ name: name, value: value.magnitude + " " + propUnit.symbol})
-            else
-              properties.push({ name: name, value: value.magnitude + " " + "???"})  
-
-          # TO ADD:
-          # image, imagelist
-          else
-            properties.push({ name: name, value: "???"}) 
-
-    return properties
+    # Render select button
+    return H.button type: "button", className: "btn btn-default btn-sm", onClick: @props.onSelectEntity,
+      H.span className: "glyphicon glyphicon-ok"
+      @props.T("Select")

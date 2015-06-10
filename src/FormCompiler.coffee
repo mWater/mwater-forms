@@ -40,6 +40,17 @@ module.exports = class FormCompiler
     @locale = options.locale or "en"
     @ctx = options.ctx or {}
 
+  # Creates a localizer for the form
+  createLocalizer: (form) ->
+    # Create localizer
+    localizedStrings = form.localizedStrings or []
+    localizerData = {
+      locales: form.locales
+      strings: localizedStrings
+    }
+    T = new ezlocalize.Localizer(localizerData, @locale).T
+    return T
+
   compileString: (str) =>
     # If no base or null, return null
     if not str? or not str._base
@@ -361,12 +372,7 @@ module.exports = class FormCompiler
       throw new Error("Schema version too high")
 
     # Create localizer
-    localizedStrings = form.localizedStrings or []
-    localizerData = {
-      locales: form.locales
-      strings: localizedStrings
-    }
-    T = new ezlocalize.Localizer(localizerData, @locale).T
+    T = @createLocalizer(form)
 
     # Compile contents
     if formUtils.isSectioned(form) 

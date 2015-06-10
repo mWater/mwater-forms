@@ -24,8 +24,7 @@
     },
     {
       "_base": "en",
-      "en": "N/A",
-      "_unused": true
+      "en": "N/A"
     },
     {
       "_base": "en",
@@ -302,7 +301,8 @@
     },
     {
       "_base": "en",
-      "en": "Data Not Found"
+      "en": "Data Not Found",
+      "_unused": true
     },
     {
       "_base": "en",
@@ -323,6 +323,42 @@
     {
       "_base": "en",
       "en": "Edit Selection"
+    },
+    {
+      "_base": "en",
+      "en": "User"
+    },
+    {
+      "_base": "en",
+      "en": "Response Id"
+    },
+    {
+      "_base": "en",
+      "en": "Date"
+    },
+    {
+      "_base": "en",
+      "en": "Don't Know"
+    },
+    {
+      "_base": "en",
+      "en": "True"
+    },
+    {
+      "_base": "en",
+      "en": "False"
+    },
+    {
+      "_base": "en",
+      "en": "Site"
+    },
+    {
+      "_base": "en",
+      "en": "Answered"
+    },
+    {
+      "_base": "en",
+      "en": "Not found"
     }
   ]
 }
