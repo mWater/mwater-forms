@@ -4,6 +4,7 @@ formUtils = require './formUtils'
 ImageDisplayComponent = require './ImageDisplayComponent'
 EntityDisplayComponent = require './EntityDisplayComponent'
 EntityLoadingComponent = require './EntityLoadingComponent'
+moment = require 'moment'
 
 # Static view of a response
 module.exports = class ResponseDisplayComponent extends React.Component
