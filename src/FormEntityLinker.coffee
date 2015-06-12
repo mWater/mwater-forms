@@ -33,7 +33,7 @@ module.exports = class FormEntityLinker
         answer.value = val
         @model.set(propLink.questionId, answer)
 
-      when "geometry:location"
+      when "geometry:location", "geometry:randomized_location"
         if val.type == "Point"
           if not answer.value? 
             answer.value = {}
@@ -127,6 +127,18 @@ module.exports = class FormEntityLinker
       when "geometry:location"
         if answer.value? and answer.value.longitude? and answer.value.latitude?
           @entity[code] = { type: "Point", coordinates: [answer.value.longitude, answer.value.latitude] }
+
+      when "geometry:randomized_location"
+        if answer.value? and answer.value.longitude? and answer.value.latitude?
+          #rndValue = Math.sqrt(Math.random())
+          rndValue = Math.sqrt(1)
+          rndAngle = Math.random() * 360
+
+          # 111,111 meters per degree
+          latOffset = Math.cos(rndAngle) * propLink.randomRadius / 111111.0
+          lngOffset = Math.sin(rndAngle) * propLink.randomRadius / 111111.0
+
+          @entity[code] = { type: "Point", coordinates: [answer.value.longitude+latOffset, answer.value.latitude+lngOffset] }
 
       when "enum:choice"
         # Find the to value
