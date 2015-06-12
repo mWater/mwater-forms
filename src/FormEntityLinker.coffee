@@ -130,15 +130,26 @@ module.exports = class FormEntityLinker
 
       when "geometry:randomized_location"
         if answer.value? and answer.value.longitude? and answer.value.latitude?
-          #rndValue = Math.sqrt(Math.random())
-          rndValue = Math.sqrt(1)
-          rndAngle = Math.random() * 360
+          rndValue = Math.sqrt(Math.random())
+          rndAngle = Math.random() * 2 * Math.PI
 
           # 111,111 meters per degree
           latOffset = Math.cos(rndAngle) * propLink.randomRadius / 111111.0
           lngOffset = Math.sin(rndAngle) * propLink.randomRadius / 111111.0
+          # change the lng offset as we get closer to the pole
+          lngOffset /= Math.cos(answer.value.latitude*Math.PI/180)
 
-          @entity[code] = { type: "Point", coordinates: [answer.value.longitude+latOffset, answer.value.latitude+lngOffset] }
+          newLat =  answer.value.latitude + latOffset
+          newLng = answer.value.longitude + lngOffset
+
+          while newLng < -180
+            newLng += 360
+          while newLng > 180
+            newLng -= 360
+
+          newLat = Math.min(85, Math.max(-85, newLat))
+
+          @entity[code] = { type: "Point", coordinates: [newLng, newLat] }
 
       when "enum:choice"
         # Find the to value
