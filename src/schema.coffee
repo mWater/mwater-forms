@@ -131,6 +131,7 @@ exports.design = {
         mappings: { } 
         alternate: { type: "string" }
         choice: { type: "string" }
+        randomRadius: { type: "number" }
         property: {} # Deprecated!
         question: {} # Deprecated!
       }
