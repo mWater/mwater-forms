@@ -226,7 +226,7 @@ exports.design = {
         exportId: { type: "string" }
 
         # Alternative answers that are non-answers to the specific question
-        # such as "Don't know" or "Not Applicable"
+        # such as "Don't Know" or "Not Applicable"
         alternates: {
           type: "object"
           properties: {

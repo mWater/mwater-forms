@@ -257,7 +257,7 @@ module.exports = class FormCompiler
       if q.alternates.na
         options.alternates.push { id: "na", label: T("Not Applicable") } 
       if q.alternates.dontknow
-        options.alternates.push { id: "dontknow", label: T("Don't know") } 
+        options.alternates.push { id: "dontknow", label: T("Don't Know") } 
 
     switch q._type
       when "TextQuestion"

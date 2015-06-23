@@ -44,7 +44,7 @@ module.exports = class ResponseDisplayComponent extends React.Component
     if answer.alternate
       switch answer.alternate 
         when "na"
-          return H.em null, @props.T("N/A")
+          return H.em null, @props.T("Not Applicable")
         when "dontknow"
           return H.em null, @props.T("Don't Know")
 
