@@ -99,6 +99,14 @@ module.exports = class FormEntityLinker
 
         answer.value.accuracy = val
         @model.set(propLink.questionId, answer)
+
+      when "decimal:location_altitude"
+        if not answer.value?
+          answer.value = {}
+
+        answer.value.altitude = val
+        @model.set(propLink.questionId, answer)
+
       else
         throw new Error("Unknown link type #{propLink.type}")
 
@@ -165,6 +173,10 @@ module.exports = class FormEntityLinker
         # Check if choice present
         if answer.specify and answer.specify[propLink.choice]?
           @entity[code] = answer.specify[propLink.choice]
+
+      when "decimal:location_altitude"
+        if answer.value?
+          @entity[code] = answer.value.altitude
 
       when "decimal:location_accuracy"
         if answer.value?
