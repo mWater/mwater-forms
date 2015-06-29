@@ -100,7 +100,7 @@ module.exports = class FormEntityLinker
         answer.value.accuracy = val
         @model.set(propLink.questionId, answer)
 
-      when "decimal:altitude"
+      when "decimal:location_altitude"
         if not answer.value?
           answer.value = {}
 
@@ -174,7 +174,7 @@ module.exports = class FormEntityLinker
         if answer.specify and answer.specify[propLink.choice]?
           @entity[code] = answer.specify[propLink.choice]
 
-      when "decimal:altitude"
+      when "decimal:location_altitude"
         if answer.value?
           @entity[code] = answer.value.altitude
 
