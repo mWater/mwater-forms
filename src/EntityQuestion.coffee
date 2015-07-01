@@ -110,13 +110,16 @@ class EntityAnswerComponent extends React.Component
     H.div null,
       H.button type: "button", className: "btn btn-link btn-sm", onClick: @props.onSelectEntity,
         H.span className: "glyphicon glyphicon-ok"
+        " "
         @props.T("Change Selection")
       H.button type: "button", className: "btn btn-link btn-sm", onClick: @props.onClearEntity,
         H.span className: "glyphicon glyphicon-remove"
+        " "
         @props.T("Clear Selection")
       if @props.entity._editable and @props.formCtx.editEntity?
         H.button type: "button", className: "btn btn-link btn-sm", onClick: @props.onEditEntity,
           H.span className: "glyphicon glyphicon-pencil"
+          " "
           @props.T("Edit Selection")
 
   render: ->
@@ -135,4 +138,5 @@ class EntityAnswerComponent extends React.Component
     # Render select button
     return H.button type: "button", className: "btn btn-default btn-sm", onClick: @props.onSelectEntity,
       H.span className: "glyphicon glyphicon-ok"
+      " "
       @props.T("Select")
