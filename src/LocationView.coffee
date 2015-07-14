@@ -124,6 +124,7 @@ module.exports = class LocationView extends Backbone.View
       @$("#location_setter_msg").text(msg)
     else
       @$("#location_setter").hide()
+      @$("#use_anyway").toggle(false)
 
   displayNotification: (message, className, shouldFadeOut) ->
     # Cancel the fadeout if timer on any preexisting alerts
