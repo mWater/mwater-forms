@@ -51,6 +51,12 @@ module.exports = class ResponseModel
     @fixRoles()
     @_updateEntities()
 
+  # Save for later. Does no state transitions, but updates any entity references
+  # and other housekeeping before saving it
+  saveForLater: ->
+    @fixRoles()
+    @_updateEntities()
+
   # Submit (either to final or pending as appropriate)
   submit: ->
     @response.submittedOn = new Date().toISOString()
