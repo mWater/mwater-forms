@@ -1,10 +1,12 @@
 React = require 'react'
 H = React.DOM
+Backbone = require 'backbone'
 formUtils = require './formUtils'
 ImageDisplayComponent = require './ImageDisplayComponent'
 EntityDisplayComponent = require './EntityDisplayComponent'
 EntityLoadingComponent = require './EntityLoadingComponent'
 moment = require 'moment'
+FormCompiler = require './FormCompiler'
 
 # Static view of a response
 module.exports = class ResponseDisplayComponent extends React.Component
@@ -14,6 +16,16 @@ module.exports = class ResponseDisplayComponent extends React.Component
     formCtx: React.PropTypes.object.isRequired
     locale: React.PropTypes.string # Defaults to english
     T: React.PropTypes.func  # Localizer to use. Call form compiler to create one
+
+  # Determine if item is visible given conditions
+  checkIfVisible: (item) =>
+    # Load response data to model    
+    model = new Backbone.Model(@props.response.data)
+    
+    # Create compiler to check conditions
+    formCompiler = new FormCompiler(model: model, ctx: @props.formCtx)
+    conds = formCompiler.compileConditions(item.conditions)
+    return conds()
 
   handleLocationClick: (location) ->
     if @props.formCtx.displayMap
@@ -170,6 +182,9 @@ module.exports = class ResponseDisplayComponent extends React.Component
           @renderLocation(answer.location)
 
   renderItem: (item) ->
+    if not @checkIfVisible(item)
+      return
+
     if item._type == "Section"
       return [
         H.tr key: item._id,
