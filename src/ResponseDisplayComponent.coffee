@@ -86,9 +86,9 @@ module.exports = class ResponseDisplayComponent extends React.Component
 
     if events.length > 1
       if @state.showCompleteHistory
-        contents.push(H.a(onClick: @handleHideHistory, @props.T("Hide History")))
+        contents.push(H.a(style: { cursor: "pointer" }, onClick: @handleHideHistory, @props.T("Hide History")))
       else
-        contents.push(H.a(onClick: @handleShowHistory, @props.T("Show History")))
+        contents.push(H.a(style: { cursor: "pointer" }, onClick: @handleShowHistory, @props.T("Show History")))
 
     return H.div key: "history", contents
 
