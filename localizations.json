@@ -277,6 +277,26 @@
     {
       "_base": "en",
       "en": "Show History"
+    },
+    {
+      "_base": "en",
+      "en": "Draft"
+    },
+    {
+      "_base": "en",
+      "en": "Rejected"
+    },
+    {
+      "_base": "en",
+      "en": "Pending"
+    },
+    {
+      "_base": "en",
+      "en": "Final"
+    },
+    {
+      "_base": "en",
+      "en": "Status"
     }
   ]
 }

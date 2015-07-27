@@ -90,17 +90,32 @@ module.exports = class ResponseDisplayComponent extends React.Component
       else
         contents.push(H.a(onClick: @handleShowHistory, @props.T("Show History")))
 
-    return H.div null, contents
+    return H.div key: "history", contents
+
+  renderStatus: ->
+    status = switch @props.response.status
+      when "draft"
+        @props.T("Draft")
+      when "rejected"
+        @props.T("Rejected")
+      when "pending"
+        @props.T("Pending")
+      when "final"
+        @props.T("Final")
+
+    H.div key: "status", 
+      @props.T('Status'), ": ", status
 
   # Header which includes basics
   renderHeader: ->
-    H.div null,
+    H.div style: { paddingBottom: 10 },
       H.div key: "user", 
         @props.T('User'), ": ", H.b(null, @props.response.user)
       H.div key: "code", 
         @props.T('Response Id'), ": ", H.b(null, @props.response.code)
       H.div key: "date", 
         @props.T('Date'), ": ", H.b(null, moment(@props.response.modified.on).format('lll'))
+      @renderStatus()
       @renderHistory()
 
   renderLocation: (location) ->
