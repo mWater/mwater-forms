@@ -104,7 +104,7 @@ module.exports = class ResponseDisplayComponent extends React.Component
         @props.T("Final")
 
     H.div key: "status", 
-      @props.T('Status'), ": ", status
+      @props.T('Status'), ": ", H.b(null, status)
 
   # Header which includes basics
   renderHeader: ->
