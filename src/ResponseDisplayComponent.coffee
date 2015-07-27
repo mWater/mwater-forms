@@ -36,10 +36,10 @@ module.exports = class ResponseDisplayComponent extends React.Component
     if @props.formCtx.displayMap
       @props.formCtx.displayMap(location)
 
-  handleHideHistory: ->
+  handleHideHistory: =>
     @setState(showCompleteHistory: false)
 
-  handleShowHistory: ->
+  handleShowHistory: =>
     @setState(showCompleteHistory: true)
 
   renderEvent: (ev) ->
@@ -74,18 +74,21 @@ module.exports = class ResponseDisplayComponent extends React.Component
   renderHistory: ->
     contents = []
 
+    events = @props.response.events or []
+
     if @state.showCompleteHistory
-      for ev in (@props.response.events or [])
+      for ev in events
         contents.push(@renderEvent(ev))
 
-    lastEvent = _.last(@props.response.events or [])
+    lastEvent = _.last(events)
     if lastEvent
       contents.push(@renderEvent(lastEvent))
 
-    if @state.showCompleteHistory
-      contents.push(H.a(onClick: @handleHideHistory, @props.T("Hide History")))
-    else
-      contents.push(H.a(onClick: @handleShowHistory, @props.T("Show History")))
+    if events.length > 1
+      if @state.showCompleteHistory
+        contents.push(H.a(onClick: @handleHideHistory, @props.T("Hide History")))
+      else
+        contents.push(H.a(onClick: @handleShowHistory, @props.T("Show History")))
 
     return H.div null, contents
 
