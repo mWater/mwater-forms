@@ -17,6 +17,11 @@ module.exports = class ResponseDisplayComponent extends React.Component
     locale: React.PropTypes.string # Defaults to english
     T: React.PropTypes.func  # Localizer to use. Call form compiler to create one
 
+  constructor: (props) ->
+    super
+
+    @state = { showCompleteHistory: false }
+
   # Determine if item is visible given conditions
   checkIfVisible: (item) =>
     # Load response data to model    
@@ -31,6 +36,59 @@ module.exports = class ResponseDisplayComponent extends React.Component
     if @props.formCtx.displayMap
       @props.formCtx.displayMap(location)
 
+  handleHideHistory: ->
+    @setState(showCompleteHistory: false)
+
+  handleShowHistory: ->
+    @setState(showCompleteHistory: true)
+
+  renderEvent: (ev) ->
+    eventType = switch ev.type
+      when "draft"
+        @props.T("Drafted")
+      when "submit"
+        @props.T("Submitted")
+      when "approve"
+        @props.T("Approved")
+      when "approve"
+        @props.T("Approved")
+      when "edit"
+        @props.T("Edited")
+
+    return H.div null, 
+      eventType
+      " "
+      @props.T("by")
+      " "
+      ev.by
+      " "
+      @props.T("on")
+      " "
+      moment(ev.on).format('lll')
+      if ev.message
+        ": " + ev.message
+      if ev.override
+        H.span(className: "label label-warning", @props.T("Admin Override"))
+
+  # History of events
+  renderHistory: ->
+    contents = []
+
+    if @state.showCompleteHistory
+      for ev in (@props.response.events or [])
+        contents.push(@renderEvent(ev))
+
+    lastEvent = _.last(@props.response.events or [])
+    if lastEvent
+      contents.push(@renderEvent(lastEvent))
+
+    if @state.showCompleteHistory
+      contents.push(H.a(onClick: @handleHideHistory, @props.T("Hide History")))
+    else
+      contents.push(H.a(onClick: @handleShowHistory, @props.T("Show History")))
+
+    return H.div null, contents
+
   # Header which includes basics
   renderHeader: ->
     H.div null,
@@ -39,7 +97,8 @@ module.exports = class ResponseDisplayComponent extends React.Component
       H.div key: "code", 
         @props.T('Response Id'), ": ", H.b(null, @props.response.code)
       H.div key: "date", 
-        @props.T('Date'), ": ", H.b(null, moment(@props.response.modified.on).format('llll'))
+        @props.T('Date'), ": ", H.b(null, moment(@props.response.modified.on).format('lll'))
+      @renderHistory()
 
   renderLocation: (location) ->
     if location

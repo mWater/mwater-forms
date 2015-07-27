@@ -71,6 +71,16 @@ describe "ResponseModel", ->
     it "does not include deployment viewers", ->
       assert.equal _.where(@response.roles, { id: "group:dep2view1"}).length, 0
 
+    it "creates draft event", ->
+      assert.equal @response.events.length, 1
+      assert.equal @response.events[0].type, "draft"
+      assert.equal @response.events[0].by, "user"
+      assert @response.events[0].on
+
+    it "does not create draft event if already in draft", ->
+      @model.draft()
+      assert.equal @response.events.length, 1
+
   describe "draft when deployed to all", ->
     beforeEach ->
       @response = { }
@@ -108,6 +118,12 @@ describe "ResponseModel", ->
 
     it "includes viewers of deployment as viewers", ->
       assert.equal _.where(@response.roles, { id: "group:dep2view1"}).length, 1
+
+    it "creates submit event", ->
+      assert.equal @response.events.length, 2
+      assert.equal @response.events[1].type, "submit"
+      assert.equal @response.events[1].by, "user2"
+      assert @response.events[1].on
 
   describe "submit when no approval stages with enumeratorAdminFinal", ->
     beforeEach ->
@@ -164,7 +180,13 @@ describe "ResponseModel", ->
       @form.deployments[1].approvalStages = []
       @model.fixRoles()
       assert.equal @response.status, "draft"
- 
+
+    it "creates submit event", ->
+      assert.equal @response.events.length, 2
+      assert.equal @response.events[1].type, "submit"
+      assert.equal @response.events[1].by, "user2"
+      assert @response.events[1].on
+
   describe "approval when last stage", ->
     beforeEach ->
       @response = { }
@@ -193,6 +215,13 @@ describe "ResponseModel", ->
     it "includes viewers of deployment as viewers", ->
       assert.equal _.where(@response.roles, { id: "group:dep2view1"}).length, 1
 
+    it "creates approve event", ->
+      assert.equal @response.events.length, 3
+      assert.equal @response.events[2].type, "approve"
+      assert.equal @response.events[2].by, "user"
+      assert @response.events[2].on
+      assert not @response.events[2].override
+
   describe "approval overrides", ->
     beforeEach ->
       @response = { }
@@ -215,6 +244,16 @@ describe "ResponseModel", ->
       @model = new ResponseModel(response: @response, form: @form, user: "formadmin", groups: [])
       @model.approve()
       assert.isTrue @response.approvals[0].override
+
+    it "creates approve event with override", ->
+      @model = new ResponseModel(response: @response, form: @form, user: "formadmin", groups: [])
+      @model.approve()
+
+      assert.equal @response.events.length, 3
+      assert.equal @response.events[2].type, "approve"
+      assert.equal @response.events[2].by, "formadmin"
+      assert.isTrue @response.events[2].override
+      assert @response.events[1].on
 
   describe "approval when not last stage", ->
     beforeEach ->
@@ -253,6 +292,13 @@ describe "ResponseModel", ->
     it "does not include deployment viewers", ->
      assert.equal _.where(@response.roles, { id: "group:dep2view1"}).length, 0
 
+    it "creates approve event", ->
+      assert.equal @response.events.length, 3
+      assert.equal @response.events[2].type, "approve"
+      assert.equal @response.events[2].by, "user"
+      assert @response.events[2].on
+      assert not @response.events[2].override
+
   describe "redraft", ->
     beforeEach ->
       @response = { }
@@ -267,6 +313,12 @@ describe "ResponseModel", ->
 
     it "does not overwrite id", ->
       assert.equal @response._id, @origId
+
+    it "creates draft event", ->
+      assert.equal @response.events.length, 3
+      assert.equal @response.events[2].type, "draft"
+      assert.equal @response.events[2].by, "user"
+      assert @response.events[2].on
 
   describe "reject", ->
     beforeEach ->
@@ -303,6 +355,36 @@ describe "ResponseModel", ->
 
     it "does not include deployment viewers", ->
       assert.equal _.where(@response.roles, { id: "group:dep2view1"}).length, 0
+
+    it "creates reject event", ->
+      assert.equal @response.events.length, 3
+      assert.equal @response.events[2].type, "reject"
+      assert.equal @response.events[2].by, "user2"
+      assert @response.events[2].on
+      assert not @response.events[2].override
+      assert.equal @response.events[2].message, "message"
+
+  describe "recordEdit", ->
+    it "does not record if done by enumerator", ->
+      response = { }
+      form = _.cloneDeep(sampleForm)
+      model = new ResponseModel(response: response, form: form, user: "user", groups: ["dep2en1"])
+      model.draft()
+
+      model.recordEdit()
+      assert.equal response.events.length, 1
+
+    it "does record if done by other than enumerator", ->
+      response = { }
+      form = _.cloneDeep(sampleForm)
+      model = new ResponseModel(response: response, form: form, user: "user", groups: ["dep2en1"])
+      model.draft()
+
+      model = new ResponseModel(response: response, form: @form, user: "user2", groups: ["dep2admin1"])
+      model.recordEdit()
+      assert.equal response.events.length, 2
+      assert.equal response.events[1].type, "edit"
+      assert.equal response.events[1].by, "user2"
 
   describe "canReject", ->
     beforeEach ->

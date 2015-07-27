@@ -22,9 +22,6 @@ module.exports = class ResponseModel
 
   # Setup draft
   draft: ->
-    # Unfinalize if final
-    if @response.status == "final" then @_unfinalize()
-
     if not @response._id
       @response._id = formUtils.createUid()
       @response.form = @form._id
@@ -32,10 +29,18 @@ module.exports = class ResponseModel
       @response.startedOn = new Date().toISOString()
       @response.data = {}
       @response.approvals = []
-  
+      @response.events = []
+
       # Create code. Not unique, but unique per user if logged in once.
       @response.code = @user + "-" + formUtils.createBase32TimeCode(new Date())
-    
+  
+    # Add event if not in draft
+    if @response.status != "draft"
+      @_addEvent("draft")
+
+    # Unfinalize if final
+    if @response.status == "final" then @_unfinalize()
+
     @response.formRev = @form._rev
     @response.status = "draft"
 
@@ -72,6 +77,8 @@ module.exports = class ResponseModel
       @response.status = "pending"
       @response.approvals = []
 
+    @_addEvent("submit")
+
     @fixRoles()
     @_updateEntities()
 
@@ -100,6 +107,8 @@ module.exports = class ResponseModel
     if @response.approvals.length >= deployment.approvalStages.length
       @_finalize()
 
+    @_addEvent("approve", override: _.intersection(approvers, subjects).length == 0)
+
     @fixRoles()
     @_updateEntities()
 
@@ -119,8 +128,15 @@ module.exports = class ResponseModel
     @response.rejectionMessage = message
     @response.approvals = []
 
+    @_addEvent("reject", message: message)
+
     @fixRoles()
     @_updateEntities()
+
+  # Record that an edit was done, if not by enumerator
+  recordEdit: ->
+    if @user != @response.user
+      @_addEvent("edit")
 
   # Performs special operation when a response becomes final. Also sets status
   _finalize: ->
@@ -443,3 +459,8 @@ module.exports = class ResponseModel
           results.updates.push(r.update)
 
       cb(results)
+
+  # Add an event
+  _addEvent: (type, attrs={}) ->
+    event = _.extend({ type: type, by: @user, on: new Date().toISOString()}, attrs)
+    @response.events.push(event)

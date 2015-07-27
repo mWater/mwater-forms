@@ -241,6 +241,42 @@
     {
       "_base": "en",
       "en": "Not found"
+    },
+    {
+      "_base": "en",
+      "en": "Drafted"
+    },
+    {
+      "_base": "en",
+      "en": "Submitted"
+    },
+    {
+      "_base": "en",
+      "en": "Approved"
+    },
+    {
+      "_base": "en",
+      "en": "Edited"
+    },
+    {
+      "_base": "en",
+      "en": "by"
+    },
+    {
+      "_base": "en",
+      "en": "on"
+    },
+    {
+      "_base": "en",
+      "en": "Admin Override"
+    },
+    {
+      "_base": "en",
+      "en": "Hide History"
+    },
+    {
+      "_base": "en",
+      "en": "Show History"
     }
   ]
 }
