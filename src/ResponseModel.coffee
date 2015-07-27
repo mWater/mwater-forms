@@ -463,4 +463,5 @@ module.exports = class ResponseModel
   # Add an event
   _addEvent: (type, attrs={}) ->
     event = _.extend({ type: type, by: @user, on: new Date().toISOString()}, attrs)
+    @response.events = @response.events or []
     @response.events.push(event)
