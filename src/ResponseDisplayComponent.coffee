@@ -77,7 +77,7 @@ module.exports = class ResponseDisplayComponent extends React.Component
     events = @props.response.events or []
 
     if @state.showCompleteHistory
-      for ev in events
+      for ev in _.initial(events)
         contents.push(@renderEvent(ev))
 
     lastEvent = _.last(events)
