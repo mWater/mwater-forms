@@ -66,7 +66,7 @@ module.exports = class ResponseDisplayComponent extends React.Component
       " "
       moment(ev.on).format('lll')
       if ev.message
-        ": " + ev.message
+        [": ", H.i(null, ev.message)]
       if ev.override
         H.span(className: "label label-warning", @props.T("Admin Override"))
 
