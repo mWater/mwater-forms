@@ -50,8 +50,8 @@ module.exports = class ResponseDisplayComponent extends React.Component
         @props.T("Submitted")
       when "approve"
         @props.T("Approved")
-      when "approve"
-        @props.T("Approved")
+      when "reject"
+        @props.T("Rejected")
       when "edit"
         @props.T("Edited")
 
