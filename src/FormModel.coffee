@@ -16,7 +16,6 @@ module.exports = class FormModel
     deploySubs = _.uniq(_.flatten(_.map(@form.deployments, getDeploymentSubs)))
     return deploySubs
 
-
   # Corrects viewing roles to ensure that appropriate subjects can see form
   correctViewers: ->
     # Compute viewers needed who don't have roles
@@ -38,9 +37,12 @@ module.exports = class FormModel
 
   # Check if user is an admin
   amAdmin: (user, groups) ->
-    subjects = ["user:" + user]
+    subjects = ["all", "user:" + user]
     subjects = subjects.concat(_.map groups, (g) -> "group:" + g)
+    return _.any(@form.roles, (r) -> r.id in subjects and r.role == 'admin')
 
-    admins = _.pluck(_.where(@form.roles, { role: "admin"}), "id")
-
-    return _.intersection(admins, subjects).length > 0
+  # Check if user is admin or deploy
+  amDeploy: (user, groups) ->
+    subjects = ["all", "user:" + user]
+    subjects = subjects.concat(_.map groups, (g) -> "group:" + g)
+    return _.any(@form.roles, (r) -> r.id in subjects and r.role in ['admin', 'deploy'])
