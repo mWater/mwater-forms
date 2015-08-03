@@ -154,6 +154,7 @@ module.exports = class ResponseModel
     if @response.pendingEntityCreates
       for create in @response.pendingEntityCreates
         @response.data[create.questionId].value = null
+        delete @response.data[create.questionId].created
 
     # Remove any pending entity operations
     @response.pendingEntityUpdates = []
@@ -193,7 +194,7 @@ module.exports = class ResponseModel
           entity._roles = [{ to: "user:#{@user}", role: "admin" }, { to: "all", role: "view" }]
 
           # Set question value
-          @response.data[question._id] = { value: entity._id }
+          @response.data[question._id] = { value: entity._id, created: true }
 
           create = {
             entityType: question.entityType,
@@ -284,7 +285,12 @@ module.exports = class ResponseModel
     for question in formUtils.priorQuestions(@form.design)    
       if question._type == "EntityQuestion"
         if @response.data and @response.data[question._id] and @response.data[question._id].value
-          entities.push({ questionId: question._id, entityType: question.entityType, entityId: @response.data[question._id].value })
+          entities.push({ 
+            questionId: question._id
+            entityType: question.entityType
+            entityId: @response.data[question._id].value
+            created: @response.data[question._id].created == true
+          })
 
     @response.entities = entities
 

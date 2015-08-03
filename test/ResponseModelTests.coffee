@@ -599,7 +599,20 @@ describe "ResponseModel", ->
 
       # Check that entities was filled out
       assert.deepEqual @response.entities, [
-        { questionId: "q1", entityType: "type1", entityId: "entityid123" }
+        { questionId: "q1", entityType: "type1", entityId: "entityid123", created: false }
+      ], JSON.stringify(@response.entities)
+
+    it "sets entities created flag", ->
+      @model = new ResponseModel(response: @response, form: @form, user: "user2", groups: ["dep2en1"])
+      @model.draft()
+
+      # Set entity question value
+      @response.data = { q1: { value: "entityid123", created: true } }
+      @model.submit()
+
+      # Check that entities was filled out
+      assert.deepEqual @response.entities, [
+        { questionId: "q1", entityType: "type1", entityId: "entityid123", created: true }
       ]
 
     it "resets entities", ->
@@ -770,6 +783,7 @@ describe "ResponseModel", ->
         assert.equal create.entity.text, "abc"
         assert create.entity._id.length > 10 # uuid
         assert.equal create.entity._id, @response.data.q2.value, "Should set entity question value"
+        assert.isTrue @response.data.q2.created, "Should set created flag in question"
 
         # Sets default roles (admin to enumerator, view to all)
         assert.deepEqual create.entity._roles, [{ to: "user:user", role: "admin" }, { to: "all", role: "view" }]
@@ -779,7 +793,8 @@ describe "ResponseModel", ->
         @finalizeForm()
 
         @model.draft()
-        assert not @response.data.q2.value
+        assert not @response.data.q2.value, "Should unset value"
+        assert not @response.data.q2.created, "Should unset created flag in question"
 
       it "leaves create entity questions alone on un-finalize if creation already completed", ->
         @response.data = { q1: { value: "abc" } }
@@ -788,6 +803,7 @@ describe "ResponseModel", ->
 
         @model.draft()
         assert @response.data.q2.value
+        assert.isTrue @response.data.q2.created, "Should leave created flag in question"
 
       describe "with roles set in deployment", ->
         beforeEach ->
