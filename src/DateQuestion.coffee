@@ -6,7 +6,7 @@ moment = require 'moment'
 
 # This only works in browser
 if process.browser
-  require('bootstrap-datetimepicker/src/js/bootstrap-datetimepicker')
+  require('eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js')
 
 # Date question. Options include:
 # format: Any moment.js format
@@ -90,6 +90,7 @@ module.exports = class DateQuestion extends Question
         format: @options.format
         useCurrent: false
         showTodayButton: true
+        focusOnShow: false
       }
 
       @$('#datetimepicker').datetimepicker(pickerOptions)

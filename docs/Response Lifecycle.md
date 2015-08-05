@@ -17,3 +17,12 @@ Entity updates are stored in `pendingEntityUpdates` in the response until resolv
 If an entity question is flagged as `createEntity` = true, then it will create instead of update an entity if left blank. In this case, it goes to `pendingEntityCreates`.
 
 If the entity has not been created (is still in `pendingEntityCreates`) and the state is moved from `final` to `rejected`, then the entity question is blanked and the pending op is cancelled.
+
+## Entity References
+
+The `entities` field of each response always contains any entities that are referenced by the response. It is an array of:
+
+questionId: _id of question that references entity
+entityType: type fo the entity (string)
+entityId: _id of the entity
+created: True if entity was created by this form
