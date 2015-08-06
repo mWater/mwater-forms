@@ -25,10 +25,16 @@ module.exports = class EntityDisplayComponent extends React.Component
       # Handle old style embedded properties
       if _.isObject(propId)
         propId = propId._id
+      if not propId
+        continue
       # END REMOVE
 
       # Get property
       prop = @props.formCtx.getProperty(propId)
+
+      # If property not found, just ignore
+      if not prop
+        continue
 
       name = localize(prop.name)
       value = entity[prop.code]
