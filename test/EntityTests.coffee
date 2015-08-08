@@ -196,6 +196,44 @@ describe "Entities", ->
       @model.set("q1", { value: "answered"})
       assert.deepEqual compiled(), { text: "sometext" }
 
+    it "doesn't save if section not visible", ->
+      form = { 
+        contents: [
+          { 
+            _id: "s1"
+            _type: "Section"
+            name: { _base: "en", en: "Section1" } 
+            conditions: [{ lhs: {question: "q1"}, op: "present"}]
+            contents: [
+              {
+                _id: "q1"
+                _type: "TextQuestion"
+                text: { _base: "en", en: "English", es: "Spanish" }
+                format: "singleline"
+              },
+              {
+                _id: "q2"
+                _type: "TextQuestion"
+                text: { _base: "en", en: "English", es: "Spanish" }
+                format: "singleline"
+              }
+            ]
+          }
+        ]
+      }
+
+      compiled = @compiler.compileSaveLinkedAnswers([
+        { propertyId: @propText._id, type: "direct", direction: "save", questionId: "q2" }
+        ], form)
+
+      # Save text
+      @model.set("q2", { value: "sometext"})
+      assert.deepEqual compiled(), {  }
+
+      # Save text
+      @model.set("q1", { value: "answered"})
+      assert.deepEqual compiled(), { text: "sometext" }
+
     it "saves enum:choice links", ->
       compiled = @compiler.compileSaveLinkedAnswers([
         { propertyId: @propEnum._id, type: "enum:choice", direction: "save", questionId: "q1", mappings: [

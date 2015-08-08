@@ -212,6 +212,14 @@ module.exports = class FormCompiler
       if form
         isQuestionVisible = (questionId) =>
           question = formUtils.findItem(form, questionId)
+
+          # Find which section question is in since section can make question invisible
+          section = _.find(form.contents, (item) =>
+            return item._type == "Section" and formUtils.findItem(item, questionId)
+            )
+          if section
+            if not @compileConditions(section.conditions)()
+              return false
           return @compileConditions(question.conditions)()
       else
         isQuestionVisible = null
