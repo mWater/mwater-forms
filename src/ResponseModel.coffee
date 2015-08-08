@@ -172,7 +172,7 @@ module.exports = class ResponseModel
     if @form.design.entitySettings and @form.design.entitySettings.entityType and not @formCtx.formEntity?
       creates.push { 
         entityType: _.last(@form.design.entitySettings.entityType.split(":")), 
-        entity: _.extend(compiler.compileSaveLinkedAnswers(@form.design.entitySettings.propertyLinks)(), { 
+        entity: _.extend(compiler.compileSaveLinkedAnswers(@form.design.entitySettings.propertyLinks, @form.design)(), { 
           _id: uuid.v4(),
           _roles: [{ to: "user:#{@user}", role: "admin" }, { to: "all", role: "view" }] # Default roles to protected
         })
@@ -187,7 +187,7 @@ module.exports = class ResponseModel
         # If value is *not* set
         if not model.get(question._id) or not model.get(question._id).value
           # Get data from that entity question
-          entity = compiler.compileSaveLinkedAnswers(question.propertyLinks)()
+          entity = compiler.compileSaveLinkedAnswers(question.propertyLinks, @form.design)()
 
           # Add _id
           entity._id = uuid.v4()
@@ -256,7 +256,7 @@ module.exports = class ResponseModel
         questionId: null
         entityId: @formCtx.formEntity._id, 
         entityType: _.last(@form.design.entitySettings.entityType.split(":")), 
-        updates: compiler.compileSaveLinkedAnswers(@form.design.entitySettings.propertyLinks)()
+        updates: compiler.compileSaveLinkedAnswers(@form.design.entitySettings.propertyLinks, @form.design)()
       })
     # END DEPRECATED
 
@@ -268,7 +268,7 @@ module.exports = class ResponseModel
         # If value is set
         if model.get(question._id) and model.get(question._id).value 
           # Get updates from that entity question
-          propertyUpdates = compiler.compileSaveLinkedAnswers(question.propertyLinks)()
+          propertyUpdates = compiler.compileSaveLinkedAnswers(question.propertyLinks, @form.design)()
           if _.keys(propertyUpdates).length > 0
             updates.push({
               entityId: model.get(question._id).value,
