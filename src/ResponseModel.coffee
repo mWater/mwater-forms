@@ -419,7 +419,7 @@ module.exports = class ResponseModel
       for update in @response.pendingEntityUpdates
         # Create an async task 
         tasks.push (cb) =>
-          db[update.entityType].findOne({ _id: update.entityId }, { interim: false }, (entity) =>
+          db[update.entityType].findOne({ _id: update.entityId }, { interim: false, timeout: 2000 }, (entity) =>
             # If not found, continue
             if not entity
               return cb()
