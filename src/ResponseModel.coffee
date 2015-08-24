@@ -351,7 +351,7 @@ module.exports = class ResponseModel
 
     # Get list of admins at both deployment and form level and add approvers
     admins = _.union(_.pluck(_.where(@form.roles, { role: "admin"}), "id"), deployment.admins, deployment.approvalStages[@response.approvals.length].approvers)
-    subjects = ["user:" + @user]
+    subjects = ["user:" + @user, "all"]
     subjects = subjects.concat(_.map @groups, (g) -> "group:" + g)
 
     if _.intersection(admins, subjects).length > 0
@@ -362,7 +362,7 @@ module.exports = class ResponseModel
   canDelete: ->
     admins = _.pluck(_.where(@response.roles, { role: "admin"}), "id")
 
-    subjects = ["user:" + @user]
+    subjects = ["user:" + @user, "all"]
     subjects = subjects.concat(_.map @groups, (g) -> "group:" + g)
 
     return _.intersection(admins, subjects).length > 0
@@ -390,7 +390,7 @@ module.exports = class ResponseModel
     if @response.status == "pending"
       # Get list of admins at both deployment and form level and add approvers
       admins = _.union(_.pluck(_.where(@form.roles, { role: "admin"}), "id"), deployment.admins, deployment.approvalStages[@response.approvals.length].approvers)
-      subjects = ["user:" + @user]
+      subjects = ["user:" + @user, "all"]
       subjects = subjects.concat(_.map @groups, (g) -> "group:" + g)
 
       if _.intersection(admins, subjects).length > 0
@@ -400,7 +400,7 @@ module.exports = class ResponseModel
       # Admins can reject final
       admins = _.union(_.pluck(_.where(@form.roles, { role: "admin"}), "id"), deployment.admins)
 
-      subjects = ["user:" + @user]
+      subjects = ["user:" + @user, "all"]
       subjects = subjects.concat(_.map @groups, (g) -> "group:" + g)
 
       return _.intersection(admins, subjects).length > 0
