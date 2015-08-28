@@ -1,5 +1,6 @@
 Backbone = require 'backbone'
 _ = require 'underscore'
+ControlList = require './ControlList'
 
 module.exports = class Section extends Backbone.View
   className: "section"
@@ -11,7 +12,9 @@ module.exports = class Section extends Backbone.View
     @options = options or {}
     @name = @options.name
     @contents = @options.contents
-    
+
+    @controlList = new ControlList(@contents, this)
+
     # Always invisible initially
     @$el.hide()
     @render()
@@ -23,20 +26,7 @@ module.exports = class Section extends Backbone.View
 
   # Returns true if validates ok
   validate: ->
-    # Get all visible items
-    items = _.filter @contents, (c) ->
-      c.visible and c.validate
-
-    # Get validation results
-    results = _.map items, (item) ->
-      item.validate()
-
-    # Scroll item into view
-    for i in [0...items.length]
-      if results[i]
-        items[i].$el.scrollintoview()
-
-    return not _.any(results)
+    return @controlList.validate()
 
   render: ->
     @$el.html @template(this)

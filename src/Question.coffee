@@ -229,3 +229,8 @@ module.exports = class Question extends Backbone.View
   # Gets the answer value field in the model
   getAnswerValue: ->
     return @getAnswerField('value')
+
+  setFocus: (offset) ->
+    $('html, body').animate({
+      scrollTop: $("#" + @id).offset().top - offset
+    }, 1000);

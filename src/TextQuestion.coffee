@@ -15,12 +15,19 @@ module.exports = class TextQuestion extends Question
 
   events:
     "change #input": "changed"
+    "keydown #input": "keydown"
 
   getText: ->
     return @$("#input").val()
 
   changed: ->
     @setAnswerValue(@getText())
+
+  keydown: (ev) ->
+    if ev.keyCode == 13
+      @$("#input").blur()
+      @trigger 'nextQuestion'
+    return true
 
   validateInternal: ->
     if @options.format == "email"
@@ -33,3 +40,7 @@ module.exports = class TextQuestion extends Question
       return true
 
     return false
+
+  setFocus: ->
+    @$("#input").focus()
+    @$("#input").select()
