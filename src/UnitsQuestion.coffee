@@ -62,3 +62,7 @@ module.exports = class UnitsQuestion extends Question
     if quantity and not @$("#units").val()
       return true # TODO localize
     return null
+
+  setFocus: ->
+    @$("#quantity").focus()
+    @$("#quantity").select()

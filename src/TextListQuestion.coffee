@@ -7,6 +7,7 @@ $ = require 'jquery'
 
 module.exports = class TextListQuestion extends Question
   events:
+    "keydown": "keydown"
     "input .box" : "record"
     "click .remove" : "removeItem"
 
@@ -79,4 +80,14 @@ module.exports = class TextListQuestion extends Question
     index = parseInt($(ev.currentTarget).data("index"))
     items.splice(index, 1)
     @setAnswerValue(items)
+
+  keydown: (ev) ->
+    # NOT READY
+    if ev.keyCode == 13
+      @$("#input").blur()
+      @trigger 'nextQuestion'
+
+  setFocus: ->
+    @$("#input_0").focus()
+    @$("#input_0").select()
 

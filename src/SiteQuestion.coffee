@@ -10,7 +10,7 @@ module.exports = class SiteQuestion extends Question
   renderAnswer: (answerEl) ->
     answerEl.html '''
       <div class="input-group">
-        <input type="tel" class="form-control">
+        <input id="input" type="tel" class="form-control">
         <span class="input-group-btn"><button class="btn btn-default" id="select" type="button">''' + @T("Select") + '''</button></span>
       </div>
       <div class="text-muted">
@@ -56,3 +56,6 @@ module.exports = class SiteQuestion extends Question
 
     return "Invalid Site"
 
+  setFocus: ->
+    @$("#input").focus()
+    @$("#input").select()

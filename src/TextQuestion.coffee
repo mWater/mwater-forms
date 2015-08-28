@@ -24,19 +24,6 @@ module.exports = class TextQuestion extends Question
   changed: ->
     @setAnswerValue(@getText())
 
-  inputKeydown: (ev) ->
-    if ev.keyCode == 13
-      if @options.commentsField
-        @$("#comments").focus()
-        @$("#comments").select()
-      else
-        @commentsKeydown(ev)
-
-  commentsKeydown: (ev) ->
-    if ev.keyCode == 13
-      @$("#input").blur()
-      @trigger 'nextQuestion'
-
   validateInternal: ->
     if @options.format == "email"
       if @getText().match /[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/
@@ -48,6 +35,21 @@ module.exports = class TextQuestion extends Question
       return true
 
     return false
+
+  inputKeydown: (ev) ->
+    # If it's a multiline, we have to handle the enter key normally
+    if @options.format != "multiline"
+      if ev.keyCode == 13
+        if @options.commentsField
+          @$("#comments").focus()
+          @$("#comments").select()
+        else
+          @commentsKeydown(ev)
+
+  commentsKeydown: (ev) ->
+    if ev.keyCode == 13
+      @$("#input").blur()
+      @trigger 'nextQuestion'
 
   setFocus: ->
     @$("#input").focus()

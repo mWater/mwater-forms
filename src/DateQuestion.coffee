@@ -44,6 +44,8 @@ module.exports = class DateQuestion extends Question
     super(options)
 
   events:
+    "keydown #date_input": "dateInputKeydown"
+    "keydown #comments": "commentsKeydown"
     "dp.change #datetimepicker": -> 
       # No error if changed
       @$(".form-group").removeClass("has-error")
@@ -132,3 +134,20 @@ module.exports = class DateQuestion extends Question
       @$('#datetimepicker').data("DateTimePicker").destroy()
       
     super()
+
+  dateInputKeydown: (ev) ->
+    if ev.keyCode == 13
+      if @options.commentsField
+        @$("#comments").focus()
+        @$("#comments").select()
+      else
+        @commentsKeydown(ev)
+
+  commentsKeydown: (ev) ->
+    if ev.keyCode == 13
+      @$("#date_input").blur()
+      @trigger 'nextQuestion'
+
+  setFocus: ->
+    @$("#date_input").focus()
+    @$("#date_input").select()
