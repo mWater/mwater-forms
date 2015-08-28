@@ -231,6 +231,10 @@ module.exports = class Question extends Backbone.View
     return @getAnswerField('value')
 
   setFocus: (offset) ->
-    $('html, body').animate({
-      scrollTop: $("#" + @id).offset().top - offset
-    }, 1000);
+    if @options.commentsField
+      @$("#comments").focus()
+      @$("#comments").select()
+    else
+      $('html, body').animate({
+        scrollTop: $("#" + @id).offset().top - offset
+      }, 1000);
