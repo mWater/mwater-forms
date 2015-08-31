@@ -99,6 +99,7 @@ module.exports = class TextListQuestion extends Question
         nextInput = @$("#input_" + (index+1))
         nextInput.focus()
         nextInput.select()
+      # It's important to prevent the default behavior when handling tabs (or else the tab is applied after the focus change)
       ev.preventDefault()
 
   setFocus: ->

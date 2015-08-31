@@ -236,6 +236,7 @@ module.exports = class Question extends Backbone.View
       # If it's a multiline, we have to handle the enter key normally
       if @options.format != "multiline"
         @nextOrComments(ev)
+        # It's important to prevent the default behavior when handling tabs (or else the tab is applied after the focus change)
         ev.preventDefault()
 
   # Either jump to next question or select the comments box
