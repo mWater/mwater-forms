@@ -23,6 +23,7 @@ module.exports = Question.extend
   events:
     "change .answer input": "changed"
     "input .answer input": "checkValidation"
+    "keydown .answer input": "inputKeydown"
 
   validateInternal: ->
     val = @$(".answer input").val()
@@ -57,3 +58,8 @@ module.exports = Question.extend
       if isNaN(val)
         val = null
       @setAnswerValue(val)
+
+  setFocus: ->
+    input = @$(".answer input")
+    input.focus()
+    input.select()

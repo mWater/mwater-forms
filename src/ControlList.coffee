@@ -1,3 +1,6 @@
+# ControlList is used by FormControls and Section to manage their questions
+# It takes care of the validation and handling the nextQuestion event that any Question can trigger
+
 module.exports = class ControlList
   constructor: (contents, view) ->
     @contents = contents
@@ -7,10 +10,13 @@ module.exports = class ControlList
       @view.listenTo content, 'nextQuestion', @focusNextQuestion.bind(this, content)
 
   focusNextQuestion: (content) ->
-    # Look for the next Question
+    # Look for the current Question
     index = @contents.indexOf(content)
+
+    # Find the next content that is not invisible (could be a Question, but could also be an Instruction)
     index++
     while index < @contents.length
+      # Take the next content
       content = @contents[index]
       # Skip any invisible content
       if content.visible

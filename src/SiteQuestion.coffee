@@ -39,6 +39,7 @@ module.exports = class SiteQuestion extends Question
   events:
     'change' : 'changed'
     'click #select' : 'selectSite'
+    "keydown #input": "inputKeydown"
 
   changed: ->
     @setAnswerValue(code: @$("input").val())
@@ -55,7 +56,3 @@ module.exports = class SiteQuestion extends Question
       return false
 
     return "Invalid Site"
-
-  setFocus: ->
-    @$("#input").focus()
-    @$("#input").select()

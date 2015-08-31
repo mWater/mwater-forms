@@ -16,7 +16,6 @@ module.exports = class TextQuestion extends Question
   events:
     "change #input": "changed"
     "keydown #input": "inputKeydown"
-    "keydown #comments": "commentsKeydown"
 
   getText: ->
     return @$("#input").val()
@@ -36,21 +35,7 @@ module.exports = class TextQuestion extends Question
 
     return false
 
-  inputKeydown: (ev) ->
-    # If it's a multiline, we have to handle the enter key normally
-    if @options.format != "multiline"
-      if ev.keyCode == 13
-        if @options.commentsField
-          @$("#comments").focus()
-          @$("#comments").select()
-        else
-          @commentsKeydown(ev)
-
-  commentsKeydown: (ev) ->
-    if ev.keyCode == 13
-      @$("#input").blur()
-      @trigger 'nextQuestion'
-
   setFocus: ->
-    @$("#input").focus()
-    @$("#input").select()
+    input = @$("#input")
+    input.focus()
+    input.select()

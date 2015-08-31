@@ -82,12 +82,28 @@ module.exports = class TextListQuestion extends Question
     @setAnswerValue(items)
 
   keydown: (ev) ->
-    # NOT READY
-    if ev.keyCode == 13
-      @$("#input").blur()
-      @trigger 'nextQuestion'
+    # When pressing ENTER or TAB
+    if ev.keyCode == 13 or ev.keyCode == 9
+      # Get the currently existing entries
+      items = @getAnswerValue() or []
+
+      # Get the index of the input that caused the callback
+      id = ev.target.id
+      index = parseInt(id.slice(6))
+
+      # If the index is equal to the items length, it means that it's the last empty entry
+      if index >= items.length
+        @nextOrComments(ev)
+      # If not, we focus the next input
+      else
+        nextInput = @$("#input_" + (index+1))
+        nextInput.focus()
+        nextInput.select()
+      ev.preventDefault()
 
   setFocus: ->
-    @$("#input_0").focus()
-    @$("#input_0").select()
+    # Select the first input
+    firstInput = @$("#input_0")
+    firstInput.focus()
+    firstInput.select()
 
