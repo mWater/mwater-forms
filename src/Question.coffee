@@ -229,3 +229,34 @@ module.exports = class Question extends Backbone.View
   # Gets the answer value field in the model
   getAnswerValue: ->
     return @getAnswerField('value')
+
+  inputKeydown: (ev) ->
+    # When pressing ENTER or TAB
+    if ev.keyCode == 13 or ev.keyCode == 9
+      # If it's a multiline, we have to handle the enter key normally
+      if @options.format != "multiline"
+        @nextOrComments(ev)
+        # It's important to prevent the default behavior when handling tabs (or else the tab is applied after the focus change)
+        ev.preventDefault()
+
+  # Either jump to next question or select the comments box
+  nextOrComments: (ev) ->
+    # If it has a comment box, set the focus on it
+    if @options.commentsField
+      comments = @$("#comments")
+      comments.focus()
+      comments.select()
+    # Else we lose the focus and go to the next question
+    else
+      # Blur the input (remove the focus)
+      ev.target.blur()
+      # Trigger a nextQuestion event that the ControlList will handle
+      @trigger 'nextQuestion'
+
+  # Scroll so that it's at the top of the screen (lowered by any offset)
+  # The offset is mostly used to avoid hiding it under the top banner
+  # Many questions have their own behavior for setting the focus.
+  setFocus: (offset) ->
+    $('html, body').animate({
+      scrollTop: $("#" + @id).offset().top - offset
+    }, 1000);

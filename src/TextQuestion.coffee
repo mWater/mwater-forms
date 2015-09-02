@@ -15,6 +15,7 @@ module.exports = class TextQuestion extends Question
 
   events:
     "change #input": "changed"
+    "keydown #input": "inputKeydown"
 
   getText: ->
     return @$("#input").val()
@@ -33,3 +34,8 @@ module.exports = class TextQuestion extends Question
       return true
 
     return false
+
+  setFocus: ->
+    input = @$("#input")
+    input.focus()
+    input.select()

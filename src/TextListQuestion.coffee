@@ -7,6 +7,7 @@ $ = require 'jquery'
 
 module.exports = class TextListQuestion extends Question
   events:
+    "keydown": "keydown"
     "input .box" : "record"
     "click .remove" : "removeItem"
 
@@ -79,4 +80,31 @@ module.exports = class TextListQuestion extends Question
     index = parseInt($(ev.currentTarget).data("index"))
     items.splice(index, 1)
     @setAnswerValue(items)
+
+  keydown: (ev) ->
+    # When pressing ENTER or TAB
+    if ev.keyCode == 13 or ev.keyCode == 9
+      # Get the currently existing entries
+      items = @getAnswerValue() or []
+
+      # Get the index of the input that caused the callback
+      id = ev.target.id
+      index = parseInt(id.slice(6))
+
+      # If the index is equal to the items length, it means that it's the last empty entry
+      if index >= items.length
+        @nextOrComments(ev)
+      # If not, we focus the next input
+      else
+        nextInput = @$("#input_" + (index+1))
+        nextInput.focus()
+        nextInput.select()
+      # It's important to prevent the default behavior when handling tabs (or else the tab is applied after the focus change)
+      ev.preventDefault()
+
+  setFocus: ->
+    # Select the first input
+    firstInput = @$("#input_0")
+    firstInput.focus()
+    firstInput.select()
 

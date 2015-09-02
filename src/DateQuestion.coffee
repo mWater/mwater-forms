@@ -44,7 +44,8 @@ module.exports = class DateQuestion extends Question
     super(options)
 
   events:
-    "dp.change #datetimepicker": -> 
+    "keydown #date_input": "inputKeydown"
+    "dp.change #datetimepicker": ->
       # No error if changed
       @$(".form-group").removeClass("has-error")
       @save()

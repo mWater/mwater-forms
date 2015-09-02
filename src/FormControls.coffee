@@ -1,6 +1,7 @@
 Backbone = require 'backbone'
 _ = require 'underscore'
 ezlocalize = require 'ez-localize'
+ControlList = require './ControlList'
 
 # Displays form controls (Save, Complete, Discard)
 module.exports = class FormControls extends Backbone.View
@@ -13,7 +14,9 @@ module.exports = class FormControls extends Backbone.View
 
     # Save T
     @T = options.T or ezlocalize.defaultT
-    
+
+    @controlList = new ControlList(@contents, this)
+
     @render()
 
   events:
@@ -23,20 +26,7 @@ module.exports = class FormControls extends Backbone.View
 
   # Returns true if validates ok
   validate: ->
-    # Get all visible items
-    items = _.filter @contents, (c) ->
-      c.visible and c.validate
-
-    # Get validation results
-    results = _.map items, (item) ->
-      item.validate()
-
-    # Scroll item into view
-    for i in [0...items.length]
-      if results[i]
-        items[i].$el.scrollintoview()
-
-    return not _.any(results)
+    return @controlList.validate()
 
   finish: ->
     # Validate current contents

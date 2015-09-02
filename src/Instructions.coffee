@@ -33,4 +33,11 @@ module.exports = class Instructions extends Backbone.View
         return true
     # Test equality to handle undefined more gracefully
     return @options.conditional(this.model) == true
+
+  setFocus: (offset) ->
+    # Scroll so that it's at the top of the screen (lowered by any offset)
+    # The offset is mostly used to avoid hiding it under the top banner
+    $('html, body').animate({
+      scrollTop: $("#" + @id).offset().top - offset
+    }, 1000);
   
