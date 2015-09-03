@@ -213,6 +213,10 @@ module.exports = class FormCompiler
         isQuestionVisible = (questionId) =>
           question = formUtils.findItem(form, questionId)
 
+          if not question
+            console.log "Misconfigured entities question in form question #{questionId}"
+            return false
+
           # Find which section question is in since section can make question invisible
           section = _.find(form.contents, (item) =>
             return item._type == "Section" and formUtils.findItem(item, questionId)
