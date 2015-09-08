@@ -113,8 +113,9 @@ module.exports = class ResponseDisplayComponent extends React.Component
         @props.T('User'), ": ", H.b(null, @props.response.user)
       H.div key: "code", 
         @props.T('Response Id'), ": ", H.b(null, @props.response.code)
-      H.div key: "date", 
-        @props.T('Date'), ": ", H.b(null, moment(@props.response.modified.on).format('lll'))
+      if @props.response and @props.response.modified
+        H.div key: "date", 
+          @props.T('Date'), ": ", H.b(null, moment(@props.response.modified.on).format('lll'))
       @renderStatus()
       @renderHistory()
 
