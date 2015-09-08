@@ -50,7 +50,7 @@ module.exports = class ResponseModel
     deployment = _.find @form.deployments, (dep) =>
       return _.intersection(dep.enumerators, subjects).length > 0 and dep.active
     if not deployment
-      throw new Error("No matching deployments")
+      throw new Error("No matching deployments for #{@form._id} user #{@user}")
     @response.deployment = deployment._id
 
     @fixRoles()
@@ -68,7 +68,7 @@ module.exports = class ResponseModel
 
     deployment = _.findWhere(@form.deployments, { _id: @response.deployment })
     if not deployment
-      throw new Error("No matching deployments")
+      throw new Error("No matching deployments for #{@form._id} user #{@user}")
 
     # If no approval stages
     if deployment.approvalStages.length == 0
@@ -89,7 +89,7 @@ module.exports = class ResponseModel
 
     deployment = _.findWhere(@form.deployments, { _id: @response.deployment })
     if not deployment
-      throw new Error("No matching deployments")
+      throw new Error("No matching deployments for #{@form._id} user #{@user}")
 
     approval = { by: @user, on: new Date().toISOString() }
 
@@ -119,7 +119,7 @@ module.exports = class ResponseModel
 
     deployment = _.findWhere(@form.deployments, { _id: @response.deployment })
     if not deployment
-      throw new Error("No matching deployments")
+      throw new Error("No matching deployments for #{@form._id} user #{@user}")
 
     # Unfinalize if final
     if @response.status == "final" then @_unfinalize()
@@ -299,7 +299,7 @@ module.exports = class ResponseModel
     # Determine deployment
     deployment = _.findWhere(@form.deployments, { _id: @response.deployment })
     if not deployment
-      throw new Error("No matching deployments")
+      throw new Error("No matching deployments for #{@form._id} user #{@user}")
 
     # If pending and more or equal approvals than approval stages, response is final
     if @response.status == "pending" and @response.approvals? and @response.approvals.length >= deployment.approvalStages.length
@@ -344,7 +344,7 @@ module.exports = class ResponseModel
   canApprove: ->
     deployment = _.findWhere(@form.deployments, { _id: @response.deployment })
     if not deployment
-      throw new Error("No matching deployments")
+      throw new Error("No matching deployments for #{@form._id} user #{@user}")
 
     if @response.status != "pending"
       return false
@@ -382,7 +382,7 @@ module.exports = class ResponseModel
   canReject: ->
     deployment = _.findWhere(@form.deployments, { _id: @response.deployment })
     if not deployment
-      throw new Error("No matching deployments")
+      throw new Error("No matching deployments for #{@form._id} user #{@user}")
 
     if @response.status == "draft" or @response.status == "rejected"
       return false
