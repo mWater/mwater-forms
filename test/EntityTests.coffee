@@ -53,6 +53,15 @@ describe "Entities", ->
       compiled({ geometry: { type: "Point", coordinates: [1,2]}})
       assert.deepEqual @model.get("q1").value, { latitude: 2, longitude: 1 }
 
+    it "loads geometry:randomized_location links", ->
+      compiled = @compiler.compileLoadLinkedAnswers([
+        { propertyId: @propGeometry._id, type: "geometry:randomized_location", direction: "load", questionId: "q1" }
+      ])
+
+      # Load point
+      compiled({ geometry: { type: "Point", coordinates: [1,2]}})
+      assert.deepEqual @model.get("q1").value, { latitude: 2, longitude: 1 }
+
     it "loads enum:choice links", ->
       compiled = @compiler.compileLoadLinkedAnswers([
         { propertyId: @propEnum._id, type: "enum:choice", direction: "load", questionId: "q1", mappings: [
@@ -164,6 +173,21 @@ describe "Entities", ->
       # Save text
       @model.set("q1", { value: { latitude: 1, longitude: 2 }})
       assert.deepEqual compiled(), { geometry: { type: "Point", coordinates: [2, 1]} }
+
+    it "saves geometry:randomized_location links", ->
+      # 1 degree radius = 111,111 meters
+      radius = 111111
+      degreeDifference = 1
+
+      compiled = @compiler.compileSaveLinkedAnswers([
+        { propertyId: @propGeometry._id, type: "geometry:randomized_location", direction: "save", questionId: "q1", randomRadius: radius }
+      ])
+
+      @model.set("q1", { value: { latitude: 1, longitude: 2 }})
+      assert.isAbove compiled().geometry.coordinates[0], 2 - degreeDifference
+      assert.isBelow compiled().geometry.coordinates[0], 2 + degreeDifference
+      assert.isAbove compiled().geometry.coordinates[1], 1 - degreeDifference
+      assert.isBelow compiled().geometry.coordinates[1], 1 + degreeDifference
 
     it "doesn't save if question not visible", ->
       form = { 
