@@ -374,10 +374,14 @@ module.exports = class FormCompiler
 
     return new Section(options)
 
-  compileForm: (form) ->
+  # Compiles a form. Options are:
+  #  entityType: type of optional entity to preload
+  #  entity: optional entity to preload into matching form question
+  #  entityQuestionId: optional question to preload entity into. Will be inferred if not specified
+  #  submitLabel: Label for submit button
+  #  allowSaveForLater: defaults to true
+  compileForm: (form, options={}) ->
     # Check schema version
-    if not form._schema
-      form._schema = require('./index').schemaVersion # TODO remove this and prev line by Sept 2014
     if form._schema < require('./index').minSchemaVersion
       throw new Error("Schema version too low")
     if form._schema > require('./index').schemaVersion
@@ -397,6 +401,8 @@ module.exports = class FormCompiler
         model: @model
         ctx: @ctx
         T: T
+        submitLabel: options.submitLabel
+        allowSaveForLater: if options.allowSaveForLater? then options.allowSaveForLater else true
       })
       contents = [sectionsView]
 
@@ -408,53 +414,42 @@ module.exports = class FormCompiler
         model: @model
         ctx: @ctx
         T: T
+        submitLabel: options.submitLabel
+        allowSaveForLater: if options.allowSaveForLater? then options.allowSaveForLater else true
         })
       contents = [formControls]
 
-    options = {
-      model: @model
-      id: form._id
-      ctx: @ctx
-      T: T
-      name: @compileString(form.name)
-      contents: contents
-    }
-
-    # Entity of form
-    formViewEntity = null
-
-    # If form-level entity, setup setEntity
-    options.setEntity = (entityType, entity, questionId) =>
-      # Load into form level linked answers. DEPRECATED
-      if form.entitySettings
-        # Save entity
-        formViewEntity = entity
-        @compileLoadLinkedAnswers(form.entitySettings.propertyLinks)(entity)
-        return
-      # END DEPRECATED
-
+    # If preloaded entity, load it
+    if options.entity
       # Find entity question
-      if questionId
-        question = formUtils.findItem(form, questionId)
+      if options.entityQuestionId
+        question = formUtils.findItem(form, options.entityQuestionId)
       else
         # Pick first matching
-        question = _.find(formUtils.priorQuestions(form), (q) -> q._type == "EntityQuestion" and q.entityType == entityType)
+        question = _.find(formUtils.priorQuestions(form), (q) -> q._type == "EntityQuestion" and q.entityType == options.entityType)
 
       # Check entity question
       if not question
         throw new Error("Entity question not found")
       if question._type != "EntityQuestion" 
         throw new Error("Not entity question")
-      if question.entityType != entityType
+      if question.entityType != options.entityType
         throw new Error("Wrong entity type")
 
       # Load data
-      @compileLoadLinkedAnswers(question.propertyLinks)(entity)
+      @compileLoadLinkedAnswers(question.propertyLinks)(options.entity)
 
       # Set entity
       entry = @model.get(question._id) || {}
       entry = _.clone(entry)
-      entry.value = entity._id
+      entry.value = options.entity._id
       @model.set(question._id, entry)
 
-    return new FormView(options)
+    return new FormView({
+      model: @model
+      id: form._id
+      ctx: @ctx
+      T: T
+      name: @compileString(form.name)
+      contents: contents
+    })

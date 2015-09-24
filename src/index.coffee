@@ -28,7 +28,6 @@ exports.TextListQuestion = require './TextListQuestion'
 exports.UnitsQuestion = require './UnitsQuestion'
 exports.FormCompiler = require './FormCompiler'
 exports.LocationView = require './LocationView'
-exports.FormView = require './FormView'
 exports.utils = require './utils'
 exports.LocationFinder = require './LocationFinder'
 
@@ -50,51 +49,6 @@ exports.templateView = (template) ->
       $(@el).html template(data)
   }
 
-exports.SurveyView = class SurveyView extends exports.FormView
-
-# TODO localize and perhaps remove
-exports.WaterTestEditView = class WaterTestEditView extends exports.FormView
-  initialize: (options) ->
-    super(options)
-
-    # Add buttons at bottom
-    # TODO move to template and sep file
-    @$el.append $('''
-      <div>
-          <button id="discard_button" type="button" class="btn btn-default"><span class="glyphicon glyphicon-trash"></span> Discard</button>
-          &nbsp;
-          <button id="close_button" type="button" class="btn btn-default margined">Save for Later</button>
-          &nbsp;
-          <button id="complete_button" type="button" class="btn btn-primary margined"><span class="glyphicon glyphicon-ok"></span> Complete</button>
-      </div>
-    ''')
-
-  events: 
-    "click #discard_button" : "discard"
-    "click #close_button" : "close"
-    "click #complete_button" : "complete"
-
-  # TODO refactor with SaveCancelForm
-  # Returns true if validates ok
-  validate: ->
-    # Get all visible items
-    items = _.filter(@contents, (c) ->
-      c.visible and c.validate
-    )
-    return not _.any(_.map(items, (item) ->
-      item.validate()
-    ))
-
-  close: ->
-    @trigger 'close'
-
-  discard: ->
-    @trigger 'discard'
-
-  complete: ->
-    if @validate()
-      @trigger 'complete'
-      
 # Creates a form view from a string
 exports.instantiateView = (viewStr, options) =>
   viewFunc = new Function("options", viewStr)
