@@ -97,7 +97,10 @@ module.exports = class Sections extends Backbone.View
     @$(".finish").toggle not @getNextSectionIndex()?
 
   render: ->
-    @$el.html require('./templates/Sections.hbs')({}, helpers: { T: @T })
+    @$el.html require('./templates/Sections.hbs')({
+      submitLabel: @options.submitLabel
+      allowSaveForLater: @options.allowSaveForLater
+      }, helpers: { T: @T })
     
     # Add sections
     sectionsEl = @$(".sections")

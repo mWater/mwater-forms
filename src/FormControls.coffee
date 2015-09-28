@@ -39,7 +39,10 @@ module.exports = class FormControls extends Backbone.View
     @trigger "discard"
 
   render: ->
-    @$el.html require('./templates/FormControls.hbs')({}, helpers: { T: @T })
+    @$el.html require('./templates/FormControls.hbs')({
+      submitLabel: @options.submitLabel
+      allowSaveForLater: @options.allowSaveForLater
+      }, helpers: { T: @T })
     
     # Add contents 
     _.each @contents, (c) => @$("#contents").append c.$el
