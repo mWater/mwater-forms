@@ -286,3 +286,22 @@ exports.updateLocalizations = (form) ->
       form.localizedStrings.push str
       existing[str.en] = true
 
+# Finds an entity question of the specified type, or a legacy site question
+exports.findEntityQuestion = (form, entityType) ->
+  question = _.find exports.priorQuestions(form), (q) -> 
+    if q._type == "EntityQuestion" and q.entityType == entityType
+      return q
+
+    if q._type == "SiteQuestion" 
+      # Get site type (use only first one)
+      if q.siteTypes and q.siteTypes[0]
+        siteType = q.siteTypes[0]
+      else
+        siteType = "Water point"
+
+      # Convert to entity type
+      questionEntityType = siteType.toLowerCase().replace(/ /g, "_")
+      if questionEntityType == entityType
+        return q
+    return
+  return question

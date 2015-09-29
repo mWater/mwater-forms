@@ -424,17 +424,17 @@ module.exports = class FormCompiler
       # Find entity question
       if options.entityQuestionId
         question = formUtils.findItem(form, options.entityQuestionId)
+        if question._type != "EntityQuestion" 
+          throw new Error("Not entity question")
+        if question.entityType != options.entityType
+          throw new Error("Wrong entity type")
       else
         # Pick first matching
-        question = _.find(formUtils.priorQuestions(form), (q) -> q._type == "EntityQuestion" and q.entityType == options.entityType)
+        question = formUtils.findEntityQuestion(form, options.entityType)
 
       # Check entity question
       if not question
         throw new Error("Entity question not found")
-      if question._type != "EntityQuestion" 
-        throw new Error("Not entity question")
-      if question.entityType != options.entityType
-        throw new Error("Wrong entity type")
 
       # Load data
       @compileLoadLinkedAnswers(question.propertyLinks)(options.entity)
@@ -442,7 +442,12 @@ module.exports = class FormCompiler
       # Set entity
       entry = @model.get(question._id) || {}
       entry = _.clone(entry)
-      entry.value = options.entity._id
+
+      if question._type == "EntityQuestion"
+        entry.value = options.entity._id
+      else if question._type == "SiteQuestion"
+        entry.value = { code: options.entity.code }
+
       @model.set(question._id, entry)
 
     return new FormView({

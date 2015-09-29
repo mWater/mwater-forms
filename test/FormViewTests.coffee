@@ -39,7 +39,7 @@ describe "FormView", ->
   #     @formView.setEntity("type1", { _id: "1234", text: "sometext"})
   #     assert.equal @model.get('q1').value, "sometext"
  
-  describe "setEntity", ->
+  describe "entity loading", ->
     it "loads property links", ->
       @form = {
         contents: [
@@ -71,4 +71,22 @@ describe "FormView", ->
       @formView = @compiler.compileForm(@form, { entity: { _id: "1234", text: "sometext"}, entityType: "type1" })
       assert.equal @model.get('q1').value, "sometext"
       assert.equal @model.get('q2').value, "1234"
+
+    it "loads site questions", ->
+      @form = {
+        contents: [
+          {
+            _id: "q2"
+            _type: "SiteQuestion"
+            text: { _base: "en", en: "English" }
+            siteTypes: ["Water point"]
+          }          
+        ]
+      }
+
+      @model = new Backbone.Model()
+      @compiler = new FormCompiler(ctx: @ctx, model: @model)
+      @formView = @compiler.compileForm(@form, { entity: { _id: "1234", code: "abc", text: "sometext"}, entityType: "water_point" })
+      assert.deepEqual @model.get('q2').value, { code: "abc" }
+
 
