@@ -788,6 +788,22 @@ describe "ResponseModel", ->
         # Sets default roles (admin to enumerator, view to all)
         assert.deepEqual create.entity._roles, [{ to: "user:user", role: "admin" }, { to: "all", role: "view" }]
 
+      it "adds extraCreateRoles if specified", ->
+        @response.data = { q1: { value: "abc" }, q2: {} }
+
+        @model.submit()
+        extraCreateRoles = [
+          { to: "group:somegroup", role: "admin" } # Extra one
+          { to: "user:user", role: "edit" } # Override user
+        ]
+        @model = new ResponseModel(response: @response, form: @form, user: "user", groups: ["dep2en1"], formCtx: @ctx, extraCreateRoles: extraCreateRoles)
+        @model.approve()
+
+        create = @response.pendingEntityCreates[0]
+
+        # Overrides roles
+        assert.deepEqual create.entity._roles, [{ to: "all", role: "view" }, { to: "group:somegroup", role: "admin" }, { to: "user:user", role: "edit" }]
+
       it "unsets create entity questions on un-finalize if creation pending", ->
         @response.data = { q1: { value: "abc" } }
         @finalizeForm()

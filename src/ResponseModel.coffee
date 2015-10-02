@@ -12,6 +12,7 @@ async = require 'async'
 # user: current username. Required
 # groups: group names of user
 # formCtx: form context. getProperty is required for submitting forms with entity questions
+# extraCreateRoles: extra roles to be added to created entities. Overrides any others with same "to"
 module.exports = class ResponseModel
   constructor: (options) ->
     @response = options.response
@@ -19,6 +20,7 @@ module.exports = class ResponseModel
     @user = options.user
     @groups = options.groups or []
     @formCtx = options.formCtx or {}
+    @extraCreateRoles = options.extraCreateRoles or []
 
   # Setup draft
   draft: ->
@@ -237,6 +239,12 @@ module.exports = class ResponseModel
                     roles.push({ to: role.to, role: role.role })
 
               create.entity._roles = roles
+
+          # Add extra create roles
+          for extraCreateRole in @extraCreateRoles
+            # Remove existing that match
+            create.entity._roles = _.filter(create.entity._roles, (r) -> r.to != extraCreateRole.to)
+            create.entity._roles.push(extraCreateRole)
 
           creates.push(create)
 
