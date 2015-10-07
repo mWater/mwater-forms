@@ -77,7 +77,7 @@ module.exports = class Sections extends Backbone.View
     @sections[index].$el.show()
     
     # Setup breadcrumbs
-    visibleSections = _.filter(_.first(@sections, index + 1), (s) ->
+    visibleSections = _.filter(_.take(@sections, index + 1), (s) ->
       s.shouldBeVisible()
     )
     data = {
