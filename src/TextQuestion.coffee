@@ -1,5 +1,5 @@
 Question = require './Question'
-_ = require 'underscore'
+_ = require 'lodash'
 
 module.exports = class TextQuestion extends Question
   renderAnswer: (answerEl) ->

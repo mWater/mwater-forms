@@ -1,5 +1,5 @@
 Question = require './Question'
-_ = require 'underscore'
+_ = require 'lodash'
 $ = require 'jquery'
 
 module.exports = class RadioQuestion extends Question

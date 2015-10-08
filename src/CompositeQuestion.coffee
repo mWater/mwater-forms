@@ -1,5 +1,5 @@
 # Question = require './Question'
-# _ = require 'underscore'
+# _ = require 'lodash'
 # Backbone = require 'backbone'
 
 # module.exports = class CompositeQuestion extends Question

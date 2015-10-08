@@ -1,5 +1,5 @@
 Question = require './Question'
-_ = require 'underscore'
+_ = require 'lodash'
 $ = require 'jquery'
 
 # Question that has a variable number of textboxes that the user

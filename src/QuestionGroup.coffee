@@ -1,6 +1,6 @@
 # Group of questions which validate as a unit
 
-_ = require 'underscore'
+_ = require 'lodash'
 Backbone = require 'backbone'
 
 module.exports = class QuestionGroup extends Backbone.View

@@ -1,5 +1,5 @@
 Backbone = require 'backbone'
-_ = require 'underscore'
+_ = require 'lodash'
 ControlList = require './ControlList'
 
 module.exports = class Section extends Backbone.View

@@ -1,5 +1,5 @@
 Backbone = require 'backbone'
-_ = require 'underscore'
+_ = require 'lodash'
 if process.browser
   require './jquery-scrollintoview'
 ezlocalize = require 'ez-localize'

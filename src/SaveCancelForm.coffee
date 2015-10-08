@@ -3,7 +3,7 @@
 ezlocalize = require 'ez-localize'
 
 Backbone = require 'backbone'
-_ = require 'underscore'
+_ = require 'lodash'
 
 module.exports = Backbone.View.extend
   initialize: (options) ->

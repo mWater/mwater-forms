@@ -1,5 +1,5 @@
 Question = require './Question'
-_ = require 'underscore'
+_ = require 'lodash'
 
 # Question that must be answered with units
 # Set units and defaultUnit if desired.

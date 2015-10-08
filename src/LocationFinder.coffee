@@ -1,5 +1,5 @@
 Backbone = require 'backbone'
-_ = require 'underscore'
+_ = require 'lodash'
 
 # Improved location finder. Triggers found event with HTML5 position object (containing coords, etc).
 # Pass storage as option (implementing localStorage API) to get caching of position

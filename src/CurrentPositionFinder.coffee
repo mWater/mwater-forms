@@ -1,4 +1,4 @@
-_ = require 'underscore'
+_ = require 'lodash'
 Backbone = require 'backbone'
 LocationFinder = require './LocationFinder'
 utils = require './utils'

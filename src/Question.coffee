@@ -1,6 +1,6 @@
 $ = require 'jquery'
 Backbone = require 'backbone'
-_ = require 'underscore'
+_ = require 'lodash'
 LocationFinder = require './LocationFinder'
 ezlocalize = require 'ez-localize'
 

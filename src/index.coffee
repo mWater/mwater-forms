@@ -1,6 +1,6 @@
 $ = require 'jquery'
 Backbone = require 'backbone'
-_ = require 'underscore'
+_ = require 'lodash'
 
 exports.formUtils = require './formUtils'
 exports.Sections = require './Sections'

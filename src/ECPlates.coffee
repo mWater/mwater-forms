@@ -1,5 +1,5 @@
 # Module that handles calling EC Compact Dry Plate automatic counting
-_ = require 'underscore'
+_ = require 'lodash'
 
 exports.isAvailable = (success, error) ->
   if window.OpenCVActivity?

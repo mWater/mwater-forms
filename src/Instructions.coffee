@@ -1,5 +1,5 @@
 Backbone = require 'backbone'
-_ = require 'underscore'
+_ = require 'lodash'
 
 module.exports = class Instructions extends Backbone.View
   initialize: (options) ->

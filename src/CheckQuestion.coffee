@@ -1,5 +1,5 @@
 Question = require './Question'
-_ = require 'underscore'
+_ = require 'lodash'
 $ = require 'jquery'
 
 # Check question that has either a checkbox next to the question prompt, 

@@ -1,5 +1,5 @@
 Question = require './Question'
-_ = require 'underscore'
+_ = require 'lodash'
 
 # Requires context (ctx) to have displayImage function
 # which takes { id: <image id>, remove: <function called when image deleted>, setCover: <called to make image cover> } as parameter

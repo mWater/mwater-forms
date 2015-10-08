@@ -1,5 +1,5 @@
 Backbone = require 'backbone'
-_ = require 'underscore'
+_ = require 'lodash'
 ezlocalize = require 'ez-localize'
 ControlList = require './ControlList'
 
