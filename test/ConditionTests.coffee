@@ -116,6 +116,15 @@ describe "Condition compiler", ->
     @testFalse("abc", "isntoneof", ["abc", "def"])
     @testTrue("xyz", "isntoneof", ["abc", "def"])
 
+  it "compiles isoneof array", ->
+    @testTrue(["abc"], "isoneof", ["abc", "def"])
+    @testTrue(["abc", "def"], "isoneof", ["abc", "def"])
+    @testFalse(["xyz"], "isoneof", ["abc", "def"])
+
+  it "compiles isntoneof array", ->
+    @testFalse(["abc"], "isntoneof", ["abc", "def"])
+    @testTrue(["xyz"], "isntoneof", ["abc", "def"])
+
   it "compiles is alternate", ->
     @testTrue(null, "is", "na", { alternate: "na" })
     @testTrue(null, "is", "dontknow", { alternate: "dontknow" })

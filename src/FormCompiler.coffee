@@ -172,10 +172,18 @@ module.exports = class FormCompiler
           return getValue() != cond.rhs.literal and getAlternate() != cond.rhs.literal
       when "isoneof"
         return () =>
-          return _.contains(cond.rhs.literal, getValue()) or _.contains(cond.rhs.literal, getAlternate()) 
+          value = getValue()
+          if _.isArray(value)
+            return _.intersection(cond.rhs.literal, value).length > 0 or _.contains(cond.rhs.literal, getAlternate()) 
+          else
+            return _.contains(cond.rhs.literal, value) or _.contains(cond.rhs.literal, getAlternate()) 
       when "isntoneof"
         return () =>
-          return not _.contains(cond.rhs.literal, getValue()) and not _.contains(cond.rhs.literal, getAlternate())
+          value = getValue()
+          if _.isArray(value)
+            return _.intersection(cond.rhs.literal, value).length == 0 and not _.contains(cond.rhs.literal, getAlternate())
+          else
+            return not _.contains(cond.rhs.literal, value) and not _.contains(cond.rhs.literal, getAlternate())
       when "true"
         return () =>
           return getValue() == true
