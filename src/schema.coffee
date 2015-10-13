@@ -25,7 +25,10 @@ exports.design = {
     _schema: { enum: [1, 2, 3, 4, 5, 10, 11] }
 
     # Name of the form
-    name: { $ref: "#/definitions/localizedString" } 
+    name: { $ref: "#/definitions/localizedString" }
+
+    # When set to true, the response will be assigned a name at creation (instead of only when being saved as a draft)
+    draftNameRequired: { type: "boolean" }
 
     # Contents of the form
     contents: { 
