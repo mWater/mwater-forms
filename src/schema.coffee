@@ -25,7 +25,9 @@ exports.design = {
     _schema: { enum: [1, 2, 3, 4, 5, 10, 11] }
 
     # Name of the form
-    name: { $ref: "#/definitions/localizedString" } 
+    name: { $ref: "#/definitions/localizedString" }
+
+    draftNameRequired: { type: "boolean" }
 
     # Contents of the form
     contents: { 
