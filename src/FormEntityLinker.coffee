@@ -23,7 +23,11 @@ module.exports = class FormEntityLinker
     answer = @model.get(propLink.questionId) or {}
     answer = _.cloneDeep(answer)
 
-    code = @getProperty(propLink.propertyId).code
+    property = @getProperty(propLink.propertyId)
+    if not property
+      throw new Error("Property link property not found #{propLink.propertyId}")
+
+    code = property.code
     val = @entity[code]
     if not val?
       return
@@ -123,7 +127,11 @@ module.exports = class FormEntityLinker
 
     # Get answer
     answer = @model.get(propLink.questionId) or {}
-    code = @getProperty(propLink.propertyId).code
+    property = @getProperty(propLink.propertyId)
+    if not property
+      throw new Error("Property link property not found #{propLink.propertyId}")
+
+    code = property.code
     
     switch propLink.type
       when "direct"
