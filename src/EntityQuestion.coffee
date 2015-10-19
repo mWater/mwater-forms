@@ -1,6 +1,7 @@
 Question = require './Question'
 _ = require 'lodash'
 React = require 'react'
+ReactDOM = require 'react-dom'
 H = React.DOM
 EntityDisplayComponent = require './EntityDisplayComponent'
 EntityLoadingComponent = require './EntityLoadingComponent'
@@ -98,11 +99,11 @@ module.exports = class EntityQuestion extends Question
           T: @T
         }))
         
-    React.render(elem, answerEl.get(0))
+    ReactDOM.render(elem, answerEl.get(0))
 
   remove: ->
     if @answerEl
-      React.unmountComponentAtNode(@answerEl.get(0))
+      ReactDOM.unmountComponentAtNode(@answerEl.get(0))
     super
 
 class EntityAnswerComponent extends React.Component

@@ -70,7 +70,7 @@ module.exports = class FormComponent extends React.Component
       @formView.on 'close', props.onSaveLater
     @formView.on 'discard', props.onDiscard
 
-    $(React.findDOMNode(@refs.form)).append(@formView.el)
+    $(@refs.form).append(@formView.el)
 
   componentWillUnmount: ->
     @formView.remove()
