@@ -435,7 +435,7 @@ module.exports = class ResponseModel
             # Update entity
             updated = _.extend({}, entity, update.updates)
 
-            db[update.entityType].upsert(updated, entity, (successEntity) =>
+            db[update.entityType].upsert(updated, (successEntity) =>
               # Remove from pending list
               @response.pendingEntityUpdates = _.without(@response.pendingEntityUpdates, update)
   

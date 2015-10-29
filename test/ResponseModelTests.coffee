@@ -915,14 +915,12 @@ describe "ResponseModel", ->
 
     it "processes updates", (done) ->
       upsertDoc = null
-      upsertBase = null
 
       base = { _id: "1234", a: "base", b: "other" }
       db = {
         test_type: {
-          upsert: (doc, base, success, error) =>
+          upsert: (doc, success, error) =>
             upsertDoc = doc
-            upsertBase = base
             success(doc)
           findOne: (selector, options, success, error) =>
             assert.deepEqual selector, { _id: "1234" }, "Should look up existing"
@@ -935,7 +933,6 @@ describe "ResponseModel", ->
       @model.processEntityOperations(db, (results) =>
         assert.equal @response.pendingEntityUpdates.length, 0
         assert.deepEqual upsertDoc, { _id: "1234", a: "text", b: "other" }
-        assert.deepEqual upsertBase, base
         expectedResults = { creates: [], updates: [{ entity: upsertDoc, entityType: "test_type" }], error: null }
         assert _.isEqual(results, expectedResults), JSON.stringify(results) + " vs " + JSON.stringify(expectedResults)
         done())
