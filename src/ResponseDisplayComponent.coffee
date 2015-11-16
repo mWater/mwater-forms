@@ -5,6 +5,7 @@ formUtils = require './formUtils'
 ImageDisplayComponent = require './ImageDisplayComponent'
 EntityDisplayComponent = require './EntityDisplayComponent'
 EntityLoadingComponent = require './EntityLoadingComponent'
+SiteDisplayComponent = require './SiteDisplayComponent'
 moment = require 'moment'
 FormCompiler = require './FormCompiler'
 
@@ -282,55 +283,3 @@ module.exports = class ResponseDisplayComponent extends React.Component
     H.div null,
       @renderHeader()
       @renderContent()
-
-
-# Loads and displays a site by code
-class SiteDisplayComponent extends React.Component
-  @propTypes:
-    siteCode: React.PropTypes.string
-    formCtx: React.PropTypes.object.isRequired
-
-  constructor: (props) ->
-    super
-    @state = { site: null }
-
-  componentWillReceiveProps: (newProps) -> @update(newProps)
-  componentDidMount: -> @update(@props)
-
-  update: (props) ->
-    if not @props.siteCode
-      return @setState(site: null)
-
-    # Load site
-    if @props.formCtx.getSite
-      @props.formCtx.getSite(@props.siteCode, (site) =>
-        @setState(site: site)
-      )
-
-  renderNameValue: (name, value) ->
-    H.div key: name,
-      H.span className: "text-muted",
-        name + ": "
-      value
-
-  render: ->
-    if not @props.siteCode
-      return null
-
-    if not @state.site
-      return @renderNameValue("Code", @props.siteCode)
-
-    H.div null, 
-      @renderNameValue("Code", @state.site.code)
-      @renderNameValue("Name", @state.site.name)
-      if @state.site.desc
-        @renderNameValue("Description", @state.site.desc)
-      if @state.site.type
-        @renderNameValue("Type", @state.site.type.join(": "))
-      if @state.site.photos
-        @renderNameValue("Photos", 
-          _.map(@state.site.photos, (img) =>
-            React.createElement(ImageDisplayComponent, formCtx: @props.formCtx, id: img.id))
-        )
-
-

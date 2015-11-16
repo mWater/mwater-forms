@@ -11,9 +11,12 @@ module.exports = class ImageDisplayComponent extends React.Component
     super
     @state = { error: false, url: null }
 
-  componentDidMount: ->
+  componentDidMount: -> @update(@props)
+  componentWillReceiveProps: (newProps) -> @update(newProps)
+
+  update: (props) ->
     # Get URL of thumbnail
-    @props.formCtx.imageManager.getImageThumbnailUrl @props.id, (url) =>
+    props.formCtx.imageManager.getImageThumbnailUrl props.id, (url) =>
       @setState(url: url, error: false)
     , => @setState(error: true)
 

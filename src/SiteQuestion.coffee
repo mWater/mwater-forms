@@ -1,6 +1,9 @@
 Question = require './Question'
 siteCodes = require './siteCodes'
 _ = require 'lodash'
+React = require 'react'
+ReactDOM = require 'react-dom'
+SiteDisplayComponent = require './SiteDisplayComponent'
 
 # Allows user to select an mWater site
 # options.siteTypes is array of acceptable site types. null/undefined for all
@@ -13,28 +16,27 @@ module.exports = class SiteQuestion extends Question
         <input id="input" type="tel" class="form-control">
         <span class="input-group-btn"><button class="btn btn-default" id="select" type="button">''' + @T("Select") + '''</button></span>
       </div>
-      <div class="text-muted">
-        <span id="site_type"></span> 
-        <span id="site_name"></span>
-      </div>
+      <div id="site_display"></div>
       '''
     if not @ctx.selectSite?
       @$("#select").attr("disabled", "disabled")
+
+  remove: ->
+    # Remove react component
+    siteDisplayElem = @$("#site_display")[0]
+    if siteDisplayElem
+      ReactDOM.unmountComponentAtNode(siteDisplayElem)
+
+    super
 
   updateAnswer: (answerEl) ->
     val = @getAnswerValue()
     if val then val = val.code
     answerEl.find("input").val val
 
-    # Lookup site information
-    @$("#site_name").text("")
-    @$("#site_type").text("")
-    if @ctx.getSite and val
-      @ctx.getSite val, (site) =>
-        if site
-          type = _.map(site.type, @T).join(" - ")
-          @$("#site_name").text((site.name or ""))
-          @$("#site_type").text(type + ": ")
+    # Display site information
+    siteDisplayElem = @$("#site_display")[0]
+    ReactDOM.render(React.createElement(SiteDisplayComponent, formCtx: @ctx, siteCode: val, hideCode: true), siteDisplayElem)
 
   events:
     'change' : 'changed'
