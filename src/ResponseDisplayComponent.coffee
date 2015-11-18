@@ -222,7 +222,7 @@ module.exports = class ResponseDisplayComponent extends React.Component
       when "site"
         code = answer.value
         # TODO Eventually always go to code parameter. Legacy responses used code directly as value.
-        if code.code
+        if _.isObject(code)
           code = code.code
 
         return React.createElement(SiteDisplayComponent, formCtx: @props.formCtx, siteCode: code)
