@@ -36,7 +36,8 @@ module.exports = class SiteQuestion extends Question
 
     # Display site information
     siteDisplayElem = @$("#site_display")[0]
-    ReactDOM.render(React.createElement(SiteDisplayComponent, formCtx: @ctx, siteCode: val, hideCode: true), siteDisplayElem)
+    if siteDisplayElem
+      ReactDOM.render(React.createElement(SiteDisplayComponent, formCtx: @ctx, siteCode: val, hideCode: true), siteDisplayElem)
 
   events:
     'change' : 'changed'
