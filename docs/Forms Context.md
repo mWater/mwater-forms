@@ -92,3 +92,12 @@ Entity set at form level. Entire entity object
 ## editEntity(type, _id, callback)
 
 callback: is called when update is complete
+
+## getUniqueCode()
+
+returns a unique mWater code (e.g. 10007) if one is available
+
+## getProperties(type)
+
+Gets all properties for an entity type (e.g. "water_point"). Note: synchronous call!
+

@@ -696,8 +696,11 @@ describe "ResponseModel", ->
 
   describe "pendingEntity operations", ->
     beforeEach ->
-      # Create sample property
+      # Create sample properties
       @propText = { _id: "1", code: "text", type: "text", name: { en: "Text" } }
+
+      # Only present to see if unique codes are filled in
+      @propCode = { _id: "1", code: "code", type: "text", unique_code: true, name: { en: "Code" } }
 
       formDesign = {
         contents: [
@@ -726,8 +729,11 @@ describe "ResponseModel", ->
       @form = _.cloneDeep(sampleForm)
       @form.design = formDesign
       
+      # Create mock context with basics needed
       @ctx = {
-        getProperty: (id) => if id == "1" then return @propText
+        getProperty: (id) => if id == "1" then return @propText else if id == "2" then return @propCode
+        getProperties: (entityType) => if entityType == "type1" then [@propText, @propCode]
+        getUniqueCode: -> return "10007"
       }
 
       @response = {}
@@ -781,6 +787,7 @@ describe "ResponseModel", ->
         assert.equal create.questionId, "q2"
         assert.equal create.entityType, "type1"
         assert.equal create.entity.text, "abc"
+        assert.equal create.entity.code, "10007", "Should fill in unique code"
         assert create.entity._id.length > 10 # uuid
         assert.equal create.entity._id, @response.data.q2.value, "Should set entity question value"
         assert.isTrue @response.data.q2.created, "Should set created flag in question"

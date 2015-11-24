@@ -246,6 +246,11 @@ module.exports = class ResponseModel
             create.entity._roles = _.filter(create.entity._roles, (r) -> r.to != extraCreateRole.to)
             create.entity._roles.push(extraCreateRole)
 
+          # Set any codes if not set
+          for property in @formCtx.getProperties(create.entityType)
+            if property.unique_code and not create.entity[property.code]
+              create.entity[property.code] = @formCtx.getUniqueCode()
+
           creates.push(create)
 
     return creates
