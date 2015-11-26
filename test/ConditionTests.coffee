@@ -144,6 +144,16 @@ describe "Condition compiler", ->
     @testFalse(null, "isntoneof", ["na", "def"], { alternate: "na"})
     @testTrue(null, "isntoneof", ["abc", "def"], { alternate: "na"})
 
+  it "compiles includes alternate", ->
+    @testTrue(["abc", "def"], "includes", "abc")
+    @testTrue(null, "includes", "na", { alternate: "na" } )
+    @testFalse(null, "includes", "abc", { alternate: "na" } )
+
+  it "compiles !includes alternate", ->
+    @testFalse(["abc", "def"], "!includes", "abc")
+    @testFalse(null, "!includes", "na", { alternate: "na" } )
+    @testTrue(null, "!includes", "abc", { alternate: "na" } )
+
 describe "Conditions compiler", ->
   beforeEach ->
     @model = new Backbone.Model()

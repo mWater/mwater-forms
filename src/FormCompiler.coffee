@@ -160,10 +160,10 @@ module.exports = class FormCompiler
           return getValue() != cond.rhs.literal
       when "includes"
         return () =>
-          return _.contains(getValue() or [], cond.rhs.literal)
+          return _.contains(getValue() or [], cond.rhs.literal) or cond.rhs.literal == getAlternate()
       when "!includes"
         return () =>
-          return not _.contains(getValue() or [], cond.rhs.literal)
+          return not _.contains(getValue() or [], cond.rhs.literal) and cond.rhs.literal != getAlternate()
       when "is"
         return () =>
           return getValue() == cond.rhs.literal or getAlternate() == cond.rhs.literal
