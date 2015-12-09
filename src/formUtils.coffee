@@ -219,10 +219,14 @@ exports.isSectioned = (form) ->
 # idMap is a map of old _ids to new _ids. If any not present, new uid will be used
 exports.duplicateItem = (item, idMap) ->
   # If form or section and ids not mapped, map ids
-  if not idMap and item._type in ["Form", "Section"]
+  if not idMap 
     idMap = {}
+
+  if item._type in ["Form", "Section"]
     for question in exports.priorQuestions(item)
-      idMap[question._id] = exports.createUid()
+      # Map non-mapped ones
+      if not idMap[question._id]
+        idMap[question._id] = exports.createUid()
 
   dup = _.cloneDeep(item)
 

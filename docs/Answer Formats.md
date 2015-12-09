@@ -37,6 +37,13 @@
 * **"entity"** 
     - {value: "entity _id"}
 
-##Alternates:
+## Alternates:
 * {alternate = "na" or "dontknow"}
 * **Note:** the alternated field can also be null or omitted.
+
+## Timestamp (for recordTimestamp option)
+`{ value: ..., timestamp: <ISO 8601 timestamp> }`
+
+## Location-stamp (for recordLocation option)
+`{ value: ..., location: {accuracy:"float", altitude:"float", altitudeAccuracy:"float", longitude:"float", latitude:"float"} }`
+      

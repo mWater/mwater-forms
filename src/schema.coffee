@@ -166,7 +166,7 @@ exports.design = {
         # Conditions for visibility of the section
         conditions: { $ref: "#/definitions/conditions" }
 
-        # _id of the section that this section is a duplicate of
+        # _id of the section that this section is a duplicate of.
         _basedOn : { $ref: "#/definitions/uuid" }
       }
       required: ["_id", "_type", "name", "contents"]
