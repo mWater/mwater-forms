@@ -38,11 +38,11 @@ class LocationFinder
         error()
 
     lowAccuracyError = (err) =>
-      console.error "Low accuracy location error: #{err}"
+      console.error "Low accuracy location error: #{err.message}"
       triggerLocationError()
 
     highAccuracyError = (err) =>
-      console.error "High accuracy location error: #{err}"
+      console.error "High accuracy location error: #{err.message}"
       triggerLocationError()
 
     lowAccuracyFired = false
@@ -101,7 +101,7 @@ class LocationFinder
 
     lowAccuracyError = (err) =>
       # Low accuracy errors are not enough to trigger final error
-      console.error "Low accuracy watch location error: #{err}"
+      console.error "Low accuracy watch location error: #{err.message}"
 
     highAccuracy = (pos) =>
       highAccuracyFired = true
@@ -109,7 +109,7 @@ class LocationFinder
       @trigger 'found', pos
 
     highAccuracyError = (err) =>
-      console.error "High accuracy watch location error: #{err}"
+      console.error "High accuracy watch location error: #{err.message}"
       @trigger 'error'
 
     # Fire initial low-accuracy one
@@ -158,7 +158,7 @@ class LocationFinder
       @trigger 'found', pos
 
     highAccuracyError = (err) =>
-      console.error "High accuracy watch location error: #{err}"
+      console.error "High accuracy watch location error: #{err.message}"
       @trigger 'error'
 
     if not @locationWatchId?
