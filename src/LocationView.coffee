@@ -79,8 +79,8 @@ module.exports = class LocationView extends Backbone.View
     else 
       @$("#location_relative").text("")
 
-    if @loc and not @currentPositionFinder.running
-      @$("#location_absolute").text(@T("Latitude") + ": #{this.loc.latitude.toFixed(6)}, " + @T("Longitude") + ": #{this.loc.longitude.toFixed(6)}")
+    if @loc and @loc.latitude? and @loc.longitude? and not @currentPositionFinder.running
+      @$("#location_absolute").text(@T("Latitude") + ": #{@loc.latitude.toFixed(6)}, " + @T("Longitude") + ": #{@loc.longitude.toFixed(6)}")
     else
       @$("#location_absolute").text("")
 
