@@ -37,7 +37,7 @@ module.exports = class FormComponent extends React.Component
 
     # Check if different from existing response
     if not _.isEqual(nextProps.data, @model.toJSON())
-      @model.set(nextProps)
+      @model.set(nextProps.data)
 
     # Allow changes to locale
     if @props.locale != nextProps.locale
