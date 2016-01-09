@@ -50,17 +50,6 @@ module.exports = class FormComponent extends React.Component
 
     # Load response data to model
     @model = new Backbone.Model()
-
-    # DEBUGGING FOR https://github.com/mWater/mwater-app/issues/401
-    @model.on 'change', =>
-      if @model.has("formCtx")
-        console.log "formCtx PRESENT!!!"
-        try 
-          i.dont.exist += 1
-        catch err
-          console.log err.stack
-        console.log "========= End of stack"
-
     @model.set(_.cloneDeep(props.data))
 
     # Create compiler
