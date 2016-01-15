@@ -220,3 +220,23 @@ describe "TextQuestion", ->
     # Make sure stored in model
     assert.equal @model.get(@q._id).value, "stored"
     assert.equal qview.$el.find("input").val(), "stored"
+
+
+  it "erases value when made invisible", ->
+    @q.conditions = [
+      { lhs: { question: "q1" }, op: "=", rhs: { literal: 1 }}
+    ]
+    @qview = @compiler.compileQuestion(@q).render()
+
+    # Make visible
+    @model.set("q1", { value: 1 })
+
+    # Set value
+    @qview.$el.find("input").val("response").change()
+    assert.equal @model.get(@q._id).value, "response"
+
+    # Make invisible
+    @model.set("q1", { value: 2 })
+
+    # Should have no value
+    assert not @model.get(@q._id)

@@ -124,11 +124,16 @@ module.exports = class Question extends Backbone.View
     # slideUp/slideDown
     @$el.slideDown()  if @shouldBeVisible() and not @visible
     @$el.slideUp()  if not @shouldBeVisible() and @visible
+
     @visible = @shouldBeVisible()
 
     if @visible and not @shownOnce
       @shownOnce = true
       @shownFirstTime()
+
+    # Clear model value if now invisible
+    if not @visible and @model.has(@id)
+      @model.unset(@id)
 
   shouldBeVisible: =>
     return true  unless @options.conditional
