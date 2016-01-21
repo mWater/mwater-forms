@@ -13,6 +13,10 @@ describe "Entities", ->
       { code: "x", name: { en: "X", es: "Xes" }}
       { code: "y", name: { en: "Y" }}
     ] } 
+    @propEnumset = { _id: "4a", code: "enumset", type: "enumset", name: { en: "Enum", es: "Enumes" }, values: [
+      { code: "x", name: { en: "X", es: "Xes" }}
+      { code: "y", name: { en: "Y" }}
+    ] } 
     @propBoolean = { _id: "5", code: "boolean", type: "boolean", name: { en: "Boolean" } } 
     @propBoolean2 = { _id: "8", code: "boolean2", type: "boolean", name: { en: "Boolean2" } } 
     @propGeometry = { _id: "6", code: "geometry", type: "geometry", name: { en: "Geometry" } } 
@@ -21,7 +25,7 @@ describe "Entities", ->
       { code: "degC", symbol: "oC", name: { "Celsius" }}
     ] } 
 
-    @props = [@propText, @propInteger, @propDecimal, @propEnum, @propGeometry, @propBoolean, @propBoolean2, @propMeasurement]
+    @props = [@propText, @propInteger, @propDecimal, @propEnum, @propEnumset, @propGeometry, @propBoolean, @propBoolean2, @propMeasurement]
 
     ctx = {
       getProperty: (id) => _.findWhere(@props, { _id: id })
@@ -63,6 +67,23 @@ describe "Entities", ->
 
       compiled({ enum: "x"})
       assert.equal @model.get("q1").value, "xx"
+
+    it "loads enumset:choices links", ->
+      compiled = @compiler.compileLoadLinkedAnswers([
+        { propertyId: @propEnumset._id, type: "enumset:choices", direction: "load", questionId: "q1", mappings: [
+          { from: "x", to: "xx" }
+          { from: "y", to: "yy" }
+          ] }
+        ])
+
+      compiled(enumset: ['x', 'y'])
+      assert.deepEqual @model.get("q1").value, ["xx", "yy"]
+
+      compiled(enumset: ['x'])
+      assert.deepEqual @model.get("q1").value, ["xx"]
+
+      compiled(enumset: [])
+      assert.deepEqual @model.get("q1").value, []
 
     it "loads boolean:choices links", ->
       compiled = @compiler.compileLoadLinkedAnswers([
@@ -245,6 +266,21 @@ describe "Entities", ->
       # Save text
       @model.set("q1", { value: "xx"})
       assert.deepEqual compiled(), { enum: "x" }
+
+    it "saves enumset:choices links", ->
+      compiled = @compiler.compileSaveLinkedAnswers([
+        { propertyId: @propEnumset._id, type: "enumset:choices", direction: "save", questionId: "q1", mappings: [
+          { from: "x", to: "xx" }
+          { from: "y", to: "yy" }
+          ] }
+        ])
+
+      # Save 
+      @model.set("q1", { value: ["xx"]})
+      assert.deepEqual compiled(), { enumset: ["x"] }
+
+      @model.set("q1", { value: []})
+      assert.deepEqual compiled(), { enumset: [] }
 
     it "saves boolean:choices links", ->
       compiled = @compiler.compileSaveLinkedAnswers([

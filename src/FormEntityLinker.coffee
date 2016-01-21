@@ -54,6 +54,20 @@ module.exports = class FormEntityLinker
           answer.value = mapping.to
           @model.set(propLink.questionId, answer)
 
+      when "enumset:choices"
+        if _.isArray(val)
+          answer.value = _.compact(_.map val, (v) =>
+            # Find the from value
+            mapping = _.findWhere(propLink.mappings, { from: v })
+            if mapping
+              # Copy property to question value 
+              return mapping.to
+          )
+        else
+          answer.value = []
+    
+        @model.set(propLink.questionId, answer)
+
       when "boolean:choices"
         answer.value = answer.value or []
 
@@ -150,6 +164,17 @@ module.exports = class FormEntityLinker
         if mapping
           # Set the property
           @entity[code] = mapping.from
+
+      when "enumset:choices"
+        if answer.value and _.isArray(answer.value)
+          @entity[code] = _.compact(_.map(answer.value, (v) =>
+            # Find the to value
+            mapping = _.findWhere(propLink.mappings, { to: v })
+            if mapping
+              # Set the property
+              return mapping.from
+            return null
+          ))
 
       when "boolean:choices"
         # Check if choice present
