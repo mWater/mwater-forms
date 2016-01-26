@@ -275,6 +275,27 @@ exports.duplicateItem = (item, idMap) ->
 
   return dup
 
+# Finds all localized strings in an object
+exports.extractLocalizedStrings = (obj) ->
+  if not obj?
+    return []
+    
+  # Return self if string
+  if obj._base?
+    return [obj]
+
+  strs = []
+
+  # If array, concat each
+  if _.isArray(obj)
+    for item in obj
+      strs = strs.concat(@extractLocalizedStrings(item))
+  else if _.isObject(obj)
+    for key, value of obj
+      strs = strs.concat(@extractLocalizedStrings(value))
+
+  return strs
+
 exports.updateLocalizations = (form) ->
   form.localizedStrings = form.localizedStrings or []
 
@@ -289,6 +310,11 @@ exports.updateLocalizations = (form) ->
     if str.en and not existing[str.en]
       form.localizedStrings.push str
       existing[str.en] = true
+
+# Determines if has at least one localization in locale
+exports.hasLocalizations = (obj, locale) ->
+  strs = exports.extractLocalizedStrings(obj)
+  return _.any(strs, (str) -> str[locale])
 
 # Finds an entity question of the specified type, or a legacy site question
 exports.findEntityQuestion = (form, entityType) ->

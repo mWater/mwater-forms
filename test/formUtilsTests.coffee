@@ -172,3 +172,51 @@ describe "FormUtils", ->
       formUtils.updateLocalizations(form)
       assert form.localizedStrings.length > 5
 
+  describe "hasLocalizations", ->
+    it "true if has one translation", ->
+      obj = [
+        { _base: "en", en: "x", fr: "y" }
+      ]
+      assert.isTrue formUtils.hasLocalizations(obj, "fr")
+      assert.isFalse formUtils.hasLocalizations(obj, "de")
+
+    it "false if blank/non-existent", ->
+      obj = [
+        { _base: "en", en: "x", fr: "" }
+      ]
+      assert.isFalse formUtils.hasLocalizations(obj, "fr")
+
+  describe "extractLocalizedStrings", ->
+    it "gets all strings", ->
+      obj = {
+        a: [
+          { 
+            b: { _base: "en", en: "hello" }
+          },
+          { 
+            c: { _base: "es", en: "hello2" }
+          }
+        ]
+        d: "test"
+        e: null
+      }
+      strs = formUtils.extractLocalizedStrings(obj)
+
+      assert.deepEqual strs, [{ _base: "en", en: "hello" }, { _base: "es", en: "hello2" }]
+
+    it "gets localizedStrings strings", ->
+      obj = {
+        localizedStrings: [
+          { 
+            b: { _base: "en", en: "hello" }
+          },
+          { 
+            c: { _base: "es", en: "hello2" }
+          }
+        ]
+        d: "test"
+        e: null
+      }
+      strs = formUtils.extractLocalizedStrings(obj)
+
+      assert.deepEqual strs, [{ _base: "en", en: "hello" }, { _base: "es", en: "hello2" }]
