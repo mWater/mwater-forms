@@ -125,6 +125,15 @@ describe "ResponseModel", ->
       assert.equal @response.events[1].by, "user2"
       assert @response.events[1].on
 
+    it "removes enumerator as viewer if deployment inactive", ->
+      assert.isTrue _.any(@response.roles, (r) -> r.id == "user:user2"), "Can see as enumerator"
+      
+      @form.deployments[1].active = false
+      @model.fixRoles()
+
+      assert.isFalse _.any(@response.roles, (r) -> r.id == "user:user2"), "Enumerator removed"
+
+
   describe "submit when no approval stages with enumeratorAdminFinal", ->
     beforeEach ->
       @response = { }

@@ -318,12 +318,17 @@ module.exports = class ResponseModel
     if @response.status == "pending" and @response.approvals? and @response.approvals.length >= deployment.approvalStages.length
       @_finalize()
 
-    # User is always admin, unless final and not enumeratorAdminFinal flag, then viewer
-    if @response.status == 'final' and not deployment.enumeratorAdminFinal
-      admins = []
-      viewers = ["user:" + @response.user]
+    # User is always admin unless final and not enumeratorAdminFinal flag, then viewer
+    # However, if deployment inactive, user can't see responses
+    if deployment.active
+      if @response.status == 'final' and not deployment.enumeratorAdminFinal
+        admins = []
+        viewers = ["user:" + @response.user]
+      else
+        admins = ["user:" + @response.user]
+        viewers = []
     else
-      admins = ["user:" + @response.user]
+      admins = []
       viewers = []
 
     # Add form admins always
