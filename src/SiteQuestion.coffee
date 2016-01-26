@@ -50,6 +50,7 @@ module.exports = class SiteQuestion extends Question
   selectSite: ->
     @ctx.selectSite @options.siteTypes, (siteCode) =>
       @setAnswerValue(code: siteCode)
+      @validate()
 
   validateInternal: ->
     if not @$("input").val()
