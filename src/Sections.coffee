@@ -44,8 +44,7 @@ module.exports = class Sections extends Backbone.View
 
   crumbSection: (e) ->
     # Go to section
-    # Get the parentNode now that the link contains a <b>
-    index = parseInt(e.target.parentNode.getAttribute("data-value"))
+    index = parseInt(e.target.getAttribute("data-value"))
     @showSection index
 
   getNextSectionIndex: ->
