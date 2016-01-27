@@ -1,4 +1,4 @@
-{{#each sections}}
-<li><a class="section-crumb" data-value="{{@index}}">{{name}}</a></li>
+{{#each sectionsIndex}}
+<li><a class="section-crumb" data-value="{{@index}}"><b>{{label}}</b></a></li>
 {{/each}}
-<li><b>{{lastSection.name}}</b></li>
+<li><b>{{lastSectionLabel}}</b></li>

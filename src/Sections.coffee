@@ -44,7 +44,8 @@ module.exports = class Sections extends Backbone.View
 
   crumbSection: (e) ->
     # Go to section
-    index = parseInt(e.target.getAttribute("data-value"))
+    # Get the parentNode now that the link contains a <b>
+    index = parseInt(e.target.parentNode.getAttribute("data-value"))
     @showSection index
 
   getNextSectionIndex: ->
@@ -80,9 +81,11 @@ module.exports = class Sections extends Backbone.View
     visibleSections = _.filter(_.take(@sections, index + 1), (s) ->
       s.shouldBeVisible()
     )
+    index = 1
+    sectionsIndex = _.map _.initial(visibleSections), (s) -> {label: "#{index++}."}
     data = {
-      sections: _.initial(visibleSections)
-      lastSection: _.last(visibleSections)
+      lastSectionLabel: "#{index}. #{_.last(visibleSections).name} "
+      sectionsIndex: sectionsIndex
     }
     @$(".breadcrumb").html require('./templates/Sections_breadcrumbs.hbs')(data, helpers: { T: @T })
     @renderNextPrev()
