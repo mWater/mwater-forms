@@ -133,6 +133,13 @@ describe "ResponseModel", ->
 
       assert.isFalse _.any(@response.roles, (r) -> r.id == "user:user2"), "Enumerator removed"
 
+    it "removes everyone as viewer if form deleted", ->
+      assert.isTrue _.any(@response.roles, (r) -> r.id == "user:user2"), "Can see as enumerator"
+      
+      @form.state = 'deleted'
+      @model.fixRoles()
+
+      assert.deepEqual @response.roles, [], "No one can see deleted"
 
   describe "submit when no approval stages with enumeratorAdminFinal", ->
     beforeEach ->

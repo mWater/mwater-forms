@@ -314,6 +314,10 @@ module.exports = class ResponseModel
     if not deployment
       throw new Error("No matching deployments for #{@form._id} user #{@user}")
 
+    # If deleted, no viewers
+    if @form.state == "deleted"
+      return @response.roles = []
+
     # If pending and more or equal approvals than approval stages, response is final
     if @response.status == "pending" and @response.approvals? and @response.approvals.length >= deployment.approvalStages.length
       @_finalize()
