@@ -196,7 +196,8 @@ module.exports = class FormCompiler
 
   compileConditions: (conds, form) =>
     # Only use valid conditions
-    conds = _.filter conds, (cond) -> conditionUtils.validateCondition(cond, form)
+    if form?
+      conds = _.filter conds, (cond) -> conditionUtils.validateCondition(cond, form)
     compConds = _.map(conds, @compileCondition)
     return =>
       for compCond in compConds
