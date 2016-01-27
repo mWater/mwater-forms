@@ -663,8 +663,11 @@ describe "ResponseModel", ->
       }
 
       @finalizeForm = =>
+        console.log 'a'
         @model.submit()
+        console.log 'b'
         @model = new ResponseModel(response: @response, form: @form, user: "user", groups: ["dep2en1"], formCtx: @ctx)
+        console.log 'c'
         @model.approve()
 
       # Create a form with the above designs
@@ -731,12 +734,15 @@ describe "ResponseModel", ->
 
       @finalizeForm = =>
         @model.submit()
+        console.log 'a'
         @model = new ResponseModel(response: @response, form: @form, user: "user", groups: ["dep2en1"], formCtx: @ctx)
+        console.log 'b'
         @model.approve()
 
       # Create a form with the above designs
       @form = _.cloneDeep(sampleForm)
       @form.design = formDesign
+      @form.contents = formDesign.contents
       
       # Create mock context with basics needed
       @ctx = {
@@ -895,7 +901,9 @@ describe "ResponseModel", ->
 
         it "defaults if doesn't match", ->
           @response.data = { q1: { value: "xyz" } }
+          console.log 'will finalize'
           @finalizeForm()
+          console.log 'finalized'
           create = @response.pendingEntityCreates[0].entity
           assert.deepEqual create._roles, [{ to: "user:user", role: "admin" }, { to: "all", role: "view" }]
 
