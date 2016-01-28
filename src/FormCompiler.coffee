@@ -3,6 +3,7 @@ markdown = require("markdown").markdown
 ezlocalize = require 'ez-localize'
 
 formUtils = require './formUtils'
+conditionUtils = require './conditionUtils'
 
 TextQuestion = require './TextQuestion'
 NumberQuestion = require './NumberQuestion'
@@ -193,7 +194,10 @@ module.exports = class FormCompiler
       else
         throw new Error("Unknown condition op " + cond.op)
 
-  compileConditions: (conds) =>
+  compileConditions: (conds, form) =>
+    # Only use valid conditions
+    if form?
+      conds = _.filter conds, (cond) -> conditionUtils.validateCondition(cond, form)
     compConds = _.map(conds, @compileCondition)
     return =>
       for compCond in compConds
@@ -230,9 +234,9 @@ module.exports = class FormCompiler
             return item._type == "Section" and formUtils.findItem(item, questionId)
             )
           if section
-            if not @compileConditions(section.conditions)()
+            if not @compileConditions(section.conditions, form)()
               return false
-          return @compileConditions(question.conditions)()
+          return @compileConditions(question.conditions, form)()
       else
         isQuestionVisible = null
 
@@ -266,7 +270,7 @@ module.exports = class FormCompiler
         # Get answer
         answer = @model.get(q._id)
         return compiledValidations(answer)
-      conditional: if q.conditions and q.conditions.length > 0 then @compileConditions(q.conditions)
+      conditional: if q.conditions and q.conditions.length > 0 then @compileConditions(q.conditions, form)
       ctx: @ctx
       T: T
     }
@@ -342,14 +346,14 @@ module.exports = class FormCompiler
 
     throw new Error("Unknown question type")
 
-  compileInstructions: (item, T) =>
+  compileInstructions: (item, T, form) =>
     T = T or ezlocalize.defaultT
 
     options = {
       model: @model
       id: item._id
       html: if @compileString(item.text) then markdown.toHTML(@compileString(item.text))
-      conditional: if item.conditions and item.conditions.length > 0 then @compileConditions(item.conditions)
+      conditional: if item.conditions and item.conditions.length > 0 then @compileConditions(item.conditions, form)
       ctx: @ctx
       T: T
     }
@@ -377,7 +381,7 @@ module.exports = class FormCompiler
       T: T
       name: @compileString(section.name)
       contents: contents
-      conditional: if section.conditions and section.conditions.length > 0 then @compileConditions(section.conditions)
+      conditional: if section.conditions and section.conditions.length > 0 then @compileConditions(section.conditions, form)
     }
 
     return new Section(options)

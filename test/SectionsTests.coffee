@@ -65,7 +65,7 @@ describe "Sections", ->
 
   it "allows going back with breadcrumbs", ->
     @ui.click("Next")
-    @view.$('.section-crumb:contains("Section1")').click()
+    @view.$('.section-crumb:contains("1.")').click()
     assert.equal @view.$(".question:contains('Section1q1')").closest(".section").css('display'), 'block'
     assert.equal @view.$(".question:contains('Section2q1')").closest(".section").css('display'), 'none'
 

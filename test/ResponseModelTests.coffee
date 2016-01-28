@@ -744,6 +744,7 @@ describe "ResponseModel", ->
       # Create a form with the above designs
       @form = _.cloneDeep(sampleForm)
       @form.design = formDesign
+      @form.contents = formDesign.contents
       
       # Create mock context with basics needed
       @ctx = {

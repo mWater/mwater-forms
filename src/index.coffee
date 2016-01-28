@@ -3,6 +3,7 @@ Backbone = require 'backbone'
 _ = require 'lodash'
 
 exports.formUtils = require './formUtils'
+exports.conditionUtils = require './conditionUtils'
 exports.Sections = require './Sections'
 exports.Section = require './Section'
 exports.Question = require './Question'
