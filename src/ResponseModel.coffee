@@ -215,7 +215,7 @@ module.exports = class ResponseModel
 
               # Conditions must be true or non-existant
               if ecs.conditions
-                if not compiler.compileConditions(ecs.conditions, @form)()
+                if not compiler.compileConditions(ecs.conditions, @form.design)()
                   return false
 
               return true
