@@ -41,6 +41,7 @@ module.exports = class FormControls extends Backbone.View
   render: ->
     @$el.html require('./templates/FormControls.hbs')({
       submitLabel: @options.submitLabel
+      discardLabel: @options.discardLabel
       allowSaveForLater: @options.allowSaveForLater
       }, helpers: { T: @T })
     

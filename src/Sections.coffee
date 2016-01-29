@@ -101,6 +101,7 @@ module.exports = class Sections extends Backbone.View
   render: ->
     @$el.html require('./templates/Sections.hbs')({
       submitLabel: @options.submitLabel
+      discardLabel: @options.discardLabel
       allowSaveForLater: @options.allowSaveForLater
       }, helpers: { T: @T })
     

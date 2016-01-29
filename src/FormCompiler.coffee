@@ -391,6 +391,7 @@ module.exports = class FormCompiler
   #  entity: optional entity to preload into matching form question
   #  entityQuestionId: optional question to preload entity into. Will be inferred if not specified
   #  submitLabel: Label for submit button
+  #  discardLabel: Label for discard button
   #  allowSaveForLater: defaults to true
   compileForm: (form, options={}) ->
     # Check schema version
@@ -414,6 +415,7 @@ module.exports = class FormCompiler
         ctx: @ctx
         T: T
         submitLabel: options.submitLabel
+        discardLabel: options.discardLabel
         allowSaveForLater: if options.allowSaveForLater? then options.allowSaveForLater else true
       })
       contents = [sectionsView]
@@ -427,6 +429,7 @@ module.exports = class FormCompiler
         ctx: @ctx
         T: T
         submitLabel: options.submitLabel
+        discardLabel: options.discardLabel
         allowSaveForLater: if options.allowSaveForLater? then options.allowSaveForLater else true
         })
       contents = [formControls]

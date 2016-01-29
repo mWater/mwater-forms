@@ -19,6 +19,7 @@ module.exports = class FormComponent extends React.Component
     onDiscard: React.PropTypes.func.isRequired    # Called when discard is pressed
 
     submitLabel: React.PropTypes.string           # Label for submit button
+    discardLabel: React.PropTypes.string           # Label for discard button
 
     entity: React.PropTypes.object            # Form-level entity to load
     entityType: React.PropTypes.string        # Type of form-level entity to load
@@ -59,6 +60,7 @@ module.exports = class FormComponent extends React.Component
       entity: props.entity
       allowSaveForLater: props.onSaveLater?
       submitLabel: props.submitLabel
+      discardLabel: props.discardLabel
       })
 
     @formView.render()
