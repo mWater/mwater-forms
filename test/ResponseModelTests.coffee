@@ -744,8 +744,7 @@ describe "ResponseModel", ->
       # Create a form with the above designs
       @form = _.cloneDeep(sampleForm)
       @form.design = formDesign
-      @form.contents = formDesign.contents
-      
+
       # Create mock context with basics needed
       @ctx = {
         getProperty: (id) => if id == "1" then return @propText else if id == "2" then return @propCode
