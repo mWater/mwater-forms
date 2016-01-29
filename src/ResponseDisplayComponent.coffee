@@ -30,7 +30,7 @@ module.exports = class ResponseDisplayComponent extends React.Component
     
     # Create compiler to check conditions
     formCompiler = new FormCompiler(model: model, ctx: @props.formCtx)
-    conds = formCompiler.compileConditions(item.conditions, @props.form)
+    conds = formCompiler.compileConditions(item.conditions, @props.form.design)
     return conds()
 
   handleLocationClick: (location) ->
