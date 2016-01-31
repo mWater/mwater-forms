@@ -68,6 +68,42 @@ describe "Entities", ->
       compiled({ enum: "x"})
       assert.equal @model.get("q1").value, "xx"
 
+    it "throws when enum:choice with no mapping", ->
+      compiled = @compiler.compileLoadLinkedAnswers([
+        { propertyId: @propEnum._id, type: "enum:choice", direction: "load", questionId: "q1", mappings: [
+          { from: "x", to: "xx" }
+          { from: "y", to: "yy" }
+          ] }
+        ])
+
+      assert.throws () =>
+        compiled({ enum: "z"})
+
+    it "throws when enum:choice with undefined mapping", ->
+      compiled = @compiler.compileLoadLinkedAnswers([
+        { propertyId: @propEnum._id, type: "enum:choice", direction: "load", questionId: "q1", mappings: [
+          { from: "x", to: "xx" }
+          { from: "y", to: "yy" }
+          { from: "z" }
+          ] }
+        ])
+
+      assert.throws () =>
+        compiled({ enum: "z"})
+
+    it "throws when enum:choice with null mapping", ->
+      compiled = @compiler.compileLoadLinkedAnswers([
+        { propertyId: @propEnum._id, type: "enum:choice", direction: "load", questionId: "q1", mappings: [
+          { from: "x", to: "xx" }
+          { from: "y", to: "yy" }
+          { from: "z", to: null }
+          ] }
+        ])
+
+      assert.throws () =>
+        compiled({ enum: "z"})
+
+
     it "loads enumset:choices links", ->
       compiled = @compiler.compileLoadLinkedAnswers([
         { propertyId: @propEnumset._id, type: "enumset:choices", direction: "load", questionId: "q1", mappings: [
@@ -84,6 +120,45 @@ describe "Entities", ->
 
       compiled(enumset: [])
       assert.deepEqual @model.get("q1").value, []
+
+    it "throws with unknown enumset:choices links", ->
+      compiled = @compiler.compileLoadLinkedAnswers([
+        { propertyId: @propEnumset._id, type: "enumset:choices", direction: "load", questionId: "q1", mappings: [
+          { from: "x", to: "xx" }
+          { from: "y", to: "yy" }
+          ] }
+        ])
+
+      assert.throws () =>
+        compiled(enumset: ['x', 'zzzz'])
+
+    it "throws with undefined enumset:choices mapping", ->
+      compiled = @compiler.compileLoadLinkedAnswers([
+        { propertyId: @propEnumset._id, type: "enumset:choices", direction: "load", questionId: "q1", mappings: [
+          { from: "x", to: "xx" }
+          { from: "y", to: "yy" }
+          { from: "z" }
+          ] }
+        ])
+
+      compiled(enumset: ['x'])
+
+      assert.throws () =>
+        compiled(enumset: ['x', 'z'])
+
+    it "throws with undefined enumset:choices mapping", ->
+      compiled = @compiler.compileLoadLinkedAnswers([
+        { propertyId: @propEnumset._id, type: "enumset:choices", direction: "load", questionId: "q1", mappings: [
+          { from: "x", to: "xx" }
+          { from: "y", to: "yy" }
+          { from: "z", to: null }
+          ] }
+        ])
+
+      compiled(enumset: ['x'])
+
+      assert.throws () =>
+        compiled(enumset: ['x', 'z'])
 
     it "loads boolean:choices links", ->
       compiled = @compiler.compileLoadLinkedAnswers([
@@ -173,9 +248,23 @@ describe "Entities", ->
         { propertyId: @propText._id, type: "direct", direction: "save", questionId: "q1" }
         ])
 
-      # Save text
       @model.set("q1", { value: "sometext"})
       assert.deepEqual compiled(), { text: "sometext" }
+
+    it "saves null direct links", ->
+      compiled = @compiler.compileSaveLinkedAnswers([
+        { propertyId: @propText._id, type: "direct", direction: "save", questionId: "q1" }
+        ])
+
+      @model.set("q1", { value: null })
+      assert.deepEqual compiled(), { text: null }
+
+    it "saves undefined direct links", ->
+      compiled = @compiler.compileSaveLinkedAnswers([
+        { propertyId: @propText._id, type: "direct", direction: "save", questionId: "q1" }
+        ])
+
+      assert.deepEqual compiled(), { text: null }
 
     it "saves geometry:location links", ->
       compiled = @compiler.compileSaveLinkedAnswers([
@@ -185,6 +274,15 @@ describe "Entities", ->
       # Save text
       @model.set("q1", { value: { latitude: 1, longitude: 2 }})
       assert.deepEqual compiled(), { geometry: { type: "Point", coordinates: [2, 1]} }
+
+    it "saves empty geometry:location links", ->
+      compiled = @compiler.compileSaveLinkedAnswers([
+        { propertyId: @propGeometry._id, type: "geometry:location", direction: "save", questionId: "q1" }
+        ])
+
+      # Save text
+      @model.set("q1", { value: null })
+      assert.deepEqual compiled(), { geometry: null }
 
     it "doesn't save if question not visible", ->
       form = { 
@@ -263,9 +361,65 @@ describe "Entities", ->
           ] }
         ])
 
-      # Save text
+      # Save 
       @model.set("q1", { value: "xx"})
       assert.deepEqual compiled(), { enum: "x" }
+
+    it "saves enum:choice links with null answer", ->
+      compiled = @compiler.compileSaveLinkedAnswers([
+        { propertyId: @propEnum._id, type: "enum:choice", direction: "save", questionId: "q1", mappings: [
+          { from: "x", to: "xx" }
+          { from: "y", to: "yy" }
+          ] }
+        ])
+
+      # Save text
+      @model.set("q1", { value: null })
+      assert.deepEqual compiled(), { enum: null }
+
+    it "saves enum:choice links with undefined answer", ->
+      compiled = @compiler.compileSaveLinkedAnswers([
+        { propertyId: @propEnum._id, type: "enum:choice", direction: "save", questionId: "q1", mappings: [
+          { from: "x", to: "xx" }
+          { from: "y", to: "yy" }
+          ] }
+        ])
+
+      assert.deepEqual compiled(), { enum: null }
+
+    it "saves enum:choice links ignoring null mappings", ->
+      compiled = @compiler.compileSaveLinkedAnswers([
+        { propertyId: @propEnum._id, type: "enum:choice", direction: "save", questionId: "q1", mappings: [
+          { from: "x", to: "xx" }
+          { from: "y", to: null }
+          ] }
+        ])
+
+      @model.set("q1", { value: null })
+      assert.deepEqual compiled(), { enum: null }
+
+    it "saves enum:choice links ignoring undefined mappings", ->
+      compiled = @compiler.compileSaveLinkedAnswers([
+        { propertyId: @propEnum._id, type: "enum:choice", direction: "save", questionId: "q1", mappings: [
+          { from: "x", to: "xx" }
+          { from: "y" }
+          ] }
+        ])
+
+      @model.set("q1", { value: null })
+      assert.deepEqual compiled(), { enum: null }
+
+    it "throws saving enum:choice links with unknown values", ->
+      compiled = @compiler.compileSaveLinkedAnswers([
+        { propertyId: @propEnum._id, type: "enum:choice", direction: "save", questionId: "q1", mappings: [
+          { from: "x", to: "xx" }
+          { from: "y", to: "yy" }
+          ] }
+        ])
+
+      assert.throws () =>
+        @model.set("q1", { value: "ZZZ" })
+        compiled()
 
     it "saves enumset:choices links", ->
       compiled = @compiler.compileSaveLinkedAnswers([

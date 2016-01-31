@@ -49,19 +49,23 @@ module.exports = class FormEntityLinker
       when "enum:choice"
         # Find the from value
         mapping = _.findWhere(propLink.mappings, { from: val })
-        if mapping
+        if mapping and mapping.to
           # Copy property to question value 
           answer.value = mapping.to
           @model.set(propLink.questionId, answer)
+        else
+          throw new Error("No mapping for value #{val} of property #{propLink.propertyId}")
 
       when "enumset:choices"
         if _.isArray(val)
           answer.value = _.compact(_.map val, (v) =>
             # Find the from value
             mapping = _.findWhere(propLink.mappings, { from: v })
-            if mapping
+            if mapping and mapping.to
               # Copy property to question value 
               return mapping.to
+            else
+              throw new Error("No mapping for value #{v} of property #{propLink.propertyId}")
           )
         else
           answer.value = []
@@ -157,13 +161,21 @@ module.exports = class FormEntityLinker
       when "geometry:location"
         if answer.value? and answer.value.longitude? and answer.value.latitude?
           @entity[code] = { type: "Point", coordinates: [answer.value.longitude, answer.value.latitude] }
+        else
+          @entity[code] = null
 
       when "enum:choice"
-        # Find the to value
-        mapping = _.findWhere(propLink.mappings, { to: answer.value })
-        if mapping
-          # Set the property
-          @entity[code] = mapping.from
+        # Find the to value if has a value
+        if answer.value
+          mapping = _.findWhere(propLink.mappings, { to: answer.value })
+          if mapping and mapping.from
+            # Set the property
+            @entity[code] = mapping.from
+          else
+            # No mapping
+            throw new Error("No mapping for value #{answer.value} of property #{propLink.propertyId}")
+        else
+          @entity[code] = null
 
       when "enumset:choices"
         if answer.value and _.isArray(answer.value)
