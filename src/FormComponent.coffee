@@ -53,6 +53,9 @@ module.exports = class FormComponent extends React.Component
     @model = new Backbone.Model()
     @model.set(_.cloneDeep(props.data))
 
+    # Listen for changes to data model
+    @model.on "change", @handleChange
+
     # Create compiler
     compiler = new FormCompiler(model: @model, locale: props.locale, ctx: props.formCtx)
     @formView = compiler.compileForm(props.design, { 
@@ -66,7 +69,7 @@ module.exports = class FormComponent extends React.Component
     @formView.render()
 
     # Listen to events
-    @formView.on 'change', @handleChange
+    # Listening to changes is done above
     @formView.on 'complete', props.onSubmit
     if props.onSaveLater
       @formView.on 'close', props.onSaveLater
