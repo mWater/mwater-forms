@@ -78,7 +78,8 @@ module.exports = class FormComponent extends React.Component
     $(@refs.form).append(@formView.el)
 
   componentWillUnmount: ->
-    @formView.remove()
+    if @formView
+      @formView.remove()
 
   handleChange: =>
     @props.onDataChange(@model.toJSON())
