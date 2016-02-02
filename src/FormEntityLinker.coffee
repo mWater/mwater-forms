@@ -53,8 +53,6 @@ module.exports = class FormEntityLinker
           # Copy property to question value 
           answer.value = mapping.to
           @model.set(propLink.questionId, answer)
-        else
-          throw new Error("No mapping for value #{val} of property #{propLink.propertyId}")
 
       when "enumset:choices"
         if _.isArray(val)
@@ -64,8 +62,6 @@ module.exports = class FormEntityLinker
             if mapping and mapping.to
               # Copy property to question value 
               return mapping.to
-            else
-              throw new Error("No mapping for value #{v} of property #{propLink.propertyId}")
           )
         else
           answer.value = []
