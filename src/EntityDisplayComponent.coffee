@@ -50,6 +50,15 @@ module.exports = class EntityDisplayComponent extends React.Component
               properties.push({ name: name, value: localize(propValue.name)})
             else
               properties.push({ name: name, value: "???"})  
+          when "enumset"
+            strs = []
+            for val in value
+              propValue = _.findWhere(prop.values, { code: val })
+              if propValue
+                strs.push(localize(propValue.name))
+              else
+                strs.push("???")
+            properties.push({ name: name, value: strs.join(", ")})
           when "boolean"
             properties.push({ name: name, value: if value then "true" else "false" })
           when "geometry"
