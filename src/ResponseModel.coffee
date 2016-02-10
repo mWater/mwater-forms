@@ -22,8 +22,8 @@ module.exports = class ResponseModel
     @formCtx = options.formCtx or {}
     @extraCreateRoles = options.extraCreateRoles or []
 
-  # Setup draft
-  draft: ->
+  # Setup draft. deploymentId is optional _id of deployment to use for cases where ambiguous
+  draft: (deploymentId) ->
     if not @response._id
       @response._id = formUtils.createUid()
       @response.form = @form._id
@@ -46,14 +46,17 @@ module.exports = class ResponseModel
     @response.formRev = @form._rev
     @response.status = "draft"
 
-    # Select deployment
-    subjects = ["user:" + @user, "all"]
-    subjects = subjects.concat(_.map @groups, (g) -> "group:" + g)
-    deployment = _.find @form.deployments, (dep) =>
-      return _.intersection(dep.enumerators, subjects).length > 0 and dep.active
-    if not deployment
-      throw new Error("No matching deployments for #{@form._id} user #{@user}")
-    @response.deployment = deployment._id
+    if deploymentId
+      @response.deployment = deploymentId
+    else # Select deployment if not specified
+      subjects = ["user:" + @user, "all"]
+      subjects = subjects.concat(_.map @groups, (g) -> "group:" + g)
+
+      deployment = _.find @form.deployments, (dep) =>
+        return _.intersection(dep.enumerators, subjects).length > 0 and dep.active
+      if not deployment
+        throw new Error("No matching deployments for #{@form._id} user #{@user}")
+      @response.deployment = deployment._id
 
     @fixRoles()
     @_updateEntities()
