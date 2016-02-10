@@ -68,40 +68,41 @@ describe "Entities", ->
       compiled({ enum: "x"})
       assert.equal @model.get("q1").value, "xx"
 
-    it "throws when enum:choice with no mapping", ->
-      compiled = @compiler.compileLoadLinkedAnswers([
-        { propertyId: @propEnum._id, type: "enum:choice", direction: "load", questionId: "q1", mappings: [
-          { from: "x", to: "xx" }
-          { from: "y", to: "yy" }
-          ] }
-        ])
+    # Removed to allow create forms for specifc limited options
+    # it "throws when enum:choice with no mapping", ->
+    #   compiled = @compiler.compileLoadLinkedAnswers([
+    #     { propertyId: @propEnum._id, type: "enum:choice", direction: "load", questionId: "q1", mappings: [
+    #       { from: "x", to: "xx" }
+    #       { from: "y", to: "yy" }
+    #       ] }
+    #     ])
 
-      assert.throws () =>
-        compiled({ enum: "z"})
+    #   assert.throws () =>
+    #     compiled({ enum: "z"})
 
-    it "throws when enum:choice with undefined mapping", ->
-      compiled = @compiler.compileLoadLinkedAnswers([
-        { propertyId: @propEnum._id, type: "enum:choice", direction: "load", questionId: "q1", mappings: [
-          { from: "x", to: "xx" }
-          { from: "y", to: "yy" }
-          { from: "z" }
-          ] }
-        ])
+    # it "throws when enum:choice with undefined mapping", ->
+    #   compiled = @compiler.compileLoadLinkedAnswers([
+    #     { propertyId: @propEnum._id, type: "enum:choice", direction: "load", questionId: "q1", mappings: [
+    #       { from: "x", to: "xx" }
+    #       { from: "y", to: "yy" }
+    #       { from: "z" }
+    #       ] }
+    #     ])
 
-      assert.throws () =>
-        compiled({ enum: "z"})
+    #   assert.throws () =>
+    #     compiled({ enum: "z"})
 
-    it "throws when enum:choice with null mapping", ->
-      compiled = @compiler.compileLoadLinkedAnswers([
-        { propertyId: @propEnum._id, type: "enum:choice", direction: "load", questionId: "q1", mappings: [
-          { from: "x", to: "xx" }
-          { from: "y", to: "yy" }
-          { from: "z", to: null }
-          ] }
-        ])
+    # it "throws when enum:choice with null mapping", ->
+    #   compiled = @compiler.compileLoadLinkedAnswers([
+    #     { propertyId: @propEnum._id, type: "enum:choice", direction: "load", questionId: "q1", mappings: [
+    #       { from: "x", to: "xx" }
+    #       { from: "y", to: "yy" }
+    #       { from: "z", to: null }
+    #       ] }
+    #     ])
 
-      assert.throws () =>
-        compiled({ enum: "z"})
+    #   assert.throws () =>
+    #     compiled({ enum: "z"})
 
 
     it "loads enumset:choices links", ->
@@ -121,44 +122,44 @@ describe "Entities", ->
       compiled(enumset: [])
       assert.deepEqual @model.get("q1").value, []
 
-    it "throws with unknown enumset:choices links", ->
-      compiled = @compiler.compileLoadLinkedAnswers([
-        { propertyId: @propEnumset._id, type: "enumset:choices", direction: "load", questionId: "q1", mappings: [
-          { from: "x", to: "xx" }
-          { from: "y", to: "yy" }
-          ] }
-        ])
+    # it "throws with unknown enumset:choices links", ->
+    #   compiled = @compiler.compileLoadLinkedAnswers([
+    #     { propertyId: @propEnumset._id, type: "enumset:choices", direction: "load", questionId: "q1", mappings: [
+    #       { from: "x", to: "xx" }
+    #       { from: "y", to: "yy" }
+    #       ] }
+    #     ])
 
-      assert.throws () =>
-        compiled(enumset: ['x', 'zzzz'])
+    #   assert.throws () =>
+    #     compiled(enumset: ['x', 'zzzz'])
 
-    it "throws with undefined enumset:choices mapping", ->
-      compiled = @compiler.compileLoadLinkedAnswers([
-        { propertyId: @propEnumset._id, type: "enumset:choices", direction: "load", questionId: "q1", mappings: [
-          { from: "x", to: "xx" }
-          { from: "y", to: "yy" }
-          { from: "z" }
-          ] }
-        ])
+    # it "throws with undefined enumset:choices mapping", ->
+    #   compiled = @compiler.compileLoadLinkedAnswers([
+    #     { propertyId: @propEnumset._id, type: "enumset:choices", direction: "load", questionId: "q1", mappings: [
+    #       { from: "x", to: "xx" }
+    #       { from: "y", to: "yy" }
+    #       { from: "z" }
+    #       ] }
+    #     ])
 
-      compiled(enumset: ['x'])
+    #   compiled(enumset: ['x'])
 
-      assert.throws () =>
-        compiled(enumset: ['x', 'z'])
+    #   assert.throws () =>
+    #     compiled(enumset: ['x', 'z'])
 
-    it "throws with undefined enumset:choices mapping", ->
-      compiled = @compiler.compileLoadLinkedAnswers([
-        { propertyId: @propEnumset._id, type: "enumset:choices", direction: "load", questionId: "q1", mappings: [
-          { from: "x", to: "xx" }
-          { from: "y", to: "yy" }
-          { from: "z", to: null }
-          ] }
-        ])
+    # it "throws with undefined enumset:choices mapping", ->
+    #   compiled = @compiler.compileLoadLinkedAnswers([
+    #     { propertyId: @propEnumset._id, type: "enumset:choices", direction: "load", questionId: "q1", mappings: [
+    #       { from: "x", to: "xx" }
+    #       { from: "y", to: "yy" }
+    #       { from: "z", to: null }
+    #       ] }
+    #     ])
 
-      compiled(enumset: ['x'])
+    #   compiled(enumset: ['x'])
 
-      assert.throws () =>
-        compiled(enumset: ['x', 'z'])
+    #   assert.throws () =>
+    #     compiled(enumset: ['x', 'z'])
 
     it "loads boolean:choices links", ->
       compiled = @compiler.compileLoadLinkedAnswers([
