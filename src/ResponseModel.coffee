@@ -11,7 +11,7 @@ async = require 'async'
 # form: form object. Required
 # user: current username. Required
 # groups: group names of user
-# formCtx: form context. getProperty is required for submitting forms with entity questions
+# formCtx: form context. getProperties and getProperty is required for submitting forms with entity questions
 # extraCreateRoles: extra roles to be added to created entities. Overrides any others with same "to"
 module.exports = class ResponseModel
   constructor: (options) ->
