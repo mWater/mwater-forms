@@ -49,9 +49,6 @@ module.exports = class ResponseModel
     if deploymentId
       @response.deployment = deploymentId
     else # Select deployment if not specified
-      subjects = ["user:" + @user, "all"]
-      subjects = subjects.concat(_.map @groups, (g) -> "group:" + g)
-
       deployments = @listEnumeratorDeployments()
 
       if deployments.length == 0
