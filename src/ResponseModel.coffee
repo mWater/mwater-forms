@@ -52,7 +52,7 @@ module.exports = class ResponseModel
       subjects = ["user:" + @user, "all"]
       subjects = subjects.concat(_.map @groups, (g) -> "group:" + g)
 
-      deployments = @listPotentialDeployments()
+      deployments = @listEnumeratorDeployments()
 
       if deployments.length == 0
         throw new Error("No matching deployments for #{@form._id} user #{@user}")
@@ -61,7 +61,8 @@ module.exports = class ResponseModel
     @fixRoles()
     @_updateEntities()
 
-  listPotentialDeployments: ->
+  # Return all active deployments that the user can enumerate
+  listEnumeratorDeployments: ->
     subjects = ["user:" + @user, "all"]
     subjects = subjects.concat(_.map @groups, (g) -> "group:" + g)
 
