@@ -49,17 +49,22 @@ module.exports = class ResponseModel
     if deploymentId
       @response.deployment = deploymentId
     else # Select deployment if not specified
-      subjects = ["user:" + @user, "all"]
-      subjects = subjects.concat(_.map @groups, (g) -> "group:" + g)
+      deployments = @listEnumeratorDeployments()
 
-      deployment = _.find @form.deployments, (dep) =>
-        return _.intersection(dep.enumerators, subjects).length > 0 and dep.active
-      if not deployment
+      if deployments.length == 0
         throw new Error("No matching deployments for #{@form._id} user #{@user}")
-      @response.deployment = deployment._id
+      @response.deployment = deployments[0]._id
 
     @fixRoles()
     @_updateEntities()
+
+  # Return all active deployments that the user can enumerate
+  listEnumeratorDeployments: ->
+    subjects = ["user:" + @user, "all"]
+    subjects = subjects.concat(_.map @groups, (g) -> "group:" + g)
+
+    return _.filter @form.deployments, (dep) =>
+      return _.intersection(dep.enumerators, subjects).length > 0 and dep.active
 
   # Save for later. Does no state transitions, but updates any entity references
   # and other housekeeping before saving it
