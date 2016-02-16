@@ -1,8 +1,9 @@
 Question = require './Question'
 _ = require 'lodash'
-
-# Requires context (ctx) to have displayImage function
-# which takes { id: <image id>, remove: <function called when image deleted>, setCover: <called to make image cover> } as parameter
+React = require 'react'
+H = React.DOM
+ModalPopupComponent = require('react-library/lib/ModalPopupComponent')
+ImagePopupComponent = require './ImagePopupComponent'
 
 module.exports = class ImagesQuestion extends Question
   events:
@@ -49,7 +50,7 @@ module.exports = class ImagesQuestion extends Question
     error = =>
       # Display this image on error
       elem.attr("src", "img/no-image-icon.jpg")
-    @ctx.imageManager.getImageThumbnailUrl id, success, error
+    @ctx.imageManager.getImageUrl id, success, error
 
   addClick: ->
     # Check consent
@@ -76,31 +77,40 @@ module.exports = class ImagesQuestion extends Question
   thumbnailClick: (ev) ->
     id = ev.currentTarget.id
 
-    # Create remove and setCover callbacks if not readonly
-    remove = null
-    setCover = null
-    if not @options.readonly
-      remove = () => 
-        images = @getAnswerValue() || []
-        images = _.reject images, (img) =>
-          img.id == id
-        @setAnswerValue(images)
-
-      # Only setCover if not already
-      cover = _.findWhere(@getAnswerValue(), { id: id }).cover
-      if not cover
-        setCover = () =>
+    ModalPopupComponent.show((onClose) =>
+      # Create remove and onSetCover callbacks if not readonly
+      onRemove = null
+      onSetCover = null
+      if not @options.readonly
+        onRemove = () => 
           images = @getAnswerValue() || []
-
-          # Make copy to force a model change
-          images = _.map(images, _.clone)
-
-          for image in images
-            if image.cover?
-              delete image.cover
-            if image.id == id
-              image.cover = true
+          images = _.reject images, (img) =>
+            img.id == id
+          onClose()
           @setAnswerValue(images)
 
-    if @ctx.displayImage?
-      @ctx.displayImage({ id: id, remove: remove, setCover: setCover })
+        # Only onSetCover if not already
+        cover = _.findWhere(@getAnswerValue(), { id: id }).cover
+        if not cover
+          onSetCover = () =>
+            images = @getAnswerValue() || []
+
+            # Make copy to force a model change
+            images = _.map(images, _.clone)
+
+            for image in images
+              if image.cover?
+                delete image.cover
+              if image.id == id
+                image.cover = true
+            onClose()
+            @setAnswerValue(images)
+
+      React.createElement(ImagePopupComponent, {
+        imageManager: @ctx.imageManager
+        id: id
+        onClose: onClose
+        onRemove: onRemove
+        onSetCover: onSetCover
+      })
+    )

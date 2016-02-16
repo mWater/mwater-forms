@@ -7,8 +7,8 @@ SiteDisplayComponent = require './SiteDisplayComponent'
 
 # Allows user to select an mWater site
 # options.siteTypes is array of acceptable site types. null/undefined for all
-# Context should have selectSite(siteTypes, function(siteCode)) to use select button
-# siteTypes is optional list of acceptable top-level site types. Null/undefined for all
+# Context should have selectSite(siteType, function(siteCode)) to use select button
+# siteType is "water_point", etc.
 module.exports = class SiteQuestion extends Question
   renderAnswer: (answerEl) ->
     answerEl.html '''
@@ -48,7 +48,7 @@ module.exports = class SiteQuestion extends Question
     @setAnswerValue(code: @$("input").val())
 
   selectSite: ->
-    @ctx.selectSite @options.siteTypes, (siteCode) =>
+    @ctx.selectSite @options.siteTypes[0] or "water_point", (siteCode) =>
       @setAnswerValue(code: siteCode)
       @validate()
 

@@ -1,9 +1,10 @@
 Question = require './Question'
+React = require 'react'
+H = React.DOM
+ModalPopupComponent = require('react-library/lib/ModalPopupComponent')
+ImagePopupComponent = require './ImagePopupComponent'
 
-# Requires context (ctx) to have displayImage function
-# which takes { id: <image id>, remove: <function called when image deleted> } as parameter
 # options.consent is a string to ask for consent before photo is taken
-
 module.exports = class ImageQuestion extends Question
   events:
     "click #add": "addClick"
@@ -65,9 +66,17 @@ module.exports = class ImageQuestion extends Question
   thumbnailClick: (ev) ->
     id = ev.currentTarget.id
 
-    # Create onRemove callback
-    remove = () => 
-      @setAnswerValue(null)
 
-    if @ctx.displayImage?
-      @ctx.displayImage({ id: id, remove: remove })
+    ModalPopupComponent.show((onClose) =>
+      # Create onRemove callback
+      onRemove = () => 
+        onClose()
+        @setAnswerValue(null)
+
+      React.createElement(ImagePopupComponent, {
+        imageManager: @ctx.imageManager
+        id: id
+        onClose: onClose
+        onRemove: onRemove
+      })
+    )

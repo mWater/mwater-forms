@@ -2,17 +2,15 @@ Form Questions have a context object which they use.
 
 Fields:
 
-### displayImage
-
-Used by ImageQuestion and ImagesQuestion
-
-Function which takes { id: image id, remove: function called when image deleted, setCover: function called to set image cover } as single parameter
-
 ### imageManager
 
 Used by ImageQuestion and ImagesQuestion
 
-Contains getImageThumbnailUrl(id, success, error) which returns url of image thumbnail
+Contains:
+
+getImageUrl(id, success, error) which returns url of image 
+
+getImageThumbnailUrl(id, success, error) which returns url of thumbnail of image 
 
 ### imageAcquirer
 
@@ -28,7 +26,7 @@ Used by SiteQuestion
 
 Function which takes siteTypes and success parameters. Success is called with code of site.
 
-siteTypes is array of acceptable site types or null for all
+siteType is type of entity (e.g. "water_point")
 
 ### getSite
 

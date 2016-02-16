@@ -1,5 +1,7 @@
 React = require 'react'
 H = React.DOM
+ModalPopupComponent = require('react-library/lib/ModalPopupComponent')
+ImagePopupComponent = require './ImagePopupComponent'
 
 # Displays an image
 module.exports = class ImageDisplayComponent extends React.Component
@@ -24,8 +26,13 @@ module.exports = class ImageDisplayComponent extends React.Component
     @setState(error: true)
 
   handleImgClick: =>
-    if @props.formCtx.displayImage
-      @props.formCtx.displayImage(id: @props.id)
+    ModalPopupComponent.show((onClose) =>
+      React.createElement(ImagePopupComponent, {
+        imageManager: @props.formCtx.imageManager
+        id: @props.id
+        onClose: onClose
+      })
+    )
 
   render: ->
     if @state.error

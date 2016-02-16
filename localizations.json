@@ -298,6 +298,22 @@
     {
       "_base": "en",
       "en": "Status"
+    },
+    {
+      "_base": "en",
+      "en": "Error"
+    },
+    {
+      "_base": "en",
+      "en": "Close"
+    },
+    {
+      "_base": "en",
+      "en": "Set as Cover Image"
+    },
+    {
+      "_base": "en",
+      "en": "Remove"
     }
   ]
 }
