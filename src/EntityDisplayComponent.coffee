@@ -1,97 +1,44 @@
 React = require 'react'
 H = React.DOM
-ImageDisplayComponent = require './ImageDisplayComponent'
+AsyncLoadComponent = require('react-library/lib/AsyncLoadComponent')
 
-# Displays an entity with certain display fields
-module.exports = class EntityDisplayComponent extends React.Component
+# Loads and displays an entity
+module.exports = class EntityDisplayComponent extends AsyncLoadComponent
   @propTypes:
-    entity: React.PropTypes.object # Can be null for no entity
-    notFound: React.PropTypes.bool # True to display not found message instead
     formCtx: React.PropTypes.object.isRequired
-    propertyIds: React.PropTypes.array.isRequired # Array of property _ids
-    locale: React.PropTypes.string # Default to "en"
-    T: React.PropTypes.func
+    entityType: React.PropTypes.string.isRequired   # _id of entity
+    entityId: React.PropTypes.string     # _id of entity
+    entityCode: React.PropTypes.string   # code of entity if _id not present
+    displayInWell: React.PropTypes.bool         # True to render in well if present
 
-  # Format entity properties for display. Return array of name, value
-  formatEntityProperties: (entity) ->
-    # Localize to locale, or English as fallback
-    localize = (str) =>
-      return str[@props.locale] or str.en
+  # Override to determine if a load is needed. Not called on mounting
+  isLoadNeeded: (newProps, oldProps) ->
+    return newProps.entityType != oldProps.entityType or newProps.entityId != oldProps.entityId or newProps.entityCode != oldProps.entityCode
 
-    # Get properties and format    
-    properties = []
-    for propId in @props.propertyIds
-      # TODO REMOVE THIS JULY 2015
-      # Handle old style embedded properties
-      if _.isObject(propId)
-        propId = propId._id
-      if not propId
-        continue
-      # END REMOVE
+  # Call callback with state changes
+  load: (props, prevProps, callback) ->
+    if not props.entityId and not props.entityCode
+      callback(entity: null)
+      return
 
-      # Get property
-      prop = @props.formCtx.getProperty(propId)
-
-      # If property not found, just ignore
-      if not prop
-        continue
-
-      name = localize(prop.name)
-      value = entity[prop.code]
-      if not value?
-        properties.push({ name: name, value: H.span(className: "text-muted", "-") })
-      else
-        switch prop.type
-          when "text", "integer", "decimal", "date", "entity"
-            properties.push({ name: name, value: value })
-          when "enum"
-            propValue = _.findWhere(prop.values, { code: value })
-            if propValue
-              properties.push({ name: name, value: localize(propValue.name)})
-            else
-              properties.push({ name: name, value: "???"})  
-          when "enumset"
-            strs = []
-            for val in value
-              propValue = _.findWhere(prop.values, { code: val })
-              if propValue
-                strs.push(localize(propValue.name))
-              else
-                strs.push("???")
-            properties.push({ name: name, value: strs.join(", ")})
-          when "boolean"
-            properties.push({ name: name, value: if value then "true" else "false" })
-          when "geometry"
-            if value.type == "Point"
-              properties.push({ name: name, value: value.coordinates[1] + ", " + value.coordinates[0] })
-          when "measurement"
-            propUnit = @props.formCtx.getUnit(value.unit)
-            if propUnit
-              properties.push({ name: name, value: value.magnitude + " " + propUnit.symbol})
-            else
-              properties.push({ name: name, value: value.magnitude + " " + "???"})  
-          when "image"
-            properties.push(name: name, value: React.createElement(ImageDisplayComponent, formCtx: @props.formCtx, id: value.id))
-          when "imagelist"
-            properties.push(name: name, value: _.map(value, (img) => React.createElement(ImageDisplayComponent, formCtx: @props.formCtx, id: img.id)))
-          else
-            properties.push({ name: name, value: "???"}) 
-
-    return properties
+    if props.entityId
+      props.formCtx.getEntityById(props.entityType, props.entityId, (entity) =>
+        callback(entity: entity)
+      )
+    else
+      props.formCtx.getEntityByCode(props.entityType, props.entityCode, (entity) =>
+        callback(entity: entity)
+      )
 
   render: ->
-    if @props.entity
-      propElems = _.map @formatEntityProperties(@props.entity), (prop) =>
-        H.div key: prop.name,
-          H.span className: "text-muted",
-            prop.name + ": "
-          prop.value
+    if @state.loading
+      return H.div className: "alert alert-info", T("Loading...")
 
-      return H.div null,
-        propElems
-    else if @props.notFound
-      return H.div className: "text-warning", @props.T("Not found")
-    else
-      # Blank means no entity
-      return H.div()
+    if not @props.entityId and not @props.entityCode
+      return null
 
+    if not @state.entity 
+      return H.div className: "alert alert-danger", T("Not found")
+
+    H.div className: (if @props.displayInWell then "well well-sm"),
+      @props.formCtx.renderEntitySummaryView(@props.entityType, @state.entity)

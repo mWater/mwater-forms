@@ -4,7 +4,7 @@ React = require 'react'
 ReactDOM = require 'react-dom'
 H = React.DOM
 EntityDisplayComponent = require './EntityDisplayComponent'
-EntityLoadingComponent = require './EntityLoadingComponent'
+AsyncLoadComponent = require('react-library/lib/AsyncLoadComponent')
 
 # Allows user to select an entity
 # Options for EntityQuestion
@@ -19,7 +19,7 @@ EntityLoadingComponent = require './EntityLoadingComponent'
 #  hidden: true to always hide
 #  loadLinkedAnswers: function that loads any linked answers when an entity is selected. Called with entity
 #
-# Context should have selectEntity(<options>) and getEntity(type, id, callback). See docs/Forms Context.md
+# Context should have selectEntity(<options>) and getEntityById(type, id, callback). See docs/Forms Context.md
 module.exports = class EntityQuestion extends Question
   events:
     'click #change_entity_button' : 'selectEntity'
@@ -30,7 +30,7 @@ module.exports = class EntityQuestion extends Question
   # Loads properties into linked answers
   loadLinkedAnswers: (entityId) =>
     # Load answers linked to properties
-    @ctx.getEntity @options.entityType, entityId, (entity) =>
+    @ctx.getEntityById @options.entityType, entityId, (entity) =>
       if entity and @options.loadLinkedAnswers
         @options.loadLinkedAnswers(entity)
 
@@ -41,10 +41,8 @@ module.exports = class EntityQuestion extends Question
 
     @ctx.selectEntity { 
       title: @options.selectText
-      type: @options.entityType
+      entityType: @options.entityType
       filter: @options.entityFilter
-      selectProperties: @options.selectProperties
-      mapProperty: @options.mapProperty
       callback: (entityId) =>
         @setAnswerValue(entityId)
 
@@ -79,25 +77,20 @@ module.exports = class EntityQuestion extends Question
     @answerEl = answerEl
 
     # Check if entities supported
-    if not @ctx.getEntity?
+    if not @ctx.getEntityById?
       elem = H.div className: "text-warning", @T("Not supported on this platform")
     else
       entityId = @getAnswerValue()
   
-      elem = React.createElement(EntityLoadingComponent, {
-        formCtx: @ctx
-        entityId: entityId
+      elem = React.createElement(EntityAnswerComponent, {
         entityType: @options.entityType
-        T: @T },
-        React.createElement(EntityAnswerComponent, {
-          onSelectEntity: @selectEntity
-          onClearEntity: @clearEntity
-          onEditEntity: @editEntity
-          formCtx: @ctx
-          displayProperties: @options.displayProperties
-          locale: @options.locale
-          T: @T
-        }))
+        entityId: entityId
+        onSelectEntity: @selectEntity
+        onClearEntity: @clearEntity
+        onEditEntity: @editEntity
+        formCtx: @ctx
+        T: @T
+      })
         
     ReactDOM.render(elem, answerEl.get(0))
 
@@ -106,7 +99,30 @@ module.exports = class EntityQuestion extends Question
       ReactDOM.unmountComponentAtNode(@answerEl.get(0))
     super
 
-class EntityAnswerComponent extends React.Component
+class EntityAnswerComponent extends AsyncLoadComponent
+  @propTypes:
+    entityId: React.PropTypes.string
+    entityType: React.PropTypes.string.isRequired
+    onSelectEntity: React.PropTypes.func.isRequired
+    onClearEntity: React.PropTypes.func.isRequired
+    onEditEntity: React.PropTypes.func.isRequired
+    formCtx: React.PropTypes.object.isRequired
+    T: React.PropTypes.func.isRequired
+
+  # Override to determine if a load is needed. Not called on mounting
+  isLoadNeeded: (newProps, oldProps) ->
+    return newProps.entityType != oldProps.entityType or newProps.entityId != oldProps.entityId
+
+  # Call callback with state changes
+  load: (props, prevProps, callback) ->
+    if not props.entityId 
+      callback(entity: null)
+      return
+
+    props.formCtx.getEntityById(props.entityType, props.entityId, (entity) =>
+      callback(entity: entity)
+    )
+
   renderEntityButtons: ->
     H.div null,
       H.button type: "button", className: "btn btn-link btn-sm", onClick: @props.onSelectEntity,
@@ -117,27 +133,28 @@ class EntityAnswerComponent extends React.Component
         H.span className: "glyphicon glyphicon-remove"
         " "
         @props.T("Clear Selection")
-      if @props.entity._editable and @props.formCtx.editEntity?
+      if @props.formCtx.editEntity? and @props.formCtx.canEditEntity(@props.entityType, @state.entity)  
         H.button type: "button", className: "btn btn-link btn-sm", onClick: @props.onEditEntity,
           H.span className: "glyphicon glyphicon-pencil"
           " "
           @props.T("Edit Selection")
 
   render: ->
-    # If entity to render
-    if @props.entity
-      return H.div null,
-        React.createElement(EntityDisplayComponent, 
-          entity: @props.entity
-          formCtx: @props.formCtx
-          propertyIds: @props.displayProperties
-          locale: @props.locale
-          T: @props.T
-          )
-        @renderEntityButtons()
+    if @state.loading
+      return H.div className: "alert alert-info", T("Loading...")
 
-    # Render select button
-    return H.button type: "button", className: "btn btn-default btn-sm", onClick: @props.onSelectEntity,
-      H.span className: "glyphicon glyphicon-ok"
-      " "
-      @props.T("Select")
+    if not @props.entityId 
+      # Render select button
+      return H.button type: "button", className: "btn btn-default btn-sm", onClick: @props.onSelectEntity,
+        H.span className: "glyphicon glyphicon-ok"
+        " "
+        @props.T("Select")
+
+    if not @state.entity 
+      return H.div className: "alert alert-danger", T("Not found")
+
+    return H.div null,
+      @renderEntityButtons()
+      H.div className: "well well-sm",
+        @props.formCtx.renderEntitySummaryView(@props.entityType, @state.entity)
+

@@ -3,7 +3,7 @@ siteCodes = require './siteCodes'
 _ = require 'lodash'
 React = require 'react'
 ReactDOM = require 'react-dom'
-SiteDisplayComponent = require './SiteDisplayComponent'
+EntityDisplayComponent = require './EntityDisplayComponent'
 
 # Allows user to select an mWater site
 # options.siteTypes is array of acceptable site types. null/undefined for all
@@ -16,9 +16,10 @@ module.exports = class SiteQuestion extends Question
         <input id="input" type="tel" class="form-control">
         <span class="input-group-btn"><button class="btn btn-default" id="select" type="button">''' + @T("Select") + '''</button></span>
       </div>
+      <br/>
       <div id="site_display"></div>
       '''
-    if not @ctx.selectSite?
+    if not @ctx.selectEntity?
       @$("#select").attr("disabled", "disabled")
 
   remove: ->
@@ -37,7 +38,11 @@ module.exports = class SiteQuestion extends Question
     # Display site information
     siteDisplayElem = @$("#site_display")[0]
     if siteDisplayElem
-      ReactDOM.render(React.createElement(SiteDisplayComponent, formCtx: @ctx, siteCode: val, hideCode: true), siteDisplayElem)
+      # Convert to new entity type
+      siteType = @options.siteTypes[0] or "Water point" 
+      entityType = siteType.toLowerCase().replace(/ /g, "_")
+
+      ReactDOM.render(React.createElement(EntityDisplayComponent, formCtx: @ctx, displayInWell: true, entityCode: val, entityType: entityType), siteDisplayElem)
 
   events:
     'change' : 'changed'
@@ -48,9 +53,17 @@ module.exports = class SiteQuestion extends Question
     @setAnswerValue(code: @$("input").val())
 
   selectSite: ->
-    @ctx.selectSite @options.siteTypes[0] or "water_point", (siteCode) =>
-      @setAnswerValue(code: siteCode)
-      @validate()
+    # Convert to new entity type
+    siteType = @options.siteTypes[0] or "Water point" 
+    entityType = siteType.toLowerCase().replace(/ /g, "_")
+
+    @ctx.selectEntity { entityType: entityType, callback: (entityId) =>
+      # Get entity
+      @ctx.getEntityById(entityType, entityId, (entity) =>
+        @setAnswerValue(code: entity.code)
+        @validate()
+      )
+    }
 
   validateInternal: ->
     if not @$("input").val()

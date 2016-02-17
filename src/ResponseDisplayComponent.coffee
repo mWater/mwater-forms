@@ -4,8 +4,6 @@ Backbone = require 'backbone'
 formUtils = require './formUtils'
 ImageDisplayComponent = require './ImageDisplayComponent'
 EntityDisplayComponent = require './EntityDisplayComponent'
-EntityLoadingComponent = require './EntityLoadingComponent'
-SiteDisplayComponent = require './SiteDisplayComponent'
 moment = require 'moment'
 FormCompiler = require './FormCompiler'
 
@@ -225,20 +223,18 @@ module.exports = class ResponseDisplayComponent extends React.Component
         if _.isObject(code)
           code = code.code
 
-        return React.createElement(SiteDisplayComponent, formCtx: @props.formCtx, siteCode: code)
+        return React.createElement(EntityDisplayComponent, {
+            formCtx: @props.formCtx
+            entityCode: code
+            entityType: q.entityType
+        })
 
       when "entity"
-        return React.createElement(EntityLoadingComponent, {
+        return React.createElement(EntityDisplayComponent, {
             formCtx: @props.formCtx
             entityId: answer.value
             entityType: q.entityType
-            T: @props.T 
-            }, React.createElement(EntityDisplayComponent, {
-              formCtx: @props.formCtx
-              propertyIds: q.displayProperties
-              locale: @props.locale
-              T: @props.T
-              }))
+        })
 
   renderQuestion: (q) ->
     # Get answer

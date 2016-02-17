@@ -63,13 +63,17 @@ Scans a barcode. Calls options.success with string if successful
 
 Function which takes options:
 title: title of popup screen
-type: entity type
+entityType: entity type
 filter: optional filter of entities that are acceptable
-selectProperties: properties to display in the list when selecting
-mapProperty: optional property to map with
 callback: called with _id of entity selected
 
-## getEntity(type, _id, callback)
+## getEntityById(entityType, entityId, callback)
+
+callback: called with an entity e.g. { _id: some id, a: "abc", b: 123 } or callback null if entity not found
+
+entity includes pseudo-property `_editable` (true/false) to indicate if entity can be edited. Default is false
+
+## getEntityByCode(entityType, entityCode, callback)
 
 callback: called with an entity e.g. { _id: some id, a: "abc", b: 123 } or callback null if entity not found
 
@@ -99,3 +103,10 @@ returns a unique mWater code (e.g. 10007) if one is available
 
 Gets all properties for an entity type (e.g. "water_point"). Note: synchronous call!
 
+## renderEntitySummaryView(entityType, entity)
+
+Renders an entity as a React element.
+
+## canEditEntity(entityType, entity)
+
+True if current user can edit the entity specified
