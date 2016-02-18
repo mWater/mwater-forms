@@ -452,7 +452,7 @@ module.exports = class ResponseModel
           db[update.entityType].findOne({ _id: update.entityId }, { interim: false, timeout: 2000 }, (entity) =>
             # If not found, continue
             if not entity
-              return cb()
+              return cb({error: "The entity with id: #{update.entityId} could not be found."})
 
             # Update entity
             updated = _.extend({}, entity, update.updates)
