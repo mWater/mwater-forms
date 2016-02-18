@@ -20,22 +20,6 @@ Contains acquire(success, error)
 
 Success is called with id of image, error with error message
 
-### selectSite
-
-Used by SiteQuestion
-
-Function which takes siteTypes and success parameters. Success is called with code of site.
-
-siteType is type of entity (e.g. "water_point")
-
-### getSite
-
-Used by SiteQuestion
-
-Function which takes site code, success, error. Success is called with site document.
- 
-(optional)
-
 ### locationFinder
 
 Used by all questions. Optional.
@@ -62,7 +46,6 @@ Scans a barcode. Calls options.success with string if successful
 ## selectEntity(<options>)
 
 Function which takes options:
-title: title of popup screen
 entityType: entity type
 filter: optional filter of entities that are acceptable
 callback: called with _id of entity selected

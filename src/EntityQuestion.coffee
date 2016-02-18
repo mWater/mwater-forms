@@ -40,7 +40,6 @@ module.exports = class EntityQuestion extends Question
       return alert(@T("Not supported on this platform"))
 
     @ctx.selectEntity { 
-      title: @options.selectText
       entityType: @options.entityType
       filter: @options.entityFilter
       callback: (entityId) =>
