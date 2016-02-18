@@ -35,6 +35,7 @@ exports.LocationEditorComponent = require './LocationEditorComponent'
 exports.ImageEditorComponent = require './ImageEditorComponent'
 exports.ImagelistEditorComponent = require './ImagelistEditorComponent'
 
+exports.DateTimePickerComponent = require './DateTimePickerComponent'
 exports.FormModel = require './FormModel'
 exports.ResponseModel = require './ResponseModel'
 exports.ResponseDisplayComponent = require './ResponseDisplayComponent'
@@ -45,6 +46,11 @@ exports.minSchemaVersion = 1 # Minimum version of forms schema that can be compi
 
 # # JSON schema of form design # Explicitly import for now
 # exports.designSchema = require('./schema').design
+
+# This only works in browser. Load datetime picker
+if process.browser
+  require('eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js')
+
 
 # Simple form that displays a template based on loaded data
 exports.templateView = (template) -> 

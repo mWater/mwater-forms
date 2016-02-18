@@ -4,10 +4,6 @@ Question = require './Question'
 
 moment = require 'moment'
 
-# This only works in browser
-if process.browser
-  require('eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js')
-
 # Date question. Options include:
 # format: Any moment.js format
 module.exports = class DateQuestion extends Question
