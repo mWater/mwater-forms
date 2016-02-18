@@ -89,7 +89,7 @@ exports.design = {
       }
       patternProperties: {
         # Language code as the key and localized string as the value
-        "^[a-z]{2}$": { type: "string" }
+        "^[a-z]{2,}$": { type: "string" }
       }
       additionalProperties: false
     }
