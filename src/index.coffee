@@ -31,6 +31,7 @@ exports.FormCompiler = require './FormCompiler'
 exports.LocationView = require './LocationView'
 exports.utils = require './utils'
 exports.LocationFinder = require './LocationFinder'
+exports.LocationEditorComponent = require './LocationEditorComponent'
 
 exports.FormModel = require './FormModel'
 exports.ResponseModel = require './ResponseModel'

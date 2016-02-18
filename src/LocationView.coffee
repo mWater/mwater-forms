@@ -39,9 +39,8 @@ module.exports = class LocationView extends Backbone.View
     @listenTo(@currentPositionFinder, 'error', @currentPositionError)
     @listenTo(@currentPositionFinder, 'status', @render)
 
-    # Start tracking location if set
-    if @loc
-      @locationFinder.startWatch()
+    # Start tracking location so that we get an accurate location quickly
+    @locationFinder.startWatch()
 
     # Do not re-render template as it would destroy input fields
     @$el.html require('./templates/LocationView.hbs')({}, helpers: { T: @T })
