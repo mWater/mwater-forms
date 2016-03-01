@@ -39,7 +39,7 @@ module.exports = class SiteQuestion extends Question
     siteDisplayElem = @$("#site_display")[0]
     if siteDisplayElem
       # Convert to new entity type
-      siteType = @options.siteTypes[0] or "Water point" 
+      siteType = (if @options.siteTypes then @options.siteTypes[0]) or "Water point" 
       entityType = siteType.toLowerCase().replace(/ /g, "_")
 
       ReactDOM.render(React.createElement(EntityDisplayComponent, formCtx: @ctx, displayInWell: true, entityCode: val, entityType: entityType), siteDisplayElem)
@@ -54,7 +54,7 @@ module.exports = class SiteQuestion extends Question
 
   selectSite: ->
     # Convert to new entity type
-    siteType = @options.siteTypes[0] or "Water point" 
+    siteType = (if @options.siteTypes then @options.siteTypes[0]) or "Water point" 
     entityType = siteType.toLowerCase().replace(/ /g, "_")
 
     @ctx.selectEntity { entityType: entityType, callback: (entityId) =>

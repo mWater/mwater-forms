@@ -23,20 +23,17 @@ module.exports = class DateTimePickerComponent extends React.Component
     timepicker: false
 
   onChange: (event) =>
-    @props.onChange?(event)
+    @props.onChange?(event.date)
 
   componentDidMount: ->
-    node = ReactDOM.findDOMNode(this)
-
     pickerOptions =
       format: if @props.timepicker then "YYYY-MM-DD HH-mm-ss" else "YYYY-MM-DD"
-      inline: true
       sideBySide: true
 
     if @props.defaultDate
       pickerOptions.defaultDate = @props.defaultDate
 
-    console.log pickerOptions
+    node = @refs.datetimepicker
     picker = $(node).datetimepicker(pickerOptions)
 
     $(node).data("DateTimePicker").date(@props.date or null)
@@ -49,14 +46,17 @@ module.exports = class DateTimePickerComponent extends React.Component
     if nextProps.date? and @props.date? and nextProps.date.isSame(@props.date)
       return
 
-    node = ReactDOM.findDOMNode(this)
+    node = @refs.datetimepicker
     $(node).off("dp.change", @onChange)
     $(node).data("DateTimePicker").date(nextProps.date or null)
     $(node).on("dp.change", @onChange)
 
   componentWillUnmount: ->
-    node = ReactDOM.findDOMNode(this)
-    $(node).data("DateTimePicker").destroy()
+    $(@refs.datetimepicker).data("DateTimePicker").destroy()
 
   render: ->
-    H.div null
+    H.div style: { position: "relative" },
+      H.input ref: "datetimepicker", type: "text", className: "form-control", placeholder: @props.placeholder,
+    # H.div ref: "datetimepicker", className: "input-group",
+    #   H.span className: "input-group-addon",
+    #     H.span className: "glyphicon glyphicon-calendar"

@@ -46,4 +46,10 @@
 
 ## Location-stamp (for recordLocation option)
 `{ value: ..., location: {accuracy:"float", altitude:"float", altitudeAccuracy:"float", longitude:"float", latitude:"float"} }`
-      
+
+## Specify choices
+
+`{ specify: { thechoiceid: "some value" } }`
+
+## Comments
+`{ comments: "some comment" }`
