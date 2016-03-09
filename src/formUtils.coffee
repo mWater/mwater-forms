@@ -155,6 +155,8 @@ exports.prepareQuestion = (q) ->
       knownFields.push "propertyLinks"
       knownFields.push "hidden"
       knownFields.push "createEntity"
+    when "AdminRegionQuestion"
+      knownFields.push "defaultValue"
 
   # Strip unknown fields
   for key in _.keys(q)
@@ -178,7 +180,7 @@ exports.changeQuestionType = (question, newType) ->
 
   return question
 
-# Gets type of the answer: text, number, choice, choices, date, units, boolean, location, image, images, texts, site, entity
+# Gets type of the answer: text, number, choice, choices, date, units, boolean, location, image, images, texts, site, entity, admin_region
 exports.getAnswerType = (q) ->
   switch q._type
     when "TextQuestion"
@@ -208,6 +210,8 @@ exports.getAnswerType = (q) ->
     when "BarcodeQuestion"
       return "text"
     when "EntityQuestion"
+      return "entity"
+    when "AdminRegionQuestion"
       return "entity"
     else throw new Error("Unknown question type")
 

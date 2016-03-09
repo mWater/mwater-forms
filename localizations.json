@@ -314,6 +314,26 @@
     {
       "_base": "en",
       "en": "Remove"
+    },
+    {
+      "_base": "en",
+      "en": "Set Using GPS"
+    },
+    {
+      "_base": "en",
+      "en": "Set Using Map"
+    },
+    {
+      "_base": "en",
+      "en": "Unable to lookup location"
+    },
+    {
+      "_base": "en",
+      "en": "Unable to get location"
+    },
+    {
+      "_base": "en",
+      "en": "Working..."
     }
   ]
 }

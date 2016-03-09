@@ -30,8 +30,8 @@ Override default locationFinder which is new LocationFinder
 
 Used by LocationQuestion
 
-Function which takes location object ( latitude, longitude, accuracy, altitude?, altitudeAccuracy? )
-Opens a map to the location
+Function which takes location object { latitude, longitude, accuracy, altitude?, altitudeAccuracy? } and callback with new location object
+Opens a map to the location and allows setting.
 
 ## stickyStorage
 
@@ -89,3 +89,18 @@ Renders an entity as a React element.
 ## canEditEntity(entityType, entity)
 
 True if current user can edit the entity specified
+
+## getAdminRegionPath(id, callback)
+
+Gets complete path (country downward) for an administrative region
+Callback (error, [{ id:, level: e.g. 1, name: e.g. "Manitoba", type: e.g. "Province" }, ...] in level ascending order)
+    
+## getSubAdminRegions(id, level, callback)
+
+Gets list of adminstrative regions at a level that are under a region. 
+Callback (error, [{ id:, level: e.g. 1, name: e.g. "Manitoba", type: e.g. "Province" }, ...])
+
+## findAdminRegionByLatLng(lat, lng, callback)
+
+Gets id for an admin region by lat/lng
+Callback (error, id)

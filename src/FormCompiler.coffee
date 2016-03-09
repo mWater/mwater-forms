@@ -20,6 +20,7 @@ TextListQuestion = require './TextListQuestion'
 SiteQuestion = require './SiteQuestion'
 BarcodeQuestion = require './BarcodeQuestion'
 EntityQuestion = require './EntityQuestion'
+AdminRegionQuestion = require './AdminRegionQuestion'
 Instructions = require './Instructions'
 
 Section = require './Section'
@@ -343,6 +344,9 @@ module.exports = class FormCompiler
         options.loadLinkedAnswers = @compileLoadLinkedAnswers(q.propertyLinks)
         options.hidden = q.hidden
         return new EntityQuestion(options)
+      when "AdminRegionQuestion"
+        options.defaultValue = q.defaultValue
+        return new AdminRegionQuestion(options)
 
     throw new Error("Unknown question type")
 
