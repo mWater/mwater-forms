@@ -212,7 +212,7 @@ exports.getAnswerType = (q) ->
     when "EntityQuestion"
       return "entity"
     when "AdminRegionQuestion"
-      return "entity"
+      return "admin_region"
     else throw new Error("Unknown question type")
 
 # Check if a form is all sections

@@ -334,6 +334,10 @@
     {
       "_base": "en",
       "en": "Working..."
+    },
+    {
+      "_base": "en",
+      "en": "Unable to connect to server"
     }
   ]
 }

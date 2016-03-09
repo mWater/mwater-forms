@@ -4,6 +4,7 @@ Backbone = require 'backbone'
 formUtils = require './formUtils'
 ImageDisplayComponent = require './ImageDisplayComponent'
 EntityDisplayComponent = require './EntityDisplayComponent'
+AdminRegionDisplayComponent = require './AdminRegionDisplayComponent'
 moment = require 'moment'
 FormCompiler = require './FormCompiler'
 
@@ -224,16 +225,22 @@ module.exports = class ResponseDisplayComponent extends React.Component
           code = code.code
 
         return React.createElement(EntityDisplayComponent, {
-            formCtx: @props.formCtx
-            entityCode: code
-            entityType: q.entityType
+          formCtx: @props.formCtx
+          entityCode: code
+          entityType: q.entityType
         })
 
       when "entity"
         return React.createElement(EntityDisplayComponent, {
-            formCtx: @props.formCtx
-            entityId: answer.value
-            entityType: q.entityType
+          formCtx: @props.formCtx
+          entityId: answer.value
+          entityType: q.entityType
+        })
+
+      when "admin_region"
+        return React.createElement(AdminRegionDisplayComponent, {
+          getAdminRegionPath: @props.formCtx.getAdminRegionPath
+          value: answer.value
         })
 
   renderQuestion: (q) ->

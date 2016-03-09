@@ -39,6 +39,7 @@ exports.ImagelistEditorComponent = require './ImagelistEditorComponent'
 exports.AdminRegionDataSource = require './AdminRegionDataSource'
 exports.AdminRegionSelectComponent = require './AdminRegionSelectComponent'
 exports.AdminRegionAnswerComponent = require './AdminRegionAnswerComponent'
+exports.AdminRegionDisplayComponent = require './AdminRegionDisplayComponent'
 
 exports.DateTimePickerComponent = require './DateTimePickerComponent'
 exports.FormModel = require './FormModel'
