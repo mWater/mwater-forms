@@ -30,15 +30,16 @@ module.exports = class AdminRegionAnswerComponent extends React.Component
 
     @props.locationFinder.getLocation (location) =>
       # Ignore if inaccurate
-      if location.accuracy > 500
+      if location.coords.accuracy > 500
         return
 
       # Lookup location
-      @props.findAdminRegionByLatLng(location.latitude, location.longitude, (error, id) =>
+      @props.findAdminRegionByLatLng(location.coords.latitude, location.coords.longitude, (error, id) =>
         if error
           @setState(error: T("Unable to lookup location"), working: false)
           return
-
+        
+        @setState(working: false)
         @props.onChange(id)
         )
     , (error) =>
