@@ -31,3 +31,15 @@ describe 'AdminRegionDataSource', ->
           assert.equal path[1].name, "Manitoba"
 
           done()
+
+  it "finds point by lat lng", (done) ->
+    @dataSource.findAdminRegionByLatLng 49.8844000, -97.1470400, (error, id) =>
+      assert not error
+
+      @dataSource.getAdminRegionPath id, (error, path) =>
+        assert not error
+
+        assert.equal path[1].name, "Manitoba"
+
+        done()
+

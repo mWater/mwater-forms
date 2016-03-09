@@ -103,6 +103,37 @@ module.exports = class AdminRegionDataSource
 
     @_executeQuery(query, callback)
 
+  findAdminRegionByLatLng: (lat, lng, callback) =>
+    # select _id as id from admin_regions as ar
+    # where ST_Intersects(ar.shape, ST_Transform(ST_SetSRID(ST_MakePoint(LNG, LAT), 4326), 3857) order by ar.level desc limit 1
+    query = {
+      type: "query"
+      selects: [{ type: "select", expr: { type: "field", tableAlias: "ar", column: "_id" }, alias: "id" }]
+      from: { type: "table", table: "admin_regions", alias: "ar" }
+      where: {
+        type: "op"
+        op: "ST_Intersects"
+        exprs: [
+          { type: "field", tableAlias: "ar", column: "shape" }
+          { type: "op", op: "ST_Transform", exprs: [{ type: "op", op: "ST_SetSRID", exprs: [{ type: "op", op: "ST_MakePoint", exprs:[lng, lat] }, 4326] }, 3857]}
+        ]
+      }
+      orderBy: [
+        { expr: { type: "field", tableAlias: "ar", column: "level" }, direction: "desc" }
+      ]
+      limit: 1
+    }
+
+    @_executeQuery(query, (error, rows) =>
+      if error
+        return callback(error)
+
+      if rows[0]
+        return callback(null, rows[0].id)
+
+      return callback(null, null)
+     )
+
   _executeQuery: (query, callback) ->
     url = @apiUrl + "jsonql?jsonql=" + encodeURIComponent(JSON.stringify(query))
     $.ajax({ dataType: "json", url: url })
