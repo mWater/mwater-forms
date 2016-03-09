@@ -333,11 +333,16 @@
     },
     {
       "_base": "en",
-      "en": "Working..."
+      "en": "Working...",
+      "_unused": true
     },
     {
       "_base": "en",
       "en": "Unable to connect to server"
+    },
+    {
+      "_base": "en",
+      "en": "Cancel GPS"
     }
   ]
 }
