@@ -23,6 +23,7 @@ module.exports = class AdminRegionQuestion extends Question
   
       elem = React.createElement(AdminRegionAnswerComponent, {
         locationFinder: @ctx.locationFinder
+        displayMap: @ctx.displayMap
         getAdminRegionPath: @ctx.getAdminRegionPath
         getSubAdminRegions: @ctx.getSubAdminRegions
         findAdminRegionByLatLng: @ctx.findAdminRegionByLatLng

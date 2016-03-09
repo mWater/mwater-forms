@@ -14,6 +14,7 @@ module.exports = class AdminRegionDataSource
         { type: "select", expr: { type: "field", tableAlias: "ar", column: "_id" }, alias: "id" }
         { type: "select", expr: { type: "field", tableAlias: "ar", column: "level" }, alias: "level" }
         { type: "select", expr: { type: "field", tableAlias: "ar", column: "name" }, alias: "name" }
+        { type: "select", expr: { type: "field", tableAlias: "ar", column: "full_name" }, alias: "full_name" }
         { type: "select", expr: { type: "field", tableAlias: "ar", column: "type" }, alias: "type" }
       ]
       from: {
@@ -54,6 +55,7 @@ module.exports = class AdminRegionDataSource
         { type: "select", expr: { type: "field", tableAlias: "ar", column: "_id" }, alias: "id" }
         { type: "select", expr: { type: "field", tableAlias: "ar", column: "level" }, alias: "level" }
         { type: "select", expr: { type: "field", tableAlias: "ar", column: "name" }, alias: "name" }
+        { type: "select", expr: { type: "field", tableAlias: "ar", column: "full_name" }, alias: "full_name" }
         { type: "select", expr: { type: "field", tableAlias: "ar", column: "type" }, alias: "type" }
       ]
       from: {
