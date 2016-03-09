@@ -89,3 +89,14 @@ Renders an entity as a React element.
 ## canEditEntity(entityType, entity)
 
 True if current user can edit the entity specified
+
+## getAdminRegionPath(id, callback)
+
+Gets complete path (country downward) for an administrative region
+Callback (error, [{ id:, level: e.g. 1, name: e.g. "Manitoba", type: e.g. "Province" }, ...] in level ascending order)
+    
+## getSubAdminRegions(id, level, callback)
+
+Gets list of adminstrative regions at a level that are under a region. 
+Callback (error, [{ id:, level: e.g. 1, name: e.g. "Manitoba", type: e.g. "Province" }, ...])
+

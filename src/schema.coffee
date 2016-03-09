@@ -22,7 +22,8 @@ exports.design = {
     # Schema 4 added isoneof and isntoneof conditions
     # Schema 10 adds entity questions and linking
     # Schema 11 deprecates form-level entity settings and adds hidden entity questions
-    _schema: { enum: [1, 2, 3, 4, 5, 10, 11] }
+    # Schema 12 adds admin regions
+    _schema: { enum: [1, 2, 3, 4, 5, 10, 11, 12] }
 
     # Name of the form
     name: { $ref: "#/definitions/localizedString" }
@@ -266,6 +267,7 @@ exports.design = {
         { $ref: "#/definitions/SiteQuestion" }
         { $ref: "#/definitions/BarcodeQuestion" }
         { $ref: "#/definitions/EntityQuestion" }
+        { $ref: "#/definitions/AdminRegionQuestion" }
       ]
     }
 
@@ -848,6 +850,20 @@ exports.design = {
         validations: { type: "array", maxItems: 0 } 
       })
       required: ["entityType"]
+      additionalProperties: false
+    }
+
+    AdminRegionQuestion: {
+      type: "object"
+      properties: extendQuestionProperties({
+        _type: { enum: ["AdminRegionQuestion"] }
+
+        # Default value (id of admin region)
+        defaultValue:  { type: "string" }
+
+        # No validation available
+        validations: { type: "array", maxItems: 0 } 
+      })
       additionalProperties: false
     }
 

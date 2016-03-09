@@ -24,10 +24,12 @@ describe 'AdminRegionSelectComponent', ->
             callback(null, [canada])
           else
             callback(null, [])
-        getSubAdminRegions: (id, callback) =>
+        getSubAdminRegions: (id, level, callback) =>
           if not id?
+            assert.equal level, 0
             callback(null, [canada])
           else if id == "canada"
+            assert.equal level, 1
             callback(null, [manitoba, ontario])
           else
             callback(null, [])
@@ -92,7 +94,7 @@ describe 'AdminRegionSelectComponent', ->
       assert.equal options[2].value, "ontario"
       done()
 
-  # These tests don't work as for some reason react is not responding to select onChange events in test mode
+  # These tests don't work as for some reason react is not responding to select onChange events in test mode, even with jQuery .val()
   # it "calls onChange with country when selected", (done) ->
   #   @render(value: null)
   #   _.defer () =>

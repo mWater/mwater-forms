@@ -16,7 +16,7 @@ module.exports = class AdminRegionSelectComponent extends AsyncLoadComponent
     super
 
     # Get countries initially
-    @props.getSubAdminRegions(null, (error, level0s) =>
+    @props.getSubAdminRegions(null, 0, (error, level0s) =>
       @setState(level0s: level0s)
     )
 
@@ -26,32 +26,32 @@ module.exports = class AdminRegionSelectComponent extends AsyncLoadComponent
 
   # Call callback with state changes
   load: (props, prevProps, callback) ->
-    # Clear all
-    callback(error: null, path: null, level1s: null, level2s: null, level3s: null, level4s: null, level5s: null)
+    # Leave current state alone while loading
+    callback(busy: true) # loading is reserved
 
     # Get path
     if props.value
       props.getAdminRegionPath(props.value, (error, path) =>
         if error
-          return callback(error: error)
+          return callback(error: error, busy: false)
 
-        callback(error: null, path: path)
+        callback(error: null, path: path, busy: false, level1s: null, level2s: null, level3s: null, level4s: null, level5s: null)
 
         # Get subadmins
         for pathElem in path
-          props.getSubAdminRegions(pathElem.id, (error, subRegions) =>
-            if error
-              return callback(error: error)
+          do (pathElem) =>
+            props.getSubAdminRegions(pathElem.id, pathElem.level + 1, (error, subRegions) =>
+              if error
+                return callback(error: error)
 
-            # Set levelNs to be list of values
-            val = {}
-            val["level#{pathElem.level + 1}s"] = subRegions
-            callback(val)
-          )
-
+              # Set levelNs to be list of values
+              val = {}
+              val["level#{pathElem.level + 1}s"] = subRegions
+              callback(val)
+            )
       )
     else
-      callback(error: null, path: [])
+      callback(error: null, path: [], busy: false)
 
     # props.imageManager.getImageUrl(props.imageId, (url) =>
     #   callback(url: url, error: false)
@@ -88,7 +88,7 @@ module.exports = class AdminRegionSelectComponent extends AsyncLoadComponent
     if @state.loading or (not @state.path and @props.value) or (not @props.value and not @state.level0s)
       return H.div null, T("Loading...") 
 
-    H.table null,
+    H.table style: { opacity: (if @state.busy then 0.5) },
       H.tbody null, 
         _.map(_.range(0, @state.path.length + 1), (level) => @renderLevel(level))
 

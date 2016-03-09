@@ -314,6 +314,14 @@
     {
       "_base": "en",
       "en": "Remove"
+    },
+    {
+      "_base": "en",
+      "en": "Set Using GPS"
+    },
+    {
+      "_base": "en",
+      "en": "Set Using Map"
     }
   ]
 }
