@@ -67,6 +67,8 @@ gulp.task "libs_js", ->
   return gulp.src([
     "./bower_components/jquery/dist/jquery.js"
     "./bower_components/bootstrap/dist/js/bootstrap.js"
+    "./bower_components/lodash/lodash.js"
+    './bower_components/backbone/backbone.js'
   ]).pipe(concat("libs.js"))
     .pipe(gulp.dest("./dist/js/"))
 

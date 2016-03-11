@@ -8,17 +8,40 @@ commonQuestionTestList = require './commonQuestionTestList'
 describe "SiteQuestion", ->
   beforeEach ->
     @ctx = {
-      selectSite: (siteTypes, success) ->
-        assert.deepEqual siteTypes, ["Water point"]
-        success("10014")
+      selectEntity: (options) ->
+        assert.equal options.entityType, "water_point"
+        options.callback("id10014")
 
-      getSite: (siteCode, success) ->
-        if siteCode == "10007"
+      getEntityById: (entityType, entityId, success) ->
+        if entityId == "id10007"
           success({
-            code: siteCode
+            _id: "id10007"
+            code: "10007"
             name: "Somename"
-            type: ["Water point", "Protected dug well"]
           })
+        if entityId == "id10014"
+          success({
+            _id: entityId
+            code: "10014"
+            name: "Somename2"
+          })
+
+      getEntityByCode: (entityType, entityCode, success) ->
+        if entityCode == "10007"
+          success({
+            _id: "id10007"
+            code: entityCode
+            name: "Somename"
+          })
+        if entityCode == "10014"
+          success({
+            _id: "id10014"
+            code: entityCode
+            name: "Somename2"
+          })
+
+      renderEntitySummaryView: (entityType, entity) ->
+        return JSON.stringify(entity)
     }
 
     @model = new Backbone.Model()
@@ -49,7 +72,5 @@ describe "SiteQuestion", ->
     assert.deepEqual @model.get("q1234").value, { code: "10014" }
 
   it "displays site information", ->
-    @qview.$el.find("input").val("10007").change()
-    assert.include(@qview.$el.text(), 'Somename')
-    assert.include(@qview.$el.text(), 'Water point')
-    assert.include(@qview.$el.text(), 'Protected dug well')
+    @qview.$el.find("input").val("10014").change()
+    assert.include(@qview.$el.text(), 'Somename2')

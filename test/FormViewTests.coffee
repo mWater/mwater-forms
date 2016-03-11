@@ -39,54 +39,54 @@ describe "FormView", ->
   #     @formView.setEntity("type1", { _id: "1234", text: "sometext"})
   #     assert.equal @model.get('q1').value, "sometext"
  
-  describe "entity loading", ->
-    it "loads property links", ->
-      @form = {
-        contents: [
-          {
-            _id: "q1"
-            _type: "TextQuestion"
-            text: { _base: "en", en: "English", es: "Spanish" }
-            format: "singleline"
-          }
-          {
-            _id: "q2"
-            _type: "EntityQuestion"
-            text: { _base: "en", en: "English" }
-            entityType: "type1"
-            entityFilter: {}
-            displayProperties: [@propText, @propInteger, @propDecimal, @propEnum]
-            selectProperties: [@propText]
-            mapProperty: null
-            selectText: { en: "Select" }
-            propertyLinks: [
-              { propertyId: @propText._id, direction: "both", questionId: "q1", type: "direct" }
-            ]
-          }          
-        ]
-      }
+  # describe "entity loading", ->
+  #   it "loads property links", ->
+  #     @form = {
+  #       contents: [
+  #         {
+  #           _id: "q1"
+  #           _type: "TextQuestion"
+  #           text: { _base: "en", en: "English", es: "Spanish" }
+  #           format: "singleline"
+  #         }
+  #         {
+  #           _id: "q2"
+  #           _type: "EntityQuestion"
+  #           text: { _base: "en", en: "English" }
+  #           entityType: "type1"
+  #           entityFilter: {}
+  #           displayProperties: [@propText, @propInteger, @propDecimal, @propEnum]
+  #           selectProperties: [@propText]
+  #           mapProperty: null
+  #           selectText: { en: "Select" }
+  #           propertyLinks: [
+  #             { propertyId: @propText._id, direction: "both", questionId: "q1", type: "direct" }
+  #           ]
+  #         }          
+  #       ]
+  #     }
 
-      @model = new Backbone.Model()
-      @compiler = new FormCompiler(ctx: @ctx, model: @model)
-      @formView = @compiler.compileForm(@form, { entity: { _id: "1234", text: "sometext"}, entityType: "type1" })
-      assert.equal @model.get('q1').value, "sometext"
-      assert.equal @model.get('q2').value, "1234"
+  #     @model = new Backbone.Model()
+  #     @compiler = new FormCompiler(ctx: @ctx, model: @model)
+  #     @formView = @compiler.compileForm(@form, { entity: { _id: "1234", text: "sometext"}, entityType: "type1" })
+  #     assert.equal @model.get('q1').value, "sometext"
+  #     assert.equal @model.get('q2').value, "1234"
 
-    it "loads site questions", ->
-      @form = {
-        contents: [
-          {
-            _id: "q2"
-            _type: "SiteQuestion"
-            text: { _base: "en", en: "English" }
-            siteTypes: ["Water point"]
-          }          
-        ]
-      }
+  #   it "loads site questions", ->
+  #     @form = {
+  #       contents: [
+  #         {
+  #           _id: "q2"
+  #           _type: "SiteQuestion"
+  #           text: { _base: "en", en: "English" }
+  #           siteTypes: ["Water point"]
+  #         }          
+  #       ]
+  #     }
 
-      @model = new Backbone.Model()
-      @compiler = new FormCompiler(ctx: @ctx, model: @model)
-      @formView = @compiler.compileForm(@form, { entity: { _id: "1234", code: "abc", text: "sometext"}, entityType: "water_point" })
-      assert.deepEqual @model.get('q2').value, { code: "abc" }
+  #     @model = new Backbone.Model()
+  #     @compiler = new FormCompiler(ctx: @ctx, model: @model)
+  #     @formView = @compiler.compileForm(@form, { entity: { _id: "1234", code: "abc", text: "sometext"}, entityType: "water_point" })
+  #     assert.deepEqual @model.get('q2').value, { code: "abc" }
 
 
