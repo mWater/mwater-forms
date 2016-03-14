@@ -43,7 +43,7 @@ module.exports = {
               "type": null
             }
           ],
-          "required": false,
+          "required": true,
           "entityType": "surface_water"
         },
         {
