@@ -91,7 +91,7 @@ module.exports = {
           "conditions": []
         },
         {
-          "_type": "RadioQuestion",
+          "_type": "DropdownQuestion",
           "_id": "febdcbd89bed40799f92951729b6d360",
           "text": {
             "_base": "en",
@@ -178,6 +178,9 @@ module.exports = {
           "help": {
             "_base": "en",
             "en": "This type of question is a text list. Once you enter one response, another blank will appear in case there are more responses given. Leave the last one blank and move on when you are done."
+          },
+          "alternates": {
+            "na": true
           }
         },
         {

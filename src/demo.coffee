@@ -24,10 +24,46 @@ class DemoComponent extends React.Component
 
   @childContextTypes: 
     locale: React.PropTypes.string
-  
-  getChildContext: -> { locale: "en" }
-    
+    selectEntity: React.PropTypes.func
+    editEntity: React.PropTypes.func
+    renderEntitySummaryView: React.PropTypes.func.isRequired
 
+    getEntityById: React.PropTypes.func
+    getEntityByCode: React.PropTypes.func
+
+    locationFinder: React.PropTypes.object
+    displayMap: React.PropTypes.func # Takes location ({ latitude, etc.}) and callback (called back with new location)
+    
+    getAdminRegionPath: React.PropTypes.func.isRequired # Call with (id, callback). Callback (error, [{ id:, level: <e.g. 1>, name: <e.g. Manitoba>, type: <e.g. Province>}] in level ascending order)
+    getSubAdminRegions: React.PropTypes.func.isRequired # Call with (id, callback). Callback (error, [{ id:, level: <e.g. 1>, name: <e.g. Manitoba>, type: <e.g. Province>}] of admin regions directly under the specified id)
+    findAdminRegionByLatLng: React.PropTypes.func.isRequired # Call with (lat, lng, callback). Callback (error, id)
+  
+  getChildContext: ->  
+    canada = { id: "canada", level: 0, name: "Canada", type: "Country" }
+    manitoba = { id: "manitoba", level: 1, name: "Manitoba", type: "Province" }
+    ontario = { id: "ontario", level: 1, name: "Ontario", type: "Province" }
+
+    return {
+      locale: "en" 
+      getAdminRegionPath: (id, callback) ->
+        if id == 'manitoba'
+          callback(null, [canada, manitoba])
+        else if id == 'ontario'
+          callback(null, [canada, ontario])
+        else if id == "canada"
+          callback(null, [canada])
+        else
+          callback(null, [])
+
+      getSubAdminRegions: (id, level, callback) ->
+        if not id?
+          callback(null, [canada])
+        else if id == "canada"
+          callback(null, [manitoba, ontario])
+        else
+          callback(null, [])
+    }
+    
 
   render: ->
     R QuestionListComponent, 

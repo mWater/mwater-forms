@@ -8,7 +8,7 @@ formUtils = require './formUtils'
 
 module.exports = class QuestionListComponent extends React.Component
   @contextTypes:
-    localizer: React.PropTypes.object.isRequired  # ez-localize localizer
+    locale: React.PropTypes.string  # e.g. "en"
 
   @propTypes:
     contents: React.PropTypes.array.isRequired 
