@@ -13,22 +13,23 @@ LocationEditorComponent = require './LocationEditorComponent'
 NumberInputComponent = require './NumberInputComponent'
 
 # TODO clear alternate on value change
+# TODO make faster with shouldComponentUpdate
 
 # Question component that displays a question of any type.
 # Displays question text and hint
 # Displays toggleable help 
 # Displays required (*)
 # Displays comments field
-# Goes to next question when enter or tab is pressed on previous question
-# Goes to comments field when enter or tab is pressed on 
+# TODO Goes to next question when enter or tab is pressed on previous question
+# TODO Goes to comments field when enter or tab is pressed on 
 # Does NOT fill in when sticky and visible for first time. This is done by data cleaning
 # Does NOT remove answer when invisible. This is done by data cleaning
 # Does not check conditions or make self invisible. This is done by parent component.
 # Displays alternates and makes exclusive with answer
-# Records timestamp when answered
-# Records GPS when answered
-# Displays validation errors and not answered errors when told to from above.
-# Allows focusing on question which scrolls into view
+# TODO Records timestamp when answered
+# TODO Records GPS when answered
+# TODO Displays validation errors and not answered errors when told to from above.
+# TODO Allows focusing on question which scrolls into view
 module.exports = class QuestionComponent extends React.Component
   @contextTypes:
     locale: React.PropTypes.string
@@ -230,6 +231,8 @@ module.exports = class QuestionComponent extends React.Component
 
       @renderAlternates()
       @renderCommentsField()
+
+# TODO move everything below to individual files and document
 
 class TextAnswerComponent extends React.Component
   @propTypes:

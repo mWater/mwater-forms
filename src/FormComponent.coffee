@@ -8,6 +8,9 @@ SectionsComponent = require './SectionsComponent'
 ItemListComponent = require './ItemListComponent'
 
 # Displays a form that can be filled out
+# TODO default answers based on sticky values
+# TODO remove answers for invisible questions
+# TODO use context instead of explicit formCtx property?
 module.exports = class FormComponent extends React.Component
   @propTypes:
     formCtx: React.PropTypes.object.isRequired  # Form context. See docs/Forms Context.md
@@ -21,9 +24,6 @@ module.exports = class FormComponent extends React.Component
     onSubmit: React.PropTypes.func.isRequired     # Called when submit is pressed
     onSaveLater: React.PropTypes.func             # Optional save for later
     onDiscard: React.PropTypes.func.isRequired    # Called when discard is pressed
-
-    submitLabel: React.PropTypes.string           # Label for submit button
-    discardLabel: React.PropTypes.string           # Label for discard button
 
     entity: React.PropTypes.object            # Form-level entity to load
     entityType: React.PropTypes.string        # Type of form-level entity to load

@@ -46,8 +46,9 @@ exports.FormModel = require './FormModel'
 exports.ResponseModel = require './ResponseModel'
 exports.ResponseDisplayComponent = require './ResponseDisplayComponent'
 exports.FormComponent = require './FormComponent'
+exports.ItemComponent = require './ItemComponent'
 
-exports.schemaVersion = 12 # Version of the schema that this package supports (cannot compile if higher)
+exports.schemaVersion = 13 # Version of the schema that this package supports (cannot compile if higher)
 exports.minSchemaVersion = 1 # Minimum version of forms schema that can be compiled
 
 # # JSON schema of form design # Explicitly import for now

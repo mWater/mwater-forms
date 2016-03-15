@@ -26,7 +26,7 @@ module.exports = class SectionsComponent extends React.Component
     } 
 
   handleSubmit: =>
-    # TODO validate
+    # TODO validate before allowing submit
     @props.onSubmit()
 
   handleBack: =>
@@ -34,11 +34,11 @@ module.exports = class SectionsComponent extends React.Component
     @setState(sectionNum: @state.sectionNum - 1)
 
   handleNext: =>
-    # TODO validate
+    # TODO validate befre allowing next
     @setState(sectionNum: @state.sectionNum + 1)
 
   renderBreadcrumbs: ->
-    # TODO breadcrumbs
+    # TODO add breadcrumbs
     return null
     # H.ul className: "breadcrumb" # TODO
     # Setup breadcrumbs

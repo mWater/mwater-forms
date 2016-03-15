@@ -8,6 +8,9 @@ NumberInputComponent = require './NumberInputComponent'
 
 # Rosters are repeated information, such as asking questions about household members N times.
 # A roster matrix is a list of columns with one row for each entry in the roster
+# TODO add validation of columns
+# TODO add required columns support
+# TODO Add to schema
 module.exports = class RosterMatrixComponent extends React.Component
   @contextTypes:
     locale: React.PropTypes.string

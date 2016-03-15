@@ -7,6 +7,7 @@ ItemComponent = require './ItemComponent'
 
 # Display a list of items
 # TODO should allow validating and scrolling to the first invalid one
+# TODO should display only items where conditions are true
 module.exports = class ItemListComponent extends React.Component
   @propTypes:
     contents: React.PropTypes.array.isRequired 

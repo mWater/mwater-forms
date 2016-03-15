@@ -9,6 +9,7 @@ RosterMatrixComponent = require './RosterMatrixComponent'
 formUtils = require './formUtils'
 
 # Renders a question, instruction, roster, etc.
+# TODO add Instructions type component
 module.exports = class ItemComponent extends React.Component
   @propTypes:
     item: React.PropTypes.object.isRequired 

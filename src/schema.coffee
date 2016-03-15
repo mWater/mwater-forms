@@ -23,7 +23,8 @@ exports.design = {
     # Schema 10 adds entity questions and linking
     # Schema 11 deprecates form-level entity settings and adds hidden entity questions
     # Schema 12 adds admin regions
-    _schema: { enum: [1, 2, 3, 4, 5, 10, 11, 12] }
+    # Schema 13 adds rosters
+    _schema: { enum: [1, 2, 3, 4, 5, 10, 11, 12, 13] }
 
     # Name of the form
     name: { $ref: "#/definitions/localizedString" }
