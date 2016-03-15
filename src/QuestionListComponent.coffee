@@ -7,9 +7,6 @@ QuestionComponent = require './QuestionComponent'
 formUtils = require './formUtils'
 
 module.exports = class QuestionListComponent extends React.Component
-  @contextTypes:
-    locale: React.PropTypes.string  # e.g. "en"
-
   @propTypes:
     contents: React.PropTypes.array.isRequired 
     responseData: React.PropTypes.object      # Current data of response. 
@@ -31,3 +28,4 @@ module.exports = class QuestionListComponent extends React.Component
   render: ->
     H.div null,
       _.map(@props.contents, (item) => @renderItem(item))
+

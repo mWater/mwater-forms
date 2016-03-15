@@ -1,7 +1,11 @@
 React = require 'react'
 H = React.DOM
+R = React.createElement
 _ = require 'lodash'
+
 FormCompiler = require './FormCompiler'
+SectionsComponent = require './SectionsComponent'
+QuestionListComponent = require './QuestionListComponent'
 
 # Displays a form that can be filled out
 module.exports = class FormComponent extends React.Component
@@ -24,65 +28,106 @@ module.exports = class FormComponent extends React.Component
     entity: React.PropTypes.object            # Form-level entity to load
     entityType: React.PropTypes.string        # Type of form-level entity to load
 
-  componentDidMount: ->
-    @reload(@props)
+  @childContextTypes:
+    locale: React.PropTypes.string
+    selectEntity: React.PropTypes.func
+    editEntity: React.PropTypes.func
+    renderEntitySummaryView: React.PropTypes.func.isRequired
 
-  componentWillReceiveProps: (nextProps) ->
-    # Can't change design
-    if nextProps.design != @props.design
-      throw new Error("Can't change design after mounted")
+    getEntityById: React.PropTypes.func
+    getEntityByCode: React.PropTypes.func
 
-    # Can't change entity
-    if nextProps.entity != @props.entity
-      throw new Error("Can't change entity after mounted")
+    locationFinder: React.PropTypes.object
+    displayMap: React.PropTypes.func # Takes location ({ latitude, etc.}) and callback (called back with new location)
+    storage: React.PropTypes.object   # Storage object for saving location
+    
+    getAdminRegionPath: React.PropTypes.func.isRequired # Call with (id, callback). Callback (error, [{ id:, level: <e.g. 1>, name: <e.g. Manitoba>, type: <e.g. Province>}] in level ascending order)
+    getSubAdminRegions: React.PropTypes.func.isRequired # Call with (id, callback). Callback (error, [{ id:, level: <e.g. 1>, name: <e.g. Manitoba>, type: <e.g. Province>}] of admin regions directly under the specified id)
+    findAdminRegionByLatLng: React.PropTypes.func.isRequired # Call with (lat, lng, callback). Callback (error, id)
 
-    # Check if different from existing response
-    if not _.isEqual(nextProps.data, @model.toJSON())
-      @model.set(nextProps.data)
+    imageManager: React.PropTypes.object.isRequired
+    imageAcquirer: React.PropTypes.object
 
-    # Allow changes to locale
-    if @props.locale != nextProps.locale
-      @reload(nextProps)
-
-  reload: (props) ->
-    if @formView
-      @formView.remove()
-      @formView = null
-
-    # Load response data to model
-    @model = new Backbone.Model()
-    @model.set(_.cloneDeep(props.data))
-
-    # Listen for changes to data model
-    @model.on "change", @handleChange
-
-    # Create compiler
-    compiler = new FormCompiler(model: @model, locale: props.locale, ctx: props.formCtx)
-    @formView = compiler.compileForm(props.design, { 
-      entityType: props.entityType
-      entity: props.entity
-      allowSaveForLater: props.onSaveLater?
-      submitLabel: props.submitLabel
-      discardLabel: props.discardLabel
-      })
-
-    @formView.render()
-
-    # Listen to events
-    # Listening to changes is done above
-    @formView.on 'complete', props.onSubmit
-    if props.onSaveLater
-      @formView.on 'close', props.onSaveLater
-    @formView.on 'discard', props.onDiscard
-
-    $(@refs.form).append(@formView.el)
-
-  componentWillUnmount: ->
-    if @formView
-      @formView.remove()
-
-  handleChange: =>
-    @props.onDataChange(@model.toJSON())
+  getChildContext: ->  
+    # TODO locale as a prop?
+    return _.extend({}, @props.formCtx, { locale: @props.locale })
 
   render: ->
-    return H.div ref: "form"
+    if @props.design.contents[0] and @props.design.contents[0]._type == "Section"
+      R SectionsComponent,
+        contents: @props.design.contents
+        responseData: @props.data
+        onResponseDataChange: @props.onDataChange
+        onSubmit: @props.onSubmit
+        onSaveLater: @props.onSaveLater
+        onDiscard: @props.onDiscard
+    else
+      R QuestionListComponent,
+        contents: @props.design.contents
+        responseData: @props.data
+        onResponseDataChange: @props.onDataChange
+
+      # TODO submit, etc.
+
+  # componentDidMount: ->
+  #   @reload(@props)
+
+  # componentWillReceiveProps: (nextProps) ->
+  #   # Can't change design
+  #   if nextProps.design != @props.design
+  #     throw new Error("Can't change design after mounted")
+
+  #   # Can't change entity
+  #   if nextProps.entity != @props.entity
+  #     throw new Error("Can't change entity after mounted")
+
+  #   # Check if different from existing response
+  #   if not _.isEqual(nextProps.data, @model.toJSON())
+  #     @model.set(nextProps.data)
+
+  #   # Allow changes to locale
+  #   if @props.locale != nextProps.locale
+  #     @reload(nextProps)
+
+  # reload: (props) ->
+  #   if @formView
+  #     @formView.remove()
+  #     @formView = null
+
+  #   # Load response data to model
+  #   @model = new Backbone.Model()
+  #   @model.set(_.cloneDeep(props.data))
+
+  #   # Listen for changes to data model
+  #   @model.on "change", @handleChange
+
+  #   # Create compiler
+  #   compiler = new FormCompiler(model: @model, locale: props.locale, ctx: props.formCtx)
+  #   @formView = compiler.compileForm(props.design, { 
+  #     entityType: props.entityType
+  #     entity: props.entity
+  #     allowSaveForLater: props.onSaveLater?
+  #     submitLabel: props.submitLabel
+  #     discardLabel: props.discardLabel
+  #     })
+
+  #   @formView.render()
+
+  #   # Listen to events
+  #   # Listening to changes is done above
+  #   @formView.on 'complete', props.onSubmit
+  #   if props.onSaveLater
+  #     @formView.on 'close', props.onSaveLater
+  #   @formView.on 'discard', props.onDiscard
+
+  #   $(@refs.form).append(@formView.el)
+
+  # componentWillUnmount: ->
+  #   if @formView
+  #     @formView.remove()
+
+  # handleChange: =>
+  #   @props.onDataChange(@model.toJSON())
+
+  # render: ->
+  #   return H.div ref: "form"

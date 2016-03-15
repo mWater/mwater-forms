@@ -162,8 +162,6 @@ module.exports = class QuestionComponent extends React.Component
           storage: @context.storage
           displayMap: @context.displayMap
 
-        return "location"
-
       when "ImageQuestion"
         return R ImageEditorComponent,
           imageManager: @context.imageManager
@@ -192,6 +190,7 @@ module.exports = class QuestionComponent extends React.Component
           onValueChange: @handleValueChange
 
       when "AdminRegionQuestion"
+        # TODO defaultValue
         return R AdminRegionAnswerComponent,
           locationFinder: @context.locationFinder
           displayMap: @context.displayMap
@@ -225,6 +224,7 @@ class TextAnswerComponent extends React.Component
   render: ->
     H.input className: "form-control", type: "text", value: @props.value, onChange: (ev) => @props.onValueChange(ev.target.value)
 
+# TODO red if not valid
 class NumberAnswerComponent extends React.Component
   constructor: ->
     super
@@ -236,7 +236,7 @@ class NumberAnswerComponent extends React.Component
 
   @propTypes:
     decimal: React.PropTypes.bool.isRequired
-    value: React.PropTypes.string
+    value: React.PropTypes.number
     onValueChange: React.PropTypes.func.isRequired
 
   componentWillReceiveProps: (nextProps) ->
@@ -323,11 +323,11 @@ class DropdownAnswerComponent extends React.Component
       H.select className: "form-control", style: { width: "auto" }, value: @props.value, onChange: @handleValueChange,
         H.option key: "__none__", value: ""
         _.map @props.choices, (choice) =>
-          H.option key: choice.id, value: choice.id, 
-            formUtils.localizeString(choice.label, @context.locale) 
-            if choice.hint
-              " (" + formUtils.localizeString(choice.hint, @context.locale) + ")"
-
+          text = formUtils.localizeString(choice.label, @context.locale)
+          if choice.hint
+            text += " (" + formUtils.localizeString(choice.hint, @context.locale) + ")"
+          return H.option key: choice.id, value: choice.id, text
+              
       @renderSpecify()
 
 class RadioAnswerComponent extends React.Component
