@@ -5,6 +5,7 @@ H = React.DOM
 LocationView = require './LocationView'
 
 # Component that allows setting of location
+# TODO reimplement in pure react
 module.exports = class LocationEditorComponent extends React.Component
   @propTypes:
     location: React.PropTypes.object  # { latitude, longitude, accuracy, altitude?, altitudeAccuracy? }
@@ -12,7 +13,7 @@ module.exports = class LocationEditorComponent extends React.Component
     onUseMap: React.PropTypes.func    # Called if map use is requested
     storage: React.PropTypes.object   # Storage object for saving location
     T: React.PropTypes.func           # Localizer
-
+    
   componentDidMount: -> 
     @locationView = new LocationView({
       loc: @props.location

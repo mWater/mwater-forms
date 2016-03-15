@@ -9,6 +9,7 @@ ImageEditorComponent = require './ImageEditorComponent'
 ImagelistEditorComponent = require './ImagelistEditorComponent'
 AdminRegionAnswerComponent = require './AdminRegionAnswerComponent'
 EntityAnswerComponent = require './EntityAnswerComponent'
+LocationEditorComponent = require './LocationEditorComponent'
 
 # Question component that displays a question of any type.
 # Displays question text and hint
@@ -37,6 +38,7 @@ module.exports = class QuestionComponent extends React.Component
 
     locationFinder: React.PropTypes.object
     displayMap: React.PropTypes.func # Takes location ({ latitude, etc.}) and callback (called back with new location)
+    storage: React.PropTypes.object   # Storage object for saving location
     
     getAdminRegionPath: React.PropTypes.func.isRequired # Call with (id, callback). Callback (error, [{ id:, level: <e.g. 1>, name: <e.g. Manitoba>, type: <e.g. Province>}] in level ascending order)
     getSubAdminRegions: React.PropTypes.func.isRequired # Call with (id, callback). Callback (error, [{ id:, level: <e.g. 1>, name: <e.g. Manitoba>, type: <e.g. Province>}] of admin regions directly under the specified id)
@@ -154,6 +156,12 @@ module.exports = class QuestionComponent extends React.Component
       when "CheckQuestion"
         return "boolean"
       when "LocationQuestion"
+        R LocationAnswerComponent,
+          value: @props.answer.value
+          onValueChange: @handleValueChange
+          storage: @context.storage
+          displayMap: @context.displayMap
+
         return "location"
 
       when "ImageQuestion"
@@ -176,7 +184,7 @@ module.exports = class QuestionComponent extends React.Component
         return "site"
       when "BarcodeQuestion"
         return "text"
-        
+
       when "EntityQuestion"
         R EntityAnswerComponent,
           value: @props.answer.value
@@ -382,3 +390,37 @@ class RadioAnswerComponent extends React.Component
   render: ->
     H.div className: "touch-radio-group",
       _.map @props.choices, (choice) => @renderChoice(choice)
+
+
+class LocationAnswerComponent extends React.Component
+  @propTypes:
+    value: React.PropTypes.string
+    onValueChange: React.PropTypes.func.isRequired
+    storage: React.PropTypes.object
+    displayMap: React.PropTypes.func
+
+  handleUseMap: ->
+    if @props.displayMap?
+      @props.displayMap.displayMap(@props.value, (newLoc) =>
+        # Wrap to -180, 180
+        while newLoc.longitude < -180
+          newLoc.longitude += 360
+        while newLoc.longitude > 180
+          newLoc.longitude -= 360
+
+        # Clip to -85, 85 (for Webmercator)
+        if newLoc.latitude > 85
+          newLoc.latitude = 85
+        if newLoc.latitude < -85
+          newLoc.latitude = -85
+        @props.onValueChange(newLoc)
+      )
+
+  render: ->
+    R LocationEditorComponent,
+      location: @props.value
+      onLocationChange: @props.onValueChange
+      onUseMap: @handleUseMap
+      storage: @props.storage
+      T: global.T # TODO
+
