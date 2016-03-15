@@ -58,7 +58,7 @@ module.exports = class RosterGroupComponent extends React.Component
           " " + T("Add")
 
   render: ->
-    H.div null,
+    H.div style: { padding: 5, marginBottom: 20 },
       @renderName()
       _.map(@props.answer, (entry, index) => @renderEntry(entry, index))
 

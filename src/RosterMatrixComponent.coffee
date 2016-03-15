@@ -4,6 +4,7 @@ H = React.DOM
 R = React.createElement
 
 formUtils = require './formUtils'
+NumberInputComponent = require './NumberInputComponent'
 
 # Rosters are repeated information, such as asking questions about household members N times.
 # A roster matrix is a list of columns with one row for each entry in the roster
@@ -54,6 +55,10 @@ module.exports = class RosterMatrixComponent extends React.Component
     H.th key: column._id,
       formUtils.localizeString(column.name, @context.locale)
 
+      # Required star
+      if column.required
+        H.span className: "required", "*"
+
   renderCell: (entry, entryIndex, column, columnIndex) ->
     value = @props.answer[entryIndex][column._id]
 
@@ -61,7 +66,8 @@ module.exports = class RosterMatrixComponent extends React.Component
     switch column._type
       when "Text"
         elem = H.input type: "text", className: "form-control input-sm", value: value, onChange: (ev) => @handleCellChange(entryIndex, column._id, ev.target.value)
-      # when "Number"
+      when "Number"
+        elem = R NumberInputComponent, small: true, style: { maxWidth: "10em"}, value: value, onChange: (val) => @handleCellChange(entryIndex, column._id, val)
       # TODO
       when "Checkbox"
         elem = H.div 
@@ -98,7 +104,7 @@ module.exports = class RosterMatrixComponent extends React.Component
           " " + T("Add")
 
   render: ->
-    H.div null,
+    H.div style: { padding: 5, marginBottom: 20 },
       @renderName()
       H.table className: "table",
         @renderHeader()

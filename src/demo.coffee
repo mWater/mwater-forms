@@ -121,22 +121,50 @@ rosterFormDesign = {
     {
       _id: "matrix01"
       _type: "RosterMatrix"
+      "name": {
+        "_base": "en",
+        "en": "Roster Matrix"
+      },
       rosterId: "02",
       allowAdd: true,
       allowRemove: true,
       columns: [
-        { _id: "a", _type: "Text", name: { en: "Name" } }
+        { _id: "a", _type: "Text", name: { en: "Name" }, required: true }
         { _id: "b", _type: "Number", name: { en: "Age" } }
         { _id: "c", _type: "Checkbox", name: { en: "Present" } }
         { _id: "d", _type: "Dropdown", name: { en: "Gender" }, choices: [{ label: { en: "Male"}, id: "male" }, { label: { en: "Female"}, id: "female" }] }
       ]
     }
     {
+      "_type": "TextQuestion",
+      "_id": "c11d1865674d4498a2adbeddc440230f",
+      "text": {
+        "_base": "en",
+        "en": "Name of partner organization"
+      },
+      "conditions": [],
+      "validations": [],
+      "required": false,
+      "format": "singleline"
+    },
+    {
+      "_type": "TextQuestion",
+      "_id": "fd620bf420a54dcd99dbae7b7c67a67c",
+      "text": {
+        "_base": "en",
+        "en": "Program Number"
+      },
+      "conditions": [],
+      "validations": [],
+      "required": false,
+      "format": "singleline"
+    },
+    {
       "_id": "02",
       "_type": "RosterGroup",
       "name": {
         "_base": "en",
-        "en": "Roster Test"
+        "en": "Roster Group"
       },
       rosterId: "02",
       allowAdd: true,

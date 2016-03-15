@@ -10,6 +10,7 @@ ImagelistEditorComponent = require './ImagelistEditorComponent'
 AdminRegionAnswerComponent = require './AdminRegionAnswerComponent'
 EntityAnswerComponent = require './EntityAnswerComponent'
 LocationEditorComponent = require './LocationEditorComponent'
+NumberInputComponent = require './NumberInputComponent'
 
 # TODO clear alternate on value change
 
@@ -129,7 +130,7 @@ module.exports = class QuestionComponent extends React.Component
         return R TextAnswerComponent, value: @props.answer.value, onValueChange: @handleValueChange
 
       when "NumberQuestion"
-        return R NumberAnswerComponent, value: @props.answer.value, onValueChange: @handleValueChange, decimal: @props.question.decimal
+        return R NumberInputComponent, value: @props.answer.value, onChange: @handleValueChange, decimal: @props.question.decimal
 
       when "DropdownQuestion"
         return R DropdownAnswerComponent, {
@@ -237,54 +238,6 @@ class TextAnswerComponent extends React.Component
 
   render: ->
     H.input className: "form-control", type: "text", value: @props.value, onChange: (ev) => @props.onValueChange(ev.target.value)
-
-# TODO red if not valid
-class NumberAnswerComponent extends React.Component
-  constructor: ->
-    super
-
-    # Parsing happens on blur
-    @state = {
-      inputText: if @props.value? then "" + @props.value else ""
-    }
-
-  @propTypes:
-    decimal: React.PropTypes.bool.isRequired
-    value: React.PropTypes.number
-    onValueChange: React.PropTypes.func.isRequired
-
-  componentWillReceiveProps: (nextProps) ->
-    # If different, override text
-    if nextProps.value != @props.value
-      @setState(inputText: if nextProps.value? then "" + nextProps.value else "")
-
-  handleBlur: =>
-    # Parse and set value
-    if @isValid()
-      val = if @props.decimal then parseFloat(@state.inputText) else parseInt(@state.inputText)
-      if isNaN(val)
-        @props.onValueChange(null)
-      else
-        @props.onValueChange(val)
-
-  # Check regex matching of numbers
-  isValid: ->
-    if @state.inputText.length == 0
-      return true
-
-    if @props.decimal
-      return @state.inputText.match(/^-?[0-9]*\.?[0-9]+$/) and not isNaN(parseFloat(@state.inputText))
-    else
-      return @state.inputText.match(/^-?\d+$/)
-
-  render: ->
-    H.input 
-      type: "text"
-      className: "form-control"
-      value: @state.inputText
-      onChange: (ev) => @setState(inputText: ev.target.value)
-      onBlur: @handleBlur
-
 
 class DropdownAnswerComponent extends React.Component
   @contextTypes:
