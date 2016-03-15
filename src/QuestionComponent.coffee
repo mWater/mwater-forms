@@ -11,6 +11,8 @@ AdminRegionAnswerComponent = require './AdminRegionAnswerComponent'
 EntityAnswerComponent = require './EntityAnswerComponent'
 LocationEditorComponent = require './LocationEditorComponent'
 
+# TODO clear alternate on value change
+
 # Question component that displays a question of any type.
 # Displays question text and hint
 # Displays toggleable help 
@@ -85,7 +87,7 @@ module.exports = class QuestionComponent extends React.Component
   renderPrompt: ->
     H.div className: "prompt",
       if @props.question.code
-        H.span className: "question-code", options.code + ": "
+        H.span className: "question-code", @props.question.code + ": "
 
       # Prompt
       formUtils.localizeString(@props.question.text, @context.locale)
@@ -157,11 +159,14 @@ module.exports = class QuestionComponent extends React.Component
         }
 
       when "DateQuestion" # , "DateTimeQuestion"??
-        return "date"
+        return "TODO - date"
+
       when "UnitsQuestion"
-        return "units"
+        return "TODO - units"
+
       when "CheckQuestion"
-        return "boolean"
+        return "TODO - boolean"
+
       when "LocationQuestion"
         R LocationAnswerComponent,
           value: @props.answer.value
@@ -184,11 +189,13 @@ module.exports = class QuestionComponent extends React.Component
           onImagelistChange: @handleValueChange
 
       when "TextListQuestion"
-        return "texts"
+        return "TODO - texts"
+
       when "SiteQuestion"
-        return "site"
+        return "TODO - site"
+
       when "BarcodeQuestion"
-        return "text"
+        return "TODO - text"
 
       when "EntityQuestion"
         R EntityAnswerComponent,

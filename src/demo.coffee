@@ -6,6 +6,7 @@ H = React.DOM
 AdminRegionSelectComponent = require './AdminRegionSelectComponent'
 FormComponent = require './FormComponent'
 sampleFormDesign = require './sampleFormDesign'
+sampleForm2 = require './sampleForm2'
 QuestionListComponent = require './QuestionListComponent'
 
 # Setup mock localizer
@@ -87,7 +88,7 @@ class DemoComponent extends React.Component
 
     R FormComponent, {
       formCtx: formCtx
-      design: sampleFormDesign
+      design: sampleForm2
       # locale: React.PropTypes.string            # Locale. Defaults to English (en)
       data: @state.data
       onDataChange: (data) => @setState(data: data)
