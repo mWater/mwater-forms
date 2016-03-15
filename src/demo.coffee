@@ -119,6 +119,19 @@ rosterFormDesign = {
   },
   "contents": [
     {
+      _id: "matrix01"
+      _type: "RosterMatrix"
+      rosterId: "02",
+      allowAdd: true,
+      allowRemove: true,
+      columns: [
+        { _id: "a", _type: "Text", name: { en: "Name" } }
+        { _id: "b", _type: "Number", name: { en: "Age" } }
+        { _id: "c", _type: "Checkbox", name: { en: "Present" } }
+        { _id: "d", _type: "Dropdown", name: { en: "Gender" }, choices: [{ label: { en: "Male"}, id: "male" }, { label: { en: "Female"}, id: "female" }] }
+      ]
+    }
+    {
       "_id": "02",
       "_type": "RosterGroup",
       "name": {

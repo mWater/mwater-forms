@@ -5,6 +5,7 @@ R = React.createElement
 
 QuestionComponent = require './QuestionComponent'
 RosterGroupComponent = require './RosterGroupComponent'
+RosterMatrixComponent = require './RosterMatrixComponent'
 formUtils = require './formUtils'
 
 module.exports = class QuestionListComponent extends React.Component
@@ -30,6 +31,13 @@ module.exports = class QuestionListComponent extends React.Component
       return R RosterGroupComponent,
         key: item._id
         rosterGroup: item
+        answer: @props.data[item.rosterId]
+        onAnswerChange: @handleAnswerChange.bind(null, item.rosterId)
+    else if item._type == "RosterMatrix"
+      # Answer is under rosterId, not _id
+      return R RosterMatrixComponent,
+        key: item._id
+        rosterMatrix: item
         answer: @props.data[item.rosterId]
         onAnswerChange: @handleAnswerChange.bind(null, item.rosterId)
 

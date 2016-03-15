@@ -180,6 +180,7 @@ exports.design = {
       anyOf: [
         { $ref: "#/definitions/question" } 
         { $ref: "#/definitions/instructions" } 
+        { $ref: "#/definitions/rosterGroup" } 
       ]
     }
 
@@ -285,6 +286,37 @@ exports.design = {
         conditions: { $ref: "#/definitions/conditions" }
       }
       required: ["_id", "_type", "text", "conditions"]
+    }
+
+    # Group of questions which are repeated
+    rosterGroup: {
+      type: "object"
+      properties: {
+        _id: { $ref: "#/definitions/uuid" }
+        _type: { enum: ["RosterGroup"] }
+
+        # _id under which roster is stored. Can reference another roster or self (in which case is = _id)
+        rosterId: { $ref: "#/definitions/uuid" }
+
+        # Name of roster group (displayed above list)
+        name: { $ref: "#/definitions/localizedString" } 
+
+        # Conditions for visibility of the instructions
+        conditions: { $ref: "#/definitions/conditions" }
+
+        # Allow user to add items
+        allowAdd: { type: "boolean" }
+
+        # Allow user to remove items
+        allowRemove: { type: "boolean" }
+
+        # Contains a list of items
+        contents: {
+          type: "array"
+          items: { $ref: "#/definitions/item" }
+        }
+      }
+      required: ["_id", "_type", "rosterId", "name", "conditions", "contents"]
     }
 
     # Conditions on an item or section that determine if it is visible.
