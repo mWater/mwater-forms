@@ -3,7 +3,7 @@ React = require 'react'
 H = React.DOM
 R = React.createElement
 
-QuestionListComponent = require './QuestionListComponent'
+ItemListComponent = require './ItemListComponent'
 formUtils = require './formUtils'
 
 module.exports = class SectionsComponent extends React.Component
@@ -64,7 +64,7 @@ module.exports = class SectionsComponent extends React.Component
     H.div key: section._id,
       H.h3 null, formUtils.localizeString(section.name, @context.locale)
 
-      R QuestionListComponent, 
+      R ItemListComponent, 
         contents: section.contents
         data: @props.data
         onDataChange: @props.onDataChange

@@ -7,7 +7,7 @@ AdminRegionSelectComponent = require './AdminRegionSelectComponent'
 FormComponent = require './FormComponent'
 sampleFormDesign = require './sampleFormDesign'
 sampleForm2 = require './sampleForm2'
-QuestionListComponent = require './QuestionListComponent'
+ItemListComponent = require './ItemListComponent'
 
 # Setup mock localizer
 global.T = (str) -> str
@@ -81,7 +81,7 @@ class DemoComponent extends React.Component
     
 
   render: ->
-    # R QuestionListComponent, 
+    # R ItemListComponent, 
     #   contents: sampleFormDesign.contents[0].contents
     #   data: @state.data
     #   onDataChange: (data) => @setState(data: data)

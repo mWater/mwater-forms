@@ -5,7 +5,7 @@ _ = require 'lodash'
 
 FormCompiler = require './FormCompiler'
 SectionsComponent = require './SectionsComponent'
-QuestionListComponent = require './QuestionListComponent'
+ItemListComponent = require './ItemListComponent'
 
 # Displays a form that can be filled out
 module.exports = class FormComponent extends React.Component
@@ -62,7 +62,7 @@ module.exports = class FormComponent extends React.Component
         onSaveLater: @props.onSaveLater
         onDiscard: @props.onDiscard
     else
-      R QuestionListComponent,
+      R ItemListComponent,
         contents: @props.design.contents
         data: @props.data
         onDataChange: @props.onDataChange

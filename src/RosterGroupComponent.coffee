@@ -37,7 +37,7 @@ module.exports = class RosterGroupComponent extends React.Component
 
   renderEntry: (entry, index) ->
     # To avoid circularity
-    QuestionListComponent = require './QuestionListComponent'
+    ItemListComponent = require './ItemListComponent'
 
     H.div key: index, className: "panel panel-default", 
       H.div className: "panel-body",
@@ -45,7 +45,7 @@ module.exports = class RosterGroupComponent extends React.Component
           H.button type: "button", style: { float: "right" }, className: "btn btn-sm btn-link", onClick: @handleRemove.bind(null, index),
             H.span className: "glyphicon glyphicon-remove"  
 
-        R QuestionListComponent,
+        R ItemListComponent,
           contents: @props.rosterGroup.contents
           data: @props.answer[index]
           onDataChange: @handleDataChange.bind(null, index)
