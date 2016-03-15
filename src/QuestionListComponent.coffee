@@ -4,26 +4,34 @@ H = React.DOM
 R = React.createElement
 
 QuestionComponent = require './QuestionComponent'
+RosterGroupComponent = require './RosterGroupComponent'
 formUtils = require './formUtils'
 
 module.exports = class QuestionListComponent extends React.Component
   @propTypes:
     contents: React.PropTypes.array.isRequired 
-    responseData: React.PropTypes.object      # Current data of response. 
-    onResponseDataChange: React.PropTypes.func.isRequired
+    data: React.PropTypes.object      # Current data of response. 
+    onDataChange: React.PropTypes.func.isRequired
 
   handleAnswerChange: (id, answer) =>
     change = {}
     change[id] = answer
-    @props.onResponseDataChange(_.extend({}, @props.responseData, change))
+    @props.onDataChange(_.extend({}, @props.data, change))
 
   renderItem: (item) =>
     if formUtils.isQuestion(item)
       return R QuestionComponent, 
         key: item._id
         question: item
-        answer: @props.responseData[item._id]
+        answer: @props.data[item._id]
         onAnswerChange: @handleAnswerChange.bind(null, item._id)
+    else if item._type == "RosterGroup"
+      # Answer is under rosterId, not _id
+      return R RosterGroupComponent,
+        key: item._id
+        rosterGroup: item
+        answer: @props.data[item.rosterId]
+        onAnswerChange: @handleAnswerChange.bind(null, item.rosterId)
 
   render: ->
     H.div null,

@@ -56,16 +56,16 @@ module.exports = class FormComponent extends React.Component
     if @props.design.contents[0] and @props.design.contents[0]._type == "Section"
       R SectionsComponent,
         contents: @props.design.contents
-        responseData: @props.data
-        onResponseDataChange: @props.onDataChange
+        data: @props.data
+        onDataChange: @props.onDataChange
         onSubmit: @props.onSubmit
         onSaveLater: @props.onSaveLater
         onDiscard: @props.onDiscard
     else
       R QuestionListComponent,
         contents: @props.design.contents
-        responseData: @props.data
-        onResponseDataChange: @props.onDataChange
+        data: @props.data
+        onDataChange: @props.onDataChange
 
       # TODO submit, etc.
 

@@ -83,12 +83,13 @@ class DemoComponent extends React.Component
   render: ->
     # R QuestionListComponent, 
     #   contents: sampleFormDesign.contents[0].contents
-    #   responseData: @state.data
-    #   onResponseDataChange: (data) => @setState(data: data)
+    #   data: @state.data
+    #   onDataChange: (data) => @setState(data: data)
 
     R FormComponent, {
       formCtx: formCtx
-      design: sampleForm2
+      # design: sampleForm2
+      design: rosterFormDesign
       # locale: React.PropTypes.string            # Locale. Defaults to English (en)
       data: @state.data
       onDataChange: (data) => @setState(data: data)
@@ -108,3 +109,89 @@ class DemoComponent extends React.Component
 
 $ ->
   ReactDOM.render(R(DemoComponent), document.getElementById("main"))
+
+rosterFormDesign = {
+  "_type": "Form",
+  "_schema": 11,
+  "name": {
+    "_base": "en",
+    "en": "Sample Form"
+  },
+  "contents": [
+    {
+      "_id": "02",
+      "_type": "RosterGroup",
+      "name": {
+        "_base": "en",
+        "en": "Roster Test"
+      },
+      rosterId: "02",
+      allowAdd: true,
+      allowRemove: true,
+      "contents": [
+        {
+          "_type": "DropdownQuestion",
+          "_id": "febdcbd89bed40799f92951729b6d360",
+          "text": {
+            "_base": "en",
+            "en": "Have you taken a loan with [name of partner organization]?"
+          },
+          "conditions": [],
+          "validations": [],
+          "required": false,
+          "choices": [
+            {
+              "label": {
+                "_base": "en",
+                "en": "Yes"
+              },
+              "id": "He8psmv"
+            },
+            {
+              "label": {
+                "_base": "en",
+                "en": "No"
+              },
+              "id": "XX52gjb"
+            },
+            {
+              "label": {
+                "_base": "en",
+                "en": "Other"
+              },
+              "specify": true,
+              "id": "8X52gj3"
+            }
+          ]
+        },
+        {
+          "_type": "RadioQuestion",
+          "_id": "dd7ffa2f8cf9423fbf814d710a3e55a4",
+          "text": {
+            "_base": "en",
+            "en": "Are you the head of the household?"
+          },
+          "conditions": [],
+          "validations": [],
+          "required": false,
+          "choices": [
+            {
+              "label": {
+                "_base": "en",
+                "en": "Yes"
+              },
+              "id": "ChFvwt8"
+            },
+            {
+              "label": {
+                "_base": "en",
+                "en": "No"
+              },
+              "id": "AK51bEJ"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

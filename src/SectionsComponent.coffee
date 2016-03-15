@@ -12,8 +12,8 @@ module.exports = class SectionsComponent extends React.Component
 
   @propTypes:
     contents: React.PropTypes.array.isRequired 
-    responseData: React.PropTypes.object      # Current data of response. 
-    onResponseDataChange: React.PropTypes.func.isRequired
+    data: React.PropTypes.object      # Current data of response. 
+    onDataChange: React.PropTypes.func.isRequired
     onSubmit: React.PropTypes.func.isRequired     # Called when submit is pressed
     onSaveLater: React.PropTypes.func             # Optional save for later
     onDiscard: React.PropTypes.func.isRequired    # Called when discard is pressed
@@ -66,8 +66,8 @@ module.exports = class SectionsComponent extends React.Component
 
       R QuestionListComponent, 
         contents: section.contents
-        responseData: @props.responseData
-        onResponseDataChange: @props.onResponseDataChange
+        data: @props.data
+        onDataChange: @props.onDataChange
 
   renderButtons: ->
     H.div className: "form-controls",
