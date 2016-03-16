@@ -16,7 +16,6 @@ module.exports = class FormComponent extends React.Component
     design: React.PropTypes.object.isRequired # Form design. See schema.coffee
   
     data: React.PropTypes.object.isRequired # Form response data. See docs/Answer Formats.md
-    # Note: Data is held as local state for now, so updating responses is not required but suggested for future compatibility on changes
     onDataChange: React.PropTypes.func.isRequired # Called when response data changes
 
     onSubmit: React.PropTypes.func.isRequired     # Called when submit is pressed
