@@ -182,7 +182,7 @@ module.exports = class QuestionComponent extends React.Component
         return "TODO - text"
 
       when "EntityQuestion"
-        R EntityAnswerComponent,
+        return R EntityAnswerComponent,
           value: @props.answer.value
           entityType: @props.question.entityType
           onValueChange: @handleValueChange
