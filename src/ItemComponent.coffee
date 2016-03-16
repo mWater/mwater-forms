@@ -4,6 +4,7 @@ H = React.DOM
 R = React.createElement
 
 QuestionComponent = require './QuestionComponent'
+InstructionsComponent = require './InstructionsComponent'
 RosterGroupComponent = require './RosterGroupComponent'
 RosterMatrixComponent = require './RosterMatrixComponent'
 formUtils = require './formUtils'
@@ -27,6 +28,9 @@ module.exports = class ItemComponent extends React.Component
         question: @props.item
         answer: @props.data[@props.item._id]
         onAnswerChange: @handleAnswerChange.bind(null, @props.item._id)
+    else if @props.item._type == "Instructions"
+      return R InstructionsComponent,
+        instructions: @props.item
     else if @props.item._type == "RosterGroup"
       # Answer is under rosterId, not _id
       return R RosterGroupComponent,
@@ -39,3 +43,5 @@ module.exports = class ItemComponent extends React.Component
         rosterMatrix: @props.item
         answer: @props.data[@props.item.rosterId]
         onAnswerChange: @handleAnswerChange.bind(null, @props.item.rosterId)
+    else
+      return H.div null, "TODO: " + @props.item._type

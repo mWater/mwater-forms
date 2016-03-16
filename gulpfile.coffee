@@ -97,7 +97,6 @@ gulp.task 'compile', gulp.series('coffee', 'copy', 'localize')
 
 gulp.task 'default', gulp.series('compile')
 
-
 gulp.task 'watch', gulp.series([
   'demo', 
   ->

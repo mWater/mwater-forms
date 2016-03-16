@@ -343,6 +343,10 @@
     {
       "_base": "en",
       "en": "Cancel GPS"
+    },
+    {
+      "_base": "en",
+      "en": "Add"
     }
   ]
 }

@@ -1,7 +1,7 @@
+_ = require 'lodash'
 React = require 'react'
 H = React.DOM
 R = React.createElement
-_ = require 'lodash'
 
 FormCompiler = require './FormCompiler'
 SectionsComponent = require './SectionsComponent'
@@ -28,25 +28,7 @@ module.exports = class FormComponent extends React.Component
     entity: React.PropTypes.object            # Form-level entity to load
     entityType: React.PropTypes.string        # Type of form-level entity to load
 
-  @childContextTypes:
-    locale: React.PropTypes.string
-    selectEntity: React.PropTypes.func
-    editEntity: React.PropTypes.func
-    renderEntitySummaryView: React.PropTypes.func.isRequired
-
-    getEntityById: React.PropTypes.func
-    getEntityByCode: React.PropTypes.func
-
-    locationFinder: React.PropTypes.object
-    displayMap: React.PropTypes.func # Takes location ({ latitude, etc.}) and callback (called back with new location)
-    storage: React.PropTypes.object   # Storage object for saving location
-    
-    getAdminRegionPath: React.PropTypes.func.isRequired # Call with (id, callback). Callback (error, [{ id:, level: <e.g. 1>, name: <e.g. Manitoba>, type: <e.g. Province>}] in level ascending order)
-    getSubAdminRegions: React.PropTypes.func.isRequired # Call with (id, callback). Callback (error, [{ id:, level: <e.g. 1>, name: <e.g. Manitoba>, type: <e.g. Province>}] of admin regions directly under the specified id)
-    findAdminRegionByLatLng: React.PropTypes.func.isRequired # Call with (lat, lng, callback). Callback (error, id)
-
-    imageManager: React.PropTypes.object.isRequired
-    imageAcquirer: React.PropTypes.object
+  @childContextTypes: require('./formContextTypes')
 
   getChildContext: ->  
     # TODO locale as a prop?

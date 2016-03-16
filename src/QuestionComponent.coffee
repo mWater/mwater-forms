@@ -31,25 +31,7 @@ NumberInputComponent = require './NumberInputComponent'
 # TODO Displays validation errors and not answered errors when told to from above.
 # TODO Allows focusing on question which scrolls into view
 module.exports = class QuestionComponent extends React.Component
-  @contextTypes:
-    locale: React.PropTypes.string
-    selectEntity: React.PropTypes.func
-    editEntity: React.PropTypes.func
-    renderEntitySummaryView: React.PropTypes.func.isRequired
-
-    getEntityById: React.PropTypes.func
-    getEntityByCode: React.PropTypes.func
-
-    locationFinder: React.PropTypes.object
-    displayMap: React.PropTypes.func # Takes location ({ latitude, etc.}) and callback (called back with new location)
-    storage: React.PropTypes.object   # Storage object for saving location
-    
-    getAdminRegionPath: React.PropTypes.func.isRequired # Call with (id, callback). Callback (error, [{ id:, level: <e.g. 1>, name: <e.g. Manitoba>, type: <e.g. Province>}] in level ascending order)
-    getSubAdminRegions: React.PropTypes.func.isRequired # Call with (id, callback). Callback (error, [{ id:, level: <e.g. 1>, name: <e.g. Manitoba>, type: <e.g. Province>}] of admin regions directly under the specified id)
-    findAdminRegionByLatLng: React.PropTypes.func.isRequired # Call with (lat, lng, callback). Callback (error, id)
-
-    imageManager: React.PropTypes.object.isRequired
-    imageAcquirer: React.PropTypes.object
+  @contextTypes: require('./formContextTypes')
 
   @propTypes:
     question: React.PropTypes.object.isRequired # Design of question. See schema
@@ -173,7 +155,7 @@ module.exports = class QuestionComponent extends React.Component
         R LocationAnswerComponent,
           value: @props.answer.value
           onValueChange: @handleValueChange
-          storage: @context.storage
+          # storage: @context.storage
           displayMap: @context.displayMap
 
       when "ImageQuestion"
@@ -204,6 +186,11 @@ module.exports = class QuestionComponent extends React.Component
           value: @props.answer.value
           entityType: @props.question.entityType
           onValueChange: @handleValueChange
+          selectEntity: @context.selectEntity
+          editEntity: @context.editEntity
+          renderEntitySummaryView: @context.renderEntitySummaryView
+          getEntityById: @context.getEntityById
+          canEditEntity: @context.canEditEntity
 
       when "AdminRegionQuestion"
         # TODO defaultValue
@@ -426,7 +413,7 @@ class LocationAnswerComponent extends React.Component
   @propTypes:
     value: React.PropTypes.string
     onValueChange: React.PropTypes.func.isRequired
-    storage: React.PropTypes.object
+    # storage: React.PropTypes.object
     displayMap: React.PropTypes.func
 
   handleUseMap: ->
@@ -451,6 +438,6 @@ class LocationAnswerComponent extends React.Component
       location: @props.value
       onLocationChange: @props.onValueChange
       onUseMap: @handleUseMap
-      storage: @props.storage
+      # storage: @props.storage
       T: global.T # TODO
 
