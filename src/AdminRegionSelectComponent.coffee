@@ -70,7 +70,7 @@ module.exports = class AdminRegionSelectComponent extends AsyncLoadComponent
     if not @state.path[level] and (not @state["level#{level}s"] or @state["level#{level}s"].length == 0)
       return null
 
-    H.tr null,
+    H.tr key: level,
       H.td style: { paddingLeft: 10, paddingRight: 10 }, className: "text-muted",
         if @state.path[level]
           @state.path[level].type
