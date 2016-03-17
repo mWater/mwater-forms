@@ -13,7 +13,7 @@ module.exports = class RosterGroupComponent extends React.Component
 
   @propTypes:
     rosterGroup: React.PropTypes.object.isRequired # Design of roster group. See schema
-    answer: React.PropTypes.arrayOf(React.PropTypes.object.isRequired)      # Current answer. Contains { value: <some value> } usually. See docs/Answer Formats.md
+    answer: React.PropTypes.arrayOf(React.PropTypes.object.isRequired)      # Current answer. Array of items
     onAnswerChange: React.PropTypes.func.isRequired
 
   handleDataChange: (index, data) =>
@@ -32,7 +32,7 @@ module.exports = class RosterGroupComponent extends React.Component
     @props.onAnswerChange(answer)
 
   renderName: ->
-    H.h3 key: "prompt",
+    H.h4 key: "prompt",
       formUtils.localizeString(@props.rosterGroup.name, @context.locale)
 
   renderEntry: (entry, index) ->
@@ -61,5 +61,9 @@ module.exports = class RosterGroupComponent extends React.Component
     H.div style: { padding: 5, marginBottom: 20 },
       @renderName()
       _.map(@props.answer, (entry, index) => @renderEntry(entry, index))
+
+      # Display message if none
+      if not @props.answer or @props.answer.length == 0
+        H.div(style: { paddingLeft: 20 }, H.i(null, T("None")))
 
       @renderAdd() 

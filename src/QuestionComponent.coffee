@@ -35,6 +35,8 @@ module.exports = class QuestionComponent extends React.Component
 
   @propTypes:
     question: React.PropTypes.object.isRequired # Design of question. See schema
+    # TODO we pass both complete data and answer. complete data is needed for substituting expressions in prompts. Should we pass both? Just data? onAnswerChange or onDataChange?
+    data: React.PropTypes.object      # Current data of response. 
     answer: React.PropTypes.object      # Current answer. Contains { value: <some value> } usually. See docs/Answer Formats.md
     onAnswerChange: React.PropTypes.func.isRequired
 
@@ -69,12 +71,23 @@ module.exports = class QuestionComponent extends React.Component
     @props.onAnswerChange(_.extend({}, @props.answer, { specify: specify }))
 
   renderPrompt: ->
+    prompt = formUtils.localizeString(@props.question.text, @context.locale)
+
+    # Substitute data # TODO HACK
+    prompt = prompt.replace(/\{(.+?)\}/g, (match, expr) =>
+      value = @props.data
+      for path in expr.split(":")
+        if value
+          value = value[path]
+      return value or ""
+      )
+
     H.div className: "prompt",
       if @props.question.code
         H.span className: "question-code", @props.question.code + ": "
 
       # Prompt
-      formUtils.localizeString(@props.question.text, @context.locale)
+      prompt
 
       # Required star
       if @props.question.required

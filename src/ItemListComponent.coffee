@@ -14,7 +14,14 @@ module.exports = class ItemListComponent extends React.Component
     data: React.PropTypes.object      # Current data of response. 
     onDataChange: React.PropTypes.func.isRequired
 
+  renderItem: (item) ->
+    # HACK condition
+    if item._id == "c91fd40903ff4f0a980352f7ae0b3998" and @props.data.b >= 18
+      return null
+
+    R(ItemComponent, item: item, data: @props.data, onDataChange: @props.onDataChange)
+
   render: ->
     H.div null,
-      _.map(@props.contents, (item) => R(ItemComponent, item: item, data: @props.data, onDataChange: @props.onDataChange))
+      _.map(@props.contents, (item) => @renderItem(item))
 

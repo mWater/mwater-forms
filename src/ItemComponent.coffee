@@ -10,7 +10,6 @@ RosterMatrixComponent = require './RosterMatrixComponent'
 formUtils = require './formUtils'
 
 # Renders a question, instruction, roster, etc.
-# TODO add Instructions type component
 module.exports = class ItemComponent extends React.Component
   @propTypes:
     item: React.PropTypes.object.isRequired 
@@ -28,6 +27,7 @@ module.exports = class ItemComponent extends React.Component
         question: @props.item
         answer: @props.data[@props.item._id]
         onAnswerChange: @handleAnswerChange.bind(null, @props.item._id)
+        data: @props.data
     else if @props.item._type == "Instructions"
       return R InstructionsComponent,
         instructions: @props.item

@@ -43,12 +43,6 @@ module.exports = class RosterMatrixComponent extends React.Component
 
     @handleDataChange(entryIndex, data)
 
-  renderHeader: ->
-    H.thead null,
-      _.map(@props.rosterMatrix.columns, (column, index) => @renderColumnHeader(column, index))
-      # Extra for remove button
-      if @props.rosterMatrix.allowRemove
-        H.th(null)
 
   renderName: ->
     H.h3 key: "prompt",
@@ -61,6 +55,14 @@ module.exports = class RosterMatrixComponent extends React.Component
       # Required star
       if column.required
         H.span className: "required", "*"
+
+  renderHeader: ->
+    H.thead null,
+      H.tr null,
+        _.map(@props.rosterMatrix.columns, (column, index) => @renderColumnHeader(column, index))
+        # Extra for remove button
+        if @props.rosterMatrix.allowRemove
+          H.th(null)
 
   renderCell: (entry, entryIndex, column, columnIndex) ->
     value = @props.answer[entryIndex][column._id]
@@ -101,7 +103,7 @@ module.exports = class RosterMatrixComponent extends React.Component
 
   renderAdd: ->
     if @props.rosterMatrix.allowAdd
-      H.div key: "add",
+      H.div key: "add", style: { marginTop: 10 },
         H.button type: "button", className: "btn btn-default btn-sm", onClick: @handleAdd,
           H.span className: "glyphicon glyphicon-plus"
           " " + T("Add")
@@ -113,5 +115,9 @@ module.exports = class RosterMatrixComponent extends React.Component
         @renderHeader()
         H.tbody null,
           _.map(@props.answer, (entry, index) => @renderEntry(entry, index))
+
+      # Display message if none
+      if not @props.answer or @props.answer.length == 0
+        H.div(style: { paddingLeft: 20 }, H.i(null, T("None")))
 
       @renderAdd() 
