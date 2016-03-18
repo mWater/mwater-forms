@@ -218,7 +218,7 @@ module.exports = class QuestionComponent extends React.Component
         }
 
       when "SiteQuestion"
-        return R SiteQuestion, {
+        return R SiteAnswerComponent, {
 
         }
 

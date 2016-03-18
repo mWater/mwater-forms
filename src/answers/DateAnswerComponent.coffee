@@ -65,4 +65,5 @@ module.exports = class DateAnswerComponent extends React.Component
     null
 
   render: ->
-    H DateTimePickerComponent, {}
+    return H.div 'Date WIP'
+    #R DateTimePickerComponent, {}
