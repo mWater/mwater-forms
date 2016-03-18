@@ -10,18 +10,18 @@ module.exports = class DropdownAnswerComponent extends React.Component
 
   @propTypes:
     choices: React.PropTypes.arrayOf(React.PropTypes.shape({
-# Unique (within the question) id of the choice. Cannot be "na" or "dontknow" as they are reserved for alternates
+      # Unique (within the question) id of the choice. Cannot be "na" or "dontknow" as they are reserved for alternates
       id: React.PropTypes.string.isRequired
 
-# Label of the choice, localized
+      # Label of the choice, localized
       label: React.PropTypes.object.isRequired
 
-# Hint associated with a choice
+      # Hint associated with a choice
       hint: React.PropTypes.object
 
-# True to require a text field to specify the value when selected
-# Usually used for "Other" options.
-# Value is stored in specify[id]
+      # True to require a text field to specify the value when selected
+      # Usually used for "Other" options.
+      # Value is stored in specify[id]
       specify: React.PropTypes.bool
     })).isRequired
     value: React.PropTypes.string
@@ -44,7 +44,7 @@ module.exports = class DropdownAnswerComponent extends React.Component
     specify = _.extend({}, @props.specify, change)
     @props.onSpecifyChange(specify)
 
-# Render specify input box
+  # Render specify input box
   renderSpecify: ->
     choice = _.findWhere(@props.choices, { id: @props.value })
     if choice and choice.specify

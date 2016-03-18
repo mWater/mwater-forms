@@ -6,13 +6,13 @@ module.exports = class LocationAnswerComponent extends React.Component
   @propTypes:
     value: React.PropTypes.string
     onValueChange: React.PropTypes.func.isRequired
-# storage: React.PropTypes.object
+    # storage: React.PropTypes.object
     displayMap: React.PropTypes.func
 
   handleUseMap: ->
     if @props.displayMap?
       @props.displayMap.displayMap(@props.value, (newLoc) =>
-# Wrap to -180, 180
+        # Wrap to -180, 180
         while newLoc.longitude < -180
           newLoc.longitude += 360
         while newLoc.longitude > 180
@@ -31,5 +31,5 @@ module.exports = class LocationAnswerComponent extends React.Component
       location: @props.value
       onLocationChange: @props.onValueChange
       onUseMap: @handleUseMap
-# storage: @props.storage
+      # storage: @props.storage
       T: global.T # TODO
