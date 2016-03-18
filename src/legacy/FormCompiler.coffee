@@ -2,8 +2,8 @@ _ = require 'lodash'
 markdown = require("markdown").markdown
 ezlocalize = require 'ez-localize'
 
-formUtils = require './formUtils'
-conditionUtils = require './conditionUtils'
+formUtils = require '../formUtils'
+conditionUtils = require '../conditionUtils'
 
 TextQuestion = require './TextQuestion'
 NumberQuestion = require './NumberQuestion'
@@ -21,14 +21,15 @@ SiteQuestion = require './SiteQuestion'
 BarcodeQuestion = require './BarcodeQuestion'
 EntityQuestion = require './EntityQuestion'
 AdminRegionQuestion = require './AdminRegionQuestion'
-Instructions = require './Instructions'
 
-Section = require './Section'
-Sections = require './Sections'
-FormView = require './FormView'
-FormControls = require './FormControls'
+Instructions = require '../Instructions'
 
-FormEntityLinker = require './FormEntityLinker'
+Section = require '../Section'
+Sections = require '../Sections'
+FormView = require '../FormView'
+FormControls = require '../FormControls'
+
+FormEntityLinker = require '../FormEntityLinker'
 
 # Compiles from Form JSON to a form control. 
 # Constructor must be passed:
@@ -399,9 +400,9 @@ module.exports = class FormCompiler
   #  allowSaveForLater: defaults to true
   compileForm: (form, options={}) ->
     # Check schema version
-    if form._schema < require('./index').minSchemaVersion
+    if form._schema < require('../index').minSchemaVersion
       throw new Error("Schema version too low")
-    if form._schema > require('./index').schemaVersion
+    if form._schema > require('../index').schemaVersion
       throw new Error("Schema version too high")
 
     # Create localizer

@@ -2,7 +2,8 @@ _ = require 'lodash'
 React = require 'react'
 H = React.DOM
 
-LocationView = require './LocationView'
+# TODO: Make a React LoactionView
+LocationView = require './legacy/LocationView'
 
 # Component that allows setting of location
 # TODO reimplement in pure react

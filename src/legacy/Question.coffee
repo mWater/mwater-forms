@@ -1,7 +1,7 @@
 $ = require 'jquery'
 Backbone = require 'backbone'
 _ = require 'lodash'
-LocationFinder = require './LocationFinder'
+LocationFinder = require '../LocationFinder'
 ezlocalize = require 'ez-localize'
 
 # Question types are subclasses that implement renderAnswer and updateAnswer

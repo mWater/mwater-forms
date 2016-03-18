@@ -3,7 +3,7 @@ _ = require 'lodash'
 React = require 'react'
 H = React.DOM
 ModalPopupComponent = require('react-library/lib/ModalPopupComponent')
-ImagePopupComponent = require './ImagePopupComponent'
+ImagePopupComponent = require '../ImagePopupComponent'
 
 module.exports = class ImagesQuestion extends Question
   events:

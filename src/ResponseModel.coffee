@@ -1,6 +1,7 @@
 _ = require 'lodash'
 formUtils = require './formUtils'
-FormCompiler = require './FormCompiler'
+# TODO: Break dependency to FormCompiler
+FormCompiler = require './legacy/FormCompiler'
 uuid = require 'node-uuid'
 Backbone = require 'backbone'
 async = require 'async'

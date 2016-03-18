@@ -18,6 +18,7 @@ DropdownAnswerComponent = require './answers/DropdownAnswerComponent'
 LocationAnswerComponent = require './answers/LocationAnswerComponent'
 MulticheckAnswerComponent = require './answers/MulticheckAnswerComponent'
 RadioAnswerComponent = require './answers/RadioAnswerComponent'
+SiteAnswerComponent = require './answers/SiteAnswerComponent'
 TextAnswerComponent = require './answers/TextAnswerComponent'
 TextListAnswerComponent = require './answers/TextListAnswerComponent'
 UnitsAnswerComponent = require './answers/UnitsAnswerComponent'
@@ -217,7 +218,9 @@ module.exports = class QuestionComponent extends React.Component
         }
 
       when "SiteQuestion"
-        return "TODO - site"
+        return R SiteQuestion, {
+
+        }
 
       when "BarcodeQuestion"
         return "TODO - text"

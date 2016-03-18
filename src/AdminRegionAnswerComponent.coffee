@@ -1,4 +1,3 @@
-Question = require './Question'
 _ = require 'lodash'
 React = require 'react'
 ReactDOM = require 'react-dom'
