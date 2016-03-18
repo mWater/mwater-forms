@@ -88,8 +88,8 @@ class DemoComponent extends React.Component
 
     R FormComponent, {
       formCtx: formCtx
-      # design: sampleForm2
-      design: rosterFormDesign
+      design: sampleForm2
+      # design: rosterFormDesign
       # locale: React.PropTypes.string            # Locale. Defaults to English (en)
       data: @state.data
       onDataChange: (data) => @setState(data: data)
