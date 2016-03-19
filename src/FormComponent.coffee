@@ -3,7 +3,6 @@ React = require 'react'
 H = React.DOM
 R = React.createElement
 
-FormCompiler = require './FormCompiler'
 SectionsComponent = require './SectionsComponent'
 ItemListComponent = require './ItemListComponent'
 

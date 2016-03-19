@@ -19,7 +19,7 @@ module.exports = class ItemListComponent extends React.Component
     if item._id == "c91fd40903ff4f0a980352f7ae0b3998" and @props.data.b >= 18
       return null
 
-    R(ItemComponent, item: item, data: @props.data, onDataChange: @props.onDataChange)
+    R(ItemComponent, key: item._id, item: item, data: @props.data, onDataChange: @props.onDataChange)
 
   render: ->
     H.div null,

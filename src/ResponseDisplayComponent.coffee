@@ -6,7 +6,8 @@ ImageDisplayComponent = require './ImageDisplayComponent'
 EntityDisplayComponent = require './EntityDisplayComponent'
 AdminRegionDisplayComponent = require './AdminRegionDisplayComponent'
 moment = require 'moment'
-FormCompiler = require './FormCompiler'
+# TODO: Break dependency to FormCompiler
+FormCompiler = require './legacy/FormCompiler'
 
 # Static view of a response
 module.exports = class ResponseDisplayComponent extends React.Component

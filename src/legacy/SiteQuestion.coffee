@@ -1,9 +1,9 @@
 Question = require './Question'
-siteCodes = require './siteCodes'
+siteCodes = require '../siteCodes'
 _ = require 'lodash'
 React = require 'react'
 ReactDOM = require 'react-dom'
-EntityDisplayComponent = require './EntityDisplayComponent'
+EntityDisplayComponent = require '../EntityDisplayComponent'
 
 # Allows user to select an mWater site
 # options.siteTypes is array of acceptable site types. null/undefined for all

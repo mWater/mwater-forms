@@ -2,7 +2,7 @@ Question = require './Question'
 React = require 'react'
 H = React.DOM
 ModalPopupComponent = require('react-library/lib/ModalPopupComponent')
-ImagePopupComponent = require './ImagePopupComponent'
+ImagePopupComponent = require '../ImagePopupComponent'
 
 # options.consent is a string to ask for consent before photo is taken
 module.exports = class ImageQuestion extends Question

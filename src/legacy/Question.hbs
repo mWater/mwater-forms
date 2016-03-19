@@ -1,0 +1,40 @@
+{{#if options.prompt}}
+	<div class="prompt">
+		{{#if options.code}}
+			<span class="question-code">{{options.code}}:</span>
+		{{/if}}
+		{{options.prompt}}
+		{{#if options.required}}
+			<span class="required">*</span>
+		{{/if}}
+		{{#if options.help}}
+		<button type="button" class="btn btn-link btn-sm" id="toggle_help">
+  			<span class="glyphicon glyphicon-question-sign"></span>
+		</button>
+		{{/if}}
+	</div>
+	{{#if options.hint}}
+		<div class="text-muted">{{options.hint}}</div>
+	{{/if}}
+	{{#if options.help}}
+	<div class="help well well-sm" style="{{#unless helpVisible}}display: none{{/unless}}">
+		{{{options.help}}}
+	</div>
+	{{/if}}
+{{/if}}
+<div class="answer"></div>
+
+{{#if options.radioAlternates}}
+	{{#each options.alternates}}
+	<div id="{{id}}" class="touch-radio alternate">{{label}}</div>
+	{{/each}}
+{{else}}
+	{{#each options.alternates}}
+	<div id="{{id}}" class="touch-checkbox alternate">{{label}}</div>
+	{{/each}}
+{{/if}}
+
+<div class="validation-message text-danger"></div>
+{{#if options.commentsField}}
+<textarea id="comments" class="form-control question-comments" placeholder="{{T "Comments"}}"></textarea>
+{{/if}}

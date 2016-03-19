@@ -1,0 +1,33 @@
+{{#if entity}}
+	{{#if properties}}
+		{{#each properties}}
+		<div><span class="text-muted">{{name}}</span>: {{value}}</div>
+		{{/each}}
+	{{else}}
+		{{#if propertiesError}}
+			<div class="text-error">{{propertiesError}}</div>
+		{{else}}
+			<div class="text-muted">{{T "Loading..."}}</div>
+		{{/if}}
+	{{/if}}
+	<button id="change_entity_button" type="button" class="btn btn-link btn-sm">
+		<span class="glyphicon glyphicon-ok"></span>
+		{{T "Change Selection"}}
+	</button>
+	<button id="clear_entity_button" type="button" class="btn btn-link btn-sm">
+		<span class="glyphicon glyphicon-remove"></span>
+		{{T "Clear Selection"}}
+	</button>
+	{{#if editable}}
+	<button id="edit_entity_button" type="button" class="btn btn-link btn-sm">
+		<span class="glyphicon glyphicon-pencil"></span>
+		{{T "Edit Selection"}}
+	</button>
+	{{/if}}
+{{else}}
+	<button id="select_entity_button" type="button" class="btn btn-default btn-sm">
+		<span class="glyphicon glyphicon-ok"></span>
+		{{selectText}}
+	</button>
+{{/if}}
+
