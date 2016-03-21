@@ -59,11 +59,12 @@ module.exports = class EntityQuestion extends Question
     entityId = @getAnswerValue()
     @ctx.editEntity @options.entityType, entityId, =>
       # Set to null and back to force a change
-      @setAnswerValue(null)
-      @setAnswerValue(entityId)
+      @setAnswerValue(null, =>
+        @setAnswerValue(entityId)
 
-      # Load answers linked to properties
-      @loadLinkedAnswers(entityId)
+        # Load answers linked to properties
+        @loadLinkedAnswers(entityId)
+      )
 
   shouldBeVisible: =>
     if @options.hidden
