@@ -10,7 +10,9 @@ if process.browser
 
 module.exports = class DateTimePickerComponent extends React.Component
   @propTypes:
-    # do we need time picker?
+    # date format
+    format: React.PropTypes.string
+    # do we need time picker?  (Only useful if format is not set)
     timepicker: React.PropTypes.bool
 
     # callback on date change
@@ -30,9 +32,14 @@ module.exports = class DateTimePickerComponent extends React.Component
     @props.onChange?(event.date)
 
   componentDidMount: ->
-    pickerOptions =
-      format: if @props.timepicker then "YYYY-MM-DD HH-mm-ss" else "YYYY-MM-DD"
-      sideBySide: true
+    pickerOptions = {sideBySide: true}
+
+    if @props.format?
+      pickerOptions.format = @props.format
+    else if @props.timepicker
+      pickerOptions.format = "YYYY-MM-DD HH-mm-ss"
+    else
+      pickerOptions.format = "YYYY-MM-DD"
 
     if @props.defaultDate
       pickerOptions.defaultDate = @props.defaultDate

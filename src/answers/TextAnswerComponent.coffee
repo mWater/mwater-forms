@@ -3,6 +3,7 @@ H = React.DOM
 R = React.createElement
 
 # Functional
+# TODO: multiline
 # Not tested
 
 module.exports = class TextAnswerComponent extends React.Component

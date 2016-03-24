@@ -7,15 +7,21 @@ LocationEditorComponent = require '../LocationEditorComponent'
 # Functional??
 
 module.exports = class LocationAnswerComponent extends React.Component
+  @contextTypes:
+    displayMap: React.PropTypes.func
+    storage: React.PropTypes.object
+
   @propTypes:
     value: React.PropTypes.string
     onValueChange: React.PropTypes.func.isRequired
-    # storage: React.PropTypes.object
-    displayMap: React.PropTypes.func
 
-  handleUseMap: ->
-    if @props.displayMap?
-      @props.displayMap.displayMap(@props.value, (newLoc) =>
+  constructor: (props) ->
+    console.log 'constructing LocationAnswerComponent'
+
+  handleUseMap: =>
+    # TODO: Display map function is not defined (maybe only because I'm running the demo)
+    if @context.displayMap?
+      @context.displayMap(@props.value, (newLoc) =>
         # Wrap to -180, 180
         while newLoc.longitude < -180
           newLoc.longitude += 360
@@ -31,12 +37,9 @@ module.exports = class LocationAnswerComponent extends React.Component
       )
 
   render: ->
-    return H.div null,
-      'YO!'
-    #console.log 'rendering location editor component'
-    #return R LocationEditorComponent,
-    #  location: @props.value
-    #  onLocationChange: @props.onValueChange
-    #  onUseMap: @handleUseMap
-    #  # storage: @props.storage
-    #  T: global.T # TODO
+    return R LocationEditorComponent,
+      location: @props.value
+      onLocationChange: @props.onValueChange
+      onUseMap: @handleUseMap
+      # storage: @context.storage
+      T: T

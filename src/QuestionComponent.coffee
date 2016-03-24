@@ -134,11 +134,10 @@ module.exports = class QuestionComponent extends React.Component
   renderAnswer: ->
     switch @props.question._type
       when "TextQuestion"
-        # TODO multiline
-        return R TextAnswerComponent, value: @props.answer.value, onValueChange: @handleValueChange
+        return R TextAnswerComponent, {value: @props.answer.value, onValueChange: @handleValueChange}
 
       when "NumberQuestion"
-        return R NumberInputComponent, value: @props.answer.value, onChange: @handleValueChange, decimal: @props.question.decimal
+        return R NumberInputComponent, { value: @props.answer.value, onChange: @handleValueChange, decimal: @props.question.decimal}
 
       when "DropdownQuestion"
         return R DropdownAnswerComponent, {
@@ -168,8 +167,6 @@ module.exports = class QuestionComponent extends React.Component
         }
 
       when "DateQuestion" # , "DateTimeQuestion"??
-        #console.log @props.question
-        #console.log @props.answer
         return R DateAnswerComponent, {
           value: @props.answer.value
           onValueChange: @handleValueChange
@@ -192,12 +189,10 @@ module.exports = class QuestionComponent extends React.Component
         }
 
       when "LocationQuestion"
-        console.log 'Location Question'
-        R LocationAnswerComponent,
+        return R LocationAnswerComponent, {
           value: @props.answer.value
           onValueChange: @handleValueChange
-          # storage: @context.storage
-          displayMap: @context.displayMap
+        }
 
       when "ImageQuestion"
         return R ImageEditorComponent,
@@ -207,11 +202,12 @@ module.exports = class QuestionComponent extends React.Component
           onImageChange: @handleValueChange 
 
       when "ImagesQuestion"
-        return R ImageEditorComponent,
+        return R ImageEditorComponent, {
           imageManager: @context.imageManager
           imageAcquirer: @context.imageAcquirer
           imagelist: @props.answer.value
           onImagelistChange: @handleValueChange
+        }
 
       when "TextListQuestion"
         return R TextListAnswerComponent, {
@@ -232,7 +228,7 @@ module.exports = class QuestionComponent extends React.Component
         }
 
       when "EntityQuestion"
-        return R EntityAnswerComponent,
+        return R EntityAnswerComponent, {
           value: @props.answer.value
           entityType: @props.question.entityType
           onValueChange: @handleValueChange
@@ -241,10 +237,11 @@ module.exports = class QuestionComponent extends React.Component
           renderEntitySummaryView: @context.renderEntitySummaryView
           getEntityById: @context.getEntityById
           canEditEntity: @context.canEditEntity
+        }
 
       when "AdminRegionQuestion"
         # TODO defaultValue
-        return R AdminRegionAnswerComponent,
+        return R AdminRegionAnswerComponent, {
           locationFinder: @context.locationFinder
           displayMap: @context.displayMap
           getAdminRegionPath: @context.getAdminRegionPath
@@ -252,7 +249,7 @@ module.exports = class QuestionComponent extends React.Component
           findAdminRegionByLatLng: @context.findAdminRegionByLatLng
           value: @props.answer.value
           onChange: @handleValueChange
-
+        }
       else
         return "Unknown type #{@props.question._type}"
     return null
