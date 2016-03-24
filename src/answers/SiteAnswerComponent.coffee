@@ -4,6 +4,9 @@ R = React.createElement
 
 formUtils = require '../formUtils'
 
+# Not Functional
+# Not tested
+
 module.exports = class SiteAnswerComponent extends React.Component
   @contextTypes:
     locale: React.PropTypes.string  # Current locale (e.g. "en")
@@ -11,7 +14,6 @@ module.exports = class SiteAnswerComponent extends React.Component
   @propTypes:
     value: React.PropTypes.bool
     onValueChange: React.PropTypes.func.isRequired
-    label: React.PropTypes.object.isRequired
     siteTypes: React.PropTypes.array
 
   @defaultProps:

@@ -2,6 +2,9 @@ React = require 'react'
 H = React.DOM
 R = React.createElement
 
+# 100% Functional (UGLY)
+# not tested
+
 module.exports = class TextListAnswerComponent extends React.Component
   @propTypes:
     value: React.PropTypes.array
@@ -38,7 +41,6 @@ module.exports = class TextListAnswerComponent extends React.Component
       ev.preventDefault()
 
   render: ->
-    console.log @props.value
     H.table style: {width: "100%"},
       H.tbody null,
         for textLine, index in @props.value

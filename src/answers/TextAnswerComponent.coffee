@@ -2,6 +2,9 @@ React = require 'react'
 H = React.DOM
 R = React.createElement
 
+# Functional
+# Not tested
+
 module.exports = class TextAnswerComponent extends React.Component
   @propTypes:
     value: React.PropTypes.string

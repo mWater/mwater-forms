@@ -7,14 +7,15 @@ formUtils = require './formUtils'
 markdown = require("markdown").markdown
 ImageEditorComponent = require './ImageEditorComponent'
 ImagelistEditorComponent = require './ImagelistEditorComponent'
-AdminRegionAnswerComponent = require './AdminRegionAnswerComponent'
-EntityAnswerComponent = require './EntityAnswerComponent'
 LocationEditorComponent = require './LocationEditorComponent'
 NumberInputComponent = require './NumberInputComponent'
 
+AdminRegionAnswerComponent = require './answers/AdminRegionAnswerComponent'
+BarcodeAnswerComponent = require './answers/BarcodeAnswerComponent'
 CheckAnswerComponent = require './answers/CheckAnswerComponent'
 DateAnswerComponent = require './answers/DateAnswerComponent'
 DropdownAnswerComponent = require './answers/DropdownAnswerComponent'
+EntityAnswerComponent = require './answers/EntityAnswerComponent'
 LocationAnswerComponent = require './answers/LocationAnswerComponent'
 MulticheckAnswerComponent = require './answers/MulticheckAnswerComponent'
 RadioAnswerComponent = require './answers/RadioAnswerComponent'
@@ -219,11 +220,15 @@ module.exports = class QuestionComponent extends React.Component
 
       when "SiteQuestion"
         return R SiteAnswerComponent, {
-
+          value: @props.answer.value
+          onValueChange: @handleValueChange
         }
 
       when "BarcodeQuestion"
-        return "TODO - text"
+        return R BarcodeAnswerComponent, {
+          value: @props.answer.value
+          onValueChange: @handleValueChange
+        }
 
       when "EntityQuestion"
         return R EntityAnswerComponent,

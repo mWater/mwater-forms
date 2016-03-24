@@ -4,6 +4,10 @@ H = React.DOM
 ReactDOM = require 'react-dom'
 moment = require 'moment'
 
+# This only works in browser. Load datetime picker
+if process.browser
+  require('eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js')
+
 module.exports = class DateTimePickerComponent extends React.Component
   @propTypes:
     # do we need time picker?

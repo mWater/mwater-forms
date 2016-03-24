@@ -1,3 +1,4 @@
+###
 _ = require 'underscore'
 $ = require 'jquery'
 Backbone = require 'backbone'
@@ -67,4 +68,4 @@ describe "LocationQuestion", ->
     # @ui.click("Set")
     # @ui.click("Map")
     # assert.deepEqual @mapDisplayed, { latitude: 1, longitude: 2, accuracy: 0 }
-
+###

@@ -1,7 +1,7 @@
 _ = require 'lodash'
 React = require 'react'
 H = React.DOM
-EntityDisplayComponent = require './EntityDisplayComponent'
+EntityDisplayComponent = require '../EntityDisplayComponent'
 AsyncLoadComponent = require('react-library/lib/AsyncLoadComponent')
 
 # Allows user to select an entity

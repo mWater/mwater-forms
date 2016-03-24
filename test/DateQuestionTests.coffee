@@ -1,3 +1,4 @@
+###
 $ = require 'jquery'
 Backbone = require 'backbone'
 Backbone.$ = $
@@ -5,10 +6,8 @@ assert = require('chai').assert
 FormCompiler = require '../src/FormCompiler'
 commonQuestionTestList = require './commonQuestionTestList'
 
-######################
 # Current fails due to two copies of jQuery floating around. No idea
 # how to fix it.
-######################
 describe "DateQuestion", ->
   beforeEach ->
     @model = new Backbone.Model()
@@ -44,3 +43,4 @@ describe "DateQuestion", ->
 
   it "pops up calendar control with current date"
   it "records calendar control selection"
+###

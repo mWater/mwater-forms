@@ -1,3 +1,4 @@
+###
 $ = require 'jquery'
 Backbone = require 'backbone'
 Backbone.$ = $
@@ -74,3 +75,4 @@ describe "SiteQuestion", ->
   it "displays site information", ->
     @qview.$el.find("input").val("10014").change()
     assert.include(@qview.$el.text(), 'Somename2')
+###

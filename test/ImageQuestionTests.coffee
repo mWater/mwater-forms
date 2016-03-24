@@ -1,3 +1,4 @@
+###
 assert = require("chai").assert
 forms = require '../src'
 UIDriver = require './helpers/UIDriver'
@@ -122,5 +123,5 @@ describe 'ImageQuestion', ->
 
       window.confirm = _oldConfirm
 
-
+###
     

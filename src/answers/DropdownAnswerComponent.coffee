@@ -4,6 +4,8 @@ R = React.createElement
 
 formUtils = require '../formUtils'
 
+# 100% Functional
+
 module.exports = class DropdownAnswerComponent extends React.Component
   @contextTypes:
     locale: React.PropTypes.string  # Current locale (e.g. "en")

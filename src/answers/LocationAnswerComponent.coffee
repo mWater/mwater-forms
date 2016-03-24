@@ -2,6 +2,8 @@ React = require 'react'
 H = React.DOM
 R = React.createElement
 
+# Functional??
+
 module.exports = class LocationAnswerComponent extends React.Component
   @propTypes:
     value: React.PropTypes.string

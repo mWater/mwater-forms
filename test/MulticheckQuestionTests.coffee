@@ -1,3 +1,4 @@
+###
 $ = require 'jquery'
 Backbone = require 'backbone'
 Backbone.$ = $
@@ -61,3 +62,4 @@ describe "MulticheckQuestion", ->
     @qview.$el.find("input[type='text']").val("specified").change()
     @qview.$el.find(".touch-checkbox:contains('AA')").trigger("click")
     assert @model.get('q1234').specify['c'], "Should not be removed"
+###

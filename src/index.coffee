@@ -23,6 +23,8 @@ _ = require 'lodash'
 #exports.AdminRegionQuestion = require './AdminRegionQuestion'
 #exports.Question = require './Question'
 
+exports.AdminRegionAnswerComponent = require './answers/AdminRegionAnswerComponent'
+
 #exports.LocationView = require './LocationView'
 
 exports.formUtils = require './formUtils'
@@ -41,7 +43,6 @@ exports.ImagelistEditorComponent = require './ImagelistEditorComponent'
 
 exports.AdminRegionDataSource = require './AdminRegionDataSource'
 exports.AdminRegionSelectComponent = require './AdminRegionSelectComponent'
-exports.AdminRegionAnswerComponent = require './AdminRegionAnswerComponent'
 exports.AdminRegionDisplayComponent = require './AdminRegionDisplayComponent'
 
 exports.DateTimePickerComponent = require './DateTimePickerComponent'
@@ -57,11 +58,6 @@ exports.minSchemaVersion = 1 # Minimum version of forms schema that can be compi
 
 # # JSON schema of form design # Explicitly import for now
 # exports.designSchema = require('./schema').design
-
-# This only works in browser. Load datetime picker
-if process.browser
-  require('eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js')
-
 
 # Simple form that displays a template based on loaded data
 exports.templateView = (template) -> 

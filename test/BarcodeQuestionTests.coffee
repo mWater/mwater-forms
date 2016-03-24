@@ -1,3 +1,4 @@
+###
 $ = require 'jquery'
 Backbone = require 'backbone'
 Backbone.$ = $
@@ -54,3 +55,5 @@ describe "BarcodeQuestion", ->
     @q.required = false
     @qview = @compiler.compileQuestion(@q).render()
     assert not @qview.validate()
+
+###

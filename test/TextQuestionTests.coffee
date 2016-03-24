@@ -1,3 +1,4 @@
+###
 $ = require 'jquery'
 Backbone = require 'backbone'
 Backbone.$ = $
@@ -240,3 +241,4 @@ describe "TextQuestion", ->
 
     # Should have no value
     assert not @model.get(@q._id)
+###

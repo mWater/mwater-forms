@@ -4,7 +4,7 @@ React = require 'react'
 ReactDOM = require 'react-dom'
 H = React.DOM
 
-AdminRegionAnswerComponent = require '../AdminRegionAnswerComponent'
+AdminRegionAnswerComponent = require '../answers/AdminRegionAnswerComponent'
 
 # Allows user to select an administrative region
 # Options for AdminRegionQuestion

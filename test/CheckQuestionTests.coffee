@@ -1,3 +1,4 @@
+###
 $ = require 'jquery'
 Backbone = require 'backbone'
 Backbone.$ = $
@@ -32,3 +33,4 @@ describe "CheckQuestion", ->
     assert @qview.validate()
     @qview.$el.find(".prompt").trigger("click")
     assert not @qview.validate()
+###

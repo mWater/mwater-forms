@@ -1,6 +1,5 @@
 Backbone = require 'backbone'
 assert = require('chai').assert
-FormCompiler = require '../src/FormCompiler'
 
 # Tests related to the FormView component
 describe "FormView", ->

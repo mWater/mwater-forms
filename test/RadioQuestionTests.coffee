@@ -1,3 +1,4 @@
+###
 $ = require 'jquery'
 Backbone = require 'backbone'
 Backbone.$ = $
@@ -55,3 +56,4 @@ describe "RadioQuestion", ->
     @qview.$el.find("input[type='text']").val("specified").trigger('input').change()
     @qview.$el.find(".touch-radio:contains('AA')").trigger("click")
     assert not @model.get('q1234').specify['c'], "Should be removed"
+###

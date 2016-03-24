@@ -1,3 +1,4 @@
+###
 _ = require 'underscore'
 $ = require 'jquery'
 Backbone = require 'backbone'
@@ -152,5 +153,5 @@ describe 'ImagesQuestion', ->
 
       window.confirm = _oldConfirm
 
-
+###
         

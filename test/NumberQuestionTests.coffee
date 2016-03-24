@@ -1,3 +1,4 @@
+###
 $ = require 'jquery'
 Backbone = require 'backbone'
 Backbone.$ = $
@@ -74,3 +75,4 @@ describe "NumberQuestion", ->
 
       @qview.$el.find("input").val("7").change()
       assert.equal @qview.validate(), "message"
+###

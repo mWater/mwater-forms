@@ -1,3 +1,4 @@
+###
 $ = require 'jquery'
 Backbone = require 'backbone'
 Backbone.$ = $
@@ -39,3 +40,4 @@ describe "TextListQuestion", ->
     # Add second value
     $(@qview.$el.find("input")[1]).val("entry2").trigger('input')
     assert.deepEqual @model.get('q1234').value, ["entry1", "entry2"]    
+###

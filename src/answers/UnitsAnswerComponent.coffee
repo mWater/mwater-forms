@@ -4,6 +4,9 @@ R = React.createElement
 
 formUtils = require '../formUtils'
 
+# Not Functional
+# Not tested
+
 module.exports = class UnitsAnswerComponent extends React.Component
   @contextTypes:
     locale: React.PropTypes.string  # Current locale (e.g. "en")

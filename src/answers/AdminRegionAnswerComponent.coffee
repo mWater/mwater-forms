@@ -3,7 +3,9 @@ React = require 'react'
 ReactDOM = require 'react-dom'
 H = React.DOM
 
-AdminRegionSelectComponent = require './AdminRegionSelectComponent'
+AdminRegionSelectComponent = require '../AdminRegionSelectComponent'
+
+# Done by Clayton
 
 # Displays a gps, map and manual select
 module.exports = class AdminRegionAnswerComponent extends React.Component

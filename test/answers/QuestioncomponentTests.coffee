@@ -1,19 +1,35 @@
 _ = require 'underscore'
-Backbone = require 'backbone'
 assert = require('chai').assert
-#FormCompiler = require '../src/FormCompiler'
+
+QuestionComponent = '../../src/QuestionComponent'
 
 # Tests that should run on all questions
 # Assumes question is @q and compiler is @compiler
 module.exports = ->
-  describe "Common question tests", ->
+  describe "QuestionComponent", ->
     beforeEach ->
-      @q.text = { _base: "en", en: "English", es: "Spanish" }
-      @q.hint = { _base: "en", en: "", es: "HINT" }
-      @q.help = { _base: "en", en: "", es: "has *formatting*" }
-      @q.required = true
+      @q = {
+        _id: "q1234"
+        _type: "CheckQuestion"
+        text: { _base: "en", en: "English", es: "Spanish" }
+        hint: { _base: "en", en: "", es: "HINT" }
+        help: { _base: "en", en: "", es: "has *formatting*" }
+        required: true
+      }
 
-      @qview = @compiler.compileQuestion(@q).render()
+      @toDestroy = []
+
+      @render = (options = {}) =>
+        elem = R(QuestionComponent, options)
+        comp = new TestComponent(elem)
+        @toDestroy.push(comp)
+        return comp
+
+    afterEach ->
+      for comp in @toDestroy
+        comp.destroy()
+
+
 
     it "displays question text", ->
       assert.match @qview.el.outerHTML, /Spanish/

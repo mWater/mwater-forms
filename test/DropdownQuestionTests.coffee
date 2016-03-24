@@ -1,3 +1,4 @@
+###
 $ = require 'jquery'
 Backbone = require 'backbone'
 Backbone.$ = $
@@ -69,3 +70,4 @@ describe 'DropdownQuestion', ->
     @qview.$el.find("input[type='text']").val("specified").trigger('input').change()
     @qview.$el.find("select").val("0").change()
     assert not @model.get('q1234').specify['c'], "Should be removed"
+###

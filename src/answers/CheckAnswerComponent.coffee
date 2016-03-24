@@ -4,6 +4,9 @@ R = React.createElement
 
 formUtils = require '../formUtils'
 
+# Functional
+# TODO: What should be done about the display? It used to show the checkbox next to the title of the question
+
 module.exports = class CheckAnswerComponent extends React.Component
   @contextTypes:
     locale: React.PropTypes.string  # Current locale (e.g. "en")
