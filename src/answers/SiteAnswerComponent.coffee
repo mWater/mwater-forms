@@ -4,12 +4,15 @@ R = React.createElement
 
 formUtils = require '../formUtils'
 
-# Not Functional
+EntityDisplayComponent = require '../EntityDisplayComponent'
+
+# TODO: get the formCtx...
 # Not tested
 
 module.exports = class SiteAnswerComponent extends React.Component
   @contextTypes:
-    locale: React.PropTypes.string  # Current locale (e.g. "en")
+    selectEntity: React.PropTypes.func
+    getEntityById: React.PropTypes.func
 
   @propTypes:
     value: React.PropTypes.bool
@@ -19,18 +22,39 @@ module.exports = class SiteAnswerComponent extends React.Component
   @defaultProps:
     value: false
 
-  handleValueChange: () =>
-    @props.onValueChange(!@props.value)
+  constructor: (props) ->
+    @state = {isSelectingEntity: false}
+
+  handleSelectClick: () =>
+    @setState(isSelectingEntity: true)
+
+  doSomething: () =>
+    null
+    ## Convert to new entity type
+    #siteType = (if props.siteTypes then @props.siteTypes[0]) or "Water point"
+    ## TODO: fix this, it screws up my editor display!
+    ##entityType = siteType.toLowerCase().replace(/ /g, "_")
+    #
+    #@context.selectEntity { entityType: entityType, callback: (entityId) =>
+    #  # Get entity
+    #  @context.getEntityById(entityType, entityId, (entity) =>
+    #    @props.onValueChange(code: entity.code)
+    #    #TODO: will it be properly validate?
+    #    #@validate()
+    #  )
+    #}
 
   render: ->
+    value = @props.value
+    if value then value = value.code
+
     H.div null,
       H.div className:"input-group",
           H.input id: "input", type: "tel", className: "form-control"
           H.span className: "input-group-btn",
-            H.button className: "btn btn-default", id: "select", type: "button",
+            H.button className: "btn btn-default", disabled: not @context.selectEntity?, type: "button", click: @handleSelectClick,
               T("Select")
       H.br()
-      H.div id: "site_display"
-    # TODO: What should we do with that?
-    #if not @ctx.selectEntity?
-    #  @$("#select").attr("disabled", "disabled")
+      # TODO: get the formCtx...
+      #if @state.isSelectingEntity
+      #  R EntityDisplayComponent, {formCtx: @ctx, displayInWell: true, entityCode: value, entityType: entityType}
