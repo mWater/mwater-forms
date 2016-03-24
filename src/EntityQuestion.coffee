@@ -58,13 +58,12 @@ module.exports = class EntityQuestion extends Question
 
     entityId = @getAnswerValue()
     @ctx.editEntity @options.entityType, entityId, =>
-      # Set to null and back to force a change
-      @setAnswerValue(null, =>
-        @setAnswerValue(entityId)
+      # Force load display
+      @answerComp?.forceLoad()
 
-        # Load answers linked to properties
-        @loadLinkedAnswers(entityId)
-      )
+      # Load answers linked to properties
+      @loadLinkedAnswers(entityId)
+    
 
   shouldBeVisible: =>
     if @options.hidden
@@ -92,7 +91,7 @@ module.exports = class EntityQuestion extends Question
         T: @T
       })
         
-    ReactDOM.render(elem, answerEl.get(0))
+    @answerComp = ReactDOM.render(elem, answerEl.get(0))
 
   remove: ->
     if @answerEl
