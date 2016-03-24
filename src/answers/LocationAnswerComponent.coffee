@@ -2,6 +2,8 @@ React = require 'react'
 H = React.DOM
 R = React.createElement
 
+LocationEditorComponent = require '../LocationEditorComponent'
+
 # Functional??
 
 module.exports = class LocationAnswerComponent extends React.Component
@@ -29,9 +31,12 @@ module.exports = class LocationAnswerComponent extends React.Component
       )
 
   render: ->
-    R LocationEditorComponent,
-      location: @props.value
-      onLocationChange: @props.onValueChange
-      onUseMap: @handleUseMap
-      # storage: @props.storage
-      T: global.T # TODO
+    return H.div null,
+      'YO!'
+    #console.log 'rendering location editor component'
+    #return R LocationEditorComponent,
+    #  location: @props.value
+    #  onLocationChange: @props.onValueChange
+    #  onUseMap: @handleUseMap
+    #  # storage: @props.storage
+    #  T: global.T # TODO

@@ -42,16 +42,16 @@ gulp.task 'prepareTests', ->
   return stream
 
 makeBrowserifyBundle = ->
-  browserify("./demo.coffee",
+  shim(browserify("./demo.coffee",
     extensions: [".coffee"]
     basedir: "./src/"
-  )
+  ))
 
 bundleDemoJs = (bundle) ->
   bundle.bundle()
     .on("error", gutil.log)
-    .pipe(source("demo.js"))
-    .pipe(gulp.dest("./dist/js/"))
+  .pipe(source("demo.js"))
+  .pipe(gulp.dest("./dist/js/"))
 
 gulp.task "browserify", ->
   bundleDemoJs(makeBrowserifyBundle())
@@ -118,3 +118,15 @@ gulp.task 'watch', gulp.series([
     w.on 'update', ->
       bundleDemoJs(w)
   ])
+
+# Shim non-browserify friendly libraries to allow them to be 'require'd
+shim = (instance) ->
+  shims = {
+    jquery: '../shims/jquery-shim'
+  }
+
+  # Add shims
+  for name, path of shims
+    instance.require(path, {expose: name})
+
+  return instance

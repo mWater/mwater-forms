@@ -192,6 +192,7 @@ module.exports = class QuestionComponent extends React.Component
         }
 
       when "LocationQuestion"
+        console.log 'Location Question'
         R LocationAnswerComponent,
           value: @props.answer.value
           onValueChange: @handleValueChange
