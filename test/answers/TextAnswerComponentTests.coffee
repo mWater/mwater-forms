@@ -30,7 +30,7 @@ describe 'TextAnswerComponent', ->
       callback()
 
     @comp = @render({value: null, onValueChange: onValueChange, format: 'singleline'})
-    checkbox = TestComponent.changeValue(@comp.findInput(), "response")
+    TestComponent.changeValue(@comp.findInput(), "response")
 
   it "records string in singleline answer", (callback) ->
     onValueChange = (value) ->
@@ -39,7 +39,7 @@ describe 'TextAnswerComponent', ->
 
     @comp = @render({value: null, onValueChange: onValueChange, format: 'multiline'})
     textArea = ReactTestUtils.findRenderedDOMComponentWithTag(@comp.getComponent(), "textarea")
-    checkbox = TestComponent.changeValue(textArea, "response")
+    TestComponent.changeValue(textArea, "response")
 
   it "accepts valid emails", ->
     @comp = @render({value: "test@test.com", format: 'email'})

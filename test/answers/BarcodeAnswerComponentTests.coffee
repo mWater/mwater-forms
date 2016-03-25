@@ -24,7 +24,7 @@ class BarcodeContext extends React.Component
     return @props.children
 
 
-describe.only 'BarcodeAnswerComponent', ->
+describe 'BarcodeAnswerComponent', ->
   describe 'Works without scanBarcode', ->
     beforeEach ->
       @toDestroy = []

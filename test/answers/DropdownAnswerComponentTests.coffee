@@ -24,81 +24,205 @@ describe 'DropdownAnswerComponent', ->
     for comp in @toDestroy
       comp.destroy()
 
-  it 'accepts known value', ->
-    assert false
+  it 'accepts known value', (done) ->
+    testComponent = @render({
+      onValueChange: (value) ->
+        assert.equal value, 'a'
+        # TODO: test disabled state
+        assert false, 'Need to test the disabled state'
+        done()
+      value: null
+      choices: [
+        {
+          id: 'a'
+          label: {'en': 'label a', '_base': 'en'}
+          hint: {'en': 'hint a', '_base': 'en'}
+          specify: false
+        }
+      ]
+    })
+    select = ReactTestUtils.findRenderedDOMComponentWithTag(testComponent.getComponent(), 'select')
+    TestComponent.changeValue(select, "a")
 
-  it 'is not disabled with unknown value', ->
-    assert false
+  it 'is not disabled with empty value', (done) ->
+    testComponent = @render({
+      onValueChange: (value) ->
+        assert.equal value, null
+        # TODO: test disabled state
+        assert false, 'Need to test the disabled state'
+        done()
+      value: 'a'
+      choices: [
+        {
+          id: 'a'
+          label: {'en': 'label a', '_base': 'en'}
+          hint: {'en': 'hint a', '_base': 'en'}
+          specify: false
+        }
+      ]
+    })
+    select = ReactTestUtils.findRenderedDOMComponentWithTag(testComponent.getComponent(), 'select')
+    TestComponent.changeValue(select, null)
 
-  it 'is not disabled with empty value', ->
-    assert false
+  it 'is not disabled with unknown value', () ->
+    testComponent = @render({
+      onValueChange: () ->
+        null
+      value: 'a1'
+      choices: [
+        {
+          id: 'a'
+          label: {'en': 'label a', '_base': 'en'}
+          hint: {'en': 'hint a', '_base': 'en'}
+          specify: false
+        },
+        {
+          id: 'b'
+          label: {'en': 'label b', '_base': 'en'}
+          hint: {'en': 'hint b', '_base': 'en'}
+          specify: true
+          onSpecifyChange: null
+        }
+      ]
+    })
 
-  it "displays choices", ->
-    assert false
+    # TODO: test if disabled
+    assert false, 'Need to test the disabled state'
 
-  it "displays choice hints", ->
-    assert false
+  it "displays choices and hints", ->
+    testComponent = @render({
+      onValueChange: (value) ->
+        null
+      value: null
+      choices: [
+        {
+          id: 'a'
+          label: {'en': 'label a', '_base': 'en'}
+          hint: {'en': 'hint a', '_base': 'en'}
+          specify: false
+        },
+        {
+          id: 'b'
+          label: {'en': 'label b', '_base': 'en'}
+          hint: {'en': 'hint b', '_base': 'en'}
+          specify: true
+          onSpecifyChange: null
+        }
+      ]
+    })
 
-  it "records selected choice", ->
-    assert false
+    labelA = testComponent.findComponentByText(/label a/)
+    assert labelA?, 'Not showing label a'
 
-  it "allows unselecting choice", ->
-    assert false
+    labelB = testComponent.findComponentByText(/label b/)
+    assert labelB?, 'Not showing label b'
 
-  it "displays specify box", ->
-    assert false
+    hintA = testComponent.findComponentByText(/hint a/)
+    assert hintA?, 'Not showing hint a'
 
-  it "records specify value", ->
-    assert false
+    hintB = testComponent.findComponentByText(/hint b/)
+    assert hintB?, 'Not showing hint b'
 
-  it "removes specify value on other selection", ->
-    assert false
+  it "displays specify box when the right choice is selected", ->
+    testComponent = @render({
+      onValueChange: (value) ->
+        null
+      value: 'b'
+      choices: [
+        {
+          id: 'a'
+          label: {'en': 'label a', '_base': 'en'}
+          hint: {'en': 'hint a', '_base': 'en'}
+          specify: false
+        },
+        {
+          id: 'b'
+          label: {'en': 'label b', '_base': 'en'}
+          hint: {'en': 'hint b', '_base': 'en'}
+          specify: true
+          onSpecifyChange: null
+        }
+      ]
+    })
 
+    specifyInput = ReactTestUtils.findRenderedDOMComponentWithClass.bind(this, testComponent.getComponent(), 'specify-input')
+    assert specifyInput?
 
-###
-  it 'accepts known value', ->
-    @model.set("q1234": { value: 'a' })
-    assert.deepEqual @model.get("q1234"), { value: 'a'}
-    assert.isFalse @qview.$("select").is(":disabled")
+  it "it doesn't displays specify box when a choice without specify is selected", ->
+    testComponent = @render({
+      onValueChange: (value) ->
+        null
+      value: 'a'
+      choices: [
+        {
+          id: 'a'
+          label: {'en': 'label a', '_base': 'en'}
+          hint: {'en': 'hint a', '_base': 'en'}
+          specify: false
+        },
+        {
+          id: 'b'
+          label: {'en': 'label b', '_base': 'en'}
+          hint: {'en': 'hint b', '_base': 'en'}
+          specify: true
+          onSpecifyChange: null
+        }
+      ]
+    })
 
-  it 'is not disabled with unknown value', ->
-    @model.set("q1234": { value: 'x' })
-    assert.deepEqual @model.get("q1234"), { value: 'x' }
-    assert.isFalse @qview.$("select").is(":disabled")
+    assert.throws(ReactTestUtils.findRenderedDOMComponentWithClass.bind(this, testComponent.getComponent(), 'specify-input'), 'Did not find exactly one match (found: 0) for class:specify-input')
 
-  it 'is not disabled with empty value', ->
-    @model.set("q1234": null)
-    assert.equal @model.get("q1234"), null
-    assert.isFalse @qview.$("select").is(":disabled")
+  it "records specify value", (done) ->
+    testComponent = @render({
+      onValueChange: (value) ->
+        null
+      onSpecifyChange: (specifyValue) ->
+        assert.deepEqual specifyValue, {'b': 'specify'}
+        done()
+      value: 'b'
+      choices: [
+        {
+          id: 'a'
+          label: {'en': 'label a', '_base': 'en'}
+          hint: {'en': 'hint a', '_base': 'en'}
+          specify: false
+        },
+        {
+          id: 'b'
+          label: {'en': 'label b', '_base': 'en'}
+          hint: {'en': 'hint b', '_base': 'en'}
+          specify: true
+        }
+      ]
+    })
 
-  it "displays choices", ->
-    assert.match @qview.el.outerHTML, /AA/
+    specifyInput = ReactTestUtils.findRenderedDOMComponentWithClass(testComponent.getComponent(), 'specify-input')
+    TestComponent.changeValue(specifyInput, 'specify')
 
-  it "displays choice hints", ->
-    assert.match @qview.el.outerHTML, /a-hint/
+  it "removes specify value on other selection", (done) ->
+    testComponent = @render({
+      onValueChange: (value) ->
+        null
+      onSpecifyChange: (specifyValue) ->
+        assert.deepEqual specifyValue, null
+        done()
+      value: 'b'
+      specify: {'b': 'something'}
+      choices: [
+        {
+          id: 'a'
+          label: {'en': 'label a', '_base': 'en'}
+          hint: {'en': 'hint a', '_base': 'en'}
+          specify: false
+        },
+        {
+          id: 'b'
+          label: {'en': 'label b', '_base': 'en'}
+          hint: {'en': 'hint b', '_base': 'en'}
+          specify: true
+        }
+      ]
+    })
 
-  it "records selected choice", ->
-    @qview.$el.find("select").val("0").change()
-    assert.equal @model.get('q1234').value, "a"
-
-  it "allows unselecting choice", ->
-    @qview.$el.find("select").val("").change()
-    assert.equal @model.get('q1234').value, null
-
-  it "displays specify box", ->
-    @qview.$el.find("select").val("2").change()
-    assert @qview.$el.find("input[type='text']").get(0)
-
-  it "records specify value", ->
-    @qview.$el.find("select").val("2").change()
-    @qview.$el.find("input[type='text']").val("specified").trigger('input').change()
-
-    assert.equal @model.get('q1234').value, "c"
-    assert.equal @model.get('q1234').specify['c'], "specified"
-
-  it "removes specify value on other selection", ->
-    @qview.$el.find("select").val("2").change()
-    @qview.$el.find("input[type='text']").val("specified").trigger('input').change()
-    @qview.$el.find("select").val("0").change()
-    assert not @model.get('q1234').specify['c'], "Should be removed"
-###
+    select = ReactTestUtils.findRenderedDOMComponentWithTag(testComponent.getComponent(), 'select')
+    TestComponent.changeValue(select, "b")

@@ -24,8 +24,16 @@ describe 'NumberAnswerComponent', ->
     for comp in @toDestroy
       comp.destroy()
 
-  it "records decimal number", ->
-    assert false
+  it "records decimal number", (done) ->
+    comp = @render({
+      decimal: true
+      onChange: (value) ->
+        console.log value
+        assert.equal value, 123.4
+        done()
+    })
+    # TODO: What is that focus thing?
+    TestComponent.changeValue(comp.findInput(), "123.4")
 
   it "records whole number", ->
     assert false

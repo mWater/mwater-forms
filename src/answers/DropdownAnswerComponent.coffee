@@ -29,7 +29,7 @@ module.exports = class DropdownAnswerComponent extends React.Component
     value: React.PropTypes.string
     onValueChange: React.PropTypes.func.isRequired
     specify: React.PropTypes.object # See answer format
-    onSpecifyChange: React.PropTypes.func.isRequired
+    onSpecifyChange: React.PropTypes.func
 
   @defaultProps:
     specify: {}
@@ -39,6 +39,7 @@ module.exports = class DropdownAnswerComponent extends React.Component
       @props.onValueChange(ev.target.value)
     else
       @props.onValueChange(null)
+    @props.onSpecifyChange(null)
 
   handleSpecifyChange: (id, ev) =>
     change = {}
