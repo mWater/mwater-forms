@@ -4,7 +4,7 @@ R = React.createElement
 
 # Functional
 # TODO: format validation
-# Not tested
+# Not tested (15 tests not implemented)
 
 module.exports = class TextAnswerComponent extends React.Component
   @propTypes:

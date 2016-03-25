@@ -1,5 +1,3 @@
-$ = require 'jquery'
-
 assert = require('chai').assert
 CheckAnswerComponent = require '../../src/answers/CheckAnswerComponent'
 
@@ -11,7 +9,7 @@ ReactDOM = require 'react-dom'
 R = React.createElement
 H = React.DOM
 
-describe.only 'CheckAnswerComponent', ->
+describe 'CheckAnswerComponent', ->
   beforeEach ->
     @toDestroy = []
 

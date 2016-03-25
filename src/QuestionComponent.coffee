@@ -8,7 +8,6 @@ markdown = require("markdown").markdown
 ImageEditorComponent = require './ImageEditorComponent'
 ImagelistEditorComponent = require './ImagelistEditorComponent'
 LocationEditorComponent = require './LocationEditorComponent'
-NumberInputComponent = require './NumberInputComponent'
 
 AdminRegionAnswerComponent = require './answers/AdminRegionAnswerComponent'
 BarcodeAnswerComponent = require './answers/BarcodeAnswerComponent'
@@ -18,6 +17,7 @@ DropdownAnswerComponent = require './answers/DropdownAnswerComponent'
 EntityAnswerComponent = require './answers/EntityAnswerComponent'
 LocationAnswerComponent = require './answers/LocationAnswerComponent'
 MulticheckAnswerComponent = require './answers/MulticheckAnswerComponent'
+NumberAnswerComponent = require './answers/NumberAnswerComponent'
 RadioAnswerComponent = require './answers/RadioAnswerComponent'
 SiteAnswerComponent = require './answers/SiteAnswerComponent'
 TextAnswerComponent = require './answers/TextAnswerComponent'
@@ -141,7 +141,7 @@ module.exports = class QuestionComponent extends React.Component
         }
 
       when "NumberQuestion"
-        return R NumberInputComponent, { value: @props.answer.value, onChange: @handleValueChange, decimal: @props.question.decimal}
+        return R NumberAnswerComponent, { value: @props.answer.value, onChange: @handleValueChange, decimal: @props.question.decimal}
 
       when "DropdownQuestion"
         return R DropdownAnswerComponent, {

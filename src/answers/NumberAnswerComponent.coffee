@@ -3,7 +3,7 @@ React = require 'react'
 H = React.DOM
 
 # Number input component that handles parsing and maintains state when number is invalid
-module.exports = class NumberInputComponent extends React.Component
+module.exports = class NumberAnswerComponent extends React.Component
   constructor: ->
     super
 
