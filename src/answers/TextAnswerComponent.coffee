@@ -9,7 +9,7 @@ R = React.createElement
 module.exports = class TextAnswerComponent extends React.Component
   @propTypes:
     value: React.PropTypes.string
-    format: React.PropTypes.string
+    format: React.PropTypes.string.isRequired
     readOnly: React.PropTypes.bool
     onValueChange: React.PropTypes.func.isRequired
 

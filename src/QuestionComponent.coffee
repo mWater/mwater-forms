@@ -134,7 +134,11 @@ module.exports = class QuestionComponent extends React.Component
   renderAnswer: ->
     switch @props.question._type
       when "TextQuestion"
-        return R TextAnswerComponent, {value: @props.answer.value, onValueChange: @handleValueChange}
+        return R TextAnswerComponent, {
+          value: @props.answer.value,
+          format: @props.question.format,
+          onValueChange: @handleValueChange
+        }
 
       when "NumberQuestion"
         return R NumberInputComponent, { value: @props.answer.value, onChange: @handleValueChange, decimal: @props.question.decimal}
