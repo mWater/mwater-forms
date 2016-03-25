@@ -13,18 +13,18 @@ module.exports = class BarcodeAnswerComponent extends React.Component
     scanBarcode: React.PropTypes.func
 
   @propTypes:
-    value: React.PropTypes.bool
+    value: React.PropTypes.string
     onValueChange: React.PropTypes.func.isRequired
 
   handleValueChange: () =>
     @props.onValueChange(!@props.value)
 
-  handleScanClick: ->
+  handleScanClick: =>
     @context.scanBarcode({ success: (text) =>
       @props.onValueChange(text)
     })
 
-  handleClearClick: ->
+  handleClearClick: =>
     @props.onValueChange(null)
 
   render: ->
@@ -48,5 +48,5 @@ module.exports = class BarcodeAnswerComponent extends React.Component
           )
         )
       else
-    	  return H.div className: "text-warning",
+        return H.div className: "text-warning",
           T("Barcode scanning not supported on this platform")

@@ -4,7 +4,7 @@ H = React.DOM
 R = React.createElement
 
 formUtils = require './formUtils'
-NumberInputComponent = require './NumberInputComponent'
+NumberAnswerComponent = require './answers/NumberAnswerComponent'
 
 # Rosters are repeated information, such as asking questions about household members N times.
 # A roster matrix is a list of columns with one row for each entry in the roster
@@ -72,7 +72,7 @@ module.exports = class RosterMatrixComponent extends React.Component
       when "Text"
         elem = H.input type: "text", className: "form-control input-sm", value: value, onChange: (ev) => @handleCellChange(entryIndex, column._id, ev.target.value)
       when "Number"
-        elem = R NumberInputComponent, small: true, style: { maxWidth: "10em"}, value: value, onChange: (val) => @handleCellChange(entryIndex, column._id, val)
+        elem = R NumberAnswerComponent, small: true, style: { maxWidth: "10em"}, value: value, onChange: (val) => @handleCellChange(entryIndex, column._id, val)
       # TODO
       when "Checkbox"
         elem = H.div 

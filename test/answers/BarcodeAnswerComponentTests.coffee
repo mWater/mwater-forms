@@ -10,75 +10,98 @@ ReactDOM = require 'react-dom'
 R = React.createElement
 H = React.DOM
 
-describe 'BarcodeAnswerComponent', ->
-  beforeEach ->
-    @toDestroy = []
+class BarcodeContext extends React.Component
+  @childContextTypes:
+    scanBarcode: React.PropTypes.func
 
-    @render = (options = {}) =>
-      elem = R(BarcodeAnswerComponent, options)
-      comp = new TestComponent(elem)
-      @toDestroy.push(comp)
-      return comp
+  getChildContext: ->
+    scanBarcode: (callback) ->
+      f = () ->
+        callback.success('0123456789')
+      setTimeout f, 30
 
-  afterEach ->
-    for comp in @toDestroy
-      comp.destroy()
-
-  it "shows text if not supported", ->
-    assert false
-
-  it "shows scan button", ->
-    assert false
-
-  it "does not show clear button if no text", ->
-    assert false
-
-  it "scans when scan pressed showing text", ->
-    assert false
-
-  it "shows clear when text present", ->
-    assert false
-
-  it "clears when clear pressed", ->
-    assert false
-
-  it "enforces required", ->
-    assert false
+  render: ->
+    return @props.children
 
 
-###
-  it "shows text if not supported", ->
-    @compiler = new FormCompiler(model: @model, locale: "es", ctx: {})
-    @qview = @compiler.compileQuestion(@q).render()
+describe.only 'BarcodeAnswerComponent', ->
+  describe 'Works without scanBarcode', ->
+    beforeEach ->
+      @toDestroy = []
 
-    assert.match(@qview.$el.html(), /not supported/i)
+      @render = (options = {}) =>
+        elem = R(BarcodeAnswerComponent, options)
+        comp = new TestComponent(elem)
+        @toDestroy.push(comp)
+        return comp
 
-  it "shows scan button", ->
-    assert.match(@qview.$el.html(), /Scan/)
+    afterEach ->
+      for comp in @toDestroy
+        comp.destroy()
 
-  it "does not show clear button if no text", ->
-    assert.notMatch(@qview.$el.html(), /Clear/)
+    it "shows text if not supported", ->
+      # If no context is passed, scanBarcode is not defined and so the feature is not supported
+      comp = @render({onValueChange: null})
+      component = comp.findComponentByText(/not supported/i)
+      assert component?, 'Not showing not supported text'
 
-  it "scans when scan pressed showing text", ->
-    @qview.$el.find("#scan").click()
-    assert.match(@qview.$el.html(), /0123456789/)
-    assert.equal @model.get("q1234").value, "0123456789"
 
-  it "shows clear when text present", ->
-    @qview.$el.find("#scan").click()
-    assert.match(@qview.$el.html(), /Clear/)
+  describe 'Works with scanBarcode', ->
+    beforeEach ->
+      @toDestroy = []
 
-  it "clears when clear pressed", ->
-    @qview.$el.find("#scan").click()
-    @qview.$el.find("#clear").click()
-    assert.equal @model.get("q1234").value, null
+      @render = (options = {}) =>
+        elem = R(BarcodeContext, {},
+          R(BarcodeAnswerComponent, options)
+        )
+        #elem = R(BarcodeAnswerComponent, options)
+        comp = new TestComponent(elem)
+        @toDestroy.push(comp)
+        return comp
 
-  it "enforces required", ->
-    @q.required = true
-    @qview = @compiler.compileQuestion(@q).render()
-    assert @qview.validate()
+    afterEach ->
+      for comp in @toDestroy
+        comp.destroy()
 
-    @q.required = false
-    @qview = @compiler.compileQuestion(@q).render()
-    assert not @qview.validate()
-###
+    it "shows scan button", ->
+      comp = @render({onValueChange: () -> null})
+      button = ReactTestUtils.findRenderedDOMComponentWithClass(comp.getComponent(), 'btn')
+      assert button?, 'Not showing scan button'
+
+    it "shows clear button when value is set", ->
+      comp = @render({
+        onValueChange: () ->
+          null
+        value: 'sometext'
+      })
+      # TODO: the method to find the Scan button doesn't seem to work
+      component = comp.findComponentByText(/Clear/i)
+      assert component?, 'Not showing clear button'
+
+    it "shows scan button", (done) ->
+      comp = @render({onValueChange: (value) ->
+        assert.equal value, "0123456789"
+        done()
+      })
+      button = ReactTestUtils.findRenderedDOMComponentWithClass(comp.getComponent(), 'btn')
+      TestComponent.click(button)
+
+    it "clears when clear pressed", (done) ->
+      comp = @render({
+        value: 'sometext'
+        onValueChange: (value) ->
+          assert.equal value, null
+          done()
+      })
+      button = ReactTestUtils.findRenderedDOMComponentWithClass(comp.getComponent(), 'btn')
+      TestComponent.click(button)
+
+    it "enforces required", ->
+      assert false
+      #@q.required = true
+      #@qview = @compiler.compileQuestion(@q).render()
+      #assert @qview.validate()
+      #
+      #@q.required = false
+      #@qview = @compiler.compileQuestion(@q).render()
+      #assert not @qview.validate()
