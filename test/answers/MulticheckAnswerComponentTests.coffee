@@ -134,7 +134,7 @@ describe 'MulticheckAnswerComponent', ->
   it "does remove specify value on unselection", ->
     testComponent = @render {
       onSpecifyChange: (specifyValue) ->
-        assert.deepEqual specifyValue, null
+        assert.equal specifyValue, null
         done()
       value: ['c']
       specify: {c: 'specify'}

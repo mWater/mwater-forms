@@ -10,11 +10,38 @@ ReactDOM = require 'react-dom'
 R = React.createElement
 H = React.DOM
 
-describe 'RadioAnswerComponent', ->
-  beforeEach ->
+# nodeType is 1, not 3 so TestComponent.findComponentByText wasn't working
+findComponentByText = (component, pattern) ->
+  return ReactTestUtils.findAllInRenderedTree(component, (c) ->
+    # Only match DOM components with a child node that is matching string
+    if ReactTestUtils.isDOMComponent(c)
+      _.any(c.childNodes, (node) ->
+        (node.nodeType == 3 or node.nodeType == 1) and node.textContent.match(pattern))
+  )[0]
+
+# nodeType is 1, not 3 so TestComponent.findComponentByText wasn't working
+findComponentById = (component, id) ->
+  return ReactTestUtils.findAllInRenderedTree(component, (c) ->
+    c.id == id
+  )[0]
+
+describe.only 'RadioAnswerComponent', ->
+  before ->
     @toDestroy = []
 
     @render = (options = {}) =>
+      options = _.extend {
+        choices: [
+          { id: "a", label: { _base: "en", en: "AA" }, hint: { _base: "en", en: "a-hint" } }
+          { id: "b", label: { _base: "en", en: "BB" } }
+          { id: "c", label: { _base: "en", en: "CC" }, specify: true }
+        ],
+        onValueChange: () ->
+          null
+        onSpecifyChange: () ->
+          null
+      }, options
+
       elem = R(RadioAnswerComponent, options)
       comp = new TestComponent(elem)
       @toDestroy.push(comp)
@@ -23,58 +50,83 @@ describe 'RadioAnswerComponent', ->
   afterEach ->
     for comp in @toDestroy
       comp.destroy()
+    @toDestroy = []
 
   it "displays choices", ->
-    assert false
+    testComponent = @render()
+
+    choiceA = findComponentByText(testComponent.getComponent(), /AA/)
+    assert choiceA?, 'Not showing choice AA'
+
+    choiceB = findComponentByText(testComponent.getComponent(), /BB/)
+    assert choiceB?, 'Not showing choice BB'
+
+    choiceC = findComponentByText(testComponent.getComponent(), /CC/)
+    assert choiceC?, 'Not showing choice CC'
 
   it "displays choice hints", ->
-    assert false
+    testComponent = @render()
 
-  it "records selected choice", ->
-    assert false
+    hintA = findComponentByText(testComponent.getComponent(), /a-hint/)
+    assert hintA?, 'Not showing hint'
 
-  it "allows unselecting choice by clicking twice", ->
-    assert false
+  it "records selected choice", (done) ->
+    testComponent = @render({
+      onValueChange: (value) ->
+        assert.equal value, 'a'
+        done()
+    })
 
-  it "displays specify box", ->
-    assert false
+    choiceA = findComponentById(testComponent.getComponent(), 'a')
 
-  it "records specify value", ->
-    assert false
+    assert choiceA?, 'could not find choice A'
+    TestComponent.click(choiceA)
 
-  it "removes specify value on other selection", ->
-    assert false
+  it "allows unselecting choice by clicking twice", (done) ->
+    testComponent = @render({
+      value: 'b'
+      onValueChange: (value) ->
+        assert.deepEqual value, null
+        done()
+    })
 
-###
-  it "displays choices", ->
-    assert.match @qview.el.outerHTML, /AA/
+    choiceB = findComponentById(testComponent.getComponent(), 'b')
 
-  it "displays choice hints", ->
-    assert.match @qview.el.outerHTML, /a-hint/
-
-  it "records selected choice", ->
-    @qview.$el.find(".touch-radio:contains('AA')").trigger("click")
-    assert.equal @model.get('q1234').value, "a"
-
-  it "allows unselecting choice by clicking twice", ->
-    @qview.$el.find(".touch-radio:contains('AA')").trigger("click")
-    @qview.$el.find(".touch-radio:contains('AA')").trigger("click")
-    assert.equal @model.get('q1234').value, null
+    assert choiceB?, 'could not find choice B'
+    TestComponent.click(choiceB)
 
   it "displays specify box", ->
-    @qview.$el.find(".touch-radio:contains('CC')").trigger("click")
-    assert @qview.$el.find("input[type='text']").get(0)
+    testComponent = @render {value: 'c'}
 
-  it "records specify value", ->
-    @qview.$el.find(".touch-radio:contains('CC')").trigger("click")
-    @qview.$el.find("input[type='text']").val("specified").trigger('input').change()
+    specifyInput = ReactTestUtils.findRenderedDOMComponentWithClass.bind(this, testComponent.getComponent(), 'specify-input')
 
-    assert.equal @model.get('q1234').value, "c"
-    assert.equal @model.get('q1234').specify['c'], "specified"
+    assert specifyInput?, 'could not find specify input'
 
-  it "removes specify value on other selection", ->
-    @qview.$el.find(".touch-radio:contains('CC')").trigger("click")
-    @qview.$el.find("input[type='text']").val("specified").trigger('input').change()
-    @qview.$el.find(".touch-radio:contains('AA')").trigger("click")
-    assert not @model.get('q1234').specify['c'], "Should be removed"
-###
+  it "it doesn't displays specify box when a choice without specify is selected", ->
+    testComponent = @render {value: 'a'}
+
+    assert.throws(ReactTestUtils.findRenderedDOMComponentWithClass.bind(this, testComponent.getComponent(), 'specify-input'), 'Did not find exactly one match (found: 0) for class:specify-input')
+
+  it "records specify value", (done) ->
+    testComponent = @render {
+      onSpecifyChange: (specifyValue) ->
+        assert.deepEqual specifyValue, {'c': 'specify'}
+        done()
+      value: 'c'
+    }
+
+    specifyInput = ReactTestUtils.findRenderedDOMComponentWithClass(testComponent.getComponent(), 'specify-input')
+    TestComponent.changeValue(specifyInput, 'specify')
+
+  it "removes specify value on other selection", (done) ->
+    testComponent = @render {
+      onSpecifyChange: (specifyValue) ->
+        assert.equal specifyValue, null
+        done()
+      value: 'c'
+      specify: {c: 'specify'}
+    }
+
+    choiceC = findComponentById(testComponent.getComponent(), 'c')
+    assert choiceC?, 'could not find choice C'
+    TestComponent.click(choiceC)

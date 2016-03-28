@@ -60,7 +60,7 @@ describe 'NumberAnswerComponent', ->
     TestComponent.changeValue(input, "123.4abc")
     ReactTestUtils.Simulate.blur(input)
 
-  it.only "enforces whole number", (done) ->
+  it "enforces whole number", (done) ->
     comp = @render({
       decimal: false
       onChange: (value) ->

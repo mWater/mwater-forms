@@ -37,6 +37,8 @@ module.exports = class RadioAnswerComponent extends React.Component
   handleValueChange: (choice) =>
     if choice.id == @props.value
       @props.onValueChange(null)
+      if @props.specify[choice.id] != null
+        @props.onSpecifyChange(null)
     else
       @props.onValueChange(choice.id)
 
@@ -52,7 +54,8 @@ module.exports = class RadioAnswerComponent extends React.Component
 
   renderChoice: (choice) ->
     H.div key: choice.id,
-      H.div className: "touch-radio #{if @props.value == choice.id then "checked" else ""}", onClick: @handleValueChange.bind(null, choice),
+      # id is used for testing
+      H.div className: "touch-radio #{if @props.value == choice.id then "checked" else ""}", id: choice.id, onClick: @handleValueChange.bind(null, choice),
         formUtils.localizeString(choice.label, @context.locale)
         if choice.hint
           H.span className: "radio-choice-hint",

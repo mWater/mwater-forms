@@ -56,6 +56,7 @@ module.exports = class MulticheckAnswerComponent extends React.Component
     selected = _.isArray(@props.value) and choice.id in @props.value
 
     H.div key: choice.id,
+      # id is used for testing
       H.div className: "choice touch-checkbox #{if selected then "checked" else ""}", id: choice.id, onClick: @handleValueChange.bind(null, choice),
         formUtils.localizeString(choice.label, @context.locale)
         if choice.hint
