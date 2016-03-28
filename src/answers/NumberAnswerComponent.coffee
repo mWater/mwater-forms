@@ -32,6 +32,8 @@ module.exports = class NumberAnswerComponent extends React.Component
         @props.onChange(null)
       else
         @props.onChange(val)
+    else
+      @props.onChange(@props.value)
 
   # Check regex matching of numbers
   isValid: ->
