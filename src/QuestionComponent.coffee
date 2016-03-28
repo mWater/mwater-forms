@@ -183,6 +183,7 @@ module.exports = class QuestionComponent extends React.Component
           units: @props.question.units
           defaultUnits: @props.question.defaultUnits
           prefix: @props.question.unitsPosition == 'prefix'
+          decimal: @props.question.decimal
         }
 
       when "CheckQuestion"

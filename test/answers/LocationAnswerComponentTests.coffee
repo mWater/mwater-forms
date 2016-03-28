@@ -24,7 +24,6 @@ describe 'LocationAnswerComponent', ->
     for comp in @toDestroy
       comp.destroy()
 
-###
   it "records location when set is clicked" #, ->
     # @ui.click("Set")
     # assert.deepEqual @model.get("q1234"), { value: { latitude: 1, longitude: 2, accuracy: 0 }}
@@ -34,4 +33,3 @@ describe 'LocationAnswerComponent', ->
     # @ui.click("Set")
     # @ui.click("Map")
     # assert.deepEqual @mapDisplayed, { latitude: 1, longitude: 2, accuracy: 0 }
-###

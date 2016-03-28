@@ -10,6 +10,8 @@ ReactDOM = require 'react-dom'
 R = React.createElement
 H = React.DOM
 
+# Cannot find datetimepicker
+
 describe 'DateAnswerComponent', ->
   beforeEach ->
     @toDestroy = []
@@ -24,10 +26,15 @@ describe 'DateAnswerComponent', ->
     for comp in @toDestroy
       comp.destroy()
 
-  it "displays format YYYY-MM-DD", ->
-    #@render({value: "2013-12-31"})
-    #assert.equal @qview.$el.find("input").val(), "2013-12-31"
-    assert false
+  it "displays format YYYY-MM-DD", (done) ->
+    testComponent = @render({
+      value: null
+      onValueChange: (value) ->
+        assert.equal value, "2013-12-31"
+        done()
+
+    })
+    TestComponent.changeValue(testComponent.findInput(), "2013-12-31")
 
   it "displays format MM/DD/YYYY", ->
     assert false

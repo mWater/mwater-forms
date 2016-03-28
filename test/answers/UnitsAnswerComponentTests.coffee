@@ -15,6 +15,17 @@ describe 'UnitsAnswerComponent', ->
     @toDestroy = []
 
     @render = (options = {}) =>
+      options = _.extend {
+        onValueChange: () ->
+          null
+        units: [
+          { id: "a", label: { _base: "en", es: "AA" }, hint: { _base: "en", es: "a-hint" } }
+          { id: "b", label: { _base: "en", es: "BB" } }
+          { id: "c", label: { _base: "en", es: "CC" } }
+        ]
+        prefix: false
+        decimal: true
+      }, options
       elem = R(UnitsAnswerComponent, options)
       comp = new TestComponent(elem)
       @toDestroy.push(comp)
@@ -24,98 +35,125 @@ describe 'UnitsAnswerComponent', ->
     for comp in @toDestroy
       comp.destroy()
 
-  it "allows changing of units", ->
-    assert false
-
-  it "defaults unit", ->
-    assert false
-
-  it "records decimal number", ->
-    assert false
-
-  it "records whole number", ->
-    assert false
-
-  it "enforces required", ->
-    assert false
-
-  it "enforces required on blank answer", ->
-    assert false
-
-  it "allows 0 on required", ->
-    assert false
-
-  it "requires unit to be specified", ->
-    assert false
-
-  it "validates range", ->
-    assert false
-
-###
-  it "allows changing of units", ->
-    @qview.$el.find("#quantity").val("123.4").change()
-    @qview.$el.find("#units").val("a").change()
-    assert.equal @model.get("q1234").value.units, "a"
-
-    @qview.$el.find("#units").val("b").change()
-    assert.equal @model.get("q1234").value.units, "b"
-
-  it "defaults unit", ->
-    @q.defaultUnits = "b"
-    @qview = @compiler.compileQuestion(@q).render()
-
-    @qview.$el.find("#quantity").val("123.4").change()
-    assert.equal @model.get("q1234").value.units, "b"
-
-  it "records decimal number", ->
-    @qview.$el.find("#quantity").val("123.4").change()
-    @qview.$el.find("#units").val("a").change()
-    assert.equal @model.get("q1234").value.quantity, 123.4
-
-  it "records whole number", ->
-    @q.decimal = false
-    @qview = @compiler.compileQuestion(@q).render()
-
-    @qview.$el.find("#quantity").val("123.4").change()
-    assert.equal @model.get("q1234").value.quantity, 123
-
-  it "enforces required", ->
-    assert @qview.validate()
-
-    @q.required = false
-    @qview = @compiler.compileQuestion(@q).render()
-    assert not @qview.validate()
-
-  it "enforces required on blank answer", ->
-    @qview.$el.find("#quantity").val("response").change()
-    @qview.$el.find("#quantity").val("").change()
-    @qview.$el.find("#units").val("a").change()
-    assert @qview.validate()
-
-  it "allows 0 on required", ->
-    @qview.$el.find("#quantity").val("0").change()
-    @qview.$el.find("#units").val("a").change()
-    assert not @qview.validate()
-
-  it "requires unit to be specified", ->
-    @qview.$el.find("#quantity").val("0").change()
-    assert @qview.validate()
-
-    @qview.$el.find("#units").val("a").change()
-    assert not @qview.validate()
-
-
-  it "validates range", ->
-    @q.validations = [
-      {
-        op: "range"
-        rhs: { literal: { max: 6 } }
-        message: { _base: "es", es: "message" }
+  it "allows changing of units", (done) ->
+    testComponent = @render({
+      answer: {
+        quantity: null
+        unit: 'a'
       }
-    ]
-    @qview = @compiler.compileQuestion(@q).render()
+      onValueChange: (value) ->
+        assert.equal value.unit, 'b'
+        done()
+    })
 
-    @qview.$el.find("#quantity").val("7").change()
-    @qview.$el.find("#units").val("a").change()
-    assert.equal @qview.validate(), "message"
-###
+    unitInput = ReactTestUtils.findAllInRenderedTree testComponent.getComponent(), (inst) ->
+      return ReactTestUtils.isDOMComponent(inst) && inst.id == 'units'
+
+    unitInput = unitInput[0]
+
+    TestComponent.changeValue(unitInput, 'b')
+
+  it "allows changing of decimal quantity", (done) ->
+    testComponent = @render({
+      answer: {
+        quantity: 'a'
+        unit: null
+      }
+
+      onValueChange: (value) ->
+        assert.equal value.quantity, 13.33
+        done()
+    })
+
+    quantityInput = ReactTestUtils.findAllInRenderedTree testComponent.getComponent(), (inst) ->
+      return ReactTestUtils.isDOMComponent(inst) && inst.id == 'quantity'
+
+    quantityInput = quantityInput[0]
+
+    TestComponent.changeValue(quantityInput, '13.33')
+    ReactTestUtils.Simulate.blur(quantityInput)
+
+  it "allows changing of whole quantity", (done) ->
+    testComponent = @render({
+      answer: {
+        quantity: 'a'
+        unit: null
+      }
+      decimal: false
+      onValueChange: (value) ->
+        assert.equal value.quantity, 13
+        done()
+    })
+
+    quantityInput = ReactTestUtils.findAllInRenderedTree testComponent.getComponent(), (inst) ->
+      return ReactTestUtils.isDOMComponent(inst) && inst.id == 'quantity'
+
+    quantityInput = quantityInput[0]
+
+    TestComponent.changeValue(quantityInput, '13.33')
+    ReactTestUtils.Simulate.blur(quantityInput)
+
+  it "defaults unit", (done) ->
+    testComponent = @render({
+      answer: {
+        quantity: null
+        unit: null
+      }
+      defaultUnits: 'b'
+      onValueChange: (value) ->
+        assert.equal value.quantity, 13.33
+        assert.equal value.unit, 'b'
+        done()
+    })
+
+    quantityInput = ReactTestUtils.findAllInRenderedTree testComponent.getComponent(), (inst) ->
+      return ReactTestUtils.isDOMComponent(inst) && inst.id == 'quantity'
+
+    quantityInput = quantityInput[0]
+
+    TestComponent.changeValue(quantityInput, '13.33')
+    ReactTestUtils.Simulate.blur(quantityInput)
+
+  it "enforces required", ->
+    #assert @qview.validate()
+
+    #@q.required = false
+    #@qview = @compiler.compileQuestion(@q).render()
+    #assert not @qview.validate()
+    assert false
+
+  it "enforces required on blank answer", ->
+    #@qview.$el.find("#quantity").val("response").change()
+    #@qview.$el.find("#quantity").val("").change()
+    #@qview.$el.find("#units").val("a").change()
+    #assert @qview.validate()
+    assert false
+
+  it "allows 0 on required", ->
+    #@qview.$el.find("#quantity").val("0").change()
+    #@qview.$el.find("#units").val("a").change()
+    #assert not @qview.validate()
+    assert false
+
+  it "requires unit to be specified", ->
+    #@qview.$el.find("#quantity").val("0").change()
+    #assert @qview.validate()
+
+    #@qview.$el.find("#units").val("a").change()
+    #assert not @qview.validate()
+    assert false
+
+  it "validates range", ->
+    #@q.validations = [
+    #  {
+    #    op: "range"
+    #    rhs: { literal: { max: 6 } }
+    #    message: { _base: "es", es: "message" }
+    #  }
+    #]
+    #@qview = @compiler.compileQuestion(@q).render()
+
+    #@qview.$el.find("#quantity").val("7").change()
+    #@qview.$el.find("#units").val("a").change()
+    #assert.equal @qview.validate(), "message"
+    assert false
