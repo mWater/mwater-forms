@@ -224,10 +224,14 @@ module.exports = class ResponseDisplayComponent extends React.Component
         if _.isObject(code)
           code = code.code
 
+        # Convert to new entity type
+        siteType = (if q.siteTypes then q.siteTypes[0]) or "Water point" 
+        entityType = siteType.toLowerCase().replace(/ /g, "_")
+
         return React.createElement(EntityDisplayComponent, {
           formCtx: @props.formCtx
           entityCode: code
-          entityType: q.entityType
+          entityType: entityType
         })
 
       when "entity"
