@@ -120,6 +120,10 @@ module.exports = {
           "_type": "NumberQuestion",
           "decimal": true,
           "required": false,
+          "alternates": {
+            "na": true,
+            "dontknow": true
+          },
           "conditions": [
             {
               "op": "!present",

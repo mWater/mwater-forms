@@ -170,10 +170,14 @@ module.exports = class QuestionComponent extends React.Component
           onSpecifyChange: @handleSpecifyChange
         }
 
-      when "DateQuestion" # , "DateTimeQuestion"??
+
+      when "DateQuestion"
         return R DateAnswerComponent, {
           value: @props.answer.value
           onValueChange: @handleValueChange
+          format: @props.question.format
+          readOnly: @props.question.readOnly
+          placeholder: @props.question.placeholder
         }
 
       when "UnitsQuestion"

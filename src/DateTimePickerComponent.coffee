@@ -14,6 +14,7 @@ module.exports = class DateTimePickerComponent extends React.Component
     format: React.PropTypes.string
     # do we need time picker?  (Only useful if format is not set)
     timepicker: React.PropTypes.bool
+    displayCalendarButton: React.PropTypes.bool
 
     # callback on date change
     # argument: {date: moment object for currently selected datetime, oldDate: moment object for previous datetime}
@@ -66,8 +67,16 @@ module.exports = class DateTimePickerComponent extends React.Component
     $(@refs.datetimepicker).data("DateTimePicker").destroy()
 
   render: ->
-    H.div style: { position: "relative" },
-      H.input ref: "datetimepicker", type: "text", className: "form-control", placeholder: @props.placeholder,
-    # H.div ref: "datetimepicker", className: "input-group",
-    #   H.span className: "input-group-addon",
-    #     H.span className: "glyphicon glyphicon-calendar"
+    input = H.input {ref: "datetimepicker", type: "text", className: "form-control", placeholder: @props.placeholder}
+
+    if @props.displayCalendarButton
+      H.div className: "row",
+        H.div className: 'col-sm-6',
+          H.div className: "form-group",
+            H.div className: 'input-group date',
+              input
+              H.span className: "input-group-addon",
+                H.span className: "glyphicon glyphicon-calendar"
+    else
+      H.div {className: "input-group date", style: { position: "relative" }},
+        input

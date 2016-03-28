@@ -13,11 +13,8 @@ DateTimePickerComponent = require '../DateTimePickerComponent'
 # TODO: Handle readOnly properly
 
 module.exports = class DateAnswerComponent extends React.Component
-  @contextTypes:
-    locale: React.PropTypes.string  # Current locale (e.g. "en")
-
   @propTypes:
-    value: React.PropTypes.object
+    value: React.PropTypes.string
     onValueChange: React.PropTypes.func.isRequired
     format: React.PropTypes.string
     placeholder: React.PropTypes.string
@@ -106,4 +103,6 @@ module.exports = class DateAnswerComponent extends React.Component
         onChange: @handleChange
         date: value
         format: @props.format
+        placeholder: @state.placeholder
+        displayCalendarButton: true
       }
