@@ -11,7 +11,7 @@ R = React.createElement
 H = React.DOM
 
 describe 'EntityAnswerComponent', ->
-  beforeEach ->
+  before ->
     @toDestroy = []
 
     @render = (options = {}) =>
@@ -23,12 +23,9 @@ describe 'EntityAnswerComponent', ->
   afterEach ->
     for comp in @toDestroy
       comp.destroy()
+    @toDestroy = []
 
-  it "should do so many things", ->
-    assert false
-
-
-
+# NOTE: All of this was already commented before we switched from EntityQuestion to EntityAnswerComponent
 ###
   # describe "EntityQuestion", ->
 #   before ->

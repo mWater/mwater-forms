@@ -11,7 +11,7 @@ R = React.createElement
 H = React.DOM
 
 describe 'LocationAnswerComponent', ->
-  beforeEach ->
+  before ->
     @toDestroy = []
 
     @render = (options = {}) =>
@@ -23,7 +23,10 @@ describe 'LocationAnswerComponent', ->
   afterEach ->
     for comp in @toDestroy
       comp.destroy()
+    @toDestroy = []
 
+# NOTE: All of this was already commented before we switched from LocationQuestion to LocationAnswerComponent
+###
   it "records location when set is clicked" #, ->
     # @ui.click("Set")
     # assert.deepEqual @model.get("q1234"), { value: { latitude: 1, longitude: 2, accuracy: 0 }}
@@ -33,3 +36,4 @@ describe 'LocationAnswerComponent', ->
     # @ui.click("Set")
     # @ui.click("Map")
     # assert.deepEqual @mapDisplayed, { latitude: 1, longitude: 2, accuracy: 0 }
+###

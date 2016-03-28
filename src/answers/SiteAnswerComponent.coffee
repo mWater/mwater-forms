@@ -13,6 +13,8 @@ module.exports = class SiteAnswerComponent extends React.Component
   @contextTypes:
     selectEntity: React.PropTypes.func
     getEntityById: React.PropTypes.func
+    getEntityByCode: React.PropTypes.func
+    renderEntitySummaryView: React.PropTypes.func
 
   @propTypes:
     value: React.PropTypes.bool
@@ -48,6 +50,12 @@ module.exports = class SiteAnswerComponent extends React.Component
     value = @props.value
     if value then value = value.code
 
+    formCtx = {
+      getEntityById: @context.getEntityById
+      getEntityByCode: @context.getEntityByCode
+      renderEntitySummaryView: @context.renderEntitySummaryView
+    }
+
     H.div null,
       H.div className:"input-group",
           H.input id: "input", type: "tel", className: "form-control"
@@ -55,6 +63,5 @@ module.exports = class SiteAnswerComponent extends React.Component
             H.button className: "btn btn-default", disabled: not @context.selectEntity?, type: "button", click: @handleSelectClick,
               T("Select")
       H.br()
-      # TODO: get the formCtx...
-      #if @state.isSelectingEntity
-      #  R EntityDisplayComponent, {formCtx: @ctx, displayInWell: true, entityCode: value, entityType: entityType}
+      if @state.isSelectingEntity
+        R EntityDisplayComponent, {formCtx: formCtx, displayInWell: true, entityCode: value, entityType: entityType}
