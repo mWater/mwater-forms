@@ -13,14 +13,14 @@ module.exports = class ItemListComponent extends React.Component
     contents: React.PropTypes.array.isRequired 
     data: React.PropTypes.object      # Current data of response. 
     onDataChange: React.PropTypes.func.isRequired
-    displayMissingRequired: React.PropTypes.bool
 
-  scrollToFirstInvalid: () ->
+  validateAndScrollToFirstInvalid: () ->
+    foundInvalid = false
     for item in @props.contents
       itemComponent = @refs[item._id]
-      if itemComponent.scrollToInvalid()
-        return true
-    return false
+      if itemComponent.scrollToInvalid(foundInvalid)
+        foundInvalid = true
+    return foundInvalid
 
   renderItem: (item) ->
     # HACK condition

@@ -533,6 +533,24 @@ module.exports = {
           "conditions":[],
           "validations":[],
           "commentsField":true
+        },
+        {
+          "_id":"urlquestion",
+          "text":{"en":"Url text question","_base":"en"},
+          "_type":"TextQuestion",
+          "format":"url",
+          "required":false,
+          "conditions":[],
+          "validations":[]
+        },
+        {
+          "_id":"emailquestion",
+          "text":{"en":"Email text question","_base":"en"},
+          "_type":"TextQuestion",
+          "format":"email",
+          "required":false,
+          "conditions":[],
+          "validations":[]
         }
       ],
       "conditions": []

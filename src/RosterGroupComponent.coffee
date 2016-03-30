@@ -31,7 +31,7 @@ module.exports = class RosterGroupComponent extends React.Component
     answer.splice(index, 1)
     @props.onAnswerChange(answer)
 
-  scrollToInvalid: () ->
+  scrollToInvalid: (alreadyFoundFirst) ->
     # TODO: Check if invalid and scroll if necessary
     # returns true if invalid
     return false

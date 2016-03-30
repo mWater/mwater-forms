@@ -63,6 +63,7 @@ module.exports = class QuestionComponent extends React.Component
 
     @state = {
       helpVisible: false    # True to display help
+      validationError: null
     }
 
   handleToggleHelp: =>
@@ -85,16 +86,17 @@ module.exports = class QuestionComponent extends React.Component
   handleSpecifyChange: (specify) =>
     @props.onAnswerChange(_.extend({}, @props.answer, { specify: specify }))
 
-  scrollToInvalid: () ->
-    # If it has an alternate value, it cannot be invalid
-    if @props.answer.alternate?
-      return false
-
+  scrollToInvalid: (alreadyFoundFirst) ->
     validationError = new AnswerValidator().validate(@props.question, @props.answer)
+
     if validationError?
-      @refs.prompt.scrollIntoView()
+      if not alreadyFoundFirst
+        @refs.prompt.scrollIntoView()
+      @setState(validationError: validationError)
       return true
-    return false
+    else
+      @setState(validationError: null)
+      return false
 
   renderPrompt: ->
     prompt = formUtils.localizeString(@props.question.text, @context.locale)

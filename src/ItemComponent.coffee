@@ -22,11 +22,11 @@ module.exports = class ItemComponent extends React.Component
     change[id] = answer
     @props.onDataChange(_.extend({}, @props.data, change))
 
-  scrollToInvalid: () ->
+  scrollToInvalid: (alreadyFoundFirst) ->
     if @refs.question?
-      return @refs.question.scrollToInvalid()
+      return @refs.question.scrollToInvalid(alreadyFoundFirst)
     if @refs.rosterGroup?
-      return @refs.question.scrollToInvalid()
+      return @refs.question.scrollToInvalid(alreadyFoundFirst)
     return false
 
   render: ->
