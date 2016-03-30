@@ -177,7 +177,7 @@ module.exports = class Question extends Backbone.View
   # The question is self-updating from then on via listening to the model
   render: ->
     # Render question
-    @$el.html require("./Question.hbs")(this, helpers: { T: @T })
+    @$el.html require("./templates/Question.hbs")(this, helpers: { T: @T })
 
     # TODO Tabular controls will have display:table-row replaced with block
     unless @shouldBeVisible()

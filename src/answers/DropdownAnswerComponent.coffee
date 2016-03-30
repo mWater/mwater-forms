@@ -26,36 +26,30 @@ module.exports = class DropdownAnswerComponent extends React.Component
       # Value is stored in specify[id]
       specify: React.PropTypes.bool
     })).isRequired
-    value: React.PropTypes.string
-    onValueChange: React.PropTypes.func.isRequired
-    specify: React.PropTypes.object # See answer format
-    onSpecifyChange: React.PropTypes.func
-
-  @defaultProps:
-    specify: {}
+    answer: React.PropTypes.object # See answer format
+    onAnswerChange: React.PropTypes.func.isRequired
 
   handleValueChange: (ev) =>
-    if ev.target.value
-      @props.onValueChange(ev.target.value)
+    if ev.target.value?
+      @props.onAnswerChange({value: ev.target.value, specify: null })
     else
-      @props.onValueChange(null)
-    @props.onSpecifyChange(null)
+      @props.onAnswerChange({value: null, specify: null })
 
   handleSpecifyChange: (id, ev) =>
     change = {}
     change[id] = ev.target.value
-    specify = _.extend({}, @props.specify, change)
-    @props.onSpecifyChange(specify)
+    specify = _.extend({}, @props.answer.specify, change)
+    @props.onAnswerChange({value: @props.answer.value, specify: specify })
 
   # Render specify input box
   renderSpecify: ->
-    choice = _.findWhere(@props.choices, { id: @props.value })
+    choice = _.findWhere(@props.choices, { id: @props.answer.value })
     if choice and choice.specify
-      H.input className: "form-control specify-input", type: "text", value: @props.specify[choice.id], onChange: @handleSpecifyChange.bind(null, choice.id)
+      H.input className: "form-control specify-input", type: "text", value: @props.answer.specify[choice.id], onChange: @handleSpecifyChange.bind(null, choice.id)
 
   render: ->
     H.div null,
-      H.select className: "form-control", style: { width: "auto" }, value: @props.value, onChange: @handleValueChange,
+      H.select className: "form-control", style: { width: "auto" }, value: @props.answer.value, onChange: @handleValueChange,
         H.option key: "__none__", value: ""
         _.map @props.choices, (choice) =>
           text = formUtils.localizeString(choice.label, @context.locale)

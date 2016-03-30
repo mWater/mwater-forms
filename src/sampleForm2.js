@@ -71,7 +71,7 @@ module.exports = {
               }
             }
           ],
-          "required": false,
+          "required": true,
           "conditions": [
             {
               "op": "true",

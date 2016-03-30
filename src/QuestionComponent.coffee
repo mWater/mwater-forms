@@ -133,6 +133,11 @@ module.exports = class QuestionComponent extends React.Component
     if @state.helpVisible and @props.question.help
       H.div className: "help well well-sm", dangerouslySetInnerHTML: { __html: markdown.toHTML(formUtils.localizeString(@props.question.help, @context.locale)) }
 
+  renderValidationError: ->
+    if @state.validationError? and typeof(@state.validationError) == "string"
+      H.div className: "validation-message text-danger",
+        @state.validationError
+
   renderAlternates: ->
     if @props.question.alternates and (@props.question.alternates.na or @props.question.alternates.dontknow)
       H.div null,
@@ -162,10 +167,8 @@ module.exports = class QuestionComponent extends React.Component
       when "DropdownQuestion"
         return R DropdownAnswerComponent, {
           choices: @props.question.choices
-          value: @props.answer.value
-          onValueChange: @handleValueChange
-          specify: @props.answer.specify
-          onSpecifyChange: @handleSpecifyChange
+          answer: @props.answer
+          onAnswerChange: @props.onAnswerChange
         }
 
       when "RadioQuestion"
@@ -280,7 +283,10 @@ module.exports = class QuestionComponent extends React.Component
     return null
 
   render: ->
-    H.div className: "question",
+    className = "question"
+    if @state.validationError?
+      className += " invalid"
+    H.div className: className,
       @renderPrompt()
       @renderHint()
       @renderHelp()
@@ -289,4 +295,5 @@ module.exports = class QuestionComponent extends React.Component
         @renderAnswer()
 
       @renderAlternates()
+      @renderValidationError()
       @renderCommentsField()
