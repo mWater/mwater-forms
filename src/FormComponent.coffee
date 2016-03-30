@@ -24,9 +24,16 @@ module.exports = class FormComponent extends React.Component
     entity: React.PropTypes.object            # Form-level entity to load TODO
     entityType: React.PropTypes.string        # Type of form-level entity to load TODO
 
+  constructor: (props) ->
+    @state = {displayMissingRequired: false}
+
   handleSubmit: =>
+    # Cannot submit if at least one itemComponent is invalid
     if not @refs.itemListComponent.scrollToFirstInvalid()
       @props.onSubmit()
+    else
+      # Should display the missing required fields after submitting
+      @setState(displayMissingRequired: true)
 
   render: ->
     if @props.design.contents[0] and @props.design.contents[0]._type == "Section"
@@ -44,6 +51,7 @@ module.exports = class FormComponent extends React.Component
           contents: @props.design.contents
           data: @props.data
           onDataChange: @props.onDataChange
+          displayMissingRequired: @state.displayMissingRequired
 
         H.button type: "button", className: "btn btn-primary", onClick: @handleSubmit,
           T("Submit")

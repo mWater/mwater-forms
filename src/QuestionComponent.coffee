@@ -2,11 +2,12 @@ _ = require 'lodash'
 React = require 'react'
 H = React.DOM
 R = React.createElement
-ReactDOM = require 'react-dom'
 
 formUtils = require './formUtils'
 markdown = require("markdown").markdown
 LocationEditorComponent = require './LocationEditorComponent'
+
+AnswerValidator = require './answers/AnswerValidator'
 
 AdminRegionAnswerComponent = require './answers/AdminRegionAnswerComponent'
 BarcodeAnswerComponent = require './answers/BarcodeAnswerComponent'
@@ -52,6 +53,7 @@ module.exports = class QuestionComponent extends React.Component
     data: React.PropTypes.object      # Current data of response. 
     answer: React.PropTypes.object      # Current answer. Contains { value: <some value> } usually. See docs/Answer Formats.md
     onAnswerChange: React.PropTypes.func.isRequired
+    displayMissingRequired: React.PropTypes.bool
 
   @defaultProps:
     answer: {}  # Default to {}
@@ -84,9 +86,13 @@ module.exports = class QuestionComponent extends React.Component
     @props.onAnswerChange(_.extend({}, @props.answer, { specify: specify }))
 
   scrollToInvalid: () ->
+    # If it has an alternate value, it cannot be invalid
+    if @props.answer.alternate?
+      return false
 
-    if @props.question._type == "TextQuestion"
-      ReactDOM.findDOMNode(this).scrollIntoView()
+    validationError = new AnswerValidator().validate(@props.question, @props.answer)
+    if validationError?
+      @refs.prompt.scrollIntoView()
       return true
     return false
 
@@ -102,7 +108,7 @@ module.exports = class QuestionComponent extends React.Component
       return value or ""
       )
 
-    H.div className: "prompt",
+    H.div className: "prompt", ref: 'prompt',
       if @props.question.code
         H.span className: "question-code", @props.question.code + ": "
 

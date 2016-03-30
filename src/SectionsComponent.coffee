@@ -23,20 +23,24 @@ module.exports = class SectionsComponent extends React.Component
 
     @state = {
       sectionNum: 0
-    } 
+      displayMissingRequired: false
+    }
 
   handleSubmit: =>
     if not @refs.itemListComponent.scrollToFirstInvalid()
       @props.onSubmit()
+    else
+      @setState(displayMissingRequired: true)
 
   handleBack: =>
     # TODO validate?
     @setState(sectionNum: @state.sectionNum - 1)
 
   handleNext: =>
-    # TODO validate before allowing next
     if not @refs.itemListComponent.scrollToFirstInvalid()
       @setState(sectionNum: @state.sectionNum + 1)
+    else
+      @setState(displayMissingRequired: true)
 
   renderBreadcrumbs: ->
     # TODO add breadcrumbs

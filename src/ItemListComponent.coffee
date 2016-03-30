@@ -13,19 +13,21 @@ module.exports = class ItemListComponent extends React.Component
     contents: React.PropTypes.array.isRequired 
     data: React.PropTypes.object      # Current data of response. 
     onDataChange: React.PropTypes.func.isRequired
+    displayMissingRequired: React.PropTypes.bool
+
+  scrollToFirstInvalid: () ->
+    for item in @props.contents
+      itemComponent = @refs[item._id]
+      if itemComponent.scrollToInvalid()
+        return true
+    return false
 
   renderItem: (item) ->
     # HACK condition
     if item._id == "c91fd40903ff4f0a980352f7ae0b3998" and @props.data.b >= 18
       return null
 
-    R(ItemComponent, key: item._id, ref: item._id, item: item, data: @props.data, onDataChange: @props.onDataChange)
-
-  scrollToFirstInvalid: () ->
-    for id, itemComponent of @refs
-      if itemComponent.scrollToInvalid()
-        return true
-    return false
+    R(ItemComponent, key: item._id, ref: item._id, item: item, data: @props.data, onDataChange: @props.onDataChange, displayMissingRequired: @props.displayMissingRequired)
 
   render: ->
     H.div null,

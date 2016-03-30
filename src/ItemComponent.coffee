@@ -37,6 +37,7 @@ module.exports = class ItemComponent extends React.Component
         answer: @props.data[@props.item._id]
         onAnswerChange: @handleAnswerChange.bind(null, @props.item._id)
         data: @props.data
+        displayMissingRequired: @props.displayMissingRequired
     else if @props.item._type == "Instructions"
       return R InstructionsComponent,
         instructions: @props.item
