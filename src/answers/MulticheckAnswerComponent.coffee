@@ -30,6 +30,10 @@ module.exports = class MulticheckAnswerComponent extends React.Component
     answer: React.PropTypes.object.isRequired # See answer format
     onAnswerChange: React.PropTypes.func.isRequired
 
+  focus: () ->
+    # Nothing to focus
+    null
+
   handleValueChange: (choice) =>
     ids = @props.answer.value or []
     if choice.id in ids

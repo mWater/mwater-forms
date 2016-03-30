@@ -17,6 +17,10 @@ module.exports = class EntityAnswerComponent extends AsyncLoadComponent
     getEntityById: React.PropTypes.func
     canEditEntity: React.PropTypes.func
 
+  focus: () ->
+    # Nothing to focus
+    null
+
   # Override to determine if a load is needed. Not called on mounting
   isLoadNeeded: (newProps, oldProps) ->
     return newProps.entityType != oldProps.entityType or newProps.value != oldProps.value

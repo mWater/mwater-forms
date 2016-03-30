@@ -16,7 +16,11 @@ module.exports = class LocationAnswerComponent extends React.Component
     onValueChange: React.PropTypes.func.isRequired
 
   constructor: (props) ->
-    console.log 'constructing LocationAnswerComponent'
+    super
+
+  focus: () ->
+    # Nothing to focus
+    null
 
   handleUseMap: =>
     # TODO: Display map function is not defined (maybe only because I'm running the demo)

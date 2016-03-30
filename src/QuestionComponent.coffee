@@ -54,6 +54,7 @@ module.exports = class QuestionComponent extends React.Component
     answer: React.PropTypes.object      # Current answer. Contains { value: <some value> } usually. See docs/Answer Formats.md
     onAnswerChange: React.PropTypes.func.isRequired
     displayMissingRequired: React.PropTypes.bool
+    onNext: React.PropTypes.func
 
   @defaultProps:
     answer: {}  # Default to {}
@@ -64,7 +65,15 @@ module.exports = class QuestionComponent extends React.Component
     @state = {
       helpVisible: false    # True to display help
       validationError: null
+      # savedValue and savedSpecify are used to save the value when selecting an alternate answer
+      savedValue: null
+      savedSpecify: null
     }
+
+  focus: ->
+    answer = @refs.answer
+    if answer? and answer.focus?
+      answer.focus()
 
   handleToggleHelp: =>
     @setState(helpVisible: not @state.helpVisible)
@@ -73,18 +82,29 @@ module.exports = class QuestionComponent extends React.Component
     @props.onAnswerChange(_.extend({}, @props.answer, { value: value }))
 
   handleAlternate: (alternate) =>
-    # Clear value, specify and set alternate
-    @props.onAnswerChange(_.extend({}, @props.answer, { 
-      value: null
-      specify: null
-      alternate: if @props.answer.alternate == alternate then null else alternate
-    }))
+    # If we are selecting a new alternate
+    if @props.answer.alternate != alternate
+      # If old alternate was null (important not to do this when changing from an alternate value to another)
+      if not @props.answer.alternate?
+        # It saves value and specify
+        @setState({savedValue: _.clone @props.answer.value, savedSpecify: _.clone @props.answer.specify})
+      # Then clear value, specify and set alternate
+      @props.onAnswerChange(_.extend({}, @props.answer, {
+        value: null
+        specify: null
+        alternate: alternate
+      }))
+    else
+      # Clear alternate and put back saved value and specify
+      @props.onAnswerChange(_.extend({}, @props.answer, {
+        value: @state.savedValue
+        specify: @state.savedSpecify
+        alternate: null
+      }))
+      @setState({savedValue: null, savedSpecify: null})
 
   handleCommentsChange: (ev) =>
     @props.onAnswerChange(_.extend({}, @props.answer, { comments: ev.target.value }))
-
-  handleSpecifyChange: (specify) =>
-    @props.onAnswerChange(_.extend({}, @props.answer, { specify: specify }))
 
   scrollToInvalid: (alreadyFoundFirst) ->
     validationError = new AnswerValidator().validate(@props.question, @props.answer)
@@ -97,6 +117,19 @@ module.exports = class QuestionComponent extends React.Component
     else
       @setState(validationError: null)
       return false
+
+  # Either jump to next question or select the comments box
+  handleNextOrComments: (ev) =>
+    # If it has a comment box, set the focus on it
+    if @props.question.commentsField?
+      comments = @refs.comments
+      comments.focus()
+      comments.select()
+    # Else we lose the focus and go to the next question
+    else
+      # Blur the input (remove the focus)
+      ev.target.blur()
+      @props.onNext?()
 
   renderPrompt: ->
     prompt = formUtils.localizeString(@props.question.text, @context.locale)
@@ -150,22 +183,30 @@ module.exports = class QuestionComponent extends React.Component
 
   renderCommentsField: ->
     if @props.question.commentsField
-      H.textarea className: "form-control question-comments", placeholder: T("Comments"), value: @props.answer.comments, onChange: @handleCommentsChange
+      H.textarea className: "form-control question-comments", ref: "comments", placeholder: T("Comments"), value: @props.answer.comments, onChange: @handleCommentsChange
 
   renderAnswer: ->
     switch @props.question._type
       when "TextQuestion"
         return R TextAnswerComponent, {
-          value: @props.answer.value,
-          format: @props.question.format,
+          ref: "answer"
+          value: @props.answer.value
+          format: @props.question.format
           onValueChange: @handleValueChange
+          onNextOrComments: @handleNextOrComments
         }
 
       when "NumberQuestion"
-        return R NumberAnswerComponent, { value: @props.answer.value, onChange: @handleValueChange, decimal: @props.question.decimal}
+        return R NumberAnswerComponent, {
+          ref: "answer"
+          value: @props.answer.value
+          onChange: @handleValueChange
+          decimal: @props.question.decimal
+        }
 
       when "DropdownQuestion"
         return R DropdownAnswerComponent, {
+          ref: "answer"
           choices: @props.question.choices
           answer: @props.answer
           onAnswerChange: @props.onAnswerChange
@@ -173,6 +214,7 @@ module.exports = class QuestionComponent extends React.Component
 
       when "RadioQuestion"
         return R RadioAnswerComponent, {
+          ref: "answer"
           choices: @props.question.choices
           answer: @props.answer
           onAnswerChange: @props.onAnswerChange
@@ -180,6 +222,7 @@ module.exports = class QuestionComponent extends React.Component
 
       when "MulticheckQuestion"
         return R MulticheckAnswerComponent, {
+          ref: "answer"
           choices: @props.question.choices
           answer: @props.answer
           onAnswerChange: @props.onAnswerChange
@@ -187,6 +230,7 @@ module.exports = class QuestionComponent extends React.Component
 
       when "DateQuestion"
         return R DateAnswerComponent, {
+          ref: "answer"
           value: @props.answer.value
           onValueChange: @handleValueChange
           format: @props.question.format
@@ -196,6 +240,7 @@ module.exports = class QuestionComponent extends React.Component
 
       when "UnitsQuestion"
         return R UnitsAnswerComponent, {
+          ref: "answer"
           answer: @props.answer
           onValueChange: @handleValueChange
           units: @props.question.units
@@ -206,6 +251,7 @@ module.exports = class QuestionComponent extends React.Component
 
       when "CheckQuestion"
         return R CheckAnswerComponent, {
+          ref: "answer"
           value: @props.answer.value
           onValueChange: @handleValueChange
           label: @props.question.label
@@ -213,6 +259,7 @@ module.exports = class QuestionComponent extends React.Component
 
       when "LocationQuestion"
         return R LocationAnswerComponent, {
+          ref: "answer"
           value: @props.answer.value
           onValueChange: @handleValueChange
         }
@@ -226,6 +273,7 @@ module.exports = class QuestionComponent extends React.Component
 
       when "ImagesQuestion"
         return R ImagesAnswerComponent, {
+          ref: "answer"
           imageManager: @context.imageManager
           imageAcquirer: @context.imageAcquirer
           imagelist: @props.answer.value
@@ -234,24 +282,28 @@ module.exports = class QuestionComponent extends React.Component
 
       when "TextListQuestion"
         return R TextListAnswerComponent, {
+          ref: "answer"
           value: @props.answer.value
           onValueChange: @handleValueChange
         }
 
       when "SiteQuestion"
         return R SiteAnswerComponent, {
+          ref: "answer"
           value: @props.answer.value
           onValueChange: @handleValueChange
         }
 
       when "BarcodeQuestion"
         return R BarcodeAnswerComponent, {
+          ref: "answer"
           value: @props.answer.value
           onValueChange: @handleValueChange
         }
 
       when "EntityQuestion"
         return R EntityAnswerComponent, {
+          ref: "answer"
           value: @props.answer.value
           entityType: @props.question.entityType
           onValueChange: @handleValueChange
@@ -265,6 +317,7 @@ module.exports = class QuestionComponent extends React.Component
       when "AdminRegionQuestion"
         # TODO defaultValue
         return R AdminRegionAnswerComponent, {
+          ref: "answer"
           locationFinder: @context.locationFinder
           displayMap: @context.displayMap
           getAdminRegionPath: @context.getAdminRegionPath

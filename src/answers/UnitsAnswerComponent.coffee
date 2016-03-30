@@ -17,12 +17,40 @@ module.exports = class UnitsAnswerComponent extends React.Component
     defaultUnits: React.PropTypes.string
     prefix: React.PropTypes.bool.isRequired
     decimal: React.PropTypes.bool.isRequired
+    onNextOrComments: React.PropTypes.func
 
   constructor: (props) ->
+    super
     @state = {quantity: @getSelectedQuantity(props.answer)}
 
   componentWillReceiveProps: (nextProps) ->
     @setState(quantity: @getSelectedQuantity(nextProps.answer))
+
+  focus: () ->
+    if @props.prefix
+      @refs.quantity.focus()
+      @refs.quantity.select()
+    else
+      @refs.units.focus()
+
+  handleKeyDown: (ev) =>
+    if @props.onNextOrComments?
+      # When pressing ENTER or TAB
+      if ev.keyCode == 13 or ev.keyCode == 9
+        @props.onNextOrComments(ev)
+        # It's important to prevent the default behavior when handling tabs (or else the tab is applied after the focus change)
+        ev.preventDefault()
+
+  handleInternalNext: (ev) =>
+    # When pressing ENTER or TAB
+    if ev.keyCode == 13 or ev.keyCode == 9
+      if @props.prefix
+        @refs.quantity.focus()
+        @refs.quantity.select()
+      else
+        @refs.units.focus()
+      # It's important to prevent the default behavior when handling tabs (or else the tab is applied after the focus change)
+      ev.preventDefault()
 
   # onChange callback only set the quantity state or else typing '1.' results in NaN and is then replaced with an empty string
   handleValueChange: (val) =>
@@ -73,6 +101,8 @@ module.exports = class UnitsAnswerComponent extends React.Component
         onBlur: @handleValueBlur,
         onChange: @handleValueChange,
         value: @state.quantity
+        ref: 'quantity'
+        onKeyDown: if @props.prefix then @handleKeyDown else @handleInternalNext
       }
 
   render: ->
@@ -82,7 +112,14 @@ module.exports = class UnitsAnswerComponent extends React.Component
           if not @props.prefix
             @createNumberInput()
           H.td null,
-            H.select {id: "units", className: "form-control", style: {width: "auto"}, onChange: @handleUnitChange},
+            H.select {
+                id: "units"
+                ref: "units"
+                className: "form-control"
+                style: {width: "auto"}
+                onChange: @handleUnitChange
+                #onKeyDown: if @props.prefix then @handleInternalNext else @handleKeyDown
+              },
               if not @props.defaultUnits
                 H.option value: "",
                   "Select units"

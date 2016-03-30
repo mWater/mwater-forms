@@ -16,6 +16,10 @@ module.exports = class BarcodeAnswerComponent extends React.Component
     value: React.PropTypes.string
     onValueChange: React.PropTypes.func.isRequired
 
+  focus: () ->
+    # Nothing to focus
+    null
+
   handleValueChange: () =>
     @props.onValueChange(!@props.value)
 

@@ -17,6 +17,10 @@ module.exports = class ImagesAnswerComponent extends React.Component
 
     @state = { modal: null }
 
+  focus: () ->
+    # Nothing to focus
+    null
+
   handleAdd: =>
     # Call imageAcquirer
     @props.imageAcquirer.acquire (id) =>

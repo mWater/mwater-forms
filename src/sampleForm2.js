@@ -541,7 +541,8 @@ module.exports = {
           "format":"url",
           "required":false,
           "conditions":[],
-          "validations":[]
+          "validations":[],
+          "commentsField":true
         },
         {
           "_id":"emailquestion",

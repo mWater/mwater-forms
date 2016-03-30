@@ -29,6 +29,10 @@ module.exports = class RadioAnswerComponent extends React.Component
     onAnswerChange: React.PropTypes.func.isRequired
     answer: React.PropTypes.object.isRequired # See answer format
 
+  focus: () ->
+    # Nothing to focus
+    null
+
   handleValueChange: (choice) =>
     if choice.id == @props.answer.value
       @props.onAnswerChange({value: null, specify: null })

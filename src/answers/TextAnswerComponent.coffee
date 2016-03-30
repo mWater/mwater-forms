@@ -12,14 +12,28 @@ module.exports = class TextAnswerComponent extends React.Component
     format: React.PropTypes.string.isRequired
     readOnly: React.PropTypes.bool
     onValueChange: React.PropTypes.func.isRequired
+    onNextOrComments: React.PropTypes.func
 
   @defaultProps:
     readOnly: false
+
+  focus: () ->
+    @refs.input.focus()
+    @refs.input.select()
+
+  handleKeyDown: (ev) =>
+    if @props.onNextOrComments?
+      # When pressing ENTER or TAB
+      if ev.keyCode == 13 or ev.keyCode == 9
+        @props.onNextOrComments(ev)
+        # It's important to prevent the default behavior when handling tabs (or else the tab is applied after the focus change)
+        ev.preventDefault()
 
   render: ->
     if @props.format == "multiline"
       return H.textarea {
         className: "form-control"
+        ref: 'input'
         value: @props.value
         rows: "5"
         readOnly: @props.readOnly
@@ -29,9 +43,11 @@ module.exports = class TextAnswerComponent extends React.Component
     else
       return H.input {
         className: "form-control"
+        ref: 'input'
         type: "text"
         value: @props.value
         readOnly: @props.readOnly
+        onKeyDown: @handleKeyDown
         onChange: (ev) =>
           @props.onValueChange(ev.target.value)
       }

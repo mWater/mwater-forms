@@ -19,11 +19,13 @@ module.exports = class DateAnswerComponent extends React.Component
     format: React.PropTypes.string
     placeholder: React.PropTypes.string
     readOnly: React.PropTypes.bool
+    onNextOrComments: React.PropTypes.func
 
   @defaultProps:
     format: "YYYY-MM-DD"
 
   constructor: (props) ->
+    super
     format = props.format
     isoFormat = null
     if format.match /ss|LLL|lll/
@@ -56,6 +58,17 @@ module.exports = class DateAnswerComponent extends React.Component
         placeholder = '...'
 
     @state = {detailLevel: detailLevel, isoFormat: isoFormat, placeholder: placeholder}
+
+  focus: () ->
+    @refs.datetimepicker?.focus()
+
+  handleKeyDown: (ev) =>
+    if @props.onNextOrComments?
+      # When pressing ENTER or TAB
+      if ev.keyCode == 13 or ev.keyCode == 9
+        @props.onNextOrComments(ev)
+        # It's important to prevent the default behavior when handling tabs (or else the tab is applied after the focus change)
+        ev.preventDefault()
 
   handleChange: (date) =>
     # Get date
@@ -100,9 +113,11 @@ module.exports = class DateAnswerComponent extends React.Component
       return H.div()
     else
       return R DateTimePickerComponent, {
+        ref: 'datetimepicker'
         onChange: @handleChange
         date: value
         format: @props.format
         placeholder: @state.placeholder
         displayCalendarButton: true
+        onKeyDown: @handleKeyDown
       }

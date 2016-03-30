@@ -19,10 +19,13 @@ module.exports = class CheckAnswerComponent extends React.Component
   @defaultProps:
     value: false
 
+  focus: () ->
+    @refs.checkbox.focus()
+
   handleValueChange: () =>
     @props.onValueChange(!@props.value)
 
   render: ->
     H.div null,
-      H.div className: "choice touch-checkbox #{if @props.value then "checked" else ""}", onClick: @handleValueChange,
+      H.div className: "choice touch-checkbox #{if @props.value then "checked" else ""}", onClick: @handleValueChange, ref: 'checkbox',
         formUtils.localizeString(@props.label, @context.locale)

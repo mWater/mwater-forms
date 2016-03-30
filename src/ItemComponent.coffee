@@ -15,7 +15,7 @@ module.exports = class ItemComponent extends React.Component
     item: React.PropTypes.object.isRequired 
     data: React.PropTypes.object      # Current data of response. 
     onDataChange: React.PropTypes.func.isRequired
-    displayMissingRequired: React.PropTypes.bool
+    onNext: React.PropTypes.func
 
   handleAnswerChange: (id, answer) =>
     change = {}
@@ -26,7 +26,14 @@ module.exports = class ItemComponent extends React.Component
     if @refs.question?
       return @refs.question.scrollToInvalid(alreadyFoundFirst)
     if @refs.rosterGroup?
-      return @refs.question.scrollToInvalid(alreadyFoundFirst)
+      return @refs.rosterGroup.scrollToInvalid(alreadyFoundFirst)
+    return false
+
+  focus: () ->
+    if @refs.question?
+      return @refs.question.focus()
+    if @refs.rosterGroup?
+      return @refs.rosterGroup.focus()
     return false
 
   render: ->
@@ -37,7 +44,7 @@ module.exports = class ItemComponent extends React.Component
         answer: @props.data[@props.item._id]
         onAnswerChange: @handleAnswerChange.bind(null, @props.item._id)
         data: @props.data
-        displayMissingRequired: @props.displayMissingRequired
+        onNext: @props.onNext
     else if @props.item._type == "Instructions"
       return R InstructionsComponent,
         instructions: @props.item

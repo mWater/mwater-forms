@@ -20,11 +20,14 @@ module.exports = class AdminRegionAnswerComponent extends React.Component
 
   constructor: ->
     super
-
     @state = {
       waiting: false # True when waiting for gps
       error: null
     }
+
+  focus: () ->
+    # Nothing to focus
+    null
 
   handleUseGPS: =>
     @setState({ error: null, waiting: true }, =>

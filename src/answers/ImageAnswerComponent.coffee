@@ -16,6 +16,10 @@ module.exports = class ImageAnswerComponent extends React.Component
 
     @state = { modal: null }
 
+  focus: () ->
+    # Nothing to focus
+    null
+
   handleClickImage: =>
     modal = React.createElement ImagePopupComponent, 
       imageManager: @props.imageManager

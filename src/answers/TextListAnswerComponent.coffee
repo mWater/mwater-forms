@@ -14,6 +14,10 @@ module.exports = class TextListAnswerComponent extends React.Component
   @defaultProps:
     value: []
 
+  focus: () ->
+    @refs.newLine?.focus()
+    @refs.newLine?.select()
+
   handleChange: (index, ev) =>
     newValue = _.clone @props.value
     newValue[index] = ev.target.value
@@ -67,5 +71,5 @@ module.exports = class TextListAnswerComponent extends React.Component
                     H.span className: "glyphicon glyphicon-remove"
         H.tr null,
           H.td null,
-            H.input {type:"text", className: "form-control box", onChange: @handleNewLineChange, value: ""}
+            H.input {type:"text", className: "form-control box", onChange: @handleNewLineChange, value: "", ref: 'newLine'}
 
