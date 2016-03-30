@@ -24,6 +24,8 @@ _ = require 'lodash'
 #exports.Question = require './Question'
 
 exports.AdminRegionAnswerComponent = require './answers/AdminRegionAnswerComponent'
+exports.ImageAnswerComponent = require './answers/ImageAnswerComponent'
+exports.ImagesAnswerComponent = require './answers/ImagesAnswerComponent'
 
 #exports.LocationView = require './LocationView'
 
@@ -38,8 +40,6 @@ exports.ECPlates = require './ECPlates'
 exports.utils = require './utils'
 exports.LocationFinder = require './LocationFinder'
 exports.LocationEditorComponent = require './LocationEditorComponent'
-exports.ImageEditorComponent = require './ImageEditorComponent'
-exports.ImagelistEditorComponent = require './ImagelistEditorComponent'
 
 exports.AdminRegionDataSource = require './AdminRegionDataSource'
 exports.AdminRegionSelectComponent = require './AdminRegionSelectComponent'

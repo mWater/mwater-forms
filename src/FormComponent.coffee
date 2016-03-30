@@ -24,7 +24,11 @@ module.exports = class FormComponent extends React.Component
     entity: React.PropTypes.object            # Form-level entity to load TODO
     entityType: React.PropTypes.string        # Type of form-level entity to load TODO
 
-   render: ->
+  handleSubmit: =>
+    if not @refs.itemListComponent.scrollToFirstInvalid()
+      @props.onSubmit()
+
+  render: ->
     if @props.design.contents[0] and @props.design.contents[0]._type == "Section"
       R SectionsComponent,
         contents: @props.design.contents
@@ -34,9 +38,14 @@ module.exports = class FormComponent extends React.Component
         onSaveLater: @props.onSaveLater
         onDiscard: @props.onDiscard
     else
-      R ItemListComponent,
-        contents: @props.design.contents
-        data: @props.data
-        onDataChange: @props.onDataChange
+      H.div null,
+        R ItemListComponent,
+          ref: 'itemListComponent'
+          contents: @props.design.contents
+          data: @props.data
+          onDataChange: @props.onDataChange
+
+        H.button type: "button", className: "btn btn-primary", onClick: @handleSubmit,
+          T("Submit")
 
       # TODO submit, etc. for non-sectioned

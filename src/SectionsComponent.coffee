@@ -26,16 +26,17 @@ module.exports = class SectionsComponent extends React.Component
     } 
 
   handleSubmit: =>
-    # TODO validate before allowing submit
-    @props.onSubmit()
+    if not @refs.itemListComponent.scrollToFirstInvalid()
+      @props.onSubmit()
 
   handleBack: =>
     # TODO validate?
     @setState(sectionNum: @state.sectionNum - 1)
 
   handleNext: =>
-    # TODO validate befre allowing next
-    @setState(sectionNum: @state.sectionNum + 1)
+    # TODO validate before allowing next
+    if not @refs.itemListComponent.scrollToFirstInvalid()
+      @setState(sectionNum: @state.sectionNum + 1)
 
   renderBreadcrumbs: ->
     # TODO add breadcrumbs
@@ -65,6 +66,7 @@ module.exports = class SectionsComponent extends React.Component
       H.h3 null, formUtils.localizeString(section.name, @context.locale)
 
       R ItemListComponent, 
+        ref: 'itemListComponent'
         contents: section.contents
         data: @props.data
         onDataChange: @props.onDataChange

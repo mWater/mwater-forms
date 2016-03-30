@@ -15,15 +15,24 @@ module.exports = class ItemComponent extends React.Component
     item: React.PropTypes.object.isRequired 
     data: React.PropTypes.object      # Current data of response. 
     onDataChange: React.PropTypes.func.isRequired
+    displayMissingRequired: React.PropTypes.bool
 
   handleAnswerChange: (id, answer) =>
     change = {}
     change[id] = answer
     @props.onDataChange(_.extend({}, @props.data, change))
 
+  scrollToInvalid: () ->
+    if @refs.question?
+      return @refs.question.scrollToInvalid()
+    if @refs.rosterGroup?
+      return @refs.question.scrollToInvalid()
+    return false
+
   render: ->
     if formUtils.isQuestion(@props.item)
       return R QuestionComponent, 
+        ref: 'question'
         question: @props.item
         answer: @props.data[@props.item._id]
         onAnswerChange: @handleAnswerChange.bind(null, @props.item._id)
@@ -34,6 +43,7 @@ module.exports = class ItemComponent extends React.Component
     else if @props.item._type == "RosterGroup"
       # Answer is under rosterId, not _id
       return R RosterGroupComponent,
+        ref: 'rosterGroup'
         rosterGroup: @props.item
         answer: @props.data[@props.item.rosterId]
         onAnswerChange: @handleAnswerChange.bind(null, @props.item.rosterId)

@@ -2,11 +2,10 @@ _ = require 'lodash'
 React = require 'react'
 H = React.DOM
 R = React.createElement
+ReactDOM = require 'react-dom'
 
 formUtils = require './formUtils'
 markdown = require("markdown").markdown
-ImageEditorComponent = require './ImageEditorComponent'
-ImagelistEditorComponent = require './ImagelistEditorComponent'
 LocationEditorComponent = require './LocationEditorComponent'
 
 AdminRegionAnswerComponent = require './answers/AdminRegionAnswerComponent'
@@ -15,6 +14,8 @@ CheckAnswerComponent = require './answers/CheckAnswerComponent'
 DateAnswerComponent = require './answers/DateAnswerComponent'
 DropdownAnswerComponent = require './answers/DropdownAnswerComponent'
 EntityAnswerComponent = require './answers/EntityAnswerComponent'
+ImageAnswerComponent = require './answers/ImageAnswerComponent'
+ImagesAnswerComponent = require './answers/ImagesAnswerComponent'
 LocationAnswerComponent = require './answers/LocationAnswerComponent'
 MulticheckAnswerComponent = require './answers/MulticheckAnswerComponent'
 NumberAnswerComponent = require './answers/NumberAnswerComponent'
@@ -26,7 +27,6 @@ UnitsAnswerComponent = require './answers/UnitsAnswerComponent'
 
 # TODO clear alternate on value change
 # TODO make faster with shouldComponentUpdate
-
 # Question component that displays a question of any type.
 # Displays question text and hint
 # Displays toggleable help 
@@ -42,6 +42,7 @@ UnitsAnswerComponent = require './answers/UnitsAnswerComponent'
 # TODO Records GPS when answered
 # TODO Displays validation errors and not answered errors when told to from above.
 # TODO Allows focusing on question which scrolls into view
+# TODO Should it put back the previous value after toggling on and off an alternate option??
 module.exports = class QuestionComponent extends React.Component
   @contextTypes: require('./formContextTypes')
 
@@ -81,6 +82,13 @@ module.exports = class QuestionComponent extends React.Component
 
   handleSpecifyChange: (specify) =>
     @props.onAnswerChange(_.extend({}, @props.answer, { specify: specify }))
+
+  scrollToInvalid: () ->
+
+    if @props.question._type == "TextQuestion"
+      ReactDOM.findDOMNode(this).scrollIntoView()
+      return true
+    return false
 
   renderPrompt: ->
     prompt = formUtils.localizeString(@props.question.text, @context.locale)
@@ -204,14 +212,14 @@ module.exports = class QuestionComponent extends React.Component
         }
 
       when "ImageQuestion"
-        return R ImageEditorComponent,
+        return R ImageAnswerComponent,
           imageManager: @context.imageManager
           imageAcquirer: @context.imageAcquirer
           image: @props.answer.value
           onImageChange: @handleValueChange 
 
       when "ImagesQuestion"
-        return R ImageEditorComponent, {
+        return R ImagesAnswerComponent, {
           imageManager: @context.imageManager
           imageAcquirer: @context.imageAcquirer
           imagelist: @props.answer.value
