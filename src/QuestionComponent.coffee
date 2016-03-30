@@ -174,21 +174,16 @@ module.exports = class QuestionComponent extends React.Component
       when "RadioQuestion"
         return R RadioAnswerComponent, {
           choices: @props.question.choices
-          value: @props.answer.value
-          onValueChange: @handleValueChange
-          specify: @props.answer.specify
-          onSpecifyChange: @handleSpecifyChange
+          answer: @props.answer
+          onAnswerChange: @props.onAnswerChange
         }
 
       when "MulticheckQuestion"
         return R MulticheckAnswerComponent, {
           choices: @props.question.choices
-          value: @props.answer.value
-          onValueChange: @handleValueChange
-          specify: @props.answer.specify
-          onSpecifyChange: @handleSpecifyChange
+          answer: @props.answer
+          onAnswerChange: @props.onAnswerChange
         }
-
 
       when "DateQuestion"
         return R DateAnswerComponent, {

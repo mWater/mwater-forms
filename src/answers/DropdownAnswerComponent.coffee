@@ -26,8 +26,8 @@ module.exports = class DropdownAnswerComponent extends React.Component
       # Value is stored in specify[id]
       specify: React.PropTypes.bool
     })).isRequired
-    answer: React.PropTypes.object # See answer format
     onAnswerChange: React.PropTypes.func.isRequired
+    answer: React.PropTypes.object.isRequired # See answer format
 
   handleValueChange: (ev) =>
     if ev.target.value?

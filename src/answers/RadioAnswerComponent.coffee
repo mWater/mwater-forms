@@ -26,42 +26,35 @@ module.exports = class RadioAnswerComponent extends React.Component
       # Value is stored in specify[id]
       specify: React.PropTypes.bool
     })).isRequired
-    value: React.PropTypes.string
-    onValueChange: React.PropTypes.func.isRequired
-    specify: React.PropTypes.object # See answer format
-    onSpecifyChange: React.PropTypes.func.isRequired
-
-  @defaultProps:
-    specify: {}
+    onAnswerChange: React.PropTypes.func.isRequired
+    answer: React.PropTypes.object.isRequired # See answer format
 
   handleValueChange: (choice) =>
-    if choice.id == @props.value
-      @props.onValueChange(null)
-      if @props.specify[choice.id] != null
-        @props.onSpecifyChange(null)
+    if choice.id == @props.answer.value
+      @props.onAnswerChange({value: null, specify: null })
     else
-      @props.onValueChange(choice.id)
+      @props.onAnswerChange({value: choice.id, specify: null })
 
   handleSpecifyChange: (id, ev) =>
     change = {}
     change[id] = ev.target.value
-    specify = _.extend({}, @props.specify, change)
-    @props.onSpecifyChange(specify)
+    specify = _.extend({}, @props.answer.specify, change)
+    @props.onAnswerChange({value: @props.answer.choice, specify: specify })
 
   # Render specify input box
   renderSpecify: (choice) ->
-    H.input className: "form-control specify-input", type: "text", value: @props.specify[choice.id], onChange: @handleSpecifyChange.bind(null, choice.id)
+    H.input className: "form-control specify-input", type: "text", value: @props.answer.specify[choice.id], onChange: @handleSpecifyChange.bind(null, choice.id)
 
   renderChoice: (choice) ->
     H.div key: choice.id,
       # id is used for testing
-      H.div className: "touch-radio #{if @props.value == choice.id then "checked" else ""}", id: choice.id, onClick: @handleValueChange.bind(null, choice),
+      H.div className: "touch-radio #{if @props.answer.value == choice.id then "checked" else ""}", id: choice.id, onClick: @handleValueChange.bind(null, choice),
         formUtils.localizeString(choice.label, @context.locale)
         if choice.hint
           H.span className: "radio-choice-hint",
             formUtils.localizeString(choice.hint, @context.locale)
 
-      if choice.specify and @props.value == choice.id
+      if choice.specify and @props.answer.value == choice.id
         @renderSpecify(choice)
 
   render: ->

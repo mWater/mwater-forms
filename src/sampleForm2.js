@@ -164,7 +164,7 @@ module.exports = {
               }
             }
           ],
-          "required": false,
+          "required": true,
           "alternates": {
             "na": true,
             "dontknow": true
@@ -479,7 +479,7 @@ module.exports = {
             }
           ],
           "_basedOn": "f7d85b74156a4f0c933df332c0247eae",
-          "required": false,
+          "required": true,
           "conditions": [],
           "validations": []
         },

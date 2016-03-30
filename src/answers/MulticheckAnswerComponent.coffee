@@ -27,33 +27,30 @@ module.exports = class MulticheckAnswerComponent extends React.Component
       specify: React.PropTypes.bool
     })).isRequired
 
-    value: React.PropTypes.arrayOf(React.PropTypes.string.isRequired)
-    onValueChange: React.PropTypes.func.isRequired
-    specify: React.PropTypes.object # See answer format
-    onSpecifyChange: React.PropTypes.func.isRequired
-
-  @defaultProps:
-    specify: {}
+    answer: React.PropTypes.object.isRequired # See answer format
+    onAnswerChange: React.PropTypes.func.isRequired
 
   handleValueChange: (choice) =>
-    ids = @props.value or []
+    ids = @props.answer.value or []
     if choice.id in ids
-      @props.onValueChange(_.difference(ids, [choice.id]))
+      specify = _.clone @props.answer.specify
+      specify.delete choice.id
+      @props.onAnswerChange({value: _.difference(ids, [choice.id]), specify: specify})
     else
-      @props.onValueChange(_.union(ids, [choice.id]))
+      @props.onAnswerChange({value: _.union(ids, [choice.id]), specify: @props.answer.specify})
 
   handleSpecifyChange: (id, ev) =>
     change = {}
     change[id] = ev.target.value
-    specify = _.extend({}, @props.specify, change)
-    @props.onSpecifyChange(specify)
+    specify = _.extend({}, @props.answer.specify, change)
+    @props.onAnswerChange({value: @props.answer.value, specify: specify})
 
   # Render specify input box
   renderSpecify: (choice) ->
-    H.input className: "form-control specify-input", type: "text", value: @props.specify[choice.id], onChange: @handleSpecifyChange.bind(null, choice.id)
+    H.input className: "form-control specify-input", type: "text", value: @props.answer.specify[choice.id], onChange: @handleSpecifyChange.bind(null, choice.id)
 
   renderChoice: (choice) ->
-    selected = _.isArray(@props.value) and choice.id in @props.value
+    selected = _.isArray(@props.answer.value) and choice.id in @props.answer.value
 
     H.div key: choice.id,
       # id is used for testing
