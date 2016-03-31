@@ -10,7 +10,7 @@ H = React.DOM
 
 TextAnswerComponent = require '../../src/answers/TextAnswerComponent'
 
-describe 'TextAnswerComponent', ->
+describe.only 'TextAnswerComponent', ->
   beforeEach ->
     @toDestroy = []
 
@@ -40,60 +40,6 @@ describe 'TextAnswerComponent', ->
     @comp = @render({value: null, onValueChange: onValueChange, format: 'multiline'})
     textArea = ReactTestUtils.findRenderedDOMComponentWithTag(@comp.getComponent(), "textarea")
     TestComponent.changeValue(textArea, "response")
-
-  it "accepts valid emails", ->
-    @comp = @render({value: "test@test.com", format: 'email'})
-    # Test email validation
-    assert false
-
-  it "rejects invalid emails", ->
-    @comp = @render({value: "test", format: 'email'})
-    # Test email validation
-    assert false
-
-  it "accepts valid urls", ->
-    @comp = @render({value: "www.apple.com", format: 'url'})
-    # Test url validation
-    assert false
-
-  it "rejects invalid urls", ->
-    @comp = @render({value: "sometext", format: 'url'})
-    # Test url validation
-    assert false
-
-  it "enforces required", ->
-    assert false
-    @q.required = true
-    @qview = @compiler.compileQuestion(@q).render()
-    assert @qview.validate()
-
-    @q.required = false
-    @qview = @compiler.compileQuestion(@q).render()
-    assert not @qview.validate()
-
-  it "enforces required on blank answer", ->
-    assert false
-    @q.required = true
-    @qview = @compiler.compileQuestion(@q).render()
-
-    @qview.$el.find("input").val("response").change()
-    @qview.$el.find("input").val("").change()
-    assert @qview.validate()
-
-  it "validates", ->
-    assert false
-    @q.validations = [
-      {
-        op: "lengthRange"
-        rhs: { literal: { max: 6 } }
-        message: { _base: "es", es: "message" }
-      }
-    ]
-    @qview = @compiler.compileQuestion(@q).render()
-
-    @qview.$el.find("input").val("1234567").change()
-    assert.equal @qview.validate(), "message"
-
 
   it "allows non-valid blank answer if not required", ->
     assert false
