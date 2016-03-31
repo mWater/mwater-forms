@@ -571,6 +571,7 @@ describe "ResponseModel", ->
 
   describe "inactive deployments", ->
     it "skips over inactive deployments", ->
+      @response = { }
       # Add to both but set first inactive
       @form = _.cloneDeep(sampleForm)
 

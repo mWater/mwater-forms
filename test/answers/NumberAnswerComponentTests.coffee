@@ -29,7 +29,6 @@ describe 'NumberAnswerComponent', ->
     comp = @render({
       decimal: true
       onChange: (value) ->
-        console.log value
         assert.equal value, 123.4
         done()
     })
@@ -41,7 +40,6 @@ describe 'NumberAnswerComponent', ->
     comp = @render({
       decimal: false
       onChange: (value) ->
-        console.log value
         assert.equal value, 123
         done()
     })

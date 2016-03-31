@@ -26,32 +26,22 @@ describe 'SiteAnswerComponent', ->
 
   it "allows valid site codes", ->
     assert false
-
-  it "rejects invalid site codes", ->
-    assert false
-
-  it "calls selectSite with site types", ->
-    assert false
-
-  it "displays site information", ->
-    assert false
-
-###
-  it "allows valid site codes", ->
     @qview.$el.find("input").val("10007").change()
     assert.deepEqual @model.get("q1234").value, { code: "10007" }
     assert not @qview.validate()
 
   it "rejects invalid site codes", ->
+    assert false
     @qview.$el.find("input").val("10008").change()
     assert.deepEqual @model.get("q1234").value, { code: "10008" }
     assert @qview.validate()
 
   it "calls selectSite with site types", ->
+    assert false
     @qview.$el.find("#select").click()
     assert.deepEqual @model.get("q1234").value, { code: "10014" }
 
   it "displays site information", ->
+    assert false
     @qview.$el.find("input").val("10014").change()
     assert.include(@qview.$el.text(), 'Somename2')
-###
