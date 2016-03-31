@@ -47,7 +47,11 @@ module.exports = class RadioAnswerComponent extends React.Component
 
   # Render specify input box
   renderSpecify: (choice) ->
-    H.input className: "form-control specify-input", type: "text", value: @props.answer.specify[choice.id], onChange: @handleSpecifyChange.bind(null, choice.id)
+    if @props.answer.specify?
+      value = @props.answer.specify[choice.id]
+    else
+      value = ''
+    H.input className: "form-control specify-input", type: "text", value: value, onChange: @handleSpecifyChange.bind(null, choice.id)
 
   renderChoice: (choice) ->
     H.div key: choice.id,

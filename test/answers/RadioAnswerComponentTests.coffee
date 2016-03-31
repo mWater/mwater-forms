@@ -25,20 +25,19 @@ findComponentById = (component, id) ->
     c.id == id
   )[0]
 
-describe.only 'RadioAnswerComponent', ->
+describe 'RadioAnswerComponent', ->
   before ->
     @toDestroy = []
 
     @render = (options = {}) =>
       options = _.extend {
+        answer: {}
         choices: [
           { id: "a", label: { _base: "en", en: "AA" }, hint: { _base: "en", en: "a-hint" } }
           { id: "b", label: { _base: "en", en: "BB" } }
           { id: "c", label: { _base: "en", en: "CC" }, specify: true }
         ],
-        onValueChange: () ->
-          null
-        onSpecifyChange: () ->
+        onAnswerChange: () ->
           null
       }, options
 
@@ -72,8 +71,8 @@ describe.only 'RadioAnswerComponent', ->
 
   it "records selected choice", (done) ->
     testComponent = @render({
-      onValueChange: (value) ->
-        assert.equal value, 'a'
+      onAnswerChange: (answer) ->
+        assert.equal answer.value, 'a'
         done()
     })
 
@@ -84,9 +83,9 @@ describe.only 'RadioAnswerComponent', ->
 
   it "allows unselecting choice by clicking twice", (done) ->
     testComponent = @render({
-      value: 'b'
-      onValueChange: (value) ->
-        assert.deepEqual value, null
+      answer: {value: 'b'}
+      onAnswerChange: (answer) ->
+        assert.deepEqual answer.value, null
         done()
     })
 
@@ -109,10 +108,10 @@ describe.only 'RadioAnswerComponent', ->
 
   it "records specify value", (done) ->
     testComponent = @render {
-      onSpecifyChange: (specifyValue) ->
-        assert.deepEqual specifyValue, {'c': 'specify'}
+      onAnswerChange: (answer) ->
+        assert.deepEqual answer.specify, {'c': 'specify'}
         done()
-      value: 'c'
+      answer: {value: 'c'}
     }
 
     specifyInput = ReactTestUtils.findRenderedDOMComponentWithClass(testComponent.getComponent(), 'specify-input')
@@ -120,10 +119,10 @@ describe.only 'RadioAnswerComponent', ->
 
   it "removes specify value on other selection", (done) ->
     testComponent = @render {
-      onSpecifyChange: (specifyValue) ->
-        assert.equal specifyValue, null
+      onAnswerChange: (answer) ->
+        assert.equal answer.specify, null
         done()
-      value: 'c'
+      answer: {value: 'c'}
       specify: {c: 'specify'}
     }
 
