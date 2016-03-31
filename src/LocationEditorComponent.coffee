@@ -31,7 +31,7 @@ module.exports = class LocationEditorComponent extends React.Component
     $(@refs.main).append(@locationView.el)
 
   componentWillReceiveProps: (nextProps) ->
-    if _.isEqual(nextProps.location, @props.location)
+    if not _.isEqual(nextProps.location, @props.location)
       @locationView.loc = nextProps.location
       @locationView.render()
 
