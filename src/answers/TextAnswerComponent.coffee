@@ -19,7 +19,6 @@ module.exports = class TextAnswerComponent extends React.Component
 
   focus: () ->
     @refs.input.focus()
-    @refs.input.select()
 
   handleKeyDown: (ev) =>
     if @props.onNextOrComments?

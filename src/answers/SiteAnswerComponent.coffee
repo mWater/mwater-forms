@@ -18,7 +18,7 @@ module.exports = class SiteAnswerComponent extends React.Component
     onNextOrComments: React.PropTypes.func
 
   @propTypes:
-    value: React.PropTypes.bool
+    value: React.PropTypes.object
     onValueChange: React.PropTypes.func.isRequired
     siteTypes: React.PropTypes.array
 
@@ -27,11 +27,10 @@ module.exports = class SiteAnswerComponent extends React.Component
 
   constructor: (props) ->
     super
-    @state = {isSelectingEntity: false}
+    @state = {shownEntity: false}
 
   focus: () ->
     @refs.input.focus()
-    @refs.input.select()
 
   handleKeyDown: (ev) =>
     if @props.onNextOrComments?
@@ -41,41 +40,39 @@ module.exports = class SiteAnswerComponent extends React.Component
         # It's important to prevent the default behavior when handling tabs (or else the tab is applied after the focus change)
         ev.preventDefault()
 
+  getEntityType: () ->
+    # Convert to new entity type
+    siteType = (if @props.siteTypes then @props.siteTypes[0]) or "Water point"
+    entityType = siteType.toLowerCase().replace(' ', "_")
+    return entityType
+
   handleSelectClick: () =>
-    @setState(isSelectingEntity: true)
+    entityType = @getEntityType()
 
-  doSomething: () =>
-    null
-    ## Convert to new entity type
-    #siteType = (if props.siteTypes then @props.siteTypes[0]) or "Water point"
-    ## TODO: fix this, it screws up my editor display!
-    ##entityType = siteType.toLowerCase().replace(/ /g, "_")
-    #
-    #@context.selectEntity { entityType: entityType, callback: (entityId) =>
-    #  # Get entity
-    #  @context.getEntityById(entityType, entityId, (entity) =>
-    #    @props.onValueChange(code: entity.code)
-    #    #TODO: will it be properly validate?
-    #    #@validate()
-    #  )
-    #}
+    @context.selectEntity { entityType: entityType, callback: (entityId) =>
+      # Get entity
+      @context.getEntityById(entityType, entityId, (entity) =>
+        @props.onValueChange(code: entity.code)
+        @setState(shownEntityCode: entity.code)
+      )
+    }
 
-  render: ->
-    value = @props.value
-    if value then value = value.code
-
+  renderEntityDisplayComponent: ->
+    entityType = @getEntityType()
     formCtx = {
       getEntityById: @context.getEntityById
       getEntityByCode: @context.getEntityByCode
       renderEntitySummaryView: @context.renderEntitySummaryView
     }
+    return R EntityDisplayComponent, {formCtx: formCtx, displayInWell: true, entityCode: @state.shownEntityCode, entityType: entityType}
 
+  render: ->
     H.div null,
       H.div className:"input-group",
           H.input id: "input", type: "tel", className: "form-control", onKeyDown: @handleKeyDown, ref: 'input'
           H.span className: "input-group-btn",
-            H.button className: "btn btn-default", disabled: not @context.selectEntity?, type: "button", click: @handleSelectClick,
+            H.button className: "btn btn-default", disabled: not @context.selectEntity?, type: "button", onClick: @handleSelectClick,
               T("Select")
       H.br()
-      if @state.isSelectingEntity
-        R EntityDisplayComponent, {formCtx: formCtx, displayInWell: true, entityCode: value, entityType: entityType}
+      if @state.shownEntityCode
+        @renderEntityDisplayComponent()

@@ -6,16 +6,17 @@ AsyncLoadComponent = require('react-library/lib/AsyncLoadComponent')
 
 # Allows user to select an entity
 module.exports = class EntityAnswerComponent extends AsyncLoadComponent
-  @propTypes:
-    value: React.PropTypes.string
-    entityType: React.PropTypes.string.isRequired
-    onValueChange: React.PropTypes.func.isRequired
-
+  @contextTypes:
     selectEntity: React.PropTypes.func
     editEntity: React.PropTypes.func
     renderEntitySummaryView: React.PropTypes.func.isRequired
     getEntityById: React.PropTypes.func
     canEditEntity: React.PropTypes.func
+
+  @propTypes:
+    value: React.PropTypes.string
+    entityType: React.PropTypes.string.isRequired
+    onValueChange: React.PropTypes.func.isRequired
 
   focus: () ->
     # Nothing to focus
@@ -31,16 +32,16 @@ module.exports = class EntityAnswerComponent extends AsyncLoadComponent
       callback(entity: null)
       return
 
-    @props.getEntityById(props.entityType, props.value, (entity) =>
+    @context.getEntityById(props.entityType, props.value, (entity) =>
       callback(entity: entity)
     )
 
   # Called to select an entity using an external mechanism (calls @ctx.selectEntity)
   handleSelectEntity: =>
-    if not @props.selectEntity
+    if not @context.selectEntity
       return alert(@T("Not supported on this platform"))
 
-    @props.selectEntity { 
+    @context.selectEntity {
       entityType: @props.entityType
       callback: (value) =>
         @props.onValueChange(value)
@@ -53,10 +54,10 @@ module.exports = class EntityAnswerComponent extends AsyncLoadComponent
     @props.onValueChange(null)
 
   handleEditEntity: =>
-    if not @props.editEntity
+    if not @context.editEntity
       return alert(@T("Not supported on this platform"))
 
-    @props.editEntity @props.entityType, @props.value, =>
+    @context.editEntity @props.entityType, @props.value, =>
       # Set to null and back to force a change
       @props.onValueChange(null)
       @props.onValueChange(value)
@@ -74,7 +75,7 @@ module.exports = class EntityAnswerComponent extends AsyncLoadComponent
         H.span className: "glyphicon glyphicon-remove"
         " "
         T("Clear Selection")
-      if @props.editEntity? and @props.canEditEntity(@props.entityType, @state.entity)  
+      if @context.editEntity? and @context.canEditEntity(@props.entityType, @state.entity)
         H.button type: "button", className: "btn btn-link btn-sm", onClick: @handleEditEntity,
           H.span className: "glyphicon glyphicon-pencil"
           " "
@@ -97,4 +98,4 @@ module.exports = class EntityAnswerComponent extends AsyncLoadComponent
     return H.div null,
       @renderEntityButtons()
       H.div className: "well well-sm",
-        @props.renderEntitySummaryView(@props.entityType, @state.entity)
+        @context.renderEntitySummaryView(@props.entityType, @state.entity)

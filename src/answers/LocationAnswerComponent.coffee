@@ -12,7 +12,7 @@ module.exports = class LocationAnswerComponent extends React.Component
     storage: React.PropTypes.object
 
   @propTypes:
-    value: React.PropTypes.string
+    value: React.PropTypes.object
     onValueChange: React.PropTypes.func.isRequired
 
   constructor: (props) ->

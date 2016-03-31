@@ -26,7 +26,6 @@ module.exports = class NumberAnswerComponent extends React.Component
 
   focus: () ->
     @refs.input.focus()
-    @refs.input.select()
 
   handleKeyDown: (ev) =>
     if @props.onNextOrComments?

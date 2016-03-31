@@ -39,7 +39,8 @@ UnitsAnswerComponent = require './answers/UnitsAnswerComponent'
 # TODO Records timestamp when answered
 # TODO Records GPS when answered
 module.exports = class QuestionComponent extends React.Component
-  @contextTypes: require('./formContextTypes')
+  @contextTypes:
+    locale: React.PropTypes.string
 
   @propTypes:
     question: React.PropTypes.object.isRequired # Design of question. See schema
@@ -263,16 +264,12 @@ module.exports = class QuestionComponent extends React.Component
 
       when "ImageQuestion"
         return R ImageAnswerComponent,
-          imageManager: @context.imageManager
-          imageAcquirer: @context.imageAcquirer
           image: @props.answer.value
           onImageChange: @handleValueChange 
 
       when "ImagesQuestion"
         return R ImagesAnswerComponent, {
           ref: "answer"
-          imageManager: @context.imageManager
-          imageAcquirer: @context.imageAcquirer
           imagelist: @props.answer.value
           onImagelistChange: @handleValueChange
         }
@@ -304,22 +301,12 @@ module.exports = class QuestionComponent extends React.Component
           value: @props.answer.value
           entityType: @props.question.entityType
           onValueChange: @handleValueChange
-          selectEntity: @context.selectEntity
-          editEntity: @context.editEntity
-          renderEntitySummaryView: @context.renderEntitySummaryView
-          getEntityById: @context.getEntityById
-          canEditEntity: @context.canEditEntity
         }
 
       when "AdminRegionQuestion"
         # TODO defaultValue
         return R AdminRegionAnswerComponent, {
           ref: "answer"
-          locationFinder: @context.locationFinder
-          displayMap: @context.displayMap
-          getAdminRegionPath: @context.getAdminRegionPath
-          getSubAdminRegions: @context.getSubAdminRegions
-          findAdminRegionByLatLng: @context.findAdminRegionByLatLng
           value: @props.answer.value
           onChange: @handleValueChange
         }

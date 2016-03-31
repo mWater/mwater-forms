@@ -78,7 +78,6 @@ class DemoComponent extends React.Component
   
   getChildContext: ->  
     formCtx
-    
 
   render: ->
     # R ItemListComponent, 
@@ -87,7 +86,6 @@ class DemoComponent extends React.Component
     #   onDataChange: (data) => @setState(data: data)
 
     R FormComponent, {
-      formCtx: formCtx
       design: sampleForm2
       # design: rosterFormDesign
       # locale: React.PropTypes.string            # Locale. Defaults to English (en)

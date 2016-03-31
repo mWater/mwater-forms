@@ -29,7 +29,6 @@ module.exports = class UnitsAnswerComponent extends React.Component
   focus: () ->
     if @props.prefix
       @refs.quantity.focus()
-      @refs.quantity.select()
     else
       @refs.units.focus()
 
@@ -46,7 +45,6 @@ module.exports = class UnitsAnswerComponent extends React.Component
     if ev.keyCode == 13 or ev.keyCode == 9
       if @props.prefix
         @refs.quantity.focus()
-        @refs.quantity.select()
       else
         @refs.units.focus()
       # It's important to prevent the default behavior when handling tabs (or else the tab is applied after the focus change)
