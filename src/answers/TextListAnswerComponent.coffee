@@ -16,7 +16,6 @@ module.exports = class TextListAnswerComponent extends React.Component
 
   focus: () ->
     @refs.newLine?.focus()
-    @refs.newLine?.select()
 
   handleChange: (index, ev) =>
     newValue = _.clone @props.value
@@ -33,14 +32,16 @@ module.exports = class TextListAnswerComponent extends React.Component
     if ev.keyCode == 13 or ev.keyCode == 9
       # If the index is equal to the items length, it means that it's the last empty entry
       if index >= @props.value.length
-        # TODO: Handle nextOrComments
         if @props.onNextOrComments?
           @props.onNextOrComments(ev)
+      # If it equals to one less, we focus the newLine input
+      if index == @props.value.length - 1
+        nextInput = @refs["newLine"]
+        nextInput.focus()
       # If not, we focus the next input
       else
         nextInput = @refs["input#{index+1}"]
         nextInput.focus()
-        nextInput.select()
       # It's important to prevent the default behavior when handling tabs (or else the tab is applied after the focus change)
       ev.preventDefault()
 
@@ -51,7 +52,7 @@ module.exports = class TextListAnswerComponent extends React.Component
           H.tr key: index,
             H.td null,
               H.b null,
-                "#{index}."
+                "#{index}. "
             H.td null,
               H.div className: "input-group",
                 H.input {
@@ -70,6 +71,11 @@ module.exports = class TextListAnswerComponent extends React.Component
                   H.button className: "btn btn-link remove", "data-index": index, type:"button",
                     H.span className: "glyphicon glyphicon-remove"
         H.tr null,
+          H.td null
           H.td null,
-            H.input {type:"text", className: "form-control box", onChange: @handleNewLineChange, value: "", ref: 'newLine'}
-
+            H.div className: "input-group",
+              H.input {type:"text", className: "form-control box", onChange: @handleNewLineChange, value: "", ref: 'newLine'}
+              H.span className: "input-group-btn",
+                H.button className: "btn btn-link remove", "data-index": index, type:"button", hidden: true,
+                  H.span className: "glyphicon glyphicon-remove"
+          H.td null

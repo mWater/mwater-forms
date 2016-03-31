@@ -23,7 +23,6 @@ module.exports = class LocationAnswerComponent extends React.Component
     null
 
   handleUseMap: =>
-    # TODO: Display map function is not defined (maybe only because I'm running the demo)
     if @context.displayMap?
       @context.displayMap(@props.value, (newLoc) =>
         # Wrap to -180, 180

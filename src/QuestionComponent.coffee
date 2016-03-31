@@ -26,24 +26,18 @@ TextAnswerComponent = require './answers/TextAnswerComponent'
 TextListAnswerComponent = require './answers/TextListAnswerComponent'
 UnitsAnswerComponent = require './answers/UnitsAnswerComponent'
 
-# TODO clear alternate on value change
 # TODO make faster with shouldComponentUpdate
 # Question component that displays a question of any type.
 # Displays question text and hint
 # Displays toggleable help 
 # Displays required (*)
 # Displays comments field
-# TODO Goes to next question when enter or tab is pressed on previous question
-# TODO Goes to comments field when enter or tab is pressed on 
 # Does NOT fill in when sticky and visible for first time. This is done by data cleaning
 # Does NOT remove answer when invisible. This is done by data cleaning
 # Does not check conditions or make self invisible. This is done by parent component.
 # Displays alternates and makes exclusive with answer
 # TODO Records timestamp when answered
 # TODO Records GPS when answered
-# TODO Displays validation errors and not answered errors when told to from above.
-# TODO Allows focusing on question which scrolls into view
-# TODO Should it put back the previous value after toggling on and off an alternate option??
 module.exports = class QuestionComponent extends React.Component
   @contextTypes: require('./formContextTypes')
 
@@ -57,7 +51,7 @@ module.exports = class QuestionComponent extends React.Component
     onNext: React.PropTypes.func
 
   @defaultProps:
-    answer: {}  # Default to {}
+    answer: {}
 
   constructor: ->
     super
@@ -243,7 +237,6 @@ module.exports = class QuestionComponent extends React.Component
           value: @props.answer.value
           onValueChange: @handleValueChange
           format: @props.question.format
-          readOnly: @props.question.readOnly
           placeholder: @props.question.placeholder
         }
 

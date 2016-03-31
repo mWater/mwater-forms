@@ -16,7 +16,7 @@ watchify = require 'watchify'
 
 # Compile coffeescript to js in lib/
 gulp.task 'coffee', ->
-  gulp.src('./src/*.coffee')
+  gulp.src('./src/**/*.coffee')
     .pipe(coffee({ bare: true }))
     .pipe(gulp.dest('./lib/'))
 

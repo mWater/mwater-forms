@@ -10,7 +10,6 @@ DateTimePickerComponent = require '../DateTimePickerComponent'
 
 # Functional (but not exactly the same yet)
 # Not tested
-# TODO: Handle readOnly properly
 
 module.exports = class DateAnswerComponent extends React.Component
   @propTypes:
@@ -18,7 +17,6 @@ module.exports = class DateAnswerComponent extends React.Component
     onValueChange: React.PropTypes.func.isRequired
     format: React.PropTypes.string
     placeholder: React.PropTypes.string
-    readOnly: React.PropTypes.bool
     onNextOrComments: React.PropTypes.func
 
   @defaultProps:
@@ -103,21 +101,12 @@ module.exports = class DateAnswerComponent extends React.Component
       else
         value = moment(value, moment.ISO_8601)
 
-    # Handle readonly case
-    if @props.readonly
-      #TODO: handle readonly
-      #if value
-      #  @$("#date_input").val(value.format(@options.format))
-      #else
-      #  @$("#date_input").val("")
-      return H.div()
-    else
-      return R DateTimePickerComponent, {
-        ref: 'datetimepicker'
-        onChange: @handleChange
-        date: value
-        format: @props.format
-        placeholder: @state.placeholder
-        displayCalendarButton: true
-        onKeyDown: @handleKeyDown
-      }
+    return R DateTimePickerComponent, {
+      ref: 'datetimepicker'
+      onChange: @handleChange
+      date: value
+      format: @props.format
+      placeholder: @state.placeholder
+      displayCalendarButton: true
+      onKeyDown: @handleKeyDown
+    }
