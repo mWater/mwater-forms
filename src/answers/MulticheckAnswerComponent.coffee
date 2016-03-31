@@ -37,8 +37,12 @@ module.exports = class MulticheckAnswerComponent extends React.Component
   handleValueChange: (choice) =>
     ids = @props.answer.value or []
     if choice.id in ids
-      specify = _.clone @props.answer.specify
-      specify.delete choice.id
+      if @props.answer.specify?
+        specify = _.clone @props.answer.specify
+        if specify[choice.id]?
+          delete specify[choice.id]
+      else
+        specify = null
       @props.onAnswerChange({value: _.difference(ids, [choice.id]), specify: specify})
     else
       @props.onAnswerChange({value: _.union(ids, [choice.id]), specify: @props.answer.specify})
@@ -51,7 +55,11 @@ module.exports = class MulticheckAnswerComponent extends React.Component
 
   # Render specify input box
   renderSpecify: (choice) ->
-    H.input className: "form-control specify-input", type: "text", value: @props.answer.specify[choice.id], onChange: @handleSpecifyChange.bind(null, choice.id)
+    if @props.answer.specify?
+      value = @props.answer.specify[choice.id]
+    else
+      value = ''
+    H.input className: "form-control specify-input", type: "text", value: value, onChange: @handleSpecifyChange.bind(null, choice.id)
 
   renderChoice: (choice) ->
     selected = _.isArray(@props.answer.value) and choice.id in @props.answer.value

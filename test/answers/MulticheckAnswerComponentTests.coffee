@@ -36,10 +36,8 @@ describe 'MulticheckAnswerComponent', ->
           { id: "b", label: { _base: "en", en: "BB" } }
           { id: "c", label: { _base: "en", en: "CC" }, specify: true }
         ]
-        value: []
-        onValueChange: () ->
-          null
-        onSpecifyChange: () ->
+        answer: {value: []}
+        onAnswerChange: () ->
           null
       }, options
       elem = R(MulticheckAnswerComponent, options)
@@ -72,8 +70,8 @@ describe 'MulticheckAnswerComponent', ->
 
   it "records selected choice", (done) ->
     testComponent = @render({
-      onValueChange: (value) ->
-        assert.deepEqual value, ['a']
+      onAnswerChange: (answer) ->
+        assert.deepEqual answer.value, ['a']
         done()
     })
 
@@ -84,9 +82,9 @@ describe 'MulticheckAnswerComponent', ->
 
   it "records multiple selected choice", (done) ->
     testComponent = @render({
-      value: ['a']
-      onValueChange: (value) ->
-        assert.deepEqual value, ['a', 'b']
+      answer: {value: ['a']}
+      onAnswerChange: (answer) ->
+        assert.deepEqual answer.value, ['a', 'b']
         done()
     })
 
@@ -97,9 +95,9 @@ describe 'MulticheckAnswerComponent', ->
 
   it "can unselected choice", (done) ->
     testComponent = @render({
-      value: ['a', 'b']
-      onValueChange: (value) ->
-        assert.deepEqual value, ['a']
+      answer: {value: ['a', 'b']}
+      onAnswerChange: (answer) ->
+        assert.deepEqual answer.value, ['a']
         done()
     })
 
@@ -120,36 +118,35 @@ describe 'MulticheckAnswerComponent', ->
 
     assert.throws(ReactTestUtils.findRenderedDOMComponentWithClass.bind(this, testComponent.getComponent(), 'specify-input'), 'Did not find exactly one match (found: 0) for class:specify-input')
 
+
   it "records specify value", (done) ->
     testComponent = @render {
-      onSpecifyChange: (specifyValue) ->
-        assert.deepEqual specifyValue, {'c': 'specify'}
+      onAnswerChange: (answer) ->
+        assert.deepEqual answer.specify, {'c': 'specify'}
         done()
-      value: ['c']
+      answer: {value: ['c']}
     }
 
     specifyInput = ReactTestUtils.findRenderedDOMComponentWithClass(testComponent.getComponent(), 'specify-input')
     TestComponent.changeValue(specifyInput, 'specify')
 
-  it "does remove specify value on unselection", ->
+  it "does remove specify value on unselection", (done) ->
     testComponent = @render {
-      onSpecifyChange: (specifyValue) ->
-        assert.equal specifyValue, null
+      onAnswerChange: (answer) ->
+        assert.deepEqual answer.specify, {}
         done()
-      value: ['c']
-      specify: {c: 'specify'}
+      answer: {value: ['c'], specify: {c: 'specify'}}
     }
 
     choiceC = findComponentById(testComponent.getComponent(), 'c')
     TestComponent.click(choiceC)
 
-  it "does not remove specify value on other selection", ->
+  it "does not remove specify value on other selection", (done) ->
     testComponent = @render {
-      onSpecifyChange: (specifyValue) ->
-        assert.deepEqual specifyValue, {c: 'specify'}
+      onAnswerChange: (answer) ->
+        assert.deepEqual answer.specify, {c: 'specify'}
         done()
-      value: ['c']
-      specify: {c: 'specify'}
+      answer: {value: ['c'], specify: {c: 'specify'}}
     }
 
     choiceB = findComponentById(testComponent.getComponent(), 'b')
