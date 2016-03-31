@@ -4,8 +4,8 @@ R = React.createElement
 
 formUtils = require '../formUtils'
 
-# Functional
-# TODO: What should be done about the display? It used to show the checkbox next to the title of the question
+# This one is very different from the other AnswerComponents since it's displayed before the title (passed has children)
+#
 
 module.exports = class CheckAnswerComponent extends React.Component
   @contextTypes:
@@ -26,6 +26,5 @@ module.exports = class CheckAnswerComponent extends React.Component
     @props.onValueChange(!@props.value)
 
   render: ->
-    H.div null,
-      H.div className: "choice touch-checkbox #{if @props.value then "checked" else ""}", onClick: @handleValueChange, ref: 'checkbox',
-        formUtils.localizeString(@props.label, @context.locale)
+    H.div className: "choice touch-checkbox #{if @props.value then "checked" else ""}", onClick: @handleValueChange, ref: 'checkbox',
+      @props.children

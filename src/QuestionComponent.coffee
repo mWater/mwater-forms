@@ -79,7 +79,7 @@ module.exports = class QuestionComponent extends React.Component
     @setState(helpVisible: not @state.helpVisible)
 
   handleValueChange: (value) =>
-    @props.onAnswerChange(_.extend({}, @props.answer, { value: value }))
+    @props.onAnswerChange(_.extend({}, @props.answer, { value: value }, alternate: null))
 
   handleAlternate: (alternate) =>
     # If we are selecting a new alternate
@@ -143,10 +143,9 @@ module.exports = class QuestionComponent extends React.Component
       return value or ""
       )
 
-    H.div className: "prompt", ref: 'prompt',
+    promptDiv = H.div className: "prompt", ref: 'prompt',
       if @props.question.code
         H.span className: "question-code", @props.question.code + ": "
-
       # Prompt
       prompt
 
@@ -157,6 +156,16 @@ module.exports = class QuestionComponent extends React.Component
       if @props.question.help
         H.button type: "button", className: "btn btn-link btn-sm", onClick: @handleToggleHelp,
           H.span className: "glyphicon glyphicon-question-sign"
+
+    if @props.question._type == 'CheckQuestion'
+      R CheckAnswerComponent, {
+        ref: "answer"
+        value: @props.answer.value
+        onValueChange: @handleValueChange
+        label: @props.question.label
+      }, promptDiv
+    else
+      return promptDiv
 
   renderHint: ->
     if @props.question.hint
@@ -250,12 +259,7 @@ module.exports = class QuestionComponent extends React.Component
         }
 
       when "CheckQuestion"
-        return R CheckAnswerComponent, {
-          ref: "answer"
-          value: @props.answer.value
-          onValueChange: @handleValueChange
-          label: @props.question.label
-        }
+        return null
 
       when "LocationQuestion"
         return R LocationAnswerComponent, {
