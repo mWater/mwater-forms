@@ -63,39 +63,6 @@ describe 'TextAnswerComponent', ->
 
   it "enforces required", ->
     assert false
-
-  it "enforces required on blank answer", ->
-    assert false
-
-  it "validates", ->
-    assert false
-
-  it "allows non-valid blank answer if not required", ->
-    assert false
-
-  it "erases value on alternate selected", ->
-    assert false
-
-  it "caches value on alternate selected", ->
-    assert false
-
-  it "erases alternate on value entered", ->
-    assert false
-
-  it "is sticky", ->
-    assert false
-
-  it "sticky doesn't override value", ->
-    assert false
-
-  it "sticky doesn't fill until visible", ->
-    assert false
-
-  it "erases value when made invisible", ->
-    assert false
-
-###
-  it "enforces required", ->
     @q.required = true
     @qview = @compiler.compileQuestion(@q).render()
     assert @qview.validate()
@@ -105,6 +72,7 @@ describe 'TextAnswerComponent', ->
     assert not @qview.validate()
 
   it "enforces required on blank answer", ->
+    assert false
     @q.required = true
     @qview = @compiler.compileQuestion(@q).render()
 
@@ -113,6 +81,7 @@ describe 'TextAnswerComponent', ->
     assert @qview.validate()
 
   it "validates", ->
+    assert false
     @q.validations = [
       {
         op: "lengthRange"
@@ -125,7 +94,9 @@ describe 'TextAnswerComponent', ->
     @qview.$el.find("input").val("1234567").change()
     assert.equal @qview.validate(), "message"
 
+
   it "allows non-valid blank answer if not required", ->
+    assert false
     @q.validations = [
       {
         op: "lengthRange"
@@ -140,6 +111,7 @@ describe 'TextAnswerComponent', ->
 
 
   it "erases value on alternate selected", ->
+    assert false
     @q.alternates = {dontknow: true, na: true}
     @qview = @compiler.compileQuestion(@q).render()
 
@@ -148,7 +120,9 @@ describe 'TextAnswerComponent', ->
 
     assert not @model.get("q1234").value
 
+
   it "caches value on alternate selected", ->
+    assert false
     @q.alternates = {dontknow: true, na: true}
     @qview = @compiler.compileQuestion(@q).render()
 
@@ -158,7 +132,9 @@ describe 'TextAnswerComponent', ->
 
     assert.equal @model.get("q1234").value, "response"
 
+
   it "erases alternate on value entered", ->
+    assert false
     @q.alternates = {dontknow: true, na: true}
     @qview = @compiler.compileQuestion(@q).render()
 
@@ -169,7 +145,9 @@ describe 'TextAnswerComponent', ->
     @qview.$el.find("input").val("response").change()
     assert not @model.get("q1234").alternate
 
+
   it "is sticky", ->
+    assert false
     @q.sticky = true
     data = {}
     ctx = {
@@ -200,7 +178,9 @@ describe 'TextAnswerComponent', ->
     # Make sure stored in model
     assert.equal model.get(@q._id).value, "response"
 
+
   it "sticky doesn't override value", ->
+    assert false
     @q.sticky = true
     data = {}
     ctx = {
@@ -222,7 +202,9 @@ describe 'TextAnswerComponent', ->
     # Make sure stored in model
     assert.equal @model.get(@q._id).value, "model"
 
+
   it "sticky doesn't fill until visible", ->
+    assert false
     @q.sticky = true
     @q.conditions = [
       { lhs: { question: "qother"}, op: "present" }
@@ -255,6 +237,7 @@ describe 'TextAnswerComponent', ->
 
 
   it "erases value when made invisible", ->
+    assert false
     @q.conditions = [
       { lhs: { question: "q1" }, op: "=", rhs: { literal: 1 }}
     ]
@@ -273,4 +256,3 @@ describe 'TextAnswerComponent', ->
     # Should have no value
     assert not @model.get(@q._id)
 
-###

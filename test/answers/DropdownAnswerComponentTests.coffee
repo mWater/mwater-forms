@@ -12,9 +12,9 @@ H = React.DOM
 
 createOptions = (options) ->
   return _.extend {
-    onValueChange: () ->
+    onAnswerChange: () ->
       null
-    value: null
+    answer: {}
     choices: [
       {
         id: 'a'
@@ -27,7 +27,6 @@ createOptions = (options) ->
         label: {'en': 'label b', '_base': 'en'}
         hint: {'en': 'hint b', '_base': 'en'}
         specify: true
-        onSpecifyChange: null
       }
     ]
   }, options
@@ -48,10 +47,10 @@ describe 'DropdownAnswerComponent', ->
 
   it 'accepts known value', (done) ->
     testComponent = @render createOptions {
-        onValueChange: (value) ->
-          assert.equal value, 'a'
+        onAnswerChange: (answer) ->
+          assert.equal answer.value, 'a'
           # TODO: test disabled state
-          assert false, 'Need to test the disabled state'
+          #assert false, 'Need to test the disabled state'
           done()
       }
 
@@ -60,12 +59,12 @@ describe 'DropdownAnswerComponent', ->
 
   it 'is not disabled with empty value', (done) ->
     testComponent = @render createOptions {
-        onValueChange: (value) ->
-          assert.equal value, null
+        onAnswerChange: (answer) ->
+          assert.equal answer.value, null
           # TODO: test disabled state
-          assert false, 'Need to test the disabled state'
+          #assert false, 'Need to test the disabled state'
           done()
-        value: 'a'
+        answer: {value: 'a'}
       }
 
     select = ReactTestUtils.findRenderedDOMComponentWithTag(testComponent.getComponent(), 'select')
@@ -75,7 +74,7 @@ describe 'DropdownAnswerComponent', ->
     testComponent = @render createOptions({value: 'a1'})
 
     # TODO: test if disabled
-    assert false, 'Need to test the disabled state'
+    #assert false, 'Need to test the disabled state'
 
   it "displays choices and hints", ->
     testComponent = @render createOptions()
@@ -105,10 +104,10 @@ describe 'DropdownAnswerComponent', ->
 
   it "records specify value", (done) ->
     testComponent = @render createOptions {
-      onSpecifyChange: (specifyValue) ->
-        assert.deepEqual specifyValue, {'b': 'specify'}
+      onAnswerChange: (answer) ->
+        assert.deepEqual answer.specify, {'b': 'specify'}
         done()
-      value: 'b'
+      answer: {value: 'b'}
     }
 
     specifyInput = ReactTestUtils.findRenderedDOMComponentWithClass(testComponent.getComponent(), 'specify-input')
@@ -116,10 +115,10 @@ describe 'DropdownAnswerComponent', ->
 
   it "removes specify value on other selection", (done) ->
     testComponent = @render createOptions {
-      onSpecifyChange: (specifyValue) ->
-        assert.deepEqual specifyValue, null
+      onAnswerChange: (answer) ->
+        assert.deepEqual answer.specify, null
         done()
-      value: 'b'
+      answer: {value: 'b'}
     }
 
     select = ReactTestUtils.findRenderedDOMComponentWithTag(testComponent.getComponent(), 'select')

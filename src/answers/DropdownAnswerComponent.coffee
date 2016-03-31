@@ -33,7 +33,7 @@ module.exports = class DropdownAnswerComponent extends React.Component
     @refs.select?.focus()
 
   handleValueChange: (ev) =>
-    if ev.target.value?
+    if ev.target.value? and ev.target.value != ''
       @props.onAnswerChange({value: ev.target.value, specify: null })
     else
       @props.onAnswerChange({value: null, specify: null })
@@ -47,8 +47,12 @@ module.exports = class DropdownAnswerComponent extends React.Component
   # Render specify input box
   renderSpecify: ->
     choice = _.findWhere(@props.choices, { id: @props.answer.value })
+    if @props.answer.specify?
+      value = @props.answer.specify[choice.id]
+    else
+      value = ''
     if choice and choice.specify
-      H.input className: "form-control specify-input", type: "text", value: @props.answer.specify[choice.id], onChange: @handleSpecifyChange.bind(null, choice.id)
+      H.input className: "form-control specify-input", type: "text", value: value, onChange: @handleSpecifyChange.bind(null, choice.id)
 
   render: ->
     H.div null,
