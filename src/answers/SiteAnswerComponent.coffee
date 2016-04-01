@@ -6,6 +6,8 @@ formUtils = require '../formUtils'
 
 EntityDisplayComponent = require '../EntityDisplayComponent'
 
+# TODO: Bug: Code is not actually set in the input field after selecting an entity!!
+
 module.exports = class SiteAnswerComponent extends React.Component
   @contextTypes:
     selectEntity: React.PropTypes.func

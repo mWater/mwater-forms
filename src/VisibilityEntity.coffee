@@ -28,6 +28,12 @@ module.exports = class VisibilityEntity
     if section._type != 'Section'
       throw new Error('Should be a section')
 
+    if section.conditions? and section.conditions.length > 0
+      compileConditions(section.conditions, forms)
+      @visibilityStructure[section._id] = conditions()
+    else
+      @visibilityStructure[section._id] = true
+
     for content in section.contents
       @parseItem(content)
 
@@ -51,21 +57,23 @@ module.exports = class VisibilityEntity
       @visibilityStructure[question._id] = true
 
 
-  parseInstruction: (question) ->
-    null
+  parseInstruction: (instruction) ->
+    @parseQuestion(instruction)
 
   parseRosterGroup: (question) ->
+    # TODO: implement visibility logic
     null
 
   parseRosterMatrix: (question) ->
+    # TODO: implement visibility logic
     null
 
-  getQuestion: (questionId) ->
+  getQuestionData: (questionId) ->
     return @data[questionId]
 
   compileCondition: (cond) =>
     getValue = =>
-      answer = @getQuestion(cond.lhs.question) || {}
+      answer = @getQuestionData(cond.lhs.question) || {}
       return answer.value
 
     getAlternate = =>

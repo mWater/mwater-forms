@@ -10,6 +10,7 @@ sampleForm2 = require './sampleForm2'
 ItemListComponent = require './ItemListComponent'
 
 CleaningEntity = require './CleaningEntity'
+StickyEntity = require './StickyEntity'
 VisibilityEntity = require './VisibilityEntity'
 
 # Setup mock localizer
@@ -18,6 +19,8 @@ global.T = (str) -> str
 canada = { id: "canada", level: 0, name: "Canada", type: "Country" }
 manitoba = { id: "manitoba", level: 1, name: "Manitoba", type: "Province" }
 ontario = { id: "ontario", level: 1, name: "Ontario", type: "Province" }
+
+testStickyStorage = {}
 
 formCtx = {
   locale: "en" 
@@ -48,13 +51,19 @@ formCtx = {
     getImageUrl: (id, success, error) -> error("Not implemented")
     getThumbnailImageUrl: (id, success, error) -> error("Not implemented")
   }
+
+  stickyStorage: {
+    get: (questionId) ->
+      return testStickyStorage[questionId]
+    set: (questionId, value) ->
+      return testStickyStorage[questionId] = value
+  }
 }
 
 
 class DemoComponent extends React.Component
   constructor: ->
     super
-    console.log 'constructing'
 
     data = {}
     visibilityStructure = @computeVisibility(data)
@@ -72,7 +81,7 @@ class DemoComponent extends React.Component
 
     locationFinder: React.PropTypes.object
     displayMap: React.PropTypes.func # Takes location ({ latitude, etc.}) and callback (called back with new location)
-    storage: React.PropTypes.object   # Storage object for saving location
+    stickyStorage: React.PropTypes.object   # Storage for sticky values
     
     getAdminRegionPath: React.PropTypes.func.isRequired # Call with (id, callback). Callback (error, [{ id:, level: <e.g. 1>, name: <e.g. Manitoba>, type: <e.g. Province>}] in level ascending order)
     getSubAdminRegions: React.PropTypes.func.isRequired # Call with (id, callback). Callback (error, [{ id:, level: <e.g. 1>, name: <e.g. Manitoba>, type: <e.g. Province>}] of admin regions directly under the specified id)
@@ -91,9 +100,11 @@ class DemoComponent extends React.Component
     return @state.visibilityStructure[itemId]
 
   handleDataChange: (data) =>
-    visibilityStructure = @computeVisibility(data)
-    newData = @cleanData(data, visibilityStructure)
-    @setState(data: newData, visibilityStructure: visibilityStructure)
+    oldVisibilityStructure = @state.visibilityStructure
+    newVisibilityStructure = @computeVisibility(data)
+    newData = @cleanData(data, newVisibilityStructure)
+    newData = @stickyData(data, formCtx.stickyStorage, oldVisibilityStructure, newVisibilityStructure)
+    @setState(data: newData, visibilityStructure: newVisibilityStructure)
 
   computeVisibility: (data) ->
     visibilityEntity = new VisibilityEntity(sampleForm2)
@@ -102,6 +113,10 @@ class DemoComponent extends React.Component
   cleanData: (data, visibilityStructure) ->
     cleaningEntity = new CleaningEntity()
     return cleaningEntity.cleanData(sampleForm2, data, visibilityStructure)
+
+  stickyData: (data, visibilityStructure) ->
+    stickyEntity = new StickyEntity()
+    return stickyEntity.setStickyData(sampleForm2, data, visibilityStructure)
 
   render: ->
     # R ItemListComponent, 

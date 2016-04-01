@@ -76,7 +76,11 @@ module.exports = class QuestionComponent extends React.Component
     @setState(helpVisible: not @state.helpVisible)
 
   handleValueChange: (value) =>
-    @props.onAnswerChange(_.extend({}, @props.answer, { value: value }, alternate: null))
+    @handleAnswerChange(_.extend({}, @props.answer, { value: value }, alternate: null))
+
+  handleAnswerChange: (answer) =>
+    # TODO: Set sticky value if sticky question
+    @props.onAnswerChange(answer)
 
   handleAlternate: (alternate) =>
     # If we are selecting a new alternate
@@ -86,14 +90,14 @@ module.exports = class QuestionComponent extends React.Component
         # It saves value and specify
         @setState({savedValue: _.clone @props.answer.value, savedSpecify: _.clone @props.answer.specify})
       # Then clear value, specify and set alternate
-      @props.onAnswerChange(_.extend({}, @props.answer, {
+      @handleAnswerChange(_.extend({}, @props.answer, {
         value: null
         specify: null
         alternate: alternate
       }))
     else
       # Clear alternate and put back saved value and specify
-      @props.onAnswerChange(_.extend({}, @props.answer, {
+      @handleAnswerChange(_.extend({}, @props.answer, {
         value: @state.savedValue
         specify: @state.savedSpecify
         alternate: null
@@ -101,7 +105,7 @@ module.exports = class QuestionComponent extends React.Component
       @setState({savedValue: null, savedSpecify: null})
 
   handleCommentsChange: (ev) =>
-    @props.onAnswerChange(_.extend({}, @props.answer, { comments: ev.target.value }))
+    @handleAnswerChange(_.extend({}, @props.answer, { comments: ev.target.value }))
 
   scrollToInvalid: (alreadyFoundFirst) ->
     validationError = new AnswerValidator().validate(@props.question, @props.answer)
@@ -215,7 +219,7 @@ module.exports = class QuestionComponent extends React.Component
           ref: "answer"
           choices: @props.question.choices
           answer: @props.answer
-          onAnswerChange: @props.onAnswerChange
+          onAnswerChange: @handleAnswerChange
         }
 
       when "RadioQuestion"
@@ -223,7 +227,7 @@ module.exports = class QuestionComponent extends React.Component
           ref: "answer"
           choices: @props.question.choices
           answer: @props.answer
-          onAnswerChange: @props.onAnswerChange
+          onAnswerChange: @handleAnswerChange
         }
 
       when "MulticheckQuestion"
@@ -231,7 +235,7 @@ module.exports = class QuestionComponent extends React.Component
           ref: "answer"
           choices: @props.question.choices
           answer: @props.answer
-          onAnswerChange: @props.onAnswerChange
+          onAnswerChange: @handleAnswerChange
         }
 
       when "DateQuestion"
