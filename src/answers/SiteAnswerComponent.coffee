@@ -6,9 +6,6 @@ formUtils = require '../formUtils'
 
 EntityDisplayComponent = require '../EntityDisplayComponent'
 
-# TODO: get the formCtx...
-# Not tested
-
 module.exports = class SiteAnswerComponent extends React.Component
   @contextTypes:
     selectEntity: React.PropTypes.func

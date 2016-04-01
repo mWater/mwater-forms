@@ -1,3 +1,4 @@
+###
 React = require 'react'
 
 # Context types for forms. Use in @contextTypes for all form operations
@@ -26,3 +27,4 @@ module.exports = {
   imageManager: React.PropTypes.object.isRequired
   imageAcquirer: React.PropTypes.object
 }
+###
