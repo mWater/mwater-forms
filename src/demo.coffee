@@ -9,6 +9,9 @@ sampleFormDesign = require './sampleFormDesign'
 sampleForm2 = require './sampleForm2'
 ItemListComponent = require './ItemListComponent'
 
+CleaningEntity = require './CleaningEntity'
+VisibilityEntity = require './VisibilityEntity'
+
 # Setup mock localizer
 global.T = (str) -> str
 
@@ -51,10 +54,12 @@ formCtx = {
 class DemoComponent extends React.Component
   constructor: ->
     super
+    console.log 'constructing'
 
-    @state = {
-      data: {}
-    }
+    data = {}
+    visibilityStructure = @computeVisibility(data)
+
+    @state = {data: data, visibilityStructure: visibilityStructure}
 
   @childContextTypes: 
     locale: React.PropTypes.string
@@ -75,9 +80,28 @@ class DemoComponent extends React.Component
 
     imageManager: React.PropTypes.object.isRequired
     imageAcquirer: React.PropTypes.object
+
+    isVisible: React.PropTypes.func.isRequired # (id) tells if an item is visible or not
   
-  getChildContext: ->  
-    formCtx
+  getChildContext: ->
+    formCtx['isVisible'] = @isVisible
+    return formCtx
+
+  isVisible: (itemId) =>
+    return @state.visibilityStructure[itemId]
+
+  handleDataChange: (data) =>
+    visibilityStructure = @computeVisibility(data)
+    newData = @cleanData(data, visibilityStructure)
+    @setState(data: newData, visibilityStructure: visibilityStructure)
+
+  computeVisibility: (data) ->
+    visibilityEntity = new VisibilityEntity(sampleForm2)
+    return visibilityEntity.createVisibilityStructure(data)
+
+  cleanData: (data, visibilityStructure) ->
+    cleaningEntity = new CleaningEntity()
+    return cleaningEntity.cleanData(sampleForm2, data, visibilityStructure)
 
   render: ->
     # R ItemListComponent, 
@@ -90,7 +114,7 @@ class DemoComponent extends React.Component
       # design: rosterFormDesign
       # locale: React.PropTypes.string            # Locale. Defaults to English (en)
       data: @state.data
-      onDataChange: (data) => @setState(data: data)
+      onDataChange: @handleDataChange
       onSubmit: => alert("Submit")
       onSaveLater: => alert("SaveLater")
       onDiscard:  => alert("Discard")

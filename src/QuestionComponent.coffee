@@ -41,6 +41,8 @@ UnitsAnswerComponent = require './answers/UnitsAnswerComponent'
 module.exports = class QuestionComponent extends React.Component
   @contextTypes:
     locale: React.PropTypes.string
+    isVisible: React.PropTypes.func.isRequired # (id) tells if an item is visible or not
+
 
   @propTypes:
     question: React.PropTypes.object.isRequired # Design of question. See schema
@@ -315,6 +317,9 @@ module.exports = class QuestionComponent extends React.Component
     return null
 
   render: ->
+    if not @context.isVisible(@props.question._id)
+      return null
+
     className = "question"
     if @state.validationError?
       className += " invalid"
