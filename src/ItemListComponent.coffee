@@ -14,6 +14,7 @@ module.exports = class ItemListComponent extends React.Component
     data: React.PropTypes.object      # Current data of response. 
     onDataChange: React.PropTypes.func.isRequired
     onNext: React.PropTypes.func
+    isVisible: React.PropTypes.func.isRequired # (id) tells if an item is visible or not
 
   validateAndScrollToFirstInvalid: () ->
     foundInvalid = false
@@ -42,6 +43,7 @@ module.exports = class ItemListComponent extends React.Component
       data: @props.data,
       onDataChange: @props.onDataChange,
       onNext: @handleNext.bind(this, index)
+      isVisible: @props.isVisible
     })
 
   render: ->

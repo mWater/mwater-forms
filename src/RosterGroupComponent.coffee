@@ -53,6 +53,10 @@ module.exports = class RosterGroupComponent extends React.Component
     # returns true if invalid
     return false
 
+  isChildVisible: (index, id) ->
+    # TODO
+    return true
+
   renderName: ->
     H.h4 key: "prompt",
       formUtils.localizeString(@props.rosterGroup.name, @context.locale)
@@ -69,8 +73,9 @@ module.exports = class RosterGroupComponent extends React.Component
 
         R ItemListComponent,
           contents: @props.rosterGroup.contents
-          data: @props.answer[index]
-          onDataChange: @handleDataChange.bind(null, index)
+          data: @getAnswer()[index]
+          onDataChange: @handleEntryDataChange.bind(null, index)
+          isVisible: @isChildVisible.bind(null, index)
 
   renderAdd: ->
     if @props.rosterGroup.allowAdd
@@ -82,10 +87,10 @@ module.exports = class RosterGroupComponent extends React.Component
   render: ->
     H.div style: { padding: 5, marginBottom: 20 },
       @renderName()
-      _.map(@props.answer, (entry, index) => @renderEntry(entry, index))
+      _.map(@getAnswer(), (entry, index) => @renderEntry(entry, index))
 
       # Display message if none
-      if not @props.answer or @props.answer.length == 0
+      if @getAnswer().length == 0
         H.div(style: { paddingLeft: 20 }, H.i(null, T("None")))
 
       @renderAdd() 

@@ -16,6 +16,7 @@ module.exports = class ItemComponent extends React.Component
     data: React.PropTypes.object      # Current data of response. 
     onDataChange: React.PropTypes.func.isRequired
     onNext: React.PropTypes.func
+    isVisible: React.PropTypes.func.isRequired # (id) tells if an item is visible or not
 
   handleAnswerChange: (id, answer) =>
     change = {}
@@ -45,9 +46,11 @@ module.exports = class ItemComponent extends React.Component
         onAnswerChange: @handleAnswerChange.bind(null, @props.item._id)
         data: @props.data
         onNext: @props.onNext
+        isVisible: @props.isVisible
     else if @props.item._type == "Instructions"
       return R InstructionsComponent,
         instructions: @props.item
+        isVisible: @props.isVisible
     else if @props.item._type == "RosterGroup"
       # Answer is under rosterId, not _id
       return R RosterGroupComponent,
@@ -55,11 +58,13 @@ module.exports = class ItemComponent extends React.Component
         rosterGroup: @props.item
         data: @props.data
         onDataChange: @props.onDataChange
+        isVisible: @props.isVisible
     else if @props.item._type == "RosterMatrix"
       # Answer is under rosterId, not _id
       return R RosterMatrixComponent,
         rosterMatrix: @props.item
         answer: @props.data[@props.item.rosterId]
         onAnswerChange: @handleAnswerChange.bind(null, @props.item.rosterId)
+        isVisible: @props.isVisible
     else
       return H.div null, "TODO: " + @props.item._type
