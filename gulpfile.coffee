@@ -32,7 +32,7 @@ gulp.task 'localize', (cb) ->
 
 # Compile tests
 gulp.task 'prepareTests', ->
-  files = glob.sync("./test/*Tests.coffee");
+  files = glob.sync("./test/**/*Tests.coffee");
   bundler = browserify({ entries: files, extensions: [".js", ".coffee"] })
   stream = bundler.bundle()
     .on('error', gutil.log)
