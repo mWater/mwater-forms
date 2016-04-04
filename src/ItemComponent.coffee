@@ -53,6 +53,7 @@ module.exports = class ItemComponent extends React.Component
       return R RosterGroupComponent,
         ref: 'rosterGroup'
         rosterGroup: @props.item
+        data: @props.data
         answer: @props.data[@props.item.rosterId]
         onAnswerChange: @handleAnswerChange.bind(null, @props.item.rosterId)
     else if @props.item._type == "RosterMatrix"
