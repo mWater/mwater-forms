@@ -89,12 +89,8 @@ class DemoComponent extends React.Component
 
     imageManager: React.PropTypes.object.isRequired
     imageAcquirer: React.PropTypes.object
-
-    isVisible: React.PropTypes.func.isRequired # (id) tells if an item is visible or not
   
-  getChildContext: ->
-    formCtx['isVisible'] = @isVisible
-    return formCtx
+  getChildContext: -> @formCtx
 
   isVisible: (itemId) =>
     return @state.visibilityStructure[itemId]
@@ -133,6 +129,7 @@ class DemoComponent extends React.Component
       onSubmit: => alert("Submit")
       onSaveLater: => alert("SaveLater")
       onDiscard:  => alert("Discard")
+      isVisible: @isVisible
       # submitLabel: React.PropTypes.string           # Label for submit button
       # discardLabel: React.PropTypes.string           # Label for discard button
       # entity: React.PropTypes.object            # Form-level entity to load
