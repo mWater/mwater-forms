@@ -20,16 +20,20 @@ module.exports = class RosterGroupComponent extends React.Component
     onDataChange: React.PropTypes.func.isRequired   # Called when data changes
     isVisible: React.PropTypes.func.isRequired # (id) tells if an item is visible or not
 
+  # Gets the id that the answer is stored under
+  getAnswerId: ->
+    # Prefer rosterId if specified, otherwise use id. Default to array
+    return @props.rosterGroup.rosterId or @props.rosterGroup._id
+
   # Get the current answer value
   getAnswer: ->
-    # Prefer rosterId if specified, otherwise use id. Default to array
-    return @props.data[@props.rosterGroup.rosterId or @props.rosterGroup._id] or []
+    return @props.data[@getAnswerId()] or []
 
   # Propagate an answer change to the onDataChange
   handleAnswerChange: (answer) =>
     # Prefer rosterId if specified, otherwise use id. Default to array
     change = {}
-    change[@props.rosterGroup.rosterId or @props.rosterGroup._id] = answer
+    change[@getAnswerId()] = answer
     @props.onDataChange(_.extend({}, @props.data, change))
 
   # Handles a change in data of a specific entry of the roster
@@ -53,9 +57,8 @@ module.exports = class RosterGroupComponent extends React.Component
     # returns true if invalid
     return false
 
-  isChildVisible: (index, id) ->
-    # TODO
-    return true
+  isChildVisible: (index, id) =>
+    return @props.isVisible("#{@getAnswerId()}.#{index}.#{id}")
 
   renderName: ->
     H.h4 key: "prompt",
@@ -66,7 +69,9 @@ module.exports = class RosterGroupComponent extends React.Component
     ItemListComponent = require './ItemListComponent'
 
     H.div key: index, className: "panel panel-default", 
-      H.div className: "panel-body",
+      H.div key: "header", className: "panel-header",
+        "##{index + 1}"
+      H.div key: "body", className: "panel-body",
         if @props.rosterGroup.allowRemove
           H.button type: "button", style: { float: "right" }, className: "btn btn-sm btn-link", onClick: @handleRemove.bind(null, index),
             H.span className: "glyphicon glyphicon-remove"  
@@ -85,6 +90,9 @@ module.exports = class RosterGroupComponent extends React.Component
           " " + T("Add")
 
   render: ->
+    if not @props.isVisible(@props.rosterGroup._id)
+      return null
+      
     H.div style: { padding: 5, marginBottom: 20 },
       @renderName()
       _.map(@getAnswer(), (entry, index) => @renderEntry(entry, index))

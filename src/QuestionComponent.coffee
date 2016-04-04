@@ -34,7 +34,7 @@ UnitsAnswerComponent = require './answers/UnitsAnswerComponent'
 # Displays comments field
 # Does NOT fill in when sticky and visible for first time. This is done by data cleaning
 # Does NOT remove answer when invisible. This is done by data cleaning
-# Does not check conditions or make self invisible. This is done by parent component.
+# Does check conditions and make self invisible.
 # Displays alternates and makes exclusive with answer
 # TODO Records timestamp when answered
 # TODO Records GPS when answered
