@@ -10,21 +10,6 @@ ReactDOM = require 'react-dom'
 R = React.createElement
 H = React.DOM
 
-# nodeType is 1, not 3 so TestComponent.findComponentByText wasn't working
-findComponentByText = (component, pattern) ->
-  return ReactTestUtils.findAllInRenderedTree(component, (c) ->
-# Only match DOM components with a child node that is matching string
-    if ReactTestUtils.isDOMComponent(c)
-      _.any(c.childNodes, (node) ->
-        (node.nodeType == 3 or node.nodeType == 1) and node.textContent.match(pattern))
-  )[0]
-
-# nodeType is 1, not 3 so TestComponent.findComponentByText wasn't working
-findComponentById = (component, id) ->
-  return ReactTestUtils.findAllInRenderedTree(component, (c) ->
-    c.id == id
-  )[0]
-
 describe 'MulticheckAnswerComponent', ->
   before ->
     @toDestroy = []
@@ -53,19 +38,19 @@ describe 'MulticheckAnswerComponent', ->
   it "displays choices", ->
     testComponent = @render()
 
-    choiceA = findComponentByText(testComponent.getComponent(), /AA/)
+    choiceA = testComponent.findComponentByText(/AA/)
     assert choiceA?, 'Not showing choice AA'
 
-    choiceB = findComponentByText(testComponent.getComponent(), /BB/)
+    choiceB = testComponent.findComponentByText(/BB/)
     assert choiceB?, 'Not showing choice BB'
 
-    choiceC = findComponentByText(testComponent.getComponent(), /CC/)
+    choiceC = testComponent.findComponentByText(/CC/)
     assert choiceC?, 'Not showing choice CC'
 
   it "displays choice hints", ->
     testComponent = @render()
 
-    hintA = findComponentByText(testComponent.getComponent(), /a-hint/)
+    hintA = testComponent.findComponentByText(/a-hint/)
     assert hintA?, 'Not showing hint'
 
   it "records selected choice", (done) ->
@@ -75,7 +60,7 @@ describe 'MulticheckAnswerComponent', ->
         done()
     })
 
-    choiceA = findComponentById(testComponent.getComponent(), 'a')
+    choiceA = testComponent.findComponentById('a')
 
     assert choiceA?, 'could not find choice A'
     TestComponent.click(choiceA)
@@ -88,7 +73,7 @@ describe 'MulticheckAnswerComponent', ->
         done()
     })
 
-    choiceB = findComponentById(testComponent.getComponent(), 'b')
+    choiceB = testComponent.findComponentById('b')
 
     assert choiceB?, 'could not find choice B'
     TestComponent.click(choiceB)
@@ -101,7 +86,7 @@ describe 'MulticheckAnswerComponent', ->
         done()
     })
 
-    choiceB = findComponentById(testComponent.getComponent(), 'b')
+    choiceB = testComponent.findComponentById('b')
 
     assert choiceB?, 'could not find choice B'
     TestComponent.click(choiceB)
@@ -138,7 +123,7 @@ describe 'MulticheckAnswerComponent', ->
       answer: {value: ['c'], specify: {c: 'specify'}}
     }
 
-    choiceC = findComponentById(testComponent.getComponent(), 'c')
+    choiceC = testComponent.findComponentById('c')
     TestComponent.click(choiceC)
 
   it "does not remove specify value on other selection", (done) ->
@@ -149,5 +134,5 @@ describe 'MulticheckAnswerComponent', ->
       answer: {value: ['c'], specify: {c: 'specify'}}
     }
 
-    choiceB = findComponentById(testComponent.getComponent(), 'b')
+    choiceB = testComponent.findComponentById('b')
     TestComponent.click(choiceB)
