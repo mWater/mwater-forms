@@ -23,13 +23,13 @@ module.exports = class RosterGroupComponent extends React.Component
   # Get the current answer value
   getAnswer: ->
     # Prefer rosterId if specified, otherwise use id. Default to array
-    return @props.data[@props.item.rosterId or @props.item._id] or []
+    return @props.data[@props.rosterGroup.rosterId or @props.rosterGroup._id] or []
 
   # Propagate an answer change to the onDataChange
   handleAnswerChange: (answer) =>
     # Prefer rosterId if specified, otherwise use id. Default to array
     change = {}
-    change[@props.item.rosterId or @props.item._id] = answer
+    change[@props.rosterGroup.rosterId or @props.rosterGroup._id] = answer
     @props.onDataChange(_.extend({}, @props.data, change))
 
   # Handles a change in data of a specific entry of the roster

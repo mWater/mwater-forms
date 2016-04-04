@@ -79,16 +79,16 @@ describe 'DropdownAnswerComponent', ->
   it "displays choices and hints", ->
     testComponent = @render createOptions()
 
-    labelA = testComponent.findComponentByText(/label a/)
+    labelA = testComponent.findDOMNodeByText(/label a/)
     assert labelA?, 'Not showing label a'
 
-    labelB = testComponent.findComponentByText(/label b/)
+    labelB = testComponent.findDOMNodeByText(/label b/)
     assert labelB?, 'Not showing label b'
 
-    hintA = testComponent.findComponentByText(/hint a/)
+    hintA = testComponent.findDOMNodeByText(/hint a/)
     assert hintA?, 'Not showing hint a'
 
-    hintB = testComponent.findComponentByText(/hint b/)
+    hintB = testComponent.findDOMNodeByText(/hint b/)
     assert hintB?, 'Not showing hint b'
 
   it "displays specify box when the right choice is selected", ->

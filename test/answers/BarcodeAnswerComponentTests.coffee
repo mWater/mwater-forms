@@ -42,7 +42,7 @@ describe 'BarcodeAnswerComponent', ->
     it "shows text if not supported", ->
       # If no context is passed, scanBarcode is not defined and so the feature is not supported
       comp = @render({onValueChange: null})
-      component = comp.findComponentByText(/not supported/i)
+      component = comp.findDOMNodeByText(/not supported/i)
       assert component?, 'Not showing not supported text'
 
 
@@ -75,7 +75,7 @@ describe 'BarcodeAnswerComponent', ->
         value: 'sometext'
       })
       # TODO: the method to find the Scan button doesn't seem to work
-      component = comp.findComponentByText(/Clear/i)
+      component = comp.findDOMNodeByText(/Clear/i)
       assert component?, 'Not showing clear button'
 
     it "shows scan button", (done) ->

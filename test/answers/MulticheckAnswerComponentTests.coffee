@@ -38,19 +38,19 @@ describe 'MulticheckAnswerComponent', ->
   it "displays choices", ->
     testComponent = @render()
 
-    choiceA = testComponent.findComponentByText(/AA/)
+    choiceA = testComponent.findDOMNodeByText(/AA/)
     assert choiceA?, 'Not showing choice AA'
 
-    choiceB = testComponent.findComponentByText(/BB/)
+    choiceB = testComponent.findDOMNodeByText(/BB/)
     assert choiceB?, 'Not showing choice BB'
 
-    choiceC = testComponent.findComponentByText(/CC/)
+    choiceC = testComponent.findDOMNodeByText(/CC/)
     assert choiceC?, 'Not showing choice CC'
 
   it "displays choice hints", ->
     testComponent = @render()
 
-    hintA = testComponent.findComponentByText(/a-hint/)
+    hintA = testComponent.findDOMNodeByText(/a-hint/)
     assert hintA?, 'Not showing hint'
 
   it "records selected choice", (done) ->
