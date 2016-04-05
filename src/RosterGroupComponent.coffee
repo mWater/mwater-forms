@@ -48,10 +48,17 @@ module.exports = class RosterGroupComponent extends React.Component
     answer.splice(index, 1)
     @handleAnswerChange(answer)
 
-  scrollToInvalid: (alreadyFoundFirst) ->
-    # TODO: Check if invalid and scroll if necessary
-    # returns true if invalid
-    return false
+  validate: (scrollToFirstInvalid) ->
+    # Ignore if not visible
+    if not @props.isVisible(@props.rosterGroup._id)
+      return false
+
+    # For each entry
+    foundInvalid = false
+    for entry, index in @getAnswer()
+      foundInvalid = foundInvalid or @refs["itemlist_#{index}"].validate(scrollToFirstInvalid)
+
+    return foundInvalid
 
   isChildVisible: (index, id) =>
     return @props.isVisible("#{@getAnswerId()}.#{index}.#{id}")
@@ -73,6 +80,7 @@ module.exports = class RosterGroupComponent extends React.Component
             H.span className: "glyphicon glyphicon-remove"  
 
         R ItemListComponent,
+          ref: "itemlist_#{index}", 
           contents: @props.rosterGroup.contents
           data: @getAnswer()[index]
           onDataChange: @handleEntryDataChange.bind(null, index)

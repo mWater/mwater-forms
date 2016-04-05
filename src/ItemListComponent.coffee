@@ -6,8 +6,6 @@ R = React.createElement
 ItemComponent = require './ItemComponent'
 
 # Display a list of items
-# TODO should allow validating and scrolling to the first invalid one
-# TODO should display only items where conditions are true
 module.exports = class ItemListComponent extends React.Component
   @propTypes:
     contents: React.PropTypes.array.isRequired 
@@ -20,8 +18,9 @@ module.exports = class ItemListComponent extends React.Component
     foundInvalid = false
     for item in @props.contents
       itemComponent = @refs[item._id]
-      if itemComponent.validate(scrollToFirstInvalid and not foundInvalid)
-        foundInvalid = true
+      if itemComponent.validate?  # Only if validation is possible
+        if itemComponent.validate(scrollToFirstInvalid and not foundInvalid)
+          foundInvalid = true
     return foundInvalid
 
   handleNext: (index) ->

@@ -29,6 +29,23 @@ module.exports = class RosterMatrixComponent extends React.Component
   getAnswer: ->
     return @props.data[@getAnswerId()] or []
 
+  validate: (scrollToFirstInvalid) ->
+    # Ignore if not visible
+    if not @props.isVisible(@props.rosterMatrix._id)
+      return false
+
+    # For each entry
+    foundInvalid = false
+    for entry, index in @getAnswer()
+      # For each column
+      for column, columnIndex in @props.rosterMatrix.columns
+        # TODO validate
+        # foundInvalid = foundInvalid or @refs["itemlist_#{index}"].validate(scrollToFirstInvalid)
+        continue
+
+    return foundInvalid
+
+
   # Propagate an answer change to the onDataChange
   handleAnswerChange: (answer) =>
     change = {}

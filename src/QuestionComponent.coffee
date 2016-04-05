@@ -106,7 +106,12 @@ module.exports = class QuestionComponent extends React.Component
   handleCommentsChange: (ev) =>
     @handleAnswerChange(_.extend({}, @props.answer, { comments: ev.target.value }))
 
+  # Returns true if validation error
   validate: (scrollToFirstInvalid) ->
+    # Ignore if not visible
+    if not @props.isVisible(@props.question._id)
+      return false
+      
     validationError = new AnswerValidator().validate(@props.question, @props.answer)
 
     if validationError?
