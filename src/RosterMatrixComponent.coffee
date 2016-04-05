@@ -5,11 +5,10 @@ R = React.createElement
 
 formUtils = require './formUtils'
 NumberAnswerComponent = require './answers/NumberAnswerComponent'
+AnswerValidator = require './answers/AnswerValidator'
 
 # Rosters are repeated information, such as asking questions about household members N times.
 # A roster matrix is a list of columns with one row for each entry in the roster
-# TODO add validation of columns
-# TODO add required columns support
 module.exports = class RosterMatrixComponent extends React.Component
   @contextTypes:
     locale: React.PropTypes.string
@@ -19,6 +18,13 @@ module.exports = class RosterMatrixComponent extends React.Component
     data: React.PropTypes.object      # Current data of response. 
     onDataChange: React.PropTypes.func.isRequired   # Called when data changes
     isVisible: React.PropTypes.func.isRequired # (id) tells if an item is visible or not
+
+  constructor: ->
+    super
+
+    @state = {
+      validationErrors: {}  # Map of "<rowindex>_<columnid>" to validation error
+    }
 
   # Gets the id that the answer is stored under
   getAnswerId: ->
@@ -34,17 +40,33 @@ module.exports = class RosterMatrixComponent extends React.Component
     if not @props.isVisible(@props.rosterMatrix._id)
       return false
 
+    validationErrors = {}
+
     # For each entry
     foundInvalid = false
-    for entry, index in @getAnswer()
+    for entry, rowIndex in @getAnswer()
       # For each column
       for column, columnIndex in @props.rosterMatrix.columns
-        # TODO validate
-        # foundInvalid = foundInvalid or @refs["itemlist_#{index}"].validate(scrollToFirstInvalid)
-        continue
+        key = "#{rowIndex}_#{column._id}"
+
+        if column.required and (not entry[column._id]?.value or entry[column._id]?.value == '')
+          foundInvalid = true
+          validationErrors[key] = true
+
+        if column.validations and column.validations.length > 0
+          validationError = new AnswerValidator().compileValidations(column.validations)(entry[column._id])
+          if validationError
+            foundInvalid = true
+            validationErrors[key] = validationError
+
+    # Save state
+    @setState(validationErrors: validationErrors)
+
+    # Scroll into view
+    if foundInvalid and scrollToFirstInvalid
+      @refs.prompt.scrollIntoView()
 
     return foundInvalid
-
 
   # Propagate an answer change to the onDataChange
   handleAnswerChange: (answer) =>
@@ -71,13 +93,13 @@ module.exports = class RosterMatrixComponent extends React.Component
   handleCellChange: (entryIndex, columnId, value) =>
     data = @getAnswer()[entryIndex]
     change = {}
-    change[columnId] = value
+    change[columnId] = { value: value }
     data = _.extend({}, data, change)
 
     @handleEntryDataChange(entryIndex, data)
 
   renderName: ->
-    H.h3 key: "prompt",
+    H.h3 key: "prompt", ref: "prompt",
       formUtils.localizeString(@props.rosterMatrix.name, @context.locale)
 
   renderColumnHeader: (column, index) ->
@@ -104,7 +126,7 @@ module.exports = class RosterMatrixComponent extends React.Component
       when "Text"
         elem = H.input type: "text", className: "form-control input-sm", value: value, onChange: (ev) => @handleCellChange(entryIndex, column._id, ev.target.value)
       when "Number"
-        elem = R NumberAnswerComponent, small: true, style: { maxWidth: "10em"}, value: value, onChange: (val) => @handleCellChange(entryIndex, column._id, val)
+        elem = R NumberAnswerComponent, small: true, style: { maxWidth: "10em"}, decimal: column.decimal, value: value, onChange: (val) => @handleCellChange(entryIndex, column._id, val)
       when "Checkbox"
         elem = H.div 
           className: "touch-checkbox #{if value then "checked" else ""}"
@@ -122,7 +144,7 @@ module.exports = class RosterMatrixComponent extends React.Component
               text = formUtils.localizeString(choice.label, @context.locale)
               return H.option key: choice.id, value: choice.id, text
 
-    return H.td null, elem
+    return H.td key: column._id, elem
 
   renderEntry: (entry, index) ->
     H.tr key: index,

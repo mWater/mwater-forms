@@ -29,7 +29,7 @@ describe "RosterMatrixComponent", ->
         { _id: "text", _type: "Text", name: { en: "Text" } }
         { _id: "number", _type: "Number", name: { en: "Number" }, decimal: false }
         { _id: "checkbox", _type: "Checkbox", name: { en: "Checkbox" } }
-        { _id: "dropdown", _type: "Dropdown", name: { en: "Dropdown" }, choices: [{ id: "x", label: { en: "X" }}, { id: "x", label: { en: "Y" }}] }
+        { _id: "dropdown", _type: "Dropdown", name: { en: "Dropdown" }, choices: [{ id: "x", label: { en: "X" }}, { id: "y", label: { en: "Y" }}] }
       ]
     }
 
@@ -67,7 +67,7 @@ describe "RosterMatrixComponent", ->
   it "puts answers from column components in correct position in array", (done) ->
     onDataChange = (val) =>
       # Removes first one
-      compare(val, { a: [{}, { text: "x" }] })
+      compare(val, { a: [{}, { text: { value: "x" }}] })
       done()
 
     comp = @render(rosterMatrix: @rosterMatrix, data: { a: [{}, {}] }, onDataChange: onDataChange)
@@ -97,10 +97,9 @@ describe "RosterMatrixComponent", ->
     comp = @render(rosterMatrix: @rosterMatrix, data: { a: [{}, {}] }, isVisible: isVisible)
     assert.equal ReactTestUtils.scryRenderedDOMComponentsWithTag(comp.getComponent(), "input").length, 0
 
-
   it "records text", (done) ->
     onDataChange = (val) =>
-      compare(val, { a: [{ text: "x" }] })
+      compare(val, { a: [{ text: { value: "x"}}] })
       done()
 
     comp = @render(rosterMatrix: @rosterMatrix, data: { a: [{}] }, onDataChange: onDataChange)
@@ -111,7 +110,7 @@ describe "RosterMatrixComponent", ->
 
   it "records number", (done) ->
     onDataChange = (val) =>
-      compare(val, { a: [{ number: 1 }] })
+      compare(val, { a: [{ number: { value: 1 }}] })
       done()
 
     comp = @render(rosterMatrix: @rosterMatrix, data: { a: [{}] }, onDataChange: onDataChange)
@@ -123,7 +122,7 @@ describe "RosterMatrixComponent", ->
 
   it "records checkbox", (done) ->
     onDataChange = (val) =>
-      compare(val, { a: [{ checkbox: true }] })
+      compare(val, { a: [{ checkbox: { value: true }}] })
       done()
 
     comp = @render(rosterMatrix: @rosterMatrix, data: { a: [{}] }, onDataChange: onDataChange)
@@ -133,7 +132,7 @@ describe "RosterMatrixComponent", ->
 
   it "records dropdown", (done) ->
     onDataChange = (val) =>
-      compare(val, { a: [{ dropdown: "y" }] })
+      compare(val, { a: [{ dropdown: { value: "y" }}] })
       done()
 
     comp = @render(rosterMatrix: @rosterMatrix, data: { a: [{}] }, onDataChange: onDataChange)
@@ -142,6 +141,26 @@ describe "RosterMatrixComponent", ->
     inputs[0].value = "y"
     ReactTestUtils.Simulate.change(inputs[0], { target: { value: "y" }})
 
-  it "requires required columns"
+  it "requires required columns", ->
+    @rosterMatrix.columns[0].required = true
 
-  it "validates columns"
+    comp = @render(rosterMatrix: @rosterMatrix, data: { a: [{}] })
+    assert.isTrue comp.getComponent().validate(false), "Should fail validation"
+
+    comp = @render(rosterMatrix: @rosterMatrix, data: { a: [{ text: { value: "x" }}] })
+    assert.isFalse comp.getComponent().validate(false), "Should pass validation"
+
+  it "validates columns", ->
+    @rosterMatrix.columns[0].validations = [
+      {
+        op: "lengthRange"
+        rhs: { literal: { min: 4, max: 6 } }
+        message: { en: "message" }
+      }
+    ]
+
+    comp = @render(rosterMatrix: @rosterMatrix, data: { a: [{ text: { value: "x" }}] })
+    assert.isTrue comp.getComponent().validate(false), "Should fail validation"
+
+    comp = @render(rosterMatrix: @rosterMatrix, data: { a: [{ text: { value: "12345" }}] })
+    assert.isFalse comp.getComponent().validate(false), "Should pass validation"

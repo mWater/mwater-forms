@@ -71,6 +71,23 @@ module.exports = class QuestionComponent extends React.Component
     if answer? and answer.focus?
       answer.focus()
 
+  # Returns true if validation error
+  validate: (scrollToFirstInvalid) ->
+    # Ignore if not visible
+    if not @props.isVisible(@props.question._id)
+      return false
+      
+    validationError = new AnswerValidator().validate(@props.question, @props.answer)
+
+    if validationError?
+      if scrollToFirstInvalid
+        @refs.prompt.scrollIntoView()
+      @setState(validationError: validationError)
+      return true
+    else
+      @setState(validationError: null)
+      return false
+
   handleToggleHelp: =>
     @setState(helpVisible: not @state.helpVisible)
 
@@ -105,23 +122,6 @@ module.exports = class QuestionComponent extends React.Component
 
   handleCommentsChange: (ev) =>
     @handleAnswerChange(_.extend({}, @props.answer, { comments: ev.target.value }))
-
-  # Returns true if validation error
-  validate: (scrollToFirstInvalid) ->
-    # Ignore if not visible
-    if not @props.isVisible(@props.question._id)
-      return false
-      
-    validationError = new AnswerValidator().validate(@props.question, @props.answer)
-
-    if validationError?
-      if scrollToFirstInvalid
-        @refs.prompt.scrollIntoView()
-      @setState(validationError: validationError)
-      return true
-    else
-      @setState(validationError: null)
-      return false
 
   # Either jump to next question or select the comments box
   handleNextOrComments: (ev) =>

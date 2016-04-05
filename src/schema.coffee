@@ -371,6 +371,18 @@ exports.design = {
 
         # For dropdown columns. Do not allow specify.
         choices: { $ref: "#/definitions/choices" }
+
+        # Validations for various types
+        validations: {
+          type: "array"
+          items: {
+            oneOf: [
+              { $ref: "#/definitions/validations/range" }
+              { $ref: "#/definitions/validations/lengthRange" }
+              { $ref: "#/definitions/validations/regex" }
+            ]
+          }
+        }
        }
       required: ["_id", "_type", "name"]
     }
