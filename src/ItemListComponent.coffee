@@ -18,7 +18,7 @@ module.exports = class ItemListComponent extends React.Component
     foundInvalid = false
     for item in @props.contents
       itemComponent = @refs[item._id]
-      if itemComponent.validate?  # Only if validation is possible
+      if itemComponent?.validate?  # Only if validation is possible
         if itemComponent.validate(scrollToFirstInvalid and not foundInvalid)
           foundInvalid = true
     return foundInvalid
@@ -31,6 +31,10 @@ module.exports = class ItemListComponent extends React.Component
       @refs[@props.contents[index]._id].focus()
 
   renderItem: (item, index) =>
+    # Check if visible
+    if not @props.isVisible(item._id)
+      return null
+
     R(ItemComponent, {
       key: item._id,
       ref: item._id,

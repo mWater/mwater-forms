@@ -17,16 +17,9 @@ module.exports = class GroupComponent extends React.Component
     isVisible: React.PropTypes.func.isRequired # (id) tells if an item is visible or not
 
   validate: (scrollToFirstInvalid) ->
-    # Ignore if not visible
-    if not @props.isVisible(@props.group._id)
-      return false
-
     return @refs.itemlist.validate(scrollToFirstInvalid)
 
   render: ->
-    if not @props.isVisible(@props.group._id)
-      return null
-
     # To avoid circularity
     ItemListComponent = require './ItemListComponent'
       

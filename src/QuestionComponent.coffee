@@ -34,7 +34,7 @@ UnitsAnswerComponent = require './answers/UnitsAnswerComponent'
 # Displays comments field
 # Does NOT fill in when sticky and visible for first time. This is done by data cleaning
 # Does NOT remove answer when invisible. This is done by data cleaning
-# Does check conditions and make self invisible.
+# Does NOT check conditions and make self invisible. This is done by parent (ItemListComponent)
 # Displays alternates and makes exclusive with answer
 # TODO Records timestamp when answered
 # TODO Records GPS when answered
@@ -73,10 +73,6 @@ module.exports = class QuestionComponent extends React.Component
 
   # Returns true if validation error
   validate: (scrollToFirstInvalid) ->
-    # Ignore if not visible
-    if not @props.isVisible(@props.question._id)
-      return false
-      
     validationError = new AnswerValidator().validate(@props.question, @props.answer)
 
     if validationError?
@@ -325,12 +321,11 @@ module.exports = class QuestionComponent extends React.Component
     return null
 
   render: ->
-    if not @props.isVisible(@props.question._id)
-      return null
-
+    # Create classname to include invalid if invalid
     className = "question"
     if @state.validationError?
       className += " invalid"
+
     H.div className: className,
       @renderPrompt()
       @renderHint()

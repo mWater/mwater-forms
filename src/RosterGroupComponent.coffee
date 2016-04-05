@@ -49,10 +49,6 @@ module.exports = class RosterGroupComponent extends React.Component
     @handleAnswerChange(answer)
 
   validate: (scrollToFirstInvalid) ->
-    # Ignore if not visible
-    if not @props.isVisible(@props.rosterGroup._id)
-      return false
-
     # For each entry
     foundInvalid = false
     for entry, index in @getAnswer()
@@ -94,9 +90,6 @@ module.exports = class RosterGroupComponent extends React.Component
           " " + T("Add")
 
   render: ->
-    if not @props.isVisible(@props.rosterGroup._id)
-      return null
-
     H.div style: { padding: 5, marginBottom: 20 },
       @renderName()
       _.map(@getAnswer(), (entry, index) => @renderEntry(entry, index))

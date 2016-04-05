@@ -36,10 +36,6 @@ module.exports = class RosterMatrixComponent extends React.Component
     return @props.data[@getAnswerId()] or []
 
   validate: (scrollToFirstInvalid) ->
-    # Ignore if not visible
-    if not @props.isVisible(@props.rosterMatrix._id)
-      return false
-
     validationErrors = {}
 
     # For each entry
@@ -162,9 +158,6 @@ module.exports = class RosterMatrixComponent extends React.Component
           " " + T("Add")
 
   render: ->
-    if not @props.isVisible(@props.rosterMatrix._id)
-      return null
-
     H.div style: { padding: 5, marginBottom: 20 },
       @renderName()
       H.table className: "table",
