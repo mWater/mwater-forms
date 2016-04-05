@@ -95,12 +95,6 @@ describe "RosterGroupComponent", ->
     assert comp.findDOMNodeByText(/#1/)
     assert comp.findDOMNodeByText(/#2/)
 
-  it "hides if isVisible for <id> is false", ->
-    # Hide first
-    isVisible = (id) -> id not in ["a"]
-    comp = @render(rosterGroup: @rosterGroup, data: { a: [{}, {}] }, isVisible: isVisible)
-    assert.equal ReactTestUtils.scryRenderedDOMComponentsWithTag(comp.getComponent(), "input").length, 0
-
   it "hides sub-items if isVisible for <id/rosterId>.<n>.<questionId> is false", ->
     # Hide first
     isVisible = (id) -> id not in ["a.0.text"]

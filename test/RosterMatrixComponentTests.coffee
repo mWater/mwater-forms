@@ -91,12 +91,6 @@ describe "RosterMatrixComponent", ->
     comp = @render(rosterMatrix: @rosterMatrix, data: {})
     assert comp.findDOMNodeByText(/Name/)
 
-  it "hides if isVisible for <id> is false", ->
-    # Hide first
-    isVisible = (id) -> id not in ["a"]
-    comp = @render(rosterMatrix: @rosterMatrix, data: { a: [{}, {}] }, isVisible: isVisible)
-    assert.equal ReactTestUtils.scryRenderedDOMComponentsWithTag(comp.getComponent(), "input").length, 0
-
   it "records text", (done) ->
     onDataChange = (val) =>
       compare(val, { a: [{ text: { value: "x"}}] })
