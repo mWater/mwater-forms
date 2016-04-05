@@ -16,6 +16,7 @@ module.exports = class FormComponent extends React.Component
   
     data: React.PropTypes.object.isRequired # Form response data. See docs/Answer Formats.md
     onDataChange: React.PropTypes.func.isRequired # Called when response data changes
+    isVisible: React.PropTypes.func.isRequired # (id) tells if an item is visible or not
 
     onSubmit: React.PropTypes.func.isRequired     # Called when submit is pressed
     onSaveLater: React.PropTypes.func             # Optional save for later
@@ -38,6 +39,7 @@ module.exports = class FormComponent extends React.Component
         onSubmit: @props.onSubmit
         onSaveLater: @props.onSaveLater
         onDiscard: @props.onDiscard
+        isVisible: @props.isVisible
     else
       H.div null,
         R ItemListComponent,
@@ -45,6 +47,7 @@ module.exports = class FormComponent extends React.Component
           contents: @props.design.contents
           data: @props.data
           onDataChange: @props.onDataChange
+          isVisible: @props.isVisible
 
         H.button type: "button", className: "btn btn-primary", onClick: @handleSubmit,
           T("Submit")

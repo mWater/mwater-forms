@@ -14,6 +14,9 @@ module.exports = class SectionsComponent extends React.Component
     contents: React.PropTypes.array.isRequired 
     data: React.PropTypes.object      # Current data of response. 
     onDataChange: React.PropTypes.func.isRequired
+
+    isVisible: React.PropTypes.func.isRequired # (id) tells if an item is visible or not
+
     onSubmit: React.PropTypes.func.isRequired     # Called when submit is pressed
     onSaveLater: React.PropTypes.func             # Optional save for later
     onDiscard: React.PropTypes.func.isRequired    # Called when discard is pressed
@@ -69,6 +72,7 @@ module.exports = class SectionsComponent extends React.Component
         contents: section.contents
         data: @props.data
         onDataChange: @props.onDataChange
+        isVisible: @props.isVisible
 
   renderButtons: ->
     H.div className: "form-controls",

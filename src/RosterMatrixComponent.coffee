@@ -140,7 +140,13 @@ module.exports = class RosterMatrixComponent extends React.Component
               text = formUtils.localizeString(choice.label, @context.locale)
               return H.option key: choice.id, value: choice.id, text
 
-    return H.td key: column._id, elem
+    # Check for validation errors
+    key = "#{rowIndex}_#{column._id}"
+    if @state.validationErrors[key]
+      className = "invalid"
+
+    return H.td key: column._id, className: className,
+      elem
 
   renderEntry: (entry, index) ->
     H.tr key: index,
