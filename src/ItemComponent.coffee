@@ -5,6 +5,7 @@ R = React.createElement
 
 QuestionComponent = require './QuestionComponent'
 InstructionsComponent = require './InstructionsComponent'
+GroupComponent = require './GroupComponent'
 RosterGroupComponent = require './RosterGroupComponent'
 RosterMatrixComponent = require './RosterMatrixComponent'
 formUtils = require './formUtils'
@@ -24,23 +25,19 @@ module.exports = class ItemComponent extends React.Component
     @props.onDataChange(_.extend({}, @props.data, change))
 
   scrollToInvalid: (alreadyFoundFirst) ->
-    if @refs.question?
-      return @refs.question.scrollToInvalid(alreadyFoundFirst)
-    if @refs.rosterGroup?
-      return @refs.rosterGroup.scrollToInvalid(alreadyFoundFirst)
+    if @refs.item?
+      return @refs.item.scrollToInvalid(alreadyFoundFirst)
     return false
 
   focus: () ->
-    if @refs.question?
-      return @refs.question.focus()
-    if @refs.rosterGroup?
-      return @refs.rosterGroup.focus()
+    if @refs.item?
+      return @refs.item.focus()
     return false
 
   render: ->
     if formUtils.isQuestion(@props.item)
       return R QuestionComponent, 
-        ref: 'question'
+        ref: 'item'
         question: @props.item
         answer: @props.data[@props.item._id]
         onAnswerChange: @handleAnswerChange.bind(null, @props.item._id)
@@ -51,20 +48,25 @@ module.exports = class ItemComponent extends React.Component
       return R InstructionsComponent,
         instructions: @props.item
         isVisible: @props.isVisible
+    else if @item.item._type == "Group"
+      return R GroupComponent,
+        ref: 'item'
+        rosterGroup: @props.item
+        data: @props.data
+        onDataChange: @props.onDataChange
+        isVisible: @props.isVisible
     else if @props.item._type == "RosterGroup"
-      # Answer is under rosterId, not _id
       return R RosterGroupComponent,
-        ref: 'rosterGroup'
+        ref: 'item'
         rosterGroup: @props.item
         data: @props.data
         onDataChange: @props.onDataChange
         isVisible: @props.isVisible
     else if @props.item._type == "RosterMatrix"
-      # Answer is under rosterId, not _id
       return R RosterMatrixComponent,
         rosterMatrix: @props.item
-        answer: @props.data[@props.item.rosterId]
-        onAnswerChange: @handleAnswerChange.bind(null, @props.item.rosterId)
+        data: @props.data
+        onDataChange: @props.onDataChange
         isVisible: @props.isVisible
     else
       return H.div null, "TODO: " + @props.item._type

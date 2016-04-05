@@ -32,10 +32,6 @@ module.exports = class ItemListComponent extends React.Component
       @refs[@props.contents[index]._id].focus()
 
   renderItem: (item, index) =>
-    # HACK condition
-    if item._id == "c91fd40903ff4f0a980352f7ae0b3998" and @props.data.b >= 18
-      return null
-
     R(ItemComponent, {
       key: item._id,
       ref: item._id,

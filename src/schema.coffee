@@ -365,7 +365,13 @@ exports.design = {
 
         # True if the column is required to be answered
         required: { type: "boolean" }
-      }
+
+        # For number columns 
+        decimal: { type: "boolean" }
+
+        # For dropdown columns. Do not allow specify.
+        choices: { $ref: "#/definitions/choices" }
+       }
       required: ["_id", "_type", "name"]
     }
 
@@ -376,6 +382,9 @@ exports.design = {
         _id: { $ref: "#/definitions/uuid" }
         _type: { enum: ["Group"] }
 
+        # Name of group (displayed above list). Can be blank
+        name: { $ref: "#/definitions/localizedString" } 
+
         # Conditions for visibility of the group
         conditions: { $ref: "#/definitions/conditions" }
 
@@ -385,7 +394,7 @@ exports.design = {
           items: { $ref: "#/definitions/item" }
         }
       }
-      required: ["_id", "_type", "rosterId", "name", "conditions", "contents"]
+      required: ["_id", "_type", "conditions", "contents"]
     }
 
     # Conditions on an item or section that determine if it is visible.
