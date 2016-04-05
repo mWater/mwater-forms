@@ -147,7 +147,8 @@ exports.design = {
       # TODO document. Used to be object, now string
     }
 
-    # A section of a form has a name and a series of items (questions, etc.) that validate as a group
+    # A section of a form has a name and a series of items (questions, etc.) that validate as a group. Forms are 
+    # either made only of sections or not at all.
     section: {
       type: "object"
       properties: {
@@ -182,6 +183,8 @@ exports.design = {
         { $ref: "#/definitions/question" } 
         { $ref: "#/definitions/instructions" } 
         { $ref: "#/definitions/rosterGroup" } 
+        { $ref: "#/definitions/rosterMatrix" } 
+        { $ref: "#/definitions/group" } 
       ]
     }
 
@@ -296,13 +299,13 @@ exports.design = {
         _id: { $ref: "#/definitions/uuid" }
         _type: { enum: ["RosterGroup"] }
 
-        # _id under which roster is stored. Can reference another roster or self (in which case is = _id)
+        # _id under which roster is stored. Can reference another roster or self (in which case is null)
         rosterId: { $ref: "#/definitions/uuid" }
 
         # Name of roster group (displayed above list)
         name: { $ref: "#/definitions/localizedString" } 
 
-        # Conditions for visibility of the instructions
+        # Conditions for visibility of the group
         conditions: { $ref: "#/definitions/conditions" }
 
         # Allow user to add items
@@ -310,6 +313,71 @@ exports.design = {
 
         # Allow user to remove items
         allowRemove: { type: "boolean" }
+
+        # Contains a list of items
+        contents: {
+          type: "array"
+          items: { $ref: "#/definitions/item" }
+        }
+      }
+      required: ["_id", "_type", "rosterId", "name", "conditions", "contents"]
+    }
+
+    # Matrix of columns and rows. Each column is of a specific type.
+    rosterMatrix: {
+      type: "object"
+      properties: {
+        _id: { $ref: "#/definitions/uuid" }
+        _type: { enum: ["RosterMatrix"] }
+
+        # _id under which roster is stored. Can reference another roster or self (in which case is null)
+        rosterId: { $ref: "#/definitions/uuid" }
+
+        # Name of roster group (displayed above matrix)
+        name: { $ref: "#/definitions/localizedString" } 
+
+        # Conditions for visibility of the matrix
+        conditions: { $ref: "#/definitions/conditions" }
+
+        # Allow user to add items
+        allowAdd: { type: "boolean" }
+
+        # Allow user to remove items
+        allowRemove: { type: "boolean" }
+
+        # Contains a list of items
+        columns: {
+          type: "array"
+          items: { $ref: "#/definitions/rosterMatrixColumn" }
+        }
+      }
+      required: ["_id", "_type", "rosterId", "name", "conditions", "columns"]
+    }
+
+    rosterMatrixColumn: {
+      type: "object"
+      properties: {
+        _id: { $ref: "#/definitions/uuid" }
+        _type: { enum: ["Text", "Number", "Checkbox", "Dropdown"] }
+
+        # Name of roster column (displayed in header)
+        name: { $ref: "#/definitions/localizedString" } 
+
+        # True if the column is required to be answered
+        required: { type: "boolean" }
+      }
+      required: ["_id", "_type", "name"]
+    }
+
+    # Group of questions which can have conditions as a whole
+    group: {
+      type: "object"
+      properties: {
+        _id: { $ref: "#/definitions/uuid" }
+        _type: { enum: ["Group"] }
+
+        # Conditions for visibility of the group
+        conditions: { $ref: "#/definitions/conditions" }
 
         # Contains a list of items
         contents: {
