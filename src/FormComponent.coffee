@@ -26,7 +26,7 @@ module.exports = class FormComponent extends React.Component
 
   handleSubmit: =>
     # Cannot submit if at least one itemComponent is invalid
-    if not @refs.itemListComponent.validateAndScrollToFirstInvalid()
+    if not @refs.itemListComponent.validate(true)
       @props.onSubmit()
 
   render: ->

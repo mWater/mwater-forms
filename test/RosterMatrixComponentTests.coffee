@@ -143,3 +143,5 @@ describe "RosterMatrixComponent", ->
     ReactTestUtils.Simulate.change(inputs[0], { target: { value: "y" }})
 
   it "requires required columns"
+
+  it "validates columns"

@@ -16,11 +16,11 @@ module.exports = class ItemListComponent extends React.Component
     onNext: React.PropTypes.func
     isVisible: React.PropTypes.func.isRequired # (id) tells if an item is visible or not
 
-  validateAndScrollToFirstInvalid: () ->
+  validate: (scrollToFirstInvalid) ->
     foundInvalid = false
     for item in @props.contents
       itemComponent = @refs[item._id]
-      if itemComponent.scrollToInvalid(foundInvalid)
+      if itemComponent.validate(scrollToFirstInvalid and not foundInvalid)
         foundInvalid = true
     return foundInvalid
 

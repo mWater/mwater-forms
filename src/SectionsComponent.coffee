@@ -26,7 +26,7 @@ module.exports = class SectionsComponent extends React.Component
     }
 
   handleSubmit: =>
-    if not @refs.itemListComponent.validateAndScrollToFirstInvalid()
+    if not @refs.itemListComponent.validate(true)
       @props.onSubmit()
 
   handleBack: =>
@@ -34,7 +34,7 @@ module.exports = class SectionsComponent extends React.Component
     @setState(sectionNum: @state.sectionNum - 1)
 
   handleNext: =>
-    if not @refs.itemListComponent.validateAndScrollToFirstInvalid()
+    if not @refs.itemListComponent.validate(true)
       @setState(sectionNum: @state.sectionNum + 1)
 
   renderBreadcrumbs: ->

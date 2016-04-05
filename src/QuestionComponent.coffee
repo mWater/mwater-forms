@@ -106,11 +106,11 @@ module.exports = class QuestionComponent extends React.Component
   handleCommentsChange: (ev) =>
     @handleAnswerChange(_.extend({}, @props.answer, { comments: ev.target.value }))
 
-  scrollToInvalid: (alreadyFoundFirst) ->
+  validate: (scrollToFirstInvalid) ->
     validationError = new AnswerValidator().validate(@props.question, @props.answer)
 
     if validationError?
-      if not alreadyFoundFirst
+      if scrollToFirstInvalid
         @refs.prompt.scrollIntoView()
       @setState(validationError: validationError)
       return true
