@@ -1,4 +1,3 @@
-conditionUtils = require './conditionUtils'
 formUtils = require './formUtils'
 
 # TODO: Name needs to be changed
@@ -169,9 +168,6 @@ module.exports = class VisibilityEntity
         throw new Error("Unknown condition op " + cond.op)
 
   compileConditions: (conds, form) =>
-    # Only use valid conditions
-    if form?
-      conds = _.filter conds, (cond) -> conditionUtils.validateCondition(cond, form)
     compConds = _.map(conds, @compileCondition)
     return (data) =>
       for compCond in compConds
