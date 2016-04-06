@@ -108,11 +108,10 @@ class DemoComponent extends React.Component
 
   cleanData: (data, visibilityStructure) ->
     cleaningEntity = new CleaningEntity()
-    return cleaningEntity.cleanData(sampleForm2, data, visibilityStructure)
+    return cleaningEntity.cleanData(data, visibilityStructure)
 
   stickyData: (data, previousVisibilityStructure, newVisibilityStructure) ->
     stickyEntity = new StickyEntity()
-
     return stickyEntity.setStickyData(sampleForm2, data, formCtx.stickyStorage, previousVisibilityStructure, newVisibilityStructure)
 
   render: ->

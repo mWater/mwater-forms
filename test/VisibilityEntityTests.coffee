@@ -3,7 +3,7 @@ VisibilityEntity = require '../src/VisibilityEntity'
 
 # If mno is invisible and xyz is visible (and mno has rosterId
 
-describe.only 'VisibilityEntity', ->
+describe 'VisibilityEntity', ->
   before ->
     @form = {_type: 'Form', contents: [
         {
@@ -87,7 +87,7 @@ describe.only 'VisibilityEntity', ->
     it 'create a complete visibility structure', ->
       data = {
         mainRosterGroupId: [
-          {firstRosterQuestionId: {value: 'some text'}}
+          {firstRosterQuestionId: {value: 'some text'}, firstSubRosterQuestionId: {value: 'sub text'}}
           # This will make the second question invisible
           {firstRosterQuestionId: {value: null}}
         ]
@@ -102,6 +102,8 @@ describe.only 'VisibilityEntity', ->
         'mainRosterGroupId.0.secondRosterQuestionId': true
         'mainRosterGroupId.1.firstRosterQuestionId': true
         'mainRosterGroupId.1.secondRosterQuestionId': false
+        'subRosterGroupId.0.firstSubRosterQuestionId': true
+        'subRosterGroupId.1.firstSubRosterQuestionId': true
         'subRosterGroupId': true
       }
       assert.deepEqual visibilityStructure, expectedVisibilityStructure
@@ -160,3 +162,59 @@ describe.only 'VisibilityEntity', ->
         }
         @visibilityEntity.processQuestion(question, false, data, '')
         assert.deepEqual {testId: false}, @visibilityEntity.visibilityStructure
+
+
+  describe 'processSection', ->
+    it 'sub questions are invisible if the section is invisible', ->
+      @form = {_type: 'Form', contents: [
+          {
+            _id: "firstSectionId"
+            _type: "Section"
+            contents: [
+              {
+                _id: "checkboxQuestionId",
+                _type: "CheckQuestion",
+                required: false,
+                alternates: {
+                  na: true,
+                  dontknow: true
+                },
+                conditions: [],
+                validations: []
+              }
+            ]
+          },
+          {
+            _id: "secondSectionId"
+            _type: "Section"
+            conditions: [
+              {op: "true", lhs: {question: "checkboxQuestionId"}}
+            ]
+            contents: [
+              {
+                _id: "anotherQuestionId",
+                _type: "CheckQuestion",
+                required: false,
+                alternates: {
+                  na: true,
+                  dontknow: true
+                },
+                conditions: [],
+                validations: []
+              }
+            ]
+          }
+        ]
+      }
+      @visibilityEntity = new VisibilityEntity(@form)
+      data = {}
+
+      firstSection = @form.contents[0]
+      @visibilityEntity.processSection(firstSection, false, data, '')
+      assert.deepEqual {firstSectionId: true, checkboxQuestionId: true}, @visibilityEntity.visibilityStructure
+
+      secondSection = @form.contents[1]
+      @visibilityEntity.processSection(secondSection, true, data, '')
+      assert.deepEqual {firstSectionId: true, checkboxQuestionId: true, secondSectionId: false, anotherQuestionId: false}, @visibilityEntity.visibilityStructure
+
+

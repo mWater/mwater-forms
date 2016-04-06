@@ -28,7 +28,7 @@ module.exports = class VisibilityEntity
       throw new Error('Should be a section')
 
     if section.conditions? and section.conditions.length > 0
-      compileConditions(section.conditions, forms)
+      conditions = @compileConditions(section.conditions, @forms)
       isVisible = conditions(data)
     else
       isVisible = true
@@ -71,7 +71,7 @@ module.exports = class VisibilityEntity
     if forceToInvisible
       isVisible = false
     else if rosterGroup.conditions? and rosterGroup.conditions.length > 0
-      compileConditions(rosterGroup.conditions, @forms)
+      conditions = @compileConditions(rosterGroup.conditions, @forms)
       isVisible = conditions(data)
     else
       isVisible = true
@@ -79,7 +79,7 @@ module.exports = class VisibilityEntity
 
     # The data used (and passed down to sub items) is the one specified by rosterId if set
     if rosterGroup.rosterId?
-      subData = data[rosterGroup._id]
+      subData = data[rosterGroup.rosterId]
     # Else the RosterGroup uses its own data
     else
       subData = data[rosterGroup._id]
@@ -90,10 +90,11 @@ module.exports = class VisibilityEntity
           newPrefix = "#{rosterGroup._id}.#{index}."
           @processItem(content, isVisible == false, rosterGroupData, newPrefix)
 
-  processRosterMatrix: (question, forceToInvisible, data, prefix) ->
-    # TODO: implement visibility logic
-    # IF rosterId is set, use that data
-    null
+  processRosterMatrix: (rosterMatrix, forceToInvisible, data, prefix) ->
+    if rosterGroup._type != 'RosterMatrix'
+      throw new Error('Should be a RosterMatrix')
+
+    @processQuestion(rosterMatrix, forceToInvisible, data, prefix)
 
   compileCondition: (cond) =>
     getValue = (data) =>
