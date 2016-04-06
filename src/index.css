@@ -13,6 +13,10 @@
     border-radius: 5px;
 }
 
+td.invalid {
+  border: #C43B1D 2px solid;
+}
+
 .question {
   margin-bottom: 20px;
 }
