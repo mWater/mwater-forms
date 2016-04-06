@@ -93,6 +93,18 @@ exports.findItem = (form, questionId) ->
         if item2._id == questionId
           return item2
 
+        if item2._type == "Group" or item._type == "RosterGroup"
+          for item3 in item2.contents
+            # If ids match
+            if item3._id == questionId
+              return item3
+
+    if item._type == "Group" or item._type == "RosterGroup"
+      for item2 in item.contents
+        # If ids match
+        if item2._id == questionId
+          return item2
+
 # Fills question with default values and removes extraneous fields
 exports.prepareQuestion = (q) ->
   _.defaults q, {
@@ -316,16 +328,6 @@ exports.updateLocalizations = (form) ->
 exports.hasLocalizations = (obj, locale) ->
   strs = exports.extractLocalizedStrings(obj)
   return _.any(strs, (str) -> str[locale])
-
-
-# TODO: Should also work with Roster stuff
-exports.extractQuestions = extractQuestions = (contents, questions) ->
-  for entry in contents
-    if entry._type == "Section"
-      extractQuestions(entry.contents, questions)
-    else if entry._type.indexOf("Question") >= 0
-      questions.push entry
-
 
 # Finds an entity question of the specified type, or a legacy site question
 exports.findEntityQuestion = (form, entityType) ->

@@ -1,7 +1,7 @@
 assert = require('chai').assert
 CleaningEntity = require '../src/CleaningEntity'
 
-describe.only 'CleaningEntity', ->
+describe 'CleaningEntity', ->
   describe 'Simple cases', ->
     it 'keeps the data for all visible questions', ->
       cleaningEntity = new CleaningEntity()

@@ -96,8 +96,6 @@ module.exports = class QuestionComponent extends React.Component
     # TODO: What should happen if alternate is set?
     if @props.question.sticky and @context.stickyStorage? and answer.value?
       @context.stickyStorage.set(@props.question._id, answer.value)
-      console.log 'setting sticky value: '
-      console.log answer.value
     @props.onAnswerChange(answer)
 
   handleAlternate: (alternate) =>
