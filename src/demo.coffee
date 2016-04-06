@@ -99,7 +99,9 @@ class DemoComponent extends React.Component
     oldVisibilityStructure = @state.visibilityStructure
     newVisibilityStructure = @computeVisibility(data)
     newData = @cleanData(data, newVisibilityStructure)
-    newData = @stickyData(newData, formCtx.stickyStorage, oldVisibilityStructure, newVisibilityStructure)
+    console.log newData
+    newData = @stickyData(newData, oldVisibilityStructure, newVisibilityStructure)
+    console.log newData
     @setState(data: newData, visibilityStructure: newVisibilityStructure)
 
   computeVisibility: (data) ->
