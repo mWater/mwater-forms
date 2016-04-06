@@ -41,6 +41,7 @@ UnitsAnswerComponent = require './answers/UnitsAnswerComponent'
 module.exports = class QuestionComponent extends React.Component
   @contextTypes:
     locale: React.PropTypes.string
+    stickyStorage: React.PropTypes.object   # Storage for sticky values
 
   @propTypes:
     question: React.PropTypes.object.isRequired # Design of question. See schema
@@ -50,7 +51,6 @@ module.exports = class QuestionComponent extends React.Component
     onAnswerChange: React.PropTypes.func.isRequired
     displayMissingRequired: React.PropTypes.bool
     onNext: React.PropTypes.func
-    isVisible: React.PropTypes.func.isRequired # (id) tells if an item is visible or not
 
   @defaultProps:
     answer: {}
@@ -92,6 +92,12 @@ module.exports = class QuestionComponent extends React.Component
 
   handleAnswerChange: (answer) =>
     # TODO: Set sticky value if sticky question
+    # TODO: What should happen if value is set to null?
+    # TODO: What should happen if alternate is set?
+    if @props.question.sticky and @context.stickyStorage? and answer.value?
+      @context.stickyStorage.set(@props.question._id, answer.value)
+      console.log 'setting sticky value: '
+      console.log answer.value
     @props.onAnswerChange(answer)
 
   handleAlternate: (alternate) =>

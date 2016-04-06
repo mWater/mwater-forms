@@ -72,6 +72,7 @@ module.exports = {
             }
           ],
           "required": true,
+          "sticky": true,
           "conditions": [
             {
               "op": "true",

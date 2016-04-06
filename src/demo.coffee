@@ -90,7 +90,7 @@ class DemoComponent extends React.Component
     imageManager: React.PropTypes.object.isRequired
     imageAcquirer: React.PropTypes.object
   
-  getChildContext: -> @formCtx
+  getChildContext: -> formCtx
 
   isVisible: (itemId) =>
     return @state.visibilityStructure[itemId]
@@ -99,7 +99,7 @@ class DemoComponent extends React.Component
     oldVisibilityStructure = @state.visibilityStructure
     newVisibilityStructure = @computeVisibility(data)
     newData = @cleanData(data, newVisibilityStructure)
-    newData = @stickyData(data, formCtx.stickyStorage, oldVisibilityStructure, newVisibilityStructure)
+    newData = @stickyData(newData, formCtx.stickyStorage, oldVisibilityStructure, newVisibilityStructure)
     @setState(data: newData, visibilityStructure: newVisibilityStructure)
 
   computeVisibility: (data) ->
@@ -110,9 +110,10 @@ class DemoComponent extends React.Component
     cleaningEntity = new CleaningEntity()
     return cleaningEntity.cleanData(sampleForm2, data, visibilityStructure)
 
-  stickyData: (data, visibilityStructure) ->
+  stickyData: (data, previousVisibilityStructure, newVisibilityStructure) ->
     stickyEntity = new StickyEntity()
-    return stickyEntity.setStickyData(sampleForm2, data, visibilityStructure)
+
+    return stickyEntity.setStickyData(sampleForm2, data, formCtx.stickyStorage, previousVisibilityStructure, newVisibilityStructure)
 
   render: ->
     # R ItemListComponent, 

@@ -43,7 +43,6 @@ module.exports = class ItemComponent extends React.Component
         onAnswerChange: @handleAnswerChange.bind(null, @props.item._id)
         data: @props.data
         onNext: @props.onNext
-        isVisible: @props.isVisible
     else if @props.item._type == "Instructions"
       return R InstructionsComponent,
         instructions: @props.item

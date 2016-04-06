@@ -317,6 +317,16 @@ exports.hasLocalizations = (obj, locale) ->
   strs = exports.extractLocalizedStrings(obj)
   return _.any(strs, (str) -> str[locale])
 
+
+# TODO: Should also work with Roster stuff
+exports.extractQuestions = extractQuestions = (contents, questions) ->
+  for entry in contents
+    if entry._type == "Section"
+      extractQuestions(entry.contents, questions)
+    else if entry._type.indexOf("Question") >= 0
+      questions.push entry
+
+
 # Finds an entity question of the specified type, or a legacy site question
 exports.findEntityQuestion = (form, entityType) ->
   question = _.find exports.priorQuestions(form), (q) -> 
