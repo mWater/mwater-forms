@@ -5,26 +5,27 @@ formUtils = require './formUtils'
 module.exports = class VisibilityEntity
   constructor: (form) ->
     @form = form
+    @visibilityStructure = {}
 
   createVisibilityStructure: (data) ->
     @data = data
     @visibilityStructure = {}
-    @parseForm()
+    @processForm()
     # Creates a dictionary with one entry for each question (with sub structure for RosterQuestions)
     return @visibilityStructure
 
-  parseForm: () ->
+  processForm: () ->
     if @form._type != 'Form'
       throw new Error('Should be a form')
 
     if @form.contents[0] and @form.contents[0]._type == "Section"
       for content in @form.contents
-        @parseSection(content)
+        @processSection(content)
     else
       for content in @form.contents
-        @parseItem(content)
+        @processItem(content)
 
-  parseSection: (section) ->
+  processSection: (section) ->
     if section._type != 'Section'
       throw new Error('Should be a section')
 
@@ -35,37 +36,38 @@ module.exports = class VisibilityEntity
       @visibilityStructure[section._id] = true
 
     for content in section.contents
-      @parseItem(content)
+      @processItem(content)
 
-  parseItem: (item) ->
+  processItem: (item) ->
     if formUtils.isQuestion(item)
-      @parseQuestion(item)
+      @processQuestion(item)
     else if @props.item._type == "Instructions"
-      @parseInstruction(item)
+      @processInstruction(item)
     else if @props.item._type == "RosterGroup"
-      @parseRosterGroup(item)
+      @processRosterGroup(item)
     else if @props.item._type == "RosterMatrix"
-      @parseRosterMatrix(item)
+      @processRosterMatrix(item)
     else
       throw new Error('Unknow item type')
 
-  parseQuestion: (question) ->
+  processQuestion: (question) ->
     if question.conditions? and question.conditions.length > 0
       conditions = @compileConditions(question.conditions, @form)
       @visibilityStructure[question._id] = conditions()
     else
       @visibilityStructure[question._id] = true
 
+  processInstruction: (instruction) ->
+    @processQuestion(instruction)
 
-  parseInstruction: (instruction) ->
-    @parseQuestion(instruction)
-
-  parseRosterGroup: (question) ->
+  processRosterGroup: (question) ->
     # TODO: implement visibility logic
+    # IF rosterId is set, use that data
     null
 
-  parseRosterMatrix: (question) ->
+  processRosterMatrix: (question) ->
     # TODO: implement visibility logic
+    # IF rosterId is set, use that data
     null
 
   getQuestionData: (questionId) ->
@@ -77,7 +79,7 @@ module.exports = class VisibilityEntity
       return answer.value
 
     getAlternate = =>
-      answer = @getQuestion(cond.lhs.question) || {}
+      answer = @getQuestionData(cond.lhs.question) || {}
       return answer.alternate
 
     switch cond.op
