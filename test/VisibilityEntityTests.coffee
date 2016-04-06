@@ -48,7 +48,7 @@ describe 'VisibilityEntity', ->
                     dontknow: false
                   },
                   conditions: [
-                    {op: "true", lhs: {question: "firstRosterQuestionId"}}
+                    {op: "present", lhs: {question: "firstRosterQuestionId"}}
                   ],
                   validations: []
                 },

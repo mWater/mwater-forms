@@ -45,10 +45,8 @@ module.exports = class VisibilityEntity
     else if item._type == "Instructions"
       @processInstruction(item, forceToInvisible, data, prefix)
     else if item._type == "RosterGroup"
-      console.log 'RosterGroup'
       @processRosterGroup(item, forceToInvisible, data)
     else if item._type == "RosterMatrix"
-      console.log 'RosterMaxtrix'
       @processRosterMatrix(item, forceToInvisible, data, prefix)
     else
       throw new Error('Unknow item type')
@@ -57,9 +55,7 @@ module.exports = class VisibilityEntity
     if forceToInvisible
       isVisible = false
     else if question.conditions? and question.conditions.length > 0
-      console.log 'has condition'
       conditions = @compileConditions(question.conditions, @form)
-      console.log data
       isVisible = conditions(data)
     else
       isVisible = true
@@ -95,9 +91,6 @@ module.exports = class VisibilityEntity
   compileCondition: (cond) =>
     getValue = (data) =>
       answer = data[cond.lhs.question] || {}
-      console.log data
-      console.log cond.lhs.question
-      console.log answer.value
       return answer.value
 
     getAlternate = (data) =>
@@ -159,7 +152,6 @@ module.exports = class VisibilityEntity
             return not _.contains(cond.rhs.literal, value) and not _.contains(cond.rhs.literal, getAlternate(data))
       when "true"
         return (data) =>
-          console.log 'true condition'
           return getValue(data) == true
       when "false"
         return (data) =>
