@@ -77,8 +77,15 @@ module.exports = class VisibilityEntity
       isVisible = true
     @visibilityStructure[rosterGroup._id] = isVisible
 
-    if data[rosterGroup._id]?
-      for rosterGroupData, index in data[rosterGroup._id]
+    # The data used (and passed down to sub items) is the one specified by rosterId if set
+    if rosterGroup.rosterId?
+      subData = data[rosterGroup._id]
+    # Else the RosterGroup uses its own data
+    else
+      subData = data[rosterGroup._id]
+
+    if subData?
+      for rosterGroupData, index in subData
         for content in rosterGroup.contents
           newPrefix = "#{rosterGroup._id}.#{index}."
           @processItem(content, isVisible == false, rosterGroupData, newPrefix)

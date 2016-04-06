@@ -553,6 +553,41 @@ module.exports = {
           "required":false,
           "conditions":[],
           "validations":[]
+        },
+        {
+          _id: "firstRosterGroupId",
+          name: {"en":"First Roster Group","_base":"en"},
+          _type: "RosterGroup",
+          allowAdd: true,
+          required: false,
+          conditions: [],
+          validations: [],
+          contents: [
+            {
+              _id: "firstRosterQuestionId",
+              _type: "TextQuestion",
+              required: false,
+              alternates: {
+                na: false,
+                dontknow: false
+              },
+              conditions: [],
+              validations: []
+            },
+            {
+              _id: "secondRosterQuestionId",
+              _type: "TextQuestion",
+              required: false,
+              alternates: {
+                na: false,
+                dontknow: false
+              },
+              conditions: [
+                {op: "present", lhs: {question: "firstRosterQuestionId"}}
+              ],
+              validations: []
+            },
+          ]
         }
       ],
       "conditions": []

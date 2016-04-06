@@ -3,7 +3,7 @@ VisibilityEntity = require '../src/VisibilityEntity'
 
 # If mno is invisible and xyz is visible (and mno has rosterId
 
-describe 'VisibilityEntity', ->
+describe.only 'VisibilityEntity', ->
   before ->
     @form = {_type: 'Form', contents: [
         {
@@ -22,7 +22,7 @@ describe 'VisibilityEntity', ->
               validations: []
             },
             {
-              _id: "firstRosterGroupId",
+              _id: "mainRosterGroupId",
               _type: "RosterGroup",
               required: false,
               conditions: [],
@@ -53,6 +53,27 @@ describe 'VisibilityEntity', ->
                   validations: []
                 },
               ]
+            },
+            {
+              _id: "subRosterGroupId",
+              _type: "RosterGroup",
+              rosterId: "mainRosterGroupId",
+              required: false,
+              conditions: [],
+              validations: []
+              contents: [
+                {
+                  _id: "firstSubRosterQuestionId",
+                  _type: "TextQuestion",
+                  required: false,
+                  alternates: {
+                    na: false,
+                    dontknow: false
+                  },
+                  conditions: [],
+                  validations: []
+                }
+              ]
             }
           ]
         }
@@ -63,10 +84,11 @@ describe 'VisibilityEntity', ->
     beforeEach ->
       @visibilityEntity = new VisibilityEntity(@form)
 
-    it.only 'create a complete visibility structure', ->
+    it 'create a complete visibility structure', ->
       data = {
-        firstRosterGroupId: [
+        mainRosterGroupId: [
           {firstRosterQuestionId: {value: 'some text'}}
+          # This will make the second question invisible
           {firstRosterQuestionId: {value: null}}
         ]
       }
@@ -75,11 +97,12 @@ describe 'VisibilityEntity', ->
       expectedVisibilityStructure = {
         'sectionId': true
         'checkboxQuestionId': true
-        'firstRosterGroupId': true
-        'firstRosterGroupId.0.firstRosterQuestionId': true
-        'firstRosterGroupId.0.secondRosterQuestionId': true
-        'firstRosterGroupId.1.firstRosterQuestionId': true
-        'firstRosterGroupId.1.secondRosterQuestionId': false
+        'mainRosterGroupId': true
+        'mainRosterGroupId.0.firstRosterQuestionId': true
+        'mainRosterGroupId.0.secondRosterQuestionId': true
+        'mainRosterGroupId.1.firstRosterQuestionId': true
+        'mainRosterGroupId.1.secondRosterQuestionId': false
+        'subRosterGroupId': true
       }
       assert.deepEqual visibilityStructure, expectedVisibilityStructure
 
