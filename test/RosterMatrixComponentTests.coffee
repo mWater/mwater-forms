@@ -25,11 +25,11 @@ describe "RosterMatrixComponent", ->
     @rosterMatrix = {
       _id: "a"
       name: { en: "Name" }
-      columns: [
-        { _id: "text", _type: "Text", name: { en: "Text" } }
-        { _id: "number", _type: "Number", name: { en: "Number" }, decimal: false }
-        { _id: "checkbox", _type: "Checkbox", name: { en: "Checkbox" } }
-        { _id: "dropdown", _type: "Dropdown", name: { en: "Dropdown" }, choices: [{ id: "x", label: { en: "X" }}, { id: "y", label: { en: "Y" }}] }
+      contents: [
+        { _id: "text", _type: "TextColumnQuestion", text: { en: "Text" } }
+        { _id: "number", _type: "NumberColumnQuestion", text: { en: "Number" }, decimal: false }
+        { _id: "check", _type: "CheckColumnQuestion", text: { en: "Check" } }
+        { _id: "dropdown", _type: "DropdownColumnQuestion", text: { en: "Dropdown" }, choices: [{ id: "x", label: { en: "X" }}, { id: "y", label: { en: "Y" }}] }
       ]
     }
 
@@ -114,9 +114,9 @@ describe "RosterMatrixComponent", ->
     ReactTestUtils.Simulate.change(inputs[1])
     ReactTestUtils.Simulate.blur(inputs[1]) # Have to leave to set it
 
-  it "records checkbox", (done) ->
+  it "records check", (done) ->
     onDataChange = (val) =>
-      compare(val, { a: [{ checkbox: { value: true }}] })
+      compare(val, { a: [{ check: { value: true }}] })
       done()
 
     comp = @render(rosterMatrix: @rosterMatrix, data: { a: [{}] }, onDataChange: onDataChange)
@@ -136,7 +136,7 @@ describe "RosterMatrixComponent", ->
     ReactTestUtils.Simulate.change(inputs[0], { target: { value: "y" }})
 
   it "requires required columns", ->
-    @rosterMatrix.columns[0].required = true
+    @rosterMatrix.contents[0].required = true
 
     comp = @render(rosterMatrix: @rosterMatrix, data: { a: [{}] })
     assert.isTrue comp.getComponent().validate(false), "Should fail validation"
@@ -145,7 +145,7 @@ describe "RosterMatrixComponent", ->
     assert.isFalse comp.getComponent().validate(false), "Should pass validation"
 
   it "validates columns", ->
-    @rosterMatrix.columns[0].validations = [
+    @rosterMatrix.contents[0].validations = [
       {
         op: "lengthRange"
         rhs: { literal: { min: 4, max: 6 } }

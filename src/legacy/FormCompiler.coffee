@@ -3,7 +3,6 @@ markdown = require("markdown").markdown
 ezlocalize = require 'ez-localize'
 
 formUtils = require '../formUtils'
-conditionUtils = require '../conditionUtils'
 
 TextQuestion = require './TextQuestion'
 NumberQuestion = require './NumberQuestion'
@@ -197,9 +196,6 @@ module.exports = class FormCompiler
         throw new Error("Unknown condition op " + cond.op)
 
   compileConditions: (conds, form) =>
-    # Only use valid conditions
-    if form?
-      conds = _.filter conds, (cond) -> conditionUtils.validateCondition(cond, form)
     compConds = _.map(conds, @compileCondition)
     return =>
       for compCond in compConds

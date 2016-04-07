@@ -30,7 +30,6 @@ exports.ImagesAnswerComponent = require './answers/ImagesAnswerComponent'
 #exports.LocationView = require './LocationView'
 
 exports.formUtils = require './formUtils'
-exports.conditionUtils = require './conditionUtils'
 exports.Sections = require './Sections'
 exports.Section = require './Section'
 exports.QuestionGroup = require './QuestionGroup'

@@ -164,11 +164,11 @@ rosterFormDesign = {
       rosterId: "02",
       allowAdd: true,
       allowRemove: true,
-      columns: [
-        { _id: "a", _type: "Text", name: { en: "Name" }, required: true }
-        { _id: "b", _type: "Number", name: { en: "Age" } }
-        { _id: "c", _type: "Checkbox", name: { en: "Present" } }
-        { _id: "d", _type: "Dropdown", name: { en: "Gender" }, choices: [{ label: { en: "Male"}, id: "male" }, { label: { en: "Female"}, id: "female" }] }
+      contents: [
+        { _id: "a", _type: "TextColumnQuestion", text: { en: "Name" }, required: true }
+        { _id: "b", _type: "NumberColumnQuestion", text: { en: "Age" } }
+        { _id: "c", _type: "CheckboxColumnQuestion", text: { en: "Present" } }
+        { _id: "d", _type: "DropdownColumnQuestion", text: { en: "Gender" }, choices: [{ label: { en: "Male"}, id: "male" }, { label: { en: "Female"}, id: "female" }] }
       ]
     }
     {

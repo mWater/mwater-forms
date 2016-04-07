@@ -51,8 +51,11 @@ describe "FormUtils", ->
       it "adds empty validations", ->
         assert.deepEqual @question.validations, []
 
-    it "adds decimal:true to NumberQuestion", ->
+    it "adds decimal:true to NumberQuestion and NumberColumnQuestion", ->
       question = formUtils.prepareQuestion({ _type: "NumberQuestion" })
+      assert.equal question.decimal, true
+
+      question = formUtils.prepareQuestion({ _type: "NumberColumnQuestion" })
       assert.equal question.decimal, true
         
     it "removes choices for NumberQuestion", ->
@@ -63,8 +66,11 @@ describe "FormUtils", ->
       question = formUtils.prepareQuestion({ _type: "TextQuestion", decimal: true })
       assert.isUndefined question.decimal
 
-    it "adds choices to RadioQuestion", ->
+    it "adds choices to RadioQuestion and DropdownColumnQuestion", ->
       question = formUtils.prepareQuestion({ _type: "RadioQuestion" })
+      assert.deepEqual question.choices, []
+
+      question = formUtils.prepareQuestion({ _type: "DropdownColumnQuestion" })
       assert.deepEqual question.choices, []
         
     # it "adds items? to MultipleTextQuestion"

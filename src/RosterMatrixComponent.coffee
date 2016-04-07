@@ -8,7 +8,7 @@ NumberAnswerComponent = require './answers/NumberAnswerComponent'
 AnswerValidator = require './answers/AnswerValidator'
 
 # Rosters are repeated information, such as asking questions about household members N times.
-# A roster matrix is a list of columns with one row for each entry in the roster
+# A roster matrix is a list of column-type questions with one row for each entry in the roster
 module.exports = class RosterMatrixComponent extends React.Component
   @contextTypes:
     locale: React.PropTypes.string
@@ -42,7 +42,7 @@ module.exports = class RosterMatrixComponent extends React.Component
     foundInvalid = false
     for entry, rowIndex in @getAnswer()
       # For each column
-      for column, columnIndex in @props.rosterMatrix.columns
+      for column, columnIndex in @props.rosterMatrix.contents
         key = "#{rowIndex}_#{column._id}"
 
         if column.required and (not entry[column._id]?.value or entry[column._id]?.value == '')
@@ -109,7 +109,7 @@ module.exports = class RosterMatrixComponent extends React.Component
   renderHeader: ->
     H.thead null,
       H.tr null,
-        _.map(@props.rosterMatrix.columns, (column, index) => @renderColumnHeader(column, index))
+        _.map(@props.rosterMatrix.contents, (column, index) => @renderColumnHeader(column, index))
         # Extra for remove button
         if @props.rosterMatrix.allowRemove
           H.th(null)
@@ -119,17 +119,17 @@ module.exports = class RosterMatrixComponent extends React.Component
 
     # Create element
     switch column._type
-      when "Text"
+      when "TextColumnQuestion"
         elem = H.input type: "text", className: "form-control input-sm", value: value, onChange: (ev) => @handleCellChange(entryIndex, column._id, ev.target.value)
-      when "Number"
+      when "NumberColumnQuestion"
         elem = R NumberAnswerComponent, small: true, style: { maxWidth: "10em"}, decimal: column.decimal, value: value, onChange: (val) => @handleCellChange(entryIndex, column._id, val)
-      when "Checkbox"
+      when "CheckColumnQuestion"
         elem = H.div 
           className: "touch-checkbox #{if value then "checked" else ""}"
           onClick: => @handleCellChange(entryIndex, column._id, not value)
           style: { display: "inline-block" }, 
             "\u200B" # ZWSP
-      when "Dropdown"
+      when "DropdownColumnQuestion"
         elem = H.select 
           className: "form-control input-sm"
           style: { width: "auto" }
@@ -141,7 +141,7 @@ module.exports = class RosterMatrixComponent extends React.Component
               return H.option key: choice.id, value: choice.id, text
 
     # Check for validation errors
-    key = "#{rowIndex}_#{column._id}"
+    key = "#{entryIndex}_#{column._id}"
     if @state.validationErrors[key]
       className = "invalid"
 
@@ -150,7 +150,7 @@ module.exports = class RosterMatrixComponent extends React.Component
 
   renderEntry: (entry, index) ->
     H.tr key: index,
-      _.map @props.rosterMatrix.columns, (column, columnIndex) => @renderCell(entry, index, column, columnIndex)
+      _.map @props.rosterMatrix.contents, (column, columnIndex) => @renderCell(entry, index, column, columnIndex)
       if @props.rosterMatrix.allowRemove
         H.td key: "_remove",
           H.button type: "button", className: "btn btn-sm btn-link", onClick: @handleRemove.bind(null, index),

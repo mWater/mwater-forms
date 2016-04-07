@@ -192,11 +192,11 @@ exports.changeQuestionType = (question, newType) ->
 # Gets type of the answer: text, number, choice, choices, date, units, boolean, location, image, images, texts, site, entity, admin_region
 exports.getAnswerType = (q) ->
   switch q._type
-    when "TextQuestion"
+    when "TextQuestion", "TextColumnQuestion"
       return "text"
-    when "NumberQuestion"
+    when "NumberQuestion", "NumberColumnQuestion"
       return "number"
-    when "DropdownQuestion", "RadioQuestion"
+    when "DropdownQuestion", "RadioQuestion", "DropdownColumnQuestion"
       return "choice"
     when "MulticheckQuestion"
       return "choices"
@@ -204,7 +204,7 @@ exports.getAnswerType = (q) ->
       return "date"
     when "UnitsQuestion"
       return "units"
-    when "CheckQuestion"
+    when "CheckQuestion", "CheckColumnQuestion"
       return "boolean"
     when "LocationQuestion"
       return "location"

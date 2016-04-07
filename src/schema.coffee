@@ -346,22 +346,22 @@ exports.design = {
         allowRemove: { type: "boolean" }
 
         # Contains a list of items
-        columns: {
+        contents: {
           type: "array"
           items: { $ref: "#/definitions/rosterMatrixColumn" }
         }
       }
-      required: ["_id", "_type", "rosterId", "name", "conditions", "columns"]
+      required: ["_id", "_type", "rosterId", "name", "conditions", "contents"]
     }
 
     rosterMatrixColumn: {
       type: "object"
       properties: {
         _id: { $ref: "#/definitions/uuid" }
-        _type: { enum: ["Text", "Number", "Checkbox", "Dropdown"] }
+        _type: { enum: ["TextColumnQuestion", "NumberColumnQuestion", "CheckColumnQuestion", "DropdownColumnQuestion"] }
 
-        # Name of roster column (displayed in header)
-        name: { $ref: "#/definitions/localizedString" } 
+        # Header of roster column
+        text: { $ref: "#/definitions/localizedString" } 
 
         # True if the column is required to be answered
         required: { type: "boolean" }
