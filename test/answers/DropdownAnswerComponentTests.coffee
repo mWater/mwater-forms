@@ -49,8 +49,6 @@ describe 'DropdownAnswerComponent', ->
     testComponent = @render createOptions {
         onAnswerChange: (answer) ->
           assert.equal answer.value, 'a'
-          # TODO: test disabled state
-          assert false, 'Need to test the disabled state'
           done()
       }
 
@@ -61,20 +59,12 @@ describe 'DropdownAnswerComponent', ->
     testComponent = @render createOptions {
         onAnswerChange: (answer) ->
           assert.equal answer.value, null
-          # TODO: test disabled state
-          assert false, 'Need to test the disabled state'
           done()
         answer: {value: 'a'}
       }
 
     select = ReactTestUtils.findRenderedDOMComponentWithTag(testComponent.getComponent(), 'select')
     TestComponent.changeValue(select, null)
-
-  it 'is not disabled with unknown value', () ->
-    testComponent = @render createOptions({value: 'a1'})
-
-    # TODO: test if disabled
-    assert false, 'Need to test the disabled state'
 
   it "displays choices and hints", ->
     testComponent = @render createOptions()
