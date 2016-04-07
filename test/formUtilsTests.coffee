@@ -20,6 +20,36 @@ describe "FormUtils", ->
         priors = formUtils.priorQuestions(sectionedForm, sectionedForm.contents[1])
         assert.deepEqual _.pluck(priors, "_id"), ['0001', '0002', '0003', '0004']
 
+      it 'includes group contents', ->
+        form = {
+          _type: "Form"
+          contents: [
+            { _id: "groupid", _type: "Group", contents: simpleForm.contents }
+          ]
+        }
+        priors = formUtils.priorQuestions(form)
+        assert.deepEqual _.pluck(priors, "_id"), ['0001', '0002', '0003', '0004']
+
+      it "doesn't include roster contents by default", ->
+        form = {
+          _type: "Form"
+          contents: [
+            { _id: "groupid", _type: "RosterGroup", contents: simpleForm.contents }
+          ]
+        }
+        priors = formUtils.priorQuestions(form)
+        assert.deepEqual _.pluck(priors, "_id"), []
+
+      it "includes roster contents only if rosterId specified", ->
+        form = {
+          _type: "Form"
+          contents: [
+            { _id: "groupid", _type: "RosterGroup", contents: simpleForm.contents }
+          ]
+        }
+        priors = formUtils.priorQuestions(form, null, "groupid")
+        assert.deepEqual _.pluck(priors, "_id"), ['0001', '0002', '0003', '0004']
+
   describe "findItem", ->
     it 'finds question', ->
       assert.equal formUtils.findItem(simpleForm, "0002")._id, "0002"

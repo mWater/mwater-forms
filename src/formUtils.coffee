@@ -7,13 +7,13 @@ exports.createUid = -> uuid.v4().replace(/-/g, "")
 
 # Create short unique id, with ~42 bits randomness to keep unique amoung a few choices
 exports.createShortUid = ->
-    chrs = "abcdefghjklmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ123456789"
-    loop 
-      id = ""
-      for i in [1..7]
-        id = id + chrs[_.random(0, chrs.length - 1)]
-      if not _.find(@model, { id: id })? then break
-    return id
+  chrs = "abcdefghjklmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ123456789"
+  loop 
+    id = ""
+    for i in [1..7]
+      id = id + chrs[_.random(0, chrs.length - 1)]
+    if not _.find(@model, { id: id })? then break
+  return id
 
 # Create a base32 time code to write on forms
 exports.createBase32TimeCode = (date) ->
@@ -56,28 +56,33 @@ exports.localizeString = (str, locale) ->
 
 # Gets all questions in form before reference item specified
 # refItem can be null for all questions
+# rosterId is the rosterId to use. null for only top-level
 # TODO should handle arbitrary nesting
-exports.priorQuestions = (form, refItem) ->
-  # List contents until current
-  priors = []
-  for item in form.contents
-    # If ids match
-    if refItem? and item._id == refItem._id
-      return priors
+exports.priorQuestions = (formDesign, refItem = null, rosterId = null) ->
+  questions = []
 
-    if exports.isQuestion(item)
-      priors.push(item)
+  # Append all child items
+  appendChildren = (parentItem, currentRosterId) ->
+    for child in parentItem.contents
+      # If ids match, abort
+      if refItem? and child._id == refItem._id
+        return true
 
-    if item._type == "Section"
-      for item2 in item.contents
-        # If ids match
-        if refItem? and item2._id == refItem._id
-          return priors
+      if currentRosterId == rosterId and exports.isQuestion(child)
+        questions.push(child)
 
-        if exports.isQuestion(item2)
-          priors.push(item2)
+      if child.contents
+        if child._type in ["RosterGroup", "RosterMatrix"]
+          if appendChildren(child, child.rosterId or child._id)
+            return true
+        else
+          if appendChildren(child, currentRosterId)
+            return true
 
-  return priors
+    return false
+
+  appendChildren(formDesign, null)
+  return questions
 
 # Finds an item by id in a form
 # TODO should handle arbitrary nesting
@@ -118,9 +123,9 @@ exports.prepareQuestion = (q) ->
   switch q._type
     when "TextQuestion"
       _.defaults q, { format: "singleline" }
-    when "NumberQuestion"
+    when "NumberQuestion", "NumberColumnQuestion"
       _.defaults q, { decimal: true }
-    when "DropdownQuestion", "RadioQuestion", "MulticheckQuestion"
+    when "DropdownQuestion", "RadioQuestion", "MulticheckQuestion", "DropdownColumnQuestion"
       _.defaults q, { choices: [] }
     when "DateQuestion" # , "DateTimeQuestion"??
       _.defaults q, { format: "YYYY-MM-DD" }
@@ -138,9 +143,9 @@ exports.prepareQuestion = (q) ->
   switch q._type
     when "TextQuestion", "DateQuestion" #, "DateTimeQuestion"
       knownFields.push "format"
-    when "NumberQuestion"
+    when "NumberQuestion", "NumberColumnQuestion"
       knownFields.push "decimal"
-    when "DropdownQuestion", "RadioQuestion", "MulticheckQuestion"
+    when "DropdownQuestion", "RadioQuestion", "MulticheckQuestion", "DropdownColumnQuestion"
       knownFields.push "choices"
     when "UnitsQuestion"
       knownFields.push "decimal"
