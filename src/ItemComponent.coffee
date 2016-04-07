@@ -25,7 +25,7 @@ module.exports = class ItemComponent extends React.Component
     @props.onDataChange(_.extend({}, @props.data, change))
 
   scrollToInvalid: (alreadyFoundFirst) ->
-    if @refs.item?
+    if @refs.item? and @refs.item.scrollToInvalid?
       return @refs.item.scrollToInvalid(alreadyFoundFirst)
     return false
 
