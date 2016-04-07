@@ -5,7 +5,7 @@ R = React.createElement
 formUtils = require '../formUtils'
 
 # This one is very different from the other AnswerComponents since it's displayed before the title (passed has children)
-#
+# TODO: Fix checkbox title size
 
 module.exports = class CheckAnswerComponent extends React.Component
   @contextTypes:

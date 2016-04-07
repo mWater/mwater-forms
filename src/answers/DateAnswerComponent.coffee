@@ -8,8 +8,7 @@ moment = require('moment')
 
 DateTimePickerComponent = require '../DateTimePickerComponent'
 
-# Functional (but not exactly the same yet)
-# Not tested
+# TODO: Clicking the date field shouldn't open the date selector (but clicking the icon should)
 
 module.exports = class DateAnswerComponent extends React.Component
   @propTypes:

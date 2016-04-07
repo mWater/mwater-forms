@@ -10,6 +10,7 @@ ReactDOM = require 'react-dom'
 R = React.createElement
 H = React.DOM
 
+# TODO: Fix 3 failing test
 # Cannot find datetimepicker
 
 describe 'DateAnswerComponent', ->

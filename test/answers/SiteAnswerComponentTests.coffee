@@ -10,6 +10,8 @@ ReactDOM = require 'react-dom'
 R = React.createElement
 H = React.DOM
 
+# TODO: Fix 4 failing test
+
 class SiteContext extends React.Component
   @childContextTypes:
     selectEntity: React.PropTypes.func

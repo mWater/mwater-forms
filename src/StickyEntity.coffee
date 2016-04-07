@@ -2,11 +2,9 @@ formUtils = require './formUtils'
 
 # TODO: Name needs to be changed
 module.exports = class CleaningEntity
-
   setStickyData: (form, data, stickyStorage, previousVisibilityStructure, newVisibilityStructure) ->
     # NOTE: Always remember that data is immutable
     newData = _.cloneDeep data
-    # TODO: Find all the sticky questions
     questions = []
 
     for key, nowVisible of newVisibilityStructure

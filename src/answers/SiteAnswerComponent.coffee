@@ -7,6 +7,8 @@ formUtils = require '../formUtils'
 EntityDisplayComponent = require '../EntityDisplayComponent'
 
 # TODO: Bug: Code is not actually set in the input field after selecting an entity!!
+# TODO: Also it doesn't work if you type a code and press enter
+# TODO: I don't think it should support onNextOrComments (my mistake), if it DOES, then we should pass it down from QuestionComponent
 
 module.exports = class SiteAnswerComponent extends React.Component
   @contextTypes:

@@ -38,8 +38,7 @@ UnitsAnswerComponent = require './answers/UnitsAnswerComponent'
 # Does NOT remove answer when invisible. This is done by data cleaning
 # Does NOT check conditions and make self invisible. This is done by parent (ItemListComponent)
 # Displays alternates and makes exclusive with answer
-# TODO Records timestamp when answered
-# TODO Records GPS when answered
+# TODO Test that it records GPS when answered and recordLocation is true
 module.exports = class QuestionComponent extends React.Component
   @contextTypes:
     locale: React.PropTypes.string
@@ -94,10 +93,9 @@ module.exports = class QuestionComponent extends React.Component
     @handleAnswerChange(_.extend({}, @props.answer, { value: value }, alternate: null))
 
   handleAnswerChange: (answer) =>
-    # TODO: Set sticky value if sticky question
-    # TODO: What should happen if value is set to null?
-    # TODO: What should happen if alternate is set?
     if @props.question.sticky and @context.stickyStorage? and answer.value?
+      # TODO: What should happen if value is set to null?
+      # TODO: What should happen if alternate is set? (or anything else that didn't change the value field)
       @context.stickyStorage.set(@props.question._id, answer.value)
 
     if @props.question.recordTimestamp and not @props.answer.timestamp?
