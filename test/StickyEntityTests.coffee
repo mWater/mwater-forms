@@ -1,7 +1,7 @@
 assert = require('chai').assert
 StickyEntity = require '../src/StickyEntity'
 
-describe.only 'StickyEntity', ->
+describe 'StickyEntity', ->
   before ->
     @stickyEntity = new StickyEntity()
 

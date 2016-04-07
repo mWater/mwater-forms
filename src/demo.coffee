@@ -9,10 +9,6 @@ sampleFormDesign = require './sampleFormDesign'
 sampleForm2 = require './sampleForm2'
 ItemListComponent = require './ItemListComponent'
 
-CleaningEntity = require './CleaningEntity'
-StickyEntity = require './StickyEntity'
-VisibilityEntity = require './VisibilityEntity'
-
 # Setup mock localizer
 global.T = (str) -> str
 
@@ -20,7 +16,9 @@ canada = { id: "canada", level: 0, name: "Canada", type: "Country" }
 manitoba = { id: "manitoba", level: 1, name: "Manitoba", type: "Province" }
 ontario = { id: "ontario", level: 1, name: "Ontario", type: "Province" }
 
-testStickyStorage = {}
+testStickyStorage = {
+  'd0dcfce3a697453ba16cc8baa8e384e7': "Testing sticky value"
+}
 
 formCtx = {
   locale: "en" 
@@ -54,6 +52,7 @@ formCtx = {
 
   stickyStorage: {
     get: (questionId) ->
+      console.log questionId
       return testStickyStorage[questionId]
     set: (questionId, value) ->
       return testStickyStorage[questionId] = value
@@ -66,9 +65,8 @@ class DemoComponent extends React.Component
     super
 
     data = {}
-    visibilityStructure = @computeVisibility(data)
 
-    @state = {data: data, visibilityStructure: visibilityStructure}
+    @state = {data: data}
 
   @childContextTypes: 
     locale: React.PropTypes.string
@@ -92,29 +90,8 @@ class DemoComponent extends React.Component
   
   getChildContext: -> formCtx
 
-  isVisible: (itemId) =>
-    return @state.visibilityStructure[itemId]
-
   handleDataChange: (data) =>
-    oldVisibilityStructure = @state.visibilityStructure
-    newVisibilityStructure = @computeVisibility(data)
-    newData = @cleanData(data, newVisibilityStructure)
-    console.log newData
-    newData = @stickyData(newData, oldVisibilityStructure, newVisibilityStructure)
-    console.log newData
-    @setState(data: newData, visibilityStructure: newVisibilityStructure)
-
-  computeVisibility: (data) ->
-    visibilityEntity = new VisibilityEntity(sampleForm2)
-    return visibilityEntity.createVisibilityStructure(data)
-
-  cleanData: (data, visibilityStructure) ->
-    cleaningEntity = new CleaningEntity()
-    return cleaningEntity.cleanData(data, visibilityStructure)
-
-  stickyData: (data, previousVisibilityStructure, newVisibilityStructure) ->
-    stickyEntity = new StickyEntity()
-    return stickyEntity.setStickyData(sampleForm2, data, formCtx.stickyStorage, previousVisibilityStructure, newVisibilityStructure)
+    @setState(data: data)
 
   render: ->
     # R ItemListComponent, 
@@ -131,7 +108,6 @@ class DemoComponent extends React.Component
       onSubmit: => alert("Submit")
       onSaveLater: => alert("SaveLater")
       onDiscard:  => alert("Discard")
-      isVisible: @isVisible
       # submitLabel: React.PropTypes.string           # Label for submit button
       # discardLabel: React.PropTypes.string           # Label for discard button
       # entity: React.PropTypes.object            # Form-level entity to load

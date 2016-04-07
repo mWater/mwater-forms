@@ -92,6 +92,7 @@ module.exports = {
           "_type": "TextQuestion",
           "format": "singleline",
           "required": false,
+          "sticky": true,
           "alternates": {
             "na": true,
             "dontknow": true

@@ -6,17 +6,20 @@ R = React.createElement
 SectionsComponent = require './SectionsComponent'
 ItemListComponent = require './ItemListComponent'
 
+CleaningEntity = require './CleaningEntity'
+StickyEntity = require './StickyEntity'
+VisibilityEntity = require './VisibilityEntity'
+
 # Displays a form that can be filled out
-# TODO default answers based on sticky values
-# TODO remove answers for invisible questions
-# TODO use context instead of explicit formCtx property?
 module.exports = class FormComponent extends React.Component
+  @contextTypes:
+    stickyStorage: React.PropTypes.object   # Storage for sticky values
+
   @propTypes:
     design: React.PropTypes.object.isRequired # Form design. See schema.coffee
   
     data: React.PropTypes.object.isRequired # Form response data. See docs/Answer Formats.md
     onDataChange: React.PropTypes.func.isRequired # Called when response data changes
-    isVisible: React.PropTypes.func.isRequired # (id) tells if an item is visible or not
 
     onSubmit: React.PropTypes.func.isRequired     # Called when submit is pressed
     onSaveLater: React.PropTypes.func             # Optional save for later
@@ -25,29 +28,61 @@ module.exports = class FormComponent extends React.Component
     entity: React.PropTypes.object            # Form-level entity to load TODO
     entityType: React.PropTypes.string        # Type of form-level entity to load TODO
 
+  constructor: (props) ->
+    @state = {visibilityStructure: {}}
+
+  # This will clean the data that has been passed at creation
+  # It will also initialize the visibilityStructure
+  # And set the sticky data
+  componentWillMount: ->
+    @handleDataChange(@props.data)
+
   handleSubmit: =>
     # Cannot submit if at least one itemComponent is invalid
     if not @refs.itemListComponent.validate(true)
       @props.onSubmit()
+
+  isVisible: (itemId) =>
+    return @state.visibilityStructure[itemId]
+
+  handleDataChange: (data) =>
+    oldVisibilityStructure = @state.visibilityStructure
+    newVisibilityStructure = @computeVisibility(data)
+    newData = @cleanData(data, newVisibilityStructure)
+    newData = @stickyData(newData, oldVisibilityStructure, newVisibilityStructure)
+    @setState(visibilityStructure: newVisibilityStructure)
+    @props.onDataChange(newData)
+
+  computeVisibility: (data) ->
+    visibilityEntity = new VisibilityEntity(@props.design)
+    return visibilityEntity.createVisibilityStructure(data)
+
+  cleanData: (data, visibilityStructure) ->
+    cleaningEntity = new CleaningEntity()
+    return cleaningEntity.cleanData(data, visibilityStructure)
+
+  stickyData: (data, previousVisibilityStructure, newVisibilityStructure) ->
+    stickyEntity = new StickyEntity()
+    return stickyEntity.setStickyData(@props.design, data, @context.stickyStorage, previousVisibilityStructure, newVisibilityStructure)
 
   render: ->
     if @props.design.contents[0] and @props.design.contents[0]._type == "Section"
       R SectionsComponent,
         contents: @props.design.contents
         data: @props.data
-        onDataChange: @props.onDataChange
+        onDataChange: @handleDataChange
         onSubmit: @props.onSubmit
         onSaveLater: @props.onSaveLater
         onDiscard: @props.onDiscard
-        isVisible: @props.isVisible
+        isVisible: @isVisible
     else
       H.div null,
         R ItemListComponent,
           ref: 'itemListComponent'
           contents: @props.design.contents
           data: @props.data
-          onDataChange: @props.onDataChange
-          isVisible: @props.isVisible
+          onDataChange: @handleDataChange
+          isVisible: @isVisible
 
         H.button type: "button", className: "btn btn-primary", onClick: @handleSubmit,
           T("Submit")
