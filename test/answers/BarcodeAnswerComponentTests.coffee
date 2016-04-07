@@ -41,7 +41,7 @@ describe 'BarcodeAnswerComponent', ->
 
     it "shows text if not supported", ->
       # If no context is passed, scanBarcode is not defined and so the feature is not supported
-      comp = @render({onValueChange: null})
+      comp = @render({onValueChange: () -> null})
       component = comp.findDOMNodeByText(/not supported/i)
       assert component?, 'Not showing not supported text'
 

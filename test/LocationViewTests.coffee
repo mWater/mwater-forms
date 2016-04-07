@@ -3,8 +3,7 @@ $ = require 'jquery'
 Backbone = require 'backbone'
 Backbone.$ = $
 assert = require('chai').assert
-forms = require '../src'
-LocationView = forms.LocationView
+LocationView = require '../src/legacy/LocationView'
 UIDriver = require './helpers/UIDriver'
 CurrentPositionFinder = require '../src/CurrentPositionFinder'
 
