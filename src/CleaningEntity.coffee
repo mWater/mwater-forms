@@ -8,8 +8,6 @@ module.exports = class CleaningEntity
     # Creates a copy of the data and cleans it
     newData = _.clone(data)
 
-    # TODO: Support the case where 2 roster groups (one master, one pointing to it) are not both visible/invisible
-
     # Remove data entries for all the invisible questions
     for key, visible of visibilityStructure
       if not visible

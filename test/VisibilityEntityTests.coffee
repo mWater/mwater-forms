@@ -1,7 +1,7 @@
 assert = require('chai').assert
 VisibilityEntity = require '../src/VisibilityEntity'
 
-describe 'VisibilityEntity', ->
+describe.only 'VisibilityEntity', ->
   before ->
     @form = {_type: 'Form', contents: [
         {
@@ -19,6 +19,24 @@ describe 'VisibilityEntity', ->
               conditions: [],
               validations: []
             },
+
+            {
+              _id: "groupId",
+              _type: "Group",
+              conditions: [{op: "true", lhs: {question: "checkboxQuestionId"}}],
+              validations: [],
+              contents: [
+                {
+                  _id: "groupQuestionId",
+                  _type: "TextQuestion",
+                  required: false,
+                  conditions: [],
+                  validations: []
+                },
+              ]
+            },
+
+
             {
               _id: "mainRosterGroupId",
               _type: "RosterGroup",
@@ -91,7 +109,6 @@ describe 'VisibilityEntity', ->
         ]
       }
       visibilityStructure = @visibilityEntity.createVisibilityStructure(data)
-      console.log visibilityStructure
 
       expectedVisibilityStructure = {
         'sectionId': true
@@ -106,6 +123,8 @@ describe 'VisibilityEntity', ->
         'mainRosterGroupId.0.firstSubRosterQuestionId': true
         'mainRosterGroupId.1.firstSubRosterQuestionId': true
         'subRosterGroupId': true
+        groupId: false
+        groupQuestionId: false
       }
       assert.deepEqual visibilityStructure, expectedVisibilityStructure
 
@@ -165,7 +184,7 @@ describe 'VisibilityEntity', ->
         assert.deepEqual {testId: false}, @visibilityEntity.visibilityStructure
 
 
-  describe 'processSection', ->
+  describe 'processGroupOrSection', ->
     it 'sub questions are invisible if the section is invisible', ->
       @form = {_type: 'Form', contents: [
           {
@@ -211,11 +230,11 @@ describe 'VisibilityEntity', ->
       data = {}
 
       firstSection = @form.contents[0]
-      @visibilityEntity.processSection(firstSection, false, data, '')
+      @visibilityEntity.processGroupOrSection(firstSection, false, data, '')
       assert.deepEqual {firstSectionId: true, checkboxQuestionId: true}, @visibilityEntity.visibilityStructure
 
       secondSection = @form.contents[1]
-      @visibilityEntity.processSection(secondSection, true, data, '')
+      @visibilityEntity.processGroupOrSection(secondSection, true, data, '')
       assert.deepEqual {firstSectionId: true, checkboxQuestionId: true, secondSectionId: false, anotherQuestionId: false}, @visibilityEntity.visibilityStructure
 
 

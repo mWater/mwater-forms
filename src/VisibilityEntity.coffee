@@ -18,23 +18,23 @@ module.exports = class VisibilityEntity
 
     if @form.contents[0] and @form.contents[0]._type == "Section"
       for content in @form.contents
-        @processSection(content, data)
+        @processGroupOrSection(content, data)
     else
       for content in @form.contents
         @processItem(content, data, '')
 
-  processSection: (section, data) ->
-    if section._type != 'Section'
-      throw new Error('Should be a section')
+  processGroupOrSection: (groupOrSection, data) ->
+    if groupOrSection._type != 'Section' and  groupOrSection._type != 'Group'
+      throw new Error('Should be a section or a group')
 
-    if section.conditions? and section.conditions.length > 0
-      conditions = @compileConditions(section.conditions, @forms)
+    if groupOrSection.conditions? and groupOrSection.conditions.length > 0
+      conditions = @compileConditions(groupOrSection.conditions, @forms)
       isVisible = conditions(data)
     else
       isVisible = true
-    @visibilityStructure[section._id] = isVisible
+    @visibilityStructure[groupOrSection._id] = isVisible
 
-    for content in section.contents
+    for content in groupOrSection.contents
       @processItem(content, isVisible == false, data, '')
 
   processItem: (item, forceToInvisible, data, prefix) ->
@@ -48,6 +48,8 @@ module.exports = class VisibilityEntity
       @processRosterGroup(item, forceToInvisible, data)
     else if item._type == "RosterMatrix"
       @processRosterMatrix(item, forceToInvisible, data, prefix)
+    else if item._type == "Group"
+      @processGroupOrSection(item, forceToInvisible, data)
     else
       throw new Error('Unknow item type')
 
