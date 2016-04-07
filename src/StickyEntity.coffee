@@ -9,9 +9,9 @@ module.exports = class CleaningEntity
     # TODO: Find all the sticky questions
     questions = []
 
-    for key, previousVisible of previousVisibilityStructure
+    for key, nowVisible of newVisibilityStructure
       # If it wasn't visible and it now is
-      if not previousVisible and newVisibilityStructure[key]
+      if nowVisible and not previousVisibilityStructure[key]
         values = key.split('.')
         if values.length == 1
           questionId = values[0]
