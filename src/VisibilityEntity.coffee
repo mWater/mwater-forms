@@ -65,7 +65,7 @@ module.exports = class VisibilityEntity
     @processQuestion(instruction, forceToInvisible, data, prefix)
 
   processRosterGroup: (rosterGroup, forceToInvisible, data, prefix) ->
-    if rosterGroup._type != 'RosterGroup' or rosterGroup._type != 'RosterMatrix'
+    if rosterGroup._type != 'RosterGroup' and rosterGroup._type != 'RosterMatrix'
       throw new Error('Should be a RosterGroup or RosterMatrix')
 
     if forceToInvisible

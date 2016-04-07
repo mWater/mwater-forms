@@ -10,12 +10,35 @@ ReactDOM = require 'react-dom'
 R = React.createElement
 H = React.DOM
 
+class SiteContext extends React.Component
+  @childContextTypes:
+    selectEntity: React.PropTypes.func
+    getEntityById: React.PropTypes.func
+    getEntityByCode: React.PropTypes.func
+    renderEntitySummaryView: React.PropTypes.func
+    onNextOrComments: React.PropTypes.func
+
+  getChildContext: ->
+    selectEntity: () ->
+      null
+    getEntityById: () ->
+      null
+    getEntityByCode: () ->
+      null
+    renderEntitySummaryView: () ->
+      null
+    onNextOrComments: () ->
+      null
+
+  render: ->
+    return @props.children
+
 describe 'SiteAnswerComponent', ->
   beforeEach ->
     @toDestroy = []
 
     @render = (options = {}) =>
-      elem = R(SiteAnswerComponent, options)
+      elem = R(SiteContext, R(SiteAnswerComponent, options))
       comp = new TestComponent(elem)
       @toDestroy.push(comp)
       return comp

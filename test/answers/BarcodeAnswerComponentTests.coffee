@@ -95,13 +95,3 @@ describe 'BarcodeAnswerComponent', ->
       })
       button = ReactTestUtils.findRenderedDOMComponentWithClass(comp.getComponent(), 'btn')
       TestComponent.click(button)
-
-    it "enforces required", ->
-      assert false
-      #@q.required = true
-      #@qview = @compiler.compileQuestion(@q).render()
-      #assert @qview.validate()
-      #
-      #@q.required = false
-      #@qview = @compiler.compileQuestion(@q).render()
-      #assert not @qview.validate()

@@ -36,10 +36,6 @@ describe 'TextListAnswerComponent', ->
     #assert.deepEqual @model.get('q1234').value, ["entry1"]
     assert false
 
-  it "empty and required is not ok", ->
-    #assert @qview.validate()
-    assert false
-
   it "loads existing values", ->
     ## Set first value
     #@model.set(@q._id, { value: ["entry1"]})

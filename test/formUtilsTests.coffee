@@ -167,8 +167,6 @@ describe "FormUtils", ->
         entityQuestion = content.contents[1]
         textQuestionId = textQuestion._id
         propertyLinkQuestionId = entityQuestion.propertyLinks[0].questionId
-        console.log textQuestionId
-        console.log propertyLinkQuestionId
         assert.equal textQuestionId, propertyLinkQuestionId
 
   describe "update localizations", ->
