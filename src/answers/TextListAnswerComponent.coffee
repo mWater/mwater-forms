@@ -70,14 +70,19 @@ module.exports = class TextListAnswerComponent extends React.Component
                     ev.target.setSelectionRange(textLine.length, textLine.length)
                 }
                 H.span className: "input-group-btn",
-                  H.button className: "btn btn-link remove testremove", "data-index": index, type:"button", onClick: @handleRemoveClick.bind(null, index),
+                  H.button className: "btn btn-link remove", "data-index": index, type:"button", onClick: @handleRemoveClick.bind(null, index),
                     H.span className: "glyphicon glyphicon-remove"
         H.tr null,
           H.td null
           H.td null,
             H.div className: "input-group",
-              H.input {type:"text", className: "form-control box", onChange: @handleNewLineChange, value: "", ref: 'newLine', id: 'newLine'}
-              H.span className: "input-group-btn",
-                H.button className: "btn btn-link remove", "data-index": index, type:"button", hidden: true,
-                  H.span className: "glyphicon glyphicon-remove", hidden: true
-          H.td null
+              H.input {
+                type:"text",
+                className: "form-control box",
+                onChange: @handleNewLineChange,
+                value: "",
+                ref: 'newLine',
+                id: 'newLine'
+              }
+
+              H.span className: "input-group-btn", style: {paddingRight: '39px'}

@@ -10,7 +10,7 @@ ReactDOM = require 'react-dom'
 R = React.createElement
 H = React.DOM
 
-describe.only 'TextListAnswerComponent', ->
+describe 'TextListAnswerComponent', ->
   before ->
     @toDestroy = []
 
@@ -42,7 +42,7 @@ describe.only 'TextListAnswerComponent', ->
         assert.deepEqual value, []
         done()
     })
-    removeBtn = ReactTestUtils.findRenderedDOMComponentWithClass(testComponent.getComponent(), 'testremove')
+    removeBtn = ReactTestUtils.findRenderedDOMComponentWithClass(testComponent.getComponent(), 'remove')
     TestComponent.click(removeBtn)
 
   it "loads existing values", (done) ->
