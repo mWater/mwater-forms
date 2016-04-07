@@ -1,7 +1,7 @@
 assert = require('chai').assert
 VisibilityEntity = require '../src/VisibilityEntity'
 
-describe.only 'VisibilityEntity', ->
+describe 'VisibilityEntity', ->
   before ->
     @form = {_type: 'Form', contents: [
         {
