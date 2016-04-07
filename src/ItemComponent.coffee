@@ -50,7 +50,7 @@ module.exports = class ItemComponent extends React.Component
     else if @props.item._type == "Group"
       return R GroupComponent,
         ref: 'item'
-        rosterGroup: @props.item
+        group: @props.item
         data: @props.data
         onDataChange: @props.onDataChange
         isVisible: @props.isVisible
