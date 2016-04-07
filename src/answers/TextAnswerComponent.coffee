@@ -32,6 +32,7 @@ module.exports = class TextAnswerComponent extends React.Component
     if @props.format == "multiline"
       return H.textarea {
         className: "form-control"
+        id: 'input'
         ref: 'input'
         value: @props.value
         rows: "5"
@@ -42,6 +43,7 @@ module.exports = class TextAnswerComponent extends React.Component
     else
       return H.input {
         className: "form-control"
+        id: 'input'
         ref: 'input'
         type: "text"
         value: @props.value

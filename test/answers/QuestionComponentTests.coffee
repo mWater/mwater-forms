@@ -11,7 +11,7 @@ ReactTestUtils = require('react-addons-test-utils')
 
 QuestionComponent = require '../../src/QuestionComponent'
 
-describe.only "QuestionComponent", ->
+describe "QuestionComponent", ->
   beforeEach ->
     @question = {
       _id: "q1234"
@@ -26,13 +26,13 @@ describe.only "QuestionComponent", ->
     @toDestroy = []
 
     @render = (options = {}) =>
-      options = _.extend {
+      @options = _.extend {
         question: @question
         data: {}
         onAnswerChange: () ->
           null
       }, options
-      elem = R(QuestionComponent, options)
+      elem = R(QuestionComponent, @options)
       comp = new TestComponent(elem)
       @toDestroy.push(comp)
       return comp
@@ -63,131 +63,131 @@ describe.only "QuestionComponent", ->
     testComponent = @render()
 
     help = testComponent.findDOMNodeByText(/formatting/)
-    assert help?, 'Not showing help'
+    assert not help?, "Help shouldn't be visible"
 
-  it "hides only when conditions are false", ->
-    @q.conditions = [
-      { lhs: { question: "q1" }, op: "=", rhs: { literal: 1 }}
-      { lhs: { question: "q2" }, op: "=", rhs: { literal: 2 }}
-    ]
-    @qview = @compiler.compileQuestion(@q).render()
+    button = testComponent.findComponentById('helpbtn')
+    TestComponent.click(button)
 
-    assert.isFalse @qview.shouldBeVisible()
+    help = testComponent.findDOMNodeByText(/formatting/)
+    assert help?, 'Help should now be visible'
 
-    @model.set({ q1: { value: 1 }})
-    assert.isFalse @qview.shouldBeVisible()
+  it "display comment box", (done) ->
+    testComponent = @render()
+    comments = testComponent.findComponentById('comments')
 
-    @model.set({ q2: { value: 2 }})
-    assert.isTrue @qview.shouldBeVisible()
+    @question.commentsField = true
+    testComponent = @render({
+      onAnswerChange: (answer) ->
+        assert.equal answer.comments, 'some comment'
+        done()
+    })
 
-  it "display comment box", ->
-    @q.commentsField = true
-    @qview = @compiler.compileQuestion(@q).render()
-    @qview.$("#comments").val("some comment").change()
-    assert.equal @model.get("q1234").comments, "some comment"
+    comments = testComponent.findComponentById('comments')
+    TestComponent.changeValue(comments, 'some comment')
 
   it "loads comment box", ->
-    @q.commentsField = true
-    @model.set("q1234", { comments: "some comment" })
-    @qview = @compiler.compileQuestion(@q).render()
-    assert.equal @qview.$("#comments").val(), "some comment"
+    @question.commentsField = true
+    testComponent = @render({
+      answer: {comments: 'some comment'}
+    })
+
+    comment = testComponent.findDOMNodeByText(/some comment/)
+
+    assert comment, 'The comment should be displayed'
 
   it "records timestamp", ->
-    @q.recordTimestamp = true
-    @qview = @compiler.compileQuestion(@q).render()
+    @question.recordTimestamp = true
+    @question.commentsField = true
+    testComponent = @render({
+      answer: {comments: 'some comment'}
+      onAnswerChange: (answer) ->
+        after = new Date().toISOString()
+        # Some imprecision in the date stamp was causing occassional failures
+        assert answer.timestamp.substr(0,10) >= before.substr(0,10), answer.timestamp + " < " + before
+        assert answer.timestamp.substr(0,10) <= after.substr(0,10), answer.timestamp + " > " + after
+    })
+
+    comments = testComponent.findDOMNodeByText(/some comment/)
 
     before = new Date().toISOString()
-    @qview.setAnswerValue(null)
-    after = new Date().toISOString()
-    # Some imprecision in the date stamp was causing occassional failures
-    assert @model.get("q1234").timestamp.substr(0,10) >= before.substr(0,10), @model.get("q1234").timestamp + " < " + before
-    assert @model.get("q1234").timestamp.substr(0,10) <= after.substr(0,10), @model.get("q1234").timestamp + " > " + after
+    TestComponent.changeValue(comments, 'some comment')
 
-  # TODO: Fix test without FormCompiler
-  #it "records location", ->
-  #  @q.recordLocation = true
-  #  ctx = {
-  #    locationFinder: new MockLocationFinder()
-  #  }
-  #  ctx.locationFinder.getLocation = (success, error) =>
-  #    success({ coords: { latitude: 2, longitude: 3, accuracy: 10}})
-  #
-  #  @compiler = new FormCompiler(model: @model, locale: "es", ctx: ctx)
-  #  @qview = @compiler.compileQuestion(@q).render()
-  #
-  #  @qview.setAnswerValue(null)
-  #  assert.deepEqual @model.get("q1234").location, { latitude: 2, longitude: 3, accuracy: 10}
 
-  it "records alternate na", ->
-    @q.alternates = {na: true}
-    @qview = @compiler.compileQuestion(@q).render()
-    @qview.$("#na").click()
-
-    assert.equal @model.get("q1234").alternate, "na"
+  it "records alternate na", (done) ->
+    @question.alternates = {na: true}
+    testComponent = @render(
+      onAnswerChange: (answer) ->
+        assert.equal answer.alternate, 'na'
+        done()
+    )
+    na = testComponent.findComponentById('na')
+    TestComponent.click(na)
 
   it "loads alternate na", ->
-    @q.alternates = {na: true}
-    @model.set("q1234", { alternate: "na" })
-    @qview = @compiler.compileQuestion(@q).render()
-    assert @qview.$("#na").hasClass("checked")
+    @question.alternates = {na: true}
+    testComponent = @render(
+      answer: {alternate: 'na'}
+    )
+    na = testComponent.findComponentById('na')
+    assert na.className.indexOf('checked') >= 0
 
-  it "records alternate dontknow", ->
-    @q.alternates = {dontknow: true, na: true}
-    @qview = @compiler.compileQuestion(@q).render()
-    @qview.$("#dontknow").click()
+  it "records alternate dontknow", (done) ->
+    @question.alternates = {dontknow: true, na: true}
+    testComponent = @render(
+      onAnswerChange: (answer) ->
+        assert.equal answer.alternate, 'dontknow'
+        done()
+    )
+    dn = testComponent.findComponentById('dn')
+    TestComponent.click(dn)
 
-    assert.equal @model.get("q1234").alternate, "dontknow"
+  it "erases value on alternate selected", (done) ->
+    @question.alternates = {dontknow: true, na: true}
+    testComponent = @render(
+      answer: {value: 'test'}
+      onAnswerChange: (answer) ->
+        assert.equal answer.alternate, 'dontknow'
+        assert.equal answer.value, null
+        done()
+    )
+    dn = testComponent.findComponentById('dn')
+    TestComponent.click(dn)
 
-  it "allows alternate for required", ->
-    @q.alternates = {na: true}
-    @qview = @compiler.compileQuestion(@q).render()
+  it "caches value on alternate selected", (done) ->
+    firstCall = true
+    @question.alternates = {dontknow: true, na: true}
+    myOptions = {
+      answer: {value: 'test'}
+      onAnswerChange: (answer) =>
+        assert.equal answer.alternate, 'dontknow'
+        assert.equal answer.value, null
 
-    assert @qview.validate()
+        @options.answer = answer
+        @options.onAnswerChange = (answer) ->
+          assert.equal null, answer.alternate, "Alternate shouldn't be set anymore"
+          assert.equal answer.value, 'test', 'Should be back to test'
+          done()
 
-    @qview.$("#na").click()
+        testComponent.setElement(R(QuestionComponent, @options))
 
-    assert not @qview.validate()
+        callback = () ->
+          dn = testComponent.findComponentById('dn')
+          TestComponent.click(dn)
+        setTimeout(callback, 30)
+    }
 
-  it "erases value on alternate selected", ->
-    assert false
-    @q.alternates = {dontknow: true, na: true}
-    @qview = @compiler.compileQuestion(@q).render()
+    testComponent = @render(myOptions)
+    dn = testComponent.findComponentById('dn')
+    TestComponent.click(dn)
 
-    @qview.$el.find("input").val("response").change()
-    @qview.$("#dontknow").click()
-
-    assert not @model.get("q1234").value
-
-
-  it "caches value on alternate selected", ->
-    assert false
-    @q.alternates = {dontknow: true, na: true}
-    @qview = @compiler.compileQuestion(@q).render()
-
-    @qview.$el.find("input").val("response").change()
-    @qview.$("#dontknow").click()
-    @qview.$("#dontknow").click()
-
-    assert.equal @model.get("q1234").value, "response"
-
-
-  it "erases alternate on value entered", ->
-    assert false
-    @q.alternates = {dontknow: true, na: true}
-    @qview = @compiler.compileQuestion(@q).render()
-
-    @qview.$el.find("input").val("response").change()
-    @qview.$("#dontknow").click()
-
-    # Add input
-    @qview.$el.find("input").val("response").change()
-    assert not @model.get("q1234").alternate
-
-
-class MockLocationFinder
-  constructor:  ->
-    _.extend @, Backbone.Events
-
-  getLocation: (success, error) ->
-  startWatch: ->
-  stopWatch: ->
+  it "erases alternate on value entered", (done) ->
+    @question.alternates = {dontknow: true, na: true}
+    testComponent = @render(
+      answer: {alternate: 'na'}
+      onAnswerChange: (answer) ->
+        assert.equal answer.alternate, null
+        assert.equal answer.value, 'test'
+        done()
+    )
+    input = testComponent.findComponentById('input')
+    TestComponent.changeValue(input, 'test')

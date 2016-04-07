@@ -7,6 +7,8 @@ formUtils = require './formUtils'
 markdown = require("markdown").markdown
 LocationEditorComponent = require './LocationEditorComponent'
 
+LocationFinder = require './LocationFinder'
+
 AnswerValidator = require './answers/AnswerValidator'
 
 AdminRegionAnswerComponent = require './answers/AdminRegionAnswerComponent'
@@ -42,6 +44,7 @@ module.exports = class QuestionComponent extends React.Component
   @contextTypes:
     locale: React.PropTypes.string
     stickyStorage: React.PropTypes.object   # Storage for sticky values
+    locationFinder: React.PropTypes.object
 
   @propTypes:
     question: React.PropTypes.object.isRequired # Design of question. See schema
@@ -96,6 +99,19 @@ module.exports = class QuestionComponent extends React.Component
     # TODO: What should happen if alternate is set?
     if @props.question.sticky and @context.stickyStorage? and answer.value?
       @context.stickyStorage.set(@props.question._id, answer.value)
+
+    if @props.question.recordTimestamp and not @props.answer.timestamp?
+      answer.timestamp = new Date().toISOString()
+
+    if @props.question.recordLocation and not @props.answer.location?
+      locationFinder = @context.locationFinder or new LocationFinder()
+      locationFinder.getLocation (loc) =>
+        if loc?
+          newAnswer = _.clone @props.answer
+          newAnswer.location = _.pick(loc.coords, "latitude", "longitude", "accuracy", "altitude", "altitudeAccuracy")
+          @props.onAnswerChange(newAnswer)
+      , ->
+        console.log "Location not found for recordLocation in Question"
     @props.onAnswerChange(answer)
 
   handleAlternate: (alternate) =>
@@ -159,7 +175,7 @@ module.exports = class QuestionComponent extends React.Component
         H.span className: "required", "*"
 
       if @props.question.help
-        H.button type: "button", className: "btn btn-link btn-sm", onClick: @handleToggleHelp,
+        H.button type: "button", id: 'helpbtn', className: "btn btn-link btn-sm", onClick: @handleToggleHelp,
           H.span className: "glyphicon glyphicon-question-sign"
 
     if @props.question._type == 'CheckQuestion'
@@ -189,15 +205,15 @@ module.exports = class QuestionComponent extends React.Component
     if @props.question.alternates and (@props.question.alternates.na or @props.question.alternates.dontknow)
       H.div null,
         if @props.question.alternates.dontknow
-          H.div className: "touch-checkbox alternate #{if @props.answer.alternate == 'dontknow' then 'checked'}", onClick: @handleAlternate.bind(null, 'dontknow'),
+          H.div id: 'dn', className: "touch-checkbox alternate #{if @props.answer.alternate == 'dontknow' then 'checked'}", onClick: @handleAlternate.bind(null, 'dontknow'),
             T("Don't Know")
         if @props.question.alternates.na
-          H.div className: "touch-checkbox alternate #{if @props.answer.alternate == 'na' then 'checked'}", onClick: @handleAlternate.bind(null, 'na'),
+          H.div id: 'na', className: "touch-checkbox alternate #{if @props.answer.alternate == 'na' then 'checked'}", onClick: @handleAlternate.bind(null, 'na'),
             T("Not Applicable")
 
   renderCommentsField: ->
     if @props.question.commentsField
-      H.textarea className: "form-control question-comments", ref: "comments", placeholder: T("Comments"), value: @props.answer.comments, onChange: @handleCommentsChange
+      H.textarea className: "form-control question-comments", id: "comments", ref: "comments", placeholder: T("Comments"), value: @props.answer.comments, onChange: @handleCommentsChange
 
   renderAnswer: ->
     switch @props.question._type

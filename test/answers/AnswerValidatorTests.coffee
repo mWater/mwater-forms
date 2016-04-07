@@ -43,6 +43,13 @@ describe 'AnswerValidator', ->
         }
         assert.equal @answerValidator.validate(question, answer), "message"
 
+      it "allows alternate for required", ->
+        answer = {alternate: 'na'}
+        question = {required: true, alternates: {na: true}}
+
+        result = @answerValidator.validate(question, answer)
+        assert.equal null, result, 'alternate is valid for a required question'
+
   describe 'validateTextQuestion', ->
     describe 'url', ->
       it "returns null for empty value", ->
