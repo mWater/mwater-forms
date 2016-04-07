@@ -84,6 +84,20 @@ exports.priorQuestions = (formDesign, refItem = null, rosterId = null) ->
   appendChildren(formDesign, null)
   return questions
 
+exports.getRosterIds = (formDesign) ->
+  rosterIds = []
+
+  recurse = (item) ->
+    if item._type in ["RosterGroup", "RosterMatrix"]
+      rosterIds.push(item.rosterId or item._id)
+    if item.contents
+      for subitem in item.contents
+        recurse(subitem)
+
+  recurse(formDesign)
+
+  return _.uniq(rosterIds)
+
 # Finds an item by id in a form
 exports.findItem = (formDesign, itemId) ->
   for item in formDesign.contents

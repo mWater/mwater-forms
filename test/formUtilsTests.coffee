@@ -50,6 +50,15 @@ describe "FormUtils", ->
         priors = formUtils.priorQuestions(form, null, "groupid")
         assert.deepEqual _.pluck(priors, "_id"), ['0001', '0002', '0003', '0004']
 
+  describe "getRosterIds", ->
+    it 'gets unique roster ids', ->
+      form = _.cloneDeep(sectionedForm)
+      form.contents[0].contents.push(
+        { _id: "groupid", _type: "RosterGroup", contents: [] }
+      )
+
+      assert.deepEqual formUtils.getRosterIds(form), ["groupid"]
+
   describe "findItem", ->
     it 'finds question', ->
       assert.equal formUtils.findItem(simpleForm, "0002")._id, "0002"
