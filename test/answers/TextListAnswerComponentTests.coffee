@@ -10,7 +10,7 @@ ReactDOM = require 'react-dom'
 R = React.createElement
 H = React.DOM
 
-describe 'TextListAnswerComponent', ->
+describe.only 'TextListAnswerComponent', ->
   before ->
     @toDestroy = []
 
@@ -25,22 +25,33 @@ describe 'TextListAnswerComponent', ->
       comp.destroy()
     @toDestroy = []
 
-  it "records add", ->
-    #$(@qview.$el.find("input")[0]).val("entry1").trigger('input')
-    #assert.deepEqual @model.get('q1234').value, ["entry1"]
-    assert false
+  it "records add", (done) ->
+    testComponent = @render({
+      onValueChange: (value) ->
+        assert.deepEqual value, ['some text']
+        done()
+    })
+    newLine = testComponent.findComponentById('newLine')
 
-  it "records remove", ->
-    #@model.set('q1234', { value: ['entry1', 'entry2']})
-    #$(@qview.$("button.remove")[1]).trigger('click')
-    #assert.deepEqual @model.get('q1234').value, ["entry1"]
-    assert false
+    TestComponent.changeValue(newLine, 'some text')
 
-  it "loads existing values", ->
-    ## Set first value
-    #@model.set(@q._id, { value: ["entry1"]})
-    #
-    ## Add second value
-    #$(@qview.$el.find("input")[1]).val("entry2").trigger('input')
-    #assert.deepEqual @model.get('q1234').value, ["entry1", "entry2"]
-    assert false
+  it "records remove", (done) ->
+    testComponent = @render({
+      value: ['some text']
+      onValueChange: (value) ->
+        assert.deepEqual value, []
+        done()
+    })
+    removeBtn = ReactTestUtils.findRenderedDOMComponentWithClass(testComponent.getComponent(), 'testremove')
+    TestComponent.click(removeBtn)
+
+  it "loads existing values", (done) ->
+    testComponent = @render({
+      value: ['some text']
+      onValueChange: (value) ->
+        assert.deepEqual value, ['some text', 'more text']
+        done()
+    })
+    newLine = testComponent.findComponentById('newLine')
+
+    TestComponent.changeValue(newLine, 'more text')

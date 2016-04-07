@@ -2,9 +2,6 @@ React = require 'react'
 H = React.DOM
 R = React.createElement
 
-# 100% Functional (UGLY)
-# not tested
-
 module.exports = class TextListAnswerComponent extends React.Component
   @propTypes:
     value: React.PropTypes.array
@@ -45,6 +42,11 @@ module.exports = class TextListAnswerComponent extends React.Component
       # It's important to prevent the default behavior when handling tabs (or else the tab is applied after the focus change)
       ev.preventDefault()
 
+  handleRemoveClick: (index, ev) =>
+    newValue = _.clone @props.value
+    newValue.splice(index, 1)
+    @props.onValueChange(newValue)
+
   render: ->
     H.table style: {width: "100%"},
       H.tbody null,
@@ -68,14 +70,14 @@ module.exports = class TextListAnswerComponent extends React.Component
                     ev.target.setSelectionRange(textLine.length, textLine.length)
                 }
                 H.span className: "input-group-btn",
-                  H.button className: "btn btn-link remove", "data-index": index, type:"button",
+                  H.button className: "btn btn-link remove testremove", "data-index": index, type:"button", onClick: @handleRemoveClick.bind(null, index),
                     H.span className: "glyphicon glyphicon-remove"
         H.tr null,
           H.td null
           H.td null,
             H.div className: "input-group",
-              H.input {type:"text", className: "form-control box", onChange: @handleNewLineChange, value: "", ref: 'newLine'}
+              H.input {type:"text", className: "form-control box", onChange: @handleNewLineChange, value: "", ref: 'newLine', id: 'newLine'}
               H.span className: "input-group-btn",
                 H.button className: "btn btn-link remove", "data-index": index, type:"button", hidden: true,
-                  H.span className: "glyphicon glyphicon-remove"
+                  H.span className: "glyphicon glyphicon-remove", hidden: true
           H.td null
