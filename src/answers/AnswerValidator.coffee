@@ -19,6 +19,10 @@ module.exports = class AnswerValidator
     if specificValidation?
       return specificValidation
 
+    # Skip validation if value is not set
+    if not answer.value? or answer.value == ''
+      return null
+
     # Check custom validation
     if question.validations?
       return @compileValidations(question.validations)(answer)
@@ -31,6 +35,8 @@ module.exports = class AnswerValidator
         return @validateTextQuestion(question, answer)
       when "UnitsQuestion"
         return @validateUnitsQuestion(question, answer)
+      when "NumbersQuestion"
+        return @validateNumberQuestion(question, answer)
       else
         return null
 
@@ -55,8 +61,8 @@ module.exports = class AnswerValidator
     return null
 
   # Valid if null or empty
-  # Valid if not email or url format
-  # Else a match is performed on the anser value
+  # Valid if quantity is not set
+  # Invalid if quantity is set but not unit
   validateUnitsQuestion: (question, answer) ->
     if not answer.value? or answer.value == ''
       return null
@@ -64,6 +70,13 @@ module.exports = class AnswerValidator
     if answer.value.quantity? and answer.value.quantity != ''
       if not answer.value.unit? or answer.value.unit == ''
         return 'Unit is required when a quantity is set'
+
+    return null
+
+  # Valid if null or empty
+  validateNumberQuestion: (question, answer) ->
+    if not answer.value? or answer.value == ''
+      return null
 
     return null
 

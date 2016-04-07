@@ -113,18 +113,3 @@ describe 'UnitsAnswerComponent', ->
 
     TestComponent.changeValue(quantityInput, '13.33')
     ReactTestUtils.Simulate.blur(quantityInput)
-
-  it "validates range", ->
-    #@q.validations = [
-    #  {
-    #    op: "range"
-    #    rhs: { literal: { max: 6 } }
-    #    message: { _base: "es", es: "message" }
-    #  }
-    #]
-    #@qview = @compiler.compileQuestion(@q).render()
-
-    #@qview.$el.find("#quantity").val("7").change()
-    #@qview.$el.find("#units").val("a").change()
-    #assert.equal @qview.validate(), "message"
-    assert false

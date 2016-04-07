@@ -68,36 +68,3 @@ describe 'NumberAnswerComponent', ->
     input = comp.findInput()
     TestComponent.changeValue(input, "123.4")
     ReactTestUtils.Simulate.blur(input)
-
-  it "enforces required", ->
-    #assert @qview.validate()
-
-    #@q.required = false
-    #@qview = @compiler.compileQuestion(@q).render()
-    #assert not @qview.validate()
-    assert false
-
-  it "enforces required on blank answer", ->
-    #@qview.$el.find("input").val("response").change()
-    #@qview.$el.find("input").val("").change()
-    #assert @qview.validate()
-    assert false
-
-  it "allows 0 on required", ->
-    #@qview.$el.find("input").val("0").change()
-    #assert not @qview.validate()
-    assert false
-
-  it "validates range", ->
-    #@q.validations = [
-    #  {
-    #    op: "range"
-    #    rhs: { literal: { max: 6 } }
-    #    message: { _base: "es", es: "message" }
-    #  }
-    #]
-    #@qview = @compiler.compileQuestion(@q).render()
-    #
-    #@qview.$el.find("input").val("7").change()
-    #assert.equal @qview.validate(), "message"
-    assert false

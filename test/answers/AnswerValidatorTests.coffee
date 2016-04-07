@@ -104,13 +104,27 @@ describe 'AnswerValidator', ->
         result = @answerValidator.validateTextQuestion(question, answer)
         assert.equal null, result
 
-  describe.only 'validateUnitsQuestion', ->
+    it "allows non-valid blank answer if not required", ->
+      question = {
+        validations: [
+          {
+            op: "lengthRange"
+            rhs: {literal: {min: 4, max: 6}}
+            message: {_base: "en", en: "message"}
+          }
+        ]
+      }
+      answer = {value: ''}
+
+      assert.equal null, @answerValidator.validate(question, answer), 'Should be allowed'
+
+  describe 'validateUnitsQuestion', ->
     it "returns true for empty value if required", ->
       answer = {value: null}
       question = {_type: "UnitsQuestion"}
 
       # Okay if not required
-      result = @answerValidator.validateSpecificAnswerType(question, answer)
+      result = @answerValidator.validate(question, answer)
       assert.equal null, result
 
       question.required = true
@@ -165,3 +179,62 @@ describe 'AnswerValidator', ->
       answer.value.quantity = 0
       answer.value.unit = 'a'
       assert.equal null, @answerValidator.validate(question, answer)
+
+    it "validates range", ->
+      question = {
+        validations: [
+          {
+            op: "range"
+            rhs: {literal: {max: 6}}
+            message: {_base: "en", en: "message"}
+          }
+        ]
+      }
+      answer = {value: {quantity: 7}, unit: 'a'}
+      assert.equal @answerValidator.validate(question, answer), "message"
+
+  describe 'validateNumberQuestion', ->
+    it "enforces required", ->
+      answer = {value: null}
+      question = {_type: "NumberQuestion"}
+
+      # Okay if not required
+      assert.equal null, @answerValidator.validate(question, answer)
+
+      question.required = true
+
+      # The unit answer is still valid in itself
+      assert.equal null, @answerValidator.validateNumberQuestion(question, answer)
+
+      # But not if required
+      assert.equal true, @answerValidator.validate(question, answer)
+
+    it "enforces required on blank answer", ->
+      answer = {value: ''}
+      question = {_type: "NumberQuestion"}
+      question.isRequired
+
+      # Okay if not required
+      assert.equal @answerValidator.validate(question, answer)
+
+    it "allows 0 on required", ->
+      answer = {value: 0}
+      question = {_type: "NumberQuestion"}
+      question.isRequired
+
+      # Okay if not required
+      assert.equal null, @answerValidator.validate(question, answer)
+
+    it "validates range", ->
+      question = {
+        validations: [
+          {
+            op: "range"
+            rhs: {literal: {max: 6}}
+            message: {_base: "en", en: "message"}
+          }
+        ]
+      }
+      answer = {value: 7}
+
+      assert.equal "message", @answerValidator.validate(question, answer)
