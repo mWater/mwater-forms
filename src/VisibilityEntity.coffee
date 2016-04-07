@@ -44,10 +44,8 @@ module.exports = class VisibilityEntity
       @processQuestion(item, forceToInvisible, data, prefix)
     else if item._type == "Instructions"
       @processInstruction(item, forceToInvisible, data, prefix)
-    else if item._type == "RosterGroup"
-      @processRosterGroup(item, forceToInvisible, data)
-    else if item._type == "RosterMatrix"
-      @processRosterMatrix(item, forceToInvisible, data, prefix)
+    else if item._type == "RosterGroup" or item._type == "RosterMatrix"
+      @processRosterGroup(item, forceToInvisible, data, prefix)
     else if item._type == "Group"
       @processGroupOrSection(item, forceToInvisible, data)
     else
@@ -67,8 +65,8 @@ module.exports = class VisibilityEntity
     @processQuestion(instruction, forceToInvisible, data, prefix)
 
   processRosterGroup: (rosterGroup, forceToInvisible, data, prefix) ->
-    if rosterGroup._type != 'RosterGroup'
-      throw new Error('Should be a RosterGroup')
+    if rosterGroup._type != 'RosterGroup' or rosterGroup._type != 'RosterMatrix'
+      throw new Error('Should be a RosterGroup or RosterMatrix')
 
     if forceToInvisible
       isVisible = false
@@ -92,12 +90,6 @@ module.exports = class VisibilityEntity
         for content in rosterGroup.contents
           newPrefix = "#{dataId}.#{index}."
           @processItem(content, isVisible == false, rosterGroupData, newPrefix)
-
-  processRosterMatrix: (rosterMatrix, forceToInvisible, data, prefix) ->
-    if rosterGroup._type != 'RosterMatrix'
-      throw new Error('Should be a RosterMatrix')
-
-    @processQuestion(rosterMatrix, forceToInvisible, data, prefix)
 
   compileCondition: (cond) =>
     getValue = (data) =>

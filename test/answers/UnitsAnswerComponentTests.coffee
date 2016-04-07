@@ -114,35 +114,6 @@ describe 'UnitsAnswerComponent', ->
     TestComponent.changeValue(quantityInput, '13.33')
     ReactTestUtils.Simulate.blur(quantityInput)
 
-  it "enforces required", ->
-    #assert @qview.validate()
-
-    #@q.required = false
-    #@qview = @compiler.compileQuestion(@q).render()
-    #assert not @qview.validate()
-    assert false
-
-  it "enforces required on blank answer", ->
-    #@qview.$el.find("#quantity").val("response").change()
-    #@qview.$el.find("#quantity").val("").change()
-    #@qview.$el.find("#units").val("a").change()
-    #assert @qview.validate()
-    assert false
-
-  it "allows 0 on required", ->
-    #@qview.$el.find("#quantity").val("0").change()
-    #@qview.$el.find("#units").val("a").change()
-    #assert not @qview.validate()
-    assert false
-
-  it "requires unit to be specified", ->
-    #@qview.$el.find("#quantity").val("0").change()
-    #assert @qview.validate()
-
-    #@qview.$el.find("#units").val("a").change()
-    #assert not @qview.validate()
-    assert false
-
   it "validates range", ->
     #@q.validations = [
     #  {

@@ -104,5 +104,64 @@ describe 'AnswerValidator', ->
         result = @answerValidator.validateTextQuestion(question, answer)
         assert.equal null, result
 
+  describe.only 'validateUnitsQuestion', ->
+    it "returns true for empty value if required", ->
+      answer = {value: null}
+      question = {_type: "UnitsQuestion"}
 
+      # Okay if not required
+      result = @answerValidator.validateSpecificAnswerType(question, answer)
+      assert.equal null, result
 
+      question.required = true
+
+      # The unit answer is still valid in itself
+      result = @answerValidator.validateUnitsQuestion(question, answer)
+      assert.equal null, result
+
+      # But not if required
+      result = @answerValidator.validate(question, answer)
+      assert.equal true, result
+
+    it "enforces required on blank answer", ->
+      answer = {value: {quantity: '', unit: 'a'}}
+      question = {_type: "UnitsQuestion"}
+
+      # Okay if not required
+      assert.equal null, @answerValidator.validate(question, answer), 'Should be valid'
+
+      question.required = true
+      # Not Okay if required
+      assert @answerValidator.validate(question, answer), "Shouldn't be valid"
+
+    it "allows 0 on required", ->
+      answer = {value: {quantity: '0', unit: 'a'}}
+      question = {_type: "UnitsQuestion"}
+      question.required = true
+      # Okay if not required
+      assert.equal null, @answerValidator.validate(question, answer), 'Should be valid'
+      # Also Okay if required
+      assert.equal null, @answerValidator.validate(question, answer), "Should also be valid"
+
+    it "requires unit to be specified if a quantity is set", ->
+      answer = {value: {quantity: '0'}}
+      question = {_type: "UnitsQuestion"}
+
+      # Not Okay if unit is undefined
+      assert @answerValidator.validate(question, answer), "Shouldn't be valid"
+
+      # Not Okay if unit is null
+      answer.value.unit = null
+      assert @answerValidator.validate(question, answer), "Shouldn't be valid either"
+
+      # Okay if quantity is undefined or nul or empty string
+      answer.value.quantity = ''
+      assert.equal null, @answerValidator.validate(question, answer)
+      answer.value.quantity = null
+      assert.equal null, @answerValidator.validate(question, answer)
+      delete answer.value['quantity']
+      assert.equal null, @answerValidator.validate(question, answer)
+
+      answer.value.quantity = 0
+      answer.value.unit = 'a'
+      assert.equal null, @answerValidator.validate(question, answer)

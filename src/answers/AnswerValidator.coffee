@@ -10,6 +10,9 @@ module.exports = class AnswerValidator
     if question.required
       if not answer.value? or answer.value == ''
         return true
+      # Handling empty string for Units values
+      if answer.value? and answer.value.quantity? and answer.value.quantity == ''
+        return true
 
     # Check internal validation
     specificValidation = @validateSpecificAnswerType(question, answer)
@@ -26,6 +29,8 @@ module.exports = class AnswerValidator
     switch question._type
       when "TextQuestion"
         return @validateTextQuestion(question, answer)
+      when "UnitsQuestion"
+        return @validateUnitsQuestion(question, answer)
       else
         return null
 
@@ -46,6 +51,19 @@ module.exports = class AnswerValidator
         return null
       else
         return T("Invalid format")
+
+    return null
+
+  # Valid if null or empty
+  # Valid if not email or url format
+  # Else a match is performed on the anser value
+  validateUnitsQuestion: (question, answer) ->
+    if not answer.value? or answer.value == ''
+      return null
+
+    if answer.value.quantity? and answer.value.quantity != ''
+      if not answer.value.unit? or answer.value.unit == ''
+        return 'Unit is required when a quantity is set'
 
     return null
 
