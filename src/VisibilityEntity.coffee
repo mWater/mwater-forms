@@ -79,15 +79,16 @@ module.exports = class VisibilityEntity
 
     # The data used (and passed down to sub items) is the one specified by rosterId if set
     if rosterGroup.rosterId?
-      subData = data[rosterGroup.rosterId]
+      dataId = rosterGroup.rosterId
     # Else the RosterGroup uses its own data
     else
-      subData = data[rosterGroup._id]
+      dataId = rosterGroup._id
+    subData = data[dataId]
 
     if subData?
       for rosterGroupData, index in subData
         for content in rosterGroup.contents
-          newPrefix = "#{rosterGroup._id}.#{index}."
+          newPrefix = "#{dataId}.#{index}."
           @processItem(content, isVisible == false, rosterGroupData, newPrefix)
 
   processRosterMatrix: (rosterMatrix, forceToInvisible, data, prefix) ->

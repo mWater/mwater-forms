@@ -1,9 +1,7 @@
 assert = require('chai').assert
 VisibilityEntity = require '../src/VisibilityEntity'
 
-# If mno is invisible and xyz is visible (and mno has rosterId
-
-describe 'VisibilityEntity', ->
+describe.only 'VisibilityEntity', ->
   before ->
     @form = {_type: 'Form', contents: [
         {
@@ -94,6 +92,7 @@ describe 'VisibilityEntity', ->
       }
       visibilityStructure = @visibilityEntity.createVisibilityStructure(data)
       console.log visibilityStructure
+
       expectedVisibilityStructure = {
         'sectionId': true
         'checkboxQuestionId': true
@@ -102,8 +101,10 @@ describe 'VisibilityEntity', ->
         'mainRosterGroupId.0.secondRosterQuestionId': true
         'mainRosterGroupId.1.firstRosterQuestionId': true
         'mainRosterGroupId.1.secondRosterQuestionId': false
-        'subRosterGroupId.0.firstSubRosterQuestionId': true
-        'subRosterGroupId.1.firstSubRosterQuestionId': true
+        # Questions under subRosterGroup need to use the mainRosterGroup id.
+        # This makes the data cleaning easier.
+        'mainRosterGroupId.0.firstSubRosterQuestionId': true
+        'mainRosterGroupId.1.firstSubRosterQuestionId': true
         'subRosterGroupId': true
       }
       assert.deepEqual visibilityStructure, expectedVisibilityStructure
