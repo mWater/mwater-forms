@@ -85,30 +85,16 @@ exports.priorQuestions = (formDesign, refItem = null, rosterId = null) ->
   return questions
 
 # Finds an item by id in a form
-# TODO should handle arbitrary nesting
-exports.findItem = (form, questionId) ->
-  for item in form.contents
+exports.findItem = (formDesign, itemId) ->
+  for item in formDesign.contents
     # If ids match
-    if item._id == questionId
+    if item._id == itemId
       return item
 
-    if item._type == "Section"
-      for item2 in item.contents
-        # If ids match
-        if item2._id == questionId
-          return item2
-
-        if item2._type == "Group" or item._type == "RosterGroup"
-          for item3 in item2.contents
-            # If ids match
-            if item3._id == questionId
-              return item3
-
-    if item._type == "Group" or item._type == "RosterGroup"
-      for item2 in item.contents
-        # If ids match
-        if item2._id == questionId
-          return item2
+    if item.contents
+      found = exports.findItem(item, itemId)
+      if found
+        return found
 
 # Fills question with default values and removes extraneous fields
 exports.prepareQuestion = (q) ->
