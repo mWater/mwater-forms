@@ -87,4 +87,13 @@ module.exports = class FormComponent extends React.Component
         H.button type: "button", className: "btn btn-primary", onClick: @handleSubmit,
           T("Submit")
 
-        # TODO submit, etc. for non-sectioned
+        if @props.onSaveLater
+          [
+            H.button type: "button", className: "btn btn-default", onClick: @props.onSaveLater,
+              T("Save for Later")
+            "\u00A0"
+          ]
+
+        H.button type:"button", className: "btn btn-default", onClick: @props.onDiscard,
+          H.span className: "glyphicon glyphicon-trash"
+          " " + T("Discard")
