@@ -24,9 +24,9 @@ module.exports = class ItemComponent extends React.Component
     change[id] = answer
     @props.onDataChange(_.extend({}, @props.data, change))
 
-  scrollToInvalid: (alreadyFoundFirst) ->
-    if @refs.item? and @refs.item.scrollToInvalid?
-      return @refs.item.scrollToInvalid(alreadyFoundFirst)
+  validate: (scrollToFirstInvalid) ->
+    if @refs.item? and @refs.item.validate?
+      return @refs.item.validate(scrollToFirstInvalid)
     return false
 
   focus: () ->
@@ -45,6 +45,7 @@ module.exports = class ItemComponent extends React.Component
         onNext: @props.onNext
     else if @props.item._type == "Instructions"
       return R InstructionsComponent,
+        ref: 'item'
         instructions: @props.item
         isVisible: @props.isVisible
     else if @props.item._type == "Group"
@@ -63,6 +64,7 @@ module.exports = class ItemComponent extends React.Component
         isVisible: @props.isVisible
     else if @props.item._type == "RosterMatrix"
       return R RosterMatrixComponent,
+        ref: 'item'
         rosterMatrix: @props.item
         data: @props.data
         onDataChange: @props.onDataChange

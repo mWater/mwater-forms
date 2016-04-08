@@ -14,7 +14,7 @@
 }
 
 td.invalid {
-  border: #C43B1D 2px solid;
+  border: #C43B1D 2px solid !important; /* Important to override other cell borders */
 }
 
 .question {

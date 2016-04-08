@@ -74,7 +74,7 @@ module.exports = class QuestionComponent extends React.Component
       answer.focus()
 
   # Returns true if validation error
-  scrollToInvalid: (scrollToFirstInvalid) ->
+  validate: (scrollToFirstInvalid) ->
     validationError = new AnswerValidator().validate(@props.question, @props.answer)
 
     if validationError?
