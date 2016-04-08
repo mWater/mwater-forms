@@ -68,8 +68,8 @@ module.exports = class RosterGroupComponent extends React.Component
     ItemListComponent = require './ItemListComponent'
 
     H.div key: index, className: "panel panel-default", 
-      H.div key: "header", className: "panel-header",
-        "##{index + 1}"
+      H.div key: "header", className: "panel-heading", style: { fontWeight: "bold" },
+        "#{index + 1}."
       H.div key: "body", className: "panel-body",
         if @props.rosterGroup.allowRemove
           H.button type: "button", style: { float: "right" }, className: "btn btn-sm btn-link", onClick: @handleRemove.bind(null, index),

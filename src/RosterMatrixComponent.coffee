@@ -100,7 +100,7 @@ module.exports = class RosterMatrixComponent extends React.Component
 
   renderColumnHeader: (column, index) ->
     H.th key: column._id,
-      formUtils.localizeString(column.name, @context.locale)
+      formUtils.localizeString(column.text, @context.locale)
 
       # Required star
       if column.required
@@ -115,7 +115,7 @@ module.exports = class RosterMatrixComponent extends React.Component
           H.th(null)
 
   renderCell: (entry, entryIndex, column, columnIndex) ->
-    value = @getAnswer()[entryIndex][column._id]
+    value = @getAnswer()[entryIndex][column._id]?.value
 
     # Create element
     switch column._type

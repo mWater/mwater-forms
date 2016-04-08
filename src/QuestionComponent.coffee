@@ -151,22 +151,11 @@ module.exports = class QuestionComponent extends React.Component
       @props.onNext?()
 
   renderPrompt: ->
-    prompt = formUtils.localizeString(@props.question.text, @context.locale)
-
-    # Substitute data # TODO HACK
-    prompt = prompt.replace(/\{(.+?)\}/g, (match, expr) =>
-      value = @props.data
-      for path in expr.split(":")
-        if value
-          value = value[path]
-      return value or ""
-      )
-
     promptDiv = H.div className: "prompt", ref: 'prompt',
       if @props.question.code
         H.span className: "question-code", @props.question.code + ": "
       # Prompt
-      prompt
+      formUtils.localizeString(@props.question.text, @context.locale)
 
       # Required star
       if @props.question.required

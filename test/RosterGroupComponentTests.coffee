@@ -89,11 +89,11 @@ describe "RosterGroupComponent", ->
     comp = @render(rosterGroup: @rosterGroup, data: {})
     assert comp.findDOMNodeByText(/Name/)
 
-  it "displays default entry header of #n", ->
+  it "displays default entry header of n.", ->
     @rosterGroup.allowRemove = true
     comp = @render(rosterGroup: @rosterGroup, data: { a: [{}, {}] })
-    assert comp.findDOMNodeByText(/#1/)
-    assert comp.findDOMNodeByText(/#2/)
+    assert comp.findDOMNodeByText(/1\./)
+    assert comp.findDOMNodeByText(/2\./)
 
   it "hides sub-items if isVisible for <id/rosterId>.<n>.<questionId> is false", ->
     # Hide first
