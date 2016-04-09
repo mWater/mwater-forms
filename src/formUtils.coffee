@@ -110,6 +110,16 @@ exports.findItem = (formDesign, itemId) ->
       if found
         return found
 
+# All items under an item including self
+exports.allItems = (rootItem) ->
+  items = []
+  items.push(rootItem)
+  if rootItem.contents
+    for item in rootItem.contents
+      items = items.concat(exports.allItems(item))
+
+  return items
+
 # Fills question with default values and removes extraneous fields
 exports.prepareQuestion = (q) ->
   _.defaults q, {

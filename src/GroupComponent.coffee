@@ -23,9 +23,8 @@ module.exports = class GroupComponent extends React.Component
     # To avoid circularity
     ItemListComponent = require './ItemListComponent'
       
-    # TODO: MBRIAU: I removed 'key: index' since index was not defined...
     H.div className: "panel panel-default",
-      H.div key: "header", className: "panel-header",
+      H.div key: "header", className: "panel-heading",
         formUtils.localizeString(@props.group.name, @context.locale)
 
       H.div key: "body", className: "panel-body",
@@ -35,3 +34,4 @@ module.exports = class GroupComponent extends React.Component
           data: @props.data
           onDataChange: @props.onDataChange
           isVisible: @props.isVisible
+          
