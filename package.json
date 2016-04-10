@@ -37,6 +37,7 @@
     "react": "^0.14.2",
     "react-dom": "^0.14.2",
     "react-library": "github:mwater/react-library",
+    "topo": "^2.0.0",
     "underscore": "^1.7.0",
     "update-object": "^1.0.0"
   },

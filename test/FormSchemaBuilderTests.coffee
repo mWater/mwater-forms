@@ -836,3 +836,37 @@ describe "FormSchemaBuilder addForm", ->
             ]
           }
       })
+
+    it "correctly orders indicators of indicators", ->
+      # Create form with number question and indicator calculation
+      indicatorCalculations = [ # Deliberately in opposite order to force testing dependency calculation
+        {
+          _id: "ic2"
+          indicator: "ind1"
+          expressions: {
+            num2: {
+              type: "op"
+              op: "-"
+              exprs: [
+                { type: "field", table: "responses:formid", column: "indicator_calculation:ic1:num1" }  # References ic1 indicator calculation
+                { type: "literal", valueType: "number", value: 3 }
+              ]
+            }
+          }
+        }
+        {
+          _id: "ic1"
+          indicator: "ind1"
+          expressions: {
+            num1: {
+              type: "op"
+              op: "+"
+              exprs: [
+                { type: "field", table: "responses:formid", column: "data:questionid:value" }
+                { type: "literal", valueType: "number", value: 5 }
+              ]
+            }
+          }
+        }
+      ]
+      assert.deepEqual _.pluck(new FormSchemaBuilder().orderIndicatorCalculation(indicatorCalculations), "_id"), ["ic1", "ic2"]

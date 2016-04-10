@@ -30,9 +30,11 @@ Cleaning an expression does not remove it entirely. But it might compile to null
 
 _ = require 'lodash'
 formUtils = require '../src/formUtils'
+ExprUtils = require('mwater-expressions').ExprUtils
 ExprCompiler = require('mwater-expressions').ExprCompiler
 update = require 'update-object'
 ColumnNotFoundException = require('mwater-expressions').ColumnNotFoundException
+Topo = require 'topo'
 
 # Append a string to each language
 appendStr = (str, suffix) ->
@@ -162,54 +164,32 @@ module.exports = class FormSchemaBuilder
   createIndicatorCalculationSections: (schema, form, isMaster) ->
     tableId = if isMaster then "master_responses:#{form._id}" else "responses:#{form._id}"
 
-    # Add indicator calculations
+    # If not calculations, don't add indicators section
     if not form.indicatorCalculations or form.indicatorCalculations.length == 0
       return schema
 
+    # Add indicator section
     indicatorsSection = {
       type: "section"
       name: { _base: "en", en: "Indicators" }
       contents: []
     }
-
-    # Re-add table
     schema = schema.addTable(update(schema.getTable(tableId), { contents: { $push: [indicatorsSection] } }))
 
-    # Since the order to add indicator calculations is not clear (#1 might reference #2), we try again and again, handling ColumnNotFoundException gracefully
-    todoIcs = form.indicatorCalculations.slice()      
-    while todoIcs.length > 0
-      successes = []
-      lastError = null
+    # Process indicator calculations topologically since the order to add indicator calculations is not clear (#1 might reference #2)
+    for indicatorCalculation in @orderIndicatorCalculation(form.indicatorCalculations)
+      indicatorsSection = _.last(schema.getTable(tableId).contents)
 
-      # For each indicator calculation todo
-      for indicatorCalculation in todoIcs
-        indicatorsSection = _.last(schema.getTable(tableId).contents)
+      # Add to indicators section
+      indicatorSectionContents = indicatorsSection.contents.slice()
+      indicatorSectionContents.push(@createIndicatorCalculationSection(indicatorCalculation, schema, isMaster))
 
-        # Add to indicators section
-        iscontents = indicatorsSection.contents.slice()
-        try 
-          iscontents.push(@createIndicatorCalculationSection(indicatorCalculation, schema, isMaster))
-        catch err
-          if err instanceof ColumnNotFoundException
-            # Continue
-            lastError = err
-            continue
-          throw err
+      # Update in original
+      contents = schema.getTable(tableId).contents.slice()
+      contents[contents.length - 1] = update(indicatorsSection, { contents: { $set: indicatorSectionContents } })
 
-        # Update in original
-        contents = schema.getTable(tableId).contents.slice()
-        contents[contents.length - 1] = update(indicatorsSection, { contents: { $set: iscontents } })
-
-        # Re-add table
-        schema = schema.addTable(update(schema.getTable(tableId), { contents: { $set: contents } }))
-        successes.push(indicatorCalculation)
-
-      if successes.length == 0
-        # Rethrow error
-        throw lastError
-
-      # Remove successes
-      todoIcs = _.difference(todoIcs, successes)
+      # Re-add table
+      schema = schema.addTable(update(schema.getTable(tableId), { contents: { $set: contents } }))
 
     return schema
 
@@ -820,3 +800,38 @@ module.exports = class FormSchemaBuilder
         
         addColumn(column)
 
+  # Orders indicator calculations, since some can depend on others by using them in their expressions
+  # e.g if A depends on B, then B is first and then A
+  # Returns indicator calculations in order
+  # Throws if circular
+  orderIndicatorCalculation: (indicatorCalculations) ->
+    toposort = new Topo()
+
+    # No schema needed for this function
+    exprUtils = new ExprUtils()
+
+    # Check columns used in the calculations. Indicator calculation fields are in format
+    #  indicator_calculation:<indicator calculation _id>:<column id>
+    for ic in indicatorCalculations
+      # Get fields referenced in all expressions and condition
+      refedColumns = []
+      for id, expr of ic.expressions
+        refedColumns = _.union(refedColumns, exprUtils.getImmediateReferencedColumns(expr))
+
+      refedColumns = _.union(refedColumns, exprUtils.getImmediateReferencedColumns(ic.condition))
+
+      # Keep ones matching format
+      refedIndicatorCalculationIds = []
+      for col in refedColumns
+        match = col.match(/^indicator_calculation:(.+?):.+$/)
+        if match
+          refedIndicatorCalculationIds = _.union(refedIndicatorCalculationIds, [match[1]])
+
+      console.log refedIndicatorCalculationIds
+
+      # Add to topo sort
+      toposort.add(ic._id, { group: ic._id, after: refedIndicatorCalculationIds })
+
+    map = _.indexBy(indicatorCalculations, "_id")
+
+    return _.map(toposort.nodes, (id) -> map[id])
