@@ -25,6 +25,18 @@ What happens if column has a null JSONQL expression? E.g. blank indic calc?
 Cleaning an expression does not remove it entirely. But it might compile to null.
 
 
+Topological sorting is done, but adding indicator calculations to schema can still fail if expressions are invalid
+since they are compiled to build the jsonql field.
+
+So, to validate/clean we need to:
+
+- create form table without indicator calculations
+- add empty indicators section
+
+- topologically sort indicator calculations 
+- for each indicator calculation
+  - clean expressions (warning if changed)
+  - re-create schema and cleaner
 
 ###
 
@@ -95,7 +107,7 @@ module.exports = class FormSchemaBuilder
       contents: contents
     })
 
-    schema = @createIndicatorCalculationSections(schema, form, false)
+    schema = @addIndicatorCalculations(schema, form, false)
 
     if form.isMaster
       schema = @addMasterForm(schema, form, cloneForms)
@@ -158,10 +170,10 @@ module.exports = class FormSchemaBuilder
       contents: contents
     })
 
-    schema = @createIndicatorCalculationSections(schema, form, true)
+    schema = @addIndicatorCalculations(schema, form, true)
 
   # Create a section in schema called Indicators with one subsection for each indicator calculated
-  createIndicatorCalculationSections: (schema, form, isMaster) ->
+  addIndicatorCalculations: (schema, form, isMaster) ->
     tableId = if isMaster then "master_responses:#{form._id}" else "responses:#{form._id}"
 
     # If not calculations, don't add indicators section
@@ -258,6 +270,40 @@ module.exports = class FormSchemaBuilder
     }
 
     return section
+
+  # Orders indicator calculations, since some can depend on others by using them in their expressions
+  # e.g if A depends on B, then B is first and then A
+  # Returns indicator calculations in order
+  # Throws if circular
+  orderIndicatorCalculation: (indicatorCalculations) ->
+    toposort = new Topo()
+
+    # No schema needed for this function
+    exprUtils = new ExprUtils()
+
+    # Check columns used in the calculations. Indicator calculation fields are in format
+    #  indicator_calculation:<indicator calculation _id>:<column id>
+    for ic in indicatorCalculations
+      # Get fields referenced in all expressions and condition
+      refedColumns = []
+      for id, expr of ic.expressions
+        refedColumns = _.union(refedColumns, exprUtils.getImmediateReferencedColumns(expr))
+
+      refedColumns = _.union(refedColumns, exprUtils.getImmediateReferencedColumns(ic.condition))
+
+      # Keep ones matching format
+      refedIndicatorCalculationIds = []
+      for col in refedColumns
+        match = col.match(/^indicator_calculation:(.+?):.+$/)
+        if match
+          refedIndicatorCalculationIds = _.union(refedIndicatorCalculationIds, [match[1]])
+
+      # Add to topo sort
+      toposort.add(ic._id, { group: ic._id, after: refedIndicatorCalculationIds })
+
+    map = _.indexBy(indicatorCalculations, "_id")
+
+    return _.map(toposort.nodes, (id) -> map[id])
 
   addFormItem: (form, item, contents) ->
     addColumn = (column) =>
@@ -799,39 +845,3 @@ module.exports = class FormSchemaBuilder
         }
         
         addColumn(column)
-
-  # Orders indicator calculations, since some can depend on others by using them in their expressions
-  # e.g if A depends on B, then B is first and then A
-  # Returns indicator calculations in order
-  # Throws if circular
-  orderIndicatorCalculation: (indicatorCalculations) ->
-    toposort = new Topo()
-
-    # No schema needed for this function
-    exprUtils = new ExprUtils()
-
-    # Check columns used in the calculations. Indicator calculation fields are in format
-    #  indicator_calculation:<indicator calculation _id>:<column id>
-    for ic in indicatorCalculations
-      # Get fields referenced in all expressions and condition
-      refedColumns = []
-      for id, expr of ic.expressions
-        refedColumns = _.union(refedColumns, exprUtils.getImmediateReferencedColumns(expr))
-
-      refedColumns = _.union(refedColumns, exprUtils.getImmediateReferencedColumns(ic.condition))
-
-      # Keep ones matching format
-      refedIndicatorCalculationIds = []
-      for col in refedColumns
-        match = col.match(/^indicator_calculation:(.+?):.+$/)
-        if match
-          refedIndicatorCalculationIds = _.union(refedIndicatorCalculationIds, [match[1]])
-
-      console.log refedIndicatorCalculationIds
-
-      # Add to topo sort
-      toposort.add(ic._id, { group: ic._id, after: refedIndicatorCalculationIds })
-
-    map = _.indexBy(indicatorCalculations, "_id")
-
-    return _.map(toposort.nodes, (id) -> map[id])
