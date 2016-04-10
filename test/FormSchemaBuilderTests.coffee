@@ -728,7 +728,7 @@ describe "FormSchemaBuilder addForm", ->
           }
       })
 
-    it "does not add indicators fields with no calculation", ->
+    it "add indicators fields with no calculation as jsonql literal null", ->
       # Create form with number question and indicator calculation
       form = {
         _id: "formid"
@@ -749,15 +749,14 @@ describe "FormSchemaBuilder addForm", ->
           {
             _id: "ic1"
             indicator: "ind1"
-            expressions: {
-            }
+            expressions: { } # No calculations
           }
         ]
       }
       schema = new FormSchemaBuilder().addForm(@schema, form)
 
       # Check that indicator calculation not added
-      assert not schema.getColumn("responses:formid", "indicator_calculation:ic1:num1")
+      assert.deepEqual schema.getColumn("responses:formid", "indicator_calculation:ic1:num1").jsonql, { type: "literal", value: null }
 
     it "adds indicators of indicators", ->
       # Create form with number question and indicator calculation

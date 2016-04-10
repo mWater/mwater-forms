@@ -233,10 +233,7 @@ module.exports = class FormSchemaBuilder
         if col.type == "section"
           return col
 
-        # Ignore if no expression
         expression = indicatorCalculation.expressions[col.id]
-        if not expression
-          return null
 
         # If master, hack expression to be from master_responses, not responses
         if isMaster
@@ -261,6 +258,10 @@ module.exports = class FormSchemaBuilder
 
         # Compile jsonql
         jsonql = exprCompiler.compileExpr(expr: expression, tableAlias: "{alias}")
+
+        # jsonql null should be explicit so it doesn't just think there is no jsonql specified
+        if not jsonql
+          jsonql = { type: "literal", value: null }
 
         # Set jsonql and id
         col = update(col, { id: { $set: "indicator_calculation:#{indicatorCalculation._id}:#{col.id}" }, jsonql: { $set: jsonql }})
