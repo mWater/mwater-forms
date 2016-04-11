@@ -46,13 +46,6 @@ module.exports = class FormComponent extends React.Component
   componentWillMount: ->
     @handleDataChange(@props.data)
 
-  # TODO I think this would be better as a prop, threaded all through
-  @childContextTypes: 
-    formExprEvaluator: React.PropTypes.object # Passed to all components for evaluating expressions
-  
-  getChildContext: -> 
-    { formExprEvaluator: @state.formExprEvaluator }
-
   handleSubmit: =>
     # Cannot submit if at least one itemComponent is invalid
     if not @refs.itemListComponent.validate(true)
@@ -91,6 +84,7 @@ module.exports = class FormComponent extends React.Component
         onSaveLater: @props.onSaveLater
         onDiscard: @props.onDiscard
         isVisible: @isVisible
+        formExprEvaluator: @state.formExprEvaluator 
     else
       H.div null,
         R ItemListComponent,
@@ -98,8 +92,9 @@ module.exports = class FormComponent extends React.Component
           contents: @props.design.contents
           data: @props.data
           onDataChange: @handleDataChange
-          isVisible: @isVisible
-
+          isVisible: @isVisible 
+          formExprEvaluator: @state.formExprEvaluator 
+          
         H.button type: "button", className: "btn btn-primary", onClick: @handleSubmit,
           T("Submit")
 

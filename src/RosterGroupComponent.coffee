@@ -16,6 +16,7 @@ module.exports = class RosterGroupComponent extends React.Component
     data: React.PropTypes.object      # Current data of response. 
     onDataChange: React.PropTypes.func.isRequired   # Called when data changes
     isVisible: React.PropTypes.func.isRequired # (id) tells if an item is visible or not
+    formExprEvaluator: React.PropTypes.object.isRequired # FormExprEvaluator for rendering strings with expression
 
   # Gets the id that the answer is stored under
   getAnswerId: ->
@@ -81,6 +82,7 @@ module.exports = class RosterGroupComponent extends React.Component
           data: @getAnswer()[index]
           onDataChange: @handleEntryDataChange.bind(null, index)
           isVisible: @isChildVisible.bind(null, index)
+          formExprEvaluator: React.PropTypes.object.isRequired # FormExprEvaluator for rendering strings with expression
 
   renderAdd: ->
     if @props.rosterGroup.allowAdd

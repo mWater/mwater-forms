@@ -18,6 +18,7 @@ module.exports = class ItemComponent extends React.Component
     onDataChange: React.PropTypes.func.isRequired
     onNext: React.PropTypes.func
     isVisible: React.PropTypes.func.isRequired # (id) tells if an item is visible or not
+    formExprEvaluator: React.PropTypes.object.isRequired # FormExprEvaluator for rendering strings with expression
 
   handleAnswerChange: (id, answer) =>
     change = {}
@@ -43,11 +44,13 @@ module.exports = class ItemComponent extends React.Component
         onAnswerChange: @handleAnswerChange.bind(null, @props.item._id)
         data: @props.data
         onNext: @props.onNext
+        formExprEvaluator: @props.formExprEvaluator
     else if @props.item._type == "Instructions"
       return R InstructionsComponent,
         ref: 'item'
         instructions: @props.item
         data: @props.data
+        formExprEvaluator: @props.formExprEvaluator
     else if @props.item._type == "Group"
       return R GroupComponent,
         ref: 'item'
@@ -55,6 +58,7 @@ module.exports = class ItemComponent extends React.Component
         data: @props.data
         onDataChange: @props.onDataChange
         isVisible: @props.isVisible
+        formExprEvaluator: @props.formExprEvaluator
     else if @props.item._type == "RosterGroup"
       return R RosterGroupComponent,
         ref: 'item'
@@ -62,6 +66,7 @@ module.exports = class ItemComponent extends React.Component
         data: @props.data
         onDataChange: @props.onDataChange
         isVisible: @props.isVisible
+        formExprEvaluator: @props.formExprEvaluator
     else if @props.item._type == "RosterMatrix"
       return R RosterMatrixComponent,
         ref: 'item'
@@ -69,5 +74,6 @@ module.exports = class ItemComponent extends React.Component
         data: @props.data
         onDataChange: @props.onDataChange
         isVisible: @props.isVisible
+        formExprEvaluator: @props.formExprEvaluator
     else
       return H.div null, "TODO: " + @props.item._type

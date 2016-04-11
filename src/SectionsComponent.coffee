@@ -16,6 +16,7 @@ module.exports = class SectionsComponent extends React.Component
     onDataChange: React.PropTypes.func.isRequired
 
     isVisible: React.PropTypes.func.isRequired # (id) tells if an item is visible or not
+    formExprEvaluator: React.PropTypes.object.isRequired # FormExprEvaluator for rendering strings with expression
 
     onSubmit: React.PropTypes.func.isRequired     # Called when submit is pressed
     onSaveLater: React.PropTypes.func             # Optional save for later
@@ -73,13 +74,14 @@ module.exports = class SectionsComponent extends React.Component
         data: @props.data
         onDataChange: @props.onDataChange
         isVisible: @props.isVisible
+        formExprEvaluator: @props.formExprEvaluator
 
   renderButtons: ->
     H.div className: "form-controls",
       # If can go back
       if @state.sectionNum > 0
         [
-          H.button type: "button", className: "btn btn-default", onClick: @handleBack,
+          H.button key: "back", type: "button", className: "btn btn-default", onClick: @handleBack,
             H.span className: "glyphicon glyphicon-backward"
             " " + T("Back")
           "\u00A0"
@@ -87,23 +89,23 @@ module.exports = class SectionsComponent extends React.Component
 
       # Can go forward or submit
       if @state.sectionNum < @props.contents.length - 1  
-        H.button type: "button", className: "btn btn-primary", onClick: @handleNext,
+        H.button key: "next", type: "button", className: "btn btn-primary", onClick: @handleNext,
           T("Next") + " " 
           H.span className: "glyphicon glyphicon-forward"
       else  
-        H.button type: "button", className: "btn btn-primary", onClick: @handleSubmit,
+        H.button key: "submit", type: "button", className: "btn btn-primary", onClick: @handleSubmit,
           T("Submit")
 
       "\u00A0"
 
       if @props.onSaveLater
         [
-          H.button type: "button", className: "btn btn-default", onClick: @props.onSaveLater,
+          H.button key: "saveLater", type: "button", className: "btn btn-default", onClick: @props.onSaveLater,
             T("Save for Later")
           "\u00A0"
         ]
 
-      H.button type:"button", className: "btn btn-default", onClick: @props.onDiscard,
+      H.button key: "discard", type:"button", className: "btn btn-default", onClick: @props.onDiscard,
         H.span className: "glyphicon glyphicon-trash"
         " " + T("Discard")
 

@@ -13,6 +13,7 @@ module.exports = class ItemListComponent extends React.Component
     onDataChange: React.PropTypes.func.isRequired
     onNext: React.PropTypes.func
     isVisible: React.PropTypes.func.isRequired # (id) tells if an item is visible or not
+    formExprEvaluator: React.PropTypes.object.isRequired # FormExprEvaluator for rendering strings with expression
 
   validate: (scrollToFirstInvalid) ->
     foundInvalid = false
@@ -43,6 +44,7 @@ module.exports = class ItemListComponent extends React.Component
       onDataChange: @props.onDataChange,
       onNext: @handleNext.bind(this, index)
       isVisible: @props.isVisible
+      formExprEvaluator: @props.formExprEvaluator
     })
 
   render: ->
