@@ -47,7 +47,7 @@ module.exports = class ItemComponent extends React.Component
       return R InstructionsComponent,
         ref: 'item'
         instructions: @props.item
-        isVisible: @props.isVisible
+        data: @props.data
     else if @props.item._type == "Group"
       return R GroupComponent,
         ref: 'item'

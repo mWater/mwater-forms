@@ -23,7 +23,7 @@ exports.design = {
     # Schema 10 adds entity questions and linking
     # Schema 11 deprecates form-level entity settings and adds hidden entity questions
     # Schema 12 adds admin regions
-    # Schema 13 adds rosters
+    # Schema 13 adds rosters and textExprs
     _schema: { enum: [1, 2, 3, 4, 5, 10, 11, 12, 13] }
 
     # Name of the form
@@ -204,6 +204,9 @@ exports.design = {
         # Text (prompt of the question)
         text: { $ref: "#/definitions/localizedString" } 
 
+        # Array of mWater expressions to substitute into text field for {0}, {1}, etc.
+        textExprs: { type: "array", items: { type: "object" }}
+
         # True if the question is required to be answered
         required: { type: "boolean" }
 
@@ -285,6 +288,9 @@ exports.design = {
 
         # Markdown text on a per-language basis
         text: { $ref: "#/definitions/localizedString" } 
+
+        # Array of mWater expressions to substitute into text field for {0}, {1}, etc.
+        textExprs: { type: "array", items: { type: "object" }}
 
         # Conditions for visibility of the instructions
         conditions: { $ref: "#/definitions/conditions" }

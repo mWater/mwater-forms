@@ -6,6 +6,7 @@ R = React.createElement
 formUtils = require './formUtils'
 markdown = require("markdown").markdown
 LocationEditorComponent = require './LocationEditorComponent'
+FormExprEvaluator = require './FormExprEvaluator'
 
 LocationFinder = require './LocationFinder'
 
@@ -44,6 +45,7 @@ module.exports = class QuestionComponent extends React.Component
     locale: React.PropTypes.string
     stickyStorage: React.PropTypes.object   # Storage for sticky values
     locationFinder: React.PropTypes.object
+    formExprEvaluator: React.PropTypes.object # FormExprEvaluator for rendering strings with expression
 
   @propTypes:
     question: React.PropTypes.object.isRequired # Design of question. See schema
@@ -154,8 +156,9 @@ module.exports = class QuestionComponent extends React.Component
     promptDiv = H.div className: "prompt", ref: 'prompt',
       if @props.question.code
         H.span className: "question-code", @props.question.code + ": "
-      # Prompt
-      formUtils.localizeString(@props.question.text, @context.locale)
+      
+      # Gracefully handle no formExprEvaluator
+      (@context.formExprEvaluator or new FormExprEvaluator()).renderString(@props.question.text, @props.question.textExprs, @props.data, @context.locale)
 
       # Required star
       if @props.question.required

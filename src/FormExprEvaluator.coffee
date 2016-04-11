@@ -8,12 +8,13 @@ ExprEvaluator = require('mwater-expressions').ExprEvaluator
 # There is also a field "textExprs" that contains an array of mWater expressions. e.g. [{ type: "field", table: "responses:12345", column: "data:abc123:value" }]
 # This would substitute the value of the abc123 question into the string
 module.exports = class FormExprEvaluator 
-  # Uses a form
-  constructor: (form) ->
-    @form = form
-
-    # Index all questions by _id for looking up type
-    @itemMap = _.indexBy(formUtils.allItems(form.design), "_id")
+  # Uses a form design
+  constructor: (formDesign) ->
+    # Index all questions by _id for looking up type. Gracefully degrade if no form
+    if formDesign
+      @itemMap = _.indexBy(formUtils.allItems(formDesign), "_id")
+    else
+      @itemMap = {}
 
   # Render a localized string that may contain one or more expressions as a string.
   renderString: (localizedStr, exprs, data, locale = "en") ->
@@ -23,13 +24,12 @@ module.exports = class FormExprEvaluator
     # Perform substitutions ({0}, {1}, etc.)
     str = str.replace(/\{(\d+)\}/g, (match, index) =>
       index = parseInt(index)
-      if exprs[index]
+      if exprs?[index]
         return @evaluateExpr(exprs[index], data) or ""
       return ""
       )
     
     return str
-
 
   # Evaluate a single expression
   # data is the data to use. Usually response.data but when in a roster, is the data for the roster entry

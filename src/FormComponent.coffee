@@ -9,6 +9,7 @@ ItemListComponent = require './ItemListComponent'
 CleaningEntity = require './CleaningEntity'
 StickyEntity = require './StickyEntity'
 VisibilityEntity = require './VisibilityEntity'
+FormExprEvaluator = require './FormExprEvaluator'
 
 # Displays a form that can be filled out
 module.exports = class FormComponent extends React.Component
@@ -29,13 +30,28 @@ module.exports = class FormComponent extends React.Component
     entityType: React.PropTypes.string        # Type of form-level entity to load TODO
 
   constructor: (props) ->
-    @state = {visibilityStructure: {}}
+    super
+
+    @state = {
+      visibilityStructure: {}
+      formExprEvaluator: new FormExprEvaluator(@props.design)
+    }
+
+  componentWillReceiveProps: (nextProps) ->
+    @setState(formExprEvaluator: new FormExprEvaluator(nextProps.design))
 
   # This will clean the data that has been passed at creation
   # It will also initialize the visibilityStructure
   # And set the sticky data
   componentWillMount: ->
     @handleDataChange(@props.data)
+
+  # TODO I think this would be better as a prop, threaded all through
+  @childContextTypes: 
+    formExprEvaluator: React.PropTypes.object # Passed to all components for evaluating expressions
+  
+  getChildContext: -> 
+    { formExprEvaluator: @state.formExprEvaluator }
 
   handleSubmit: =>
     # Cannot submit if at least one itemComponent is invalid

@@ -5,22 +5,19 @@ describe "FormExprEvaluator", ->
   describe "renderString", ->
     beforeEach ->
       @testEval = (question, data, localizedStr, exprs, locale, expected) =>
-        form = {
-          _id: "1234"
-          design: {
-            _type: "Form"
-            contents: []
-          }
+        formDesign = {
+          _type: "Form"
+          contents: []
         }
 
         # Create question
         question = _.defaults(question, { _id: "a", _type: "TextQuestion", text: { en: "Question" }, conditions: [], validations: [] })
 
         # Add to form
-        form.design.contents.push(question)
+        formDesign.contents.push(question)
 
         # Create evaluator
-        evl = new FormExprEvaluator(form)
+        evl = new FormExprEvaluator(formDesign)
 
         # Evaluate a simple field
         assert.deepEqual evl.renderString(localizedStr, exprs, data, locale), expected
@@ -47,21 +44,18 @@ describe "FormExprEvaluator", ->
     beforeEach ->
       @testEval = (question, data, column, expected) =>
         form = {
-          _id: "1234"
-          design: {
-            _type: "Form"
-            contents: []
-          }
+          _type: "Form"
+          contents: []
         }
 
         # Create question
         question = _.defaults(question, { _id: "a", _type: "TextQuestion", text: { en: "Question" }, conditions: [], validations: [] })
 
         # Add to form
-        form.design.contents.push(question)
+        formDesign.contents.push(question)
 
         # Create evaluator
-        evl = new FormExprEvaluator(form)
+        evl = new FormExprEvaluator(formDesign)
 
         # Evaluate a simple field
         assert.deepEqual evl.evaluateExpr({ type: "field", table: "responses:1234", column: column }, data), expected
