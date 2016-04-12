@@ -17,6 +17,7 @@ module.exports = class FormComponent extends React.Component
     stickyStorage: React.PropTypes.object   # Storage for sticky values
 
   @propTypes:
+    formCtx: React.PropTypes.object.isRequired   # Context to use for form. See docs/FormsContext.md
     design: React.PropTypes.object.isRequired # Form design. See schema.coffee
   
     data: React.PropTypes.object.isRequired # Form response data. See docs/Answer Formats.md
@@ -29,6 +30,8 @@ module.exports = class FormComponent extends React.Component
     entity: React.PropTypes.object            # Form-level entity to load TODO
     entityType: React.PropTypes.string        # Type of form-level entity to load TODO
 
+  @childContextTypes: require('./formContextTypes')
+
   constructor: (props) ->
     super
 
@@ -36,6 +39,8 @@ module.exports = class FormComponent extends React.Component
       visibilityStructure: {}
       formExprEvaluator: new FormExprEvaluator(@props.design)
     }
+
+  getChildContext: -> @props.formCtx
 
   componentWillReceiveProps: (nextProps) ->
     @setState(formExprEvaluator: new FormExprEvaluator(nextProps.design))
@@ -72,7 +77,7 @@ module.exports = class FormComponent extends React.Component
 
   stickyData: (data, previousVisibilityStructure, newVisibilityStructure) ->
     stickyEntity = new StickyEntity()
-    return stickyEntity.setStickyData(@props.design, data, @context.stickyStorage, previousVisibilityStructure, newVisibilityStructure)
+    return stickyEntity.setStickyData(@props.design, data, @props.formCtx.stickyStorage, previousVisibilityStructure, newVisibilityStructure)
 
   render: ->
     if @props.design.contents[0] and @props.design.contents[0]._type == "Section"
@@ -94,7 +99,7 @@ module.exports = class FormComponent extends React.Component
           onDataChange: @handleDataChange
           isVisible: @isVisible 
           formExprEvaluator: @state.formExprEvaluator 
-          
+
         H.button type: "button", className: "btn btn-primary", onClick: @handleSubmit,
           T("Submit")
 
