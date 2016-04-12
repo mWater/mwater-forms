@@ -46,7 +46,7 @@ ExprUtils = require('mwater-expressions').ExprUtils
 ExprCompiler = require('mwater-expressions').ExprCompiler
 update = require 'update-object'
 ColumnNotFoundException = require('mwater-expressions').ColumnNotFoundException
-Topo = require 'topo'
+TopoSort = require 'topo-sort'
 
 # Append a string to each language
 appendStr = (str, suffix) ->
@@ -276,7 +276,7 @@ module.exports = class FormSchemaBuilder
   # Returns indicator calculations in order
   # Throws if circular
   orderIndicatorCalculation: (indicatorCalculations) ->
-    toposort = new Topo()
+    toposort = new TopoSort()
 
     # No schema needed for this function
     exprUtils = new ExprUtils()
@@ -299,11 +299,14 @@ module.exports = class FormSchemaBuilder
           refedIndicatorCalculationIds = _.union(refedIndicatorCalculationIds, [match[1]])
 
       # Add to topo sort
-      toposort.add(ic._id, { group: ic._id, after: refedIndicatorCalculationIds })
+      toposort.add(ic._id, refedIndicatorCalculationIds);
+
+    # Get in reverse order (to build dependencies correctly)
+    orderedIds = toposort.sort()
+    orderedIds.reverse()
 
     map = _.indexBy(indicatorCalculations, "_id")
-
-    return _.map(toposort.nodes, (id) -> map[id])
+    return _.map(orderedIds, (id) -> map[id])
 
   addFormItem: (form, item, contents) ->
     addColumn = (column) =>
