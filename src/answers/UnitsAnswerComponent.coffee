@@ -125,5 +125,4 @@ module.exports = class UnitsAnswerComponent extends React.Component
                 H.option key: unit.id, value:unit.id,
                   formUtils.localizeString(unit.label, @context.locale)
           if @props.prefix
-            H.td null,
-              @createNumberInput()
+            @createNumberInput()

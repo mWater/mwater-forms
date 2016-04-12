@@ -147,7 +147,7 @@ exports.prepareQuestion = (q) ->
       _.defaults q, { entityFilter: {}, displayProperties: [], selectionMode: "external", selectProperties: [], selectText: { _base: "en", en: "Select" }, propertyLinks: [] }
 
   # Get known fields
-  knownFields = ['_id', '_type', 'text', 'conditions', 'validations', 
+  knownFields = ['_id', '_type', 'text', 'textExprs', 'conditions', 'validations', 
     'required', 'code', 'hint', 'help', 'alternates', 'commentsField', 'recordLocation', 'recordTimestamp', 'sticky', 'exportId']
 
   switch q._type
