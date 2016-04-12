@@ -4,7 +4,7 @@ _  = require 'lodash'
 # all basic properties but still use additionalProperties: false
 extendQuestionProperties = (properties) ->
   return _.defaults properties, {
-    _id: {}, code: {}, text: {}, required: {}, conditions: {}, hint: {}, help: {}, sticky: {}
+    _id: {}, code: {}, text: {}, textExprs: {}, required: {}, conditions: {}, hint: {}, help: {}, sticky: {}
     alternates: {}, commentsField: {}, recordTimestamp: {}, recordLocation: {}, sensor: {}, _basedOn: {}, exportId: {}
   } 
 
