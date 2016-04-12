@@ -390,7 +390,7 @@ exports.design = {
           }
         }
        }
-      required: ["_id", "_type", "name"]
+      required: ["_id", "_type", "text"]
     }
 
     # Group of questions which can have conditions as a whole
