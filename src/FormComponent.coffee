@@ -7,7 +7,7 @@ SectionsComponent = require './SectionsComponent'
 ItemListComponent = require './ItemListComponent'
 
 ResponseCleaner = require './ResponseCleaner'
-StickyEntity = require './StickyEntity'
+DefaultValueApplier = require './DefaultValueApplier'
 VisibilityCalculator = require './VisibilityCalculator'
 FormExprEvaluator = require './FormExprEvaluator'
 
@@ -76,8 +76,8 @@ module.exports = class FormComponent extends React.Component
     return responseCleaner.cleanData(data, visibilityStructure)
 
   stickyData: (data, previousVisibilityStructure, newVisibilityStructure) ->
-    stickyEntity = new StickyEntity()
-    return stickyEntity.setStickyData(@props.design, data, @props.formCtx.stickyStorage, previousVisibilityStructure, newVisibilityStructure)
+    defaultValueApplier = new DefaultValueApplier()
+    return defaultValueApplier.setStickyData(@props.design, data, @props.formCtx.stickyStorage, previousVisibilityStructure, newVisibilityStructure)
 
   render: ->
     if @props.design.contents[0] and @props.design.contents[0]._type == "Section"
