@@ -43,7 +43,7 @@ describe "FormExprEvaluator", ->
   describe "evaluateExpr", ->
     beforeEach ->
       @testEval = (question, data, column, expected) =>
-        form = {
+        formDesign = {
           _type: "Form"
           contents: []
         }

@@ -36,12 +36,12 @@ module.exports = class RosterGroupComponent extends React.Component
   # Handles a change in data of a specific entry of the roster
   handleEntryDataChange: (index, data) =>
     answer = @getAnswer().slice()
-    answer[index] = data
+    answer[index] = _.extend({}, answer[index], { data: data })
     @handleAnswerChange(answer)
 
   handleAdd: =>
     answer = @getAnswer().slice()
-    answer.push({})
+    answer.push({ _id: formUtils.createUid(), data: {} })
     @handleAnswerChange(answer)
 
   handleRemove: (index) =>
@@ -79,7 +79,7 @@ module.exports = class RosterGroupComponent extends React.Component
         R ItemListComponent,
           ref: "itemlist_#{index}", 
           contents: @props.rosterGroup.contents
-          data: @getAnswer()[index]
+          data: @getAnswer()[index].data
           onDataChange: @handleEntryDataChange.bind(null, index)
           isVisible: @isChildVisible.bind(null, index)
           formExprEvaluator: @props.formExprEvaluator  # TODO?

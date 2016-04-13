@@ -46,12 +46,12 @@ module.exports = class RosterMatrixComponent extends React.Component
       for column, columnIndex in @props.rosterMatrix.contents
         key = "#{rowIndex}_#{column._id}"
 
-        if column.required and (not entry[column._id]?.value or entry[column._id]?.value == '')
+        if column.required and (not entry.data[column._id]?.value or entry.data[column._id]?.value == '')
           foundInvalid = true
           validationErrors[key] = true
 
         if column.validations and column.validations.length > 0
-          validationError = new AnswerValidator().compileValidations(column.validations)(entry[column._id])
+          validationError = new AnswerValidator().compileValidations(column.validations)(entry.data[column._id])
           if validationError
             foundInvalid = true
             validationErrors[key] = validationError
@@ -74,12 +74,12 @@ module.exports = class RosterMatrixComponent extends React.Component
   # Handles a change in data of a specific entry of the roster
   handleEntryDataChange: (index, data) =>
     answer = @getAnswer().slice()
-    answer[index] = data
+    answer[index] = _.extend({}, answer[index], { data: data })
     @handleAnswerChange(answer)
 
   handleAdd: =>
     answer = @getAnswer().slice()
-    answer.push({})
+    answer.push({ _id: formUtils.createUid(), data: {} })
     @handleAnswerChange(answer)
 
   handleRemove: (index) =>
@@ -88,7 +88,7 @@ module.exports = class RosterMatrixComponent extends React.Component
     @handleAnswerChange(answer)
 
   handleCellChange: (entryIndex, columnId, value) =>
-    data = @getAnswer()[entryIndex]
+    data = @getAnswer()[entryIndex].data
     change = {}
     change[columnId] = { value: value }
     data = _.extend({}, data, change)

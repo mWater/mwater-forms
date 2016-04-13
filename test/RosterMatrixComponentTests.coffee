@@ -5,6 +5,7 @@ assert = require('chai').assert
 TestComponent = require('react-library/lib/TestComponent')
 ReactTestUtils = require('react-addons-test-utils')
 RosterMatrixComponent = require '../src/RosterMatrixComponent'
+FormExprEvaluator = require '../src/FormExprEvaluator'
 
 React = require 'react'
 ReactDOM = require 'react-dom'
@@ -16,7 +17,10 @@ describe "RosterMatrixComponent", ->
     @toDestroy = []
 
     @render = (options) =>
-      elem = R(RosterMatrixComponent, _.defaults(options, { isVisible: (-> true) }))
+      elem = R(RosterMatrixComponent, _.defaults(options, { 
+        isVisible: (-> true)
+        formExprEvaluator: new FormExprEvaluator()
+      }))
       comp = new TestComponent(elem)
       @toDestroy.push(comp)
       return comp
@@ -39,7 +43,9 @@ describe "RosterMatrixComponent", ->
 
   it "adds entry when add is clicked", (done) ->
     onDataChange = (val) =>
-      compare(val, { a: [{}] })
+      assert.equal val.a.length, 1
+      assert val.a[0]._id
+      assert.deepEqual val.a[0].data, {}
       done()
 
     @rosterMatrix.allowAdd = true
@@ -53,11 +59,11 @@ describe "RosterMatrixComponent", ->
   it "removes entry when remove is clicked", (done) ->
     onDataChange = (val) =>
       # Removes first one
-      compare(val, { a: [{ x: 2 }] })
+      compare(val, { a: [{ _id: "2", data: { x: { value: 2 } } }] })
       done()
 
     @rosterMatrix.allowRemove = true
-    comp = @render(rosterMatrix: @rosterMatrix, data: { a: [{ x: 1 }, { x: 2 }] }, onDataChange: onDataChange)
+    comp = @render(rosterMatrix: @rosterMatrix, data: { a: [{ _id: "1", data: { x: { value: 1 } } }, { _id: "2", data: { x: { value: 2 } } }] }, onDataChange: onDataChange)
     TestComponent.click(ReactTestUtils.scryRenderedDOMComponentsWithClass(comp.getComponent(), "glyphicon-remove")[0])
 
   it "does not show remove if remove is disabled", ->
@@ -66,11 +72,10 @@ describe "RosterMatrixComponent", ->
 
   it "puts answers from column components in correct position in array", (done) ->
     onDataChange = (val) =>
-      # Removes first one
-      compare(val, { a: [{}, { text: { value: "x" }}] })
+      compare(val, { a: [{ _id: "1", data: {}}, { _id: "2", data: { text: { value: "x"}}}] })
       done()
 
-    comp = @render(rosterMatrix: @rosterMatrix, data: { a: [{}, {}] }, onDataChange: onDataChange)
+    comp = @render(rosterMatrix: @rosterMatrix, data: { a: [{ _id: "1", data: {}}, { _id: "2", data: {}}] }, onDataChange: onDataChange)
 
     # Set 3rd input (second row text)
     inputs = ReactTestUtils.scryRenderedDOMComponentsWithTag(comp.getComponent(), "input")
@@ -79,7 +84,9 @@ describe "RosterMatrixComponent", ->
 
   it "uses alternate rosterId if specified", (done) ->
     onDataChange = (val) =>
-      compare(val, { b: [{}] })
+      assert.equal val.b.length, 1
+      assert val.b[0]._id
+      assert.deepEqual val.b[0].data, {}
       done()
 
     @rosterMatrix.allowAdd = true
@@ -93,7 +100,7 @@ describe "RosterMatrixComponent", ->
 
   it "records text", (done) ->
     onDataChange = (val) =>
-      compare(val, { a: [{ text: { value: "x"}}] })
+      compare(val.a[0].data, { text: { value: "x"}})
       done()
 
     comp = @render(rosterMatrix: @rosterMatrix, data: { a: [{}] }, onDataChange: onDataChange)
@@ -104,7 +111,7 @@ describe "RosterMatrixComponent", ->
 
   it "records number", (done) ->
     onDataChange = (val) =>
-      compare(val, { a: [{ number: { value: 1 }}] })
+      compare(val.a[0].data, { number: { value: 1 }})
       done()
 
     comp = @render(rosterMatrix: @rosterMatrix, data: { a: [{}] }, onDataChange: onDataChange)
@@ -116,7 +123,7 @@ describe "RosterMatrixComponent", ->
 
   it "records check", (done) ->
     onDataChange = (val) =>
-      compare(val, { a: [{ check: { value: true }}] })
+      compare(val.a[0].data, { check: { value: true }})
       done()
 
     comp = @render(rosterMatrix: @rosterMatrix, data: { a: [{}] }, onDataChange: onDataChange)
@@ -126,7 +133,7 @@ describe "RosterMatrixComponent", ->
 
   it "records dropdown", (done) ->
     onDataChange = (val) =>
-      compare(val, { a: [{ dropdown: { value: "y" }}] })
+      compare(val.a[0].data, { dropdown: { value: "y" }})
       done()
 
     comp = @render(rosterMatrix: @rosterMatrix, data: { a: [{}] }, onDataChange: onDataChange)
@@ -138,10 +145,10 @@ describe "RosterMatrixComponent", ->
   it "requires required columns", ->
     @rosterMatrix.contents[0].required = true
 
-    comp = @render(rosterMatrix: @rosterMatrix, data: { a: [{}] })
+    comp = @render(rosterMatrix: @rosterMatrix, data: { a: [{ _id: "1", data: {}}] })
     assert.isTrue comp.getComponent().validate(false), "Should fail validation"
 
-    comp = @render(rosterMatrix: @rosterMatrix, data: { a: [{ text: { value: "x" }}] })
+    comp = @render(rosterMatrix: @rosterMatrix, data: { a: [{ _id: "1", data: { text: { value: "x" }}}] })
     assert.isFalse comp.getComponent().validate(false), "Should pass validation"
 
   it "validates columns", ->
@@ -153,8 +160,8 @@ describe "RosterMatrixComponent", ->
       }
     ]
 
-    comp = @render(rosterMatrix: @rosterMatrix, data: { a: [{ text: { value: "x" }}] })
+    comp = @render(rosterMatrix: @rosterMatrix, data: { a: [{ _id: "1", data: { text: { value: "x" }}}] })
     assert.isTrue comp.getComponent().validate(false), "Should fail validation"
 
-    comp = @render(rosterMatrix: @rosterMatrix, data: { a: [{ text: { value: "12345" }}] })
+    comp = @render(rosterMatrix: @rosterMatrix, data: { a: [{ _id: "1", data: { text: { value: "12345" }}}] })
     assert.isFalse comp.getComponent().validate(false), "Should pass validation"
