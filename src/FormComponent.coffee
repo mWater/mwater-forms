@@ -6,7 +6,7 @@ R = React.createElement
 SectionsComponent = require './SectionsComponent'
 ItemListComponent = require './ItemListComponent'
 
-CleaningEntity = require './CleaningEntity'
+ResponseCleaner = require './ResponseCleaner'
 StickyEntity = require './StickyEntity'
 VisibilityEntity = require './VisibilityEntity'
 FormExprEvaluator = require './FormExprEvaluator'
@@ -72,8 +72,8 @@ module.exports = class FormComponent extends React.Component
     return visibilityEntity.createVisibilityStructure(data)
 
   cleanData: (data, visibilityStructure) ->
-    cleaningEntity = new CleaningEntity()
-    return cleaningEntity.cleanData(data, visibilityStructure)
+    responseCleaner = new ResponseCleaner()
+    return responseCleaner.cleanData(data, visibilityStructure)
 
   stickyData: (data, previousVisibilityStructure, newVisibilityStructure) ->
     stickyEntity = new StickyEntity()

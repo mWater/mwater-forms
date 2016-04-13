@@ -1,6 +1,5 @@
 
-# TODO: Name needs to be changed
-module.exports = class CleaningEntity
+module.exports = class ResponseCleaner
 
   # Returns an array containing the cleaned data
   cleanData: (data, visibilityStructure) ->

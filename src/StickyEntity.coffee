@@ -1,7 +1,7 @@
 formUtils = require './formUtils'
 
 # TODO: Name needs to be changed
-module.exports = class CleaningEntity
+module.exports = class StickyEntity
   setStickyData: (form, data, stickyStorage, previousVisibilityStructure, newVisibilityStructure) ->
     # NOTE: Always remember that data is immutable
     newData = _.cloneDeep data
