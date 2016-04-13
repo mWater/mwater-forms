@@ -1,7 +1,7 @@
 assert = require('chai').assert
 DefaultValueApplier = require '../src/DefaultValueApplier'
 
-describe 'DefaultValueApplier', ->
+describe.only 'DefaultValueApplier', ->
   before ->
     @defaultValueApplier = new DefaultValueApplier()
 
@@ -55,6 +55,24 @@ describe 'DefaultValueApplier', ->
 
   it "doesn't sets a sticky value for a question that was already set", ->
     data = {somethingElse: 'random data', testId: {value: 'a'}}
+    previousVisibilityStructure = {}
+    newVisibilityStructure = {'testId': true}
+
+    newData = @defaultValueApplier.setStickyData(@design, data, @stickyStorage, previousVisibilityStructure, newVisibilityStructure)
+
+    assert.deepEqual data, newData
+
+  it "doesn't sets a sticky value for a question that has an alternate value", ->
+    data = {somethingElse: 'random data', testId: {alternate: 'na'}}
+    previousVisibilityStructure = {}
+    newVisibilityStructure = {'testId': true}
+
+    newData = @defaultValueApplier.setStickyData(@design, data, @stickyStorage, previousVisibilityStructure, newVisibilityStructure)
+
+    assert.deepEqual data, newData
+
+  it "doesn't sets a sticky value for a question that has an alternate value", ->
+    data = {somethingElse: 'random data', testId: {alternate: 'na'}}
     previousVisibilityStructure = {}
     newVisibilityStructure = {'testId': true}
 

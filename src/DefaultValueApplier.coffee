@@ -1,5 +1,13 @@
 formUtils = require './formUtils'
 
+# The DefaultValueApplier applies a value stored in the stickyStorage as a default answer to a question.
+# It uses the following logic:
+#    - The question needs to be newly visible
+#    - The question needs to be sticky
+#    - An entry for that question needs to be present in the stickyStorage
+#    - The data for that question needs to be undefined or null, alternate needs to be null or undefined
+# The DefaultValueApplier is not a substitute for regular exercise :)
+
 module.exports = class DefaultValueApplier
   setStickyData: (form, data, stickyStorage, previousVisibilityStructure, newVisibilityStructure) ->
     # NOTE: Always remember that data is immutable
@@ -20,12 +28,15 @@ module.exports = class DefaultValueApplier
         if question? and question.sticky
           # Uses stickyStorage.get(questionId) to find any sticky value
           stickyValue = stickyStorage.get(questionId)
+          # An entry for that question needs to be present in the stickyStorage
           if stickyValue? and stickyValue != ''
             dataEntry = data[questionId]
-            # If not already answered
-            if not dataEntry? or not dataEntry.value?
-              if not dataEntry?
-                newData[questionId] = dataEntry = {}
-              dataEntry.value = stickyValue
+            # The data for that question needs to be undefined or null
+            # Alternate for that question needs to be undefined or null
+            if not dataEntry? or (not dataEntry.value? and not dataEntry.alternate?)
+                # Create the dataEntry if not present
+                if not dataEntry?
+                  newData[questionId] = dataEntry = {}
+                dataEntry.value = stickyValue
 
     return newData
