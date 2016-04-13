@@ -8,7 +8,7 @@ ItemListComponent = require './ItemListComponent'
 
 ResponseCleaner = require './ResponseCleaner'
 StickyEntity = require './StickyEntity'
-VisibilityEntity = require './VisibilityEntity'
+VisibilityCalculator = require './VisibilityCalculator'
 FormExprEvaluator = require './FormExprEvaluator'
 
 # Displays a form that can be filled out
@@ -68,8 +68,8 @@ module.exports = class FormComponent extends React.Component
     @props.onDataChange(newData)
 
   computeVisibility: (data) ->
-    visibilityEntity = new VisibilityEntity(@props.design)
-    return visibilityEntity.createVisibilityStructure(data)
+    visibilityCalculator = new VisibilityCalculator(@props.design)
+    return visibilityCalculator.createVisibilityStructure(data)
 
   cleanData: (data, visibilityStructure) ->
     responseCleaner = new ResponseCleaner()

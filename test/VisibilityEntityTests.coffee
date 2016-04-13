@@ -1,7 +1,7 @@
 assert = require('chai').assert
-VisibilityEntity = require '../src/VisibilityEntity'
+VisibilityCalculator = require '../src/VisibilityCalculator'
 
-describe 'VisibilityEntity', ->
+describe 'VisibilityCalculator', ->
   before ->
     @form = {_type: 'Form', contents: [
         {
@@ -98,7 +98,7 @@ describe 'VisibilityEntity', ->
 
   describe 'createVisibilityStructure', ->
     beforeEach ->
-      @visibilityEntity = new VisibilityEntity(@form)
+      @visibilityCalculator = new VisibilityCalculator(@form)
 
     it 'create a complete visibility structure', ->
       data = {
@@ -108,7 +108,7 @@ describe 'VisibilityEntity', ->
           {firstRosterQuestionId: {value: null}}
         ]
       }
-      visibilityStructure = @visibilityEntity.createVisibilityStructure(data)
+      visibilityStructure = @visibilityCalculator.createVisibilityStructure(data)
 
       expectedVisibilityStructure = {
         'sectionId': true
@@ -130,36 +130,36 @@ describe 'VisibilityEntity', ->
 
   describe 'processQuestion', ->
     beforeEach ->
-      @visibilityEntity = new VisibilityEntity(@form)
+      @visibilityCalculator = new VisibilityCalculator(@form)
 
     describe "TextQuestion", ->
       it 'sets visibility to false if forceToInvisible is set to true', ->
         data = {}
 
         question = {_id: 'testId'}
-        @visibilityEntity.processQuestion(question, true, data, '')
-        assert.deepEqual {testId: false}, @visibilityEntity.visibilityStructure
+        @visibilityCalculator.processQuestion(question, true, data, '')
+        assert.deepEqual {testId: false}, @visibilityCalculator.visibilityStructure
 
       it 'sets visibility using the prefix', ->
         data = {}
         question = {_id: 'testId'}
-        @visibilityEntity.processQuestion(question, false, data, 'testprefix.')
-        assert.deepEqual {'testprefix.testId': true}, @visibilityEntity.visibilityStructure
+        @visibilityCalculator.processQuestion(question, false, data, 'testprefix.')
+        assert.deepEqual {'testprefix.testId': true}, @visibilityCalculator.visibilityStructure
 
       it 'sets visibility to true if conditions is null, undefined or empty', ->
         data = {}
 
         question = {_id: 'testId'}
-        @visibilityEntity.processQuestion(question, false, data, '')
-        assert.deepEqual {testId: true}, @visibilityEntity.visibilityStructure
+        @visibilityCalculator.processQuestion(question, false, data, '')
+        assert.deepEqual {testId: true}, @visibilityCalculator.visibilityStructure
 
         question = {_id: 'testId', conditions: null}
-        @visibilityEntity.processQuestion(question, false, data, '')
-        assert.deepEqual {testId: true}, @visibilityEntity.visibilityStructure
+        @visibilityCalculator.processQuestion(question, false, data, '')
+        assert.deepEqual {testId: true}, @visibilityCalculator.visibilityStructure
 
         question = {_id: 'testId', conditions: []}
-        @visibilityEntity.processQuestion(question, false, data, '')
-        assert.deepEqual {testId: true}, @visibilityEntity.visibilityStructure
+        @visibilityCalculator.processQuestion(question, false, data, '')
+        assert.deepEqual {testId: true}, @visibilityCalculator.visibilityStructure
 
       it 'sets visibility to true if conditions is true', ->
         data = {checkboxQuestionId: {value: true}}
@@ -169,8 +169,8 @@ describe 'VisibilityEntity', ->
             {op: "true", lhs: {question: "checkboxQuestionId"}}
           ]
         }
-        @visibilityEntity.processQuestion(question, false, data, '')
-        assert.deepEqual {testId: true}, @visibilityEntity.visibilityStructure
+        @visibilityCalculator.processQuestion(question, false, data, '')
+        assert.deepEqual {testId: true}, @visibilityCalculator.visibilityStructure
 
       it 'sets visibility to false if conditions is false', ->
         data = {checkboxQuestionId: {value: false}}
@@ -180,8 +180,8 @@ describe 'VisibilityEntity', ->
             {op: "true", lhs: {question: "checkboxQuestionId"}}
           ]
         }
-        @visibilityEntity.processQuestion(question, false, data, '')
-        assert.deepEqual {testId: false}, @visibilityEntity.visibilityStructure
+        @visibilityCalculator.processQuestion(question, false, data, '')
+        assert.deepEqual {testId: false}, @visibilityCalculator.visibilityStructure
 
 
   describe 'processGroupOrSection', ->
@@ -226,15 +226,15 @@ describe 'VisibilityEntity', ->
           }
         ]
       }
-      @visibilityEntity = new VisibilityEntity(@form)
+      @visibilityCalculator = new VisibilityCalculator(@form)
       data = {}
 
       firstSection = @form.contents[0]
-      @visibilityEntity.processGroupOrSection(firstSection, false, data, '')
-      assert.deepEqual {firstSectionId: true, checkboxQuestionId: true}, @visibilityEntity.visibilityStructure
+      @visibilityCalculator.processGroupOrSection(firstSection, false, data, '')
+      assert.deepEqual {firstSectionId: true, checkboxQuestionId: true}, @visibilityCalculator.visibilityStructure
 
       secondSection = @form.contents[1]
-      @visibilityEntity.processGroupOrSection(secondSection, true, data, '')
-      assert.deepEqual {firstSectionId: true, checkboxQuestionId: true, secondSectionId: false, anotherQuestionId: false}, @visibilityEntity.visibilityStructure
+      @visibilityCalculator.processGroupOrSection(secondSection, true, data, '')
+      assert.deepEqual {firstSectionId: true, checkboxQuestionId: true, secondSectionId: false, anotherQuestionId: false}, @visibilityCalculator.visibilityStructure
 
 

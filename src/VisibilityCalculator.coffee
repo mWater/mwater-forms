@@ -1,7 +1,6 @@
 formUtils = require './formUtils'
 
-# TODO: Name needs to be changed
-module.exports = class VisibilityEntity
+module.exports = class VisibilityCalculator
   constructor: (form) ->
     @form = form
     @visibilityStructure = {}
