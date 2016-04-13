@@ -35,6 +35,7 @@
     "mwater-expressions": "git+ssh://github.com/mWater/mwater-expressions.git",
     "node-uuid": "^1.4.3",
     "react": "^0.14.2",
+    "react-addons-css-transition-group": "^15.0.1",
     "react-dom": "^0.14.2",
     "react-library": "github:mwater/react-library",
     "topo-sort": "^1.0.0",

@@ -4,6 +4,7 @@ H = React.DOM
 R = React.createElement
 
 ItemComponent = require './ItemComponent'
+ReactCSSTransitionGroup = require('react-addons-css-transition-group')
 
 # Display a list of items
 module.exports = class ItemListComponent extends React.Component
@@ -49,5 +50,7 @@ module.exports = class ItemListComponent extends React.Component
 
   render: ->
     H.div null,
-      _.map(@props.contents, @renderItem)
+      # Fade in and out
+      R ReactCSSTransitionGroup, transitionName: "fade", transitionEnterTimeout: 300, transitionLeaveTimeout: 300,
+        _.map(@props.contents, @renderItem)
 
