@@ -59,11 +59,34 @@ module.exports = class FormComponent extends React.Component
   isVisible: (itemId) =>
     return @state.visibilityStructure[itemId]
 
-  handleDataChange: (data) =>
+  # The process of computing visibility, cleaning data and applying stickyData/defaultValue can trigger more changes
+  # and should be repeated until the visibilityStructure is stable.
+  # A simple case: Question A, B and C with B only visible if A is set and C only visible if B is set and B containing a defaultValue
+  # Setting a value to A will make B visible and set to defaultValue, but C will remain invisible until the process is repeated
+  computingVisibilityAndUpdatingData: (data, oldVisibilityStructure) ->
     oldVisibilityStructure = @state.visibilityStructure
     newVisibilityStructure = @computeVisibility(data)
     newData = @cleanData(data, newVisibilityStructure)
     newData = @stickyData(newData, oldVisibilityStructure, newVisibilityStructure)
+    return [newData, newVisibilityStructure]
+
+  handleDataChange: (data) =>
+    newData = data
+    oldVisibilityStructure = @state.visibilityStructure
+    nbIterations = 0
+    # This needs to be repeated until it stabilizes
+    while true
+      [newData, newVisibilityStructure] = @computingVisibilityAndUpdatingData(newData, oldVisibilityStructure)
+      nbIterations++
+      # If the visibilityStructure is still the same twice, the process is now stable.
+      if _.isEqual(newVisibilityStructure, oldVisibilityStructure)
+        break
+      # Looping conditions???
+      if nbIterations >= 10
+        throw new Error('Impossible to compute question visibility. The question conditions must be looping')
+      # New is now old
+      oldVisibilityStructure = newVisibilityStructure
+
     @setState(visibilityStructure: newVisibilityStructure)
     @props.onDataChange(newData)
 
