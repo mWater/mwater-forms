@@ -67,26 +67,32 @@ module.exports = class SectionsComponent extends React.Component
       @setState(sectionNum: nextVisibleIndex)
     # This should never happen... simply ignore
 
+  handleBreadcrumbClick: (index) =>
+    @setState(sectionNum: index)
+
   renderBreadcrumbs: ->
-    # TODO: add breadcrumbs
-    return null
-    # H.ul className: "breadcrumb" # TODO
-    # Setup breadcrumbs
-    # visibleSections = _.filter(_.take(@sections, index + 1), (s) ->
-    #   s.shouldBeVisible()
-    # )
-    # index = 1
-    # sectionsIndex = _.map _.initial(visibleSections), (s) -> {label: "#{index++}."}
-    # data = {
-    #   lastSectionLabel: "#{index}. #{_.last(visibleSections).name} "
-    #   sectionsIndex: sectionsIndex
-    # }
-    # @$(".breadcrumb").html require('./templates/Sections_breadcrumbs.hbs')(data, helpers: { T: @T })
-    # @renderNextPrev()
-    #       {{#each sectionsIndex}}
-    # <li><b><a class="section-crumb" data-value="{{@index}}">{{label}}</a></b></li>
-    # {{/each}}
-    # <li><b>{{lastSectionLabel}}</b></li>
+    breadcrumbs = []
+    index = 0
+    while index < @state.sectionNum
+      section = @props.contents[index]
+      visible = @props.isVisible(section._id)
+      breadcrumbs.push H.li {key: index},
+        H.b null,
+          if visible
+            H.a {className: "section-crumb", disabled: not visible, onClick: @handleBreadcrumbClick.bind(this, index)},
+              "#{index + 1}."
+          else
+            "#{index + 1}."
+      index++
+
+    currentSectionName = @props.contents[@state.sectionNum].name
+    currentSectionName = currentSectionName[currentSectionName._base]
+    breadcrumbs.push H.li {key: @state.sectionNum},
+      H.b null,
+        "#{@state.sectionNum + 1}. #{currentSectionName}"
+
+    return H.ul className: "breadcrumb",
+      breadcrumbs
 
   renderSection: ->
     section = @props.contents[@state.sectionNum]
