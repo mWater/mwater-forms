@@ -2,7 +2,7 @@ assert = require('chai').assert
 DefaultValueApplier = require '../src/DefaultValueApplier'
 
 describe.only 'DefaultValueApplier', ->
-  before ->
+  beforeEach ->
     @defaultValueApplier = new DefaultValueApplier()
 
     @design = {contents: [
@@ -36,8 +36,65 @@ describe.only 'DefaultValueApplier', ->
     assert data != newData
     assert.deepEqual expectedData, newData
 
-  it "sets a sticky value for a question that just became visible because previousVisibilityStructure is empty", ->
+  it 'sets a sticky value for a question that was invisible and just became visible (even if defaultValue is set)', ->
+    @design.contents[0].defaultValue = 'default value'
+    data = {somethingElse: 'random data'}
 
+    previousVisibilityStructure = {'testId': false}
+    newVisibilityStructure = {'testId': true}
+
+    newData = @defaultValueApplier.setStickyData(@design, data, @stickyStorage, previousVisibilityStructure, newVisibilityStructure)
+
+    expectedData = {
+      testId: {value: 'data'}
+      somethingElse: 'random data'
+    }
+
+    assert data != newData
+    assert.deepEqual expectedData, newData
+
+  it 'sets a default value for a question that was invisible and just became visible (not sticky)', ->
+    @design.contents[0].defaultValue = 'default value'
+    @design.contents[0].sticky = false
+    data = {somethingElse: 'random data'}
+
+    previousVisibilityStructure = {'testId': false}
+    newVisibilityStructure = {'testId': true}
+
+    newData = @defaultValueApplier.setStickyData(@design, data, @stickyStorage, previousVisibilityStructure, newVisibilityStructure)
+
+    expectedData = {
+      testId: {value: 'default value'}
+      somethingElse: 'random data'
+    }
+
+    assert data != newData
+    assert.deepEqual expectedData, newData
+
+  it 'sets a default value for a question that was invisible and just became visible (sticky with no entry)', ->
+    @design.contents[0].defaultValue = 'default value'
+    # No entry in sticky storage
+    @stickyStorage = {
+      get: (questionId) ->
+        assert.equal questionId, 'testId'
+        return null
+    }
+    data = {somethingElse: 'random data'}
+
+    previousVisibilityStructure = {'testId': false}
+    newVisibilityStructure = {'testId': true}
+
+    newData = @defaultValueApplier.setStickyData(@design, data, @stickyStorage, previousVisibilityStructure, newVisibilityStructure)
+
+    expectedData = {
+      testId: {value: 'default value'}
+      somethingElse: 'random data'
+    }
+
+    assert data != newData
+    assert.deepEqual expectedData, newData
+
+  it "sets a sticky value for a question that just became visible because previousVisibilityStructure is empty", ->
     data = {somethingElse: 'random data'}
 
     previousVisibilityStructure = {}

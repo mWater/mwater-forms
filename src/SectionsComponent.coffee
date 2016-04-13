@@ -33,16 +33,42 @@ module.exports = class SectionsComponent extends React.Component
     if not @refs.itemListComponent.validate(true)
       @props.onSubmit()
 
+  hasPrevious: ->
+    # Returns true if a visible index exist with a higher value
+    return @nextVisibleIndex(@state.sectionNum - 1, -1) != -1
+
+  hasNext: ->
+    # Returns true if a visible index exist with a higher value
+    return @nextVisibleIndex(@state.sectionNum + 1, 1) != -1
+
+  nextVisibleIndex: (index, increment) ->
+    if index < 0
+      return -1
+    if index >= @props.contents.length
+      return -1
+    section = @props.contents[index]
+    isVisible = @props.isVisible(section._id)
+    if isVisible
+      return index
+    else
+      return @nextVisibleIndex(index + increment, increment)
+
   handleBack: =>
-    # TODO validate?
-    @setState(sectionNum: @state.sectionNum - 1)
+    # Move to previous that is visible
+    previousVisibleIndex = @nextVisibleIndex(@state.sectionNum - 1, -1)
+    if previousVisibleIndex != -1
+      @setState(sectionNum: previousVisibleIndex)
+    # This should never happen... simply ignore
 
   handleNext: =>
-    if not @refs.itemListComponent.validate(true)
-      @setState(sectionNum: @state.sectionNum + 1)
+    # Move to next that is visible
+    nextVisibleIndex = @nextVisibleIndex(@state.sectionNum + 1, 1)
+    if nextVisibleIndex != -1
+      @setState(sectionNum: nextVisibleIndex)
+    # This should never happen... simply ignore
 
   renderBreadcrumbs: ->
-    # TODO add breadcrumbs
+    # TODO: add breadcrumbs
     return null
     # H.ul className: "breadcrumb" # TODO
     # Setup breadcrumbs
@@ -79,7 +105,7 @@ module.exports = class SectionsComponent extends React.Component
   renderButtons: ->
     H.div className: "form-controls",
       # If can go back
-      if @state.sectionNum > 0
+      if @hasPrevious()
         [
           H.button key: "back", type: "button", className: "btn btn-default", onClick: @handleBack,
             H.span className: "glyphicon glyphicon-backward"
@@ -88,7 +114,7 @@ module.exports = class SectionsComponent extends React.Component
         ]
 
       # Can go forward or submit
-      if @state.sectionNum < @props.contents.length - 1  
+      if @hasNext()
         H.button key: "next", type: "button", className: "btn btn-primary", onClick: @handleNext,
           T("Next") + " " 
           H.span className: "glyphicon glyphicon-forward"
