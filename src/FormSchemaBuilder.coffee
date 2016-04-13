@@ -1,42 +1,8 @@
 
 ###
-To pass isVisible, or other thing as prop to all questions, how much work:
-
-28 places in 8 files! To use context or not to use context...
-
-* switch form component to use response
-
-===> evaluateExpr: (data, expr) ? Still requires data (which changes in rosters) but abstracts everythign else away. Context.
-No schema necessary.
-
-
-
-Could make indicator calculations in strict order? Painful to explain.
-
-How to clean indicator calculations? Failed one could bork all of them that depend on it. Or not:
-
-- Attempt to compile, skipping failed ICs
-- Clean all exprs of all ICs, flagging error if different
-
-What happens if column has a null JSONQL expression? E.g. blank indic calc?
- - doesn't even get added as column in the response schema! 
- - *** probably should so rest of calculations don't crash. it should be part of schema.
-
-Cleaning an expression does not remove it entirely. But it might compile to null.
-
 
 Topological sorting is done, but adding indicator calculations to schema can still fail if expressions are invalid
 since they are compiled to build the jsonql field.
-
-So, to validate/clean we need to:
-
-- create form table without indicator calculations
-- add empty indicators section
-
-- topologically sort indicator calculations 
-- for each indicator calculation
-  - clean expressions (warning if changed)
-  - re-create schema and cleaner
 
 ###
 
@@ -47,37 +13,6 @@ ExprCompiler = require('mwater-expressions').ExprCompiler
 update = require 'update-object'
 ColumnNotFoundException = require('mwater-expressions').ColumnNotFoundException
 TopoSort = require 'topo-sort'
-
-# Append a string to each language
-appendStr = (str, suffix) ->
-  output = {}
-  for key, value of str
-    if key == "_base"
-      output._base = value
-    else
-      # If it's a simple string
-      if _.isString(suffix)
-        output[key] = value + suffix
-      else
-        output[key] = value + (suffix[key] or suffix[suffix._base] or suffix.en)
-  return output
-
-# Map a tree that consists of items with optional 'contents' array. null means to discard item
-mapTree = (tree, func) ->
-  if not tree
-    return tree
-
-  if _.isArray(tree)
-    return _.map(tree, (item) -> mapTree(item, func))
-
-  # Map item
-  output = func(tree)
-
-  # Map contents
-  if tree.contents
-    output.contents = _.compact(_.map(tree.contents, (item) -> func(item)))
-
-  return output
 
 module.exports = class FormSchemaBuilder
   # Pass clone forms if a master form
@@ -848,3 +783,34 @@ module.exports = class FormSchemaBuilder
         }
         
         addColumn(column)
+
+# Append a string to each language
+appendStr = (str, suffix) ->
+  output = {}
+  for key, value of str
+    if key == "_base"
+      output._base = value
+    else
+      # If it's a simple string
+      if _.isString(suffix)
+        output[key] = value + suffix
+      else
+        output[key] = value + (suffix[key] or suffix[suffix._base] or suffix.en)
+  return output
+
+# Map a tree that consists of items with optional 'contents' array. null means to discard item
+mapTree = (tree, func) ->
+  if not tree
+    return tree
+
+  if _.isArray(tree)
+    return _.map(tree, (item) -> mapTree(item, func))
+
+  # Map item
+  output = func(tree)
+
+  # Map contents
+  if tree.contents
+    output.contents = _.compact(_.map(tree.contents, (item) -> func(item)))
+
+  return output
