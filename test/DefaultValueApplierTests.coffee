@@ -1,7 +1,7 @@
 assert = require('chai').assert
 DefaultValueApplier = require '../src/DefaultValueApplier'
 
-describe.only 'DefaultValueApplier', ->
+describe 'DefaultValueApplier', ->
   beforeEach ->
     @defaultValueApplier = new DefaultValueApplier()
 

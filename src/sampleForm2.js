@@ -646,6 +646,33 @@ module.exports = {
         }
       ],
       "conditions": []
+    },
+    {
+      "_id": "secondSectionId",
+      "name": {
+        "en": "Second Section",
+        "_base": "en"
+      },
+      "_type": "Section",
+      contents: [],
+      conditions: [
+        {
+          "op": "true",
+          "lhs": {
+            "question": "ef40dba8338d4ebdbbc5808e78969e95"
+          }
+        }
+      ]
+    },
+    {
+      "_id": "thridSectionId",
+      "name": {
+        "en": "Third Section",
+        "_base": "en"
+      },
+      "_type": "Section",
+      contents: [],
+      conditions: []
     }
   ],
   "draftNameRequired": true
