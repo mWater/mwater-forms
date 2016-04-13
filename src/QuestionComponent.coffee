@@ -48,16 +48,11 @@ module.exports = class QuestionComponent extends React.Component
 
   @propTypes:
     question: React.PropTypes.object.isRequired # Design of question. See schema
-    # TODO we pass both complete data and answer. complete data is needed for substituting expressions in prompts. Should we pass both? Just data? onAnswerChange or onDataChange?
-    data: React.PropTypes.object      # Current data of response. 
-    answer: React.PropTypes.object      # Current answer. Contains { value: <some value> } usually. See docs/Answer Formats.md
+    data: React.PropTypes.object      # Current data of response.
     onAnswerChange: React.PropTypes.func.isRequired
     displayMissingRequired: React.PropTypes.bool
     onNext: React.PropTypes.func
     formExprEvaluator: React.PropTypes.object.isRequired # FormExprEvaluator for rendering strings with expression
-
-  @defaultProps:
-    answer: {}
 
   constructor: ->
     super
@@ -75,9 +70,16 @@ module.exports = class QuestionComponent extends React.Component
     if answer? and answer.focus?
       answer.focus()
 
+  getAnswer: ->
+    # The answer to this question
+    answer = @props.data[@props.question._id]
+    if answer?
+      return answer
+    return {}
+
   # Returns true if validation error
   validate: (scrollToFirstInvalid) ->
-    validationError = new AnswerValidator().validate(@props.question, @props.answer)
+    validationError = new AnswerValidator().validate(@props.question, @getAnswer())
 
     if validationError?
       if scrollToFirstInvalid
@@ -92,45 +94,47 @@ module.exports = class QuestionComponent extends React.Component
     @setState(helpVisible: not @state.helpVisible)
 
   handleValueChange: (value) =>
-    @handleAnswerChange(_.extend({}, @props.answer, { value: value }, alternate: null))
+    @handleAnswerChange(_.extend({}, @getAnswer(), { value: value }, alternate: null))
 
-  handleAnswerChange: (answer) =>
-    if @props.question.sticky and @context.stickyStorage? and answer.value?
+  handleAnswerChange: (newAnswer) =>
+    oldAnswer = @getAnswer()
+    if @props.question.sticky and @context.stickyStorage? and newAnswer.value?
       # TODO: What should happen if value is set to null?
       # TODO: What should happen if alternate is set? (or anything else that didn't change the value field)
-      @context.stickyStorage.set(@props.question._id, answer.value)
+      @context.stickyStorage.set(@props.question._id, newAnswer.value)
 
-    if @props.question.recordTimestamp and not @props.answer.timestamp?
-      answer.timestamp = new Date().toISOString()
+    if @props.question.recordTimestamp and not oldAnswer.timestamp?
+      newAnswer.timestamp = new Date().toISOString()
 
-    if @props.question.recordLocation and not @props.answer.location?
+    if @props.question.recordLocation and not oldAnswer.location?
       locationFinder = @context.locationFinder or new LocationFinder()
       locationFinder.getLocation (loc) =>
         # TODO Should check if component is still mounted!
         if loc?
-          newAnswer = _.clone @props.answer
+          newAnswer = _.clone oldAnswer
           newAnswer.location = _.pick(loc.coords, "latitude", "longitude", "accuracy", "altitude", "altitudeAccuracy")
           @props.onAnswerChange(newAnswer)
       , ->
         console.log "Location not found for recordLocation in Question"
-    @props.onAnswerChange(answer)
+    @props.onAnswerChange(newAnswer)
 
   handleAlternate: (alternate) =>
+    answer = @getAnswer()
     # If we are selecting a new alternate
-    if @props.answer.alternate != alternate
+    if answer.alternate != alternate
       # If old alternate was null (important not to do this when changing from an alternate value to another)
-      if not @props.answer.alternate?
+      if not answer.alternate?
         # It saves value and specify
-        @setState({savedValue: _.clone @props.answer.value, savedSpecify: _.clone @props.answer.specify})
+        @setState({savedValue: _.clone answer.value, savedSpecify: _.clone answer.specify})
       # Then clear value, specify and set alternate
-      @handleAnswerChange(_.extend({}, @props.answer, {
+      @handleAnswerChange(_.extend({}, answer, {
         value: null
         specify: null
         alternate: alternate
       }))
     else
       # Clear alternate and put back saved value and specify
-      @handleAnswerChange(_.extend({}, @props.answer, {
+      @handleAnswerChange(_.extend({}, answer, {
         value: @state.savedValue
         specify: @state.savedSpecify
         alternate: null
@@ -138,7 +142,7 @@ module.exports = class QuestionComponent extends React.Component
       @setState({savedValue: null, savedSpecify: null})
 
   handleCommentsChange: (ev) =>
-    @handleAnswerChange(_.extend({}, @props.answer, { comments: ev.target.value }))
+    @handleAnswerChange(_.extend({}, @getAnswer(), { comments: ev.target.value }))
 
   # Either jump to next question or select the comments box
   handleNextOrComments: (ev) =>
@@ -171,7 +175,7 @@ module.exports = class QuestionComponent extends React.Component
     if @props.question._type == 'CheckQuestion'
       R CheckAnswerComponent, {
         ref: "answer"
-        value: @props.answer.value
+        value: @getAnswer().value
         onValueChange: @handleValueChange
         label: @props.question.label
       }, promptDiv
@@ -195,22 +199,23 @@ module.exports = class QuestionComponent extends React.Component
     if @props.question.alternates and (@props.question.alternates.na or @props.question.alternates.dontknow)
       H.div null,
         if @props.question.alternates.dontknow
-          H.div id: 'dn', className: "touch-checkbox alternate #{if @props.answer.alternate == 'dontknow' then 'checked'}", onClick: @handleAlternate.bind(null, 'dontknow'),
+          H.div id: 'dn', className: "touch-checkbox alternate #{if @getAnswer().alternate == 'dontknow' then 'checked'}", onClick: @handleAlternate.bind(null, 'dontknow'),
             T("Don't Know")
         if @props.question.alternates.na
-          H.div id: 'na', className: "touch-checkbox alternate #{if @props.answer.alternate == 'na' then 'checked'}", onClick: @handleAlternate.bind(null, 'na'),
+          H.div id: 'na', className: "touch-checkbox alternate #{if @getAnswer().alternate == 'na' then 'checked'}", onClick: @handleAlternate.bind(null, 'na'),
             T("Not Applicable")
 
   renderCommentsField: ->
     if @props.question.commentsField
-      H.textarea className: "form-control question-comments", id: "comments", ref: "comments", placeholder: T("Comments"), value: @props.answer.comments, onChange: @handleCommentsChange
+      H.textarea className: "form-control question-comments", id: "comments", ref: "comments", placeholder: T("Comments"), value: @getAnswer().comments, onChange: @handleCommentsChange
 
   renderAnswer: ->
+    answer = @getAnswer()
     switch @props.question._type
       when "TextQuestion"
         return R TextAnswerComponent, {
           ref: "answer"
-          value: @props.answer.value
+          value: answer.value
           format: @props.question.format
           onValueChange: @handleValueChange
           onNextOrComments: @handleNextOrComments
@@ -219,7 +224,7 @@ module.exports = class QuestionComponent extends React.Component
       when "NumberQuestion"
         return R NumberAnswerComponent, {
           ref: "answer"
-          value: @props.answer.value
+          value: answer.value
           onChange: @handleValueChange
           decimal: @props.question.decimal
         }
@@ -228,7 +233,7 @@ module.exports = class QuestionComponent extends React.Component
         return R DropdownAnswerComponent, {
           ref: "answer"
           choices: @props.question.choices
-          answer: @props.answer
+          answer: answer
           onAnswerChange: @handleAnswerChange
         }
 
@@ -236,7 +241,7 @@ module.exports = class QuestionComponent extends React.Component
         return R RadioAnswerComponent, {
           ref: "answer"
           choices: @props.question.choices
-          answer: @props.answer
+          answer: answer
           onAnswerChange: @handleAnswerChange
         }
 
@@ -244,14 +249,14 @@ module.exports = class QuestionComponent extends React.Component
         return R MulticheckAnswerComponent, {
           ref: "answer"
           choices: @props.question.choices
-          answer: @props.answer
+          answer: answer
           onAnswerChange: @handleAnswerChange
         }
 
       when "DateQuestion"
         return R DateAnswerComponent, {
           ref: "answer"
-          value: @props.answer.value
+          value: answer.value
           onValueChange: @handleValueChange
           format: @props.question.format
           placeholder: @props.question.placeholder
@@ -260,7 +265,7 @@ module.exports = class QuestionComponent extends React.Component
       when "UnitsQuestion"
         return R UnitsAnswerComponent, {
           ref: "answer"
-          answer: @props.answer
+          answer: answer
           onValueChange: @handleValueChange
           units: @props.question.units
           defaultUnits: @props.question.defaultUnits
@@ -274,56 +279,55 @@ module.exports = class QuestionComponent extends React.Component
       when "LocationQuestion"
         return R LocationAnswerComponent, {
           ref: "answer"
-          value: @props.answer.value
+          value: answer.value
           onValueChange: @handleValueChange
         }
 
       when "ImageQuestion"
         return R ImageAnswerComponent,
-          image: @props.answer.value
+          image: answer.value
           onImageChange: @handleValueChange 
 
       when "ImagesQuestion"
         return R ImagesAnswerComponent, {
           ref: "answer"
-          imagelist: @props.answer.value
+          imagelist: answer.value
           onImagelistChange: @handleValueChange
         }
 
       when "TextListQuestion"
         return R TextListAnswerComponent, {
           ref: "answer"
-          value: @props.answer.value
+          value: answer.value
           onValueChange: @handleValueChange
         }
 
       when "SiteQuestion"
         return R SiteAnswerComponent, {
           ref: "answer"
-          value: @props.answer.value
+          value: answer.value
           onValueChange: @handleValueChange
         }
 
       when "BarcodeQuestion"
         return R BarcodeAnswerComponent, {
           ref: "answer"
-          value: @props.answer.value
+          value: answer.value
           onValueChange: @handleValueChange
         }
 
       when "EntityQuestion"
         return R EntityAnswerComponent, {
           ref: "answer"
-          value: @props.answer.value
+          value: answer.value
           entityType: @props.question.entityType
           onValueChange: @handleValueChange
         }
 
       when "AdminRegionQuestion"
-        # TODO defaultValue https://github.com/mWater/mwater-forms/issues/117
         return R AdminRegionAnswerComponent, {
           ref: "answer"
-          value: @props.answer.value
+          value: answer.value
           onChange: @handleValueChange
         }
       else

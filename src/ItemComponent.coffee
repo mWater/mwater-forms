@@ -40,7 +40,6 @@ module.exports = class ItemComponent extends React.Component
       return R QuestionComponent, 
         ref: 'item'
         question: @props.item
-        answer: @props.data[@props.item._id]
         onAnswerChange: @handleAnswerChange.bind(null, @props.item._id)
         data: @props.data
         onNext: @props.onNext

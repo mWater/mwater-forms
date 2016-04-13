@@ -90,7 +90,7 @@ describe "QuestionComponent", ->
   it "loads comment box", ->
     @question.commentsField = true
     testComponent = @render({
-      answer: {comments: 'some comment'}
+      data: {q1234: {comments: 'some comment'}}
     })
 
     comment = testComponent.findDOMNodeByText(/some comment/)
@@ -101,7 +101,7 @@ describe "QuestionComponent", ->
     @question.recordTimestamp = true
     @question.commentsField = true
     testComponent = @render({
-      answer: {comments: 'some comment'}
+      data: {q1234: {comments: 'some comment'}}
       onAnswerChange: (answer) ->
         after = new Date().toISOString()
         # Some imprecision in the date stamp was causing occassional failures
@@ -128,7 +128,7 @@ describe "QuestionComponent", ->
   it "loads alternate na", ->
     @question.alternates = {na: true}
     testComponent = @render(
-      answer: {alternate: 'na'}
+      data: {q1234: {alternate: 'na'}}
     )
     na = testComponent.findComponentById('na')
     assert na.className.indexOf('checked') >= 0
@@ -146,7 +146,7 @@ describe "QuestionComponent", ->
   it "erases value on alternate selected", (done) ->
     @question.alternates = {dontknow: true, na: true}
     testComponent = @render(
-      answer: {value: 'test'}
+      data: {q1234: {value: 'test'}}
       onAnswerChange: (answer) ->
         assert.equal answer.alternate, 'dontknow'
         assert.equal answer.value, null
@@ -159,12 +159,12 @@ describe "QuestionComponent", ->
     firstCall = true
     @question.alternates = {dontknow: true, na: true}
     myOptions = {
-      answer: {value: 'test'}
+      data: {q1234: {value: 'test'}}
       onAnswerChange: (answer) =>
         assert.equal answer.alternate, 'dontknow'
         assert.equal answer.value, null
 
-        @options.answer = answer
+        @options.data = {q1234: answer}
         @options.onAnswerChange = (answer) ->
           assert.equal null, answer.alternate, "Alternate shouldn't be set anymore"
           assert.equal answer.value, 'test', 'Should be back to test'
@@ -185,7 +185,7 @@ describe "QuestionComponent", ->
   it "erases alternate on value entered", (done) ->
     @question.alternates = {dontknow: true, na: true}
     testComponent = @render(
-      answer: {alternate: 'na'}
+      data: {q1234: {alternate: 'na'}}
       onAnswerChange: (answer) ->
         assert.equal answer.alternate, null
         assert.equal answer.value, 'test'
