@@ -57,7 +57,6 @@ exports.localizeString = (str, locale) ->
 # Gets all questions in form before reference item specified
 # refItem can be null for all questions
 # rosterId is the rosterId to use. null for only top-level
-# TODO should handle arbitrary nesting
 exports.priorQuestions = (formDesign, refItem = null, rosterId = null) ->
   questions = []
 

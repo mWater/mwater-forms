@@ -9,8 +9,8 @@ moment = require 'moment'
 # TODO: Break dependency to FormCompiler
 FormCompiler = require './legacy/FormCompiler'
 
-# TODO display roster group and roster matrix answers
-# TODO ensure that Group is displayed
+# TODO display roster group and roster matrix answers https://github.com/mWater/mwater-forms/issues/119
+# TODO ensure that Group is displayed https://github.com/mWater/mwater-forms/issues/119
 
 # Static view of a response
 module.exports = class ResponseDisplayComponent extends React.Component

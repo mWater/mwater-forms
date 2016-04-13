@@ -27,8 +27,8 @@ module.exports = class FormComponent extends React.Component
     onSaveLater: React.PropTypes.func             # Optional save for later
     onDiscard: React.PropTypes.func.isRequired    # Called when discard is pressed
 
-    entity: React.PropTypes.object            # Form-level entity to load TODO
-    entityType: React.PropTypes.string        # Type of form-level entity to load TODO
+    entity: React.PropTypes.object            # Form-level entity to load TODO https://github.com/mWater/mwater-forms/issues/115
+    entityType: React.PropTypes.string        # Type of form-level entity to load TODO https://github.com/mWater/mwater-forms/issues/115
 
   @childContextTypes: require('./formContextTypes')
 

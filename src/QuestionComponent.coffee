@@ -106,6 +106,7 @@ module.exports = class QuestionComponent extends React.Component
     if @props.question.recordLocation and not @props.answer.location?
       locationFinder = @context.locationFinder or new LocationFinder()
       locationFinder.getLocation (loc) =>
+        # TODO Should check if component is still mounted!
         if loc?
           newAnswer = _.clone @props.answer
           newAnswer.location = _.pick(loc.coords, "latitude", "longitude", "accuracy", "altitude", "altitudeAccuracy")
@@ -319,7 +320,7 @@ module.exports = class QuestionComponent extends React.Component
         }
 
       when "AdminRegionQuestion"
-        # TODO defaultValue
+        # TODO defaultValue https://github.com/mWater/mwater-forms/issues/117
         return R AdminRegionAnswerComponent, {
           ref: "answer"
           value: @props.answer.value

@@ -76,4 +76,4 @@ module.exports = class ItemComponent extends React.Component
         isVisible: @props.isVisible
         formExprEvaluator: @props.formExprEvaluator
     else
-      return H.div null, "TODO: " + @props.item._type
+      throw new Error("Unknown item of type #{@props.item._type}")

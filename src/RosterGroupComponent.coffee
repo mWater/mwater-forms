@@ -82,7 +82,7 @@ module.exports = class RosterGroupComponent extends React.Component
           data: @getAnswer()[index]
           onDataChange: @handleEntryDataChange.bind(null, index)
           isVisible: @isChildVisible.bind(null, index)
-          formExprEvaluator: React.PropTypes.object.isRequired # FormExprEvaluator for rendering strings with expression
+          formExprEvaluator: @props.formExprEvaluator  # TODO?
 
   renderAdd: ->
     if @props.rosterGroup.allowAdd
