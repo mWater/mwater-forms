@@ -5,7 +5,7 @@ assert = require('chai').assert
 #FormCompiler = require '../src/FormCompiler'
 _ = require 'lodash'
 
-# TODO: Fix test without FormCompiler
+# TODO: SurveyorPro: Fix test without FormCompiler
 ###
 describe "Condition compiler", ->
   beforeEach ->

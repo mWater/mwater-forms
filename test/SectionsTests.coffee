@@ -1,4 +1,3 @@
-# TODO: Fix test without FormCompiler
 ###
 _ = require 'lodash'
 $ = require 'jquery'

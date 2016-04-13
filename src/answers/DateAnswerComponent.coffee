@@ -8,7 +8,7 @@ moment = require('moment')
 
 DateTimePickerComponent = require '../DateTimePickerComponent'
 
-# TODO: Clicking the date field shouldn't open the date selector (but clicking the icon should)
+# TODO: SurveyorPro: Clicking the date field shouldn't open the date selector (but clicking the icon should)
 
 module.exports = class DateAnswerComponent extends React.Component
   @propTypes:

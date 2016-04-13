@@ -29,7 +29,7 @@ TextAnswerComponent = require './answers/TextAnswerComponent'
 TextListAnswerComponent = require './answers/TextListAnswerComponent'
 UnitsAnswerComponent = require './answers/UnitsAnswerComponent'
 
-# TODO make faster with shouldComponentUpdate
+# TODO: SurveyorPro: make faster with shouldComponentUpdate
 # Question component that displays a question of any type.
 # Displays question text and hint
 # Displays toggleable help 
@@ -39,7 +39,7 @@ UnitsAnswerComponent = require './answers/UnitsAnswerComponent'
 # Does NOT remove answer when invisible. This is done by data cleaning
 # Does NOT check conditions and make self invisible. This is done by parent (ItemListComponent)
 # Displays alternates and makes exclusive with answer
-# TODO Test that it records GPS when answered and recordLocation is true
+# TODO: SurveyorPro: Test that it records GPS when answered and recordLocation is true
 module.exports = class QuestionComponent extends React.Component
   @contextTypes:
     locale: React.PropTypes.string
@@ -99,8 +99,8 @@ module.exports = class QuestionComponent extends React.Component
   handleAnswerChange: (newAnswer) =>
     oldAnswer = @getAnswer()
     if @props.question.sticky and @context.stickyStorage? and newAnswer.value?
-      # TODO: What should happen if value is set to null?
-      # TODO: What should happen if alternate is set? (or anything else that didn't change the value field)
+      # TODO: SurveyorPro: What should happen if value is set to null?
+      # TODO: SurveyorPro: What should happen if alternate is set? (or anything else that didn't change the value field)
       @context.stickyStorage.set(@props.question._id, newAnswer.value)
 
     if @props.question.recordTimestamp and not oldAnswer.timestamp?
@@ -109,7 +109,7 @@ module.exports = class QuestionComponent extends React.Component
     if @props.question.recordLocation and not oldAnswer.location?
       locationFinder = @context.locationFinder or new LocationFinder()
       locationFinder.getLocation (loc) =>
-        # TODO Should check if component is still mounted!
+        # TODO: SurveyorPro: Should check if component is still mounted!
         if loc?
           newAnswer = _.clone oldAnswer
           newAnswer.location = _.pick(loc.coords, "latitude", "longitude", "accuracy", "altitude", "altitudeAccuracy")

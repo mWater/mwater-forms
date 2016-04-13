@@ -42,7 +42,7 @@ module.exports = class ImagesAnswerComponent extends React.Component
         imagelist = _.filter(@props.imagelist or [], (image) -> image.id != id)
         @props.onImagelistChange(imagelist)
 
-      # TODO only onSetCover if not already cover
+      # TODO: SurveyorPro: only onSetCover if not already cover
       onSetCover = () =>
         @setState(modal: null)
 
