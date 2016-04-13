@@ -49,11 +49,6 @@ module.exports = class FormComponent extends React.Component
   # It will also initialize the visibilityStructure
   # And set the sticky data
   componentWillMount: ->
-    # TODO: Set default entity
-    # lowerCase + replace spaces by
-    # for SiteQuestion: {value: { code: entity.code }}
-    # for EntityQuestion: {value: entity._id}
-    # Only set if no value nor alternate
     @handleDataChange(@props.data)
 
   handleSubmit: =>
