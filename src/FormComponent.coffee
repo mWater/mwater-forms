@@ -49,6 +49,11 @@ module.exports = class FormComponent extends React.Component
   # It will also initialize the visibilityStructure
   # And set the sticky data
   componentWillMount: ->
+    # TODO: Set default entity
+    # lowerCase + replace spaces by
+    # for SiteQuestion: {value: { code: entity.code }}
+    # for EntityQuestion: {value: entity._id}
+    # Only set if no value nor alternate
     @handleDataChange(@props.data)
 
   handleSubmit: =>
@@ -99,8 +104,8 @@ module.exports = class FormComponent extends React.Component
     return responseCleaner.cleanData(data, visibilityStructure)
 
   stickyData: (data, previousVisibilityStructure, newVisibilityStructure) ->
-    defaultValueApplier = new DefaultValueApplier()
-    return defaultValueApplier.setStickyData(@props.design, data, @props.formCtx.stickyStorage, previousVisibilityStructure, newVisibilityStructure)
+    defaultValueApplier = new DefaultValueApplier(@props.design, @props.formCtx.stickyStorage, @props.entity, @props.entityType)
+    return defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure)
 
   render: ->
     if @props.design.contents[0] and @props.design.contents[0]._type == "Section"
