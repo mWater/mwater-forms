@@ -1,16 +1,22 @@
 formUtils = require './formUtils'
 
+# Uses conditions to defines the visibility status of all the Sections, Questions, Instructions, Group, RosterGroup and RosterMatrix
+# The result is kept in the visibilityStructure. It contains an entry with true or false for each element (should never be null or undefined)
+# A parent (like a section or a group), will always force visible to false for all their children if they are invisible.
+# The usage is fairly simple. It's created with a form and then the visibilityStructure is recalculated with specify data each time it changes.
+
 module.exports = class VisibilityCalculator
   constructor: (form) ->
     @form = form
     @visibilityStructure = {}
 
+  # Updates the visibilityStructure dictionary with one entry for each element
   createVisibilityStructure: (data) ->
     @visibilityStructure = {}
     @processForm(data)
-    # Creates a dictionary with one entry for each question (with sub structure for RosterQuestions)
     return @visibilityStructure
 
+  # Process the whole form
   processForm: (data) ->
     if @form._type != 'Form'
       throw new Error('Should be a form')
@@ -22,10 +28,12 @@ module.exports = class VisibilityCalculator
       for content in @form.contents
         @processItem(content, data, '')
 
+  # Process a section or a group (they both behave the same way when it comes to determining visibility)
   processGroupOrSection: (groupOrSection, data) ->
     if groupOrSection._type != 'Section' and  groupOrSection._type != 'Group'
       throw new Error('Should be a section or a group')
 
+    # Always visible if no condition has been set
     if groupOrSection.conditions? and groupOrSection.conditions.length > 0
       conditions = @compileConditions(groupOrSection.conditions, @forms)
       isVisible = conditions(data)
@@ -36,20 +44,22 @@ module.exports = class VisibilityCalculator
     for content in groupOrSection.contents
       @processItem(content, isVisible == false, data, '')
 
+  # If the parent is invisible, forceToInvisible is set to true and the item will be invisible no matter what
+  # The prefix contains the info set by a RosterGroup or a RosterMatrix
   processItem: (item, forceToInvisible, data, prefix) ->
     if formUtils.isQuestion(item)
-      #console.log 'Question'
-      #console.log item
       @processQuestion(item, forceToInvisible, data, prefix)
     else if item._type == "Instructions"
       @processInstruction(item, forceToInvisible, data, prefix)
     else if item._type == "RosterGroup" or item._type == "RosterMatrix"
-      @processRosterGroup(item, forceToInvisible, data, prefix)
+      @processRoster(item, forceToInvisible, data, prefix)
     else if item._type == "Group"
       @processGroupOrSection(item, forceToInvisible, data)
     else
       throw new Error('Unknow item type')
 
+  # Sets visible to false if forceToInvisible is true or the conditions and data make the question invisible
+  # The prefix contains the info set by a RosterGroup or a RosterMatrix
   processQuestion: (question, forceToInvisible, data, prefix) ->
     if forceToInvisible
       isVisible = false
@@ -60,10 +70,14 @@ module.exports = class VisibilityCalculator
       isVisible = true
     @visibilityStructure[prefix + question._id] = isVisible
 
+  # Behaves like a question
   processInstruction: (instruction, forceToInvisible, data, prefix) ->
     @processQuestion(instruction, forceToInvisible, data, prefix)
 
-  processRosterGroup: (rosterGroup, forceToInvisible, data, prefix) ->
+  # Handles RosterGroup and RosterMatrix
+  # The visibility of the Rosters are similar to questions, the extra logic is for handling the children
+  # The logic is a bit more tricky when a rosterId is set. It uses that other roster data for calculating the visibility of its children.
+  processRoster: (rosterGroup, forceToInvisible, data, prefix) ->
     if rosterGroup._type != 'RosterGroup' and rosterGroup._type != 'RosterMatrix'
       throw new Error('Should be a RosterGroup or RosterMatrix')
 
@@ -90,6 +104,7 @@ module.exports = class VisibilityCalculator
           newPrefix = "#{dataId}.#{index}."
           @processItem(content, isVisible == false, rosterGroupData, newPrefix)
 
+  # This code has been copied from FromCompiler, only getValue and getAlternate have been changed
   compileCondition: (cond) =>
     getValue = (data) =>
       answer = data[cond.lhs.question] || {}
@@ -161,6 +176,7 @@ module.exports = class VisibilityCalculator
       else
         throw new Error("Unknown condition op " + cond.op)
 
+  # This code has been copied from FromCompiler
   compileConditions: (conds, form) =>
     compConds = _.map(conds, @compileCondition)
     return (data) =>
