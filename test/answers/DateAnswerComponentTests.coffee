@@ -38,7 +38,7 @@ describe 'DateAnswerComponent', ->
     TestComponent.changeValue(testComponent.findInput(), "2013-12-31")
 
   it "displays format MM/DD/YYYY", ->
-    assert false
+    assert false, 'Test not updated yet'
     @q.format = "MM/DD/YYYY"
     @qview = @compiler.compileQuestion(@q).render()
 
@@ -46,7 +46,7 @@ describe 'DateAnswerComponent', ->
     assert.equal @qview.$el.find("input").val(), "12/31/2013"
 
   it "handles arbitrary date formats in Moment.js format", ->
-    assert false
+    assert false, 'Test not updated yet'
     @q.format = "MMDDYYYY"
     @qview = @compiler.compileQuestion(@q).render()
 
