@@ -42,12 +42,39 @@ module.exports = class FormSchemaBuilder
       contents: contents
     })
 
+    # Add any roster tables
+    schema = @addRosterTables(schema, form)
+
     schema = @addIndicatorCalculations(schema, form, false)
 
     if form.isMaster
       schema = @addMasterForm(schema, form, cloneForms)
 
     # Create table
+    return schema
+
+  addRosterTables: (schema, form) ->
+    # For each item
+    for item in formUtils.allItems(form.design)
+      if item._type in ["RosterGroup", "RosterMatrix"]
+        # If new, create table
+        if not item.rosterId
+          contents = []
+        else
+          # Use existing contents
+          contents = schema.getTable("responses:#{form._id}:roster:#{item.rosterId}").contents.slice()
+
+        # Add contents
+        for rosterItem in item.contents
+          @addFormItem(form, rosterItem, contents)
+
+        schema = schema.addTable({
+          id: "responses:#{form._id}:roster:#{item.rosterId or item._id}"
+          name: item.name
+          primaryKey: "_id"
+          contents: contents
+        })
+
     return schema
 
   # Adds a table which references master form data from master_responses table
@@ -96,7 +123,6 @@ module.exports = class FormSchemaBuilder
           # Direct access to underlying JSON type
           return update(item, jsonql: { $set: { type: "op", op: "->", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, item.id ]}})
     )
-
 
     schema = schema.addTable({
       id: "master_responses:#{form._id}"
@@ -253,12 +279,26 @@ module.exports = class FormSchemaBuilder
         for subitem in item.contents
           @addFormItem(form, subitem, contents)
 
-      else if item._type == "Section"        
+      else if item._type in ["Section", "Group"]
         # Create section contents
         sectionContents = []
         for subitem in item.contents
           @addFormItem(form, subitem, sectionContents)
         contents.push({ type: "section", name: item.name, contents: sectionContents })
+
+      else if item._type in ["RosterGroup", "RosterMatrix"]
+        # Add join to roster table if original (no rosterId specified)
+        if not item.rosterId
+          contents.push({
+            id: "data:#{item._id}"
+            type: "join"
+            join: {
+              type: "1-n"
+              toTable: "responses:#{form._id}:roster:#{item._id}"
+              fromColumn: "_id"
+              toColumn: "response"
+            }
+          })
 
     else if formUtils.isQuestion(item)
       # Get type of answer

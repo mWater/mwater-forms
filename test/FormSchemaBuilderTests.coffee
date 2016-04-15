@@ -870,3 +870,109 @@ describe "FormSchemaBuilder addForm", ->
         }
       ]
       assert.deepEqual _.pluck(new FormSchemaBuilder().orderIndicatorCalculation(indicatorCalculations), "_id"), ["ic1", "ic2"]
+
+  describe "Roster Group", ->
+    before ->
+      # Form with roster group
+      form = {
+        _id: "formid"
+        design: {
+          _type: "Form"
+          name: { en: "Form" }
+          contents: [{
+            _id: "roster1"
+            _type: "RosterGroup"
+            name: { en: "Roster1" }
+            contents: [
+              { _id: "q1", _type: "TextQuestion", text: { en: "Q1" }}
+            ]
+          }]
+        }
+      }
+
+      # Add to blank schema
+      @schema = new FormSchemaBuilder().addForm(new Schema(), form)
+
+    it "creates new table with column", ->
+      assert.equal @schema.getTable("responses:formid:roster:roster1").name.en, "Roster1"
+
+      # Check that column was added
+      assert @schema.getColumn("responses:formid:roster:roster1", "data:q1:value")
+      compare(@schema.getColumn("responses:formid:roster:roster1", "data:q1:value").jsonql, {
+        # data#>>'{questionid,value}'
+        type: "op"
+        op: "#>>"
+        exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{q1,value}"]
+      })
+
+    it "adds join to roster table", ->
+      assert.equal @schema.getColumn("responses:formid", "data:roster1").join.toTable, "responses:formid:roster:roster1"
+
+    it "reuses existing table when rosterId specified", ->
+      form = {
+        _id: "formid"
+        design: {
+          _type: "Form"
+          name: { en: "Form" }
+          contents: [
+            {
+              _id: "roster1"
+              _type: "RosterGroup"
+              name: { en: "Roster1" }
+              contents: [
+                { _id: "q1", _type: "TextQuestion", text: { en: "Q1" }}
+              ]
+            }
+            {
+              _id: "roster2"
+              _type: "RosterGroup"
+              rosterId: "roster1"
+              name: { en: "Roster2" }
+              contents: [
+                { _id: "q2", _type: "TextQuestion", text: { en: "Q2" }}
+              ]
+            }
+          ]
+        }
+      }
+
+      # Add to blank schema
+      schema = new FormSchemaBuilder().addForm(new Schema(), form)
+
+      # Check that was added
+      assert schema.getColumn("responses:formid:roster:roster1", "data:q1:value"), "original should be there"
+      assert schema.getColumn("responses:formid:roster:roster1", "data:q2:value"), "new should be there"
+
+    it "works with master forms"
+  
+  describe "Roster Matrix", ->
+    it "adds columns", ->
+      # Form with roster group
+      form = {
+        _id: "formid"
+        design: {
+          _type: "Form"
+          name: { en: "Form" }
+          contents: [{
+            _id: "roster1"
+            _type: "RosterMatrix"
+            contents: [
+              { _id: "q1", _type: "TextColumnQuestion", text: { en: "Q1" }}
+            ]
+          }]
+        }
+      }
+
+      # Add to blank schema
+      schema = new FormSchemaBuilder().addForm(new Schema(), form)
+
+      # Check that was added
+      assert schema.getColumn("responses:formid:roster:roster1", "data:q1:value")
+      compare(schema.getColumn("responses:formid:roster:roster1", "data:q1:value").jsonql, {
+        # data#>>'{questionid,value}'
+        type: "op"
+        op: "#>>"
+        exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{q1,value}"]
+      })
+
+    it "works with master forms"
