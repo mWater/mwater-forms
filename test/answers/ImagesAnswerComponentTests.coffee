@@ -1,3 +1,4 @@
+# TODO: SurveyorPro: Make a component version of these tests
 ###
 _ = require 'underscore'
 $ = require 'jquery'

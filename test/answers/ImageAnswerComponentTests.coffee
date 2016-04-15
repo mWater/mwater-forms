@@ -1,3 +1,4 @@
+# TODO: SurveyorPro: Make a component version of these tests
 ###
 assert = require("chai").assert
 forms = require '../src'
