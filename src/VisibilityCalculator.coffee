@@ -26,7 +26,7 @@ module.exports = class VisibilityCalculator
         @processGroupOrSection(content, data)
     else
       for content in @form.contents
-        @processItem(content, data, '')
+        @processItem(content, false, data, '')
 
   # Process a section or a group (they both behave the same way when it comes to determining visibility)
   processGroupOrSection: (groupOrSection, data) ->

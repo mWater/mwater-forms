@@ -126,6 +126,8 @@ module.exports = class FormComponent extends React.Component
         H.button type: "button", className: "btn btn-primary", onClick: @handleSubmit,
           T("Submit")
 
+        "\u00A0"
+
         if @props.onSaveLater
           [
             H.button type: "button", className: "btn btn-default", onClick: @props.onSaveLater,

@@ -5,7 +5,6 @@ R = React.createElement
 
 formUtils = require './formUtils'
 markdown = require("markdown").markdown
-LocationEditorComponent = require './LocationEditorComponent'
 FormExprEvaluator = require './FormExprEvaluator'
 
 LocationFinder = require './LocationFinder'
