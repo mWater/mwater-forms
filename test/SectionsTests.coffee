@@ -1,3 +1,4 @@
+# TODO: SurveyorPro: Make sure all the tests are in SectionsComponentTests
 ###
 _ = require 'lodash'
 $ = require 'jquery'

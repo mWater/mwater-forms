@@ -1,4 +1,4 @@
-# TODO: SurveyorPro: Fix test without FormCompiler
+# TODO: SurveyorPro: Move tests to InstructionsComponent
 ###
 $ = require 'jquery'
 Backbone = require 'backbone'

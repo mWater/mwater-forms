@@ -1,19 +1,15 @@
 $ = require 'jquery'
-Backbone = require 'backbone'
 _ = require 'lodash'
 
 exports.AdminRegionAnswerComponent = require './answers/AdminRegionAnswerComponent'
 exports.ImageAnswerComponent = require './answers/ImageAnswerComponent'
 exports.ImagesAnswerComponent = require './answers/ImagesAnswerComponent'
 
-#exports.LocationView = require './LocationView'
+exports.LocationView = require './LocationView'
 
 exports.formUtils = require './formUtils'
-exports.Sections = require './Sections'
-exports.Section = require './Section'
 exports.QuestionGroup = require './QuestionGroup'
 exports.SaveCancelForm = require './SaveCancelForm'
-exports.Instructions = require './Instructions'
 exports.ECPlates = require './ECPlates'
 exports.utils = require './utils'
 exports.LocationFinder = require './LocationFinder'
