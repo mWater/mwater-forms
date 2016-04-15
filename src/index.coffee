@@ -8,7 +8,6 @@ exports.ImagesAnswerComponent = require './answers/ImagesAnswerComponent'
 exports.LocationView = require './LocationView'
 
 exports.formUtils = require './formUtils'
-exports.SaveCancelForm = require './SaveCancelForm'
 exports.ECPlates = require './ECPlates'
 exports.utils = require './utils'
 exports.LocationFinder = require './LocationFinder'
