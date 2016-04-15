@@ -64,7 +64,7 @@ module.exports = class LocationView extends Backbone.View
     super()
 
   render: ->
-# Set location string
+    # Set location string
     if @errorFindingLocation
       @$("#location_relative").text(@T("GPS not available"))
     else if not @loc and not @currentPositionFinder.running
@@ -72,7 +72,7 @@ module.exports = class LocationView extends Backbone.View
     else if @currentPositionFinder.running
       @$("#location_relative").text(@T("Setting location..."))
     else if @loc and @currentPos
-# Calculate relative location
+      # Calculate relative location
       relativeLocation = utils.getRelativeLocation(@currentPos.coords, @loc)
       @$("#location_relative").text(utils.formatRelativeLocation(relativeLocation, @T))
     else
@@ -125,7 +125,7 @@ module.exports = class LocationView extends Backbone.View
       @$("#location_setter").hide()
 
   displayNotification: (message, className, shouldFadeOut) ->
-# Cancel the fadeout if timer on any preexisting alerts
+    # Cancel the fadeout if timer on any preexisting alerts
     timeout = timeout || 0
     clearTimeout timeout
 
@@ -148,7 +148,7 @@ module.exports = class LocationView extends Backbone.View
     @trigger('locationset', null)
     @render()
 
-# Takes out relevant coords from html5 position
+  # Takes out relevant coords from html5 position
   convertPosToLoc: (pos) ->
     if not pos?
       return pos
@@ -158,7 +158,7 @@ module.exports = class LocationView extends Backbone.View
     @currentPositionFinder.start()
 
   currentPositionFound: (pos) ->
-# Extract location
+    # Extract location
     @loc = @convertPosToLoc(pos)
 
     # Set current position
@@ -197,7 +197,7 @@ module.exports = class LocationView extends Backbone.View
     @trigger('map', @loc)
 
   editLocation: ->
-# Set values
+    # Set values
     @$("#latitude").val(if @loc then @loc.latitude else "")
     @$("#longitude").val(if @loc then @loc.longitude else "")
     @$("#location_edit_controls").slideDown()
