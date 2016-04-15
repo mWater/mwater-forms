@@ -1,16 +1,15 @@
 React = require 'react'
 H = React.DOM
-Backbone = require 'backbone'
+#Backbone = require 'backbone'
 formUtils = require './formUtils'
 ImageDisplayComponent = require './ImageDisplayComponent'
 EntityDisplayComponent = require './EntityDisplayComponent'
 AdminRegionDisplayComponent = require './AdminRegionDisplayComponent'
 moment = require 'moment'
-# TODO: SurveyorPro: Break dependency to FormCompiler
-FormCompiler = require './legacy/FormCompiler'
 
 # TODO: SurveyorPro: display roster group and roster matrix answers https://github.com/mWater/mwater-forms/issues/119
 # TODO: SurveyorPro: ensure that Group is displayed https://github.com/mWater/mwater-forms/issues/119
+VisibilityCalculator = require './VisibilityCalculator'
 
 # Static view of a response
 module.exports = class ResponseDisplayComponent extends React.Component
@@ -24,17 +23,9 @@ module.exports = class ResponseDisplayComponent extends React.Component
   constructor: (props) ->
     super
 
-    @state = { showCompleteHistory: false }
-
-  # Determine if item is visible given conditions
-  checkIfVisible: (item) =>
-    # Load response data to model    
-    model = new Backbone.Model(@props.response.data)
-    
-    # Create compiler to check conditions
-    formCompiler = new FormCompiler(model: model, ctx: @props.formCtx)
-    conds = formCompiler.compileConditions(item.conditions, @props.form.design)
-    return conds()
+    @state = {
+      showCompleteHistory: false
+    }
 
   handleLocationClick: (location) ->
     if @props.formCtx.displayMap
@@ -285,8 +276,8 @@ module.exports = class ResponseDisplayComponent extends React.Component
         if answer and answer.location
           @renderLocation(answer.location)
 
-  renderItem: (item) ->
-    if not @checkIfVisible(item)
+  renderItem: (item, visibilityStructure) ->
+    if not visibilityStructure[item._id]
       return
 
     if item._type == "Section" or item._type == "Group" or item._type == "RosterGroup"
@@ -295,7 +286,7 @@ module.exports = class ResponseDisplayComponent extends React.Component
           H.td colSpan: 2, style: { fontWeight: "bold" },
             formUtils.localizeString(item.name, @props.locale)
         _.map item.contents, (item) =>
-          @renderItem(item)
+          @renderItem(item, visibilityStructure)
       ]
 
     if item._type == "RosterMatrix"
@@ -304,19 +295,21 @@ module.exports = class ResponseDisplayComponent extends React.Component
           H.td colSpan: 2, style: { fontWeight: "bold" },
             formUtils.localizeString(item.name, @props.locale)
         _.map item.contents, (item) =>
-          @renderItem(item)
+          @renderItem(item, visibilityStructure)
       ]
 
     if formUtils.isQuestion(item)
       return @renderColumnQuestion(item)
 
-  renderContent: ->
+  renderContent: (visibilityStructure) ->
     H.table className: "table table-bordered",
       H.tbody null, 
         _.map @props.form.design.contents, (item) =>
-          @renderItem(item)
+          @renderItem(item, visibilityStructure)
 
   render: ->
+    visibilityStructure = new VisibilityCalculator(@props.form.design).createVisibilityStructure(@props.response.data)
+
     H.div null,
       @renderHeader()
-      @renderContent()
+      @renderContent(visibilityStructure)
