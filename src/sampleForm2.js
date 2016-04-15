@@ -623,6 +623,22 @@ module.exports = {
           ]
         },
         {
+          _id: "matrix01Id",
+          _type: "RosterMatrix",
+          "name": {
+            "_base": "en",
+            "en": "Roster Matrix"
+          },
+          allowAdd: true,
+          allowRemove: true,
+          contents: [
+            { _id: "a", _type: "TextColumnQuestion", text: { en: "Name" }, required: true },
+            { _id: "b", _type: "NumberColumnQuestion", text: { en: "Age" } },
+            { _id: "c", _type: "CheckboxColumnQuestion", text: { en: "Present" } },
+            { _id: "d", _type: "DropdownColumnQuestion", text: { en: "Gender" }, choices: [{ label: { en: "Male"}, id: "male" }, { label: { en: "Female"}, id: "female" }] }
+          ]
+        },
+        {
           _id: "groupId",
           name: {"en":"Question Group","_base":"en"},
           _type: "Group",

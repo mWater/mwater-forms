@@ -268,11 +268,37 @@ module.exports = class ResponseDisplayComponent extends React.Component
         if answer and answer.location
           @renderLocation(answer.location)
 
+  renderColumnQuestion: (q) ->
+    # Get answer
+    answer = @props.response.data[q._id]
+
+    H.tr key: q._id,
+      H.td key: "name", style: { width: "50%" },
+        formUtils.localizeString(q.text, @props.locale)
+      H.td key: "value",
+        @renderAnswer(q, answer)
+        if answer and answer.timestamp
+          H.div null,
+            @props.T('Answered')
+            ": "
+            moment(answer.timestamp).format('llll')
+        if answer and answer.location
+          @renderLocation(answer.location)
+
   renderItem: (item) ->
     if not @checkIfVisible(item)
       return
 
-    if item._type == "Section"
+    if item._type == "Section" or item._type == "Group" or item._type == "RosterGroup"
+      return [
+        H.tr key: item._id,
+          H.td colSpan: 2, style: { fontWeight: "bold" },
+            formUtils.localizeString(item.name, @props.locale)
+        _.map item.contents, (item) =>
+          @renderItem(item)
+      ]
+
+    if item._type == "RosterMatrix"
       return [
         H.tr key: item._id,
           H.td colSpan: 2, style: { fontWeight: "bold" },
@@ -282,7 +308,7 @@ module.exports = class ResponseDisplayComponent extends React.Component
       ]
 
     if formUtils.isQuestion(item)
-      return @renderQuestion(item)
+      return @renderColumnQuestion(item)
 
   renderContent: ->
     H.table className: "table table-bordered",
