@@ -326,7 +326,7 @@ module.exports = {
           items: { $ref: "#/definitions/item" }
         }
       }
-      required: ["_id", "_type", "rosterId", "name", "conditions", "contents"]
+      required: ["_id", "_type", "name", "conditions", "contents"]
     }
 
     # Matrix of columns and rows. Each column is of a specific type.
@@ -357,7 +357,7 @@ module.exports = {
           items: { $ref: "#/definitions/rosterMatrixColumn" }
         }
       }
-      required: ["_id", "_type", "rosterId", "name", "conditions", "contents"]
+      required: ["_id", "_type", "name", "conditions", "contents"]
     }
 
     rosterMatrixColumn: {
