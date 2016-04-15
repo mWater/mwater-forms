@@ -3,7 +3,7 @@ Backbone.$ = require 'jquery'
 LocationFinder = require '../LocationFinder'
 _ = require 'lodash'
 ezlocalize = require 'ez-localize'
-CurrentPositionFinder = require '../CurrentPositionFinder'
+CurrentPositionFinder = require './CurrentPositionFinder'
 utils = require '../utils'
 
 # Shows the relative location of a point and allows setting it
