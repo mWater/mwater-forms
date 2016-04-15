@@ -5,6 +5,8 @@ R = React.createElement
 
 formUtils = require './formUtils'
 
+# TODO Add focus()
+
 # Rosters are repeated information, such as asking questions about household members N times.
 # A roster group is a group of questions that is asked once for each roster entry
 module.exports = class RosterGroupComponent extends React.Component

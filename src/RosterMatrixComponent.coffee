@@ -7,6 +7,8 @@ formUtils = require './formUtils'
 NumberAnswerComponent = require './answers/NumberAnswerComponent'
 AnswerValidator = require './answers/AnswerValidator'
 
+# TODO Add focus()
+
 # Rosters are repeated information, such as asking questions about household members N times.
 # A roster matrix is a list of column-type questions with one row for each entry in the roster
 module.exports = class RosterMatrixComponent extends React.Component

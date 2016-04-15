@@ -31,7 +31,7 @@ module.exports = class ItemComponent extends React.Component
     return false
 
   focus: () ->
-    if @refs.item?
+    if @refs.item?.focus?
       return @refs.item.focus()
     return false
 
