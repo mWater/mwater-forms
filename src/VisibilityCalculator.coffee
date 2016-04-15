@@ -161,7 +161,7 @@ module.exports = class VisibilityCalculator
           else
             return _.contains(cond.rhs.literal, value) or _.contains(cond.rhs.literal, getAlternate(data))
       when "isntoneof"
-        return () =>
+        return (data) =>
           value = getValue(data)
           if _.isArray(value)
             return _.intersection(cond.rhs.literal, value).length == 0 and not _.contains(cond.rhs.literal, getAlternate(data))
@@ -177,7 +177,7 @@ module.exports = class VisibilityCalculator
         throw new Error("Unknown condition op " + cond.op)
 
   # This code has been copied from FromCompiler
-  compileConditions: (conds, form) =>
+  compileConditions: (conds) =>
     compConds = _.map(conds, @compileCondition)
     return (data) =>
       for compCond in compConds

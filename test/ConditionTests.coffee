@@ -1,37 +1,31 @@
-$ = require 'jquery'
-Backbone = require 'backbone'
-Backbone.$ = $
 assert = require('chai').assert
-#FormCompiler = require '../src/FormCompiler'
 _ = require 'lodash'
 
-# TODO: SurveyorPro: Fix test without FormCompiler
-###
+VisibilityCalculator = require '../src/VisibilityCalculator'
+
 describe "Condition compiler", ->
   beforeEach ->
-    @model = new Backbone.Model()
-    @compiler = new FormCompiler(model: @model, locale: "es")
-    # lhsExtras is stuff to add to answer of lhs question
-    @testTrue = (lhs, op, rhs, lhsExtras={}) =>
-      @model.set("lhsid", _.extend({ value: lhs }, lhsExtras))
-      cond = { 
+    @visibilityCalculator = new VisibilityCalculator(null)
+
+    @compileCondition = (lhs, op, rhs) =>
+      cond = {
         lhs: { question: "lhsid" }
         op: op
         rhs: if rhs? then { literal: rhs } else undefined
       }
-      cond = @compiler.compileCondition(cond)
-      assert.isTrue cond()
+      return @visibilityCalculator.compileCondition(cond)
+
+    # lhsExtras is stuff to add to answer of lhs question
+    @testTrue = (lhs, op, rhs, lhsExtras={}) =>
+      data = {lhsid: _.extend({ value: lhs }, lhsExtras)}
+      condition = @compileCondition(lhs, op, rhs, lhsExtras)
+      assert.isTrue condition(data)
 
     # lhsExtras is stuff to add to answer of lhs question
     @testFalse = (lhs, op, rhs, lhsExtras={}) =>
-      @model.set("lhsid", _.extend({ value: lhs }, lhsExtras))
-      cond = { 
-        lhs: { question: "lhsid" }
-        op: op
-        rhs: if rhs? then { literal: rhs } else undefined
-      }
-      cond = @compiler.compileCondition(cond)
-      assert.isFalse cond()
+      data = {lhsid: _.extend({ value: lhs }, lhsExtras)}
+      condition = @compileCondition(lhs, op, rhs, lhsExtras)
+      assert.isFalse condition(data)
 
   describe "present", ->
     it "handles empty string", ->
@@ -158,25 +152,28 @@ describe "Condition compiler", ->
 
 describe "Conditions compiler", ->
   beforeEach ->
-    @model = new Backbone.Model()
-    @compiler = new FormCompiler(model: @model, locale: "es")
+    @visibilityCalculator = new VisibilityCalculator(null)
 
   it "combines conditions", ->
-    @model.set("lhsid1", { value: 1 })
-    @model.set("lhsid2", { value: 2 })
-    cond1 = { 
+    data = {
+      lhsid1: { value: 1 }
+      lhsid2: { value: 2 }
+    }
+
+    cond1 = {
       lhs: { question: "lhsid1" }
       op: "="
       rhs: { literal: 1 }
     }
+
     cond2 = {
       lhs: { question: "lhsid2" }
       op: "="
       rhs: { literal: 2 }
     }
-    cond = @compiler.compileConditions([cond1, cond2])
-    assert.isTrue cond()
 
-    @model.set("lhsid2", { value: 3 })
-    assert.isFalse cond()
-###
+    cond = @visibilityCalculator.compileConditions([cond1, cond2])
+    assert.isTrue cond(data)
+
+    data["lhsid2"] = { value: 3 }
+    assert.isFalse cond(data)
