@@ -8,6 +8,7 @@ FormComponent = require './FormComponent'
 sampleFormDesign = require './sampleFormDesign'
 sampleForm2 = require './sampleForm2'
 ItemListComponent = require './ItemListComponent'
+ResponseDisplayComponent = require './ResponseDisplayComponent'
 
 # Setup mock localizer
 global.T = (str) -> str
@@ -77,25 +78,40 @@ class DemoComponent extends React.Component
     #   data: @state.data
     #   onDataChange: (data) => @setState(data: data)
 
-    R FormComponent, {
-      formCtx: formCtx
-      design: sampleForm2
-      # design: rosterFormDesign
-      # locale: React.PropTypes.string            # Locale. Defaults to English (en)
-      data: @state.data
-      onDataChange: @handleDataChange
-      onSubmit: => alert("Submit")
-      onSaveLater: => alert("SaveLater")
-      onDiscard:  => alert("Discard")
-      # submitLabel: React.PropTypes.string           # Label for submit button
-      # discardLabel: React.PropTypes.string           # Label for discard button
-      # entity: React.PropTypes.object            # Form-level entity to load
-      # entityType: React.PropTypes.string        # Type of form-level entity to load      getAdminRegionPath: getAdminRegionPath
-      #   getSubAdminRegions: getSubAdminRegions
-      #   onChange: onChange
-      #   value: value
-      # })  
-    }
+    H.div className: "row",
+      H.div(className: "col-md-6",
+        R FormComponent, {
+          formCtx: formCtx
+          design: sampleForm2
+          # design: rosterFormDesign
+          # locale: React.PropTypes.string            # Locale. Defaults to English (en)
+          data: @state.data
+          onDataChange: @handleDataChange
+          onSubmit: => alert("Submit")
+          onSaveLater: => alert("SaveLater")
+          onDiscard:  => alert("Discard")
+          # submitLabel: React.PropTypes.string           # Label for submit button
+          # discardLabel: React.PropTypes.string           # Label for discard button
+          # entity: React.PropTypes.object            # Form-level entity to load
+          # entityType: React.PropTypes.string        # Type of form-level entity to load      getAdminRegionPath: getAdminRegionPath
+          #   getSubAdminRegions: getSubAdminRegions
+          #   onChange: onChange
+          #   value: value
+          # })
+        }
+      )
+      H.div(className: "col-md-6",
+        R ResponseDisplayComponent, {
+          form: {
+            design: sampleForm2
+          }
+          response: {
+            data: @state.data
+          }
+          formCtx: formCtx
+          T: T
+        }
+      )
 
 
 $ ->
