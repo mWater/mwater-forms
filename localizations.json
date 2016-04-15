@@ -20,7 +20,8 @@
     },
     {
       "_base": "en",
-      "en": "Images not available on this platform"
+      "en": "Images not available on this platform",
+      "_unused": true
     },
     {
       "_base": "en",
@@ -112,11 +113,13 @@
     },
     {
       "_base": "en",
-      "en": "Taking photos not supported on this platform"
+      "en": "Taking photos not supported on this platform",
+      "_unused": true
     },
     {
       "_base": "en",
-      "en": "Select units"
+      "en": "Select units",
+      "_unused": true
     },
     {
       "_base": "en",
