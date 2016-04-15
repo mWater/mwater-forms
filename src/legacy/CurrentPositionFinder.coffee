@@ -1,7 +1,7 @@
 _ = require 'lodash'
 Backbone = require 'backbone'
-LocationFinder = require './LocationFinder'
-utils = require './utils'
+LocationFinder = require '../LocationFinder'
+utils = require '../utils'
 
 initialDelay = 10000
 goodDelay = 5000

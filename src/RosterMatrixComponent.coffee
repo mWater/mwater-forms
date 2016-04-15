@@ -118,7 +118,7 @@ module.exports = class RosterMatrixComponent extends React.Component
           H.th(null)
 
   renderCell: (entry, entryIndex, column, columnIndex) ->
-    value = @getAnswer()[entryIndex][column._id]?.value
+    value = @getAnswer()[entryIndex].data?[column._id]?.value
 
     # Create element
     switch column._type
