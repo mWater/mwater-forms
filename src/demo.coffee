@@ -53,7 +53,6 @@ formCtx = {
 
   stickyStorage: {
     get: (questionId) ->
-      console.log questionId
       return testStickyStorage[questionId]
     set: (questionId, value) ->
       return testStickyStorage[questionId] = value

@@ -242,11 +242,16 @@ module.exports = class ResponseDisplayComponent extends React.Component
           value: answer.value
         })
 
-  renderQuestion: (q) ->
+  renderQuestion: (q, dataId) ->
     # Get answer
-    answer = @props.response.data[q._id]    
+    dataIds = dataId.split('.')
+    if dataIds.length == 1
+      answer = @props.response.data[dataId]
+    else
+      rosterData = @props.response.data[dataIds[0]]
+      answer = rosterData[dataIds[1]].data[dataIds[2]]
 
-    H.tr key: q._id,
+    H.tr key: dataId,
       H.td key: "name", style: { width: "50%" },
         formUtils.localizeString(q.text, @props.locale)
       H.td key: "value",
@@ -259,53 +264,80 @@ module.exports = class ResponseDisplayComponent extends React.Component
         if answer and answer.location
           @renderLocation(answer.location)
 
-  renderColumnQuestion: (q) ->
-    # Get answer
-    answer = @props.response.data[q._id]
+  # Add all the items with the proper rosterId to items array
+  # Looks inside groups and sections
+  collectItemsReferencingRoster: (items, contents, rosterId) ->
+    # Get the contents of all the other question that are referencing this roster
+    for otherItem in contents
+      if otherItem._type == 'Group' or otherItem._type == 'Section'
+        @collectItemsReferencingRoster(items, otherItem.contents, rosterId)
+      if otherItem.rosterId == rosterId
+        items.push.apply(items, otherItem.contents);
 
-    H.tr key: q._id,
-      H.td key: "name", style: { width: "50%" },
-        formUtils.localizeString(q.text, @props.locale)
-      H.td key: "value",
-        @renderAnswer(q, answer)
-        if answer and answer.timestamp
-          H.div null,
-            @props.T('Answered')
-            ": "
-            moment(answer.timestamp).format('llll')
-        if answer and answer.location
-          @renderLocation(answer.location)
-
-  renderItem: (item, visibilityStructure) ->
-    if not visibilityStructure[item._id]
+  # dataId is the key used for looking up the data + testing visibility
+  # dataId is simply item._id except for rosters children
+  renderItem: (item, visibilityStructure, dataId) ->
+    if not visibilityStructure[dataId]
       return
 
-    if item._type == "Section" or item._type == "Group" or item._type == "RosterGroup"
+    # Sections and Groups behave the same
+    if item._type == "Section" or item._type == "Group"
       return [
         H.tr key: item._id,
           H.td colSpan: 2, style: { fontWeight: "bold" },
             formUtils.localizeString(item.name, @props.locale)
         _.map item.contents, (item) =>
-          @renderItem(item, visibilityStructure)
+          @renderItem(item, visibilityStructure, item._id)
       ]
 
-    if item._type == "RosterMatrix"
+    # RosterMatrices and RosterGroups behave the same
+    # Only the one storing the data will display it
+    # The rosters referencing another one will display a simple text to say so
+    if item._type == "RosterMatrix" or item._type == "RosterGroup"
+      items = []
+      # If storing data
+      if not item.rosterId?
+        items = _.clone item.contents
+        # Get the questions of the other rosters referencing this one
+        @collectItemsReferencingRoster(items, @props.form.design.contents, item._id)
+
       return [
         H.tr key: item._id,
           H.td colSpan: 2, style: { fontWeight: "bold" },
             formUtils.localizeString(item.name, @props.locale)
-        _.map item.contents, (item) =>
-          @renderItem(item, visibilityStructure)
+        # Simply display a text referencing the other roster
+        if item.rosterId?
+          referencedRoster = formUtils.findItem(@props.form.design, item.rosterId)
+          H.tr null,
+            H.td colSpan: 2,
+              H.span style: {fontStyle: 'italic'},
+                T("Data is stored in ") + referencedRoster.name[@props.formCtx.locale]
+        else
+          # Get the data for that roster
+          data = @props.response.data[item._id]
+          if data?
+            # For each entry in data
+            for enty, index in data
+              [
+                # Display the index of the answer
+                H.tr null,
+                  H.td colSpan: 2, style: { fontWeight: "bold" },
+                    "#{index+1}."
+                # And the answer for each question
+                _.map items, (childItem) =>
+                  dataId = "#{item._id}.#{index}.#{childItem._id}"
+                  @renderItem(childItem, visibilityStructure, dataId)
+              ]
       ]
 
     if formUtils.isQuestion(item)
-      return @renderColumnQuestion(item)
+      return @renderQuestion(item, dataId)
 
   renderContent: (visibilityStructure) ->
     H.table className: "table table-bordered",
       H.tbody null, 
         _.map @props.form.design.contents, (item) =>
-          @renderItem(item, visibilityStructure)
+          @renderItem(item, visibilityStructure, item._id)
 
   render: ->
     visibilityStructure = new VisibilityCalculator(@props.form.design).createVisibilityStructure(@props.response.data)
