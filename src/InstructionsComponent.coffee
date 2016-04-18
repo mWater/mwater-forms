@@ -16,6 +16,18 @@ module.exports = class InstructionsComponent extends React.Component
     data: React.PropTypes.object      # Current data of response. 
     formExprEvaluator: React.PropTypes.object # FormExprEvaluator for rendering strings with expression
 
+  shouldComponentUpdate: (nextProps, nextState, nextContext) ->
+    if @context.locale != nextContext.locale
+      return true
+    if nextProps.instructions.textExprs? and nextProps.instructions.textExprs.length > 0
+      return true
+    if nextProps.formExprEvaluator? and nextProps.formExprEvaluator != @props.formExprEvaluator
+      return true
+    if nextProps.instructions != @props.instructions
+      return true
+
+    return false
+
   render: ->
     text = @props.formExprEvaluator.renderString(@props.instructions.text, @props.instructions.textExprs, @props.data, @context.locale)
 
