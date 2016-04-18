@@ -5,7 +5,7 @@ exports.AdminRegionAnswerComponent = require './answers/AdminRegionAnswerCompone
 exports.ImageAnswerComponent = require './answers/ImageAnswerComponent'
 exports.ImagesAnswerComponent = require './answers/ImagesAnswerComponent'
 
-exports.LocationView = require './LocationView'
+exports.LocationView = require './legacy/LocationView'
 
 exports.formUtils = require './formUtils'
 exports.ECPlates = require './ECPlates'
