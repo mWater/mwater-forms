@@ -13,9 +13,6 @@ FormExprEvaluator = require './FormExprEvaluator'
 
 # Displays a form that can be filled out
 module.exports = class FormComponent extends React.Component
-  @contextTypes:
-    stickyStorage: React.PropTypes.object   # Storage for sticky values
-
   @propTypes:
     formCtx: React.PropTypes.object.isRequired   # Context to use for form. See docs/FormsContext.md
     design: React.PropTypes.object.isRequired # Form design. See schema.coffee
