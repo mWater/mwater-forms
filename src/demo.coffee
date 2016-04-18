@@ -7,6 +7,7 @@ AdminRegionSelectComponent = require './AdminRegionSelectComponent'
 FormComponent = require './FormComponent'
 sampleFormDesign = require './sampleFormDesign'
 sampleForm2 = require './sampleForm2'
+bigsampleForm2 = require './bigsampleForm2'
 ItemListComponent = require './ItemListComponent'
 ResponseDisplayComponent = require './ResponseDisplayComponent'
 
@@ -96,7 +97,7 @@ class DemoComponent extends React.Component
       H.div(className: "col-md-6",
         R FormComponent, {
           formCtx: formCtx
-          design: sampleForm2.design
+          design: bigsampleForm2.design
           # design: rosterFormDesign
           # locale: React.PropTypes.string            # Locale. Defaults to English (en)
           data: @state.data
@@ -114,16 +115,16 @@ class DemoComponent extends React.Component
           # })
         }
       )
-      H.div(className: "col-md-6",
-        R ResponseDisplayComponent, {
-          form: sampleForm2
-          response: {
-            data: @state.data
-          }
-          formCtx: formCtx
-          T: T
-        }
-      )
+      #H.div(className: "col-md-6",
+      #  R ResponseDisplayComponent, {
+      #    form: bigsampleForm2
+      #    response: {
+      #      data: @state.data
+      #    }
+      #    formCtx: formCtx
+      #    T: T
+      #  }
+      #)
 
 
 $ ->
