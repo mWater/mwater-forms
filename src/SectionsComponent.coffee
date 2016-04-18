@@ -33,15 +33,15 @@ module.exports = class SectionsComponent extends React.Component
     if not @refs.itemListComponent.validate(true)
       @props.onSubmit()
 
-  hasPrevious: ->
+  hasPreviousSection: ->
     # Returns true if a visible index exist with a higher value
-    return @nextVisibleIndex(@state.sectionNum - 1, -1) != -1
+    return @nextVisibleSectionIndex(@state.sectionNum - 1, -1) != -1
 
-  hasNext: ->
+  hasNextSection: ->
     # Returns true if a visible index exist with a higher value
-    return @nextVisibleIndex(@state.sectionNum + 1, 1) != -1
+    return @nextVisibleSectionIndex(@state.sectionNum + 1, 1) != -1
 
-  nextVisibleIndex: (index, increment) ->
+  nextVisibleSectionIndex: (index, increment) ->
     if index < 0
       return -1
     if index >= @props.contents.length
@@ -51,24 +51,27 @@ module.exports = class SectionsComponent extends React.Component
     if isVisible
       return index
     else
-      return @nextVisibleIndex(index + increment, increment)
+      return @nextVisibleSectionIndex(index + increment, increment)
 
-  handleBack: =>
+  handleBackSection: =>
     # Move to previous that is visible
-    previousVisibleIndex = @nextVisibleIndex(@state.sectionNum - 1, -1)
+    previousVisibleIndex = @nextVisibleSectionIndex(@state.sectionNum - 1, -1)
     if previousVisibleIndex != -1
       @setState(sectionNum: previousVisibleIndex)
     # This should never happen... simply ignore
 
-  handleNext: =>
+  handleNextSection: =>
     # Move to next that is visible
-    nextVisibleIndex = @nextVisibleIndex(@state.sectionNum + 1, 1)
+    nextVisibleIndex = @nextVisibleSectionIndex(@state.sectionNum + 1, 1)
     if nextVisibleIndex != -1
       @setState(sectionNum: nextVisibleIndex)
     # This should never happen... simply ignore
 
   handleBreadcrumbClick: (index) =>
     @setState(sectionNum: index)
+
+  handleItemListNext: () =>
+    @refs.nextOrSubmit.focus()
 
   renderBreadcrumbs: ->
     breadcrumbs = []
@@ -107,25 +110,26 @@ module.exports = class SectionsComponent extends React.Component
         onDataChange: @props.onDataChange
         isVisible: @props.isVisible
         formExprEvaluator: @props.formExprEvaluator
+        onNext: @handleItemListNext
 
   renderButtons: ->
     H.div className: "form-controls",
       # If can go back
-      if @hasPrevious()
+      if @hasPreviousSection()
         [
-          H.button key: "back", type: "button", className: "btn btn-default", onClick: @handleBack,
+          H.button key: "back", type: "button", className: "btn btn-default", onClick: @handleBackSection,
             H.span className: "glyphicon glyphicon-backward"
             " " + T("Back")
           "\u00A0"
         ]
 
       # Can go forward or submit
-      if @hasNext()
-        H.button key: "next", type: "button", className: "btn btn-primary", onClick: @handleNext,
+      if @hasNextSection()
+        H.button key: "next", type: "button", ref: 'nextOrSubmit', className: "btn btn-primary", onClick: @handleNextSection,
           T("Next") + " " 
           H.span className: "glyphicon glyphicon-forward"
       else  
-        H.button key: "submit", type: "button", className: "btn btn-primary", onClick: @handleSubmit,
+        H.button key: "submit", type: "button", ref: 'nextOrSubmit', className: "btn btn-primary", onClick: @handleSubmit,
           T("Submit")
 
       "\u00A0"

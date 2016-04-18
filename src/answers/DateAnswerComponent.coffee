@@ -57,7 +57,9 @@ module.exports = class DateAnswerComponent extends React.Component
     @state = {detailLevel: detailLevel, isoFormat: isoFormat, placeholder: placeholder}
 
   focus: () ->
-    @refs.datetimepicker?.focus()
+    datetimepicker = @refs.datetimepicker
+    if datetimepicker.focus?
+      datetimepicker.focus()
 
   handleKeyDown: (ev) =>
     if @props.onNextOrComments?

@@ -16,6 +16,7 @@ module.exports = class GroupComponent extends React.Component
     onDataChange: React.PropTypes.func.isRequired   # Called when data changes
     isVisible: React.PropTypes.func.isRequired # (id) tells if an item is visible or not
     formExprEvaluator: React.PropTypes.object.isRequired # FormExprEvaluator for rendering strings with expression
+    onNext: React.PropTypes.func.isRequired   # Called when moving out of the GroupComponent questions
 
   validate: (scrollToFirstInvalid) ->
     return @refs.itemlist.validate(scrollToFirstInvalid)
@@ -36,4 +37,5 @@ module.exports = class GroupComponent extends React.Component
           onDataChange: @props.onDataChange
           isVisible: @props.isVisible
           formExprEvaluator: @props.formExprEvaluator
+          onNext: @props.onNext
           

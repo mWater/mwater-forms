@@ -99,6 +99,9 @@ module.exports = class FormComponent extends React.Component
     defaultValueApplier = new DefaultValueApplier(@props.design, @props.formCtx.stickyStorage, @props.entity, @props.entityType)
     return defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure)
 
+  handleNext: () =>
+    @refs.submit.focus()
+
   render: ->
     if @props.design.contents[0] and @props.design.contents[0]._type == "Section"
       R SectionsComponent,
@@ -118,9 +121,10 @@ module.exports = class FormComponent extends React.Component
           data: @props.data
           onDataChange: @handleDataChange
           isVisible: @isVisible 
-          formExprEvaluator: @state.formExprEvaluator 
+          formExprEvaluator: @state.formExprEvaluator
+          onNext: @handleNext
 
-        H.button type: "button", className: "btn btn-primary", onClick: @handleSubmit,
+        H.button type: "button", className: "btn btn-primary", ref: 'submit', onClick: @handleSubmit,
           T("Submit")
 
         "\u00A0"

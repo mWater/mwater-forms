@@ -226,6 +226,7 @@ module.exports = class QuestionComponent extends React.Component
           value: answer.value
           onChange: @handleValueChange
           decimal: @props.question.decimal
+          onNextOrComments: @handleNextOrComments
         }
 
       when "DropdownQuestion"
@@ -259,6 +260,7 @@ module.exports = class QuestionComponent extends React.Component
           onValueChange: @handleValueChange
           format: @props.question.format
           placeholder: @props.question.placeholder
+          onNextOrComments: @handleNextOrComments
         }
 
       when "UnitsQuestion"
@@ -270,6 +272,7 @@ module.exports = class QuestionComponent extends React.Component
           defaultUnits: @props.question.defaultUnits
           prefix: @props.question.unitsPosition == 'prefix'
           decimal: @props.question.decimal
+          onNextOrComments: @handleNextOrComments
         }
 
       when "CheckQuestion"
@@ -299,6 +302,7 @@ module.exports = class QuestionComponent extends React.Component
           ref: "answer"
           value: answer.value
           onValueChange: @handleValueChange
+          onNextOrComments: @handleNextOrComments
         }
 
       when "SiteQuestion"
@@ -306,6 +310,7 @@ module.exports = class QuestionComponent extends React.Component
           ref: "answer"
           value: answer.value
           onValueChange: @handleValueChange
+          onNextOrComments: @handleNextOrComments
         }
 
       when "BarcodeQuestion"

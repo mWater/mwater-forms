@@ -58,6 +58,7 @@ module.exports = class ItemComponent extends React.Component
         onDataChange: @props.onDataChange
         isVisible: @props.isVisible
         formExprEvaluator: @props.formExprEvaluator
+        onNext: @props.onNext
     else if @props.item._type == "RosterGroup"
       return R RosterGroupComponent,
         ref: 'item'
