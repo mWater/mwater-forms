@@ -1021,6 +1021,9 @@ module.exports = {
           # Usually used for "Other" options.
           # Value is stored in specify[id]
           specify: { type: "boolean" }
+
+          # Conditions for visibility of the choice
+          conditions: { $ref: "#/definitions/conditions" }
         }
         required: ["id", "label"]
         additionalProperties: false
