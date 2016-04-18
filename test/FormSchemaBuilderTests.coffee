@@ -956,6 +956,7 @@ describe "FormSchemaBuilder addForm", ->
           contents: [{
             _id: "roster1"
             _type: "RosterMatrix"
+            name: { en: "Roster1" }
             contents: [
               { _id: "q1", _type: "TextColumnQuestion", text: { en: "Q1" }}
             ]
