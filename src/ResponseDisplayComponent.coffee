@@ -20,12 +20,16 @@ module.exports = class ResponseDisplayComponent extends React.Component
     locale: React.PropTypes.string # Defaults to english
     T: React.PropTypes.func  # Localizer to use. Call form compiler to create one
 
+  @childContextTypes: require('./formContextTypes')
+
   constructor: (props) ->
     super
 
     @state = {
       showCompleteHistory: false
     }
+
+  getChildContext: -> @props.formCtx
 
   handleLocationClick: (location) ->
     if @props.formCtx.displayMap

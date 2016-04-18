@@ -3,12 +3,12 @@ H = React.DOM
 R = React.createElement
 
 formUtils = require '../formUtils'
-
 EntityDisplayComponent = require '../EntityDisplayComponent'
 
 # TODO: SurveyorPro: Bug: Code is not actually set in the input field after selecting an entity!!
 # TODO: SurveyorPro: Also it doesn't work if you type a code and press enter
 # TODO: SurveyorPro: I don't think it should support onNextOrComments (my mistake), if it DOES, then we should pass it down from QuestionComponent
+# TODO: validate codes in answervalidator
 
 module.exports = class SiteAnswerComponent extends React.Component
   @contextTypes:
@@ -22,13 +22,6 @@ module.exports = class SiteAnswerComponent extends React.Component
     value: React.PropTypes.object
     onValueChange: React.PropTypes.func.isRequired
     siteTypes: React.PropTypes.array
-
-  @defaultProps:
-    value: false
-
-  constructor: (props) ->
-    super
-    @state = {shownEntity: false}
 
   focus: () ->
     @refs.input.focus()
@@ -54,26 +47,30 @@ module.exports = class SiteAnswerComponent extends React.Component
       # Get entity
       @context.getEntityById(entityType, entityId, (entity) =>
         @props.onValueChange(code: entity.code)
-        @setState(shownEntityCode: entity.code)
       )
     }
 
-  renderEntityDisplayComponent: ->
-    entityType = @getEntityType()
-    formCtx = {
-      getEntityById: @context.getEntityById
-      getEntityByCode: @context.getEntityByCode
-      renderEntitySummaryView: @context.renderEntitySummaryView
-    }
-    return R EntityDisplayComponent, {formCtx: formCtx, displayInWell: true, entityCode: @state.shownEntityCode, entityType: entityType}
+  handleChange: (ev) =>
+    if ev.target.value
+      @props.onValueChange({ code: ev.target.value })
+    else
+      @props.onValueChange(null)
 
   render: ->
     H.div null,
       H.div className:"input-group",
-          H.input id: "input", type: "tel", className: "form-control", onKeyDown: @handleKeyDown, ref: 'input'
-          H.span className: "input-group-btn",
-            H.button className: "btn btn-default", disabled: not @context.selectEntity?, type: "button", onClick: @handleSelectClick,
-              T("Select")
+        H.input 
+          type: "tel"
+          className: "form-control"
+          onKeyDown: @handleKeyDown
+          ref: 'input'
+          value: @props.value?.code or ""
+          onChange: @handleChange
+        H.span className: "input-group-btn",
+          H.button className: "btn btn-default", disabled: not @context.selectEntity?, type: "button", onClick: @handleSelectClick,
+            T("Select")
       H.br()
-      if @state.shownEntityCode
-        @renderEntityDisplayComponent()
+      R EntityDisplayComponent, 
+        displayInWell: true
+        entityType: @getEntityType()
+        entityCode: @props.value?.code

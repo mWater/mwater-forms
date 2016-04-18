@@ -1,16 +1,18 @@
 _ = require 'lodash'
 React = require 'react'
 H = React.DOM
+R = React.createElement
 EntityDisplayComponent = require '../EntityDisplayComponent'
 AsyncLoadComponent = require('react-library/lib/AsyncLoadComponent')
 
 # Allows user to select an entity
+# State is needed for canEditEntity which requires entire entity
 module.exports = class EntityAnswerComponent extends AsyncLoadComponent
   @contextTypes:
     selectEntity: React.PropTypes.func
     editEntity: React.PropTypes.func
     renderEntitySummaryView: React.PropTypes.func.isRequired
-    getEntityById: React.PropTypes.func
+    getEntityById: React.PropTypes.func.isRequired     # Gets an entity by id (entityType, entityId, callback)
     canEditEntity: React.PropTypes.func
 
   @propTypes:
@@ -20,7 +22,7 @@ module.exports = class EntityAnswerComponent extends AsyncLoadComponent
 
   focus: () ->
     # Nothing to focus
-    null
+    return false
 
   # Override to determine if a load is needed. Not called on mounting
   isLoadNeeded: (newProps, oldProps) ->
@@ -45,9 +47,6 @@ module.exports = class EntityAnswerComponent extends AsyncLoadComponent
       entityType: @props.entityType
       callback: (value) =>
         @props.onValueChange(value)
-
-        # Load answers linked to properties
-        @loadLinkedAnswers(value)
     }
 
   handleClearEntity: =>
@@ -58,12 +57,8 @@ module.exports = class EntityAnswerComponent extends AsyncLoadComponent
       return alert(@T("Not supported on this platform"))
 
     @context.editEntity @props.entityType, @props.value, =>
-      # Set to null and back to force a change
-      @props.onValueChange(null)
       @props.onValueChange(value)
-
-      # Load answers linked to properties
-      @loadLinkedAnswers(value)
+      @forceLoad()
 
   renderEntityButtons: ->
     H.div null,
@@ -97,5 +92,7 @@ module.exports = class EntityAnswerComponent extends AsyncLoadComponent
 
     return H.div null,
       @renderEntityButtons()
-      H.div className: "well well-sm",
-        @context.renderEntitySummaryView(@props.entityType, @state.entity)
+      R EntityDisplayComponent, 
+        entityType: @props.entityType
+        displayInWell: true
+        entityId: @props.value

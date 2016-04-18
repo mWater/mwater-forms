@@ -9,8 +9,8 @@ module.exports = {
   renderEntitySummaryView: React.PropTypes.func.isRequired
   canEditEntity: React.PropTypes.func
 
-  getEntityById: React.PropTypes.func
-  getEntityByCode: React.PropTypes.func
+  getEntityById: React.PropTypes.func     # Gets an entity by id (entityType, entityId, callback)
+  getEntityByCode: React.PropTypes.func   # Gets an entity by code (entityType, entityCode, callback)
 
   locationFinder: React.PropTypes.object
   displayMap: React.PropTypes.func # Takes location ({ latitude, etc.}) and callback (called back with new location)

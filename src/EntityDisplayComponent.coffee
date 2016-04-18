@@ -4,8 +4,12 @@ AsyncLoadComponent = require('react-library/lib/AsyncLoadComponent')
 
 # Loads and displays an entity
 module.exports = class EntityDisplayComponent extends AsyncLoadComponent
+  @contextTypes:
+    getEntityById: React.PropTypes.func.isRequired     # Gets an entity by id (entityType, entityId, callback)
+    getEntityByCode: React.PropTypes.func.isRequired   # Gets an entity by code (entityType, entityCode, callback)
+    renderEntitySummaryView: React.PropTypes.func.isRequired
+
   @propTypes:
-    formCtx: React.PropTypes.object.isRequired
     entityType: React.PropTypes.string.isRequired   # _id of entity
     entityId: React.PropTypes.string     # _id of entity
     entityCode: React.PropTypes.string   # code of entity if _id not present
@@ -22,11 +26,11 @@ module.exports = class EntityDisplayComponent extends AsyncLoadComponent
       return
 
     if props.entityId
-      props.formCtx.getEntityById(props.entityType, props.entityId, (entity) =>
+      @context.getEntityById(props.entityType, props.entityId, (entity) =>
         callback(entity: entity)
       )
     else
-      props.formCtx.getEntityByCode(props.entityType, props.entityCode, (entity) =>
+      @context.getEntityByCode(props.entityType, props.entityCode, (entity) =>
         callback(entity: entity)
       )
 
@@ -41,4 +45,4 @@ module.exports = class EntityDisplayComponent extends AsyncLoadComponent
       return H.div className: "alert alert-danger", T("Not found")
 
     H.div className: (if @props.displayInWell then "well well-sm"),
-      @props.formCtx.renderEntitySummaryView(@props.entityType, @state.entity)
+      @context.renderEntitySummaryView(@props.entityType, @state.entity)

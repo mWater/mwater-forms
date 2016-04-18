@@ -30,11 +30,11 @@ module.exports = class TextAnswerComponent extends React.Component
         className: "form-control"
         id: 'input'
         ref: 'input'
-        value: @props.value
+        value: @props.value or ""
         rows: "5"
         readOnly: @props.readOnly
         onChange: (ev) =>
-          @props.onValueChange(ev.target.value)
+          @props.onValueChange(if ev.target.value then ev.target.value else null)
       }
     else
       return H.input {
@@ -42,9 +42,9 @@ module.exports = class TextAnswerComponent extends React.Component
         id: 'input'
         ref: 'input'
         type: "text"
-        value: @props.value
+        value: @props.value or ""
         readOnly: @props.readOnly
         onKeyDown: @handleKeyDown
         onChange: (ev) =>
-          @props.onValueChange(ev.target.value)
+          @props.onValueChange(if ev.target.value then ev.target.value else null)
       }

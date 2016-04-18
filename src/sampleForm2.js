@@ -333,6 +333,19 @@ module.exports = {
             "validations": []
           },
           {
+            "_id": "fbcsdfsdfsd23sdfsdf",
+            "text": {
+              "en": "an entity question",
+              "_base": "en"
+            },
+            "_type": "EntityQuestion",
+            "required": false,
+            "alternates": { },
+            entityType: "water_point",
+            "conditions": [],
+            "validations": []
+          },
+          {
             "_id": "ea408d056c4b460698e4abc3a36cc737",
             "text": {
               "en": "New question",

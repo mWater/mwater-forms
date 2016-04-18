@@ -57,6 +57,21 @@ formCtx = {
     set: (questionId, value) ->
       return testStickyStorage[questionId] = value
   }
+
+  selectEntity: (options) =>
+    options.callback("1234")
+
+  getEntityById: (entityType, entityId, callback) =>
+    if entityId == "1234"
+      callback({ _id: "1234", code: "10007", name: "Test" })
+    else
+      callback(null)
+
+  getEntityByCode: (entityType, entityCode, callback) =>
+    if entityCode == "10007"
+      callback({ _id: "1234", code: "10007", name: "Test" })
+    else
+      callback(null)
 }
 
 
