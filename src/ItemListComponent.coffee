@@ -33,8 +33,8 @@ module.exports = class ItemListComponent extends React.Component
       @refs[@props.contents[index]._id].focus()
 
   renderItem: (item, index) =>
-    # Check if visible
-    if not @props.isVisible(item._id)
+    # Check if invisible or disabled
+    if not @props.isVisible(item._id) or item.disabled
       return null
 
     R(ItemComponent, {

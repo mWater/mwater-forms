@@ -4,7 +4,7 @@ _  = require 'lodash'
 # all basic properties but still use additionalProperties: false
 extendQuestionProperties = (properties) ->
   return _.defaults properties, {
-    _id: {}, code: {}, text: {}, textExprs: {}, required: {}, conditions: {}, hint: {}, help: {}, sticky: {}
+    _id: {}, code: {}, text: {}, textExprs: {}, required: {}, disabled: {}, conditions: {}, hint: {}, help: {}, sticky: {}
     alternates: {}, commentsField: {}, recordTimestamp: {}, recordLocation: {}, sensor: {}, _basedOn: {}, exportId: {}
   } 
 
@@ -209,6 +209,9 @@ module.exports = {
 
         # True if the question is required to be answered
         required: { type: "boolean" }
+
+        # True if the question is disbled (will never be shown in live form)
+        disbled: { type: "boolean" }
 
         # Conditions for visibility of the instructions
         conditions: { $ref: "#/definitions/conditions" }
