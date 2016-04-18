@@ -950,19 +950,19 @@ module.exports = {
         # Filter for the entities that can be chosen. MongoDb-style
         entityFilter: { type: "object" }
 
-        # Properties that should be displayed when an entity is chosen
+        # Properties that should be displayed when an entity is chosen DEPRECATED
         displayProperties: { 
           type: "array"
           items: { $ref: "#/definitions/propertyId" }
         }
 
-        # Properties that should be used to select the entity
+        # Properties that should be used to select the entity DEPRECATED
         selectProperties: {
           type: "array"
           items: { $ref: "#/definitions/propertyId" }
         }
 
-        # Geometry property (optional) that should be displayed on a map for choosing an entity. Deprecated
+        # Geometry property (optional) that should be displayed on a map for choosing an entity. DEPRECATED
         mapProperty: { $ref: "#/definitions/propertyId" } 
         
         # Text of select button
@@ -977,10 +977,10 @@ module.exports = {
         # How selection is made
         selectionMode: { $enum: ['external'] }
 
-        # True if hidden always
+        # True if hidden always DEPRECATED
         hidden: { type: "boolean" }
 
-        # True to create an entity if one is not selected
+        # True to create an entity if one is not selected DEPRECATED
         createEntity: { type: "boolean" }
 
         # No validation available
