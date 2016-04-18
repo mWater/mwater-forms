@@ -894,7 +894,7 @@ describe "FormSchemaBuilder addForm", ->
       @schema = new FormSchemaBuilder().addForm(new Schema(), form)
 
     it "creates new table with column", ->
-      assert.equal @schema.getTable("responses:formid:roster:roster1").name.en, "Roster1"
+      assert.equal @schema.getTable("responses:formid:roster:roster1").name.en, "Form: Roster1"
 
       # Check that column was added
       assert @schema.getColumn("responses:formid:roster:roster1", "data:q1:value")

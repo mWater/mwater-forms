@@ -14,7 +14,7 @@ formUtils = require './formUtils'
 module.exports = class ItemComponent extends React.Component
   @propTypes:
     item: React.PropTypes.object.isRequired 
-    data: React.PropTypes.object      # Current data of response. 
+    data: React.PropTypes.object.isRequired      # Current data of response. 
     onDataChange: React.PropTypes.func.isRequired
     onNext: React.PropTypes.func
     isVisible: React.PropTypes.func.isRequired # (id) tells if an item is visible or not

@@ -70,7 +70,7 @@ module.exports = class FormSchemaBuilder
 
         schema = schema.addTable({
           id: "responses:#{form._id}:roster:#{item.rosterId or item._id}"
-          name: item.name
+          name: appendStr(appendStr(form.design.name, ": "), item.name)
           primaryKey: "_id"
           contents: contents
         })
