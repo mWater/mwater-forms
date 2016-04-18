@@ -6,8 +6,8 @@ formUtils = require './formUtils'
 # The usage is fairly simple. It's created with a form and then the visibilityStructure is recalculated with specify data each time it changes.
 
 module.exports = class VisibilityCalculator
-  constructor: (form) ->
-    @form = form
+  constructor: (formDesign) ->
+    @formDesign = formDesign
     @visibilityStructure = {}
 
   # Updates the visibilityStructure dictionary with one entry for each element
@@ -18,14 +18,14 @@ module.exports = class VisibilityCalculator
 
   # Process the whole form
   processForm: (data) ->
-    if @form._type != 'Form'
+    if @formDesign._type != 'Form'
       throw new Error('Should be a form')
 
-    if @form.contents[0] and @form.contents[0]._type == "Section"
-      for content in @form.contents
+    if @formDesign.contents[0] and @formDesign.contents[0]._type == "Section"
+      for content in @formDesign.contents
         @processGroupOrSection(content, data)
     else
-      for content in @form.contents
+      for content in @formDesign.contents
         @processItem(content, false, data, '')
 
   # Process a section or a group (they both behave the same way when it comes to determining visibility)
@@ -35,7 +35,7 @@ module.exports = class VisibilityCalculator
 
     # Always visible if no condition has been set
     if groupOrSection.conditions? and groupOrSection.conditions.length > 0
-      conditions = @compileConditions(groupOrSection.conditions, @forms)
+      conditions = @compileConditions(groupOrSection.conditions, @formDesign)
       isVisible = conditions(data)
     else
       isVisible = true
@@ -64,7 +64,7 @@ module.exports = class VisibilityCalculator
     if forceToInvisible
       isVisible = false
     else if question.conditions? and question.conditions.length > 0
-      conditions = @compileConditions(question.conditions, @form)
+      conditions = @compileConditions(question.conditions, @formDesign)
       isVisible = conditions(data)
     else
       isVisible = true
@@ -84,7 +84,7 @@ module.exports = class VisibilityCalculator
     if forceToInvisible
       isVisible = false
     else if rosterGroup.conditions? and rosterGroup.conditions.length > 0
-      conditions = @compileConditions(rosterGroup.conditions, @forms)
+      conditions = @compileConditions(rosterGroup.conditions, @formDesign)
       isVisible = conditions(data)
     else
       isVisible = true
