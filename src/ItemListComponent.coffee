@@ -51,6 +51,8 @@ module.exports = class ItemListComponent extends React.Component
   render: ->
     H.div null,
       # Fade in and out
-      R ReactCSSTransitionGroup, transitionName: "fade", transitionEnterTimeout: 300, transitionLeaveTimeout: 300,
-        _.map(@props.contents, @renderItem)
+      # TODO: Not working on my phone (mbriau) It sometimes fail when transitioning IN but always fail when transitioning out.
+      #       There's no error reported, the order of the questions is just wrong after the transition...
+      #R ReactCSSTransitionGroup, transitionName: "fade", transitionEnterTimeout: 300, transitionLeaveTimeout: 300,
+      _.map(@props.contents, @renderItem)
 
