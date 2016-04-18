@@ -323,6 +323,12 @@ module.exports = {
         # Allow user to remove items
         allowRemove: { type: "boolean" }
 
+        # Title of each entry
+        entryTitle: { $ref: "#/definitions/localizedString" }
+
+        # Array of mWater expressions to substitute into entry title field for {0}, {1}, etc.
+        entryTitleExprs: { type: "array", items: { type: "object" }}
+
         # Contains a list of items
         contents: {
           type: "array"

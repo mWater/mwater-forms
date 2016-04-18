@@ -57,9 +57,21 @@ module.exports = class FormSchemaBuilder
     # For each item
     for item in formUtils.allItems(form.design)
       if item._type in ["RosterGroup", "RosterMatrix"]
-        # If new, create table
+        # If new, create table with single join back to responses
         if not item.rosterId
-          contents = []
+          contents = [
+            { 
+              id: "response"
+              type: "join"
+              name: { en: "Response" }
+              join: {
+                type: "n-1"
+                toTable: "responses:#{form._id}"
+                fromColumn: "response"
+                toColumn: "_id"
+              }
+            }
+          ]
         else
           # Use existing contents
           contents = schema.getTable("responses:#{form._id}:roster:#{item.rosterId}").contents.slice()

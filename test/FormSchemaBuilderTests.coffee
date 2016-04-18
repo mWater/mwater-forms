@@ -907,6 +907,11 @@ describe "FormSchemaBuilder addForm", ->
 
     it "adds join to roster table", ->
       assert.equal @schema.getColumn("responses:formid", "data:roster1").join.toTable, "responses:formid:roster:roster1"
+      assert.equal @schema.getColumn("responses:formid", "data:roster1").join.type, "1-n"
+
+    it "adds join back to main table", ->
+      assert.equal @schema.getColumn("responses:formid:roster:roster1", "response").join.toTable, "responses:formid"
+      assert.equal @schema.getColumn("responses:formid:roster:roster1", "response").join.type, "n-1"
 
     it "reuses existing table when rosterId specified", ->
       form = {

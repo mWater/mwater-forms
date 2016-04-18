@@ -4,6 +4,7 @@ H = React.DOM
 R = React.createElement
 
 formUtils = require './formUtils'
+FormExprEvaluator = require './FormExprEvaluator'
 
 # TODO Add focus()
 
@@ -66,13 +67,17 @@ module.exports = class RosterGroupComponent extends React.Component
     H.h4 key: "prompt",
       formUtils.localizeString(@props.rosterGroup.name, @context.locale)
 
+  renderEntryTitle: (entry, index) ->
+    @props.formExprEvaluator.renderString(@props.rosterGroup.entryTitle, @props.rosterGroup.entryTitleExprs, @getAnswer()[index].data, @context.locale)
+
   renderEntry: (entry, index) ->
     # To avoid circularity
     ItemListComponent = require './ItemListComponent'
 
     H.div key: index, className: "panel panel-default", 
       H.div key: "header", className: "panel-heading", style: { fontWeight: "bold" },
-        "#{index + 1}."
+        "#{index + 1}. "
+        @renderEntryTitle(entry, index)
       H.div key: "body", className: "panel-body",
         if @props.rosterGroup.allowRemove
           H.button type: "button", style: { float: "right" }, className: "btn btn-sm btn-link", onClick: @handleRemove.bind(null, index),
