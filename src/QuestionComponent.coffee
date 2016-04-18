@@ -64,6 +64,33 @@ module.exports = class QuestionComponent extends React.Component
       savedSpecify: null
     }
 
+  shouldComponentUpdate: (nextProps, nextState, nextContext) ->
+    if @context.locale != nextContext.locale
+      return true
+    if nextProps.question.textExprs? and nextProps.question.textExprs.length > 0
+      return true
+    if nextProps.question.choices?
+      for choice in nextProps.question.choices
+        if choice.conditions? and choice.conditions.length > 0
+          return true
+
+    if nextProps.formExprEvaluator? and nextProps.formExprEvaluator != @props.formExprEvaluator
+      return true
+    if nextProps.question != @props.question
+      return true
+
+    oldAnswer = @props.data[@props.question._id]
+    newAnswer = nextProps.data[@props.question._id]
+    if newAnswer != oldAnswer
+      return true
+
+    if not _.isEqual @state, nextState
+      return true
+    return false
+
+  componentWillUnmount: () ->
+    @unmounted = true
+
   focus: ->
     answer = @refs.answer
     if answer? and answer.focus?
@@ -109,8 +136,8 @@ module.exports = class QuestionComponent extends React.Component
       locationFinder = @context.locationFinder or new LocationFinder()
       locationFinder.getLocation (loc) =>
         # TODO: SurveyorPro: Should check if component is still mounted!
-        if loc?
-          newAnswer = _.clone oldAnswer
+        if loc? and not @unmounted?
+          newAnswer = _.clone @getAnswer()
           newAnswer.location = _.pick(loc.coords, "latitude", "longitude", "accuracy", "altitude", "altitudeAccuracy")
           @props.onAnswerChange(newAnswer)
       , ->
