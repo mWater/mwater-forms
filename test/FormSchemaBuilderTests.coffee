@@ -27,7 +27,43 @@ describe "FormSchemaBuilder addForm", ->
     compare(table.id, "responses:formid")
     compare(table.name, { en: "Form" })
 
-  it "adds form join to entity"
+  it "adds form join to entity", ->
+    # Add water point table
+    schema = new Schema()
+    schema = schema.addTable({
+      id: "entities.water_point"
+      name: { en: "Water Points" }
+      contents: [
+        { id: "name", name: { en: "Name" }, type: "text" }
+      ]
+    })
+
+    # Add form with one site question
+    form = {
+      _id: "formid"
+      design: {
+        _type: "Form"
+        name: { en: "Form" }
+        contents: [
+          { 
+            _id: "site1"
+            _type: "SiteQuestion" 
+            text: { en: "Site1" }
+            siteTypes: ["Water point"]
+          } 
+        ]
+      }
+    }
+
+    schema = new FormSchemaBuilder().addForm(schema, form)
+
+    # Check that join to form is present
+    column = schema.getColumn("entities.water_point", "responses:formid:data:site1:value")
+    assert column, "Column should exist"
+    assert.equal column.name.en, "Form: Site1"
+    assert.equal column.type, "join"
+    assert.equal column.join.type, "1-n"
+    assert.equal column.join.toTable, "responses:formid"
 
   it "adds structure", ->
     # Create form

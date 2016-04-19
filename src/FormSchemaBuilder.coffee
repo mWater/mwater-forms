@@ -42,6 +42,9 @@ module.exports = class FormSchemaBuilder
       contents: contents
     })
 
+    # Add reverse joins from entity and site questions
+    schema = @addReverseEntityJoins(schema, form)
+
     # Add any roster tables
     schema = @addRosterTables(schema, form)
 
@@ -51,6 +54,29 @@ module.exports = class FormSchemaBuilder
       schema = @addMasterForm(schema, form, cloneForms)
 
     # Create table
+    return schema
+
+  # Add joins back from entities to site and entity questions
+  addReverseEntityJoins: (schema, form) ->
+    for column in schema.getColumns("responses:#{form._id}")
+      if column.type == "join" and column.join.type == "n-1"
+        # Create reverse join
+        join = {
+          id: "responses:#{form._id}:#{column.id}"
+          name: appendStr(appendStr(form.design.name, ": "), column.name)
+          type: "join"
+          join: {
+            type: "1-n"
+            toTable: "responses:#{form._id}"
+            fromColumn: column.join.toColumn
+            toColumn: column.join.fromColumn
+          }
+        }
+
+        # Add to entities table if it exists
+        if schema.getTable(column.join.toTable)
+          schema = schema.addTable(update(schema.getTable(column.join.toTable), { contents: { $push: [join] } }))        
+
     return schema
 
   addRosterTables: (schema, form) ->
