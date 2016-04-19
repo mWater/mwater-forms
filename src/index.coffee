@@ -22,7 +22,6 @@ exports.FormModel = require './FormModel'
 exports.ResponseModel = require './ResponseModel'
 exports.ResponseDisplayComponent = require './ResponseDisplayComponent'
 exports.FormComponent = require './FormComponent'
-exports.ItemComponent = require './ItemComponent'
 exports.formContextTypes = require './formContextTypes'
 exports.FormSchemaBuilder = require './FormSchemaBuilder'
 

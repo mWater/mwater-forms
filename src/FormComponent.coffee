@@ -40,7 +40,8 @@ module.exports = class FormComponent extends React.Component
   getChildContext: -> @props.formCtx
 
   componentWillReceiveProps: (nextProps) ->
-    @setState(formExprEvaluator: new FormExprEvaluator(nextProps.design))
+    if @props.design != nextProps.design
+      @setState(formExprEvaluator: new FormExprEvaluator(nextProps.design))
 
   # This will clean the data that has been passed at creation
   # It will also initialize the visibilityStructure
@@ -49,7 +50,7 @@ module.exports = class FormComponent extends React.Component
     @handleDataChange(@props.data)
 
   handleSubmit: =>
-    # Cannot submit if at least one itemComponent is invalid
+    # Cannot submit if at least one item is invalid
     if not @refs.itemListComponent.validate(true)
       @props.onSubmit()
 
