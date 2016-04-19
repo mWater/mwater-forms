@@ -193,3 +193,4 @@ describe "QuestionComponent", ->
     )
     input = testComponent.findComponentById('input')
     TestComponent.changeValue(input, 'test')
+    ReactTestUtils.Simulate.blur(input)
