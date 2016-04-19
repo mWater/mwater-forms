@@ -25,6 +25,8 @@ module.exports = class DropdownAnswerComponent extends React.Component
       # Usually used for "Other" options.
       # Value is stored in specify[id]
       specify: React.PropTypes.bool
+
+      choice: React.PropTypes.array
     })).isRequired
     onAnswerChange: React.PropTypes.func.isRequired
     answer: React.PropTypes.object.isRequired # See answer format
@@ -54,14 +56,20 @@ module.exports = class DropdownAnswerComponent extends React.Component
     if choice and choice.specify
       H.input className: "form-control specify-input", type: "text", value: value, onChange: @handleSpecifyChange.bind(null, choice.id)
 
+  conditionsValid: (choice) ->
+    if not choice.conditions? or choice.conditions.length == 0
+      return true
+    return false
+
   render: ->
     H.div null,
       H.select className: "form-control", style: { width: "auto" }, value: @props.answer.value, onChange: @handleValueChange, ref: 'select',
         H.option key: "__none__", value: ""
         _.map @props.choices, (choice) =>
-          text = formUtils.localizeString(choice.label, @context.locale)
-          if choice.hint
-            text += " (" + formUtils.localizeString(choice.hint, @context.locale) + ")"
-          return H.option key: choice.id, value: choice.id, text
+          if @conditionsValid(choice)
+            text = formUtils.localizeString(choice.label, @context.locale)
+            if choice.hint
+              text += " (" + formUtils.localizeString(choice.hint, @context.locale) + ")"
+            return H.option key: choice.id, value: choice.id, text
 
       @renderSpecify()

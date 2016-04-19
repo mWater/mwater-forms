@@ -7,8 +7,6 @@ EntityDisplayComponent = require './EntityDisplayComponent'
 AdminRegionDisplayComponent = require './AdminRegionDisplayComponent'
 moment = require 'moment'
 
-# TODO: SurveyorPro: display roster group and roster matrix answers https://github.com/mWater/mwater-forms/issues/119
-# TODO: SurveyorPro: ensure that Group is displayed https://github.com/mWater/mwater-forms/issues/119
 VisibilityCalculator = require './VisibilityCalculator'
 
 # Static view of a response

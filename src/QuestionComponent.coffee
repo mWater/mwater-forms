@@ -28,7 +28,6 @@ TextAnswerComponent = require './answers/TextAnswerComponent'
 TextListAnswerComponent = require './answers/TextListAnswerComponent'
 UnitsAnswerComponent = require './answers/UnitsAnswerComponent'
 
-# TODO: SurveyorPro: make faster with shouldComponentUpdate
 # Question component that displays a question of any type.
 # Displays question text and hint
 # Displays toggleable help 
@@ -38,7 +37,6 @@ UnitsAnswerComponent = require './answers/UnitsAnswerComponent'
 # Does NOT remove answer when invisible. This is done by data cleaning
 # Does NOT check conditions and make self invisible. This is done by parent (ItemListComponent)
 # Displays alternates and makes exclusive with answer
-# TODO: SurveyorPro: Test that it records GPS when answered and recordLocation is true
 module.exports = class QuestionComponent extends React.Component
   @contextTypes:
     locale: React.PropTypes.string
@@ -337,7 +335,6 @@ module.exports = class QuestionComponent extends React.Component
           ref: "answer"
           value: answer.value
           onValueChange: @handleValueChange
-          onNextOrComments: @handleNextOrComments
         }
 
       when "BarcodeQuestion"

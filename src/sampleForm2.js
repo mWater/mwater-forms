@@ -71,6 +71,21 @@ module.exports = {
                   "en": "Red",
                   "_base": "en"
                 }
+              },
+              {
+                "id": "MLuenLA2",
+                "label": {
+                  "en": "Optional",
+                  "_base": "en"
+                },
+                conditions: [
+                  {
+                    "op": "true",
+                    "lhs": {
+                      "question": "ef40dba8338d4ebdbbc5808e78969e95"
+                    }
+                  }
+                ]
               }
             ],
             "required": true,

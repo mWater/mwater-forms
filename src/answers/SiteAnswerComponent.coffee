@@ -5,9 +5,6 @@ R = React.createElement
 formUtils = require '../formUtils'
 EntityDisplayComponent = require '../EntityDisplayComponent'
 
-# TODO: SurveyorPro: Bug: Code is not actually set in the input field after selecting an entity!!
-# TODO: SurveyorPro: Also it doesn't work if you type a code and press enter
-# TODO: SurveyorPro: I don't think it should support onNextOrComments (my mistake), if it DOES, then we should pass it down from QuestionComponent
 # TODO: validate codes in answervalidator
 
 module.exports = class SiteAnswerComponent extends React.Component
@@ -16,7 +13,6 @@ module.exports = class SiteAnswerComponent extends React.Component
     getEntityById: React.PropTypes.func
     getEntityByCode: React.PropTypes.func
     renderEntitySummaryView: React.PropTypes.func
-    onNextOrComments: React.PropTypes.func
 
   @propTypes:
     value: React.PropTypes.object
