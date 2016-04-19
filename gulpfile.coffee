@@ -13,6 +13,7 @@ concat = require 'gulp-concat'
 browserSync = require 'browser-sync'
 reload = browserSync.reload
 watchify = require 'watchify'
+envify = require('envify/custom')
 
 # Compile coffeescript to js in lib/
 gulp.task 'coffee', ->
@@ -48,10 +49,12 @@ makeBrowserifyBundle = ->
   ))
 
 bundleDemoJs = (bundle) ->
-  bundle.bundle()
+  # Use production node for performance testing
+  console.log "Using production version of React"
+  bundle.transform(envify({ NODE_ENV: 'production' }), { global: true }).bundle()
     .on("error", gutil.log)
-  .pipe(source("demo.js"))
-  .pipe(gulp.dest("./dist/js/"))
+    .pipe(source("demo.js"))
+    .pipe(gulp.dest("./dist/js/"))
 
 gulp.task "browserify", ->
   bundleDemoJs(makeBrowserifyBundle())
