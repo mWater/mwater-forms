@@ -98,7 +98,7 @@ module.exports = class UnitsAnswerComponent extends React.Component
         style: {width: "12em"},
         onBlur: @handleValueBlur,
         onChange: @handleValueChange,
-        value: @state.quantity
+        value: @state.quantity or ""
         ref: 'quantity'
         onKeyDown: if @props.prefix then @handleKeyDown else @handleInternalNext
       }
