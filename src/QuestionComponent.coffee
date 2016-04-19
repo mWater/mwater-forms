@@ -41,7 +41,6 @@ UnitsAnswerComponent = require './answers/UnitsAnswerComponent'
 # TODO: SurveyorPro: Test that it records GPS when answered and recordLocation is true
 module.exports = class QuestionComponent extends React.Component
   @contextTypes:
-    locale: React.PropTypes.string
     stickyStorage: React.PropTypes.object   # Storage for sticky values
     locationFinder: React.PropTypes.object
 
@@ -52,6 +51,7 @@ module.exports = class QuestionComponent extends React.Component
     displayMissingRequired: React.PropTypes.bool
     onNext: React.PropTypes.func
     formExprEvaluator: React.PropTypes.object.isRequired # FormExprEvaluator for rendering strings with expression
+    locale: React.PropTypes.string
 
   constructor: ->
     super
@@ -64,8 +64,8 @@ module.exports = class QuestionComponent extends React.Component
       savedSpecify: null
     }
 
-  shouldComponentUpdate: (nextProps, nextState, nextContext) ->
-    if @context.locale != nextContext.locale
+  testShouldComponentUpdate: (nextProps) ->
+    if @props.locale != nextProps.locale
       return true
     if nextProps.question.textExprs? and nextProps.question.textExprs.length > 0
       return true
@@ -82,6 +82,12 @@ module.exports = class QuestionComponent extends React.Component
     oldAnswer = @props.data[@props.question._id]
     newAnswer = nextProps.data[@props.question._id]
     if newAnswer != oldAnswer
+      return true
+
+    return false
+
+  shouldComponentUpdate: (nextProps, nextState) ->
+    if @testShouldComponentUpdate(nextProps, nextState)
       return true
 
     if not _.isEqual @state, nextState
