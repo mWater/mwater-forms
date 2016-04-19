@@ -14,6 +14,8 @@ module.exports = class TextAnswerComponent extends React.Component
     readOnly: false
 
   constructor: (props) ->
+    super
+    
     @state = {text: props.value}
 
   componentWillReceiveProps: (nextProps) ->
