@@ -12,6 +12,9 @@ formUtils = require './formUtils'
 
 # Renders a question, instruction, roster, etc.
 module.exports = class ItemComponent extends React.Component
+  @contextTypes:
+    locale: React.PropTypes.string
+
   @propTypes:
     item: React.PropTypes.object.isRequired 
     data: React.PropTypes.object.isRequired      # Current data of response. 
@@ -25,6 +28,22 @@ module.exports = class ItemComponent extends React.Component
     change[id] = answer
     @props.onDataChange(_.extend({}, @props.data, change))
 
+  shouldComponentUpdate: (nextProps, nextState) ->
+    if formUtils.isQuestion(nextProps.item) and formUtils.isQuestion(@props.item)
+      return @refs.item.testShouldComponentUpdate(@createQuestionComponentProps(nextProps))
+    return true
+
+  createQuestionComponentProps: (props) ->
+    return {
+      ref: 'item'
+      question: props.item
+      onAnswerChange: @handleAnswerChange.bind(null, props.item._id)
+      data: props.data
+      onNext: props.onNext
+      formExprEvaluator: props.formExprEvaluator
+      locale: @context.locale
+    }
+
   validate: (scrollToFirstInvalid) ->
     if @refs.item? and @refs.item.validate?
       return @refs.item.validate(scrollToFirstInvalid)
@@ -37,13 +56,7 @@ module.exports = class ItemComponent extends React.Component
 
   render: ->
     if formUtils.isQuestion(@props.item)
-      return R QuestionComponent, 
-        ref: 'item'
-        question: @props.item
-        onAnswerChange: @handleAnswerChange.bind(null, @props.item._id)
-        data: @props.data
-        onNext: @props.onNext
-        formExprEvaluator: @props.formExprEvaluator
+      return R QuestionComponent, @createQuestionComponentProps(@props)
     else if @props.item._type == "Instructions"
       return R InstructionsComponent,
         ref: 'item'
