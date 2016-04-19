@@ -33,7 +33,6 @@ module.exports = class TextAnswerComponent extends React.Component
         ev.preventDefault()
 
   handleBlur: (ev) =>
-    console.log 'handle blur2'
     @props.onValueChange(if ev.target.value then ev.target.value else null)
 
   render: ->

@@ -10,7 +10,7 @@ H = React.DOM
 
 TextAnswerComponent = require '../../src/answers/TextAnswerComponent'
 
-describe 'TextAnswerComponent', ->
+describe.only 'TextAnswerComponent', ->
   beforeEach ->
     @toDestroy = []
 
@@ -30,7 +30,9 @@ describe 'TextAnswerComponent', ->
       callback()
 
     @comp = @render({value: null, onValueChange: onValueChange, format: 'singleline'})
-    TestComponent.changeValue(@comp.findInput(), "response")
+    input = @comp.findInput()
+    TestComponent.changeValue(input, "response")
+    ReactTestUtils.Simulate.blur(input)
 
   it "records string in singleline answer", (callback) ->
     onValueChange = (value) ->
@@ -40,3 +42,4 @@ describe 'TextAnswerComponent', ->
     @comp = @render({value: null, onValueChange: onValueChange, format: 'multiline'})
     textArea = ReactTestUtils.findRenderedDOMComponentWithTag(@comp.getComponent(), "textarea")
     TestComponent.changeValue(textArea, "response")
+    ReactTestUtils.Simulate.blur(textArea)
