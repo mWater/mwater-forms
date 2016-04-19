@@ -13,6 +13,14 @@ module.exports = class TextAnswerComponent extends React.Component
   @defaultProps:
     readOnly: false
 
+  constructor: (props) ->
+    @state = {text: props.value}
+
+  componentWillReceiveProps: (nextProps) ->
+    # If different, override text
+    if nextProps.value != @props.value
+      @setState(text: if nextProps.value? then nextProps.value else "")
+
   focus: () ->
     @refs.input.focus()
 
@@ -24,17 +32,21 @@ module.exports = class TextAnswerComponent extends React.Component
         # It's important to prevent the default behavior when handling tabs (or else the tab is applied after the focus change)
         ev.preventDefault()
 
+  handleBlur: (ev) =>
+    console.log 'handle blur2'
+    @props.onValueChange(if ev.target.value then ev.target.value else null)
+
   render: ->
     if @props.format == "multiline"
       return H.textarea {
         className: "form-control"
         id: 'input'
         ref: 'input'
-        value: @props.value or ""
+        value: @state.text or ""
         rows: "5"
         readOnly: @props.readOnly
-        onChange: (ev) =>
-          @props.onValueChange(if ev.target.value then ev.target.value else null)
+        onBlur: @handleBlur
+        onChange: (ev) => @setState(text: ev.target.value)
       }
     else
       return H.input {
@@ -42,9 +54,9 @@ module.exports = class TextAnswerComponent extends React.Component
         id: 'input'
         ref: 'input'
         type: "text"
-        value: @props.value or ""
+        value: @state.text or ""
         readOnly: @props.readOnly
         onKeyDown: @handleKeyDown
-        onChange: (ev) =>
-          @props.onValueChange(if ev.target.value then ev.target.value else null)
+        onBlur: @handleBlur
+        onChange: (ev) => @setState(text: ev.target.value)
       }
