@@ -196,6 +196,7 @@ module.exports = class QuestionComponent extends React.Component
         H.button type: "button", id: 'helpbtn', className: "btn btn-link btn-sm", onClick: @handleToggleHelp,
           H.span className: "glyphicon glyphicon-question-sign"
 
+    # Special case!
     if @props.question._type == 'CheckQuestion'
       R CheckAnswerComponent, {
         ref: "answer"
@@ -259,6 +260,7 @@ module.exports = class QuestionComponent extends React.Component
           ref: "answer"
           choices: @props.question.choices
           answer: answer
+          data: @props.data
           onAnswerChange: @handleAnswerChange
         }
 
@@ -301,6 +303,7 @@ module.exports = class QuestionComponent extends React.Component
         }
 
       when "CheckQuestion"
+        # Look at renderPrompt special case
         return null
 
       when "LocationQuestion"

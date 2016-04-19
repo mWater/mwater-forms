@@ -3,8 +3,7 @@ H = React.DOM
 R = React.createElement
 
 formUtils = require '../formUtils'
-
-# 100% Functional
+conditionsUtils = require '../conditionsUtils'
 
 module.exports = class DropdownAnswerComponent extends React.Component
   @contextTypes:
@@ -30,6 +29,7 @@ module.exports = class DropdownAnswerComponent extends React.Component
     })).isRequired
     onAnswerChange: React.PropTypes.func.isRequired
     answer: React.PropTypes.object.isRequired # See answer format
+    data: React.PropTypes.object.isRequired
 
   focus: () ->
     @refs.select?.focus()
@@ -56,17 +56,17 @@ module.exports = class DropdownAnswerComponent extends React.Component
     if choice and choice.specify
       H.input className: "form-control specify-input", type: "text", value: value, onChange: @handleSpecifyChange.bind(null, choice.id)
 
-  conditionsValid: (choice) ->
-    if not choice.conditions? or choice.conditions.length == 0
+  areConditionsValid: (choice) ->
+    if not choice.conditions?
       return true
-    return false
+    return conditionsUtils.compileConditions(choice.conditions)(@props.data)
 
   render: ->
     H.div null,
       H.select className: "form-control", style: { width: "auto" }, value: @props.answer.value, onChange: @handleValueChange, ref: 'select',
         H.option key: "__none__", value: ""
         _.map @props.choices, (choice) =>
-          if @conditionsValid(choice)
+          if @areConditionsValid(choice)
             text = formUtils.localizeString(choice.label, @context.locale)
             if choice.hint
               text += " (" + formUtils.localizeString(choice.hint, @context.locale) + ")"
