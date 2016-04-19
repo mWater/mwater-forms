@@ -10,7 +10,7 @@ H = React.DOM
 
 TextAnswerComponent = require '../../src/answers/TextAnswerComponent'
 
-describe.only 'TextAnswerComponent', ->
+describe 'TextAnswerComponent', ->
   beforeEach ->
     @toDestroy = []
 

@@ -79,6 +79,7 @@ describe "RosterGroupComponent", ->
     inputs = ReactTestUtils.scryRenderedDOMComponentsWithTag(comp.getComponent(), "input")
     inputs[1].value = "x"
     ReactTestUtils.Simulate.change(inputs[1])
+    ReactTestUtils.Simulate.blur(inputs[1])
 
   it "uses alternate rosterId if specified", (done) ->
     onDataChange = (val) =>
