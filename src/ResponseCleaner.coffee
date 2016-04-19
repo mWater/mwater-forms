@@ -12,7 +12,7 @@ module.exports = class ResponseCleaner
     newData = _.clone(data)
 
     @cleanDataBasedOnVisibility(newData, visibilityStructure)
-    @cleanDataBasedOnChoiceConditions(newData, design)
+    @cleanDataBasedOnChoiceConditions(newData, visibilityStructure, design)
 
     return newData
 
@@ -38,18 +38,45 @@ module.exports = class ResponseCleaner
             answerToClean = newData[rosterGroupId][index]
             delete answerToClean[questionId]
 
-  cleanDataBasedOnChoiceConditions: (newData, design) ->
-    questions = formUtils.priorQuestions(design)
-    # For each question of the form
-    for question in questions
-      # Of dropdown or radio type (types with conditional choices)
-      if question._type == 'DropdownQuestion' or question._type == 'RadioQuestion'
-        for choice in question.choices
-          # If one of the choice is conditional
-          if choice.conditions
-            # And it's the selected choice
-            if choice.id == newData[question._id]?.value
-              # Test the condition
-              if not conditionsUtils.compileConditions(choice.conditions)(newData)
-                delete newData[question._id]
+  cleanDataBasedOnChoiceConditions: (newData, visibilityStructure, design) ->
+    for key, visible of visibilityStructure
+      if visible
+        values = key.split('.')
+        selectedChoice = null
+
+        # If the key doesn't contain any '.', simply remove the data entry
+        if values.length == 1
+          questionId = key
+          selectedChoice = newData[questionId]?.value
+          deleteAnswer = () ->
+            delete newData[questionId]
+        # Else, it's a RosterGroup or a RosterMatrix
+        else
+          # The id of the roster containing the data
+          rosterGroupId = values[0]
+          # The index of the answer
+          index = parseInt(values[1])
+          # The id of the answered question
+          questionId = values[2]
+          if newData[rosterGroupId]? and newData[rosterGroupId][index]?
+            # Delete the entry
+            selectedChoice = newData?[rosterGroupId]?[index]?[questionId]?.value
+            deleteAnswer = () ->
+              answerToClean = newData[rosterGroupId][index]
+              delete answerToClean[questionId]
+
+        if selectedChoice?
+          question = formUtils.findItem(design, questionId)
+          # Of dropdown or radio type (types with conditional choices)
+          if question._type == 'DropdownQuestion' or question._type == 'RadioQuestion' or question._type == 'DropdownColumnQuestion'
+            for choice in question.choices
+              # If one of the choice is conditional
+              if choice.conditions
+                # And it's the selected choice
+                if choice.id == selectedChoice
+                  # Test the condition
+                  if not conditionsUtils.compileConditions(choice.conditions)(newData)
+                    deleteAnswer()
+
+
 
