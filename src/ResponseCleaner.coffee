@@ -1,14 +1,23 @@
 # The ResponseCleaner has a very clear ans simple task: removes the data entry (answer) of invisible questions
 # The only complexity is the handling of Rosters
 
+formUtils = require './formUtils'
+conditionsUtils = require './conditionsUtils'
+
 module.exports = class ResponseCleaner
   # Returns an array containing the cleaned data
-  cleanData: (data, visibilityStructure) ->
+  cleanData: (data, visibilityStructure, design) ->
     # NOTE: Always remember that data is immutable
     # Creates a copy of the data and cleans it
     newData = _.clone(data)
 
-    # Remove data entries for all the invisible questions
+    @cleanDataBasedOnVisibility(newData, visibilityStructure)
+    @cleanDataBasedOnChoiceConditions(newData, design)
+
+    return newData
+
+  # Remove data entries for all the invisible questions
+  cleanDataBasedOnVisibility: (newData, visibilityStructure) ->
     for key, visible of visibilityStructure
       if not visible
         values = key.split('.')
@@ -29,4 +38,18 @@ module.exports = class ResponseCleaner
             answerToClean = newData[rosterGroupId][index]
             delete answerToClean[questionId]
 
-    return newData
+  cleanDataBasedOnChoiceConditions: (newData, design) ->
+    questions = formUtils.priorQuestions(design)
+    # For each question of the form
+    for question in questions
+      # Of dropdown or radio type (types with conditional choices)
+      if question._type == 'DropdownQuestion' or question._type == 'RadioQuestion'
+        for choice in question.choices
+          # If one of the choice is conditional
+          if choice.conditions
+            # And it's the selected choice
+            if choice.id == newData[question._id]?.value
+              # Test the condition
+              if not conditionsUtils.compileConditions(choice.conditions)(newData)
+                delete newData[question._id]
+

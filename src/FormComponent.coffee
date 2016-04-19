@@ -94,7 +94,7 @@ module.exports = class FormComponent extends React.Component
 
   cleanData: (data, visibilityStructure) ->
     responseCleaner = new ResponseCleaner()
-    return responseCleaner.cleanData(data, visibilityStructure)
+    return responseCleaner.cleanData(data, visibilityStructure, @props.design)
 
   stickyData: (data, previousVisibilityStructure, newVisibilityStructure) ->
     defaultValueApplier = new DefaultValueApplier(@props.design, @props.formCtx.stickyStorage, @props.entity, @props.entityType)
