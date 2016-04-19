@@ -269,6 +269,7 @@ module.exports = class QuestionComponent extends React.Component
           ref: "answer"
           choices: @props.question.choices
           answer: answer
+          data: @props.data
           onAnswerChange: @handleAnswerChange
         }
 

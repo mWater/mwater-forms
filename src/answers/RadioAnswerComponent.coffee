@@ -3,8 +3,7 @@ H = React.DOM
 R = React.createElement
 
 formUtils = require '../formUtils'
-
-# 100% Functional
+conditionsUtils = require '../conditionsUtils'
 
 module.exports = class RadioAnswerComponent extends React.Component
   @contextTypes:
@@ -28,6 +27,7 @@ module.exports = class RadioAnswerComponent extends React.Component
     })).isRequired
     onAnswerChange: React.PropTypes.func.isRequired
     answer: React.PropTypes.object.isRequired # See answer format
+    data: React.PropTypes.object.isRequired
 
   focus: () ->
     # Nothing to focus
@@ -53,17 +53,23 @@ module.exports = class RadioAnswerComponent extends React.Component
       value = ''
     H.input className: "form-control specify-input", type: "text", value: value, onChange: @handleSpecifyChange.bind(null, choice.id)
 
-  renderChoice: (choice) ->
-    H.div key: choice.id,
-      # id is used for testing
-      H.div className: "touch-radio #{if @props.answer.value == choice.id then "checked" else ""}", id: choice.id, onClick: @handleValueChange.bind(null, choice),
-        formUtils.localizeString(choice.label, @context.locale)
-        if choice.hint
-          H.span className: "radio-choice-hint",
-            formUtils.localizeString(choice.hint, @context.locale)
+  areConditionsValid: (choice) ->
+    if not choice.conditions?
+      return true
+    return conditionsUtils.compileConditions(choice.conditions)(@props.data)
 
-      if choice.specify and @props.answer.value == choice.id
-        @renderSpecify(choice)
+  renderChoice: (choice) ->
+    if @areConditionsValid(choice)
+      H.div key: choice.id,
+        # id is used for testing
+        H.div className: "touch-radio #{if @props.answer.value == choice.id then "checked" else ""}", id: choice.id, onClick: @handleValueChange.bind(null, choice),
+          formUtils.localizeString(choice.label, @context.locale)
+          if choice.hint
+            H.span className: "radio-choice-hint",
+              formUtils.localizeString(choice.hint, @context.locale)
+
+        if choice.specify and @props.answer.value == choice.id
+          @renderSpecify(choice)
 
   render: ->
     H.div className: "touch-radio-group",

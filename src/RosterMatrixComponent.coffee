@@ -4,10 +4,9 @@ H = React.DOM
 R = React.createElement
 
 formUtils = require './formUtils'
+conditionsUtils = require './conditionsUtils'
 NumberAnswerComponent = require './answers/NumberAnswerComponent'
 AnswerValidator = require './answers/AnswerValidator'
-
-# TODO Add focus()
 
 # Rosters are repeated information, such as asking questions about household members N times.
 # A roster matrix is a list of column-type questions with one row for each entry in the roster
@@ -117,6 +116,11 @@ module.exports = class RosterMatrixComponent extends React.Component
         if @props.rosterMatrix.allowRemove
           H.th(null)
 
+  areConditionsValid: (choice) ->
+    if not choice.conditions?
+      return true
+    return conditionsUtils.compileConditions(choice.conditions)(@props.data)
+
   renderCell: (entry, entryIndex, column, columnIndex) ->
     value = @getAnswer()[entryIndex].data?[column._id]?.value
 
@@ -140,8 +144,9 @@ module.exports = class RosterMatrixComponent extends React.Component
           onChange: ((ev) => @handleCellChange(entryIndex, column._id, if ev.target.value then ev.target.value else null)),
             H.option key: "__none__", value: ""
             _.map column.choices, (choice) =>
-              text = formUtils.localizeString(choice.label, @context.locale)
-              return H.option key: choice.id, value: choice.id, text
+              if @areConditionsValid(choice)
+                text = formUtils.localizeString(choice.label, @context.locale)
+                return H.option key: choice.id, value: choice.id, text
 
     # Check for validation errors
     key = "#{entryIndex}_#{column._id}"
