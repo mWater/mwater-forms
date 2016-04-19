@@ -61,6 +61,9 @@ module.exports = class SectionsComponent extends React.Component
     # This should never happen... simply ignore
 
   handleNextSection: =>
+    if @refs.itemListComponent.validate(true)
+      return
+
     # Move to next that is visible
     nextVisibleIndex = @nextVisibleSectionIndex(@state.sectionNum + 1, 1)
     if nextVisibleIndex != -1
