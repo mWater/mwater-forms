@@ -5,7 +5,6 @@ R = React.createElement
 
 formUtils = require './formUtils'
 markdown = require("markdown").markdown
-FormExprEvaluator = require './FormExprEvaluator'
 
 LocationFinder = require './LocationFinder'
 
@@ -45,7 +44,8 @@ module.exports = class QuestionComponent extends React.Component
 
   @propTypes:
     question: React.PropTypes.object.isRequired # Design of question. See schema
-    data: React.PropTypes.object      # Current data of response.
+    data: React.PropTypes.object      # Current data of response. Data of roster entry if in a roster
+    parentData: React.PropTypes.object      # Data of overall response if in a roster
     onAnswerChange: React.PropTypes.func.isRequired
     displayMissingRequired: React.PropTypes.bool
     onNext: React.PropTypes.func
@@ -186,7 +186,7 @@ module.exports = class QuestionComponent extends React.Component
       if @props.question.code
         H.span className: "question-code", @props.question.code + ": "
       
-      @props.formExprEvaluator.renderString(@props.question.text, @props.question.textExprs, @props.data, @context.locale)
+      @props.formExprEvaluator.renderString(@props.question.text, @props.question.textExprs, @props.data, @props.parentData, @context.locale)
 
       # Required star
       if @props.question.required

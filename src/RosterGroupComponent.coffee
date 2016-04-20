@@ -4,7 +4,6 @@ H = React.DOM
 R = React.createElement
 
 formUtils = require './formUtils'
-FormExprEvaluator = require './FormExprEvaluator'
 
 # TODO Add focus()
 
@@ -68,7 +67,7 @@ module.exports = class RosterGroupComponent extends React.Component
       formUtils.localizeString(@props.rosterGroup.name, @context.locale)
 
   renderEntryTitle: (entry, index) ->
-    @props.formExprEvaluator.renderString(@props.rosterGroup.entryTitle, @props.rosterGroup.entryTitleExprs, @getAnswer()[index].data, @context.locale)
+    @props.formExprEvaluator.renderString(@props.rosterGroup.entryTitle, @props.rosterGroup.entryTitleExprs, @getAnswer()[index].data, @props.data, @context.locale)
 
   renderEntry: (entry, index) ->
     # To avoid circularity
@@ -87,6 +86,7 @@ module.exports = class RosterGroupComponent extends React.Component
           ref: "itemlist_#{index}", 
           contents: @props.rosterGroup.contents
           data: @getAnswer()[index].data
+          parentData: @props.data
           onDataChange: @handleEntryDataChange.bind(null, index)
           isVisible: @isChildVisible.bind(null, index)
           formExprEvaluator: @props.formExprEvaluator  # TODO: SurveyorPro: ?

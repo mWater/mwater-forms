@@ -17,7 +17,9 @@ module.exports = class FormExprEvaluator
       @itemMap = {}
 
   # Render a localized string that may contain one or more expressions as a string.
-  renderString: (localizedStr, exprs, data, locale = "en") ->
+  # data is the data to use. Usually response.data but when in a roster, is the data for the roster entry'
+  # parentData is the response.data if in a roster, null otherwise
+  renderString: (localizedStr, exprs, data, parentData, locale = "en") ->
     # Localize string
     str = formUtils.localizeString(localizedStr, locale)
 
@@ -25,21 +27,30 @@ module.exports = class FormExprEvaluator
     str = str.replace(/\{(\d+)\}/g, (match, index) =>
       index = parseInt(index)
       if exprs?[index]
-        return @evaluateExpr(exprs[index], data) or ""
+        return @evaluateExpr(exprs[index], data, parentData) or ""
       return ""
       )
     
     return str
 
   # Evaluate a single expression
-  # data is the data to use. Usually response.data but when in a roster, is the data for the roster entry
-  evaluateExpr: (expr, data) ->
-    # Create row object that ExprEvaluator needs from data
-    row = {
+  # data is the data to use. Usually response.data but when in a roster, is the data for the roster entry'
+  # parentData is the response.data if in a roster, null otherwise
+  evaluateExpr: (expr, data, parentData) ->
+    row = @createRow(data, parentData)
+    return new ExprEvaluator().evaluate(expr, row)
+
+  # Create row object that ExprEvaluator needs from data
+  createRow: (data, parentData) ->
+    return {
       # Returns primary key of row. Is the response id, but don't implement for now
       getPrimaryKey: -> throw new Error("Not implemented")
       # gets the value of a column
       getField: (columnId) =>
+        # Handle special case of column "response" which joins from roster entry back to main response data (parentData)
+        if columnId == "response"
+          return @createRow(parentData, null)
+
         match = columnId.match(/^data:(.+):value$/)
         if match
           # Special case for location question
@@ -98,5 +109,3 @@ module.exports = class FormExprEvaluator
 
         return null
     }
-
-    return new ExprEvaluator().evaluate(expr, row)

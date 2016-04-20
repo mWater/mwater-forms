@@ -16,7 +16,8 @@ formUtils = require './formUtils'
 module.exports = class ItemListComponent extends React.Component
   @propTypes:
     contents: React.PropTypes.array.isRequired 
-    data: React.PropTypes.object      # Current data of response. 
+    data: React.PropTypes.object      # Current data of response. Data of roster entry if in a roster
+    parentData: React.PropTypes.object      # Data of overall response if in a roster
     onDataChange: React.PropTypes.func.isRequired
     onNext: React.PropTypes.func
     isVisible: React.PropTypes.func.isRequired # (id) tells if an item is visible or not
@@ -55,6 +56,7 @@ module.exports = class ItemListComponent extends React.Component
         question: item
         onAnswerChange: @handleAnswerChange.bind(null, item._id)
         data: @props.data
+        parentData: @props.parentData
         onNext: @handleNext.bind(this, index)
         formExprEvaluator: @props.formExprEvaluator
     else if item._type == "Instructions"
@@ -63,6 +65,7 @@ module.exports = class ItemListComponent extends React.Component
         ref: item._id,
         instructions: item
         data: @props.data
+        parentData: @props.parentData
         formExprEvaluator: @props.formExprEvaluator
     else if item._type == "Group"
       return R GroupComponent,
@@ -70,6 +73,7 @@ module.exports = class ItemListComponent extends React.Component
         ref: item._id,
         group: item
         data: @props.data
+        parentData: @props.parentData
         onDataChange: @props.onDataChange
         isVisible: @props.isVisible
         formExprEvaluator: @props.formExprEvaluator

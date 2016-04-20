@@ -4,7 +4,7 @@ FormExprEvaluator = require '../src/FormExprEvaluator'
 describe "FormExprEvaluator", ->
   describe "renderString", ->
     beforeEach ->
-      @testEval = (question, data, localizedStr, exprs, locale, expected) =>
+      @testEval = (question, data, parentData, localizedStr, exprs, locale, expected) =>
         formDesign = {
           _type: "Form"
           contents: []
@@ -20,29 +20,29 @@ describe "FormExprEvaluator", ->
         evl = new FormExprEvaluator(formDesign)
 
         # Evaluate a simple field
-        assert.deepEqual evl.renderString(localizedStr, exprs, data, locale), expected
+        assert.deepEqual evl.renderString(localizedStr, exprs, data, parentData, locale), expected
 
     it "uses locale if present", ->
-      @testEval({}, {}, { _base: "en", en: "test", es: "prueba" }, [], "es", "prueba")
+      @testEval({}, {}, null, { _base: "en", en: "test", es: "prueba" }, [], "es", "prueba")
 
     it "falls back to base", ->
-      @testEval({}, {}, { _base: "en", en: "test", es: "prueba" }, [], "fr", "test")
+      @testEval({}, {}, null, { _base: "en", en: "test", es: "prueba" }, [], "fr", "test")
 
     it "uses blank if no expression", ->
-      @testEval({}, {}, { _base: "en", en: "test{0}" }, [], "en", "test")
+      @testEval({}, {}, null, { _base: "en", en: "test{0}" }, [], "en", "test")
 
     it "renders null as empty", ->
-      @testEval({}, {}, { _base: "en", en: "test{0}" }, [{ type: "field", table: "responses:1234", column: "a" }], "en", "test")
+      @testEval({}, {}, null, { _base: "en", en: "test{0}" }, [{ type: "field", table: "responses:1234", column: "a" }], "en", "test")
 
     it "renders text expressions", ->
-      @testEval({}, { a: { value: "xyz" }}, { _base: "en", en: "test{0}" }, [{ type: "field", table: "responses:1234", column: "data:a:value" }], "en", "testxyz")
+      @testEval({}, { a: { value: "xyz" }}, null, { _base: "en", en: "test{0}" }, [{ type: "field", table: "responses:1234", column: "data:a:value" }], "en", "testxyz")
 
     it "renders number expressions", ->
-      @testEval({ _type: "NumberQuestion" }, { a: { value: 123 }}, { _base: "en", en: "test{0}" }, [{ type: "field", table: "responses:1234", column: "data:a:value" }], "en", "test123")
+      @testEval({ _type: "NumberQuestion" }, { a: { value: 123 }}, null, { _base: "en", en: "test{0}" }, [{ type: "field", table: "responses:1234", column: "data:a:value" }], "en", "test123")
 
   describe "evaluateExpr", ->
     beforeEach ->
-      @testEval = (question, data, column, expected) =>
+      @testEval = (question, data, parentData, column, expected) =>
         formDesign = {
           _type: "Form"
           contents: []
@@ -58,55 +58,75 @@ describe "FormExprEvaluator", ->
         evl = new FormExprEvaluator(formDesign)
 
         # Evaluate a simple field
-        assert.deepEqual evl.evaluateExpr({ type: "field", table: "responses:1234", column: column }, data), expected
+        assert.deepEqual evl.evaluateExpr({ type: "field", table: "responses:1234", column: column }, data, parentData), expected
 
     it "evaluates text", ->
-      @testEval({ _type: "TextQuestion" }, { a: { value: "xyz" } }, "data:a:value", "xyz")
+      @testEval({ _type: "TextQuestion" }, { a: { value: "xyz" } }, null, "data:a:value", "xyz")
 
     it "evaluates number", ->
-      @testEval({ _type: "NumberQuestion" }, { a: { value: 123 } }, "data:a:value", 123)
+      @testEval({ _type: "NumberQuestion" }, { a: { value: 123 } }, null, "data:a:value", 123)
 
     it "evaluates choice"
     it "evaluates choices"
 
     it "evaluates location as geojson", ->
-      @testEval({ _type: "LocationQuestion" }, { a: { value: { longitude: 12, latitude: 34 } } }, "data:a:value", { type: "Point", coordinates: [12, 34] })
+      @testEval({ _type: "LocationQuestion" }, { a: { value: { longitude: 12, latitude: 34 } } }, null, "data:a:value", { type: "Point", coordinates: [12, 34] })
 
     it "evaluates location accuracy", ->
-      @testEval({ _type: "LocationQuestion" }, { a: { value: { accuracy: 12 } } }, "data:a:value:accuracy", 12)
+      @testEval({ _type: "LocationQuestion" }, { a: { value: { accuracy: 12 } } }, null, "data:a:value:accuracy", 12)
 
     it "evaluates location altitude", ->
-      @testEval({ _type: "LocationQuestion" }, { a: { value: { altitude: 12 } } }, "data:a:value:altitude", 12)
+      @testEval({ _type: "LocationQuestion" }, { a: { value: { altitude: 12 } } }, null, "data:a:value:altitude", 12)
 
     it "evaluates units quantity", ->
-      @testEval({ _type: "UnitsQuestion" }, { a: { value: { quantity: 123, units: "abc" } } }, "data:a:value:quantity", 123)
+      @testEval({ _type: "UnitsQuestion" }, { a: { value: { quantity: 123, units: "abc" } } }, null, "data:a:value:quantity", 123)
 
     it "evaluates units unit", ->
-      @testEval({ _type: "UnitsQuestion" }, { a: { value: { quantity: 123, units: "abc" } } }, "data:a:value:units", "abc")
+      @testEval({ _type: "UnitsQuestion" }, { a: { value: { quantity: 123, units: "abc" } } }, null, "data:a:value:units", "abc")
 
     it "evaluates na", ->
-      @testEval({ _type: "TextQuestion", alternates: { na: true } }, { a: { alternate: "na" } }, "data:a:na", true)
-      @testEval({ _type: "TextQuestion", alternates: { na: true } }, { a: { alternate: "na" } }, "data:a:dontknow", false)
+      @testEval({ _type: "TextQuestion", alternates: { na: true } }, { a: { alternate: "na" } }, null, "data:a:na", true)
+      @testEval({ _type: "TextQuestion", alternates: { na: true } }, { a: { alternate: "na" } }, null, "data:a:dontknow", false)
 
     it "evaluates dontknow", ->
-      @testEval({ _type: "TextQuestion", alternates: { dontknow: true } }, { a: { alternate: "dontknow" } }, "data:a:dontknow", true)
-      @testEval({ _type: "TextQuestion", alternates: { dontknow: true } }, { a: { alternate: "dontknow" } }, "data:a:na", false)
+      @testEval({ _type: "TextQuestion", alternates: { dontknow: true } }, { a: { alternate: "dontknow" } }, null, "data:a:dontknow", true)
+      @testEval({ _type: "TextQuestion", alternates: { dontknow: true } }, { a: { alternate: "dontknow" } }, null, "data:a:na", false)
 
     it "evaluates recorded timestamp", ->
-      @testEval({ recordTimestamp: true }, { a: { timestamp: "2015-12-31" } }, "data:a:timestamp", "2015-12-31")
+      @testEval({ recordTimestamp: true }, { a: { timestamp: "2015-12-31" } }, null, "data:a:timestamp", "2015-12-31")
 
     it "evaluates recorded GPS as geojson", ->
-      @testEval({ recordLocation: true }, { a: { location: { longitude: 12, latitude: 34 } } }, "data:a:location", { type: "Point", coordinates: [12, 34] })
+      @testEval({ recordLocation: true }, { a: { location: { longitude: 12, latitude: 34 } } }, null, "data:a:location", { type: "Point", coordinates: [12, 34] })
 
     it "evaluates recorded GPS accuracy", ->
-      @testEval({ recordLocation: true }, { a: { location: { accuracy: 12 } } }, "data:a:location:accuracy", 12)
+      @testEval({ recordLocation: true }, { a: { location: { accuracy: 12 } } }, null, "data:a:location:accuracy", 12)
 
     it "evaluates recorded GPS altitude", ->
-      @testEval({ recordLocation: true }, { a: { location: { altitude: 12 } } }, "data:a:location:altitude", 12)
+      @testEval({ recordLocation: true }, { a: { location: { altitude: 12 } } }, null, "data:a:location:altitude", 12)
 
     it "evaluates entity and site types as null", ->
-      @testEval({ _type: "EntityQuestion" }, { a: { value: "1234" }}, "data:a:value", null)
-      @testEval({ _type: "SiteQuestion" }, { a: { value: { code: "1234" } } }, "data:a:value", null)
+      @testEval({ _type: "EntityQuestion" }, { a: { value: "1234" }}, null, "data:a:value", null)
+      @testEval({ _type: "SiteQuestion" }, { a: { value: { code: "1234" } } }, null, "data:a:value", null)
 
     it "evaluates other as null", ->
-      @testEval({ _type: "TextQuestion" }, { }, "nosuchcolumn", null)
+      @testEval({ _type: "TextQuestion" }, { }, null, "nosuchcolumn", null)
+
+    it "gets data from parentData (response join)", ->
+      formDesign = {
+        _type: "Form"
+        contents: [
+          { _id: "a", _type: "TextQuestion", text: { en: "Question" }, conditions: [], validations: [] }
+        ]
+      }
+
+      # Create evaluator
+      evl = new FormExprEvaluator(formDesign)
+
+      # Evaluate a scalar join through response join
+      expr = { 
+        type: "scalar"
+        table: "responses:1234:roster:abcd"
+        joins: ['response']
+        expr: { type: "field", table: "responses:1234", column: "data:a:value" }
+      }
+      assert.deepEqual evl.evaluateExpr(expr, { }, { a: { value: "abc" } }), "abc"

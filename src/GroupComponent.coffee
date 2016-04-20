@@ -13,6 +13,7 @@ module.exports = class GroupComponent extends React.Component
   @propTypes:
     group: React.PropTypes.object.isRequired # Design of group. See schema
     data: React.PropTypes.object      # Current data of response. 
+    parentData: React.PropTypes.object      # Data of overall response if in a roster
     onDataChange: React.PropTypes.func.isRequired   # Called when data changes
     isVisible: React.PropTypes.func.isRequired # (id) tells if an item is visible or not
     formExprEvaluator: React.PropTypes.object.isRequired # FormExprEvaluator for rendering strings with expression
@@ -34,6 +35,7 @@ module.exports = class GroupComponent extends React.Component
           ref: "itemlist"
           contents: @props.group.contents
           data: @props.data
+          parentData: @props.parentData
           onDataChange: @props.onDataChange
           isVisible: @props.isVisible
           formExprEvaluator: @props.formExprEvaluator

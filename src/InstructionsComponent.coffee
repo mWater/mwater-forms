@@ -5,7 +5,6 @@ R = React.createElement
 
 formUtils = require './formUtils'
 markdown = require("markdown").markdown
-FormExprEvaluator = require './FormExprEvaluator'
 
 module.exports = class InstructionsComponent extends React.Component
   @contextTypes: 
@@ -13,7 +12,8 @@ module.exports = class InstructionsComponent extends React.Component
 
   @propTypes:
     instructions: React.PropTypes.object.isRequired # Design of instructions. See schema
-    data: React.PropTypes.object      # Current data of response. 
+    data: React.PropTypes.object      # Current data of response. Data of roster entry if in a roster
+    parentData: React.PropTypes.object      # Data of overall response if in a roster
     formExprEvaluator: React.PropTypes.object # FormExprEvaluator for rendering strings with expression
 
   shouldComponentUpdate: (nextProps, nextState, nextContext) ->
@@ -29,7 +29,7 @@ module.exports = class InstructionsComponent extends React.Component
     return false
 
   render: ->
-    text = @props.formExprEvaluator.renderString(@props.instructions.text, @props.instructions.textExprs, @props.data, @context.locale)
+    text = @props.formExprEvaluator.renderString(@props.instructions.text, @props.instructions.textExprs, @props.data, @props.parentData, @context.locale)
 
     html = if text then markdown.toHTML(text)
 
