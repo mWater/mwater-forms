@@ -50,8 +50,10 @@ makeBrowserifyBundle = ->
 
 bundleDemoJs = (bundle) ->
   # Use production node for performance testing
-  console.log "Using production version of React"
-  bundle.transform(envify({ NODE_ENV: 'production' }), { global: true }).bundle()
+  # console.log "Using production version of React"
+  # bundle = bundle.transform(envify({ NODE_ENV: 'production' }), { global: true })
+
+  bundle.bundle()
     .on("error", gutil.log)
     .pipe(source("demo.js"))
     .pipe(gulp.dest("./dist/js/"))
