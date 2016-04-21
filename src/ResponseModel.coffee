@@ -8,16 +8,12 @@ uuid = require 'node-uuid'
 # form: form object. Required
 # user: current username. Required
 # groups: group names of user
-# formCtx: form context. getProperties and getProperty is required for submitting forms with entity questions
-# extraCreateRoles: extra roles to be added to created entities. Overrides any others with same "to"
 module.exports = class ResponseModel
   constructor: (options) ->
     @response = options.response
     @form = options.form
     @user = options.user
     @groups = options.groups or []
-    @formCtx = options.formCtx or {}
-    @extraCreateRoles = options.extraCreateRoles or []
 
   # Setup draft. deploymentId is optional _id of deployment to use for cases where ambiguous
   draft: (deploymentId) ->
