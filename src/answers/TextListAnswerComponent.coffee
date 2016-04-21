@@ -8,31 +8,39 @@ module.exports = class TextListAnswerComponent extends React.Component
     onValueChange: React.PropTypes.func.isRequired
     onNextOrComments: React.PropTypes.func
 
-  @defaultProps:
-    value: []
-
   focus: () ->
     @refs.newLine?.focus()
 
   handleChange: (index, ev) =>
-    newValue = _.clone @props.value
+    if @props.value?
+      newValue = _.clone @props.value
+    else
+      newValue = []
     newValue[index] = ev.target.value
     @props.onValueChange(newValue)
 
   handleNewLineChange: (ev) =>
-    newValue = _.clone @props.value
+    if @props.value?
+      newValue = _.clone @props.value
+    else
+      newValue = []
     newValue.push (ev.target.value)
     @props.onValueChange(newValue)
 
   handleKeydown: (index, ev) =>
+    if @props.value?
+      value = _.clone @props.value
+    else
+      value = []
+
     # When pressing ENTER or TAB
     if ev.keyCode == 13 or ev.keyCode == 9
       # If the index is equal to the items length, it means that it's the last empty entry
-      if index >= @props.value.length
+      if index >= value.length
         if @props.onNextOrComments?
           @props.onNextOrComments(ev)
       # If it equals to one less, we focus the newLine input
-      if index == @props.value.length - 1
+      if index == value.length - 1
         nextInput = @refs["newLine"]
         nextInput.focus()
       # If not, we focus the next input
@@ -43,14 +51,19 @@ module.exports = class TextListAnswerComponent extends React.Component
       ev.preventDefault()
 
   handleRemoveClick: (index, ev) =>
-    newValue = _.clone @props.value
+    if @props.value?
+      newValue = _.clone @props.value
+    else
+      newValue = []
     newValue.splice(index, 1)
     @props.onValueChange(newValue)
 
   render: ->
+    value = @props.value or []
+
     H.table style: {width: "100%"},
       H.tbody null,
-        for textLine, index in @props.value
+        for textLine, index in value
           H.tr key: index,
             H.td null,
               H.b null,
@@ -64,7 +77,7 @@ module.exports = class TextListAnswerComponent extends React.Component
                   value: textLine
                   onChange: @handleChange.bind(null, index)
                   onKeyDown: @handleKeydown.bind(null, index)
-                  autoFocus: index == @props.value.length - 1
+                  autoFocus: index == value.length - 1
                   onFocus: (ev) ->
                     # Necessary or else the cursor is set before the first character after a new line is created
                     ev.target.setSelectionRange(textLine.length, textLine.length)
