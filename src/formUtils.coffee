@@ -357,7 +357,7 @@ exports.findEntityQuestion = (form, entityType) ->
         siteType = "Water point"
 
       # Convert to entity type
-      questionEntityType = siteType.toLowerCase().replace(/ /g, "_")
+      questionEntityType = siteType.toLowerCase().replace(new RegExp(' ', 'g'), "_")
       if questionEntityType == entityType
         return q
     return

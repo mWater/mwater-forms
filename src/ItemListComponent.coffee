@@ -9,6 +9,7 @@ GroupComponent = require './GroupComponent'
 RosterGroupComponent = require './RosterGroupComponent'
 RosterMatrixComponent = require './RosterMatrixComponent'
 formUtils = require './formUtils'
+formRenderUtils = require './formRenderUtils'
 
 #ReactCSSTransitionGroup = require('react-addons-css-transition-group')
 
@@ -39,65 +40,8 @@ module.exports = class ItemListComponent extends React.Component
     else
       @refs[@props.contents[index]._id]?.focus?()
 
-  handleAnswerChange: (id, answer) =>
-    change = {}
-    change[id] = answer
-    @props.onDataChange(_.extend({}, @props.data, change))
-
   renderItem: (item, index) =>
-    # Check if invisible or disabled
-    if not @props.isVisible(item._id) or item.disabled
-      return null
-
-    if formUtils.isQuestion(item)
-      component = R QuestionComponent,
-        key: item._id,
-        ref: item._id,
-        question: item
-        onAnswerChange: @handleAnswerChange.bind(null, item._id)
-        data: @props.data
-        parentData: @props.parentData
-        onNext: @handleNext.bind(this, index)
-        formExprEvaluator: @props.formExprEvaluator
-    else if item._type == "Instructions"
-      return R InstructionsComponent,
-        key: item._id,
-        ref: item._id,
-        instructions: item
-        data: @props.data
-        parentData: @props.parentData
-        formExprEvaluator: @props.formExprEvaluator
-    else if item._type == "Group"
-      return R GroupComponent,
-        key: item._id,
-        ref: item._id,
-        group: item
-        data: @props.data
-        parentData: @props.parentData
-        onDataChange: @props.onDataChange
-        isVisible: @props.isVisible
-        formExprEvaluator: @props.formExprEvaluator
-        onNext: @handleNext.bind(this, index)
-    else if item._type == "RosterGroup"
-      return R RosterGroupComponent,
-        key: item._id,
-        ref: item._id,
-        rosterGroup: item
-        data: @props.data
-        onDataChange: @props.onDataChange
-        isVisible: @props.isVisible
-        formExprEvaluator: @props.formExprEvaluator
-    else if item._type == "RosterMatrix"
-      return R RosterMatrixComponent,
-        key: item._id,
-        ref: item._id,
-        rosterMatrix: item
-        data: @props.data
-        onDataChange: @props.onDataChange
-        isVisible: @props.isVisible
-        formExprEvaluator: @props.formExprEvaluator
-    else
-      throw new Error("Unknown item of type #{item._type}")
+    formRenderUtils.renderItem(item, @props.data, @props.parentData, @props.formExprEvaluator, @props.onDataChange, @props.isVisible, @handleNext.bind(this, index))
 
   render: ->
     H.div null,
