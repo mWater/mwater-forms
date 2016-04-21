@@ -8,6 +8,7 @@ exports.ImagesAnswerComponent = require './answers/ImagesAnswerComponent'
 exports.LocationView = require './legacy/LocationView'
 
 exports.formUtils = require './formUtils'
+exports.formRenderUtils = require './formRenderUtils'
 exports.ECPlates = require './ECPlates'
 exports.utils = require './utils'
 exports.LocationFinder = require './LocationFinder'
