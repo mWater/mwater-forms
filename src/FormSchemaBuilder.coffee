@@ -633,7 +633,7 @@ module.exports = class FormSchemaBuilder
             name: item.text
             join: {
               type: "n-1"
-              toTable: if item.siteTypes then "entities." + _.first(item.siteTypes).toLowerCase().replace(" ", "_") else "entities.water_point"
+              toTable: if item.siteTypes then "entities." + _.first(item.siteTypes).toLowerCase().replace(/ /g, "_") else "entities.water_point"
               fromColumn: codeExpr
               toColumn: "code"
             }
@@ -710,6 +710,28 @@ module.exports = class FormSchemaBuilder
                 { type: "field", tableAlias: "{alias}", column: "data" }
                 "{#{item._id},value}"
               ]
+            }
+          }
+          addColumn(column)
+
+        when "admin_region"
+          # Add join to admin region
+          column = {
+            id: "data:#{item._id}:value"
+            name: item.text
+            type: "join"
+            join: {
+              type: "n-1"
+              toTable: "admin_regions"
+              fromColumn: {
+                type: "op"
+                op: "#>>"
+                exprs: [
+                  { type: "field", tableAlias: "{alias}", column: "data" }
+                  "{#{item._id},value}"
+                ]
+              }
+              toColumn: "_id"
             }
           }
           addColumn(column)
