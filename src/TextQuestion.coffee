@@ -24,6 +24,9 @@ module.exports = class TextQuestion extends Question
     @setAnswerValue(@getText())
 
   validateInternal: ->
+    if @getText() == ""
+      return false
+      
     if @options.format == "email"
       if @getText().match /[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/
         return false
