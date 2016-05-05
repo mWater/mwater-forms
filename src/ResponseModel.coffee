@@ -18,6 +18,7 @@ module.exports = class ResponseModel
     @response = options.response
     @form = options.form
     @user = options.user
+    @username = options.username
     @groups = options.groups or []
     @formCtx = options.formCtx or {}
     @extraCreateRoles = options.extraCreateRoles or []
@@ -34,7 +35,7 @@ module.exports = class ResponseModel
       @response.events = []
 
       # Create code. Not unique, but unique per user if logged in once.
-      @response.code = @user + "-" + formUtils.createBase32TimeCode(new Date())
+      @response.code = @username + "-" + formUtils.createBase32TimeCode(new Date())
   
     # Add event if not in draft
     if @response.status != "draft"
@@ -52,7 +53,7 @@ module.exports = class ResponseModel
       deployments = @listEnumeratorDeployments()
 
       if deployments.length == 0
-        throw new Error("No matching deployments for #{@form._id} user #{@user}")
+        throw new Error("No matching deployments for #{@form._id} user #{@username}")
       @response.deployment = deployments[0]._id
 
     @fixRoles()
@@ -78,7 +79,7 @@ module.exports = class ResponseModel
 
     deployment = _.findWhere(@form.deployments, { _id: @response.deployment })
     if not deployment
-      throw new Error("No matching deployments for #{@form._id} user #{@user}")
+      throw new Error("No matching deployments for #{@form._id} user #{@username}")
 
     # If no approval stages
     if deployment.approvalStages.length == 0
@@ -99,7 +100,7 @@ module.exports = class ResponseModel
 
     deployment = _.findWhere(@form.deployments, { _id: @response.deployment })
     if not deployment
-      throw new Error("No matching deployments for #{@form._id} user #{@user}")
+      throw new Error("No matching deployments for #{@form._id} user #{@username}")
 
     approval = { by: @user, on: new Date().toISOString() }
 
@@ -129,7 +130,7 @@ module.exports = class ResponseModel
 
     deployment = _.findWhere(@form.deployments, { _id: @response.deployment })
     if not deployment
-      throw new Error("No matching deployments for #{@form._id} user #{@user}")
+      throw new Error("No matching deployments for #{@form._id} user #{@username}")
 
     # Unfinalize if final
     if @response.status == "final" then @_unfinalize()
@@ -320,7 +321,7 @@ module.exports = class ResponseModel
     # Determine deployment
     deployment = _.findWhere(@form.deployments, { _id: @response.deployment })
     if not deployment
-      throw new Error("No matching deployments for #{@form._id} user #{@user}")
+      throw new Error("No matching deployments for #{@form._id} user #{@username}")
 
     # If deleted, no viewers
     if @form.state == "deleted"
@@ -374,7 +375,7 @@ module.exports = class ResponseModel
   canApprove: ->
     deployment = _.findWhere(@form.deployments, { _id: @response.deployment })
     if not deployment
-      throw new Error("No matching deployments for #{@form._id} user #{@user}")
+      throw new Error("No matching deployments for #{@form._id} user #{@username}")
 
     if @response.status != "pending"
       return false
@@ -412,7 +413,7 @@ module.exports = class ResponseModel
   canReject: ->
     deployment = _.findWhere(@form.deployments, { _id: @response.deployment })
     if not deployment
-      throw new Error("No matching deployments for #{@form._id} user #{@user}")
+      throw new Error("No matching deployments for #{@form._id} user #{@username}")
 
     if @response.status == "draft" or @response.status == "rejected"
       return false
