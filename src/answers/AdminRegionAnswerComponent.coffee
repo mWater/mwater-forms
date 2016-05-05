@@ -15,6 +15,7 @@ module.exports = class AdminRegionAnswerComponent extends React.Component
     getAdminRegionPath: React.PropTypes.func.isRequired # Call with (id, callback). Callback (error, [{ id:, level: <e.g. 1>, name: <e.g. Manitoba>, type: <e.g. Province>}] in level ascending order)
     getSubAdminRegions: React.PropTypes.func.isRequired # Call with (id, callback). Callback (error, [{ id:, level: <e.g. 1>, name: <e.g. Manitoba>, type: <e.g. Province>}] of admin regions directly under the specified id)
     findAdminRegionByLatLng: React.PropTypes.func.isRequired # Call with (lat, lng, callback). Callback (error, id)
+    T: React.PropTypes.func.isRequired  # Localizer to use
 
   @propTypes:
     value: React.PropTypes.string     # id of admin region
@@ -41,7 +42,7 @@ module.exports = class AdminRegionAnswerComponent extends React.Component
         # Lookup location
         @context.findAdminRegionByLatLng(location.coords.latitude, location.coords.longitude, (error, id) =>
           if error
-            @setState(error: T("Unable to lookup location"), waiting: false)
+            @setState(error: @context.T("Unable to lookup location"), waiting: false)
             return
           
           @setState(waiting: false)
@@ -52,7 +53,7 @@ module.exports = class AdminRegionAnswerComponent extends React.Component
         if not @state.waiting
           return
 
-        @setState(error: T("Unable to get location"), waiting: false)
+        @setState(error: @context.T("Unable to get location"), waiting: false)
     )
 
   handleCancelUseGPS: =>
@@ -69,7 +70,7 @@ module.exports = class AdminRegionAnswerComponent extends React.Component
       # Lookup location
       @context.findAdminRegionByLatLng(location.latitude, location.longitude, (error, id) =>
         if error
-          @setState(error: T("Unable to lookup location"))
+          @setState(error: @context.T("Unable to lookup location"))
           return
 
         @props.onChange(id)
@@ -85,23 +86,23 @@ module.exports = class AdminRegionAnswerComponent extends React.Component
         H.button type: "button", className: "btn btn-link btn-sm", onClick: @handleUseGPS, disabled: not @context.locationFinder?,
           H.span className: "glyphicon glyphicon-screenshot"
           " "
-          T("Set Using GPS")
+          @context.T("Set Using GPS")
       else
         H.button type: "button", className: "btn btn-link btn-sm", onClick: @handleCancelUseGPS, disabled: not @context.locationFinder?,
           H.span className: "glyphicon glyphicon-remove"
           " "
-          T("Cancel GPS")
+          @context.T("Cancel GPS")
 
       H.button type: "button", className: "btn btn-link btn-sm", onClick: @handleUseMap, disabled: not @context.displayMap?,
         H.span className: "glyphicon glyphicon-map-marker"
         " "
-        T("Set Using Map")
+        @context.T("Set Using Map")
 
   render: ->
     return H.div null,
       @renderEntityButtons()
       if @state.waiting
-        H.div className: "text-info", T("Waiting for GPS...")
+        H.div className: "text-info", @context.T("Waiting for GPS...")
 
       if @state.error
         H.div className: "text-danger", @state.error

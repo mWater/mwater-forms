@@ -11,6 +11,7 @@ module.exports = class BarcodeAnswerComponent extends React.Component
   @contextTypes:
     locale: React.PropTypes.string  # Current locale (e.g. "en")
     scanBarcode: React.PropTypes.func
+    T: React.PropTypes.func.isRequired  # Localizer to use
 
   @propTypes:
     value: React.PropTypes.string
@@ -42,15 +43,15 @@ module.exports = class BarcodeAnswerComponent extends React.Component
         H.div null,
           H.button {className: "btn btn-default", onClick: @handleClearClick, type: "button"},
             H.span {className: "glyphicon glyphicon-remove"},
-            T("Clear")
+            @context.T("Clear")
     else
       if supported
         H.div(null,
           H.button({className: "btn btn-default", onClick: @handleScanClick, type: "button"},
             H.span({className: "glyphicon glyphicon-qrcode"})
-            T("Scan")
+            @context.T("Scan")
           )
         )
       else
         return H.div className: "text-warning",
-          T("Barcode scanning not supported on this platform")
+          @context.T("Barcode scanning not supported on this platform")

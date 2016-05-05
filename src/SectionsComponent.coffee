@@ -9,6 +9,7 @@ formUtils = require './formUtils'
 module.exports = class SectionsComponent extends React.Component
   @contextTypes:
     locale: React.PropTypes.string
+    T: React.PropTypes.func.isRequired  # Localizer to use
 
   @propTypes:
     contents: React.PropTypes.array.isRequired 
@@ -122,31 +123,31 @@ module.exports = class SectionsComponent extends React.Component
         [
           H.button key: "back", type: "button", className: "btn btn-default", onClick: @handleBackSection,
             H.span className: "glyphicon glyphicon-backward"
-            " " + T("Back")
+            " " + @context.T("Back")
           "\u00A0"
         ]
 
       # Can go forward or submit
       if @hasNextSection()
         H.button key: "next", type: "button", ref: 'nextOrSubmit', className: "btn btn-primary", onClick: @handleNextSection,
-          T("Next") + " " 
+          @context.T("Next") + " " 
           H.span className: "glyphicon glyphicon-forward"
       else  
         H.button key: "submit", type: "button", ref: 'nextOrSubmit', className: "btn btn-primary", onClick: @handleSubmit,
-          T("Submit")
+          @context.T("Submit")
 
       "\u00A0"
 
       if @props.onSaveLater
         [
           H.button key: "saveLater", type: "button", className: "btn btn-default", onClick: @props.onSaveLater,
-            T("Save for Later")
+            @context.T("Save for Later")
           "\u00A0"
         ]
 
       H.button key: "discard", type:"button", className: "btn btn-default", onClick: @props.onDiscard,
         H.span className: "glyphicon glyphicon-trash"
-        " " + T("Discard")
+        " " + @context.T("Discard")
 
   render: ->
     H.div null,

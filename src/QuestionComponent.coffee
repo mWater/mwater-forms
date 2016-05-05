@@ -41,6 +41,7 @@ module.exports = class QuestionComponent extends React.Component
     locale: React.PropTypes.string
     stickyStorage: React.PropTypes.object   # Storage for sticky values
     locationFinder: React.PropTypes.object
+    T: React.PropTypes.func.isRequired  # Localizer to use
 
   @propTypes:
     question: React.PropTypes.object.isRequired # Design of question. See schema
@@ -225,14 +226,14 @@ module.exports = class QuestionComponent extends React.Component
       H.div null,
         if @props.question.alternates.dontknow
           H.div id: 'dn', className: "touch-checkbox alternate #{if @getAnswer().alternate == 'dontknow' then 'checked'}", onClick: @handleAlternate.bind(null, 'dontknow'),
-            T("Don't Know")
+            @context.T("Don't Know")
         if @props.question.alternates.na
           H.div id: 'na', className: "touch-checkbox alternate #{if @getAnswer().alternate == 'na' then 'checked'}", onClick: @handleAlternate.bind(null, 'na'),
-            T("Not Applicable")
+            @context.T("Not Applicable")
 
   renderCommentsField: ->
     if @props.question.commentsField
-      H.textarea className: "form-control question-comments", id: "comments", ref: "comments", placeholder: T("Comments"), value: @getAnswer().comments, onChange: @handleCommentsChange
+      H.textarea className: "form-control question-comments", id: "comments", ref: "comments", placeholder: @context.T("Comments"), value: @getAnswer().comments, onChange: @handleCommentsChange
 
   renderAnswer: ->
     answer = @getAnswer()

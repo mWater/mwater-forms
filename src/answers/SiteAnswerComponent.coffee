@@ -13,6 +13,7 @@ module.exports = class SiteAnswerComponent extends React.Component
     getEntityById: React.PropTypes.func
     getEntityByCode: React.PropTypes.func
     renderEntitySummaryView: React.PropTypes.func
+    T: React.PropTypes.func.isRequired  # Localizer to use
 
   @propTypes:
     value: React.PropTypes.object
@@ -64,7 +65,7 @@ module.exports = class SiteAnswerComponent extends React.Component
           onChange: @handleChange
         H.span className: "input-group-btn",
           H.button className: "btn btn-default", disabled: not @context.selectEntity?, type: "button", onClick: @handleSelectClick,
-            T("Select")
+            @context.T("Select")
       H.br()
       R EntityDisplayComponent, 
         displayInWell: true

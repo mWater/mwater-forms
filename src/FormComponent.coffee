@@ -5,6 +5,7 @@ R = React.createElement
 
 SectionsComponent = require './SectionsComponent'
 ItemListComponent = require './ItemListComponent'
+ezlocalize = require 'ez-localize'
 
 ResponseCleaner = require './ResponseCleaner'
 DefaultValueApplier = require './DefaultValueApplier'
@@ -27,27 +28,44 @@ module.exports = class FormComponent extends React.Component
     entity: React.PropTypes.object            # Form-level entity to load
     entityType: React.PropTypes.string        # Type of form-level entity to load
 
-  @childContextTypes: require('./formContextTypes')
+  @childContextTypes: _.extend({}, require('./formContextTypes'), T: React.PropTypes.func.isRequired)
 
   constructor: (props) ->
-    super
+    super(props)
 
     @state = {
       visibilityStructure: {}
       formExprEvaluator: new FormExprEvaluator(@props.design)
+      T: @createLocalizer(@props.design, @props.formCtx.locale)
     }
 
-  getChildContext: -> @props.formCtx
+  getChildContext: -> 
+    # T(...) to use special form-localizer
+    _.extend({}, @props.formCtx, T: @state.T)
 
   componentWillReceiveProps: (nextProps) ->
     if @props.design != nextProps.design
       @setState(formExprEvaluator: new FormExprEvaluator(nextProps.design))
+
+    if @props.design != nextProps.design or @props.formCtx.locale != nextProps.formCtx.locale
+      @setState(T: @createLocalizer(nextProps.design, nextProps.formCtx.locale))
 
   # This will clean the data that has been passed at creation
   # It will also initialize the visibilityStructure
   # And set the sticky data
   componentWillMount: ->
     @handleDataChange(@props.data)
+
+  # Creates a localizer for the form design
+  createLocalizer: (design, locale) ->
+    # Create localizer
+    localizedStrings = design.localizedStrings or []
+    localizerData = {
+      locales: design.locales
+      strings: localizedStrings
+    }
+    T = new ezlocalize.Localizer(localizerData, locale).T
+    return T
 
   handleSubmit: =>
     # Cannot submit if at least one item is invalid
@@ -126,17 +144,17 @@ module.exports = class FormComponent extends React.Component
           onNext: @handleNext
 
         H.button type: "button", className: "btn btn-primary", ref: 'submit', onClick: @handleSubmit,
-          T("Submit")
+          @state.T("Submit")
 
         "\u00A0"
 
         if @props.onSaveLater
           [
             H.button type: "button", className: "btn btn-default", onClick: @props.onSaveLater,
-              T("Save for Later")
+              @state.T("Save for Later")
             "\u00A0"
           ]
 
         H.button type:"button", className: "btn btn-default", onClick: @props.onDiscard,
           H.span className: "glyphicon glyphicon-trash"
-          " " + T("Discard")
+          " " + @state.T("Discard")

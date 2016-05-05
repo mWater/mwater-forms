@@ -1,6 +1,6 @@
 React = require 'react'
 
-# Context types for forms. Use in @contextTypes for all form operations
+# Context types for forms. Note that T (localizer) is not included here as it is not passed in within formCtx prop.
 # TODO unify wiht docs/Forms Context.md here
 module.exports = {
   locale: React.PropTypes.string

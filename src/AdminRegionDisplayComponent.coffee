@@ -9,6 +9,9 @@ module.exports = class AdminRegionDisplayComponent extends AsyncLoadComponent
     getAdminRegionPath: React.PropTypes.func.isRequired # Call with (id, callback). Callback (error, [{ id:, level: <e.g. 1>, name: <e.g. Manitoba>, type: <e.g. Province>}] in level ascending order)
     value: React.PropTypes.string     # _id of entity
 
+  @contextTypes:
+    T: React.PropTypes.func.isRequired  # Localizer to use
+
   # Override to determine if a load is needed. Not called on mounting
   isLoadNeeded: (newProps, oldProps) ->
     return newProps.value != oldProps.value
@@ -25,10 +28,10 @@ module.exports = class AdminRegionDisplayComponent extends AsyncLoadComponent
 
   render: ->
     if @state.loading
-      return H.span className: "text-muted", T("Loading...")
+      return H.span className: "text-muted", @context.T("Loading...")
 
     if @state.error
-      return H.span className: "text-danger", T("Unable to connect to server")
+      return H.span className: "text-danger", @context.T("Unable to connect to server")
 
     if not @state.path or @state.path.length == 0
       return H.span null, "None"

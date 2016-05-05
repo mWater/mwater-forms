@@ -14,6 +14,7 @@ module.exports = class EntityAnswerComponent extends AsyncLoadComponent
     renderEntitySummaryView: React.PropTypes.func.isRequired
     getEntityById: React.PropTypes.func.isRequired     # Gets an entity by id (entityType, entityId, callback)
     canEditEntity: React.PropTypes.func
+    T: React.PropTypes.func.isRequired  # Localizer to use
 
   @propTypes:
     value: React.PropTypes.string
@@ -41,7 +42,7 @@ module.exports = class EntityAnswerComponent extends AsyncLoadComponent
   # Called to select an entity using an external mechanism (calls @ctx.selectEntity)
   handleSelectEntity: =>
     if not @context.selectEntity
-      return alert(@T("Not supported on this platform"))
+      return alert(@context.T("Not supported on this platform"))
 
     @context.selectEntity {
       entityType: @props.entityType
@@ -54,7 +55,7 @@ module.exports = class EntityAnswerComponent extends AsyncLoadComponent
 
   handleEditEntity: =>
     if not @context.editEntity
-      return alert(@T("Not supported on this platform"))
+      return alert(@context.T("Not supported on this platform"))
 
     @context.editEntity @props.entityType, @props.value, =>
       @props.onValueChange(value)
@@ -65,30 +66,30 @@ module.exports = class EntityAnswerComponent extends AsyncLoadComponent
       H.button type: "button", className: "btn btn-link btn-sm", onClick: @handleSelectEntity,
         H.span className: "glyphicon glyphicon-ok"
         " "
-        T("Change Selection")
+        @context.T("Change Selection")
       H.button type: "button", className: "btn btn-link btn-sm", onClick: @handleClearEntity,
         H.span className: "glyphicon glyphicon-remove"
         " "
-        T("Clear Selection")
+        @context.T("Clear Selection")
       if @context.editEntity? and @context.canEditEntity(@props.entityType, @state.entity)
         H.button type: "button", className: "btn btn-link btn-sm", onClick: @handleEditEntity,
           H.span className: "glyphicon glyphicon-pencil"
           " "
-          T("Edit Selection")
+          @context.T("Edit Selection")
 
   render: ->
     if @state.loading
-      return H.div className: "alert alert-info", T("Loading...")
+      return H.div className: "alert alert-info", @context.T("Loading...")
 
     if not @props.value 
       # Render select button
       return H.button type: "button", className: "btn btn-default btn-sm", onClick: @handleSelectEntity,
         H.span className: "glyphicon glyphicon-ok"
         " "
-        T("Select")
+        @context.T("Select")
 
     if not @state.entity 
-      return H.div className: "alert alert-danger", T("Not found")
+      return H.div className: "alert alert-danger", @context.T("Not found")
 
     return H.div null,
       @renderEntityButtons()

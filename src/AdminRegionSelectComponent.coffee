@@ -12,6 +12,9 @@ module.exports = class AdminRegionSelectComponent extends AsyncLoadComponent
     value: React.PropTypes.string     # id of admin region
     onChange: React.PropTypes.func.isRequired  # Called with new id
 
+  @contextTypes:
+    T: React.PropTypes.func.isRequired  # Localizer to use
+
   componentWillMount: ->
     super
 
@@ -86,7 +89,7 @@ module.exports = class AdminRegionSelectComponent extends AsyncLoadComponent
 
   render: ->
     if @state.loading or (not @state.path and @props.value) or (not @props.value and not @state.level0s)
-      return H.div null, T("Loading...") 
+      return H.div null, @context.T("Loading...") 
 
     H.table style: { opacity: (if @state.busy then 0.5) },
       H.tbody null, 

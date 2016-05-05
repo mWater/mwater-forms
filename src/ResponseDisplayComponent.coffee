@@ -6,6 +6,7 @@ ImageDisplayComponent = require './ImageDisplayComponent'
 EntityDisplayComponent = require './EntityDisplayComponent'
 AdminRegionDisplayComponent = require './AdminRegionDisplayComponent'
 moment = require 'moment'
+ezlocalize = require 'ez-localize'
 
 VisibilityCalculator = require './VisibilityCalculator'
 
@@ -16,18 +17,38 @@ module.exports = class ResponseDisplayComponent extends React.Component
     response: React.PropTypes.object.isRequired
     formCtx: React.PropTypes.object.isRequired
     locale: React.PropTypes.string # Defaults to english
-    T: React.PropTypes.func  # Localizer to use. Call form compiler to create one
 
-  @childContextTypes: require('./formContextTypes')
+  @childContextTypes: _.extend({}, require('./formContextTypes'), T: React.PropTypes.func.isRequired)
 
   constructor: (props) ->
-    super
+    super(props)
 
     @state = {
       showCompleteHistory: false
+      T: @createLocalizer(@props.form.design, @props.formCtx.locale)
     }
 
-  getChildContext: -> @props.formCtx
+  componentWillReceiveProps: (nextProps) ->
+    if @props.design != nextProps.design
+      @setState(formExprEvaluator: new FormExprEvaluator(nextProps.design))
+
+    if @props.design != nextProps.design or @props.formCtx.locale != nextProps.formCtx.locale
+      @setState(T: @createLocalizer(nextProps.design, nextProps.formCtx.locale))
+
+  getChildContext: -> 
+    # T(...) to use special form-localizer
+    _.extend({}, @props.formCtx, T: @state.T)
+
+  # Creates a localizer for the form design
+  createLocalizer: (design, locale) ->
+    # Create localizer
+    localizedStrings = design.localizedStrings or []
+    localizerData = {
+      locales: design.locales
+      strings: localizedStrings
+    }
+    T = new ezlocalize.Localizer(localizerData, locale).T
+    return T
 
   handleLocationClick: (location) ->
     if @props.formCtx.displayMap
@@ -42,30 +63,30 @@ module.exports = class ResponseDisplayComponent extends React.Component
   renderEvent: (ev) ->
     eventType = switch ev.type
       when "draft"
-        @props.T("Drafted")
+        @state.T("Drafted")
       when "submit"
-        @props.T("Submitted")
+        @state.T("Submitted")
       when "approve"
-        @props.T("Approved")
+        @state.T("Approved")
       when "reject"
-        @props.T("Rejected")
+        @state.T("Rejected")
       when "edit"
-        @props.T("Edited")
+        @state.T("Edited")
 
     return H.div null, 
       eventType
       " "
-      @props.T("by")
+      @state.T("by")
       " "
       ev.by
       " "
-      @props.T("on")
+      @state.T("on")
       " "
       moment(ev.on).format('lll')
       if ev.message
         [": ", H.i(null, ev.message)]
       if ev.override
-        H.span(className: "label label-warning", @props.T("Admin Override"))
+        H.span(className: "label label-warning", @state.T("Admin Override"))
 
   # History of events
   renderHistory: ->
@@ -83,36 +104,36 @@ module.exports = class ResponseDisplayComponent extends React.Component
 
     if events.length > 1
       if @state.showCompleteHistory
-        contents.push(H.a(style: { cursor: "pointer" }, onClick: @handleHideHistory, @props.T("Hide History")))
+        contents.push(H.a(style: { cursor: "pointer" }, onClick: @handleHideHistory, @state.T("Hide History")))
       else
-        contents.push(H.a(style: { cursor: "pointer" }, onClick: @handleShowHistory, @props.T("Show History")))
+        contents.push(H.a(style: { cursor: "pointer" }, onClick: @handleShowHistory, @state.T("Show History")))
 
     return H.div key: "history", contents
 
   renderStatus: ->
     status = switch @props.response.status
       when "draft"
-        @props.T("Draft")
+        @state.T("Draft")
       when "rejected"
-        @props.T("Rejected")
+        @state.T("Rejected")
       when "pending"
-        @props.T("Pending")
+        @state.T("Pending")
       when "final"
-        @props.T("Final")
+        @state.T("Final")
 
     H.div key: "status", 
-      @props.T('Status'), ": ", H.b(null, status)
+      @state.T('Status'), ": ", H.b(null, status)
 
   # Header which includes basics
   renderHeader: ->
     H.div style: { paddingBottom: 10 },
       H.div key: "user", 
-        @props.T('User'), ": ", H.b(null, @props.response.user)
+        @state.T('User'), ": ", H.b(null, @props.response.user)
       H.div key: "code", 
-        @props.T('Response Id'), ": ", H.b(null, @props.response.code)
+        @state.T('Response Id'), ": ", H.b(null, @props.response.code)
       if @props.response and @props.response.modified
         H.div key: "date", 
-          @props.T('Date'), ": ", H.b(null, moment(@props.response.modified.on).format('lll'))
+          @state.T('Date'), ": ", H.b(null, moment(@props.response.modified.on).format('lll'))
       @renderStatus()
       @renderHistory()
 
@@ -131,9 +152,9 @@ module.exports = class ResponseDisplayComponent extends React.Component
     if answer.alternate
       switch answer.alternate 
         when "na"
-          return H.em null, @props.T("Not Applicable")
+          return H.em null, @state.T("Not Applicable")
         when "dontknow"
-          return H.em null, @props.T("Don't Know")
+          return H.em null, @state.T("Don't Know")
 
     if not answer.value?
       return null
@@ -198,7 +219,7 @@ module.exports = class ResponseDisplayComponent extends React.Component
               H.em null, unitsStr
 
       when "boolean"
-        return if answer.value then @props.T("True") else @props.T("False")
+        return if answer.value then @state.T("True") else @state.T("False")
 
       when "location"
         return @renderLocation(answer.value)
@@ -260,7 +281,7 @@ module.exports = class ResponseDisplayComponent extends React.Component
         @renderAnswer(q, answer)
         if answer and answer.timestamp
           H.div null,
-            @props.T('Answered')
+            @state.T('Answered')
             ": "
             moment(answer.timestamp).format('llll')
         if answer and answer.location
@@ -313,7 +334,7 @@ module.exports = class ResponseDisplayComponent extends React.Component
           H.tr null,
             H.td colSpan: 2,
               H.span style: {fontStyle: 'italic'},
-                T("Data is stored in ") + referencedRoster.name[@props.formCtx.locale]
+                @state.T("Data is stored in {0}", referencedRoster.name[@props.formCtx.locale])
         else
           # Get the data for that roster
           data = @props.response.data[item._id]

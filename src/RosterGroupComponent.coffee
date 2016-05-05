@@ -12,6 +12,7 @@ formUtils = require './formUtils'
 module.exports = class RosterGroupComponent extends React.Component
   @contextTypes:
     locale: React.PropTypes.string
+    T: React.PropTypes.func.isRequired  # Localizer to use
 
   @propTypes:
     rosterGroup: React.PropTypes.object.isRequired # Design of roster group. See schema
@@ -96,7 +97,7 @@ module.exports = class RosterGroupComponent extends React.Component
       H.div key: "add",
         H.button type: "button", className: "btn btn-default btn-sm", onClick: @handleAdd,
           H.span className: "glyphicon glyphicon-plus"
-          " " + T("Add")
+          " " + @context.T("Add")
 
   render: ->
     H.div style: { padding: 5, marginBottom: 20 },
@@ -105,6 +106,6 @@ module.exports = class RosterGroupComponent extends React.Component
 
       # Display message if none
       if @getAnswer().length == 0
-        H.div(style: { paddingLeft: 20 }, H.i(null, T("None")))
+        H.div(style: { paddingLeft: 20 }, H.i(null, @context.T("None")))
 
       @renderAdd() 

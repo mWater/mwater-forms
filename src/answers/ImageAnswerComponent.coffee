@@ -8,6 +8,7 @@ module.exports = class ImageAnswerComponent extends React.Component
   @contextTypes:
     imageManager: React.PropTypes.object.isRequired
     imageAcquirer: React.PropTypes.object
+    T: React.PropTypes.func.isRequired  # Localizer to use
 
   @propTypes:
     image: React.PropTypes.object            # e.g. { id: someid, caption: caption }
@@ -54,4 +55,4 @@ module.exports = class ImageAnswerComponent extends React.Component
           onClick: @handleAdd
           style: { maxHeight: 100 }
       else 
-        H.div className: "text-muted", T("No images present")
+        H.div className: "text-muted", @context.T("No images present")
