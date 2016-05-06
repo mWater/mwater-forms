@@ -14,13 +14,28 @@ module.exports = class ResponseDisplayComponent extends React.Component
     form: React.PropTypes.object.isRequired
     response: React.PropTypes.object.isRequired
     formCtx: React.PropTypes.object.isRequired
+    apiUrl: React.PropTypes.string
     locale: React.PropTypes.string # Defaults to english
     T: React.PropTypes.func  # Localizer to use. Call form compiler to create one
 
   constructor: (props) ->
     super
 
-    @state = { showCompleteHistory: false }
+    @state = { showCompleteHistory: false, eventsUsernames: null, loadingUsernames: false }
+
+  componentWillMount: () ->
+    events = @props.response.events or []
+
+    if events.length > 0 and @props.apiUrl?
+      byArray = _.map(events, (event) -> "\"#{event.by}\"" )
+      url = @props.apiUrl + 'users_public_data?filter={"_id":{"$in":[' + byArray.join(',') + ']}}'
+      @setState(loadingUsernames: true)
+      $.ajax({ dataType: "json", url: url })
+      .done (rows) =>
+        # eventsUsernames is an object with a key for each _id value
+        @setState(loadingUsernames: false, eventsUsernames: _.indexBy(rows, '_id'))
+      .fail (xhr) =>
+        @setState(loadingUsernames: false, eventsUsernames: null)
 
   # Determine if item is visible given conditions
   checkIfVisible: (item) =>
@@ -43,6 +58,9 @@ module.exports = class ResponseDisplayComponent extends React.Component
     @setState(showCompleteHistory: true)
 
   renderEvent: (ev) ->
+    if not @state.eventsUsernames?
+      return null
+
     eventType = switch ev.type
       when "draft"
         @props.T("Drafted")
@@ -55,12 +73,12 @@ module.exports = class ResponseDisplayComponent extends React.Component
       when "edit"
         @props.T("Edited")
 
-    return H.div null, 
+    return H.div null,
       eventType
       " "
       @props.T("by")
       " "
-      ev.by
+      @state.eventsUsernames[ev.by].username
       " "
       @props.T("on")
       " "
@@ -72,6 +90,10 @@ module.exports = class ResponseDisplayComponent extends React.Component
 
   # History of events
   renderHistory: ->
+    if @state.loadingUsernames
+      return H.div key: "history",
+        H.label(null, @props.T("Loading History..."))
+
     contents = []
 
     events = @props.response.events or []
