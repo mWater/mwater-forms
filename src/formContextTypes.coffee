@@ -1,9 +1,8 @@
 React = require 'react'
 
-# Context types for forms. Note that T (localizer) is not included here as it is not passed in within formCtx prop.
+# Context types for forms
 # TODO unify wiht docs/Forms Context.md here
 module.exports = {
-  locale: React.PropTypes.string
   selectEntity: React.PropTypes.func
   editEntity: React.PropTypes.func
   renderEntitySummaryView: React.PropTypes.func.isRequired

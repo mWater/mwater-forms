@@ -18,7 +18,10 @@ module.exports = class ResponseDisplayComponent extends React.Component
     formCtx: React.PropTypes.object.isRequired
     locale: React.PropTypes.string # Defaults to english
 
-  @childContextTypes: _.extend({}, require('./formContextTypes'), T: React.PropTypes.func.isRequired)
+  @childContextTypes: _.extend({}, require('./formContextTypes'), {
+    T: React.PropTypes.func.isRequired
+    locale: React.PropTypes.string          # e.g. "fr"
+  })
 
   constructor: (props) ->
     super(props)
@@ -32,12 +35,14 @@ module.exports = class ResponseDisplayComponent extends React.Component
     if @props.design != nextProps.design
       @setState(formExprEvaluator: new FormExprEvaluator(nextProps.design))
 
-    if @props.design != nextProps.design or @props.formCtx.locale != nextProps.formCtx.locale
-      @setState(T: @createLocalizer(nextProps.design, nextProps.formCtx.locale))
+    if @props.design != nextProps.design or @props.locale != nextProps.locale
+      @setState(T: @createLocalizer(nextProps.design, nextProps.locale))
 
   getChildContext: -> 
-    # T(...) to use special form-localizer
-    _.extend({}, @props.formCtx, T: @state.T)
+    _.extend({}, @props.formCtx, {
+      T: @state.T
+      locale: @props.locale
+    })
 
   # Creates a localizer for the form design
   createLocalizer: (design, locale) ->

@@ -228,11 +228,11 @@ module.exports = {
           {
             "_id": "e73674c9957b41a0b9a923cd4dd76af8",
             "text": {
-              "en": "American date format",
+              "en": "Date time question",
               "_base": "en"
             },
             "_type": "DateQuestion",
-            "format": "MM/DD/YYYY",
+            "format": "lll",
             "required": false,
             "alternates": {
               "na": true,

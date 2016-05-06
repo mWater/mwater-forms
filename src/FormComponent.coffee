@@ -21,6 +21,8 @@ module.exports = class FormComponent extends React.Component
     data: React.PropTypes.object.isRequired # Form response data. See docs/Answer Formats.md
     onDataChange: React.PropTypes.func.isRequired # Called when response data changes
 
+    locale: React.PropTypes.string          # e.g. "fr"
+    
     onSubmit: React.PropTypes.func.isRequired     # Called when submit is pressed
     onSaveLater: React.PropTypes.func             # Optional save for later
     onDiscard: React.PropTypes.func.isRequired    # Called when discard is pressed
@@ -28,7 +30,10 @@ module.exports = class FormComponent extends React.Component
     entity: React.PropTypes.object            # Form-level entity to load
     entityType: React.PropTypes.string        # Type of form-level entity to load
 
-  @childContextTypes: _.extend({}, require('./formContextTypes'), T: React.PropTypes.func.isRequired)
+  @childContextTypes: _.extend({}, require('./formContextTypes'), {
+    T: React.PropTypes.func.isRequired
+    locale: React.PropTypes.string          # e.g. "fr"
+  })
 
   constructor: (props) ->
     super(props)
@@ -40,15 +45,17 @@ module.exports = class FormComponent extends React.Component
     }
 
   getChildContext: -> 
-    # T(...) to use special form-localizer
-    _.extend({}, @props.formCtx, T: @state.T)
+    _.extend({}, @props.formCtx, {
+      T: @state.T
+      locale: @props.locale
+    })
 
   componentWillReceiveProps: (nextProps) ->
     if @props.design != nextProps.design
       @setState(formExprEvaluator: new FormExprEvaluator(nextProps.design))
 
-    if @props.design != nextProps.design or @props.formCtx.locale != nextProps.formCtx.locale
-      @setState(T: @createLocalizer(nextProps.design, nextProps.formCtx.locale))
+    if @props.design != nextProps.design or @props.locale != nextProps.locale
+      @setState(T: @createLocalizer(nextProps.design, nextProps.locale))
 
   # This will clean the data that has been passed at creation
   # It will also initialize the visibilityStructure
