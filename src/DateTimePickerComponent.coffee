@@ -16,6 +16,9 @@ module.exports = class DateTimePickerComponent extends React.Component
     timepicker: React.PropTypes.bool
     displayCalendarButton: React.PropTypes.bool
 
+    showTodayButton: React.PropTypes.bool # Show the today button
+    showClear: React.PropTypes.bool # Show the clear button
+
     # callback on date change
     # argument: {date: moment object for currently selected datetime, oldDate: moment object for previous datetime}
     onChange: React.PropTypes.func
@@ -33,7 +36,7 @@ module.exports = class DateTimePickerComponent extends React.Component
     @props.onChange?(event.date)
 
   componentDidMount: ->
-    pickerOptions = {sideBySide: true}
+    pickerOptions = { showClear: @props.showClear }
 
     if @props.format?
       pickerOptions.format = @props.format
@@ -44,6 +47,8 @@ module.exports = class DateTimePickerComponent extends React.Component
 
     if @props.defaultDate
       pickerOptions.defaultDate = @props.defaultDate
+
+    pickerOptions.showTodayButton = @props.showTodayButton
 
     node = @refs.datetimepicker
     picker = $(node).datetimepicker(pickerOptions)
@@ -66,6 +71,10 @@ module.exports = class DateTimePickerComponent extends React.Component
   componentWillUnmount: ->
     $(@refs.datetimepicker).data("DateTimePicker").destroy()
 
+  handleCalendarClick: =>
+    node = @refs.datetimepicker
+    $(node).data("DateTimePicker").toggle()
+
   render: ->
     input = H.input {ref: "datetimepicker", type: "text", className: "form-control", placeholder: @props.placeholder}
 
@@ -75,7 +84,7 @@ module.exports = class DateTimePickerComponent extends React.Component
           H.div className: "form-group",
             H.div className: 'input-group date',
               input
-              H.span className: "input-group-addon",
+              H.span className: "input-group-addon", onClick: @handleCalendarClick,
                 H.span className: "glyphicon glyphicon-calendar"
     else
       H.div {className: "input-group date", style: { position: "relative" }},
