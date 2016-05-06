@@ -2,8 +2,8 @@ $ = require 'jquery'
 _ = require 'lodash'
 
 exports.AdminRegionAnswerComponent = require './answers/AdminRegionAnswerComponent'
-exports.ImageAnswerComponent = require './answers/ImageAnswerComponent'
-exports.ImagesAnswerComponent = require './answers/ImagesAnswerComponent'
+exports.ImageEditorComponent = require './ImageEditorComponent'
+exports.ImagelistEditorComponent = require './ImagelistEditorComponent'
 
 exports.LocationView = require './legacy/LocationView'
 
