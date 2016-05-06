@@ -71,18 +71,18 @@ module.exports = class DateTimePickerComponent extends React.Component
   componentWillUnmount: ->
     $(@refs.datetimepicker).data("DateTimePicker").destroy()
 
-  handleCalendarClick: =>
-    node = @refs.datetimepicker
-    $(node).data("DateTimePicker").toggle()
+  # handleCalendarClick: =>
+  #   node = @refs.datetimepicker
+  #   $(node).data("DateTimePicker").toggle()
 
   render: ->
-    input = H.input {ref: "datetimepicker", type: "text", className: "form-control", placeholder: @props.placeholder}
+    input = H.input { type: "text", className: "form-control", placeholder: @props.placeholder}
 
     if @props.displayCalendarButton
       H.div className: "row",
         H.div className: 'col-sm-6',
           H.div className: "form-group",
-            H.div className: 'input-group date',
+            H.div className: 'input-group date', ref: "datetimepicker",
               input
               H.span className: "input-group-addon", onClick: @handleCalendarClick,
                 H.span className: "glyphicon glyphicon-calendar"
