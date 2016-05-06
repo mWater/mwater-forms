@@ -106,7 +106,6 @@ module.exports = class DateAnswerComponent extends React.Component
       date: value
       format: @props.format
       placeholder: @state.placeholder
-      displayCalendarButton: true
       showTodayButton: true
       showClear: true
       onKeyDown: @handleKeyDown

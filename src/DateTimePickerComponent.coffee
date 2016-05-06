@@ -12,9 +12,9 @@ module.exports = class DateTimePickerComponent extends React.Component
   @propTypes:
     # date format
     format: React.PropTypes.string
+
     # do we need time picker?  (Only useful if format is not set)
     timepicker: React.PropTypes.bool
-    displayCalendarButton: React.PropTypes.bool
 
     showTodayButton: React.PropTypes.bool # Show the today button
     showClear: React.PropTypes.bool # Show the clear button
@@ -78,14 +78,10 @@ module.exports = class DateTimePickerComponent extends React.Component
   render: ->
     input = H.input { type: "text", className: "form-control", placeholder: @props.placeholder, onFocus: @handleInputFocus }
 
-    if @props.displayCalendarButton
-      H.div className: "row",
-        H.div className: 'col-sm-6',
-          H.div className: "form-group",
-            H.div className: 'input-group date', ref: "datetimepicker",
-              input
-              H.span className: "input-group-addon", onClick: @handleCalendarClick,
-                H.span className: "glyphicon glyphicon-calendar"
-    else
-      H.div {className: "input-group date", style: { position: "relative" }},
-        input
+    H.div className: "row",
+      H.div className: 'col-sm-6',
+        H.div className: "form-group",
+          H.div className: 'input-group date', ref: "datetimepicker",
+            input
+            H.span className: "input-group-addon", onClick: @handleCalendarClick,
+              H.span className: "glyphicon glyphicon-calendar"
