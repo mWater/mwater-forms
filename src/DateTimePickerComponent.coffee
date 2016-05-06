@@ -36,7 +36,7 @@ module.exports = class DateTimePickerComponent extends React.Component
     @props.onChange?(event.date)
 
   componentDidMount: ->
-    pickerOptions = { showClear: @props.showClear }
+    pickerOptions = { showClear: @props.showClear, useStrict: true }
 
     if @props.format?
       pickerOptions.format = @props.format
