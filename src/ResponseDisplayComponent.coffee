@@ -110,7 +110,7 @@ module.exports = class ResponseDisplayComponent extends React.Component
   renderHeader: ->
     H.div style: { paddingBottom: 10 },
       H.div key: "user", 
-        @props.T('User'), ": ", H.b(null, @props.response.user)
+        @props.T('User'), ": ", H.b(null, @props.response.username)
       H.div key: "code", 
         @props.T('Response Id'), ": ", H.b(null, @props.response.code)
       if @props.response and @props.response.modified
