@@ -59,6 +59,10 @@ module.exports = class SectionsComponent extends React.Component
     previousVisibleIndex = @nextVisibleSectionIndex(@state.sectionNum - 1, -1)
     if previousVisibleIndex != -1
       @setState(sectionNum: previousVisibleIndex)
+
+      # Scroll to top of section
+      @refs.sections.scrollIntoView()
+
     # This should never happen... simply ignore
 
   handleNextSection: =>
@@ -69,6 +73,10 @@ module.exports = class SectionsComponent extends React.Component
     nextVisibleIndex = @nextVisibleSectionIndex(@state.sectionNum + 1, 1)
     if nextVisibleIndex != -1
       @setState(sectionNum: nextVisibleIndex)
+
+      # Scroll to top of section
+      @refs.sections.scrollIntoView()
+      
     # This should never happen... simply ignore
 
   handleBreadcrumbClick: (index) =>
@@ -150,7 +158,7 @@ module.exports = class SectionsComponent extends React.Component
         " " + @context.T("Discard")
 
   render: ->
-    H.div null,
+    H.div ref: "sections",
       @renderBreadcrumbs()
       H.div className: "sections",
         @renderSection()

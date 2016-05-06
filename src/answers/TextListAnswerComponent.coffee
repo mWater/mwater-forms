@@ -67,7 +67,7 @@ module.exports = class TextListAnswerComponent extends React.Component
           H.tr key: index,
             H.td null,
               H.b null,
-                "#{index}.\u00a0"
+                "#{index + 1}.\u00a0"
             H.td null,
               H.div className: "input-group",
                 H.input {

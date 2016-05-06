@@ -106,6 +106,11 @@ module.exports = class QuestionComponent extends React.Component
   validate: (scrollToFirstInvalid) ->
     validationError = new AnswerValidator().validate(@props.question, @getAnswer())
 
+    # Check for isValid function in answer component, as some answer components don't store invalid answers
+    # like the number answer.
+    if not validationError and @refs.answer?.isValid and not @refs.answer?.isValid()
+      validationError = true
+
     if validationError?
       if scrollToFirstInvalid
         @refs.prompt.scrollIntoView()
@@ -150,7 +155,7 @@ module.exports = class QuestionComponent extends React.Component
       # If old alternate was null (important not to do this when changing from an alternate value to another)
       if not answer.alternate?
         # It saves value and specify
-        @setState({savedValue: _.clone answer.value, savedSpecify: _.clone answer.specify})
+        @setState({ savedValue: answer.value, savedSpecify: answer.specify })
       # Then clear value, specify and set alternate
       @handleAnswerChange(_.extend({}, answer, {
         value: null

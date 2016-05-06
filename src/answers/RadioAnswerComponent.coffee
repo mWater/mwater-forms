@@ -43,7 +43,7 @@ module.exports = class RadioAnswerComponent extends React.Component
     change = {}
     change[id] = ev.target.value
     specify = _.extend({}, @props.answer.specify, change)
-    @props.onAnswerChange({value: @props.answer.choice, specify: specify })
+    @props.onAnswerChange({value: @props.answer.value, specify: specify })
 
   # Render specify input box
   renderSpecify: (choice) ->

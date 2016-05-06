@@ -172,6 +172,45 @@ module.exports = {
             "validations": []
           },
           {
+            "_id": "d923456e0df14418b192cec19d0d2277",
+            "text": {
+              "en": "Radio",
+              "_base": "en"
+            },
+            "_type": "RadioQuestion",
+            "choices": [
+              {
+                "id": "15ktQcc",
+                "label": {
+                  "en": "a",
+                  "_base": "en"
+                }
+              },
+              {
+                "id": "rbRntNk",
+                "label": {
+                  "en": "b",
+                  "_base": "en"
+                }
+              },
+              {
+                "id": "AZSGxYC",
+                "label": {
+                  "en": "c",
+                  "_base": "en"
+                },
+                specify: true
+              }
+            ],
+            "required": true,
+            "alternates": {
+              "na": true,
+              "dontknow": true
+            },
+            "conditions": [],
+            "validations": []
+          },
+          {
             "_id": "d9765b2e0df14418b192cec19d0d2277",
             "text": {
               "en": "A multi check question?",
