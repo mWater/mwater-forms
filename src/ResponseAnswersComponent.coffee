@@ -17,10 +17,15 @@ module.exports = class ResponseAnswersComponent extends React.Component
     form: React.PropTypes.object.isRequired
     data: React.PropTypes.object.isRequired
     locale: React.PropTypes.string # Defaults to english
+    hideEmptyAnswers: React.PropTypes.bool # True to hide empty answers
 
-  @contextTypes: 
     getAdminRegionPath: React.PropTypes.func.isRequired # Call with (id, callback). Callback (error, [{ id:, level: <e.g. 1>, name: <e.g. Manitoba>, type: <e.g. Province>}] in level ascending order)
     T: React.PropTypes.func.isRequired  # Localizer to use
+    displayMap: React.PropTypes.func    # Open map to display location
+
+  handleLocationClick: (location) ->
+    if @props.displayMap
+      @props.displayMap(location)
 
   renderLocation: (location) ->
     if location
@@ -37,9 +42,9 @@ module.exports = class ResponseAnswersComponent extends React.Component
     if answer.alternate
       switch answer.alternate 
         when "na"
-          return H.em null, @context.T("Not Applicable")
+          return H.em null, @props.T("Not Applicable")
         when "dontknow"
-          return H.em null, @context.T("Don't Know")
+          return H.em null, @props.T("Don't Know")
 
     if not answer.value?
       return null
@@ -104,7 +109,7 @@ module.exports = class ResponseAnswersComponent extends React.Component
               H.em null, unitsStr
 
       when "boolean"
-        return if answer.value then @context.T("True") else @context.T("False")
+        return if answer.value then @props.T("True") else @props.T("False")
 
       when "location"
         return @renderLocation(answer.value)
@@ -144,7 +149,7 @@ module.exports = class ResponseAnswersComponent extends React.Component
 
       when "admin_region"
         return R(AdminRegionDisplayComponent, {
-          getAdminRegionPath: @context.getAdminRegionPath
+          getAdminRegionPath: @props.getAdminRegionPath
           value: answer.value
         })
 
@@ -157,6 +162,10 @@ module.exports = class ResponseAnswersComponent extends React.Component
       rosterData = @props.data[dataIds[0]]
       answer = rosterData[dataIds[1]].data[dataIds[2]]
 
+    # Do not display if empty and hide empty true
+    if @props.hideEmptyAnswers and not answer?.value? and not answer?.alternate
+      return null
+
     H.tr key: dataId,
       H.td key: "name", style: { width: "50%" },
         formUtils.localizeString(q.text, @props.locale)
@@ -164,7 +173,7 @@ module.exports = class ResponseAnswersComponent extends React.Component
         @renderAnswer(q, answer)
         if answer and answer.timestamp
           H.div null,
-            @context.T('Answered')
+            @props.T('Answered')
             ": "
             moment(answer.timestamp).format('llll')
         if answer and answer.location
@@ -188,12 +197,21 @@ module.exports = class ResponseAnswersComponent extends React.Component
 
     # Sections and Groups behave the same
     if item._type == "Section" or item._type == "Group"
+      contents = _.map item.contents, (item) =>
+        @renderItem(item, visibilityStructure, item._id)
+
+      # Remove nulls
+      contents = _.compact(contents)
+
+      # Do not display if empty
+      if contents.length == 0
+        return null
+
       return [
         H.tr key: item._id,
           H.td colSpan: 2, style: { fontWeight: "bold" },
             formUtils.localizeString(item.name, @props.locale)
-        _.map item.contents, (item) =>
-          @renderItem(item, visibilityStructure, item._id)
+        contents
       ]
 
     # RosterMatrices and RosterGroups behave the same
@@ -201,38 +219,57 @@ module.exports = class ResponseAnswersComponent extends React.Component
     # The rosters referencing another one will display a simple text to say so
     if item._type == "RosterMatrix" or item._type == "RosterGroup"
       items = []
-      # If storing data
-      if not item.rosterId?
-        items = _.clone item.contents
-        # Get the questions of the other rosters referencing this one
-        @collectItemsReferencingRoster(items, @props.form.design.contents, item._id)
+
+      # Simply display a text referencing the other roster if a reference
+      if item.rosterId?
+        # Unless hiding empty, in which case blank
+        if @props.hideEmptyAnswers
+          return null
+
+        referencedRoster = formUtils.findItem(@props.form.design, item.rosterId)
+        return H.tr null,
+          H.td style: { fontWeight: "bold" },
+            formUtils.localizeString(item.name, @props.locale)
+          H.td null,
+            H.span style: {fontStyle: 'italic'},
+              @props.T("Data is stored in {0}", formUtils.localizeString(referencedRoster.name, @props.locale))
+
+      # Get the data for that roster
+      data = @props.data[item._id]
+
+      if (not data or data.length == 0) and @props.hideEmptyAnswers
+        return null
+
+      # Get the questions of the other rosters referencing this one
+      items = _.clone(item.contents)
+      @collectItemsReferencingRoster(items, @props.form.design.contents, item._id)
 
       return [
         H.tr key: item._id,
           H.td colSpan: 2, style: { fontWeight: "bold" },
             formUtils.localizeString(item.name, @props.locale)
-        # Simply display a text referencing the other roster
-        if item.rosterId?
-          referencedRoster = formUtils.findItem(@props.form.design, item.rosterId)
-          H.tr null,
-            H.td colSpan: 2,
-              H.span style: {fontStyle: 'italic'},
-                @context.T("Data is stored in {0}", formUtils.localizeString(referencedRoster.name, @props.locale))
-        else
-          # Get the data for that roster
-          data = @props.data[item._id]
-          if data?
-            # For each entry in data
-            for enty, index in data
+
+        if data?
+          # For each entry in data
+          for entry, index in data
+            contents = _.map items, (childItem) =>
+              dataId = "#{item._id}.#{index}.#{childItem._id}"
+              @renderItem(childItem, visibilityStructure, dataId)
+
+            # Remove nulls
+            contents = _.compact(contents)
+
+            # Do not display if empty
+            if contents.length == 0
+              null
+            else
               [
                 # Display the index of the answer
                 H.tr null,
                   H.td colSpan: 2, style: { fontWeight: "bold" },
                     "#{index+1}."
                 # And the answer for each question
-                _.map items, (childItem) =>
-                  dataId = "#{item._id}.#{index}.#{childItem._id}"
-                  @renderItem(childItem, visibilityStructure, dataId)
+                contents
               ]
       ]
 

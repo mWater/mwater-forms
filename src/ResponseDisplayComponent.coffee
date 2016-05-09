@@ -50,10 +50,6 @@ module.exports = class ResponseDisplayComponent extends React.Component
     T = new ezlocalize.Localizer(localizerData, locale).T
     return T
 
-  handleLocationClick: (location) ->
-    if @props.formCtx.displayMap
-      @props.formCtx.displayMap(location)
-
   handleHideHistory: =>
     @setState(showCompleteHistory: false)
 
@@ -140,4 +136,11 @@ module.exports = class ResponseDisplayComponent extends React.Component
   render: ->
     H.div null,
       @renderHeader()
-      React.createElement(ResponseAnswersComponent, form: @props.form, data: @props.response.data, locale: @props.locale)
+      React.createElement(ResponseAnswersComponent, {
+        form: @props.form
+        data: @props.response.data
+        locale: @props.locale
+        T: @props.T
+        getAdminRegionPath: @props.formCtx.getAdminRegionPath
+        displayMap: @props.formCtx.displayMap
+      })

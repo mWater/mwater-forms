@@ -10,6 +10,7 @@ sampleForm2 = require './sampleForm2'
 #bigsampleForm2 = require './bigsampleForm2'
 ItemListComponent = require './ItemListComponent'
 ResponseDisplayComponent = require './ResponseDisplayComponent'
+ResponseAnswersComponent = require './ResponseAnswersComponent'
 
 # Setup mock localizer
 global.T = (str) -> str
