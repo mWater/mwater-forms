@@ -68,15 +68,15 @@ module.exports = class UnitsAnswerComponent extends React.Component
     if isNaN(quantity)
       quantity = null
 
-    @props.onValueChange({quantity: quantity, unit: unit})
+    @props.onValueChange({quantity: quantity, units: unit})
 
   getSelectedUnit: ->
     answer = @props.answer
     if answer.value?
       if answer.value.quantity?
-        return answer.value.unit
+        return answer.value.units
       else
-        return answer.unit
+        return answer.units
     return null
 
   getSelectedQuantity: (answer) ->
