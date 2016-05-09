@@ -62,14 +62,14 @@ module.exports = class AnswerValidator
 
   # Valid if null or empty
   # Valid if quantity is not set
-  # Invalid if quantity is set but not unit
+  # Invalid if quantity is set but not units
   validateUnitsQuestion: (question, answer) ->
     if not answer.value? or answer.value == ''
       return null
 
     if answer.value.quantity? and answer.value.quantity != ''
-      if not answer.value.unit? or answer.value.unit == ''
-        return 'Unit is required when a quantity is set'
+      if not answer.value.units? or answer.value.units == ''
+        return 'units field is required when a quantity is set'
 
     return null
 
