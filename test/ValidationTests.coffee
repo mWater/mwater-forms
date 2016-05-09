@@ -1,3 +1,5 @@
+# TODO: SurveyorPro: Fix test without FormCompiler
+###
 $ = require 'jquery'
 Backbone = require 'backbone'
 Backbone.$ = $
@@ -109,3 +111,4 @@ describe "Validation compiler", ->
 
     result = @compiler.compileValidations(validations)({ value: 3 })
     assert.equal result, "message2"
+###

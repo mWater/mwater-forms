@@ -1,9 +1,6 @@
 _ = require 'lodash'
 formUtils = require './formUtils'
-FormCompiler = require './FormCompiler'
 uuid = require 'node-uuid'
-Backbone = require 'backbone'
-async = require 'async'
 
 # Model of a response object that allows manipulation and asking of questions
 # Options are:
@@ -11,8 +8,6 @@ async = require 'async'
 # form: form object. Required
 # user: current username. Required
 # groups: group names of user
-# formCtx: form context. getProperties and getProperty is required for submitting forms with entity questions
-# extraCreateRoles: extra roles to be added to created entities. Overrides any others with same "to"
 module.exports = class ResponseModel
   constructor: (options) ->
     @response = options.response
@@ -20,8 +15,6 @@ module.exports = class ResponseModel
     @user = options.user
     @username = options.username
     @groups = options.groups or []
-    @formCtx = options.formCtx or {}
-    @extraCreateRoles = options.extraCreateRoles or []
 
   # Setup draft. deploymentId is optional _id of deployment to use for cases where ambiguous
   draft: (deploymentId) ->
@@ -154,11 +147,6 @@ module.exports = class ResponseModel
     # Set response status
     @response.status = "final"
 
-    # Get any entity creates/updates. Updates first, since generating creates adds answers to entity questions
-    # that would make them look like updates
-    @response.pendingEntityUpdates = @_generateEntityUpdates()
-    @response.pendingEntityCreates = @_generateEntityCreates()
-
   # Performs special operation when a response goes from final to other
   _unfinalize: ->
     # Unset any entity questions that were set because a create happened
@@ -170,136 +158,6 @@ module.exports = class ResponseModel
     # Remove any pending entity operations
     @response.pendingEntityUpdates = []
     @response.pendingEntityCreates = []
-
-  _generateEntityCreates: ->
-    creates = []
-
-    # Create form compiler
-    model = new Backbone.Model(@response.data)
-    compiler = new FormCompiler(model: model, ctx: @formCtx)
-
-    # DEPRECATED!!!
-    # If no entity was set (then it would be update, not create) and is set to create entity
-    if @form.design.entitySettings and @form.design.entitySettings.entityType and not @formCtx.formEntity?
-      creates.push { 
-        entityType: _.last(@form.design.entitySettings.entityType.split(":")), 
-        entity: _.extend(compiler.compileSaveLinkedAnswers(@form.design.entitySettings.propertyLinks, @form.design)(), { 
-          _id: uuid.v4(),
-          _roles: [{ to: "user:#{@user}", role: "admin" }, { to: "all", role: "view" }] # Default roles to protected
-        })
-      }
-    # END DEPRECATED
-
-    # TODO Null response handling. Include? Currently yes
-    # Go through all entity questions
-    for question in formUtils.priorQuestions(@form.design)
-      # If entity question with property links and createEntity is true
-      if question._type == "EntityQuestion" and question.propertyLinks and question.createEntity
-        # If value is *not* set
-        if not model.get(question._id) or not model.get(question._id).value
-          # Get data from that entity question
-          entity = compiler.compileSaveLinkedAnswers(question.propertyLinks, @form.design)()
-
-          # Add _id
-          entity._id = uuid.v4()
-          entity._roles = [{ to: "user:#{@user}", role: "admin" }, { to: "all", role: "view" }]
-
-          # Set question value
-          @response.data[question._id] = { value: entity._id, created: true }
-
-          create = {
-            entityType: question.entityType,
-            entity: entity
-            questionId: question._id
-          }
-
-          # Get deployment to override _roles and _created_for
-          deployment = _.findWhere(@form.deployments, { _id: @response.deployment })
-          if deployment.entityCreationSettings
-            # Find first matching setting (right question and conditions true)
-            settings = _.find(deployment.entityCreationSettings, (ecs) =>
-              # Question must match
-              if ecs.questionId != question._id 
-                return false
-
-              # Conditions must be true or non-existant
-              if ecs.conditions
-                if not compiler.compileConditions(ecs.conditions, @form.design)()
-                  return false
-
-              return true
-            )
-
-            # Apply settings if match found
-            if settings
-              if settings.createdFor
-                create.entity._created_for = settings.createdFor
-
-              roles = []
-
-              # Set enumerator role
-              if settings.enumeratorRole
-                roles.push({ to: "user:#{@response.user}", role: settings.enumeratorRole })
-
-              # Add other roles
-              if settings.otherRoles
-                for role in settings.otherRoles
-                  if not _.findWhere(roles, to: role.to)
-                    roles.push({ to: role.to, role: role.role })
-
-              create.entity._roles = roles
-
-          # Add extra create roles
-          for extraCreateRole in @extraCreateRoles
-            # Remove existing that match
-            create.entity._roles = _.filter(create.entity._roles, (r) -> r.to != extraCreateRole.to)
-            create.entity._roles.push(extraCreateRole)
-
-          # Set any codes if not set
-          for property in @formCtx.getProperties(create.entityType)
-            if property.unique_code and not create.entity[property.code]
-              create.entity[property.code] = @formCtx.getUniqueCode()
-
-          creates.push(create)
-
-    return creates
-
-  _generateEntityUpdates: ->
-    updates = []
-
-    # Create form compiler
-    model = new Backbone.Model(@response.data)
-    compiler = new FormCompiler(model: model, ctx: @formCtx)
-
-    # DEPRECATED!!!
-    # If entity was set 
-    if @form.design.entitySettings and @form.design.entitySettings.entityType and @formCtx.formEntity?
-      updates.push({ 
-        questionId: null
-        entityId: @formCtx.formEntity._id, 
-        entityType: _.last(@form.design.entitySettings.entityType.split(":")), 
-        updates: compiler.compileSaveLinkedAnswers(@form.design.entitySettings.propertyLinks, @form.design)()
-      })
-    # END DEPRECATED
-
-    # TODO Null response handling. Include? Currently yes
-    # Go through all entity questions
-    for question in formUtils.priorQuestions(@form.design)
-      # If entity question with property links
-      if question._type == "EntityQuestion" and question.propertyLinks
-        # If value is set
-        if model.get(question._id) and model.get(question._id).value 
-          # Get updates from that entity question
-          propertyUpdates = compiler.compileSaveLinkedAnswers(question.propertyLinks, @form.design)()
-          if _.keys(propertyUpdates).length > 0
-            updates.push({
-              entityId: model.get(question._id).value,
-              entityType: question.entityType,
-              updates: propertyUpdates
-              questionId: question._id
-            })
-
-    return updates
 
   # Updates entities field
   _updateEntities: ->
@@ -435,67 +293,6 @@ module.exports = class ResponseModel
       subjects = subjects.concat(_.map @groups, (g) -> "group:" + g)
 
       return _.intersection(admins, subjects).length > 0
-
-  # Process any pending entity operations using the specified mongo-style 
-  # database. See minimongo for a spec.
-  # Calls callback with results with:
-  # { 
-  #  creates: [array of { entity, entityType }]
-  #  updates: [array of { entity, entityType }]
-  #  error: error if present or null
-  # }
-  processEntityOperations: (db, cb) ->
-    tasks = []
-    if @response.pendingEntityUpdates
-      for update in @response.pendingEntityUpdates
-        # Create an async task 
-        tasks.push (cb) =>
-          db[update.entityType].findOne({ _id: update.entityId }, { interim: false, timeout: 2000 }, (entity) =>
-            # If not found, continue
-            if not entity
-              return cb({error: "The entity with id: #{update.entityId} could not be found."})
-
-            # Update entity
-            updated = _.extend({}, entity, update.updates)
-
-            db[update.entityType].upsert(updated, (successEntity) =>
-              # Remove from pending list
-              @response.pendingEntityUpdates = _.without(@response.pendingEntityUpdates, update)
-  
-              # Call callback with update
-              cb(null, { update: { entity: successEntity, entityType: update.entityType } })
-            , cb)
-          , cb)
-
-    if @response.pendingEntityCreates
-      for create in @response.pendingEntityCreates
-        # Create an async task 
-        tasks.push (cb) =>
-          db[create.entityType].upsert(create.entity, (successEntity) =>
-            # Remove from pending list
-            @response.pendingEntityCreates = _.without(@response.pendingEntityCreates, create)
-
-            # Call callback with create
-            cb(null, { create: { entity: successEntity, entityType: create.entityType } })
-          , cb)
-
-    # Execute all tasks, then upsert
-    async.series tasks, (err, res) =>
-      # Create results object
-      results = {
-        error: err
-        creates: []
-        updates: []
-      }
-
-      # Add creates and updates
-      for r in res
-        if r and r.create
-          results.creates.push(r.create)
-        if r and r.update
-          results.updates.push(r.update)
-
-      cb(results)
 
   # Add an event
   _addEvent: (type, attrs={}) ->

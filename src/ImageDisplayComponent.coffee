@@ -7,7 +7,9 @@ ImagePopupComponent = require './ImagePopupComponent'
 module.exports = class ImageDisplayComponent extends React.Component
   @propTypes:
     id: React.PropTypes.string.isRequired  # Id of image
-    formCtx: React.PropTypes.object.isRequired
+
+  @contextTypes:
+    imageManager: React.PropTypes.object.isRequired
 
   constructor: ->
     super
@@ -18,7 +20,7 @@ module.exports = class ImageDisplayComponent extends React.Component
 
   update: (props) ->
     # Get URL of thumbnail
-    props.formCtx.imageManager.getImageThumbnailUrl props.id, (url) =>
+    @context.imageManager.getImageThumbnailUrl props.id, (url) =>
       @setState(url: url, error: false)
     , => @setState(error: true)
 
@@ -28,7 +30,7 @@ module.exports = class ImageDisplayComponent extends React.Component
   handleImgClick: =>
     ModalPopupComponent.show((onClose) =>
       React.createElement(ImagePopupComponent, {
-        imageManager: @props.formCtx.imageManager
+        imageManager: @context.imageManager
         id: @props.id
         onClose: onClose
       })
