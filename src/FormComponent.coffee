@@ -41,7 +41,7 @@ module.exports = class FormComponent extends React.Component
     @state = {
       visibilityStructure: {}
       formExprEvaluator: new FormExprEvaluator(@props.design)
-      T: @createLocalizer(@props.design, @props.formCtx.locale)
+      T: @createLocalizer(@props.design, @props.locale)
     }
 
   getChildContext: -> 
