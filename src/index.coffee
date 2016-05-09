@@ -4,7 +4,7 @@ _ = require 'lodash'
 exports.AdminRegionAnswerComponent = require './answers/AdminRegionAnswerComponent'
 exports.ImageEditorComponent = require './ImageEditorComponent'
 exports.ImagelistEditorComponent = require './ImagelistEditorComponent'
-
+exports.ResponseAnswersComponent = require './ResponseAnswersComponent'
 exports.LocationView = require './legacy/LocationView'
 
 exports.formUtils = require './formUtils'
