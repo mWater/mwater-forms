@@ -29,6 +29,20 @@ module.exports = class ResponseDisplayComponent extends React.Component
       T: @createLocalizer(@props.form.design, @props.formCtx.locale)
     }
 
+  componentWillMount: () ->
+    events = @props.response.events or []
+    
+    if events.length > 0 and @props.apiUrl?
+      byArray = _.map(events, (event) -> "\"#{event.by}\"" )
+      url = @props.apiUrl + 'users_public_data?filter={"_id":{"$in":[' + byArray.join(',') + ']}}'
+      @setState(loadingUsernames: true)
+      $.ajax({ dataType: "json", url: url })
+      .done (rows) =>
+        # eventsUsernames is an object with a key for each _id value
+        @setState(loadingUsernames: false, eventsUsernames: _.indexBy(rows, '_id'))
+      .fail (xhr) =>
+        @setState(loadingUsernames: false, eventsUsernames: null)
+
   componentWillReceiveProps: (nextProps) ->
     if @props.design != nextProps.design
       @setState(formExprEvaluator: new FormExprEvaluator(nextProps.design))
@@ -36,7 +50,9 @@ module.exports = class ResponseDisplayComponent extends React.Component
     if @props.design != nextProps.design or @props.locale != nextProps.locale
       @setState(T: @createLocalizer(nextProps.design, nextProps.locale))
 
-  getChildContext: -> 
+    events = @props.response.events or []
+
+  getChildContext: ->
     _.extend({}, @props.formCtx, {
       T: @state.T
       locale: @props.locale
