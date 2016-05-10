@@ -13,7 +13,7 @@ module.exports = class ImageDisplayComponent extends React.Component
 
   constructor: ->
     super
-    @state = { error: false, url: null }
+    @state = { error: false, url: null, popup: false }
 
   componentDidMount: -> @update(@props)
   componentWillReceiveProps: (newProps) -> @update(newProps)
@@ -24,17 +24,9 @@ module.exports = class ImageDisplayComponent extends React.Component
       @setState(url: url, error: false)
     , => @setState(error: true)
 
-  handleImgError: =>
-    @setState(error: true)
+  handleImgError: => @setState(error: true)
 
-  handleImgClick: =>
-    ModalPopupComponent.show((onClose) =>
-      React.createElement(ImagePopupComponent, {
-        imageManager: @context.imageManager
-        id: @props.id
-        onClose: onClose
-      })
-    )
+  handleImgClick: => @setState(popup: true)
 
   render: ->
     if @state.error
@@ -44,5 +36,13 @@ module.exports = class ImageDisplayComponent extends React.Component
     else
       src = "img/image-loading.png"
 
-    H.img className: "img-thumbnail", src: src, onError: @handleImgError, onClick: @handleImgClick, style: { maxHeight: 100 }
+    H.span null,
+      H.img className: "img-thumbnail", src: src, onError: @handleImgError, onClick: @handleImgClick, style: { maxHeight: 100 }
+      if @state.popup
+        React.createElement(ImagePopupComponent, {
+          imageManager: @context.imageManager
+          id: @props.id
+          onClose: => @setState(popup: false)
+        })
+
 

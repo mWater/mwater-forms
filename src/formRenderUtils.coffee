@@ -9,6 +9,7 @@ GroupComponent = require './GroupComponent'
 RosterGroupComponent = require './RosterGroupComponent'
 RosterMatrixComponent = require './RosterMatrixComponent'
 
+# Render an item, given its data, visibility function, etc.
 exports.renderItem = (item, data, parentData, formExprEvaluator, onDataChange, isVisible, onNext) ->
   handleAnswerChange = (id, answer) =>
     change = {}
