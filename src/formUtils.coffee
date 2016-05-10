@@ -7,13 +7,13 @@ exports.createUid = -> uuid.v4().replace(/-/g, "")
 
 # Create short unique id, with ~42 bits randomness to keep unique amoung a few choices
 exports.createShortUid = ->
-    chrs = "abcdefghjklmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ123456789"
-    loop 
-      id = ""
-      for i in [1..7]
-        id = id + chrs[_.random(0, chrs.length - 1)]
-      if not _.find(@model, { id: id })? then break
-    return id
+  chrs = "abcdefghjklmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ123456789"
+  loop 
+    id = ""
+    for i in [1..7]
+      id = id + chrs[_.random(0, chrs.length - 1)]
+    if not _.find(@model, { id: id })? then break
+  return id
 
 # Create a base32 time code to write on forms
 exports.createBase32TimeCode = (date) ->
@@ -56,42 +56,68 @@ exports.localizeString = (str, locale) ->
 
 # Gets all questions in form before reference item specified
 # refItem can be null for all questions
-# TODO should handle arbitrary nesting
-exports.priorQuestions = (form, refItem) ->
-  # List contents until current
-  priors = []
-  for item in form.contents
-    # If ids match
-    if refItem? and item._id == refItem._id
-      return priors
+# rosterId is the rosterId to use. null for only top-level
+exports.priorQuestions = (formDesign, refItem = null, rosterId = null) ->
+  questions = []
 
-    if exports.isQuestion(item)
-      priors.push(item)
+  # Append all child items
+  appendChildren = (parentItem, currentRosterId) ->
+    for child in parentItem.contents
+      # If ids match, abort
+      if refItem? and child._id == refItem._id
+        return true
 
-    if item._type == "Section"
-      for item2 in item.contents
-        # If ids match
-        if refItem? and item2._id == refItem._id
-          return priors
+      if currentRosterId == rosterId and exports.isQuestion(child)
+        questions.push(child)
 
-        if exports.isQuestion(item2)
-          priors.push(item2)
+      if child.contents
+        if child._type in ["RosterGroup", "RosterMatrix"]
+          if appendChildren(child, child.rosterId or child._id)
+            return true
+        else
+          if appendChildren(child, currentRosterId)
+            return true
 
-  return priors
+    return false
+
+  appendChildren(formDesign, null)
+  return questions
+
+exports.getRosterIds = (formDesign) ->
+  rosterIds = []
+
+  recurse = (item) ->
+    if item._type in ["RosterGroup", "RosterMatrix"]
+      rosterIds.push(item.rosterId or item._id)
+    if item.contents
+      for subitem in item.contents
+        recurse(subitem)
+
+  recurse(formDesign)
+
+  return _.uniq(rosterIds)
 
 # Finds an item by id in a form
-# TODO should handle arbitrary nesting
-exports.findItem = (form, questionId) ->
-  for item in form.contents
+exports.findItem = (formDesign, itemId) ->
+  for item in formDesign.contents
     # If ids match
-    if item._id == questionId
+    if item._id == itemId
       return item
 
-    if item._type == "Section"
-      for item2 in item.contents
-        # If ids match
-        if item2._id == questionId
-          return item2
+    if item.contents
+      found = exports.findItem(item, itemId)
+      if found
+        return found
+
+# All items under an item including self
+exports.allItems = (rootItem) ->
+  items = []
+  items.push(rootItem)
+  if rootItem.contents
+    for item in rootItem.contents
+      items = items.concat(exports.allItems(item))
+
+  return items
 
 # Fills question with default values and removes extraneous fields
 exports.prepareQuestion = (q) ->
@@ -106,9 +132,9 @@ exports.prepareQuestion = (q) ->
   switch q._type
     when "TextQuestion"
       _.defaults q, { format: "singleline" }
-    when "NumberQuestion"
+    when "NumberQuestion", "NumberColumnQuestion"
       _.defaults q, { decimal: true }
-    when "DropdownQuestion", "RadioQuestion", "MulticheckQuestion"
+    when "DropdownQuestion", "RadioQuestion", "MulticheckQuestion", "DropdownColumnQuestion"
       _.defaults q, { choices: [] }
     when "DateQuestion" # , "DateTimeQuestion"??
       _.defaults q, { format: "YYYY-MM-DD" }
@@ -120,15 +146,15 @@ exports.prepareQuestion = (q) ->
       _.defaults q, { entityFilter: {}, displayProperties: [], selectionMode: "external", selectProperties: [], selectText: { _base: "en", en: "Select" }, propertyLinks: [] }
 
   # Get known fields
-  knownFields = ['_id', '_type', 'text', 'conditions', 'validations', 
+  knownFields = ['_id', '_type', 'text', 'textExprs', 'conditions', 'validations', 
     'required', 'code', 'hint', 'help', 'alternates', 'commentsField', 'recordLocation', 'recordTimestamp', 'sticky', 'exportId']
 
   switch q._type
     when "TextQuestion", "DateQuestion" #, "DateTimeQuestion"
       knownFields.push "format"
-    when "NumberQuestion"
+    when "NumberQuestion", "NumberColumnQuestion"
       knownFields.push "decimal"
-    when "DropdownQuestion", "RadioQuestion", "MulticheckQuestion"
+    when "DropdownQuestion", "RadioQuestion", "MulticheckQuestion", "DropdownColumnQuestion"
       knownFields.push "choices"
     when "UnitsQuestion"
       knownFields.push "decimal"
@@ -180,11 +206,11 @@ exports.changeQuestionType = (question, newType) ->
 # Gets type of the answer: text, number, choice, choices, date, units, boolean, location, image, images, texts, site, entity, admin_region
 exports.getAnswerType = (q) ->
   switch q._type
-    when "TextQuestion"
+    when "TextQuestion", "TextColumnQuestion"
       return "text"
-    when "NumberQuestion"
+    when "NumberQuestion", "NumberColumnQuestion"
       return "number"
-    when "DropdownQuestion", "RadioQuestion"
+    when "DropdownQuestion", "RadioQuestion", "DropdownColumnQuestion"
       return "choice"
     when "MulticheckQuestion"
       return "choices"
@@ -192,7 +218,7 @@ exports.getAnswerType = (q) ->
       return "date"
     when "UnitsQuestion"
       return "units"
-    when "CheckQuestion"
+    when "CheckQuestion", "CheckColumnQuestion"
       return "boolean"
     when "LocationQuestion"
       return "location"
@@ -331,7 +357,7 @@ exports.findEntityQuestion = (form, entityType) ->
         siteType = "Water point"
 
       # Convert to entity type
-      questionEntityType = siteType.toLowerCase().replace(/ /g, "_")
+      questionEntityType = siteType.toLowerCase().replace(new RegExp(' ', 'g'), "_")
       if questionEntityType == entityType
         return q
     return

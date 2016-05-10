@@ -13,19 +13,12 @@
     border-radius: 5px;
 }
 
-.question-default {
-  margin-bottom: 20px;
+td.invalid {
+  border: #C43B1D 2px solid !important; /* Important to override other cell borders */
 }
 
-.question-tabular  {
-  display:table-row;
-}
-.question-tabular > .prompt {
-  padding-right: 2px;
-  display:table-cell;
-}
-.question-tabular  > .answer {
-  display:table-cell;
+.question {
+  margin-bottom: 20px;
 }
 
 .question-code {
@@ -43,7 +36,7 @@
   margin-top: 5px;
 }
 
-.question-default  > .prompt {
+.question  > .prompt {
   font-weight: bold;
 }
 
@@ -119,4 +112,23 @@ select {
 
 .specify-input {
   margin-top: 3px;
+}
+
+/* Fade css transition */
+.fade-enter {
+  opacity: 0.01;
+}
+
+.fade-enter.fade-enter-active {
+  opacity: 1;
+  transition: opacity 300ms ease-in;
+}
+
+.fade-leave {
+  opacity: 1;
+}
+
+.fade-leave.fade-leave-active {
+  opacity: 0.01;
+  transition: opacity 300ms ease-in;
 }

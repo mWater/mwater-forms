@@ -3,8 +3,7 @@ assert = require('chai').assert
 Backbone = require 'backbone'
 sinon = require 'sinon'
 
-CurrentPositionFinder = require '../src/CurrentPositionFinder'
-
+CurrentPositionFinder = require '../src/legacy/CurrentPositionFinder'
 
 initialDelay = 10000
 goodDelay = 5000

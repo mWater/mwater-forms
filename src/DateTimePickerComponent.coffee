@@ -4,10 +4,20 @@ H = React.DOM
 ReactDOM = require 'react-dom'
 moment = require 'moment'
 
+# This only works in browser. Load datetime picker
+if process.browser
+  require('eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js')
+
 module.exports = class DateTimePickerComponent extends React.Component
   @propTypes:
-    # do we need time picker?
+    # date format
+    format: React.PropTypes.string
+
+    # do we need time picker?  (Only useful if format is not set)
     timepicker: React.PropTypes.bool
+
+    showTodayButton: React.PropTypes.bool # Show the today button
+    showClear: React.PropTypes.bool # Show the clear button
 
     # callback on date change
     # argument: {date: moment object for currently selected datetime, oldDate: moment object for previous datetime}
@@ -26,12 +36,19 @@ module.exports = class DateTimePickerComponent extends React.Component
     @props.onChange?(event.date)
 
   componentDidMount: ->
-    pickerOptions =
-      format: if @props.timepicker then "YYYY-MM-DD HH-mm-ss" else "YYYY-MM-DD"
-      sideBySide: true
+    pickerOptions = { showClear: @props.showClear, useStrict: true }
+
+    if @props.format?
+      pickerOptions.format = @props.format
+    else if @props.timepicker
+      pickerOptions.format = "YYYY-MM-DD HH-mm-ss"
+    else
+      pickerOptions.format = "YYYY-MM-DD"
 
     if @props.defaultDate
       pickerOptions.defaultDate = @props.defaultDate
+
+    pickerOptions.showTodayButton = @props.showTodayButton
 
     node = @refs.datetimepicker
     picker = $(node).datetimepicker(pickerOptions)
@@ -54,9 +71,17 @@ module.exports = class DateTimePickerComponent extends React.Component
   componentWillUnmount: ->
     $(@refs.datetimepicker).data("DateTimePicker").destroy()
 
+  handleInputFocus: =>
+    node = @refs.datetimepicker
+    $(node).data("DateTimePicker").show()
+
   render: ->
-    H.div style: { position: "relative" },
-      H.input ref: "datetimepicker", type: "text", className: "form-control", placeholder: @props.placeholder,
-    # H.div ref: "datetimepicker", className: "input-group",
-    #   H.span className: "input-group-addon",
-    #     H.span className: "glyphicon glyphicon-calendar"
+    input = H.input { type: "text", className: "form-control", placeholder: @props.placeholder, onFocus: @handleInputFocus }
+
+    H.div className: "row",
+      H.div className: 'col-sm-6',
+        H.div className: "form-group",
+          H.div className: 'input-group date', ref: "datetimepicker",
+            input
+            H.span className: "input-group-addon", onClick: @handleCalendarClick,
+              H.span className: "glyphicon glyphicon-calendar"

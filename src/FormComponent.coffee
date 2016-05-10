@@ -1,88 +1,167 @@
+_ = require 'lodash'
 React = require 'react'
 H = React.DOM
-_ = require 'lodash'
-FormCompiler = require './FormCompiler'
+R = React.createElement
+
+SectionsComponent = require './SectionsComponent'
+ItemListComponent = require './ItemListComponent'
+ezlocalize = require 'ez-localize'
+
+ResponseCleaner = require './ResponseCleaner'
+DefaultValueApplier = require './DefaultValueApplier'
+VisibilityCalculator = require './VisibilityCalculator'
+FormExprEvaluator = require './FormExprEvaluator'
 
 # Displays a form that can be filled out
 module.exports = class FormComponent extends React.Component
   @propTypes:
-    formCtx: React.PropTypes.object.isRequired  # Form context. See docs/Forms Context.md
+    formCtx: React.PropTypes.object.isRequired   # Context to use for form. See docs/FormsContext.md
     design: React.PropTypes.object.isRequired # Form design. See schema.coffee
-    locale: React.PropTypes.string            # Locale. Defaults to English (en)
-
+  
     data: React.PropTypes.object.isRequired # Form response data. See docs/Answer Formats.md
-    # Note: Data is held as local state for now, so updating responses is not required but suggested for future compatibility on changes
     onDataChange: React.PropTypes.func.isRequired # Called when response data changes
 
+    locale: React.PropTypes.string          # e.g. "fr"
+    
     onSubmit: React.PropTypes.func.isRequired     # Called when submit is pressed
     onSaveLater: React.PropTypes.func             # Optional save for later
     onDiscard: React.PropTypes.func.isRequired    # Called when discard is pressed
 
-    submitLabel: React.PropTypes.string           # Label for submit button
-    discardLabel: React.PropTypes.string           # Label for discard button
-
     entity: React.PropTypes.object            # Form-level entity to load
     entityType: React.PropTypes.string        # Type of form-level entity to load
 
-  componentDidMount: ->
-    @reload(@props)
+  @childContextTypes: _.extend({}, require('./formContextTypes'), {
+    T: React.PropTypes.func.isRequired
+    locale: React.PropTypes.string          # e.g. "fr"
+  })
+
+  constructor: (props) ->
+    super(props)
+
+    @state = {
+      visibilityStructure: {}
+      formExprEvaluator: new FormExprEvaluator(@props.design)
+      T: @createLocalizer(@props.design, @props.locale)
+    }
+
+  getChildContext: -> 
+    _.extend({}, @props.formCtx, {
+      T: @state.T
+      locale: @props.locale
+    })
 
   componentWillReceiveProps: (nextProps) ->
-    # Can't change design
-    if nextProps.design != @props.design
-      throw new Error("Can't change design after mounted")
+    if @props.design != nextProps.design
+      @setState(formExprEvaluator: new FormExprEvaluator(nextProps.design))
 
-    # Can't change entity
-    if nextProps.entity != @props.entity
-      throw new Error("Can't change entity after mounted")
+    if @props.design != nextProps.design or @props.locale != nextProps.locale
+      @setState(T: @createLocalizer(nextProps.design, nextProps.locale))
 
-    # Check if different from existing response
-    if not _.isEqual(nextProps.data, @model.toJSON())
-      @model.set(nextProps.data)
+  # This will clean the data that has been passed at creation
+  # It will also initialize the visibilityStructure
+  # And set the sticky data
+  componentWillMount: ->
+    @handleDataChange(@props.data)
 
-    # Allow changes to locale
-    if @props.locale != nextProps.locale
-      @reload(nextProps)
+  # Creates a localizer for the form design
+  createLocalizer: (design, locale) ->
+    # Create localizer
+    localizedStrings = design.localizedStrings or []
+    localizerData = {
+      locales: design.locales
+      strings: localizedStrings
+    }
+    T = new ezlocalize.Localizer(localizerData, locale).T
+    return T
 
-  reload: (props) ->
-    if @formView
-      @formView.remove()
-      @formView = null
+  handleSubmit: =>
+    # Cannot submit if at least one item is invalid
+    if not @refs.itemListComponent.validate(true)
+      @props.onSubmit()
 
-    # Load response data to model
-    @model = new Backbone.Model()
-    @model.set(_.cloneDeep(props.data))
+  isVisible: (itemId) =>
+    return @state.visibilityStructure[itemId]
 
-    # Listen for changes to data model
-    @model.on "change", @handleChange
+  # The process of computing visibility, cleaning data and applying stickyData/defaultValue can trigger more changes
+  # and should be repeated until the visibilityStructure is stable.
+  # A simple case: Question A, B and C with B only visible if A is set and C only visible if B is set and B containing a defaultValue
+  # Setting a value to A will make B visible and set to defaultValue, but C will remain invisible until the process is repeated
+  computingVisibilityAndUpdatingData: (data, oldVisibilityStructure) ->
+    oldVisibilityStructure = @state.visibilityStructure
+    newVisibilityStructure = @computeVisibility(data)
+    newData = @cleanData(data, newVisibilityStructure)
+    newData = @stickyData(newData, oldVisibilityStructure, newVisibilityStructure)
+    return [newData, newVisibilityStructure]
 
-    # Create compiler
-    compiler = new FormCompiler(model: @model, locale: props.locale, ctx: props.formCtx)
-    @formView = compiler.compileForm(props.design, { 
-      entityType: props.entityType
-      entity: props.entity
-      allowSaveForLater: props.onSaveLater?
-      submitLabel: props.submitLabel
-      discardLabel: props.discardLabel
-      })
+  handleDataChange: (data) =>
+    newData = data
+    oldVisibilityStructure = @state.visibilityStructure
+    nbIterations = 0
+    # This needs to be repeated until it stabilizes
+    while true
+      [newData, newVisibilityStructure] = @computingVisibilityAndUpdatingData(newData, oldVisibilityStructure)
+      nbIterations++
+      # If the visibilityStructure is still the same twice, the process is now stable.
+      if _.isEqual(newVisibilityStructure, oldVisibilityStructure)
+        break
+      # Looping conditions???
+      if nbIterations >= 10
+        throw new Error('Impossible to compute question visibility. The question conditions must be looping')
+      # New is now old
+      oldVisibilityStructure = newVisibilityStructure
 
-    @formView.render()
+    @setState(visibilityStructure: newVisibilityStructure)
+    @props.onDataChange(newData)
 
-    # Listen to events
-    # Listening to changes is done above
-    @formView.on 'complete', props.onSubmit
-    if props.onSaveLater
-      @formView.on 'close', props.onSaveLater
-    @formView.on 'discard', props.onDiscard
+  computeVisibility: (data) ->
+    visibilityCalculator = new VisibilityCalculator(@props.design)
+    return visibilityCalculator.createVisibilityStructure(data)
 
-    $(@refs.form).append(@formView.el)
+  cleanData: (data, visibilityStructure) ->
+    responseCleaner = new ResponseCleaner()
+    return responseCleaner.cleanData(data, visibilityStructure, @props.design)
 
-  componentWillUnmount: ->
-    if @formView
-      @formView.remove()
+  stickyData: (data, previousVisibilityStructure, newVisibilityStructure) ->
+    defaultValueApplier = new DefaultValueApplier(@props.design, @props.formCtx.stickyStorage, @props.entity, @props.entityType)
+    return defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure)
 
-  handleChange: =>
-    @props.onDataChange(@model.toJSON())
+  handleNext: () =>
+    @refs.submit.focus()
 
   render: ->
-    return H.div ref: "form"
+    if @props.design.contents[0] and @props.design.contents[0]._type == "Section"
+      R SectionsComponent,
+        contents: @props.design.contents
+        data: @props.data
+        onDataChange: @handleDataChange
+        onSubmit: @props.onSubmit
+        onSaveLater: @props.onSaveLater
+        onDiscard: @props.onDiscard
+        isVisible: @isVisible
+        formExprEvaluator: @state.formExprEvaluator 
+    else
+      H.div null,
+        R ItemListComponent,
+          ref: 'itemListComponent'
+          contents: @props.design.contents
+          data: @props.data
+          onDataChange: @handleDataChange
+          isVisible: @isVisible 
+          formExprEvaluator: @state.formExprEvaluator
+          onNext: @handleNext
+
+        H.button type: "button", className: "btn btn-primary", ref: 'submit', onClick: @handleSubmit,
+          @state.T("Submit")
+
+        "\u00A0"
+
+        if @props.onSaveLater
+          [
+            H.button type: "button", className: "btn btn-default", onClick: @props.onSaveLater,
+              @state.T("Save for Later")
+            "\u00A0"
+          ]
+
+        H.button type:"button", className: "btn btn-default", onClick: @props.onDiscard,
+          H.span className: "glyphicon glyphicon-trash"
+          " " + @state.T("Discard")

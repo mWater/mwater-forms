@@ -1,44 +1,21 @@
 $ = require 'jquery'
-Backbone = require 'backbone'
 _ = require 'lodash'
 
+exports.AdminRegionAnswerComponent = require './answers/AdminRegionAnswerComponent'
+exports.ImageEditorComponent = require './ImageEditorComponent'
+exports.ImagelistEditorComponent = require './ImagelistEditorComponent'
+exports.ResponseAnswersComponent = require './ResponseAnswersComponent'
+exports.LocationView = require './legacy/LocationView'
+
 exports.formUtils = require './formUtils'
-exports.conditionUtils = require './conditionUtils'
-exports.Sections = require './Sections'
-exports.Section = require './Section'
-exports.Question = require './Question'
-exports.RadioQuestion = require './RadioQuestion'
-exports.CheckQuestion = require './CheckQuestion'
-exports.TextQuestion = require './TextQuestion'
-# Deprecated exports.CompositeQuestion = require './CompositeQuestion'
-exports.LocationQuestion = require './LocationQuestion'
-exports.DateQuestion = require './DateQuestion'
-exports.DropdownQuestion = require './DropdownQuestion'
-exports.NumberQuestion = require './NumberQuestion'
-exports.QuestionGroup = require './QuestionGroup'
-exports.MulticheckQuestion = require './MulticheckQuestion'
-exports.SaveCancelForm = require './SaveCancelForm'
-exports.SiteQuestion = require './SiteQuestion'
-exports.BarcodeQuestion = require './BarcodeQuestion'
-exports.ImageQuestion = require './ImageQuestion'
-exports.ImagesQuestion = require './ImagesQuestion'
-exports.EntityQuestion = require './EntityQuestion'
-exports.AdminRegionQuestion = require './AdminRegionQuestion'
-exports.Instructions = require './Instructions'
+exports.formRenderUtils = require './formRenderUtils'
 exports.ECPlates = require './ECPlates'
-exports.TextListQuestion = require './TextListQuestion'
-exports.UnitsQuestion = require './UnitsQuestion'
-exports.FormCompiler = require './FormCompiler'
-exports.LocationView = require './LocationView'
 exports.utils = require './utils'
 exports.LocationFinder = require './LocationFinder'
 exports.LocationEditorComponent = require './LocationEditorComponent'
-exports.ImageEditorComponent = require './ImageEditorComponent'
-exports.ImagelistEditorComponent = require './ImagelistEditorComponent'
 
 exports.AdminRegionDataSource = require './AdminRegionDataSource'
 exports.AdminRegionSelectComponent = require './AdminRegionSelectComponent'
-exports.AdminRegionAnswerComponent = require './AdminRegionAnswerComponent'
 exports.AdminRegionDisplayComponent = require './AdminRegionDisplayComponent'
 
 exports.DateTimePickerComponent = require './DateTimePickerComponent'
@@ -46,17 +23,14 @@ exports.FormModel = require './FormModel'
 exports.ResponseModel = require './ResponseModel'
 exports.ResponseDisplayComponent = require './ResponseDisplayComponent'
 exports.FormComponent = require './FormComponent'
+exports.formContextTypes = require './formContextTypes'
+exports.FormSchemaBuilder = require './FormSchemaBuilder'
 
-exports.schemaVersion = 12 # Version of the schema that this package supports (cannot compile if higher)
+exports.schemaVersion = 13 # Version of the schema that this package supports (cannot compile if higher)
 exports.minSchemaVersion = 1 # Minimum version of forms schema that can be compiled
 
-# # JSON schema of form design # Explicitly import for now
-# exports.designSchema = require('./schema').design
-
-# This only works in browser. Load datetime picker
-if process.browser
-  require('eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js')
-
+# JSON schema of form
+exports.schema = require('./schema')
 
 # Simple form that displays a template based on loaded data
 exports.templateView = (template) -> 
@@ -91,3 +65,4 @@ exports.createBase32TimeCode = (date) ->
     code = chars[num] + code
 
   return code
+

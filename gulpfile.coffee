@@ -13,10 +13,11 @@ concat = require 'gulp-concat'
 browserSync = require 'browser-sync'
 reload = browserSync.reload
 watchify = require 'watchify'
+envify = require('envify/custom')
 
 # Compile coffeescript to js in lib/
 gulp.task 'coffee', ->
-  gulp.src('./src/*.coffee')
+  gulp.src('./src/**/*.coffee')
     .pipe(coffee({ bare: true }))
     .pipe(gulp.dest('./lib/'))
 
@@ -32,7 +33,7 @@ gulp.task 'localize', (cb) ->
 
 # Compile tests
 gulp.task 'prepareTests', ->
-  files = glob.sync("./test/*Tests.coffee");
+  files = glob.sync("./test/**/*Tests.coffee");
   bundler = browserify({ entries: files, extensions: [".js", ".coffee"] })
   stream = bundler.bundle()
     .on('error', gutil.log)
@@ -42,12 +43,16 @@ gulp.task 'prepareTests', ->
   return stream
 
 makeBrowserifyBundle = ->
-  browserify("./demo.coffee",
+  shim(browserify("./demo.coffee",
     extensions: [".coffee"]
     basedir: "./src/"
-  )
+  ))
 
 bundleDemoJs = (bundle) ->
+  # Use production node for performance testing
+  # console.log "Using production version of React"
+  # bundle = bundle.transform(envify({ NODE_ENV: 'production' }), { global: true })
+
   bundle.bundle()
     .on("error", gutil.log)
     .pipe(source("demo.js"))
@@ -67,6 +72,8 @@ gulp.task "libs_js", ->
   return gulp.src([
     "./bower_components/jquery/dist/jquery.js"
     "./bower_components/bootstrap/dist/js/bootstrap.js"
+    "./bower_components/lodash/lodash.js"
+    './bower_components/backbone/backbone.js'
   ]).pipe(concat("libs.js"))
     .pipe(gulp.dest("./dist/js/"))
 
@@ -95,7 +102,6 @@ gulp.task 'compile', gulp.series('coffee', 'copy', 'localize')
 
 gulp.task 'default', gulp.series('compile')
 
-
 gulp.task 'watch', gulp.series([
   'demo', 
   ->
@@ -117,3 +123,15 @@ gulp.task 'watch', gulp.series([
     w.on 'update', ->
       bundleDemoJs(w)
   ])
+
+# Shim non-browserify friendly libraries to allow them to be 'require'd
+shim = (instance) ->
+  shims = {
+    jquery: '../shims/jquery-shim'
+  }
+
+  # Add shims
+  for name, path of shims
+    instance.require(path, {expose: name})
+
+  return instance
