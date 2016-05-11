@@ -330,6 +330,7 @@ module.exports = class FormSchemaBuilder
           contents.push({
             id: "data:#{item._id}"
             type: "join"
+            name: item.name
             join: {
               type: "1-n"
               toTable: "responses:#{form._id}:roster:#{item._id}"
