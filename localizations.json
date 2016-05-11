@@ -20,7 +20,8 @@
     },
     {
       "_base": "en",
-      "en": "Images not available on this platform"
+      "en": "Images not available on this platform",
+      "_unused": true
     },
     {
       "_base": "en",
@@ -112,11 +113,13 @@
     },
     {
       "_base": "en",
-      "en": "Taking photos not supported on this platform"
+      "en": "Taking photos not supported on this platform",
+      "_unused": true
     },
     {
       "_base": "en",
-      "en": "Select units"
+      "en": "Select units",
+      "_unused": true
     },
     {
       "_base": "en",
@@ -343,6 +346,28 @@
     {
       "_base": "en",
       "en": "Cancel GPS"
+    },
+    {
+      "_base": "en",
+      "en": "Add"
+    },
+    {
+      "_base": "en",
+      "en": "None"
+    },
+    {
+      "_base": "en",
+      "en": "Invalid format",
+      "_unused": true
+    },
+    {
+      "_base": "en",
+      "en": "Data is stored in ",
+      "_unused": true
+    },
+    {
+      "_base": "en",
+      "en": "Data is stored in {0}"
     }
   ]
 }

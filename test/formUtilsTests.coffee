@@ -20,6 +20,45 @@ describe "FormUtils", ->
         priors = formUtils.priorQuestions(sectionedForm, sectionedForm.contents[1])
         assert.deepEqual _.pluck(priors, "_id"), ['0001', '0002', '0003', '0004']
 
+      it 'includes group contents', ->
+        form = {
+          _type: "Form"
+          contents: [
+            { _id: "groupid", _type: "Group", contents: simpleForm.contents }
+          ]
+        }
+        priors = formUtils.priorQuestions(form)
+        assert.deepEqual _.pluck(priors, "_id"), ['0001', '0002', '0003', '0004']
+
+      it "doesn't include roster contents by default", ->
+        form = {
+          _type: "Form"
+          contents: [
+            { _id: "groupid", _type: "RosterGroup", contents: simpleForm.contents }
+          ]
+        }
+        priors = formUtils.priorQuestions(form)
+        assert.deepEqual _.pluck(priors, "_id"), []
+
+      it "includes roster contents only if rosterId specified", ->
+        form = {
+          _type: "Form"
+          contents: [
+            { _id: "groupid", _type: "RosterGroup", contents: simpleForm.contents }
+          ]
+        }
+        priors = formUtils.priorQuestions(form, null, "groupid")
+        assert.deepEqual _.pluck(priors, "_id"), ['0001', '0002', '0003', '0004']
+
+  describe "getRosterIds", ->
+    it 'gets unique roster ids', ->
+      form = _.cloneDeep(sectionedForm)
+      form.contents[0].contents.push(
+        { _id: "groupid", _type: "RosterGroup", contents: [] }
+      )
+
+      assert.deepEqual formUtils.getRosterIds(form), ["groupid"]
+
   describe "findItem", ->
     it 'finds question', ->
       assert.equal formUtils.findItem(simpleForm, "0002")._id, "0002"
@@ -51,8 +90,11 @@ describe "FormUtils", ->
       it "adds empty validations", ->
         assert.deepEqual @question.validations, []
 
-    it "adds decimal:true to NumberQuestion", ->
+    it "adds decimal:true to NumberQuestion and NumberColumnQuestion", ->
       question = formUtils.prepareQuestion({ _type: "NumberQuestion" })
+      assert.equal question.decimal, true
+
+      question = formUtils.prepareQuestion({ _type: "NumberColumnQuestion" })
       assert.equal question.decimal, true
         
     it "removes choices for NumberQuestion", ->
@@ -63,8 +105,11 @@ describe "FormUtils", ->
       question = formUtils.prepareQuestion({ _type: "TextQuestion", decimal: true })
       assert.isUndefined question.decimal
 
-    it "adds choices to RadioQuestion", ->
+    it "adds choices to RadioQuestion and DropdownColumnQuestion", ->
       question = formUtils.prepareQuestion({ _type: "RadioQuestion" })
+      assert.deepEqual question.choices, []
+
+      question = formUtils.prepareQuestion({ _type: "DropdownColumnQuestion" })
       assert.deepEqual question.choices, []
         
     # it "adds items? to MultipleTextQuestion"
@@ -161,8 +206,6 @@ describe "FormUtils", ->
         entityQuestion = content.contents[1]
         textQuestionId = textQuestion._id
         propertyLinkQuestionId = entityQuestion.propertyLinks[0].questionId
-        console.log textQuestionId
-        console.log propertyLinkQuestionId
         assert.equal textQuestionId, propertyLinkQuestionId
 
   describe "update localizations", ->

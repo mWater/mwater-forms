@@ -84,7 +84,6 @@ section3 = {
 }
 
 module.exports = {
-  _id: "theformid"
   _type: "Form"
   name: { _base: "en", en: "Form" } 
   contents: [section1, section2, section3]

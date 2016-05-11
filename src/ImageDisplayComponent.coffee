@@ -7,32 +7,26 @@ ImagePopupComponent = require './ImagePopupComponent'
 module.exports = class ImageDisplayComponent extends React.Component
   @propTypes:
     id: React.PropTypes.string.isRequired  # Id of image
-    formCtx: React.PropTypes.object.isRequired
+
+  @contextTypes:
+    imageManager: React.PropTypes.object.isRequired
 
   constructor: ->
     super
-    @state = { error: false, url: null }
+    @state = { error: false, url: null, popup: false }
 
   componentDidMount: -> @update(@props)
   componentWillReceiveProps: (newProps) -> @update(newProps)
 
   update: (props) ->
     # Get URL of thumbnail
-    props.formCtx.imageManager.getImageThumbnailUrl props.id, (url) =>
+    @context.imageManager.getImageThumbnailUrl props.id, (url) =>
       @setState(url: url, error: false)
     , => @setState(error: true)
 
-  handleImgError: =>
-    @setState(error: true)
+  handleImgError: => @setState(error: true)
 
-  handleImgClick: =>
-    ModalPopupComponent.show((onClose) =>
-      React.createElement(ImagePopupComponent, {
-        imageManager: @props.formCtx.imageManager
-        id: @props.id
-        onClose: onClose
-      })
-    )
+  handleImgClick: => @setState(popup: true)
 
   render: ->
     if @state.error
@@ -42,5 +36,13 @@ module.exports = class ImageDisplayComponent extends React.Component
     else
       src = "img/image-loading.png"
 
-    H.img className: "img-thumbnail", src: src, onError: @handleImgError, onClick: @handleImgClick, style: { maxHeight: 100 }
+    H.span null,
+      H.img className: "img-thumbnail", src: src, onError: @handleImgError, onClick: @handleImgClick, style: { maxHeight: 100 }
+      if @state.popup
+        React.createElement(ImagePopupComponent, {
+          imageManager: @context.imageManager
+          id: @props.id
+          onClose: => @setState(popup: false)
+        })
+
 

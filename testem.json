@@ -2,12 +2,15 @@
     "framework": "mocha",
     "serve_files": [ 
         "bower_components/lodash/lodash.js",
+        "bower_components/jquery/dist/jquery.js",
+        "bower_components/bootstrap/dist/js/bootstrap.js",
+        "bower_components/backbone/backbone.js",
         "test/browserified.js"
      ],
     "src_files": [
         "src/*.js",
         "src/*.coffee",
-        "test/*Tests.coffee"
+        "test/**/*Tests.coffee"
     ],
     "launchers": {
     },
