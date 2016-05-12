@@ -3,7 +3,7 @@ assert = require('chai').assert
 
 AssignmentModel = require('../src/AssignmentModel')
 
-describe.only 'AssignmentModel', ->
+describe 'AssignmentModel', ->
   it "sets roles", () ->
     options = {}
     deployment = {_id: 'deploymentId', admins: ['deploymentAdminId']}
