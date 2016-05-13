@@ -11,7 +11,6 @@ describe 'AssignmentModel', ->
     options.assignment = assignment
     options.form = {id: 'formId', roles: [{role: 'admin', id:'formAdminId'}, {role: 'view', id:'formViewId'}], deployments: [deployment]}
     options.user = 'testUserId'
-    options.username = 'testUsername'
     options.groups = []
     assignmentModel = new AssignmentModel(options)
 
