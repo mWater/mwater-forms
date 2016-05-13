@@ -13,7 +13,6 @@ module.exports = class AssignmentModel
     @assignment = options.assignment
     @form = options.form
     @user = options.user
-    @username = options.username
     @groups = options.groups or []
     @fixRoles()
 
@@ -22,7 +21,7 @@ module.exports = class AssignmentModel
     # Determine deployment
     deployment = _.findWhere(@form.deployments, { _id: @assignment.deployment })
     if not deployment
-      throw new Error("No matching deployments for #{@form._id} user #{@username}")
+      throw new Error("No matching deployments for #{@form._id} user #{@user}")
 
     admins = []
     viewers = @assignment.assignedTo
