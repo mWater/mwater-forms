@@ -25,7 +25,9 @@ module.exports = class ResponseDataUpdater
   # Updates the data of a response, given an expression and its value. For example,
   # if there is a text field in question q1234, the expression { type: "field", table: "responses:form123", column: "data:q1234:value" }
   # refers to the text field value. Setting it will set data.q1234.value in the data.
-  updateData: (data, expr, value, callback) ->
+  # suppressCleaning stops any cleaning of data (removing values that are invisble because of conditions). Useful when doing multiple updates
+  # in which case it should be true except for last update.
+  updateData: (data, expr, value, callback, suppressCleaning = false) ->
     # Handle simple fields
     if expr.type == "field" and expr.column.match(/^data:.+:value$/)
       @updateValue(data, expr, value, callback)

@@ -26,6 +26,8 @@ exports.FormComponent = require './FormComponent'
 exports.formContextTypes = require './formContextTypes'
 exports.FormSchemaBuilder = require './FormSchemaBuilder'
 
+exports.ResponseDataUpdater = require './ResponseDataUpdater'
+
 exports.schemaVersion = 13 # Version of the schema that this package supports (cannot compile if higher)
 exports.minSchemaVersion = 1 # Minimum version of forms schema that can be compiled
 
