@@ -25,6 +25,7 @@ exports.ResponseDisplayComponent = require './ResponseDisplayComponent'
 exports.FormComponent = require './FormComponent'
 exports.formContextTypes = require './formContextTypes'
 exports.FormSchemaBuilder = require './FormSchemaBuilder'
+exports.AssignmentModel = require './AssignmentModel'
 
 exports.ResponseDataUpdater = require './ResponseDataUpdater'
 
