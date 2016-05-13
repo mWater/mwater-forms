@@ -49,7 +49,7 @@ module.exports = class DropdownAnswerComponent extends React.Component
   # Render specify input box
   renderSpecify: ->
     choice = _.findWhere(@props.choices, { id: @props.answer.value })
-    if @props.answer.specify?
+    if choice and choice.specify and @props.answer.specify?
       value = @props.answer.specify[choice.id]
     else
       value = ''

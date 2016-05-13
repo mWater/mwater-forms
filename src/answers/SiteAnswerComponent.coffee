@@ -34,7 +34,7 @@ module.exports = class SiteAnswerComponent extends React.Component
   getEntityType: () ->
     # Convert to new entity type
     siteType = (if @props.siteTypes then @props.siteTypes[0]) or "Water point"
-    entityType = siteType.toLowerCase().replace(' ', "_")
+    entityType = siteType.toLowerCase().replace(new RegExp(' ', 'g'), "_")
     return entityType
 
   handleSelectClick: () =>

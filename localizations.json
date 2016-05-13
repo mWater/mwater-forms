@@ -368,6 +368,10 @@
     {
       "_base": "en",
       "en": "Data is stored in {0}"
+    },
+    {
+      "_base": "en",
+      "en": "Select..."
     }
   ]
 }

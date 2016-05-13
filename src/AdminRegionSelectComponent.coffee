@@ -80,7 +80,7 @@ module.exports = class AdminRegionSelectComponent extends AsyncLoadComponent
       H.td null,
         H.select key: "level#{level}", className: "form-control", value: (if @state.path[level] then @state.path[level].id else ""), onChange: @handleChange.bind(null, level),
           H.option key: "none", value: "", 
-            if @state.path[level] then "None" else "Select..."
+            if @state.path[level] then @context.T("None") else @context.T("Select...")
 
           if @state["level#{level}s"]
             _.map(@state["level#{level}s"], (subRegion) => H.option(key: subRegion.id, value: subRegion.id, subRegion.name))

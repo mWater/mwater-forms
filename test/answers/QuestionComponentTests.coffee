@@ -9,6 +9,7 @@ H = React.DOM
 FormExprEvaluator = require '../../src/FormExprEvaluator'
 TestComponent = require('react-library/lib/TestComponent')
 ReactTestUtils = require('react-addons-test-utils')
+MockTContextWrapper = require '../MockTContextWrapper'
 
 QuestionComponent = require '../../src/QuestionComponent'
 
@@ -34,7 +35,7 @@ describe "QuestionComponent", ->
           null
         formExprEvaluator: new FormExprEvaluator()
       }, options
-      elem = R(QuestionComponent, @options)
+      elem = R(MockTContextWrapper, null, R(QuestionComponent, @options))
       comp = new TestComponent(elem)
       @toDestroy.push(comp)
       return comp
@@ -170,7 +171,7 @@ describe "QuestionComponent", ->
           assert.equal answer.value, 'test', 'Should be back to test'
           done()
 
-        testComponent.setElement(R(QuestionComponent, @options))
+        testComponent.setElement(R(MockTContextWrapper, null, R(QuestionComponent, @options)))
 
         callback = () ->
           dn = testComponent.findComponentById('dn')
