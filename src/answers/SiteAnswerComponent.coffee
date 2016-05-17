@@ -11,8 +11,6 @@ module.exports = class SiteAnswerComponent extends React.Component
   @contextTypes:
     selectEntity: React.PropTypes.func
     getEntityById: React.PropTypes.func
-    getEntityByCode: React.PropTypes.func
-    renderEntitySummaryView: React.PropTypes.func
     T: React.PropTypes.func.isRequired  # Localizer to use
 
   @propTypes:
