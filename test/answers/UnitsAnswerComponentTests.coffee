@@ -39,10 +39,10 @@ describe 'UnitsAnswerComponent', ->
     testComponent = @render({
       answer: {
         quantity: null
-        unit: 'a'
+        units: 'a'
       }
       onValueChange: (value) ->
-        assert.equal value.unit, 'b'
+        assert.equal value.units, 'b'
         done()
     })
 
