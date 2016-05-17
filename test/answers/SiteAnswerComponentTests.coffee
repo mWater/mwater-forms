@@ -41,7 +41,7 @@ class SiteContext extends React.Component
   render: ->
     return @props.children
 
-describe.only 'SiteAnswerComponent', ->
+describe 'SiteAnswerComponent', ->
   beforeEach ->
     @toDestroy = []
 
