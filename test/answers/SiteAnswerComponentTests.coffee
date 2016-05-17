@@ -4,6 +4,7 @@ TestComponent = require('react-library/lib/TestComponent')
 ReactTestUtils = require('react-addons-test-utils')
 
 SiteAnswerComponent = require '../../src/answers/SiteAnswerComponent'
+AnswerValidator = require '../../src/answers/AnswerValidator'
 
 React = require 'react'
 ReactDOM = require 'react-dom'
@@ -19,17 +20,22 @@ class SiteContext extends React.Component
     getEntityByCode: React.PropTypes.func
     renderEntitySummaryView: React.PropTypes.func
     onNextOrComments: React.PropTypes.func
+    T: React.PropTypes.func
 
   getChildContext: ->
     selectEntity: () ->
       null
     getEntityById: () ->
       null
-    getEntityByCode: () ->
-      null
+    getEntityByCode: (code) ->
+      if code == '10007'
+        return true
+      return null
     renderEntitySummaryView: () ->
       null
     onNextOrComments: () ->
+      null
+    T: () ->
       null
 
   render: ->
@@ -40,7 +46,7 @@ describe 'SiteAnswerComponent', ->
     @toDestroy = []
 
     @render = (options = {}) =>
-      elem = R(SiteContext, R(SiteAnswerComponent, options))
+      elem = R(SiteContext, {}, R(SiteAnswerComponent, options))
       comp = new TestComponent(elem)
       @toDestroy.push(comp)
       return comp
@@ -49,24 +55,35 @@ describe 'SiteAnswerComponent', ->
     for comp in @toDestroy
       comp.destroy()
 
-  it "allows valid site codes", ->
-    assert false, 'Test not updated yet'
-    @qview.$el.find("input").val("10007").change()
-    assert.deepEqual @model.get("q1234").value, { code: "10007" }
-    assert not @qview.validate()
+  it "allows valid site codes", (done) ->
+    testComponent = @render({
+      onValueChange: (value) ->
+        assert.equal value.code, "10007"
 
-  it "rejects invalid site codes", ->
-    assert false, 'Test not updated yet'
-    @qview.$el.find("input").val("10008").change()
-    assert.deepEqual @model.get("q1234").value, { code: "10008" }
-    assert @qview.validate()
+        # Validate answer
+        answer = {value: value}
+        answerValidator = new AnswerValidator()
+        question = {_type: "SiteQuestion"}
+        assert.equal null, answerValidator.validate(question, answer)
 
-  it "calls selectSite with site types", ->
-    assert false, 'Test not updated yet'
-    @qview.$el.find("#select").click()
-    assert.deepEqual @model.get("q1234").value, { code: "10014" }
+        done()
+    })
+    input = testComponent.findInput()
+    TestComponent.changeValue(input, "10007")
 
-  it "displays site information", ->
-    assert false, 'Test not updated yet'
-    @qview.$el.find("input").val("10014").change()
-    assert.include(@qview.$el.text(), 'Somename2')
+  it "rejects invalid site codes", (done) ->
+    testComponent = @render({
+      onValueChange: (value) ->
+        assert.equal value.code, "10008"
+
+        # Validate answer
+        answer = {value: value}
+        answerValidator = new AnswerValidator()
+        question = {_type: "SiteQuestion"}
+        assert.equal 'Invalid code', answerValidator.validate(question, answer)
+
+        done()
+    })
+    input = testComponent.findInput()
+    TestComponent.changeValue(input, "10008")
+

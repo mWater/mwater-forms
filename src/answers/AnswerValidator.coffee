@@ -1,4 +1,4 @@
-
+siteCodes = require '../siteCodes'
 
 module.exports = class AnswerValidator
   validate: (question, answer) ->
@@ -37,8 +37,21 @@ module.exports = class AnswerValidator
         return @validateUnitsQuestion(question, answer)
       when "NumbersQuestion"
         return @validateNumberQuestion(question, answer)
+      when "SiteQuestion"
+        return @validateSiteQuestion(question, answer)
       else
         return null
+
+  # Valid if null or empty
+  # Valid if code is valid (checksum)
+  validateSiteQuestion: (question, answer) ->
+    if not answer.value? or answer.value == ''
+      return null
+
+    if siteCodes.isValid(answer.value.code)
+      return null
+    else
+      return "Invalid code"
 
   # Valid if null or empty
   # Valid if not email or url format

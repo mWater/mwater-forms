@@ -2,15 +2,16 @@ _ = require 'lodash'
 compare = require './compare'
 assert = require('chai').assert
 
-TestComponent = require('react-library/lib/TestComponent')
-ReactTestUtils = require('react-addons-test-utils')
-RosterMatrixComponent = require '../src/RosterMatrixComponent'
-FormExprEvaluator = require '../src/FormExprEvaluator'
-
 React = require 'react'
 ReactDOM = require 'react-dom'
 R = React.createElement
 H = React.DOM
+
+TestComponent = require('react-library/lib/TestComponent')
+ReactTestUtils = require('react-addons-test-utils')
+RosterMatrixComponent = require '../src/RosterMatrixComponent'
+FormExprEvaluator = require '../src/FormExprEvaluator'
+MockTContextWrapper = require './MockTContextWrapper'
 
 describe "RosterMatrixComponent", ->
   beforeEach ->
@@ -20,8 +21,9 @@ describe "RosterMatrixComponent", ->
       elem = R(RosterMatrixComponent, _.defaults(options, { 
         isVisible: (-> true)
         formExprEvaluator: new FormExprEvaluator()
+        onDataChange: ->
       }))
-      comp = new TestComponent(elem)
+      comp = new TestComponent(R(MockTContextWrapper, null, elem))
       @toDestroy.push(comp)
       return comp
 
@@ -146,10 +148,10 @@ describe "RosterMatrixComponent", ->
     @rosterMatrix.contents[0].required = true
 
     comp = @render(rosterMatrix: @rosterMatrix, data: { a: [{ _id: "1", data: {}}] })
-    assert.isTrue comp.getComponent().validate(false), "Should fail validation"
+    assert.isTrue comp.getComponent().refs.main.validate(false), "Should fail validation"
 
     comp = @render(rosterMatrix: @rosterMatrix, data: { a: [{ _id: "1", data: { text: { value: "x" }}}] })
-    assert.isFalse comp.getComponent().validate(false), "Should pass validation"
+    assert.isFalse comp.getComponent().refs.main.validate(false), "Should pass validation"
 
   it "validates columns", ->
     @rosterMatrix.contents[0].validations = [
@@ -161,7 +163,7 @@ describe "RosterMatrixComponent", ->
     ]
 
     comp = @render(rosterMatrix: @rosterMatrix, data: { a: [{ _id: "1", data: { text: { value: "x" }}}] })
-    assert.isTrue comp.getComponent().validate(false), "Should fail validation"
+    assert.isTrue comp.getComponent().refs.main.validate(false), "Should fail validation"
 
     comp = @render(rosterMatrix: @rosterMatrix, data: { a: [{ _id: "1", data: { text: { value: "12345" }}}] })
-    assert.isFalse comp.getComponent().validate(false), "Should pass validation"
+    assert.isFalse comp.getComponent().refs.main.validate(false), "Should pass validation"

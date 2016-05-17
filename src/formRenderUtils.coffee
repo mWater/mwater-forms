@@ -9,6 +9,7 @@ GroupComponent = require './GroupComponent'
 RosterGroupComponent = require './RosterGroupComponent'
 RosterMatrixComponent = require './RosterMatrixComponent'
 
+# Render an item, given its data, visibility function, etc.
 exports.renderItem = (item, data, parentData, formExprEvaluator, onDataChange, isVisible, onNext) ->
   handleAnswerChange = (id, answer) =>
     change = {}
@@ -65,5 +66,17 @@ exports.renderItem = (item, data, parentData, formExprEvaluator, onDataChange, i
       onDataChange: onDataChange
       isVisible: isVisible
       formExprEvaluator: formExprEvaluator
+  else if item._type == "Section"
+    # Sections are not usually rendered like this, except when in single-page mode. In which case, render as a group
+    return R GroupComponent,
+      key: item._id,
+      ref: item._id,
+      group: item
+      data: data
+      parentData: parentData
+      onDataChange: onDataChange
+      isVisible: isVisible
+      formExprEvaluator: formExprEvaluator
+      onNext: onNext
   else
     throw new Error("Unknown item of type #{item._type}")

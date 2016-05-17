@@ -8,6 +8,8 @@ exports.ResponseAnswersComponent = require './ResponseAnswersComponent'
 exports.LocationView = require './legacy/LocationView'
 
 exports.formUtils = require './formUtils'
+exports.conditionsUtils = require './conditionsUtils'
+exports.AnswerValidator = require './answers/AnswerValidator'
 exports.formRenderUtils = require './formRenderUtils'
 exports.ECPlates = require './ECPlates'
 exports.utils = require './utils'
@@ -25,6 +27,9 @@ exports.ResponseDisplayComponent = require './ResponseDisplayComponent'
 exports.FormComponent = require './FormComponent'
 exports.formContextTypes = require './formContextTypes'
 exports.FormSchemaBuilder = require './FormSchemaBuilder'
+exports.AssignmentModel = require './AssignmentModel'
+
+exports.ResponseDataUpdater = require './ResponseDataUpdater'
 
 exports.schemaVersion = 13 # Version of the schema that this package supports (cannot compile if higher)
 exports.minSchemaVersion = 1 # Minimum version of forms schema that can be compiled

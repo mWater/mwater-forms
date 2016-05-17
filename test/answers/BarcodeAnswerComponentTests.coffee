@@ -13,16 +13,23 @@ H = React.DOM
 class BarcodeContext extends React.Component
   @childContextTypes:
     scanBarcode: React.PropTypes.func
+    T: React.PropTypes.func.isRequired
 
   getChildContext: ->
-    scanBarcode: (callback) ->
-      f = () ->
-        callback.success('0123456789')
-      setTimeout f, 30
+    ctx = {
+      T: (str) -> str
+    }
+
+    if @props.enableScanBarcode
+      ctx.scanBarcode = (callback) ->
+        f = () ->
+          callback.success('0123456789')
+        setTimeout f, 30
+        
+    return ctx
 
   render: ->
     return @props.children
-
 
 describe 'BarcodeAnswerComponent', ->
   describe 'Works without scanBarcode', ->
@@ -30,7 +37,9 @@ describe 'BarcodeAnswerComponent', ->
       @toDestroy = []
 
       @render = (options = {}) =>
-        elem = R(BarcodeAnswerComponent, options)
+        elem = R(BarcodeContext, {},
+          R(BarcodeAnswerComponent, options)
+        )
         comp = new TestComponent(elem)
         @toDestroy.push(comp)
         return comp
@@ -51,7 +60,7 @@ describe 'BarcodeAnswerComponent', ->
       @toDestroy = []
 
       @render = (options = {}) =>
-        elem = R(BarcodeContext, {},
+        elem = R(BarcodeContext, { enableScanBarcode: true },
           R(BarcodeAnswerComponent, options)
         )
         #elem = R(BarcodeAnswerComponent, options)

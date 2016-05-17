@@ -470,6 +470,43 @@ describe "FormSchemaBuilder addForm", ->
         }
       ])
 
+    # TODO possibly use containment
+    # # But since #>> is not indexed, we need to use containment test
+    # # e.g. from.data @> { questionid: { value: to._id }}
+    # # which is from.data @> json_build_object('questionid', json_build_object('value', to._id))::jsonb
+    # join: {
+    #   type: "n-1"
+    #   toTable: "entities.water_point"
+    #   jsonql: {
+    #     type: "op"
+    #     op: "@>"
+    #     exprs: [
+    #       { type: "field", tableAlias: "{from}", column: "data" }
+    #       {
+    #         type: "op"
+    #         op: "::jsonb"
+    #         exprs: [
+    #           { 
+    #             type: "op"
+    #             op: "json_build_object"
+    #             exprs: [
+    #               "questionid"
+    #               { 
+    #                 type: "op"
+    #                 op: "json_build_object"
+    #                 exprs: [
+    #                   "value"
+    #                   { type: "field", tableAlias: "{to}", column: "_id" }
+    #                 ]
+    #               }
+    #             ]
+    #           }
+    #         ]
+    #       }
+    #     ]
+    #   }
+
+
     it "site", ->
       @testQuestion({ 
         _type: "SiteQuestion" 

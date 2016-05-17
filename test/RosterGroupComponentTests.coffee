@@ -2,15 +2,17 @@ _ = require 'lodash'
 compare = require './compare'
 assert = require('chai').assert
 
-TestComponent = require('react-library/lib/TestComponent')
-ReactTestUtils = require('react-addons-test-utils')
-RosterGroupComponent = require '../src/RosterGroupComponent'
-FormExprEvaluator = require '../src/FormExprEvaluator'
-
 React = require 'react'
 ReactDOM = require 'react-dom'
 R = React.createElement
 H = React.DOM
+
+TestComponent = require('react-library/lib/TestComponent')
+ReactTestUtils = require('react-addons-test-utils')
+RosterGroupComponent = require '../src/RosterGroupComponent'
+FormExprEvaluator = require '../src/FormExprEvaluator'
+MockTContextWrapper = require './MockTContextWrapper'
+
 
 describe "RosterGroupComponent", ->
   beforeEach ->
@@ -20,8 +22,9 @@ describe "RosterGroupComponent", ->
       elem = R(RosterGroupComponent, _.defaults(options, { 
         isVisible: (-> true)
         formExprEvaluator: new FormExprEvaluator()
+        onDataChange: ->
       }))
-      comp = new TestComponent(elem)
+      comp = new TestComponent(R(MockTContextWrapper, null, elem))
       @toDestroy.push(comp)
       return comp
 
@@ -119,3 +122,4 @@ describe "RosterGroupComponent", ->
     @rosterGroup.rosterId = "b"
     comp = @render(rosterGroup: @rosterGroup, data: { a: [{ _id: "1", data: {} }, { _id: "2", data: {} }] }, isVisible: isVisible)
     assert.equal ReactTestUtils.scryRenderedDOMComponentsWithTag(comp.getComponent(), "input").length, 0
+

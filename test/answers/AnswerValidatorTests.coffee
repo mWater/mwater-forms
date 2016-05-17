@@ -156,7 +156,7 @@ describe 'AnswerValidator', ->
       assert @answerValidator.validate(question, answer), "Shouldn't be valid"
 
     it "allows 0 on required", ->
-      answer = {value: {quantity: '0', unit: 'a'}}
+      answer = {value: {quantity: '0', units: 'a'}}
       question = {_type: "UnitsQuestion"}
       question.required = true
       # Okay if not required
@@ -164,7 +164,7 @@ describe 'AnswerValidator', ->
       # Also Okay if required
       assert.equal null, @answerValidator.validate(question, answer), "Should also be valid"
 
-    it "requires unit to be specified if a quantity is set", ->
+    it "requires units to be specified if a quantity is set", ->
       answer = {value: {quantity: '0'}}
       question = {_type: "UnitsQuestion"}
 
@@ -172,7 +172,7 @@ describe 'AnswerValidator', ->
       assert @answerValidator.validate(question, answer), "Shouldn't be valid"
 
       # Not Okay if unit is null
-      answer.value.unit = null
+      answer.value.units = null
       assert @answerValidator.validate(question, answer), "Shouldn't be valid either"
 
       # Okay if quantity is undefined or nul or empty string
@@ -184,7 +184,7 @@ describe 'AnswerValidator', ->
       assert.equal null, @answerValidator.validate(question, answer)
 
       answer.value.quantity = 0
-      answer.value.unit = 'a'
+      answer.value.units = 'a'
       assert.equal null, @answerValidator.validate(question, answer)
 
     it "validates range", ->

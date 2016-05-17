@@ -11,8 +11,6 @@ module.exports = class SiteAnswerComponent extends React.Component
   @contextTypes:
     selectEntity: React.PropTypes.func
     getEntityById: React.PropTypes.func
-    getEntityByCode: React.PropTypes.func
-    renderEntitySummaryView: React.PropTypes.func
     T: React.PropTypes.func.isRequired  # Localizer to use
 
   @propTypes:
@@ -34,7 +32,7 @@ module.exports = class SiteAnswerComponent extends React.Component
   getEntityType: () ->
     # Convert to new entity type
     siteType = (if @props.siteTypes then @props.siteTypes[0]) or "Water point"
-    entityType = siteType.toLowerCase().replace(' ', "_")
+    entityType = siteType.toLowerCase().replace(new RegExp(' ', 'g'), "_")
     return entityType
 
   handleSelectClick: () =>

@@ -5,6 +5,7 @@ ReactTestUtils = require('react-addons-test-utils')
 
 TestComponent = require('react-library/lib/TestComponent')
 AdminRegionSelectComponent = require '../src/AdminRegionSelectComponent'
+MockTContextWrapper = require './MockTContextWrapper'
 
 # Setup mock localizer
 global.T = (str) -> str
@@ -38,7 +39,7 @@ describe 'AdminRegionSelectComponent', ->
       }
 
       elem = React.createElement(AdminRegionSelectComponent, _.extend(props, options))
-      @testComp = new TestComponent(elem)
+      @testComp = new TestComponent(React.createElement(MockTContextWrapper, null, elem))
       @comp = @testComp.comp
      
     @value = "NOT SET"

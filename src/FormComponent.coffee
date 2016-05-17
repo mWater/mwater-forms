@@ -30,6 +30,8 @@ module.exports = class FormComponent extends React.Component
     entity: React.PropTypes.object            # Form-level entity to load
     entityType: React.PropTypes.string        # Type of form-level entity to load
 
+    singlePageMode: React.PropTypes.bool      # True to render as a single page, not divided into sections
+
   @childContextTypes: _.extend({}, require('./formContextTypes'), {
     T: React.PropTypes.func.isRequired
     locale: React.PropTypes.string          # e.g. "fr"
@@ -129,7 +131,7 @@ module.exports = class FormComponent extends React.Component
     @refs.submit.focus()
 
   render: ->
-    if @props.design.contents[0] and @props.design.contents[0]._type == "Section"
+    if @props.design.contents[0] and @props.design.contents[0]._type == "Section" and not @props.singlePageMode
       R SectionsComponent,
         contents: @props.design.contents
         data: @props.data

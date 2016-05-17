@@ -38,16 +38,21 @@ module.exports = class ResponseCleaner
             answerToClean = newData[rosterGroupId][index]
             delete answerToClean[questionId]
 
+  # Remove data entries for all the conditional choices that are false
+  # 'DropdownQuestion', 'RadioQuestion' and 'DropdownColumnQuestion' can have choices that are only present if a condition
+  # is filled. If the condition is no longer filled, the answer data needs to be removed
   cleanDataBasedOnChoiceConditions: (newData, visibilityStructure, design) ->
     for key, visible of visibilityStructure
       if visible
         values = key.split('.')
         selectedChoice = null
 
+        # FIST: Setup what is needed for the cleaning the data (different for rosters)
         # If the key doesn't contain any '.', simply remove the data entry
         if values.length == 1
           questionId = key
           selectedChoice = newData[questionId]?.value
+          # A simple delete
           deleteAnswer = () ->
             delete newData[questionId]
         # Else, it's a RosterGroup or a RosterMatrix
@@ -62,10 +67,13 @@ module.exports = class ResponseCleaner
             # Delete the entry
             selectedChoice = newData?[rosterGroupId]?[index]?[questionId]?.value
             deleteAnswer = () ->
+              # Need to find what needs to be cleaned first (with roster data)
               answerToClean = newData[rosterGroupId][index]
               delete answerToClean[questionId]
 
+        # SECOND: look for conditional choices and delete their answer if the conditions are false
         if selectedChoice?
+          # Get the question
           question = formUtils.findItem(design, questionId)
           # Of dropdown or radio type (types with conditional choices)
           if question._type == 'DropdownQuestion' or question._type == 'RadioQuestion' or question._type == 'DropdownColumnQuestion'
