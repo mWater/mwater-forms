@@ -10,35 +10,30 @@ module.exports = class StopwatchAnswerComponent extends React.Component
 
   constructor: (props) ->
     super
-    now = now()
     @state =
       timerId: 0
-      startTime: now
-      stopTime: now
+      elapsedTicks: 0
 
   handleStartClick: (ev) =>
-    update = () => @forceUpdate()
-    existingTicks = @state.stopTime - @state.startTime
-    @setState(timerId: setInterval(update, 10), startTime: now() - existingTicks)
+    startTime = now() - @state.elapsedTicks
+    update = () => @setState(elapsedTicks: now() - startTime)
+    @setState(timerId: setInterval(update, 10))
 
   handleStopClick: (ev) =>
     clearInterval(@state.timerId)
-    stopTime = now()
-    @setState(timerId: 0, stopTime: stopTime)
-    seconds = (stopTime - @state.startTime) / 1000
+    @setState(timerId: 0)
+    seconds = @state.elapsedTicks / 1000
     @props.onValueChange(seconds)
 
   handleResetClick: (ev) =>
     clearInterval(@state.timerId)
-    now = now()
-    @setState(timerId: 0, startTime: now, stopTime: now)
+    @setState(timerId: 0, elapsedTicks: 0)
     @props.onValueChange(null)
 
   isRunning: () -> @state.timerId != 0
 
   displayValue: () ->
-    endTime = if @isRunning() then now() else @state.stopTime
-    elapsedSeconds = (endTime - @state.startTime) / 1000
+    elapsedSeconds = @state.elapsedTicks / 1000
     elapsedSeconds.toFixed(1)
 
   render: ->
