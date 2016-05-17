@@ -146,6 +146,23 @@ module.exports = {
             ]
           },
           {
+            "_id": "9429d931dcbf4110846074c25f9dc226",
+            "text": {
+              "en": "Stopwatch Question?",
+              "_base": "en"
+            },
+            "_type": "StopwatchQuestion",
+            "format": "singleline",
+            "required": false,
+            "sticky": true,
+            "alternates": {
+              "na": true,
+              "dontknow": true
+            },
+            "conditions": [],
+            "validations": []
+          },
+          {
             "_id": "fd43a6faa6764490ab82eae19d71af71",
             "text": {
               "en": "Number Question for {0}?",

@@ -23,13 +23,14 @@ MulticheckAnswerComponent = require './answers/MulticheckAnswerComponent'
 NumberAnswerComponent = require './answers/NumberAnswerComponent'
 RadioAnswerComponent = require './answers/RadioAnswerComponent'
 SiteAnswerComponent = require './answers/SiteAnswerComponent'
+StopwatchAnswerComponent = require './answers/StopwatchAnswerComponent'
 TextAnswerComponent = require './answers/TextAnswerComponent'
 TextListAnswerComponent = require './answers/TextListAnswerComponent'
 UnitsAnswerComponent = require './answers/UnitsAnswerComponent'
 
 # Question component that displays a question of any type.
 # Displays question text and hint
-# Displays toggleable help 
+# Displays toggleable help
 # Displays required (*)
 # Displays comments field
 # Does NOT fill in when sticky and visible for first time. This is done by data cleaning
@@ -191,7 +192,7 @@ module.exports = class QuestionComponent extends React.Component
     promptDiv = H.div className: "prompt", ref: 'prompt',
       if @props.question.code
         H.span className: "question-code", @props.question.code + ": "
-      
+
       @props.formExprEvaluator.renderString(@props.question.text, @props.question.textExprs, @props.data, @props.parentData, @context.locale)
 
       # Required star
@@ -323,7 +324,7 @@ module.exports = class QuestionComponent extends React.Component
       when "ImageQuestion"
         return R ImageAnswerComponent,
           image: answer.value
-          onImageChange: @handleValueChange 
+          onImageChange: @handleValueChange
 
       when "ImagesQuestion"
         return R ImagesAnswerComponent, {
@@ -368,6 +369,15 @@ module.exports = class QuestionComponent extends React.Component
           ref: "answer"
           value: answer.value
           onChange: @handleValueChange
+        }
+
+      when "StopwatchQuestion"
+        return R StopwatchAnswerComponent, {
+          ref: "answer"
+          value: answer.value
+          format: @props.question.format
+          onValueChange: @handleValueChange
+          onNextOrComments: @handleNextOrComments
         }
       else
         return "Unknown type #{@props.question._type}"
