@@ -24,7 +24,7 @@ module.exports = class StopwatchAnswerComponent extends React.Component
     @props.onValueChange(null)
 
   # Stores the value in seconds
-  persistValue: (ticks) -> props.onValueChange(ticks / 1000)
+  persistValue: (ticks) -> @props.onValueChange((ticks / 1000).toFixed(1))
 
   # Stops the timer and persists the value
   handleStopClick: () =>
@@ -48,7 +48,7 @@ module.exports = class StopwatchAnswerComponent extends React.Component
     @persistValue(@state.editTicks)
 
   # Exits edit mode without changes
-  handleCancelEditClick: () => setState(editing: false)
+  handleCancelEditClick: () => @setState(editing: false)
 
   # Updates @editTicks with the value from the textbox
   handleTextChange: (ev) =>
@@ -73,14 +73,16 @@ module.exports = class StopwatchAnswerComponent extends React.Component
         disabled: !@state.editing
         onChange: @handleTextChange # update the @editTicks value
       }
-      if !@state.editing
-        isRunning = @state.timerId != 0
-        H.span {},
-          H.button {class: 'btn btn-default', onClick: @handleStartClick, disabled: isRunning}, "Start"
-          H.button {class: 'btn btn-default', onClick: @handleStopClick, disabled: !isRunning}, "Stop"
-          H.button {class: 'btn btn-default', onClick: @handleResetClick, disabled: @state.elapsedTicks == 0}, "Reset"
-          H.button {class: 'btn btn-default', onClick: @handleEditClick, disabled: isRunning}, "Edit"
-      else
-        H.span {},
-          H.button {class: 'btn btn-default', onClick: @handleSaveEditClick}, "Save"
-          H.button {class: 'btn btn-default', onClick: @handleCancelEditClick}, "Cancel"
+        if !@state.editing
+          isRunning = @state.timerId != 0
+          H.div {className: 'btn-toolbar', role: 'toolbar'},
+            H.div {className: 'btn-group', role: 'group'},
+              H.button {className: 'btn btn-default', onClick: @handleStartClick, disabled: isRunning}, "Start"
+              H.button {className: 'btn btn-default', onClick: @handleStopClick, disabled: !isRunning}, "Stop"
+              H.button {className: 'btn btn-default', onClick: @handleResetClick, disabled: @state.elapsedTicks == 0}, "Reset"
+            H.div {className: 'btn-group', role: 'group'},
+              H.button {className: 'btn btn-default', onClick: @handleEditClick, disabled: isRunning}, "Edit"
+        else
+          H.div {className: 'btn-group', role: 'group'},
+            H.button {className: 'btn btn-default', onClick: @handleSaveEditClick}, "Save"
+            H.button {className: 'btn btn-default', onClick: @handleCancelEditClick}, "Cancel"

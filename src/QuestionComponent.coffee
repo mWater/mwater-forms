@@ -375,9 +375,7 @@ module.exports = class QuestionComponent extends React.Component
         return R StopwatchAnswerComponent, {
           ref: "answer"
           value: answer.value
-          format: @props.question.format
           onValueChange: @handleValueChange
-          onNextOrComments: @handleNextOrComments
         }
       else
         return "Unknown type #{@props.question._type}"

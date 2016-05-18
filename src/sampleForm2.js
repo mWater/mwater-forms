@@ -155,10 +155,6 @@ module.exports = {
             "format": "singleline",
             "required": false,
             "sticky": true,
-            "alternates": {
-              "na": true,
-              "dontknow": true
-            },
             "conditions": [],
             "validations": []
           },
