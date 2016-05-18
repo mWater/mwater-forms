@@ -1,7 +1,7 @@
 formUtils = require './formUtils'
 
 # Updates data in a response given an expression (mWater expression, see FormSchemaBuilder and also mwater-expressions package) and a value
-module.exports = class ResponseDataUpdater
+module.exports = class ResponseDataExprValueUpdater
   constructor: (formDesign, schema, dataSource) ->
     @formDesign = formDesign
     @schema = schema
