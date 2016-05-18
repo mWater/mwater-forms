@@ -279,6 +279,7 @@ module.exports = {
         { $ref: "#/definitions/BarcodeQuestion" }
         { $ref: "#/definitions/EntityQuestion" }
         { $ref: "#/definitions/AdminRegionQuestion" }
+        { $ref: "#/definitions/StopwatchQuestion" }
       ]
     }
 
@@ -726,6 +727,17 @@ module.exports = {
         }
       })
       required: ["decimal"]
+      additionalProperties: false
+    }
+
+    # Displays a stopwatch with manual edit option
+    StopwatchQuestion: {
+      properties: extendQuestionProperties({
+        _type: { enum: ["StopwatchQuestion"] }
+
+        # No validation available
+        validations: { type: "array", maxItems: 0 }
+      })
       additionalProperties: false
     }
 
