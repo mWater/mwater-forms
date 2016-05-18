@@ -208,7 +208,7 @@ exports.getAnswerType = (q) ->
   switch q._type
     when "TextQuestion", "TextColumnQuestion"
       return "text"
-    when "NumberQuestion", "NumberColumnQuestion"
+    when "NumberQuestion", "NumberColumnQuestion", "StopwatchQuestion"
       return "number"
     when "DropdownQuestion", "RadioQuestion", "DropdownColumnQuestion"
       return "choice"

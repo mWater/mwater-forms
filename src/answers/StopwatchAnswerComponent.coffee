@@ -3,28 +3,35 @@ H = React.DOM
 R = React.createElement
 
 now = () -> new Date().getTime()
+roundToTenthsOfSecond = (ticks) -> Math.round(ticks / 100) / 10
+toTicks = (seconds) -> if seconds then seconds * 1000 else null
 
+# Creates a stopwatch timer component on the form, can be start/stop/reset and manually edited
 module.exports = class StopwatchAnswerComponent extends React.Component
   @propTypes:
     onValueChange: React.PropTypes.func.isRequired
+    value: React.PropTypes.number
 
   constructor: (props) ->
     super
+    ticks = toTicks(props.value)
     @state =
-      timerId: 0       # ID of the running JS timer
-      elapsedTicks: 0  # Tick count
-      editing: false   # True if in edit mode
-      editTicks: 0     # Temporary store for manual-mode tick count
+      timerId: 0          # ID of the running JS timer
+      elapsedTicks: ticks # Tick count
+      editing: false      # True if in edit mode
+      editTicks: 0        # Temporary store for manual-mode tick count
+
+  componentWillReceiveProps: (nextProps) -> @setState(elapsedTicks: toTicks(nextProps.value))
 
   # Starts a timer to update @elapsedTicks every 10 ms
   handleStartClick: () =>
-    startTime = now() - @state.elapsedTicks # for restarts we need to fudge the startTime
+    startTime = now() - (@state.elapsedTicks or 0) # for restarts we need to fudge the startTime
     update = () => @setState(elapsedTicks: now() - startTime)
     @setState(timerId: setInterval(update, 10)) # create a timer and store its id in state
     @props.onValueChange(null)
 
   # Stores the value in seconds
-  persistValue: (ticks) -> @props.onValueChange((ticks / 1000).toFixed(1))
+  persistValue: (ticks) -> @props.onValueChange(roundToTenthsOfSecond(ticks))
 
   # Stops the timer and persists the value
   handleStopClick: () =>
@@ -35,7 +42,7 @@ module.exports = class StopwatchAnswerComponent extends React.Component
   # Stops timer and resets @elapsedTicks to 0
   handleResetClick: () =>
     clearInterval(@state.timerId)
-    @setState(timerId: 0, elapsedTicks: 0)
+    @setState(timerId: 0, elapsedTicks: null)
     @props.onValueChange(null)
 
   # Enters manual edit mode, with the current value
@@ -53,18 +60,19 @@ module.exports = class StopwatchAnswerComponent extends React.Component
   # Updates @editTicks with the value from the textbox
   handleTextChange: (ev) =>
     if @state.editing
-      @setState(editTicks: ev.target.value * 1000)
+      @setState(editTicks: toTicks(ev.target.value))
 
   # Grabs the tick count from the relevant state variable and formats it
   getDisplayValue: () ->
-    ticks = if @state.editing then @state.editTicks else @state.elapsedTicks
-    elapsedSeconds = ticks / 1000
-    elapsedSeconds.toFixed(1)
+    if @state.elapsedTicks == null then ""
+    else
+      ticks = if @state.editing then @state.editTicks else @state.elapsedTicks
+      roundToTenthsOfSecond(ticks).toFixed(1)
 
   render: ->
     H.div {},
       H.input
-        className: "form-control"
+        className: "form-control input-lg"
         id: 'input'
         ref: 'input'
         type: 'number'
@@ -76,9 +84,9 @@ module.exports = class StopwatchAnswerComponent extends React.Component
         isRunning = @state.timerId != 0
         H.div {className: 'btn-toolbar', role: 'toolbar'},
           H.div {className: 'btn-group', role: 'group'},
-            H.button {className: 'btn btn-default', onClick: @handleStartClick, disabled: isRunning}, "Start"
-            H.button {className: 'btn btn-default', onClick: @handleStopClick, disabled: !isRunning}, "Stop"
-            H.button {className: 'btn btn-default', onClick: @handleResetClick, disabled: @state.elapsedTicks == 0}, "Reset"
+            H.button {className: 'btn btn-success', onClick: @handleStartClick, disabled: isRunning}, "Start"
+            H.button {className: 'btn btn-danger', onClick: @handleStopClick, disabled: !isRunning}, "Stop"
+            H.button {className: 'btn btn-default', onClick: @handleResetClick, disabled: !@state.elapsedTicks}, "Reset"
           H.div {className: 'btn-group', role: 'group'},
             H.button {className: 'btn btn-default', onClick: @handleEditClick, disabled: isRunning}, "Edit"
       else
