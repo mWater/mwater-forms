@@ -8,7 +8,7 @@ exports.createUid = -> uuid.v4().replace(/-/g, "")
 # Create short unique id, with ~42 bits randomness to keep unique amoung a few choices
 exports.createShortUid = ->
   chrs = "abcdefghjklmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ123456789"
-  loop 
+  loop
     id = ""
     for i in [1..7]
       id = id + chrs[_.random(0, chrs.length - 1)]
@@ -41,7 +41,7 @@ exports.isQuestion = (item) ->
 
 exports.localizeString = (str, locale) ->
   # If null, return empty string
-  if not str? 
+  if not str?
     return ""
 
   # Return for locale if present
@@ -51,7 +51,7 @@ exports.localizeString = (str, locale) ->
   # Return base if present
   if str._base
     return str[str._base] || ""
-    
+
   return ""
 
 # Gets all questions in form before reference item specified
@@ -146,7 +146,7 @@ exports.prepareQuestion = (q) ->
       _.defaults q, { entityFilter: {}, displayProperties: [], selectionMode: "external", selectProperties: [], selectText: { _base: "en", en: "Select" }, propertyLinks: [] }
 
   # Get known fields
-  knownFields = ['_id', '_type', 'text', 'textExprs', 'conditions', 'validations', 
+  knownFields = ['_id', '_type', 'text', 'textExprs', 'conditions', 'validations',
     'required', 'code', 'hint', 'help', 'alternates', 'commentsField', 'recordLocation', 'recordTimestamp', 'sticky', 'exportId']
 
   switch q._type
@@ -193,7 +193,7 @@ exports.changeQuestionType = (question, newType) ->
   question.validations = []
 
   # Clear format (type specific)
-  delete question.format 
+  delete question.format
 
   # Set type
   question._type = newType
@@ -236,6 +236,8 @@ exports.getAnswerType = (q) ->
       return "entity"
     when "AdminRegionQuestion"
       return "admin_region"
+    when "StopwatchQuestion"
+      return "number"
     else throw new Error("Unknown question type")
 
 # Check if a form is all sections
@@ -246,7 +248,7 @@ exports.isSectioned = (form) ->
 # idMap is a map of old _ids to new _ids. If any not present, new uid will be used
 exports.duplicateItem = (item, idMap) ->
   # If form or section and ids not mapped, map ids
-  if not idMap 
+  if not idMap
     idMap = {}
 
   if item._type in ["Form", "Section"]
@@ -306,7 +308,7 @@ exports.duplicateItem = (item, idMap) ->
 exports.extractLocalizedStrings = (obj) ->
   if not obj?
     return []
-    
+
   # Return self if string
   if obj._base?
     return [obj]
@@ -345,11 +347,11 @@ exports.hasLocalizations = (obj, locale) ->
 
 # Finds an entity question of the specified type, or a legacy site question
 exports.findEntityQuestion = (form, entityType) ->
-  question = _.find exports.priorQuestions(form), (q) -> 
+  question = _.find exports.priorQuestions(form), (q) ->
     if q._type == "EntityQuestion" and q.entityType == entityType
       return q
 
-    if q._type == "SiteQuestion" 
+    if q._type == "SiteQuestion"
       # Get site type (use only first one)
       if q.siteTypes and q.siteTypes[0]
         siteType = q.siteTypes[0]
