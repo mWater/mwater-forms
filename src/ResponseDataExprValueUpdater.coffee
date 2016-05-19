@@ -1,4 +1,6 @@
 formUtils = require './formUtils'
+ResponseCleaner = require './ResponseCleaner'
+VisibilityCalculator = require './VisibilityCalculator'
 
 # Updates data in a response given an expression (mWater expression, see FormSchemaBuilder and also mwater-expressions package) and a value
 module.exports = class ResponseDataExprValueUpdater
@@ -28,18 +30,32 @@ module.exports = class ResponseDataExprValueUpdater
   # suppressCleaning stops any cleaning of data (removing values that are invisble because of conditions). Useful when doing multiple updates
   # in which case it should be true except for last update.
   updateData: (data, expr, value, callback, suppressCleaning = false) ->
+    # Cleans data unless suppressCleaning = true
+    cleanData = (error, data) =>
+      if suppressCleaning or error
+        return callback(error, data)
+
+      # Compute visibility
+      visibilityCalculator = new VisibilityCalculator(@formDesign)
+      visibilityStructure = visibilityCalculator.createVisibilityStructure(data)
+  
+      responseCleaner = new ResponseCleaner()
+      data = responseCleaner.cleanData(data, visibilityStructure, @formDesign)
+
+      callback(null, data)
+
     # Handle simple fields
     if expr.type == "field" and expr.column.match(/^data:.+:value$/)
-      @updateValue(data, expr, value, callback)
+      @updateValue(data, expr, value, cleanData)
       return
 
     # Handle quantity and units
     if expr.type == "field" and expr.column.match(/^data:.+:value:quantity$/)
-      @updateQuantity(data, expr, value, callback)
+      @updateQuantity(data, expr, value, cleanData)
       return
 
     if expr.type == "field" and expr.column.match(/^data:.+:value:units$/)
-      @updateUnits(data, expr, value, callback)
+      @updateUnits(data, expr, value, cleanData)
       return
     
     callback(new Error("Cannot update expr #{JSON.stringify(expr)}"))
