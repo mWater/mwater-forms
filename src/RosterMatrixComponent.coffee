@@ -135,14 +135,19 @@ module.exports = class RosterMatrixComponent extends React.Component
         elem = H.label null, cellText
       when "UnitsColumnQuestion"
         console.log column
+        console.log answer
+        answer = data?[column._id]
         elem = R UnitsAnswerComponent, {
           small: true
           decimal: column.decimal
           prefix: column.unitsPosition == 'prefix'
-          answer: answer
+          answer: answer or {}
           units: column.units
           defaultUnits: column.defaultUnits
-          onValueChange: (val) => @handleCellChange(entryIndex, column._id, val)
+          onValueChange: (val) =>
+            console.log('val callback')
+            console.log val
+            @handleCellChange(entryIndex, column._id, val)
         }
       when "TextColumnQuestion"
         elem = H.input type: "text", className: "form-control input-sm", value: value, onChange: (ev) => @handleCellChange(entryIndex, column._id, ev.target.value)
