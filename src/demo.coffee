@@ -3,7 +3,6 @@ ReactDOM = require 'react-dom'
 R = React.createElement
 H = React.DOM
 
-AdminRegionSelectComponent = require './AdminRegionSelectComponent'
 FormComponent = require './FormComponent'
 sampleFormDesign = require './sampleFormDesign'
 sampleForm2 = require './sampleForm2'

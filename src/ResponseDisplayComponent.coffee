@@ -28,11 +28,11 @@ module.exports = class ResponseDisplayComponent extends React.Component
     }
 
   componentWillReceiveProps: (nextProps) ->
-    if @props.design != nextProps.design
-      @setState(formExprEvaluator: new FormExprEvaluator(nextProps.design))
+    if @props.form.design != nextProps.form.design
+      @setState(formExprEvaluator: new FormExprEvaluator(nextProps.form.design))
 
-    if @props.design != nextProps.design or @props.locale != nextProps.locale
-      @setState(T: @createLocalizer(nextProps.design, nextProps.locale))
+    if @props.form.design != nextProps.form.design or @props.locale != nextProps.locale
+      @setState(T: @createLocalizer(nextProps.form.design, nextProps.locale))
 
   getChildContext: -> 
     _.extend({}, @props.formCtx, {

@@ -155,4 +155,40 @@ describe "ResponseDataExprValueUpdater", ->
 
   it "cannot update expressions in general"
 
+  it "cleans after update", (done) ->
+    # Make a form with a condition
+    design = {
+      _type: "Form"
+      contents: [
+        {
+          _id: "q1"
+          _type: "TextQuestion"
+          text: { en: "Q1" }
+          conditions: []
+          validations: []
+        }      
+        {
+          _id: "q2"
+          _type: "TextQuestion"
+          text: { en: "Q2" }
+          # Conditional on q1
+          conditions: [{ lhs: { question: "q1" }, op: "present" }]
+          validations: []
+        }      
+      ]
+    }
+
+    updater = new ResponseDataExprValueUpdater(design, null, null)
+
+    # q1
+    expr = { type: "field", table: "responses:form1234", column: "data:q1:value" }
+
+    # Set q1 = null
+    updater.updateData({ q1: { value: "a" }, q2: { value: "b" }}, expr, null, (error, data) =>
+      assert not error
+      assert.deepEqual data, { q1: { value: null } }, JSON.stringify(data)
+      done()
+    )
+
+
 

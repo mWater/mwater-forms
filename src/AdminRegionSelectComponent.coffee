@@ -11,8 +11,6 @@ module.exports = class AdminRegionSelectComponent extends AsyncLoadComponent
     getSubAdminRegions: React.PropTypes.func.isRequired # Call with (id, callback). Callback (error, [{ id:, level: <e.g. 1>, name: <e.g. Manitoba>, type: <e.g. Province>}] of admin regions directly under the specified id)
     value: React.PropTypes.string     # id of admin region
     onChange: React.PropTypes.func.isRequired  # Called with new id
-
-  @contextTypes:
     T: React.PropTypes.func.isRequired  # Localizer to use
 
   componentWillMount: ->
@@ -80,7 +78,7 @@ module.exports = class AdminRegionSelectComponent extends AsyncLoadComponent
       H.td null,
         H.select key: "level#{level}", className: "form-control", value: (if @state.path[level] then @state.path[level].id else ""), onChange: @handleChange.bind(null, level),
           H.option key: "none", value: "", 
-            if @state.path[level] then @context.T("None") else @context.T("Select...")
+            if @state.path[level] then @props.T("None") else @props.T("Select...")
 
           if @state["level#{level}s"]
             _.map(@state["level#{level}s"], (subRegion) => H.option(key: subRegion.id, value: subRegion.id, subRegion.name))
@@ -89,7 +87,7 @@ module.exports = class AdminRegionSelectComponent extends AsyncLoadComponent
 
   render: ->
     if @state.loading or (not @state.path and @props.value) or (not @props.value and not @state.level0s)
-      return H.div null, @context.T("Loading...") 
+      return H.div null, @props.T("Loading...") 
 
     H.table style: { opacity: (if @state.busy then 0.5) },
       H.tbody null, 
