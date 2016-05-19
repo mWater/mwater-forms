@@ -98,9 +98,9 @@ class DemoComponent extends React.Component
       H.div(className: "col-md-6",
         R FormComponent, {
           formCtx: formCtx
-          design: sampleForm2.design
+          #design: sampleForm2.design
           # design: bigsampleForm2.design
-          # design: rosterFormDesign
+          design: rosterFormDesign
           # locale: React.PropTypes.string            # Locale. Defaults to English (en)
           data: @state.data
           onDataChange: @handleDataChange
@@ -134,6 +134,7 @@ $ ->
 
 rosterFormDesign = {
   "_type": "Form",
+  _id: "form123"
   "_schema": 11,
   "name": {
     "_base": "en",
@@ -147,7 +148,6 @@ rosterFormDesign = {
         "_base": "en",
         "en": "Roster Matrix"
       },
-      rosterId: "02",
       allowAdd: true,
       allowRemove: true,
       contents: [
@@ -156,104 +156,19 @@ rosterFormDesign = {
         { _id: "c", _type: "CheckboxColumnQuestion", text: { en: "Present" } }
         { _id: "d", _type: "DropdownColumnQuestion", text: { en: "Gender" }, choices: [{ label: { en: "Male"}, id: "male" }, { label: { en: "Female"}, id: "female" }] }
       ]
-    }
-    {
-      "_type": "TextQuestion",
-      "_id": "c11d1865674d4498a2adbeddc440230f",
-      "text": {
-        "_base": "en",
-        "en": "Name of partner organization"
-      },
-      "conditions": [],
-      "validations": [],
-      "required": false,
-      "format": "singleline"
     },
     {
-      "_type": "TextQuestion",
-      "_id": "fd620bf420a54dcd99dbae7b7c67a67c",
-      "text": {
-        "_base": "en",
-        "en": "Program Number"
-      },
-      "conditions": [],
-      "validations": [],
-      "required": false,
-      "format": "singleline"
-    },
-    {
-      "_id": "02",
-      "_type": "RosterGroup",
+      _id: "matrix02"
+      _type: "RosterMatrix"
       "name": {
         "_base": "en",
-        "en": "Roster Group"
+        "en": "Roster Matrix 2"
       },
-      rosterId: "02",
-      allowAdd: true,
-      allowRemove: true,
-      "contents": [
-        {
-          "_type": "DropdownQuestion",
-          "_id": "febdcbd89bed40799f92951729b6d360",
-          "text": {
-            "_base": "en",
-            "en": "Have you taken a loan with [name of partner organization]?"
-          },
-          "conditions": [],
-          "validations": [],
-          "required": false,
-          "choices": [
-            {
-              "label": {
-                "_base": "en",
-                "en": "Yes"
-              },
-              "id": "He8psmv"
-            },
-            {
-              "label": {
-                "_base": "en",
-                "en": "No"
-              },
-              "id": "XX52gjb"
-            },
-            {
-              "label": {
-                "_base": "en",
-                "en": "Other"
-              },
-              "specify": true,
-              "id": "8X52gj3"
-            }
-          ]
-        },
-        {
-          "_type": "RadioQuestion",
-          "_id": "dd7ffa2f8cf9423fbf814d710a3e55a4",
-          "text": {
-            "_base": "en",
-            "en": "Are you the head of the household?"
-          },
-          "conditions": [],
-          "validations": [],
-          "required": false,
-          "choices": [
-            {
-              "label": {
-                "_base": "en",
-                "en": "Yes"
-              },
-              "id": "ChFvwt8"
-            },
-            {
-              "label": {
-                "_base": "en",
-                "en": "No"
-              },
-              "id": "AK51bEJ"
-            }
-          ]
-        }
+      rosterId: "matrix01",
+      contents: [
+        { _id: "a", _type: "TextColumn", text: { en: "Text Column" }, cellText: { en: "Cell Text {0}" }, "cellTextExprs": [
+          { "type": "field", "table": "responses:form123:roster:matrix01", "column": "data:a:value" }
+        ],}
       ]
     }
   ]

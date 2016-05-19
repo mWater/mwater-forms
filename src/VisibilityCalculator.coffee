@@ -51,6 +51,8 @@ module.exports = class VisibilityCalculator
   processItem: (item, forceToInvisible, data, prefix) ->
     if formUtils.isQuestion(item)
       @processQuestion(item, forceToInvisible, data, prefix)
+    else if item._type == 'TextColumn'
+      @processQuestion(item, forceToInvisible, data, prefix)
     else if item._type == "Instructions"
       @processInstruction(item, forceToInvisible, data, prefix)
     else if item._type == "RosterGroup" or item._type == "RosterMatrix"

@@ -123,10 +123,14 @@ module.exports = class RosterMatrixComponent extends React.Component
     return conditionsUtils.compileConditions(choice.conditions)(@props.data)
 
   renderCell: (entry, entryIndex, column, columnIndex) ->
-    value = @getAnswer()[entryIndex].data?[column._id]?.value
+    data = @getAnswer()[entryIndex].data
+    value = data?[column._id]?.value
 
     # Create element
     switch column._type
+      when "TextColumn"
+        cellText = @props.formExprEvaluator.renderString(column.cellText, column.cellTextExprs, data, @props.data, @context.locale)
+        elem = H.label null, cellText
       when "TextColumnQuestion"
         elem = H.input type: "text", className: "form-control input-sm", value: value, onChange: (ev) => @handleCellChange(entryIndex, column._id, ev.target.value)
       when "NumberColumnQuestion"
