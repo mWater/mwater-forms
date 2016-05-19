@@ -166,9 +166,32 @@ rosterFormDesign = {
       },
       rosterId: "matrix01",
       contents: [
-        { _id: "a", _type: "TextColumn", text: { en: "Text Column" }, cellText: { en: "Cell Text {0}" }, "cellTextExprs": [
+        { _id: "a2", _type: "TextColumn", text: { en: "Text Column" }, cellText: { en: "Cell Text {0}" }, "cellTextExprs": [
           { "type": "field", "table": "responses:form123:roster:matrix01", "column": "data:a:value" }
         ],}
+        {
+          id: "b2",
+          _type: "UnitsColumnQuestion",
+          text: { en: "Units" },
+          "decimal": true,
+          "defaultUnits": "wtdAQZ3",
+          units: [
+            {
+              "id": "gVQSSfG",
+              "label": {
+                "en": "cm",
+                "_base": "en"
+              }
+            }
+            {
+              "id": "wtdAQZ3",
+              "label": {
+                "en": "inch",
+                "_base": "en"
+              }
+            }
+          ]
+        }
       ]
     }
   ]
