@@ -111,5 +111,6 @@ module.exports = class AdminRegionAnswerComponent extends React.Component
         getSubAdminRegions: @context.getSubAdminRegions
         value: @props.value
         onChange: @handleChange
+        T: @context.T
       })
 

@@ -21,10 +21,10 @@ module.exports = class UnitsAnswerComponent extends React.Component
 
   constructor: (props) ->
     super
-    @state = {quantity: @getSelectedQuantity(props.answer)}
+    @state = {quantity: @getSelectedQuantity(props.answer), selectedUnits: @getSelectedUnit(props.answer)}
 
   componentWillReceiveProps: (nextProps) ->
-    @setState(quantity: @getSelectedQuantity(nextProps.answer))
+    @setState(quantity: @getSelectedQuantity(nextProps.answer), selectedUnits: @getSelectedUnit(nextProps.answer))
 
   focus: () ->
     if @props.prefix
@@ -56,13 +56,16 @@ module.exports = class UnitsAnswerComponent extends React.Component
 
   # Uses onBlur for updating the value instead of onChange (look at the justification above)
   handleValueBlur: (val) =>
-    @changed(val.target.value, @getSelectedUnit())
+    @changed(val.target.value, @state.selectedUnits)
 
   handleUnitChange: (val) =>
     @changed(@state.quantity, val.target.value)
 
   changed: (quantity, unit) ->
-    quantity = if @props.decimal then parseFloat(quantity) else parseInt(quantity)
+    if quantity == null or quantity == ''
+      quantity = null
+    else
+      quantity = if @props.decimal then parseFloat(quantity) else parseInt(quantity)
     unit = if unit then unit else @props.defaultUnits
 
     if isNaN(quantity)
@@ -70,19 +73,20 @@ module.exports = class UnitsAnswerComponent extends React.Component
 
     @props.onValueChange({quantity: quantity, units: unit})
 
-  getSelectedUnit: ->
-    answer = @props.answer
+  getSelectedUnit: (answer) ->
     if answer.value?
-      if answer.value.quantity?
+      if answer.value.quantity != undefined
         return answer.value.units
       else
         return answer.units
+    if @props.defaultUnits?
+      return @props.defaultUnits
     return null
 
   getSelectedQuantity: (answer) ->
     answer = answer
     if answer.value?
-      if answer.value.quantity?
+      if answer.value.quantity != undefined
         return answer.value.quantity
       else
         return answer.value
@@ -116,7 +120,7 @@ module.exports = class UnitsAnswerComponent extends React.Component
                 className: "form-control"
                 style: {width: "auto"}
                 onChange: @handleUnitChange
-                #onKeyDown: if @props.prefix then @handleInternalNext else @handleKeyDown
+                value: if @state.selectedUnits == null then '' else @state.selectedUnits
               },
               if not @props.defaultUnits
                 H.option value: "",

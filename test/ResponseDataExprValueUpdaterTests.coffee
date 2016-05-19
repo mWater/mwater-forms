@@ -1,7 +1,7 @@
 assert = require('chai').assert
-ResponseDataUpdater = require '../src/ResponseDataUpdater'
+ResponseDataExprValueUpdater = require '../src/ResponseDataExprValueUpdater'
 
-describe "ResponseDataUpdater", ->
+describe "ResponseDataExprValueUpdater", ->
   describe "updates simple question values", ->
     beforeEach ->
       # Test updating a single value. newValue is optional different form
@@ -19,12 +19,12 @@ describe "ResponseDataUpdater", ->
           contents: [question]
         }
 
-        responseDataUpdater = new ResponseDataUpdater(formDesign, null, null)
+        updater = new ResponseDataExprValueUpdater(formDesign, null, null)
 
         # Simple field
         expr = { type: "field", table: "responses:form1234", column: "data:q1234:value" }
 
-        responseDataUpdater.updateData({}, expr, value, (error, data) =>
+        updater.updateData({}, expr, value, (error, data) =>
           assert not error
           assert.deepEqual data, { q1234: { value: newValue or value } }
           done()
@@ -88,12 +88,12 @@ describe "ResponseDataUpdater", ->
       it "quantity from empty", (done) ->
         @question._type = "UnitsQuestion"
         @question.units = [{ id: "a" }, { id: "b" }]
-        responseDataUpdater = new ResponseDataUpdater(@formDesign, null, null)
+        updater = new ResponseDataExprValueUpdater(@formDesign, null, null)
 
         # Quantity
         expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:quantity" }
 
-        responseDataUpdater.updateData({}, expr, 4, (error, data) =>
+        updater.updateData({}, expr, 4, (error, data) =>
           assert not error
           assert.deepEqual data, { q1234: { value: { quantity: 4 } } }
           done()
@@ -102,12 +102,12 @@ describe "ResponseDataUpdater", ->
       it "quantity with existing data", (done) ->
         @question._type = "UnitsQuestion"
         @question.units = [{ id: "a" }, { id: "b" }]
-        responseDataUpdater = new ResponseDataUpdater(@formDesign, null, null)
+        updater = new ResponseDataExprValueUpdater(@formDesign, null, null)
 
         # Quantity
         expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:quantity" }
 
-        responseDataUpdater.updateData({ q1234: { value: { quantity: 3, units: "a" }} }, expr, 4, (error, data) =>
+        updater.updateData({ q1234: { value: { quantity: 3, units: "a" }} }, expr, 4, (error, data) =>
           assert not error
           assert.deepEqual data, { q1234: { value: { quantity: 4, units: "a" } } }
           done()
@@ -116,12 +116,12 @@ describe "ResponseDataUpdater", ->
       it "units with existing data", (done) ->
         @question._type = "UnitsQuestion"
         @question.units = [{ id: "a" }, { id: "b" }]
-        responseDataUpdater = new ResponseDataUpdater(@formDesign, null, null)
+        updater = new ResponseDataExprValueUpdater(@formDesign, null, null)
 
         # Quantity
         expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:units" }
 
-        responseDataUpdater.updateData({ q1234: { value: { quantity: 3, units: "a" }} }, expr, "b", (error, data) =>
+        updater.updateData({ q1234: { value: { quantity: 3, units: "a" }} }, expr, "b", (error, data) =>
           assert not error
           assert.deepEqual data, { q1234: { value: { quantity: 3, units: "b" } } }
           done()
@@ -154,5 +154,41 @@ describe "ResponseDataUpdater", ->
   it "updates comments"
 
   it "cannot update expressions in general"
+
+  it "cleans after update", (done) ->
+    # Make a form with a condition
+    design = {
+      _type: "Form"
+      contents: [
+        {
+          _id: "q1"
+          _type: "TextQuestion"
+          text: { en: "Q1" }
+          conditions: []
+          validations: []
+        }      
+        {
+          _id: "q2"
+          _type: "TextQuestion"
+          text: { en: "Q2" }
+          # Conditional on q1
+          conditions: [{ lhs: { question: "q1" }, op: "present" }]
+          validations: []
+        }      
+      ]
+    }
+
+    updater = new ResponseDataExprValueUpdater(design, null, null)
+
+    # q1
+    expr = { type: "field", table: "responses:form1234", column: "data:q1:value" }
+
+    # Set q1 = null
+    updater.updateData({ q1: { value: "a" }, q2: { value: "b" }}, expr, null, (error, data) =>
+      assert not error
+      assert.deepEqual data, { q1: { value: null } }, JSON.stringify(data)
+      done()
+    )
+
 
 
