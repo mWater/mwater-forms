@@ -227,7 +227,7 @@ module.exports = class FormSchemaBuilder
         expression = indicatorCalculation.expressions[col.id]
 
         # If master, hack expression to be from master_responses, not responses
-        if isMaster
+        if isMaster and expression
           expression = JSON.parse(JSON.stringify(expression).replace(/table":"responses:/g, "table\":\"master_responses:"))
 
         # Joins are special. Only handle "n-1" joins (which are from id fields in original indicator properties)
