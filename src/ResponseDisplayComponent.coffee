@@ -12,6 +12,7 @@ module.exports = class ResponseDisplayComponent extends React.Component
     form: React.PropTypes.object.isRequired
     response: React.PropTypes.object.isRequired
     formCtx: React.PropTypes.object.isRequired
+    apiUrl: React.PropTypes.string
     locale: React.PropTypes.string # Defaults to english
 
   @childContextTypes: _.extend({}, require('./formContextTypes'), {
@@ -23,9 +24,25 @@ module.exports = class ResponseDisplayComponent extends React.Component
     super(props)
 
     @state = {
+      eventsUsernames: null,
+      loadingUsernames: false
       showCompleteHistory: false
       T: @createLocalizer(@props.form.design, @props.formCtx.locale)
     }
+
+  componentWillMount: () ->
+    events = @props.response.events or []
+    
+    if events.length > 0 and @props.apiUrl?
+      byArray = _.map(events, (event) -> "\"#{event.by}\"" )
+      url = @props.apiUrl + 'users_public_data?filter={"_id":{"$in":[' + byArray.join(',') + ']}}'
+      @setState(loadingUsernames: true)
+      $.ajax({ dataType: "json", url: url })
+      .done (rows) =>
+        # eventsUsernames is an object with a key for each _id value
+        @setState(loadingUsernames: false, eventsUsernames: _.indexBy(rows, '_id'))
+      .fail (xhr) =>
+        @setState(loadingUsernames: false, eventsUsernames: null)
 
   componentWillReceiveProps: (nextProps) ->
     if @props.form.design != nextProps.form.design
@@ -34,7 +51,9 @@ module.exports = class ResponseDisplayComponent extends React.Component
     if @props.form.design != nextProps.form.design or @props.locale != nextProps.locale
       @setState(T: @createLocalizer(nextProps.form.design, nextProps.locale))
 
-  getChildContext: -> 
+    events = @props.response.events or []
+
+  getChildContext: ->
     _.extend({}, @props.formCtx, {
       T: @state.T
       locale: @props.locale
@@ -58,6 +77,9 @@ module.exports = class ResponseDisplayComponent extends React.Component
     @setState(showCompleteHistory: true)
 
   renderEvent: (ev) ->
+    if not @state.eventsUsernames?
+      return null
+
     eventType = switch ev.type
       when "draft"
         @state.T("Drafted")
@@ -70,12 +92,12 @@ module.exports = class ResponseDisplayComponent extends React.Component
       when "edit"
         @state.T("Edited")
 
-    return H.div null, 
+    return H.div null,
       eventType
       " "
       @state.T("by")
       " "
-      ev.by
+      @state.eventsUsernames[ev.by].username
       " "
       @state.T("on")
       " "
@@ -87,6 +109,10 @@ module.exports = class ResponseDisplayComponent extends React.Component
 
   # History of events
   renderHistory: ->
+    if @state.loadingUsernames
+      return H.div key: "history",
+        H.label(null, @props.T("Loading History..."))
+
     contents = []
 
     events = @props.response.events or []
@@ -125,7 +151,7 @@ module.exports = class ResponseDisplayComponent extends React.Component
   renderHeader: ->
     H.div style: { paddingBottom: 10 },
       H.div key: "user", 
-        @state.T('User'), ": ", H.b(null, @props.response.user)
+        @state.T('User'), ": ", H.b(null, @props.response.username)
       H.div key: "code", 
         @state.T('Response Id'), ": ", H.b(null, @props.response.code)
       if @props.response and @props.response.modified
