@@ -105,6 +105,16 @@ module.exports = class FormSchemaBuilder
                 toColumn: "_id"
               }
             }
+            { 
+              id: "index"
+              type: "number"
+              name: { en: "Index" }
+              jsonql: {
+                type: "op"
+                op: "row_number"
+                exprs: []
+              }
+            }
           ]
         else
           # Use existing contents

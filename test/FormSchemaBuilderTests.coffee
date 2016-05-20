@@ -978,6 +978,9 @@ describe "FormSchemaBuilder addForm", ->
         exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{q1,value}"]
       })
 
+    it "adds index to roster table", ->
+      assert.equal @schema.getColumn("responses:formid:roster:roster1", "index").type, "number"
+
     it "adds join to roster table", ->
       assert.equal @schema.getColumn("responses:formid", "data:roster1").join.toTable, "responses:formid:roster:roster1"
       assert.equal @schema.getColumn("responses:formid", "data:roster1").join.type, "1-n"
