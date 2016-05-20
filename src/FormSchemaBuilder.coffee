@@ -26,6 +26,14 @@ module.exports = class FormSchemaBuilder
     # Add user
     contents.push({ id: "user", type: "text", name: { en: "Enumerator" } })
 
+    # Add status
+    contents.push({ id: "status", type: "enum", name: { en: "Status" }, enumValues: [
+      { id: "draft", name: { en: "Draft" } }
+      { id: "pending", name: { en: "Pending" } }
+      { id: "final", name: { en: "Final" } }
+      { id: "rejected", name: { en: "Rejected" } }
+    ]})
+
     # Add code
     contents.push({ id: "code", type: "text", name: { en: "Response Code" } })
 
