@@ -109,11 +109,6 @@ module.exports = class FormSchemaBuilder
               id: "index"
               type: "number"
               name: { en: "Index" }
-              jsonql: {
-                type: "op"
-                op: "row_number"
-                exprs: []
-              }
             }
           ]
         else
