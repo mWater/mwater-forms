@@ -7,7 +7,7 @@ roundToTenthsOfSecond = (ticks) -> if ticks? then Math.round(ticks / 100) / 10 e
 getDisplayValue = (ticks) -> if ticks? then roundToTenthsOfSecond(ticks).toFixed(1) else "-.-"
 toTicks = (seconds) -> if seconds? then seconds * 1000 else null
 
-# Creates a stopwatch timer component on the form, can be start/stop/reset and manually edited
+# Creates a stopwatch timer component on the form, can be start/stop/reset
 module.exports = class StopwatchAnswerComponent extends React.Component
   @propTypes:
     onValueChange: React.PropTypes.func.isRequired
@@ -19,8 +19,6 @@ module.exports = class StopwatchAnswerComponent extends React.Component
     @state =
       timerId: 0          # ID of the running JS timer
       elapsedTicks: ticks # Tick count
-      editing: false      # True if in edit mode
-      editTicks: 0        # Temporary store for manual-mode tick count
 
   componentWillReceiveProps: (nextProps) -> @setState(elapsedTicks: toTicks(nextProps.value))
 
@@ -46,25 +44,7 @@ module.exports = class StopwatchAnswerComponent extends React.Component
     @setState(timerId: 0, elapsedTicks: null)
     @props.onValueChange(null)
 
-  # Enters manual edit mode, with the current value
-  handleEditClick: () =>
-    @setState(editing: true, editTicks: @state.elapsedTicks)
-
-  # Stores @editTicks into @elapsedTicks, persists, and leaves edit mode
-  handleSaveEditClick: () =>
-    @setState(editing: false, elapsedTicks: @state.editTicks)
-    @persistValue(@state.editTicks)
-
-  # Exits edit mode without changes
-  handleCancelEditClick: () => @setState(editing: false)
-
-  # Updates @editTicks with the value from the textbox
-  handleTextChange: (ev) =>
-    if @state.editing
-      @setState(editTicks: toTicks(ev.target.value))
-
   render: ->
-      if !@state.editing
         isRunning = @state.timerId != 0
         H.div {},
           H.div {className: "jumbotron"},
@@ -74,18 +54,3 @@ module.exports = class StopwatchAnswerComponent extends React.Component
               H.button {className: 'btn btn-success', onClick: @handleStartClick, disabled: isRunning}, "Start"
               H.button {className: 'btn btn-danger', onClick: @handleStopClick, disabled: !isRunning}, "Stop"
               H.button {className: 'btn btn-default', onClick: @handleResetClick, disabled: !@state.elapsedTicks}, "Reset"
-            H.div {className: 'btn-group', role: 'group'},
-              H.button {className: 'btn btn-default', onClick: @handleEditClick, disabled: isRunning}, "Edit"
-      else
-        H.div {},
-          H.input
-            className: "form-control input-lg"
-            id: 'input'
-            ref: 'input'
-            type: 'number'
-            step: '0.1'
-            value: getDisplayValue(@state.editTicks)
-            onChange: @handleTextChange # update the @editTicks value
-          H.div {className: 'btn-group', role: 'group'},
-            H.button {className: 'btn btn-default', onClick: @handleSaveEditClick}, "Save"
-            H.button {className: 'btn btn-default', onClick: @handleCancelEditClick}, "Cancel"
