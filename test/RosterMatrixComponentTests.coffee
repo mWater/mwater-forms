@@ -13,7 +13,7 @@ RosterMatrixComponent = require '../src/RosterMatrixComponent'
 FormExprEvaluator = require '../src/FormExprEvaluator'
 MockTContextWrapper = require './MockTContextWrapper'
 
-describe "RosterMatrixComponent", ->
+describe.only "RosterMatrixComponent", ->
   beforeEach ->
     @toDestroy = []
 
@@ -36,6 +36,8 @@ describe "RosterMatrixComponent", ->
         { _id: "number", _type: "NumberColumnQuestion", text: { en: "Number" }, decimal: false }
         { _id: "check", _type: "CheckColumnQuestion", text: { en: "Check" } }
         { _id: "dropdown", _type: "DropdownColumnQuestion", text: { en: "Dropdown" }, choices: [{ id: "x", label: { en: "X" }}, { id: "y", label: { en: "Y" }}] }
+        { _id: "units", _type: "UnitsColumnQuestion", text: { en: "Units" }, units: [{ id: "cm", label: { en: "CM" }}, { id: "inch", label: { en: "INCH" }}] }
+        { _id: "textColumn", _type: "TextColumn", text: { en: "TextColumn" } }
       ]
     }
 
