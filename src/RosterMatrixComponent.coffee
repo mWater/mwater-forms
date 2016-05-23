@@ -6,6 +6,7 @@ R = React.createElement
 formUtils = require './formUtils'
 conditionsUtils = require './conditionsUtils'
 NumberAnswerComponent = require './answers/NumberAnswerComponent'
+UnitsAnswerComponent = require './answers/UnitsAnswerComponent'
 AnswerValidator = require './answers/AnswerValidator'
 
 # Rosters are repeated information, such as asking questions about household members N times.
@@ -123,10 +124,31 @@ module.exports = class RosterMatrixComponent extends React.Component
     return conditionsUtils.compileConditions(choice.conditions)(@props.data)
 
   renderCell: (entry, entryIndex, column, columnIndex) ->
-    value = @getAnswer()[entryIndex].data?[column._id]?.value
+    answer = @getAnswer()[entryIndex]
+    data = answer.data
+    value = data?[column._id]?.value
 
     # Create element
     switch column._type
+      when "TextColumn"
+        cellText = @props.formExprEvaluator.renderString(column.cellText, column.cellTextExprs, data, @props.data, @context.locale)
+        elem = H.label null, cellText
+      when "UnitsColumnQuestion"
+        console.log column
+        console.log answer
+        answer = data?[column._id]
+        elem = R UnitsAnswerComponent, {
+          small: true
+          decimal: column.decimal
+          prefix: column.unitsPosition == 'prefix'
+          answer: answer or {}
+          units: column.units
+          defaultUnits: column.defaultUnits
+          onValueChange: (val) =>
+            console.log('val callback')
+            console.log val
+            @handleCellChange(entryIndex, column._id, val)
+        }
       when "TextColumnQuestion"
         elem = H.input type: "text", className: "form-control input-sm", value: value, onChange: (ev) => @handleCellChange(entryIndex, column._id, ev.target.value)
       when "NumberColumnQuestion"

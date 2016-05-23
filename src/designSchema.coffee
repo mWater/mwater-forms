@@ -374,7 +374,7 @@ module.exports = {
       type: "object"
       properties: {
         _id: { $ref: "#/definitions/uuid" }
-        _type: { enum: ["TextColumnQuestion", "NumberColumnQuestion", "CheckColumnQuestion", "DropdownColumnQuestion"] }
+        _type: { enum: ["TextColumnQuestion", "NumberColumnQuestion", "CheckColumnQuestion", "DropdownColumnQuestion", "UnitsColumnQuestion", "TextColumn"] }
 
         # Header of roster column
         text: { $ref: "#/definitions/localizedString" } 
@@ -384,6 +384,17 @@ module.exports = {
 
         # For number columns 
         decimal: { type: "boolean" }
+
+        # List of units displayed
+        units: {
+          $ref: "#/definitions/units"
+        }
+
+        # Whether units are before or after quantity
+        unitsPosition: { enum: ["prefix", "suffix"] }
+
+        # Default units (id) or null
+        defaultUnits: { type: ["string", "null"] }
 
         # For dropdown columns. Do not allow specify.
         choices: { $ref: "#/definitions/choices" }
@@ -569,6 +580,25 @@ module.exports = {
           } 
         }
         required: ["rhs"]
+      }
+
+      units: {
+        type: "object"
+        properties: {
+          # Unique (within the question) id of the unit
+          id: { type: "string" }
+
+          # Code, unique within the question that should be used for exporting
+          code: { type: "string" }
+
+          # Label of the unit, localized
+          label: { $ref: "#/definitions/localizedString" }
+
+          # Hint associated with a unit
+          hint: { $ref: "#/definitions/localizedString" }
+        }
+        required: ["id", "label"]
+        additionalProperties: false
       }
       
       # Conditions with date as right-hand side
@@ -810,26 +840,8 @@ module.exports = {
         decimal: { type: "boolean" }
 
         # List of units displayed
-        units: { 
-          type: "array" 
-          items: { 
-            type: "object"
-            properties: {
-              # Unique (within the question) id of the unit
-              id: { type: "string" }
-
-              # Code, unique within the question that should be used for exporting
-              code: { type: "string" }
-
-              # Label of the unit, localized
-              label: { $ref: "#/definitions/localizedString" } 
-
-              # Hint associated with a unit
-              hint: { $ref: "#/definitions/localizedString" } 
-            }
-            required: ["id", "label"]
-            additionalProperties: false
-          } 
+        units: {
+          $ref: "#/definitions/units"
         }
 
         # Whether units are before or after quantity
