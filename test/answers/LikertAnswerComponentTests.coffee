@@ -10,7 +10,7 @@ ReactDOM = require 'react-dom'
 R = React.createElement
 H = React.DOM
 
-describe.only 'LikertAnswerComponent', ->
+describe 'LikertAnswerComponent', ->
   before ->
     @toDestroy = []
 

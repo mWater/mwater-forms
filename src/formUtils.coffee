@@ -159,7 +159,7 @@ exports.prepareQuestion = (q) ->
     when "DropdownQuestion", "RadioQuestion", "MulticheckQuestion", "DropdownColumnQuestion"
       knownFields.push "choices"
     when "LikertQuestion"
-      knownFields.push "units"
+      knownFields.push "items"
       knownFields.push "choices"
     when "UnitsQuestion", "UnitsColumnQuestion"
       knownFields.push "decimal"
@@ -208,7 +208,7 @@ exports.changeQuestionType = (question, newType) ->
 
   return question
 
-# Gets type of the answer: text, number, choice, choices, date, units, boolean, location, image, images, texts, site, entity, admin_region
+# Gets type of the answer: text, number, choice, choices, date, units, boolean, location, image, images, texts, site, entity, admin_region, items_choices
 exports.getAnswerType = (q) ->
   switch q._type
     when "TextQuestion", "TextColumnQuestion"
@@ -241,6 +241,8 @@ exports.getAnswerType = (q) ->
       return "entity"
     when "AdminRegionQuestion"
       return "admin_region"
+    when "LikertQuestion"
+      return "items_choices"
     else throw new Error("Unknown question type")
 
 # Check if a form is all sections

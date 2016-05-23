@@ -280,6 +280,7 @@ module.exports = {
         { $ref: "#/definitions/EntityQuestion" }
         { $ref: "#/definitions/AdminRegionQuestion" }
         { $ref: "#/definitions/StopwatchQuestion" }
+        { $ref: "#/definitions/LikertQuestion" }
       ]
     }
 
@@ -798,6 +799,25 @@ module.exports = {
 
         # No validation available
         validations: { type: "array", maxItems: 0 } 
+      })
+      required: ['choices']
+      additionalProperties: false
+    }
+
+    # Displays same choices for each item
+    LikertQuestion: {
+      type: "object"
+      properties: extendQuestionProperties({
+        _type: { enum: ["RadioQuestion"] }
+
+        # Choices of the radio buttons
+        choices: { $ref: "#/definitions/choices" }
+
+        # Choices of the radio buttons
+        items: { $ref: "#/definitions/choices" }
+
+        # No validation available
+        validations: { type: "array", maxItems: 0 }
       })
       required: ['choices']
       additionalProperties: false
