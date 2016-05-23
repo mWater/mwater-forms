@@ -66,7 +66,7 @@ module.exports = class RadioAnswerComponent extends React.Component
           formUtils.localizeString(choice.label, @context.locale)
           if choice.hint
             H.span className: "radio-choice-hint",
-              formUtils.localizeString(choice.hint, @context.locale)
+              " " + formUtils.localizeString(choice.hint, @context.locale)
 
         if choice.specify and @props.answer.value == choice.id
           @renderSpecify(choice)

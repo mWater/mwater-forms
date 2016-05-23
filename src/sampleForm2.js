@@ -197,6 +197,10 @@ module.exports = {
                 "label": {
                   "en": "a",
                   "_base": "en"
+                },
+                "hint": {
+                  "en": "HINT A",
+                  "_base": "en"
                 }
               },
               {
