@@ -23,6 +23,7 @@ MulticheckAnswerComponent = require './answers/MulticheckAnswerComponent'
 NumberAnswerComponent = require './answers/NumberAnswerComponent'
 RadioAnswerComponent = require './answers/RadioAnswerComponent'
 SiteAnswerComponent = require './answers/SiteAnswerComponent'
+StopwatchAnswerComponent = require './answers/StopwatchAnswerComponent'
 TextAnswerComponent = require './answers/TextAnswerComponent'
 TextListAnswerComponent = require './answers/TextListAnswerComponent'
 UnitsAnswerComponent = require './answers/UnitsAnswerComponent'
@@ -368,6 +369,13 @@ module.exports = class QuestionComponent extends React.Component
           ref: "answer"
           value: answer.value
           onChange: @handleValueChange
+        }
+
+      when "StopwatchQuestion"
+        return R StopwatchAnswerComponent, {
+          ref: "answer"
+          value: answer.value
+          onValueChange: @handleValueChange
         }
       else
         return "Unknown type #{@props.question._type}"
