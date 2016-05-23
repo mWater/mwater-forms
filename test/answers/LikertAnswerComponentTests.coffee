@@ -18,9 +18,14 @@ describe.only 'LikertAnswerComponent', ->
       options = _.extend {
         answer: {}
         choices: [
-          { id: "a", label: { _base: "en", en: "AA" }, hint: { _base: "en", en: "a-hint" } }
-          { id: "b", label: { _base: "en", en: "BB" } }
-          { id: "c", label: { _base: "en", en: "CC" }, specify: true }
+          { id: "choiceA", label: { _base: "en", en: "Choice A" } }
+          { id: "choiceB", label: { _base: "en", en: "Choice B" } }
+          { id: "choiceC", label: { _base: "en", en: "Choice C" } }
+        ],
+        items: [
+          { id: "itemA", label: { _base: "en", en: "Item A" }, hint: { _base: "en", en: "a-hint" } }
+          { id: "itemB", label: { _base: "en", en: "Item B" } }
+          { id: "itemC", label: { _base: "en", en: "Item C" } }
         ],
         onAnswerChange: () ->
           null
@@ -36,17 +41,29 @@ describe.only 'LikertAnswerComponent', ->
       comp.destroy()
     @toDestroy = []
 
+  it "displays items", ->
+    testComponent = @render()
+
+    choiceA = testComponent.findDOMNodeByText(/Item A/)
+    assert choiceA?, 'Not showing item A'
+
+    choiceB = testComponent.findDOMNodeByText(/Item B/)
+    assert choiceB?, 'Not showing item B'
+
+    choiceC = testComponent.findDOMNodeByText(/Item C/)
+    assert choiceC?, 'Not showing item C'
+
   it "displays choices", ->
     testComponent = @render()
 
-    choiceA = testComponent.findDOMNodeByText(/AA/)
-    assert choiceA?, 'Not showing choice AA'
+    choiceA = testComponent.findDOMNodeByText(/Choice A/)
+    assert choiceA?, 'Not showing choice A'
 
-    choiceB = testComponent.findDOMNodeByText(/BB/)
-    assert choiceB?, 'Not showing choice BB'
+    choiceB = testComponent.findDOMNodeByText(/Choice B/)
+    assert choiceB?, 'Not showing choice B'
 
-    choiceC = testComponent.findDOMNodeByText(/CC/)
-    assert choiceC?, 'Not showing choice CC'
+    choiceC = testComponent.findDOMNodeByText(/Choice C/)
+    assert choiceC?, 'Not showing choice C'
 
   it "displays choice hints", ->
     testComponent = @render()
@@ -57,60 +74,28 @@ describe.only 'LikertAnswerComponent', ->
   it "records selected choice", (done) ->
     testComponent = @render({
       onAnswerChange: (answer) ->
-        assert.equal answer.value, 'a'
+        assert.deepEqual answer.value, {'itemB':'choiceB'}
         done()
     })
 
-    choiceA = testComponent.findComponentById('a')
+    id = "itemB:choiceB"
 
-    assert choiceA?, 'could not find choice A'
-    TestComponent.click(choiceA)
+    itemBchoiceB = testComponent.findComponentById(id)
+
+    assert itemBchoiceB?, 'could not find item B, choice B, radio btn'
+    TestComponent.click(itemBchoiceB)
 
   it "allows unselecting choice by clicking twice", (done) ->
     testComponent = @render({
-      answer: {value: 'b'}
+      answer: {value: {'itemB': 'choiceB'}}
       onAnswerChange: (answer) ->
-        assert.deepEqual answer.value, null
+        assert.deepEqual answer.value, {}
         done()
     })
 
-    choiceB = testComponent.findComponentById('b')
+    id = "itemB:choiceB"
 
-    assert choiceB?, 'could not find choice B'
-    TestComponent.click(choiceB)
+    itemBchoiceB = testComponent.findComponentById(id)
 
-  it "displays specify box", ->
-    testComponent = @render {value: 'c'}
-
-    specifyInput = ReactTestUtils.findRenderedDOMComponentWithClass.bind(this, testComponent.getComponent(), 'specify-input')
-
-    assert specifyInput?, 'could not find specify input'
-
-  it "it doesn't displays specify box when a choice without specify is selected", ->
-    testComponent = @render {value: 'a'}
-
-    assert.throws(ReactTestUtils.findRenderedDOMComponentWithClass.bind(this, testComponent.getComponent(), 'specify-input'), 'Did not find exactly one match (found: 0) for class:specify-input')
-
-  it "records specify value", (done) ->
-    testComponent = @render {
-      onAnswerChange: (answer) ->
-        assert.deepEqual answer.specify, {'c': 'specify'}
-        done()
-      answer: {value: 'c'}
-    }
-
-    specifyInput = ReactTestUtils.findRenderedDOMComponentWithClass(testComponent.getComponent(), 'specify-input')
-    TestComponent.changeValue(specifyInput, 'specify')
-
-  it "removes specify value on other selection", (done) ->
-    testComponent = @render {
-      onAnswerChange: (answer) ->
-        assert.equal answer.specify, null
-        done()
-      answer: {value: 'c'}
-      specify: {c: 'specify'}
-    }
-
-    choiceC = testComponent.findComponentById('c')
-    assert choiceC?, 'could not find choice C'
-    TestComponent.click(choiceC)
+    assert itemBchoiceB?, 'could not find item B, choice B, radio btn'
+    TestComponent.click(itemBchoiceB)
