@@ -138,7 +138,7 @@ exports.prepareQuestion = (q) ->
       _.defaults q, { choices: [] }
     when "DateQuestion" # , "DateTimeQuestion"??
       _.defaults q, { format: "YYYY-MM-DD" }
-    when "UnitsQuestion"
+    when "UnitsQuestion", "UnitsColumnQuestion"
       _.defaults q, { units: [], defaultUnits: null, unitsPosition: "suffix", decimal: true  }
     when "CheckQuestion"
       _.defaults q, { label: {} }
@@ -156,7 +156,7 @@ exports.prepareQuestion = (q) ->
       knownFields.push "decimal"
     when "DropdownQuestion", "RadioQuestion", "MulticheckQuestion", "DropdownColumnQuestion"
       knownFields.push "choices"
-    when "UnitsQuestion"
+    when "UnitsQuestion", "UnitsColumnQuestion"
       knownFields.push "decimal"
       knownFields.push "units"
       knownFields.push "defaultUnits"
@@ -216,7 +216,7 @@ exports.getAnswerType = (q) ->
       return "choices"
     when "DateQuestion" # , "DateTimeQuestion"??
       return "date"
-    when "UnitsQuestion"
+    when "UnitsQuestion", "UnitsColumnQuestion"
       return "units"
     when "CheckQuestion", "CheckColumnQuestion"
       return "boolean"
