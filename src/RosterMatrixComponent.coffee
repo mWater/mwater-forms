@@ -134,8 +134,6 @@ module.exports = class RosterMatrixComponent extends React.Component
         cellText = @props.formExprEvaluator.renderString(column.cellText, column.cellTextExprs, data, @props.data, @context.locale)
         elem = H.label null, cellText
       when "UnitsColumnQuestion"
-        console.log column
-        console.log answer
         answer = data?[column._id]
         elem = R UnitsAnswerComponent, {
           small: true
@@ -145,8 +143,6 @@ module.exports = class RosterMatrixComponent extends React.Component
           units: column.units
           defaultUnits: column.defaultUnits
           onValueChange: (val) =>
-            console.log('val callback')
-            console.log val
             @handleCellChange(entryIndex, column._id, val)
         }
       when "TextColumnQuestion"
