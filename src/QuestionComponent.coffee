@@ -180,8 +180,9 @@ module.exports = class QuestionComponent extends React.Component
     # If it has a comment box, set the focus on it
     if @props.question.commentsField?
       comments = @refs.comments
-      comments.focus()
-      comments.select()
+      # For some reason, comments can be null here sometimes
+      comments?.focus()
+      comments?.select()
     # Else we lose the focus and go to the next question
     else
       # Blur the input (remove the focus)

@@ -262,6 +262,7 @@ module.exports = {
               "na": true,
               "dontknow": true
             },
+            "commentsField": "true",
             "conditions": [],
             "validations": []
           },
