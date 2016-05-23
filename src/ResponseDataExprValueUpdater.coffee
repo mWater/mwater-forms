@@ -3,6 +3,7 @@ ResponseCleaner = require './ResponseCleaner'
 VisibilityCalculator = require './VisibilityCalculator'
 
 # Updates data in a response given an expression (mWater expression, see FormSchemaBuilder and also mwater-expressions package) and a value
+# When updates are complete for data, cleanData must be called to clean data (removing values that are invisble because of conditions).
 module.exports = class ResponseDataExprValueUpdater
   constructor: (formDesign, schema, dataSource) ->
     @formDesign = formDesign
@@ -21,45 +22,48 @@ module.exports = class ResponseDataExprValueUpdater
     if expr.type == "field"
       if expr.column.match(/^data:.+:value$/) or expr.column.match(/^data:.+:value:quantity$/) or expr.column.match(/^data:.+:value:units$/)
         return true
-  
+
+    # Can update scalar with single join, non-aggr
+    if expr.type == "scalar" and expr.joins.length == 1 and not expr.aggr
+      return true
+
     return false    
 
   # Updates the data of a response, given an expression and its value. For example,
   # if there is a text field in question q1234, the expression { type: "field", table: "responses:form123", column: "data:q1234:value" }
   # refers to the text field value. Setting it will set data.q1234.value in the data.
-  # suppressCleaning stops any cleaning of data (removing values that are invisble because of conditions). Useful when doing multiple updates
-  # in which case it should be true except for last update.
-  updateData: (data, expr, value, callback, suppressCleaning = false) ->
-    # Cleans data unless suppressCleaning = true
-    cleanData = (error, data) =>
-      if suppressCleaning or error
-        return callback(error, data)
-
-      # Compute visibility
-      visibilityCalculator = new VisibilityCalculator(@formDesign)
-      visibilityStructure = visibilityCalculator.createVisibilityStructure(data)
-  
-      responseCleaner = new ResponseCleaner()
-      data = responseCleaner.cleanData(data, visibilityStructure, @formDesign)
-
-      callback(null, data)
-
+  updateData: (data, expr, value, callback) ->
     # Handle simple fields
     if expr.type == "field" and expr.column.match(/^data:.+:value$/)
-      @updateValue(data, expr, value, cleanData)
+      @updateValue(data, expr, value, callback)
       return
 
     # Handle quantity and units
     if expr.type == "field" and expr.column.match(/^data:.+:value:quantity$/)
-      @updateQuantity(data, expr, value, cleanData)
+      @updateQuantity(data, expr, value, callback)
       return
 
     if expr.type == "field" and expr.column.match(/^data:.+:value:units$/)
-      @updateUnits(data, expr, value, cleanData)
+      @updateUnits(data, expr, value, callback)
       return
-    
+
+    # Can update scalar with single join, non-aggr
+    if expr.type == "scalar" and expr.joins.length == 1 and not expr.aggr and expr.joins[0].match(/^data:.+:value$/)
+      @updateScalar(data, expr, value, callback) 
+
     callback(new Error("Cannot update expr #{JSON.stringify(expr)}"))
 
+  # Cleans data. Must be called after last update is done.
+  cleanData: (data) ->
+    # Compute visibility
+    visibilityCalculator = new VisibilityCalculator(@formDesign)
+    visibilityStructure = visibilityCalculator.createVisibilityStructure(data)
+
+    responseCleaner = new ResponseCleaner()
+    data = responseCleaner.cleanData(data, visibilityStructure, @formDesign)
+    return data
+
+  # Updates a value of a question, e.g. data:somequestion:value
   updateValue: (data, expr, value, callback) ->
     question = @formItems[expr.column.match(/^data:(.+):value$/)[1]]
     if not question
@@ -114,3 +118,6 @@ module.exports = class ResponseDataExprValueUpdater
     change[question._id] = answer
     data = _.extend({}, data, change)
     return callback(null, data)    
+
+  updateScalar: (data, expr, value, callback) ->
+    

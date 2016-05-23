@@ -1,5 +1,6 @@
 assert = require('chai').assert
 ResponseDataExprValueUpdater = require '../src/ResponseDataExprValueUpdater'
+Schema = require('mwater-expressions').Schema
 
 describe "ResponseDataExprValueUpdater", ->
   describe "updates simple question values", ->
@@ -83,7 +84,6 @@ describe "ResponseDataExprValueUpdater", ->
         contents: [@question]
       }
 
-
     describe "UnitsQuestion", ->
       it "quantity from empty", (done) ->
         @question._type = "UnitsQuestion"
@@ -127,25 +127,55 @@ describe "ResponseDataExprValueUpdater", ->
           done()
         )
 
-    it "SiteQuestion" #, (done) ->
-      # # Create form
-      # question = {
-      #   _id: "q1234"
-      #   _type: "SiteQuestion"
-      #   text: { en: "Q1234" }
-      #   siteTypes: ["Community"]
-      # }
+    it "SiteQuestion", (done) ->
+      # Create form
+      question = {
+        _id: "q1234"
+        _type: "SiteQuestion"
+        text: { en: "Q1234" }
+        siteTypes: ["Community"]
+      }
 
-      # formDesign = { _type: "Form", contents: [question] }
+      formDesign = { _type: "Form", contents: [question] }
 
-      # # Mock data source
-      # # TODO
-      # assert.fail()
+      # Mock data source
+      dataSource = {
+        performQuery: (query, callback) =>
+          callback(null, [])
+      }
+
+      # Create schema with communities
+      schema = new Schema()
+      schema.addTable({
+        id: "entities.community"
+        name: { en: "Communities" }
+        primaryKey: "_id"
+        contents: [
+          { id: "code", type: "text", name: { en: "Code" } }
+        ]
+      })
+
+      # Add 
+
+      # Create updater
+      updater = new ResponseDataExprValueUpdater(formDesign, schema, dataSource)
+
+      # Update by name
+      expr = { type: "scalar", table: "responses:form123", joins: ["data:q1234:value"], expr: { type: "field", table: "entities.community", column: "name" }}
+
+      assert.isTrue updater.canUpdate(expr), "Should be able to update"
+
+      updater.updateData({}, expr, "Name1", (error, data) =>
+        assert not error
+
+        assert.deepEqual data.q1234.value, { code: "code1" }
+        done()
+      )
 
     it "EntityQuestion"
     it "AdminRegionQuestion"
 
-  it "updates latitude and longitude"
+  it "updates latitude and longitude individually"
   it "updates accuracy"
   it "updates altitude"
   it "updates na/don't know"
@@ -155,7 +185,7 @@ describe "ResponseDataExprValueUpdater", ->
 
   it "cannot update expressions in general"
 
-  it "cleans after update", (done) ->
+  it "cleans data", (done) ->
     # Make a form with a condition
     design = {
       _type: "Form"
@@ -186,9 +216,8 @@ describe "ResponseDataExprValueUpdater", ->
     # Set q1 = null
     updater.updateData({ q1: { value: "a" }, q2: { value: "b" }}, expr, null, (error, data) =>
       assert not error
+      data = updater.cleanData(data)
       assert.deepEqual data, { q1: { value: null } }, JSON.stringify(data)
       done()
     )
-
-
 
