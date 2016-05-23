@@ -13,7 +13,7 @@ RosterMatrixComponent = require '../src/RosterMatrixComponent'
 FormExprEvaluator = require '../src/FormExprEvaluator'
 MockTContextWrapper = require './MockTContextWrapper'
 
-describe.only "RosterMatrixComponent", ->
+describe "RosterMatrixComponent", ->
   beforeEach ->
     @toDestroy = []
 
