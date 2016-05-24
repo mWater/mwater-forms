@@ -99,6 +99,11 @@ module.exports = class MatrixAnswerComponent extends React.Component
     H.tr key: index,
       H.td key: "_item", 
         H.label null, formUtils.localizeString(item.label, @context.locale)
+        if item.hint
+          [
+            H.br()
+            H.div className: "text-muted", formUtils.localizeString(item.hint, @context.locale)
+          ]
       _.map @props.contents, (column, columnIndex) => @renderCell(item, index, column, columnIndex)
 
   render: ->

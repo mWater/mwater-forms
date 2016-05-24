@@ -216,7 +216,7 @@ matrixFormDesign = {
       items: [
         { "id": "item1", "label": { "en": "First", "_base": "en" } }
         { "id": "item2", "label": { "en": "Second", "_base": "en" } }
-        { "id": "item3", "label": { "en": "Third", "_base": "en" } }
+        { "id": "item3", "label": { "en": "Third", "_base": "en" }, hint: { en: "Some hint"} }
       ]
       contents: [
         { _id: "a", _type: "TextColumnQuestion", text: { en: "Name" }, required: true }
