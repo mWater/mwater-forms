@@ -27,6 +27,9 @@ module.exports = class MatrixAnswerComponent extends React.Component
     answer: React.PropTypes.object.isRequired # See answer format
     onAnswerChange: React.PropTypes.func.isRequired
 
+    data: React.PropTypes.object            # Current data of response. Data of roster entry if in a roster
+    parentData: React.PropTypes.object      # Data of overall response if in a roster
+
   focus: () ->
     # TODO
     null
@@ -45,71 +48,34 @@ module.exports = class MatrixAnswerComponent extends React.Component
       H.tr null,
         _.map(@props.contents, (column, index) => @renderColumnHeader(column, index))
 
-  renderCell: (entry, entryIndex, column, columnIndex) ->
-    answer = @getAnswer()[entryIndex]
-    data = answer.data
-    value = data?[column._id]?.value
+  renderCell: (item, itemIndex, column, columnIndex) ->
+    matrixValue = @props.answer?.value or {}
 
-    # Create element
-    switch column._type
-      when "TextColumn"
-        cellText = @props.formExprEvaluator.renderString(column.cellText, column.cellTextExprs, data, @props.data, @context.locale)
-        elem = H.label null, cellText
-      when "UnitsColumnQuestion"
-        console.log column
-        console.log answer
-        answer = data?[column._id]
-        elem = R UnitsAnswerComponent, {
-          small: true
-          decimal: column.decimal
-          prefix: column.unitsPosition == 'prefix'
-          answer: answer or {}
-          units: column.units
-          defaultUnits: column.defaultUnits
-          onValueChange: (val) =>
-            console.log('val callback')
-            console.log val
-            @handleCellChange(entryIndex, column._id, val)
-        }
-      when "TextColumnQuestion"
-        elem = H.input type: "text", className: "form-control input-sm", value: value, onChange: (ev) => @handleCellChange(entryIndex, column._id, ev.target.value)
-      when "NumberColumnQuestion"
-        elem = R NumberAnswerComponent, small: true, style: { maxWidth: "10em"}, decimal: column.decimal, value: value, onChange: (val) => @handleCellChange(entryIndex, column._id, val)
-      when "CheckColumnQuestion"
-        elem = H.div 
-          className: "touch-checkbox #{if value then "checked" else ""}"
-          onClick: => @handleCellChange(entryIndex, column._id, not value)
-          style: { display: "inline-block" }, 
-            "\u200B" # ZWSP
-      when "DropdownColumnQuestion"
-        elem = H.select 
-          className: "form-control input-sm"
-          style: { width: "auto" }
-          value: value
-          onChange: ((ev) => @handleCellChange(entryIndex, column._id, if ev.target.value then ev.target.value else null)),
-            H.option key: "__none__", value: ""
-            _.map column.choices, (choice) =>
-              if @areConditionsValid(choice)
-                text = formUtils.localizeString(choice.label, @context.locale)
-                return H.option key: choice.id, value: choice.id, text
+    # Get data of the item, which is indexed by item id in the answer
+    itemData = matrixValue[item.id] or {}
 
-    # Check for validation errors
-    key = "#{entryIndex}_#{column._id}"
-    if @state.validationErrors[key]
-      className = "invalid"
+    # Get cell answer which is inside the item data, indexed by column id
+    cellAnswer = itemData[column._id] or {}
 
-    return H.td key: column._id, className: className,
-      elem
+    # Determine if invalid TODO
+    # key = "#{entryIndex}_#{column._id}"
+    # invalid = @state.validationErrors[key]
+    invalid = false # TODO
 
-  renderEntry: (entry, index) ->
+    # Render cell
+    return R MatrixColumnCellComponent, 
+      key: column._id
+      column: column
+      data: @props.data
+      parentData: @props.parentData
+      answer: cellAnswer
+      onAnswerChange: @handleCellChange.bind(null, item, column._id)
+      formExprEvaluator: @props.formExprEvaluator
+      invalid: invalid
+
+  renderItem: (item, index) ->
     H.tr key: index,
-      _.map @props.rosterMatrix.contents, (column, columnIndex) => @renderCell(entry, index, column, columnIndex)
-      if @props.rosterMatrix.allowRemove
-        H.td key: "_remove",
-          H.button type: "button", className: "btn btn-sm btn-link", onClick: @handleRemove.bind(null, index),
-            H.span className: "glyphicon glyphicon-remove"  
-
-
+      _.map @props.contents, (column, columnIndex) => @renderCell(item, index, column, columnIndex)
 
   render: ->
     # Create table of 
