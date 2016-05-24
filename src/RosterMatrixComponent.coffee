@@ -127,6 +127,7 @@ module.exports = class RosterMatrixComponent extends React.Component
 
     # Render cell
     return R MatrixColumnCellComponent, 
+      key: column._id
       column: column
       data: entryData
       parentData: @props.data
