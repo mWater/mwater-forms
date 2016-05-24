@@ -53,9 +53,9 @@ module.exports = class MatrixColumnCellComponent extends React.Component
           onValueChange: @handleValueChange
         }
       when "TextColumnQuestion"
-        elem = H.input type: "text", className: "form-control input-sm", value: value, onChange: (ev) => @handleValueChange(ev.target.value)
+        elem = H.input type: "text", className: "form-control input-sm", value: value or "", onChange: (ev) => @handleValueChange(ev.target.value)
       when "NumberColumnQuestion"
-        elem = R NumberAnswerComponent, small: true, style: { maxWidth: "10em"}, decimal: column.decimal, value: value, onChange: @handleValueChange
+        elem = R NumberAnswerComponent, small: true, style: { maxWidth: "10em"}, decimal: column.decimal, value: value or "", onChange: @handleValueChange
       when "CheckColumnQuestion"
         elem = H.div 
           className: "touch-checkbox #{if value then "checked" else ""}"

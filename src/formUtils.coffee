@@ -146,6 +146,10 @@ exports.prepareQuestion = (q) ->
       _.defaults q, { label: {} }
     when "EntityQuestion"
       _.defaults q, { entityFilter: {}, displayProperties: [], selectionMode: "external", selectProperties: [], selectText: { _base: "en", en: "Select" }, propertyLinks: [] }
+    when "LikertQuestion"
+      _.defaults q, { items: [], choices: [] }
+    when "MatrixQuestion"
+      _.defaults q, { items: [], contents: [] }
 
   # Get known fields
   knownFields = ['_id', '_type', 'text', 'textExprs', 'conditions', 'validations', 
