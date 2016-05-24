@@ -246,7 +246,7 @@ describe 'AnswerValidator', ->
 
       assert.equal "message", @answerValidator.validate(question, answer)
 
-  describe.only 'validateLikertQuestion', ->
+  describe 'validateLikertQuestion', ->
     it "enforces required", ->
       answer = {value: null}
       question = {
