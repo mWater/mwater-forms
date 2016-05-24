@@ -149,7 +149,7 @@ exports.prepareQuestion = (q) ->
     when "LikertQuestion"
       _.defaults q, { items: [], choices: [] }
     when "MatrixQuestion"
-      _.defaults q, { items: [], contents: [] }
+      _.defaults q, { items: [], columns: [] }
 
   # Get known fields
   knownFields = ['_id', '_type', 'text', 'textExprs', 'conditions', 'validations', 
@@ -191,7 +191,7 @@ exports.prepareQuestion = (q) ->
       knownFields.push "defaultValue"
     when "MatrixQuestion"
       knownFields.push "items"
-      knownFields.push "contents"
+      knownFields.push "columns"
 
   # Strip unknown fields
   for key in _.keys(q)
