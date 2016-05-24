@@ -77,5 +77,5 @@ module.exports = class MatrixColumnCellComponent extends React.Component
     if @props.invalid
       className = "invalid"
 
-    return H.td key: column._id, className: className,
+    return H.td className: className,
       elem
