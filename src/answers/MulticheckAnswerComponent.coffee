@@ -4,8 +4,7 @@ R = React.createElement
 
 formUtils = require '../formUtils'
 
-# 100% Functional
-
+# Multiple checkboxes where more than one can be checked
 module.exports = class MulticheckAnswerComponent extends React.Component
   @contextTypes:
     locale: React.PropTypes.string  # Current locale (e.g. "en")
