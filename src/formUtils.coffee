@@ -180,6 +180,9 @@ exports.prepareQuestion = (q) ->
       knownFields.push "createEntity"
     when "AdminRegionQuestion"
       knownFields.push "defaultValue"
+    when "MatrixQuestion"
+      knownFields.push "items"
+      knownFields.push "contents"
 
   # Strip unknown fields
   for key in _.keys(q)
@@ -236,6 +239,8 @@ exports.getAnswerType = (q) ->
       return "entity"
     when "AdminRegionQuestion"
       return "admin_region"
+    when "MatrixQuestion"
+      return "matrix"
     else throw new Error("Unknown question type")
 
 # Check if a form is all sections
@@ -279,21 +284,6 @@ exports.duplicateItem = (item, idMap) ->
 
       # For future AND and OR TODO
       return true
-
-  if dup.propertyLinks
-    dup.propertyLinks = _.filter dup.propertyLinks, (link) =>
-      if link.questionId
-        # Check if in id
-        if idMap and idMap[link.questionId]
-          # Map id
-          link.questionId = idMap[link.questionId]
-          return true
-        # Could not be mapped
-        return false
-
-      # For future AND and OR TODO
-      return true
-
 
   # Duplicate contents
   if dup.contents

@@ -36,6 +36,8 @@
     - Legacy: {value: "siteCode"}
 * **"entity"** 
     - {value: "entity _id"}
+* **"matrix"**
+    - { value: { ITEM1ID: { QUESTION1ID: { value: somevalue }, QUESTION2ID: { ...}}, ITEM2ID: ... }
 
 ## Alternates:
 * {alternate = "na" or "dontknow"}

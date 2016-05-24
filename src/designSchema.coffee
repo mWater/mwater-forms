@@ -5,7 +5,7 @@ _  = require 'lodash'
 extendQuestionProperties = (properties) ->
   return _.defaults properties, {
     _id: {}, code: {}, text: {}, textExprs: {}, required: {}, disabled: {}, conditions: {}, hint: {}, help: {}, sticky: {}
-    alternates: {}, commentsField: {}, recordTimestamp: {}, recordLocation: {}, sensor: {}, _basedOn: {}, exportId: {}
+    alternates: {}, commentsField: {}, recordTimestamp: {}, recordLocation: {}, sensor: {}, _basedOn: {}, exportId: {}, contents: {}, items: {}
   } 
 
 # This is the design of a form which is stored in the "design" field of forms in mWater
@@ -280,6 +280,7 @@ module.exports = {
         { $ref: "#/definitions/EntityQuestion" }
         { $ref: "#/definitions/AdminRegionQuestion" }
         { $ref: "#/definitions/StopwatchQuestion" }
+        { $ref: "#/definitions/MatrixQuestion" }
       ]
     }
 
@@ -361,16 +362,17 @@ module.exports = {
         # Allow user to remove items
         allowRemove: { type: "boolean" }
 
-        # Contains a list of items
+        # Contains a list of columns
         contents: {
           type: "array"
-          items: { $ref: "#/definitions/rosterMatrixColumn" }
+          items: { $ref: "#/definitions/matrixColumn" }
         }
       }
       required: ["_id", "_type", "name", "conditions", "contents"]
     }
 
-    rosterMatrixColumn: {
+    # Columns of a matrix question or roster matrix
+    matrixColumn: {
       type: "object"
       properties: {
         _id: { $ref: "#/definitions/uuid" }
@@ -582,25 +584,6 @@ module.exports = {
         required: ["rhs"]
       }
 
-      units: {
-        type: "object"
-        properties: {
-          # Unique (within the question) id of the unit
-          id: { type: "string" }
-
-          # Code, unique within the question that should be used for exporting
-          code: { type: "string" }
-
-          # Label of the unit, localized
-          label: { $ref: "#/definitions/localizedString" }
-
-          # Hint associated with a unit
-          hint: { $ref: "#/definitions/localizedString" }
-        }
-        required: ["id", "label"]
-        additionalProperties: false
-      }
-      
       # Conditions with date as right-hand side
       date: {
         type: "object"
@@ -1028,6 +1011,26 @@ module.exports = {
       additionalProperties: false
     }
 
+    MatrixQuestion: {
+      type: "object"
+      properties: extendQuestionProperties({
+        _type: { enum: ["MatrixQuestion"] }
+
+        # Items, each representing a row
+        items: { $ref: "#/definitions/choices"}
+
+        # Contains a list of columns
+        contents: {
+          type: "array"
+          items: { $ref: "#/definitions/matrixColumn" }
+        }
+
+        # No validation available
+        validations: { type: "array", maxItems: 0 } 
+      })
+      additionalProperties: false
+    }
+
     # List of choices for a dropdown, radio or multicheck
     choices: {
       type: "array"
@@ -1059,5 +1062,31 @@ module.exports = {
         additionalProperties: false
       }
     }
+
+    units: {
+      type: "array"
+      items: {
+        type: "object"
+
+        properties: {
+          type: "object"
+          properties: {
+            # Unique (within the question) id of the unit
+            id: { type: "string" }
+
+            # Code, unique within the question that should be used for exporting
+            code: { type: "string" }
+
+            # Label of the unit, localized
+            label: { $ref: "#/definitions/localizedString" }
+
+            # Hint associated with a unit
+            hint: { $ref: "#/definitions/localizedString" }
+          }
+          required: ["id", "label"]
+          additionalProperties: false
+        }
+      }
+    }    
   }
 }
