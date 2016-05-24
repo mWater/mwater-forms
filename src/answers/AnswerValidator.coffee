@@ -13,6 +13,11 @@ module.exports = class AnswerValidator
       # Handling empty string for Units values
       if answer.value? and answer.value.quantity? and answer.value.quantity == ''
         return true
+      # A required LikertQuestion needs an answer for all items
+      if question._type == 'LikertQuestion'
+        for item in question.items
+          if not answer.value[item.id]?
+            return true
 
     # Check internal validation
     specificValidation = @validateSpecificAnswerType(question, answer)
@@ -39,6 +44,8 @@ module.exports = class AnswerValidator
         return @validateNumberQuestion(question, answer)
       when "SiteQuestion"
         return @validateSiteQuestion(question, answer)
+      when "LikertQuestion"
+        return @validateLikertQuestion(question, answer)
       else
         return null
 
@@ -83,6 +90,19 @@ module.exports = class AnswerValidator
     if answer.value.quantity? and answer.value.quantity != ''
       if not answer.value.units? or answer.value.units == ''
         return 'units field is required when a quantity is set'
+
+    return null
+
+  # Valid if null or empty
+  # Valid if quantity is not set
+  # Invalid if quantity is set but not units
+  validateLikertQuestion: (question, answer) ->
+    if not answer.value? or answer.value == ''
+      return null
+
+    for item, choiceId of answer.value
+      if not _.findWhere(question.choices, {id: choiceId})?
+        return 'Invalid choice'
 
     return null
 

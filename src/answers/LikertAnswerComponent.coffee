@@ -59,9 +59,10 @@ module.exports = class LikertAnswerComponent extends React.Component
       H.div className: "touch-radio #{if value == choice.id then "checked" else ""}", id: id, onClick: @handleValueChange.bind(null, choice, item),
         formUtils.localizeString(choice.label, @context.locale)
 
-  renderChoiceLabel: (choice) ->
-    H.td key: "label#{choice.id}",
-      formUtils.localizeString(choice.label, @context.locale)
+  # IN CASE WE DECIDE TO DISPLAY THE CHOICES AT THE TOP (INSTEAD OF REPEATING THEM)
+  #renderChoiceLabel: (choice) ->
+  #  H.td key: "label#{choice.id}",
+  #    formUtils.localizeString(choice.label, @context.locale)
 
   renderItem: (item) ->
     return H.tr null,
@@ -76,6 +77,7 @@ module.exports = class LikertAnswerComponent extends React.Component
 
   render: ->
     H.table {className: "", style: {width: '100%'}},
+      # IN CASE WE DECIDE TO DISPLAY THE CHOICES AT THE TOP (INSTEAD OF REPEATING THEM)
       #H.thead null,
       #  H.tr null,
       #    H.td(),

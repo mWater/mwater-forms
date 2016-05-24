@@ -219,7 +219,7 @@ describe 'AnswerValidator', ->
     it "enforces required on blank answer", ->
       answer = {value: ''}
       question = {_type: "NumberQuestion"}
-      question.isRequired
+      question.isRequired = false
 
       # Okay if not required
       assert.equal @answerValidator.validate(question, answer)
@@ -227,7 +227,7 @@ describe 'AnswerValidator', ->
     it "allows 0 on required", ->
       answer = {value: 0}
       question = {_type: "NumberQuestion"}
-      question.isRequired
+      question.isRequired = false
 
       # Okay if not required
       assert.equal null, @answerValidator.validate(question, answer)
@@ -245,3 +245,45 @@ describe 'AnswerValidator', ->
       answer = {value: 7}
 
       assert.equal "message", @answerValidator.validate(question, answer)
+
+  describe.only 'validateLikertQuestion', ->
+    it "enforces required", ->
+      answer = {value: null}
+      question = {
+        _type: "LikertQuestion"
+        items: [{id: 'itemAId'}, {id: 'itemBId'}]
+        choices: [{id: 'choiceId'}]
+      }
+
+      # Okay if not required
+      assert.equal null, @answerValidator.validate(question, answer)
+
+      question.required = true
+
+      # The unit answer is still valid in itself
+      assert.equal null, @answerValidator.validateLikertQuestion(question, answer)
+
+      # But not if required
+      assert.equal true, @answerValidator.validate(question, answer)
+
+      # Even if one of the items has been answered
+      answer = {'itemAId': 'choiceId'}
+      assert.equal true, @answerValidator.validate(question, answer)
+
+      # But it's validate if all items have been answered
+      answer = {value: {'itemAId': 'choiceId', 'itemBId': 'choiceId'}}
+      assert.equal null, @answerValidator.validate(question, answer)
+
+    it "enforces that all the answered items of values are available choices", ->
+      answer = {value: {'itemAId': 'choiceId', 'itemBId': 'choiceId'}}
+      question = {
+        _type: "LikertQuestion"
+        items: [{id: 'itemAId'}, {id: 'itemBId'}]
+        choices: [{id: 'choiceId'}]
+      }
+
+      assert.equal null, @answerValidator.validateLikertQuestion(question, answer)
+
+      # Setting an invalid choice value
+      answer = {value: {'itemAId': 'choiceId', 'itemBId': 'anotherChoiceId'}}
+      assert.equal 'Invalid choice', @answerValidator.validateLikertQuestion(question, answer)
