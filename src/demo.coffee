@@ -12,7 +12,12 @@ ResponseDisplayComponent = require './ResponseDisplayComponent'
 ResponseAnswersComponent = require './ResponseAnswersComponent'
 
 # Setup mock localizer
-global.T = (str) -> str
+global.T = (str) ->
+  if arguments.length > 1
+    for subValue, index in Array.from(arguments).slice(1)
+      tag = "{#{index}}"
+      str = str.replace(tag, subValue)
+  return str
 
 canada = { id: "canada", level: 0, name: "Canada", type: "Country" }
 manitoba = { id: "manitoba", level: 1, name: "Manitoba", type: "Province" }
@@ -98,9 +103,9 @@ class DemoComponent extends React.Component
       H.div(className: "col-md-6",
         R FormComponent, {
           formCtx: formCtx
-          # design: sampleForm2.design
+          design: sampleForm2.design
           # design: bigsampleForm2.design
-          design: matrixFormDesign
+          #design: matrixFormDesign
           # design: rosterFormDesign
           # locale: React.PropTypes.string            # Locale. Defaults to English (en)
           data: @state.data
