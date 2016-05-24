@@ -36,6 +36,8 @@
     - Legacy: {value: "siteCode"}
 * **"entity"** 
     - {value: "entity _id"}
+* **"admin_region"**
+    - {value: "id_of_admin_region"}
 
 ## Alternates:
 * {alternate = "na" or "dontknow"}
