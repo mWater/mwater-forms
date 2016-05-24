@@ -397,7 +397,7 @@ module.exports = class QuestionComponent extends React.Component
           value: answer.value
           onValueChange: @handleValueChange
           items: @props.question.items
-          contents: @props.question.contents
+          columns: @props.question.columns
           data: @props.data
           parentData: @props.parentData
           formExprEvaluator: @props.formExprEvaluator

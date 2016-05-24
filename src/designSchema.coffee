@@ -24,7 +24,8 @@ module.exports = {
     # Schema 11 deprecates form-level entity settings and adds hidden entity questions
     # Schema 12 adds admin regions
     # Schema 13 adds rosters and textExprs
-    _schema: { enum: [1, 2, 3, 4, 5, 10, 11, 12, 13] }
+    # Schema 14 adds matrix and likert and units columns and text columns
+    _schema: { enum: [1, 2, 3, 4, 5, 10, 11, 12, 13, 14] }
 
     # Name of the form
     name: { $ref: "#/definitions/localizedString" }
@@ -1040,7 +1041,7 @@ module.exports = {
         items: { $ref: "#/definitions/choices"}
 
         # Contains a list of columns
-        contents: {
+        columns: {
           type: "array"
           items: { $ref: "#/definitions/matrixColumn" }
         }
@@ -1048,6 +1049,7 @@ module.exports = {
         # No validation available
         validations: { type: "array", maxItems: 0 } 
       })
+      required: ["items", "columns"]
       additionalProperties: false
     }
 

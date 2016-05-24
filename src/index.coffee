@@ -31,7 +31,7 @@ exports.AssignmentModel = require './AssignmentModel'
 
 exports.ResponseDataExprValueUpdater = require './ResponseDataExprValueUpdater'
 
-exports.schemaVersion = 13 # Version of the schema that this package supports (cannot compile if higher)
+exports.schemaVersion = 14 # Version of the schema that this package supports (cannot compile if higher)
 exports.minSchemaVersion = 1 # Minimum version of forms schema that can be compiled
 
 # JSON schema of form

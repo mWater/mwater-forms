@@ -23,7 +23,7 @@ module.exports = class MatrixAnswerComponent extends React.Component
     })).isRequired
 
     # Array of matrix columns
-    contents: React.PropTypes.array.isRequired
+    columns: React.PropTypes.array.isRequired
 
     value: React.PropTypes.object                    # See answer format
     onValueChange: React.PropTypes.func.isRequired
@@ -68,7 +68,7 @@ module.exports = class MatrixAnswerComponent extends React.Component
       H.tr null,
         # First item
         H.th(null)
-        _.map(@props.contents, (column, index) => @renderColumnHeader(column, index))
+        _.map(@props.columns, (column, index) => @renderColumnHeader(column, index))
 
   renderCell: (item, itemIndex, column, columnIndex) ->
     matrixValue = @props.value or {}
@@ -104,7 +104,7 @@ module.exports = class MatrixAnswerComponent extends React.Component
             H.br()
             H.div className: "text-muted", formUtils.localizeString(item.hint, @context.locale)
           ]
-      _.map @props.contents, (column, columnIndex) => @renderCell(item, index, column, columnIndex)
+      _.map @props.columns, (column, columnIndex) => @renderCell(item, index, column, columnIndex)
 
   render: ->
     # Create table of 
