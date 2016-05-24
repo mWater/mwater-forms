@@ -83,8 +83,8 @@ describe "RosterMatrixComponent", ->
 
     # Set 3rd input (second row text)
     inputs = ReactTestUtils.scryRenderedDOMComponentsWithTag(comp.getComponent(), "input")
-    inputs[2].value = "x"
-    ReactTestUtils.Simulate.change(inputs[2])
+    inputs[3].value = "x"
+    ReactTestUtils.Simulate.change(inputs[3])
 
   it "uses alternate rosterId if specified", (done) ->
     onDataChange = (val) =>

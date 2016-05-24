@@ -196,18 +196,6 @@ describe "FormUtils", ->
       it "duplicates locales", ->
         assert.equal @duplicate.locales[0].code, "en"
 
-    describe "duplicate form with propertyLinks", ->
-      before ->
-        @duplicate = formUtils.duplicateItem(propertyLinksFormDesign)
-
-      it "updates the propertyLinks with the cloned question ids", ->
-        content = @duplicate.contents[0]
-        textQuestion = content.contents[0]
-        entityQuestion = content.contents[1]
-        textQuestionId = textQuestion._id
-        propertyLinkQuestionId = entityQuestion.propertyLinks[0].questionId
-        assert.equal textQuestionId, propertyLinkQuestionId
-
   describe "update localizations", ->
     it "adds form-level localizations", ->
       form = _.cloneDeep(simpleForm)

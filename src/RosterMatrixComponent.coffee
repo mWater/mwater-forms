@@ -4,10 +4,9 @@ H = React.DOM
 R = React.createElement
 
 formUtils = require './formUtils'
-conditionsUtils = require './conditionsUtils'
-NumberAnswerComponent = require './answers/NumberAnswerComponent'
-UnitsAnswerComponent = require './answers/UnitsAnswerComponent'
 AnswerValidator = require './answers/AnswerValidator'
+
+MatrixColumnCellComponent = require './MatrixColumnCellComponent'
 
 # Rosters are repeated information, such as asking questions about household members N times.
 # A roster matrix is a list of column-type questions with one row for each entry in the roster
@@ -90,10 +89,10 @@ module.exports = class RosterMatrixComponent extends React.Component
     answer.splice(index, 1)
     @handleAnswerChange(answer)
 
-  handleCellChange: (entryIndex, columnId, value) =>
+  handleCellChange: (entryIndex, columnId, answer) =>
     data = @getAnswer()[entryIndex].data
     change = {}
-    change[columnId] = { value: value }
+    change[columnId] = answer
     data = _.extend({}, data, change)
 
     @handleEntryDataChange(entryIndex, data)
@@ -118,66 +117,23 @@ module.exports = class RosterMatrixComponent extends React.Component
         if @props.rosterMatrix.allowRemove
           H.th(null)
 
-  areConditionsValid: (choice) ->
-    if not choice.conditions?
-      return true
-    return conditionsUtils.compileConditions(choice.conditions)(@props.data)
-
   renderCell: (entry, entryIndex, column, columnIndex) ->
-    answer = @getAnswer()[entryIndex]
-    data = answer.data
-    value = data?[column._id]?.value
+    # Get data of the entry
+    entryData = @getAnswer()[entryIndex].data
 
-    # Create element
-    switch column._type
-      when "TextColumn"
-        cellText = @props.formExprEvaluator.renderString(column.cellText, column.cellTextExprs, data, @props.data, @context.locale)
-        elem = H.label null, cellText
-      when "UnitsColumnQuestion"
-        console.log column
-        console.log answer
-        answer = data?[column._id]
-        elem = R UnitsAnswerComponent, {
-          small: true
-          decimal: column.decimal
-          prefix: column.unitsPosition == 'prefix'
-          answer: answer or {}
-          units: column.units
-          defaultUnits: column.defaultUnits
-          onValueChange: (val) =>
-            console.log('val callback')
-            console.log val
-            @handleCellChange(entryIndex, column._id, val)
-        }
-      when "TextColumnQuestion"
-        elem = H.input type: "text", className: "form-control input-sm", value: value, onChange: (ev) => @handleCellChange(entryIndex, column._id, ev.target.value)
-      when "NumberColumnQuestion"
-        elem = R NumberAnswerComponent, small: true, style: { maxWidth: "10em"}, decimal: column.decimal, value: value, onChange: (val) => @handleCellChange(entryIndex, column._id, val)
-      when "CheckColumnQuestion"
-        elem = H.div 
-          className: "touch-checkbox #{if value then "checked" else ""}"
-          onClick: => @handleCellChange(entryIndex, column._id, not value)
-          style: { display: "inline-block" }, 
-            "\u200B" # ZWSP
-      when "DropdownColumnQuestion"
-        elem = H.select 
-          className: "form-control input-sm"
-          style: { width: "auto" }
-          value: value
-          onChange: ((ev) => @handleCellChange(entryIndex, column._id, if ev.target.value then ev.target.value else null)),
-            H.option key: "__none__", value: ""
-            _.map column.choices, (choice) =>
-              if @areConditionsValid(choice)
-                text = formUtils.localizeString(choice.label, @context.locale)
-                return H.option key: choice.id, value: choice.id, text
-
-    # Check for validation errors
+    # Determine if invalid
     key = "#{entryIndex}_#{column._id}"
-    if @state.validationErrors[key]
-      className = "invalid"
+    invalid = @state.validationErrors[key]
 
-    return H.td key: column._id, className: className,
-      elem
+    # Render cell
+    return R MatrixColumnCellComponent, 
+      column: column
+      data: entryData
+      parentData: @props.data
+      answer: entryData?[column._id] or {}
+      onAnswerChange: @handleCellChange.bind(null, entryIndex, column._id)
+      formExprEvaluator: @props.formExprEvaluator
+      invalid: invalid
 
   renderEntry: (entry, index) ->
     H.tr key: index,
@@ -207,3 +163,5 @@ module.exports = class RosterMatrixComponent extends React.Component
         H.div(style: { paddingLeft: 20 }, H.i(null, @context.T("None")))
 
       @renderAdd() 
+
+
