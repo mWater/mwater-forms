@@ -98,9 +98,10 @@ class DemoComponent extends React.Component
       H.div(className: "col-md-6",
         R FormComponent, {
           formCtx: formCtx
-          #design: sampleForm2.design
+          # design: sampleForm2.design
           # design: bigsampleForm2.design
           design: matrixFormDesign
+          # design: rosterFormDesign
           # locale: React.PropTypes.string            # Locale. Defaults to English (en)
           data: @state.data
           onDataChange: @handleDataChange

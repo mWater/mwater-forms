@@ -136,6 +136,8 @@ exports.prepareQuestion = (q) ->
       _.defaults q, { decimal: true }
     when "DropdownQuestion", "RadioQuestion", "MulticheckQuestion", "DropdownColumnQuestion"
       _.defaults q, { choices: [] }
+    when "LikertQuestion"
+      _.defaults q, { items: [], choices: [] }
     when "DateQuestion" # , "DateTimeQuestion"??
       _.defaults q, { format: "YYYY-MM-DD" }
     when "UnitsQuestion", "UnitsColumnQuestion"
@@ -155,6 +157,9 @@ exports.prepareQuestion = (q) ->
     when "NumberQuestion", "NumberColumnQuestion"
       knownFields.push "decimal"
     when "DropdownQuestion", "RadioQuestion", "MulticheckQuestion", "DropdownColumnQuestion"
+      knownFields.push "choices"
+    when "LikertQuestion"
+      knownFields.push "items"
       knownFields.push "choices"
     when "UnitsQuestion", "UnitsColumnQuestion"
       knownFields.push "decimal"
@@ -206,7 +211,7 @@ exports.changeQuestionType = (question, newType) ->
 
   return question
 
-# Gets type of the answer: text, number, choice, choices, date, units, boolean, location, image, images, texts, site, entity, admin_region
+# Gets type of the answer: text, number, choice, choices, date, units, boolean, location, image, images, texts, site, entity, admin_region, items_choices, matrix
 exports.getAnswerType = (q) ->
   switch q._type
     when "TextQuestion", "TextColumnQuestion"
@@ -241,6 +246,8 @@ exports.getAnswerType = (q) ->
       return "admin_region"
     when "MatrixQuestion"
       return "matrix"
+    when "LikertQuestion"
+      return "items_choices"
     else throw new Error("Unknown question type")
 
 # Check if a form is all sections

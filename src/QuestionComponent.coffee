@@ -18,6 +18,7 @@ DropdownAnswerComponent = require './answers/DropdownAnswerComponent'
 EntityAnswerComponent = require './answers/EntityAnswerComponent'
 ImageAnswerComponent = require './answers/ImageAnswerComponent'
 ImagesAnswerComponent = require './answers/ImagesAnswerComponent'
+LikertAnswerComponent = require './answers/LikertAnswerComponent'
 LocationAnswerComponent = require './answers/LocationAnswerComponent'
 MatrixAnswerComponent = require './answers/MatrixAnswerComponent'
 MulticheckAnswerComponent = require './answers/MulticheckAnswerComponent'
@@ -267,6 +268,16 @@ module.exports = class QuestionComponent extends React.Component
       when "DropdownQuestion"
         return R DropdownAnswerComponent, {
           ref: "answer"
+          choices: @props.question.choices
+          answer: answer
+          data: @props.data
+          onAnswerChange: @handleAnswerChange
+        }
+
+      when "LikertQuestion"
+        return R LikertAnswerComponent, {
+          ref: "answer"
+          items: @props.question.items
           choices: @props.question.choices
           answer: answer
           data: @props.data
