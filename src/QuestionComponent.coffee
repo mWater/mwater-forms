@@ -19,6 +19,7 @@ EntityAnswerComponent = require './answers/EntityAnswerComponent'
 ImageAnswerComponent = require './answers/ImageAnswerComponent'
 ImagesAnswerComponent = require './answers/ImagesAnswerComponent'
 LocationAnswerComponent = require './answers/LocationAnswerComponent'
+MatrixAnswerComponent = require './answers/MatrixAnswerComponent'
 MulticheckAnswerComponent = require './answers/MulticheckAnswerComponent'
 NumberAnswerComponent = require './answers/NumberAnswerComponent'
 RadioAnswerComponent = require './answers/RadioAnswerComponent'
@@ -378,6 +379,19 @@ module.exports = class QuestionComponent extends React.Component
           value: answer.value
           onValueChange: @handleValueChange
         }
+
+      when "MatrixQuestion"
+        return R MatrixAnswerComponent, {
+          ref: "answer"
+          value: answer.value
+          onValueChange: @handleValueChange
+          items: @props.question.items
+          contents: @props.question.contents
+          data: @props.data
+          parentData: @props.parentData
+          formExprEvaluator: @props.formExprEvaluator
+        }
+
       else
         return "Unknown type #{@props.question._type}"
     return null

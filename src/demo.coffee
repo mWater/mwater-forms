@@ -85,6 +85,7 @@ class DemoComponent extends React.Component
     @state = {data: data}
 
   handleDataChange: (data) =>
+    console.log data
     @setState(data: data)
 
   render: ->
@@ -99,7 +100,7 @@ class DemoComponent extends React.Component
           formCtx: formCtx
           #design: sampleForm2.design
           # design: bigsampleForm2.design
-          design: rosterFormDesign
+          design: matrixFormDesign
           # locale: React.PropTypes.string            # Locale. Defaults to English (en)
           data: @state.data
           onDataChange: @handleDataChange
@@ -151,7 +152,7 @@ rosterFormDesign = {
       allowRemove: true,
       contents: [
         { _id: "a", _type: "TextColumnQuestion", text: { en: "Name" }, required: true }
-        { _id: "b", _type: "NumberColumnQuestion", text: { en: "Age" } }
+        { _id: "b", _type: "NumberColumnQuestion", text: { en: "Age" }, decimal: false }
         { _id: "c", _type: "CheckColumnQuestion", text: { en: "Present" } }
         { _id: "d", _type: "DropdownColumnQuestion", text: { en: "Gender" }, choices: [{ label: { en: "Male"}, id: "male" }, { label: { en: "Female"}, id: "female" }] }
       ]
@@ -191,6 +192,37 @@ rosterFormDesign = {
             }
           ]
         }
+      ]
+    }
+  ]
+}
+
+matrixFormDesign = {
+  "_type": "Form",
+  _id: "form123"
+  "_schema": 11,
+  "name": {
+    "_base": "en",
+    "en": "Sample Form"
+  },
+  "contents": [
+    {
+      _id: "matrix01"
+      _type: "MatrixQuestion"
+      "name": {
+        "_base": "en",
+        "en": "Matrix"
+      },
+      items: [
+        { "id": "item1", "label": { "en": "First", "_base": "en" } }
+        { "id": "item2", "label": { "en": "Second", "_base": "en" } }
+        { "id": "item3", "label": { "en": "Third", "_base": "en" } }
+      ]
+      contents: [
+        { _id: "a", _type: "TextColumnQuestion", text: { en: "Name" }, required: true }
+        { _id: "b", _type: "NumberColumnQuestion", text: { en: "Age" }, decimal: false }
+        { _id: "c", _type: "CheckColumnQuestion", text: { en: "Present" } }
+        { _id: "d", _type: "DropdownColumnQuestion", text: { en: "Gender" }, choices: [{ label: { en: "Male"}, id: "male" }, { label: { en: "Female"}, id: "female" }] }
       ]
     }
   ]

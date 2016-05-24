@@ -13,7 +13,7 @@ module.exports = class MatrixColumnCellComponent extends React.Component
   @propTypes: 
     column: React.PropTypes.object.isRequired       # Column. See designSchema
     data: React.PropTypes.object.isRequired         # Data of the response. Used for text columns to render expressions and to evaluate conditional choices
-    parentData: React.PropTypes.object.isRequired   # Parent data if in a roster
+    parentData: React.PropTypes.object              # Parent data if in a roster
     answer: React.PropTypes.object                  # Answer of the cell
     onAnswerChange: React.PropTypes.func.isRequired   # Called with new answer of cell
     formExprEvaluator: React.PropTypes.object.isRequired # FormExprEvaluator for rendering strings with expression

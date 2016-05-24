@@ -3,8 +3,9 @@ H = React.DOM
 R = React.createElement
 
 formUtils = require '../formUtils'
+MatrixColumnCellComponent = require '../MatrixColumnCellComponent'
 
-# Multiple checkboxes where more than one can be checked
+# Matrix with columns and items
 module.exports = class MatrixAnswerComponent extends React.Component
   @contextTypes:
     locale: React.PropTypes.string  # Current locale (e.g. "en")
@@ -24,15 +25,34 @@ module.exports = class MatrixAnswerComponent extends React.Component
     # Array of matrix columns
     contents: React.PropTypes.array.isRequired
 
-    answer: React.PropTypes.object.isRequired # See answer format
-    onAnswerChange: React.PropTypes.func.isRequired
+    value: React.PropTypes.object                    # See answer format
+    onValueChange: React.PropTypes.func.isRequired
 
     data: React.PropTypes.object            # Current data of response. Data of roster entry if in a roster
     parentData: React.PropTypes.object      # Data of overall response if in a roster
+    formExprEvaluator: React.PropTypes.object.isRequired # FormExprEvaluator for rendering strings with expression
 
   focus: () ->
     # TODO
     null
+
+  handleCellChange: (item, column, answer) =>
+    matrixValue = @props.value or {}
+
+    # Get data of the item, which is indexed by item id in the answer
+    itemData = matrixValue[item.id] or {}
+
+    # Set column in item
+    change = {}
+    change[column._id] = answer
+    itemData = _.extend({}, itemData, change)
+
+    # Set item data within value
+    change = {}
+    change[item.id] = itemData
+    matrixValue = _.extend({}, matrixValue, change)
+
+    @props.onValueChange(matrixValue)
 
   renderColumnHeader: (column, index) ->
     H.th key: column._id,
@@ -46,10 +66,12 @@ module.exports = class MatrixAnswerComponent extends React.Component
   renderHeader: ->
     H.thead null,
       H.tr null,
+        # First item
+        H.th(null)
         _.map(@props.contents, (column, index) => @renderColumnHeader(column, index))
 
   renderCell: (item, itemIndex, column, columnIndex) ->
-    matrixValue = @props.answer?.value or {}
+    matrixValue = @props.value or {}
 
     # Get data of the item, which is indexed by item id in the answer
     itemData = matrixValue[item.id] or {}
@@ -69,12 +91,14 @@ module.exports = class MatrixAnswerComponent extends React.Component
       data: @props.data
       parentData: @props.parentData
       answer: cellAnswer
-      onAnswerChange: @handleCellChange.bind(null, item, column._id)
+      onAnswerChange: @handleCellChange.bind(null, item, column)
       formExprEvaluator: @props.formExprEvaluator
       invalid: invalid
 
   renderItem: (item, index) ->
     H.tr key: index,
+      H.td key: "_item", 
+        H.label null, formUtils.localizeString(item.label, @context.locale)
       _.map @props.contents, (column, columnIndex) => @renderCell(item, index, column, columnIndex)
 
   render: ->
