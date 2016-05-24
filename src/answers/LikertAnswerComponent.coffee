@@ -66,16 +66,16 @@ module.exports = class LikertAnswerComponent extends React.Component
   renderItem: (item) ->
     return H.tr null,
       H.td(null,
-        formUtils.localizeString(item.label, @context.locale)
+        H.b(null, formUtils.localizeString(item.label, @context.locale))
         if item.hint
           H.div null,
-            H.span className: "",
+            H.span className: "", style: {color: '#888'},
               formUtils.localizeString(item.hint, @context.locale)
       ),
       _.map @props.choices, (choice) => @renderChoice(item, choice)
 
   render: ->
-    H.table className: "",
+    H.table {className: "", style: {width: '100%'}},
       #H.thead null,
       #  H.tr null,
       #    H.td(),
