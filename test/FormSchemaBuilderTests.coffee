@@ -533,6 +533,9 @@ describe "FormSchemaBuilder addForm", ->
         }
       ])
 
+    it "items_choices"
+    it "matrix"
+
     it "adds location stamp", ->
       @testQuestion({ _type: "TextQuestion", recordLocation: true }, [
         { 

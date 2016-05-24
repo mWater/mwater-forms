@@ -69,6 +69,9 @@ describe "ResponseDataExprValueUpdater", ->
       @testUpdate("LocationQuestion", {}, { type: "Point", coordinates: [2, 3] }, done, { latitude: 3, longitude: 2 })
       @testUpdate("LocationQuestion", {}, null, done, null)
 
+    it "LikertQuestion"
+    it "MatrixQuestion"
+
 
   describe "special cases", ->
     beforeEach ->
