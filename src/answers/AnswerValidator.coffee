@@ -1,6 +1,7 @@
 siteCodes = require '../siteCodes'
 
 # AnswerValidator gets called when a form is submitted (or on next)
+# Only the validate method is not internal
 module.exports = class AnswerValidator
   # It returns null if everything is fine
   # It makes sure required questions are properly answered

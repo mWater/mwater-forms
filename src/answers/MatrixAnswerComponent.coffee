@@ -144,7 +144,9 @@ module.exports = class MatrixAnswerComponent extends React.Component
       _.map @props.columns, (column, columnIndex) => @renderCell(item, index, column, columnIndex)
 
   render: ->
-    # Create table of 
+    # Create table
+    # borderCollapse is set to separate (overriding bootstrap table value), so that we can properly see the validation
+    # error borders (or else the top one of the first row is missing since it's being collapsed with the th border)
     H.table className: "table", style: {borderCollapse: 'separate'},
       @renderHeader()
       H.tbody null,
