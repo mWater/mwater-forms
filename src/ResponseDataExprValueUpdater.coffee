@@ -70,16 +70,20 @@ module.exports = class ResponseDataExprValueUpdater
       @updateUnits(data, expr, value, callback)
       return
 
-    # # Handle Likert (items_choices) and Matrix
-    # if expr.type == "field" and expr.column.match(/^data:.+:value:.+$/)
-    #   question = @formItems[expr.column.match(/^data:(.+):value:.+$/)[1]]
-    #   if not question
-    #     return callback(new Error("Question #{expr.column} not found"))
+    # Handle Likert (items_choices) and Matrix
+    if expr.type == "field" and expr.column.match(/^data:.+:value:.+$/)
+      question = @formItems[expr.column.match(/^data:(.+):value:.+$/)[1]]
+      if not question
+        return callback(new Error("Question #{expr.column} not found"))
 
-    #   answerType = formUtils.getAnswerType(question)
-    #   if answerType == "items_choices"
-    #     @updateItemsChoices(data, expr, value, )
+      answerType = formUtils.getAnswerType(question)
+      if answerType == "items_choices"
+        @updateItemsChoices(data, expr, value, callback)
+        return
 
+      if answerType == "matrix"
+        @updateMatrix(data, expr, value, callback)
+        return
     
     # Handle comments
     if expr.type == "field" and expr.column.match(/^data:.+:comments$/)
@@ -137,6 +141,20 @@ module.exports = class ResponseDataExprValueUpdater
 
     answer = data[question._id] or {}
     return callback(null, @setValue(data, question, _.extend({}, answer.value or {}, units: value)))
+
+  # Update a Likert-style item
+  updateItemsChoices: (data, expr, value, callback) ->
+    question = @formItems[expr.column.match(/^data:(.+):value:.+$/)[1]]
+    if not question
+      return callback(new Error("Question #{expr.column} not found"))
+
+    item = expr.column.match(/^data:.+:value:(.+)$/)[1]
+
+    answerValue = data[question._id]?.value or {}
+    change = {}
+    change[item] = value
+    answerValue = _.extend({}, answerValue, change)
+    return callback(null, @setValue(data, question, answerValue))
 
   updateComments: (data, expr, value, callback) ->
     question = @formItems[expr.column.match(/^data:(.+):comments$/)[1]]
