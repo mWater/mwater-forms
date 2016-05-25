@@ -142,7 +142,6 @@ module.exports = class QuestionComponent extends React.Component
     if @props.question.recordLocation and not oldAnswer.location?
       locationFinder = @context.locationFinder or new LocationFinder()
       locationFinder.getLocation (loc) =>
-        # TODO: SurveyorPro: Should check if component is still mounted!
         if loc? and not @unmounted?
           newAnswer = _.clone @getAnswer()
           newAnswer.location = _.pick(loc.coords, "latitude", "longitude", "accuracy", "altitude", "altitudeAccuracy")

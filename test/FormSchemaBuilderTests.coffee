@@ -533,7 +533,46 @@ describe "FormSchemaBuilder addForm", ->
         }
       ])
 
-    it "items_choices"
+    it "items_choices", ->
+      # items_choices (Likert) has a database column for each item, all in one section
+      # Each value is stored as follows: data:QUESTIONID:value:ITEMID, corresponding to the actual path to get data
+      @testQuestion({ 
+        _type: "LikertQuestion" 
+        items: [
+          { id: "item1", label: { _base:"en", en: "Item 1" } }
+          { id: "item2", label: { _base:"en", en: "Item 2" } }
+        ]
+        choices: [
+          { id: "yes", label: { _base:"en", en: "Yes"}}
+          { id: "no", label: { _base:"en", en: "No"}}
+        ]
+      }, 
+      [
+        # Item 1
+        { 
+          id: "data:questionid:value:item1" 
+          type: "enum"
+          name: { _base: "en", en: "Question: Item 1"}
+          enumValues: [
+            { id: "yes", name: { _base:"en", en: "Yes"} }
+            { id: "no", name: { _base:"en", en: "No"} }
+          ]
+          # data#>>'{questionid,value,item1}'
+          jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,item1}"] }
+        }
+        # Item 2
+        { 
+          id: "data:questionid:value:item2" 
+          type: "enum"
+          name: { _base: "en", en: "Question: Item 2"}
+          enumValues: [
+            { id: "yes", name: { _base:"en", en: "Yes"} }
+            { id: "no", name: { _base:"en", en: "No"} }
+          ]
+          # data#>>'{questionid,value,item2}'
+          jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,item2}"] }
+        }
+      ])
 
     describe "matrix", ->
       it "adds columns", ->

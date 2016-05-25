@@ -750,6 +750,32 @@ module.exports = class FormSchemaBuilder
           }
           addColumn(column)
 
+        when "items_choices"
+          # Create section
+          section = {
+            type: "section"
+            name: item.name
+            contents: []
+          }
+
+          # For each item
+          for itemItem in item.items
+            section.contents.push({
+              id: "data:#{item._id}:value:#{itemItem.id}"
+              type: "enum"
+              name: appendStr(appendStr(item.text, ": "), itemItem.label)
+              enumValues: _.map(item.choices, (c) -> { id: c.id, name: c.label })
+              jsonql: {
+                type: "op"
+                op: "#>>"
+                exprs: [
+                  { type: "field", tableAlias: "{alias}", column: "data" }
+                  "{#{item._id},value,#{itemItem.id}}"
+                ]
+              }
+           })
+          addColumn(section)
+
         when "matrix"
           sections = []
           # For each item
