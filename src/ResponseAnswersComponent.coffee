@@ -154,7 +154,46 @@ module.exports = class ResponseAnswersComponent extends React.Component
         })
 
       when "items_choices"
-        return answer.value
+        for item in q.items
+          choiceId = answer.value[item.id]
+          if choiceId?
+            choice = _.findWhere(q.choices, { id: choiceId })
+            if choice?
+              return H.div null,
+                formUtils.localizeString(choice.label, 'en')
+            else
+              return H.span className: "label label-danger", "Invalid Choice"
+
+  # Special render on multiple rows
+  renderMatrixAnswer: (q, answer) ->
+    if not answer
+      return null
+    if answer.alternate
+      return null
+    if not answer.value?
+      return null
+
+    if formUtils.getAnswerType(q) == "items_choices"
+      contents = []
+      for item in q.items
+        itemTd = H.td style: {textAlign: "center"},
+          formUtils.localizeString(item.label, @props.locale)
+        choiceId = answer.value[item.id]
+        if choiceId?
+          choice = _.findWhere(q.choices, { id: choiceId })
+          if choice?
+            contents.push H.tr null,
+              itemTd,
+              H.td null,
+                formUtils.localizeString(choice.label, @props.locale)
+          else
+            contents.push H.tr null,
+              itemTd,
+              H.td null,
+                H.span className: "label label-danger", "Invalid Choice"
+      return contents
+    else
+      return null
 
 
   renderQuestion: (q, dataId) ->
@@ -174,18 +213,24 @@ module.exports = class ResponseAnswersComponent extends React.Component
     if @props.hideEmptyAnswers and not answer?.value? and not answer?.alternate
       return null
 
-    H.tr key: dataId,
-      H.td key: "name", style: { width: "50%" },
-        formUtils.localizeString(q.text, @props.locale)
-      H.td key: "value",
-        @renderAnswer(q, answer)
-        if answer and answer.timestamp
-          H.div null,
-            @props.T('Answered')
-            ": "
-            moment(answer.timestamp).format('llll')
-        if answer and answer.location
-          @renderLocation(answer.location)
+    matrixAnswer = @renderMatrixAnswer(q, answer)
+
+    return [
+      H.tr key: dataId,
+        H.td key: "name", style: { width: "50%" },
+          formUtils.localizeString(q.text, @props.locale)
+        H.td key: "value",
+          if not matrixAnswer?
+            @renderAnswer(q, answer)
+          if answer and answer.timestamp
+            H.div null,
+              @props.T('Answered')
+              ": "
+              moment(answer.timestamp).format('llll')
+          if answer and answer.location
+            @renderLocation(answer.location)
+      matrixAnswer
+    ]
 
   # Add all the items with the proper rosterId to items array
   # Looks inside groups and sections
