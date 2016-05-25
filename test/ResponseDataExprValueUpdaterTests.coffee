@@ -31,7 +31,7 @@ describe "ResponseDataExprValueUpdater", ->
 
         updater.updateData({}, expr, value, (error, data) =>
           assert not error
-          assert.deepEqual data, { q1234: { value: newValue or value } }
+          compare data, { q1234: { value: newValue or value } }
           done()
         )
 
@@ -102,7 +102,7 @@ describe "ResponseDataExprValueUpdater", ->
 
         updater.updateData({ q1234: oldAnswer }, expr, value, (error, data) =>
           assert not error
-          assert.deepEqual data, { q1234: newAnswer }
+          compare data, { q1234: newAnswer }
           done()
         )
 
@@ -143,7 +143,57 @@ describe "ResponseDataExprValueUpdater", ->
           done
         )
 
-    it "MatrixQuestion"
+    describe "MatrixQuestion", ->
+      it "updates simple column", (done) ->
+        @testUpdate("MatrixQuestion", { 
+            items: [
+              { id: "item1", label: { _base:"en", en: "Item 1" } }
+              { id: "item2", label: { _base:"en", en: "Item 2" } }
+            ]
+            columns: [
+              { _id: "col1", _type: "TextColumnQuestion" }
+            ]
+          },
+          "data:q1234:value:item1:col1:value",
+          "sometext"
+          { value: { item2: { col1: { value: "xyz" } } } }
+          { value: { item1: { col1: { value: "sometext" } }, item2: { col1: { value: "xyz" } } } }
+          done
+        )
+
+      it "updates units magnitude column", (done) ->
+        @testUpdate("MatrixQuestion", { 
+            items: [
+              { id: "item1", label: { _base:"en", en: "Item 1" } }
+              { id: "item2", label: { _base:"en", en: "Item 2" } }
+            ]
+            columns: [
+              { _id: "col1", _type: "DropdownColumnQuestion", units: [{ id: "a" }, { id: "b" }] }
+            ]
+          },
+          "data:q1234:value:item1:col1:value:quantity",
+          123
+          { value: { item2: { col1: { value: "xyz" } } } }
+          { value: { item1: { col1: { value: { quantity: 123 } } }, item2: { col1: { value: "xyz" } } } } 
+          done
+        )
+
+      it "updates units units column", (done) ->
+        @testUpdate("MatrixQuestion", { 
+            items: [
+              { id: "item1", label: { _base:"en", en: "Item 1" } }
+              { id: "item2", label: { _base:"en", en: "Item 2" } }
+            ]
+            columns: [
+              { _id: "col1", _type: "DropdownColumnQuestion", units: [{ id: "a" }, { id: "b" }] }
+            ]
+          },
+          "data:q1234:value:item1:col1:value:units",
+          "a"
+          { value: { item2: { col1: { value: "xyz" } } } }
+          { value: { item1: { col1: { value: { units: "a" } } }, item2: { col1: { value: "xyz" } } } } 
+          done
+        )
 
 
   describe "special cases", ->
@@ -170,7 +220,7 @@ describe "ResponseDataExprValueUpdater", ->
 
         updater.updateData({}, expr, 4, (error, data) =>
           assert not error
-          assert.deepEqual data, { q1234: { value: { quantity: 4 } } }
+          compare data, { q1234: { value: { quantity: 4 } } }
           done()
         )
 
@@ -184,7 +234,7 @@ describe "ResponseDataExprValueUpdater", ->
 
         updater.updateData({ q1234: { value: { quantity: 3, units: "a" }} }, expr, 4, (error, data) =>
           assert not error
-          assert.deepEqual data, { q1234: { value: { quantity: 4, units: "a" } } }
+          compare data, { q1234: { value: { quantity: 4, units: "a" } } }
           done()
         )
 
@@ -198,7 +248,7 @@ describe "ResponseDataExprValueUpdater", ->
 
         updater.updateData({ q1234: { value: { quantity: 3, units: "a" }} }, expr, "b", (error, data) =>
           assert not error
-          assert.deepEqual data, { q1234: { value: { quantity: 3, units: "b" } } }
+          compare data, { q1234: { value: { quantity: 3, units: "b" } } }
           done()
         )
 
@@ -269,7 +319,7 @@ describe "ResponseDataExprValueUpdater", ->
         updater.updateData({}, expr, "Name1", (error, data) =>
           assert not error
 
-          assert.deepEqual data.q1234.value, { code: "code1" }
+          compare data.q1234.value, { code: "code1" }
           done()
         )
 
@@ -339,7 +389,7 @@ describe "ResponseDataExprValueUpdater", ->
         updater.updateData({}, expr, "Name1", (error, data) =>
           assert not error
 
-          assert.deepEqual data.q1234.value, "12345"
+          compare data.q1234.value, "12345"
           done()
         )
 
@@ -409,7 +459,7 @@ describe "ResponseDataExprValueUpdater", ->
         updater.updateData({}, expr, "Name1", (error, data) =>
           assert not error
 
-          assert.deepEqual data.q1234.value, "12345"
+          compare data.q1234.value, "12345"
           done()
         )
 
@@ -434,7 +484,7 @@ describe "ResponseDataExprValueUpdater", ->
 
       @updater.updateData({ q1234: { value: { latitude: 2, longitude: 3, altitude: 4 }}}, expr, 45, (error, data) =>
         assert not error
-        assert.deepEqual data, { q1234: { value: { latitude: 45, longitude: 3, altitude: 4 }}}
+        compare data, { q1234: { value: { latitude: 45, longitude: 3, altitude: 4 }}}
         done()
       )
 
@@ -444,7 +494,7 @@ describe "ResponseDataExprValueUpdater", ->
 
       @updater.updateData({ q1234: { value: { latitude: 2, longitude: 3, altitude: 4 }}}, expr, 45, (error, data) =>
         assert not error
-        assert.deepEqual data, { q1234: { value: { latitude: 2, longitude: 45, altitude: 4 }}}
+        compare data, { q1234: { value: { latitude: 2, longitude: 45, altitude: 4 }}}
         done()
       )
 
@@ -453,7 +503,7 @@ describe "ResponseDataExprValueUpdater", ->
 
       @updater.updateData({ q1234: { value: { latitude: 2, longitude: 3, altitude: 4 }}}, expr, 45, (error, data) =>
         assert not error
-        assert.deepEqual data, { q1234: { value: { latitude: 2, longitude: 3, accuracy: 45, altitude: 4 }}}
+        compare data, { q1234: { value: { latitude: 2, longitude: 3, accuracy: 45, altitude: 4 }}}
         done()
       )
 
@@ -462,7 +512,7 @@ describe "ResponseDataExprValueUpdater", ->
 
       @updater.updateData({ q1234: { value: { latitude: 2, longitude: 3, altitude: 4 }}}, expr, 45, (error, data) =>
         assert not error
-        assert.deepEqual data, { q1234: { value: { latitude: 2, longitude: 3, altitude: 45 }}}
+        compare data, { q1234: { value: { latitude: 2, longitude: 3, altitude: 45 }}}
         done()
       )
 
@@ -484,7 +534,7 @@ describe "ResponseDataExprValueUpdater", ->
     
     updater.updateData({ }, expr, true, (error, data) =>
       assert not error
-      assert.deepEqual data, { q1234: { alternate: "na" } }
+      compare data, { q1234: { alternate: "na" } }
       done()
     )
 
@@ -508,12 +558,12 @@ describe "ResponseDataExprValueUpdater", ->
     # Set contains to true
     updater.updateData { }, expr, true, (error, data) =>
       assert not error
-      assert.deepEqual data, { q1234: { value: ['b'] } }
+      compare data, { q1234: { value: ['b'] } }
 
       # Set it to false
       updater.updateData { q1234: { value: ['b', 'c'] } }, expr, false, (error, data) =>
         assert not error
-        assert.deepEqual data, { q1234: { value: ['c'] } }
+        compare data, { q1234: { value: ['c'] } }
         done()
 
   it "updates specify", (done) ->
@@ -534,7 +584,7 @@ describe "ResponseDataExprValueUpdater", ->
 
     updater.updateData({ }, expr, "apple", (error, data) =>
       assert not error
-      assert.deepEqual data, { q1234: { specify: { b: "apple" } } }
+      compare data, { q1234: { specify: { b: "apple" } } }
       done()
     )
     
@@ -556,7 +606,7 @@ describe "ResponseDataExprValueUpdater", ->
 
     updater.updateData({ }, expr, "apple", (error, data) =>
       assert not error
-      assert.deepEqual data, { q1234: { comments: "apple" } }
+      compare data, { q1234: { comments: "apple" } }
       done()
     )
 
@@ -592,7 +642,7 @@ describe "ResponseDataExprValueUpdater", ->
     updater.updateData({ q1: { value: "a" }, q2: { value: "b" }}, expr, null, (error, data) =>
       assert not error
       data = updater.cleanData(data)
-      assert.deepEqual data, { q1: { value: null } }, JSON.stringify(data)
+      compare data, { q1: { value: null } }, JSON.stringify(data)
       done()
     )
 
