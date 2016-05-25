@@ -46,7 +46,8 @@ module.exports = class LikertAnswerComponent extends React.Component
       delete newValue[item.id]
     else
       newValue[item.id] = choice.id
-    @props.onAnswerChange({value: newValue})
+
+    @props.onAnswerChange(_.extend({}, @props.answer, { value: newValue }))
 
   renderChoice: (item, choice) ->
     id = "#{item.id}:#{choice.id}"
