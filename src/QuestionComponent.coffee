@@ -116,7 +116,7 @@ module.exports = class QuestionComponent extends React.Component
 
     # Check for isValid function in answer component, as some answer components don't store invalid answers
     # like the number answer.
-    if not validationError and not @refs.answer?.isValid?()
+    if not validationError and @refs.answer?.isValid and not @refs.answer?.isValid()
       validationError = true
 
     if validationError?
