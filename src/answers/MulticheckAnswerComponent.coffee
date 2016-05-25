@@ -3,6 +3,7 @@ H = React.DOM
 R = React.createElement
 
 formUtils = require '../formUtils'
+conditionsUtils = require '../conditionsUtils'
 
 # Multiple checkboxes where more than one can be checked
 module.exports = class MulticheckAnswerComponent extends React.Component
@@ -28,6 +29,7 @@ module.exports = class MulticheckAnswerComponent extends React.Component
 
     answer: React.PropTypes.object.isRequired # See answer format
     onAnswerChange: React.PropTypes.func.isRequired
+    data: React.PropTypes.object.isRequired
 
   focus: () ->
     # Nothing to focus
@@ -52,6 +54,11 @@ module.exports = class MulticheckAnswerComponent extends React.Component
     specify = _.extend({}, @props.answer.specify, change)
     @props.onAnswerChange({value: @props.answer.value, specify: specify})
 
+  areConditionsValid: (choice) ->
+    if not choice.conditions?
+      return true
+    return conditionsUtils.compileConditions(choice.conditions)(@props.data)
+
   # Render specify input box
   renderSpecify: (choice) ->
     if @props.answer.specify?
@@ -61,6 +68,9 @@ module.exports = class MulticheckAnswerComponent extends React.Component
     H.input className: "form-control specify-input", type: "text", value: value, onChange: @handleSpecifyChange.bind(null, choice.id)
 
   renderChoice: (choice) ->
+    if not @areConditionsValid(choice)
+      return null
+      
     selected = _.isArray(@props.answer.value) and choice.id in @props.answer.value
 
     H.div key: choice.id,

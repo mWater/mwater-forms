@@ -306,7 +306,15 @@ module.exports = {
                 "label": {
                   "en": "a",
                   "_base": "en"
-                }
+                },
+                "conditions": [
+                  {
+                    "op": "true",
+                    "lhs": {
+                      "question": "ef40dba8338d4ebdbbc5808e78969e95"
+                    }
+                  }
+                ]
               },
               {
                 "id": "rbRntNk",
