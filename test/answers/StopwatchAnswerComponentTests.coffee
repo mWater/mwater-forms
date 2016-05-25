@@ -37,7 +37,7 @@ describe 'StopwatchAnswerComponent', ->
     comp = @render({
       onValueChange: (value) ->
         if ready
-          assert.equal value, 1.2
+          assert.equal value, 1.23
           done()
     })
     btnStart = comp.findDOMNodeByText("Start")
