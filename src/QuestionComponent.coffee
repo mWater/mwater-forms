@@ -107,11 +107,16 @@ module.exports = class QuestionComponent extends React.Component
 
   # Returns true if validation error
   validate: (scrollToFirstInvalid) ->
+    if @refs.answer?.validate?(scrollToFirstInvalid)?
+      if scrollToFirstInvalid
+        @refs.prompt.scrollIntoView()
+      return true
+
     validationError = new AnswerValidator().validate(@props.question, @getAnswer())
 
     # Check for isValid function in answer component, as some answer components don't store invalid answers
     # like the number answer.
-    if not validationError and @refs.answer?.isValid and not @refs.answer?.isValid()
+    if not validationError and not @refs.answer?.isValid?()
       validationError = true
 
     if validationError?
