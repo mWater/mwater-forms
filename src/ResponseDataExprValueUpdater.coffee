@@ -19,7 +19,7 @@ module.exports = class ResponseDataExprValueUpdater
   canUpdate: (expr) ->
     # Handle simple fields
     if expr.type == "field"
-      if expr.column.match(/^data:.+:value$/) or expr.column.match(/^data:.+:value:quantity$/) or expr.column.match(/^data:.+:value:units$/)
+      if expr.column.match(/^data:.+:value(:.+)?$/) 
         return true
   
     return false    
@@ -57,6 +57,17 @@ module.exports = class ResponseDataExprValueUpdater
     if expr.type == "field" and expr.column.match(/^data:.+:value:units$/)
       @updateUnits(data, expr, value, cleanData)
       return
+
+    # # Handle Likert (items_choices) and Matrix
+    # if expr.type == "field" and expr.column.match(/^data:.+:value:.+$/)
+    #   question = @formItems[expr.column.match(/^data:(.+):value:.+$/)[1]]
+    #   if not question
+    #     return callback(new Error("Question #{expr.column} not found"))
+
+    #   answerType = formUtils.getAnswerType(question)
+    #   if answerType == "items_choices"
+    #     @updateItemsChoices(data, expr, value, )
+
     
     callback(new Error("Cannot update expr #{JSON.stringify(expr)}"))
 

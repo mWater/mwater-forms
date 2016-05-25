@@ -34,8 +34,9 @@ describe "ResponseDataExprValueUpdater", ->
       @testUpdate("TextQuestion", {}, "abc", done)
 
     it "NumberQuestion, NumberColumnQuestion", (done) ->
-      @testUpdate("NumberQuestion", {}, 123, done)
-      @testUpdate("NumberColumnQuestion", {}, 123, done)
+      @testUpdate("NumberQuestion", {}, 123, =>
+        @testUpdate("NumberColumnQuestion", {}, 123, done)
+      )
 
     it "DropdownQuestion, DropdownColumnQuestion, RadioQuestion", (done) ->
       choices = [{ id: "a" }, { id: "b" }]
@@ -46,12 +47,14 @@ describe "ResponseDataExprValueUpdater", ->
       @testUpdate("NumberQuestion", { choices: choices }, ["a", "b"], done)
 
     it "DateQuestion (date and datetime)", (done) ->
-      @testUpdate("DateQuestion", { format: "YYYY-MM-DD" }, "2015-12-25", done)
-      @testUpdate("DateQuestion", { format: "lll" }, "2015-12-25T12:34:56Z", done)
+      @testUpdate("DateQuestion", { format: "YYYY-MM-DD" }, "2015-12-25", =>
+        @testUpdate("DateQuestion", { format: "lll" }, "2015-12-25T12:34:56Z", done)
+      )
 
     it "CheckQuestion, CheckColumnQuestion", (done) ->
-      @testUpdate("CheckQuestion", {}, true, done)
-      @testUpdate("CheckColumnQuestion", {}, true, done)
+      @testUpdate("CheckQuestion", {}, true, =>
+        @testUpdate("CheckColumnQuestion", {}, true, done)
+      )
 
     it "ImageQuestion", (done) ->
       @testUpdate("ImageQuestion", {}, { id: "1234" }, done)
@@ -66,10 +69,75 @@ describe "ResponseDataExprValueUpdater", ->
       @testUpdate("BarcodeQuestion", {}, "abc", done)
       
     it "LocationQuestion value", (done) ->
-      @testUpdate("LocationQuestion", {}, { type: "Point", coordinates: [2, 3] }, done, { latitude: 3, longitude: 2 })
-      @testUpdate("LocationQuestion", {}, null, done, null)
+      @testUpdate("LocationQuestion", {}, { type: "Point", coordinates: [2, 3] }, =>
+        @testUpdate("LocationQuestion", {}, null, done, null)
+      , { latitude: 3, longitude: 2 })
 
-    it "LikertQuestion"
+  describe "Complex questions", ->
+    before ->
+      # Test updating a single expression. answer is expected answer
+      @testUpdate = (questionType, options, column, value, oldAnswer, newAnswer, done) ->
+        # Make simple question
+        question = {
+          _id: "q1234"
+          _type: questionType
+          text: { en: "Q1234" }
+        }
+        _.extend(question, options)
+
+        formDesign = {
+          _type: "Form"
+          contents: [question]
+        }
+
+        updater = new ResponseDataExprValueUpdater(formDesign, null, null)
+
+        # Simple field
+        expr = { type: "field", table: "responses:form1234", column: column }
+
+        updater.updateData({ q1234: oldAnswer }, expr, value, (error, data) =>
+          assert not error
+          assert.deepEqual data, { q1234: newAnswer }
+          done()
+        )
+
+    describe "LikertQuestion", ->
+      it "creates new answer", (done) ->
+        @testUpdate("LikertQuestion", { 
+            items: [
+              { id: "item1", label: { _base:"en", en: "Item 1" } }
+              { id: "item2", label: { _base:"en", en: "Item 2" } }
+            ]
+            choices: [
+              { id: "yes", label: { _base:"en", en: "Yes"}}
+              { id: "no", label: { _base:"en", en: "No"}}
+            ]
+          },
+          "data:q1234:value:item1",
+          "yes"
+          null
+          { value: { item1: "yes" } }
+          done
+        )
+
+      it "keeps existing answer", (done) ->
+        @testUpdate("LikertQuestion", { 
+            items: [
+              { id: "item1", label: { _base:"en", en: "Item 1" } }
+              { id: "item2", label: { _base:"en", en: "Item 2" } }
+            ]
+            choices: [
+              { id: "yes", label: { _base:"en", en: "Yes"}}
+              { id: "no", label: { _base:"en", en: "No"}}
+            ]
+          },
+          "data:q1234:value:item1",
+          "yes"
+          { value: { item2: "no" } }
+          { value: { item1: "yes", item2: "no" } }
+          done
+        )
+
     it "MatrixQuestion"
 
 
