@@ -58,7 +58,7 @@ module.exports = class EntityAnswerComponent extends AsyncLoadComponent
       return alert(@context.T("Not supported on this platform"))
 
     @context.editEntity @props.entityType, @props.value, =>
-      @props.onValueChange(value)
+      @props.onValueChange(@props.value)
       @forceLoad()
 
   renderEntityButtons: ->
