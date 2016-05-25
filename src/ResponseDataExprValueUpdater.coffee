@@ -24,6 +24,10 @@ module.exports = class ResponseDataExprValueUpdater
       if expr.column.match(/^data:.+:value(:.+)?$/) 
         return true
 
+      # Latitude/longitude of location question
+      if expr.type == "op" and expr.op in ['latitude', 'longitude'] and expr.expr.type == "field" and expr.expr.column.match(/^data:.+:value$/)
+        return true
+
       # Comments field
       if expr.column.match(/^data:.+:comments$/)
         return true
@@ -36,8 +40,14 @@ module.exports = class ResponseDataExprValueUpdater
       if expr.column.match(/^data:.+:specify:.+$/)
         return true
 
+    if expr.type == "op" and expr.op in ['latitude', 'longitude'] and expr.exprs[0].type == "field" and expr.exprs[0].column.match(/^data:.+:value$/)
+      return true
+
     # Can update scalar with single join, non-aggr
     if expr.type == "scalar" and expr.joins.length == 1 and not expr.aggr
+      return true
+
+    if expr.type == "op" and expr.op == "contains" and expr.exprs[0].type == "field" and expr.exprs[0].column.match(/^data:.+:value$/) and expr.exprs[1].value?.length == 1
       return true
 
     return false    
@@ -56,6 +66,9 @@ module.exports = class ResponseDataExprValueUpdater
   # if there is a text field in question q1234, the expression { type: "field", table: "responses:form123", column: "data:q1234:value" }
   # refers to the text field value. Setting it will set data.q1234.value in the data.
   updateData: (data, expr, value, callback) ->
+    if not @canUpdate(expr)
+      callback(new Error("Cannot update expression"))
+
     # Handle simple fields
     if expr.type == "field" and expr.column.match(/^data:.+:value$/)
       @updateValue(data, expr, value, callback)
@@ -68,6 +81,21 @@ module.exports = class ResponseDataExprValueUpdater
 
     if expr.type == "field" and expr.column.match(/^data:.+:value:units$/)
       @updateUnits(data, expr, value, callback)
+      return
+
+    # Handle latitude/longitude of location question
+    if expr.type == "op" and expr.op in ['latitude', 'longitude'] and expr.exprs[0].type == "field" and expr.exprs[0].column.match(/^data:.+:value$/)
+      @updateLocationLatLng(data, expr, value, callback)
+      return
+
+    # Handle location altitude
+    if expr.type == "field" and expr.column.match(/^data:.+:value:altitude$/)
+      @updateLocationAltitude(data, expr, value, callback)
+      return
+
+    # Handle location altitude
+    if expr.type == "field" and expr.column.match(/^data:.+:value:accuracy$/)
+      @updateLocationAccuracy(data, expr, value, callback)
       return
 
     # Handle Likert (items_choices) and Matrix
@@ -84,6 +112,15 @@ module.exports = class ResponseDataExprValueUpdater
       if answerType == "matrix"
         @updateMatrix(data, expr, value, callback)
         return
+
+    # Handle contains for enumset with one value
+    if expr.type == "op" and expr.op == "contains" and expr.exprs[0].type == "field" and expr.exprs[0].column.match(/^data:.+:value$/) and expr.exprs[1].value?.length == 1
+      @updateEnumsetContains(data, expr, value, callback)
+
+    # Handle specify
+    if expr.type == "field" and expr.column.match(/^data:.+:specify:.+$/)
+      @updateSpecify(data, expr, value, callback)
+      return
     
     # Handle comments
     if expr.type == "field" and expr.column.match(/^data:.+:comments$/)
@@ -126,6 +163,37 @@ module.exports = class ResponseDataExprValueUpdater
       else
         return callback(new Error("Answer type #{answerType} not supported")) 
 
+  # Update a single latitude or longitude of a location
+  updateLocationLatLng: (data, expr, value, callback) ->
+    question = @formItems[expr.exprs[0].column.match(/^data:(.+):value$/)[1]]
+    if not question
+      return callback(new Error("Question #{expr.exprs[0].column} not found"))
+
+    if expr.op == "latitude"
+      val = _.extend({}, data[question._id]?.value or {}, { latitude: value })
+    else if expr.op == "longitude"
+      val = _.extend({}, data[question._id]?.value or {}, { longitude: value })
+    else
+      throw new Error("Unsupported op #{expr.op}")
+
+    return callback(null, @setValue(data, question, val))
+
+  updateLocationAccuracy: (data, expr, value, callback) ->
+    question = @formItems[expr.column.match(/^data:(.+):value:accuracy$/)[1]]
+    if not question
+      return callback(new Error("Question #{expr.column} not found"))
+
+    answer = data[question._id] or {}
+    return callback(null, @setValue(data, question, _.extend({}, answer.value or {}, accuracy: value)))
+
+  updateLocationAltitude: (data, expr, value, callback) ->
+    question = @formItems[expr.column.match(/^data:(.+):value:altitude$/)[1]]
+    if not question
+      return callback(new Error("Question #{expr.column} not found"))
+
+    answer = data[question._id] or {}
+    return callback(null, @setValue(data, question, _.extend({}, answer.value or {}, altitude: value)))
+
   updateQuantity: (data, expr, value, callback) ->
     question = @formItems[expr.column.match(/^data:(.+):value:quantity$/)[1]]
     if not question
@@ -141,6 +209,35 @@ module.exports = class ResponseDataExprValueUpdater
 
     answer = data[question._id] or {}
     return callback(null, @setValue(data, question, _.extend({}, answer.value or {}, units: value)))
+
+  updateEnumsetContains: (data, expr, value, callback) ->
+    question = @formItems[expr.exprs[0].column.match(/^data:(.+):value$/)[1]]
+    if not question
+      return callback(new Error("Question #{expr.exprs[0].column} not found"))
+
+    answerValue = data[question._id]?.value or []
+
+    # Add to list if true
+    if value == true
+      answerValue = _.union(answerValue, [expr.exprs[1].value[0]])
+    else if value == false
+      answerValue = _.difference(answerValue, [expr.exprs[1].value[0]])
+
+    return callback(null, @setValue(data, question, answerValue))
+
+  updateSpecify: (data, expr, value, callback) ->
+    question = @formItems[expr.column.match(/^data:(.+):specify:.+$/)[1]]
+    if not question
+      return callback(new Error("Question #{expr.column} not found"))
+
+    specifyId = expr.column.match(/^data:.+:specify:(.+)$/)[1]
+
+    answer = data[question._id] or {}
+    specify = answer.specify or {}
+    change = {}
+    change[specifyId] = value
+    specify = _.extend({}, specify, change)
+    return callback(null, @setAnswer(data, question, _.extend({}, answer, specify: specify)))
 
   # Update a Likert-style item
   updateItemsChoices: (data, expr, value, callback) ->

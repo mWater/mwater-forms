@@ -40,8 +40,6 @@ module.exports = class MatrixColumnCellComponent extends React.Component
         cellText = @props.formExprEvaluator.renderString(column.cellText, column.cellTextExprs, @props.data, @props.parentData, @context.locale)
         elem = H.label null, cellText
       when "UnitsColumnQuestion"
-        console.log column
-        console.log answer
         answer = data?[column._id]
         elem = R UnitsAnswerComponent, {
           small: true

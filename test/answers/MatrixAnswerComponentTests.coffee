@@ -25,7 +25,7 @@ describe 'MatrixAnswerComponent', ->
         value: null
         onValueChange: () ->
           null
-        contents: [
+        columns: [
           { _id: "c1", _type: "TextColumnQuestion", name: { en: "C1" } }
         ]
         data: {}

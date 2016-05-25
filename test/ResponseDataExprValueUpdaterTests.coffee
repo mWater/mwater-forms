@@ -448,8 +448,23 @@ describe "ResponseDataExprValueUpdater", ->
         done()
       )
 
-    it "updates accuracy"
-    it "updates altitude"
+    it "updates accuracy", (done) ->
+      expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:accuracy" }
+
+      @updater.updateData({ q1234: { value: { latitude: 2, longitude: 3, altitude: 4 }}}, expr, 45, (error, data) =>
+        assert not error
+        assert.deepEqual data, { q1234: { value: { latitude: 2, longitude: 3, accuracy: 45, altitude: 4 }}}
+        done()
+      )
+
+    it "updates altitude", (done) ->
+      expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:altitude" }
+
+      @updater.updateData({ q1234: { value: { latitude: 2, longitude: 3, altitude: 4 }}}, expr, 45, (error, data) =>
+        assert not error
+        assert.deepEqual data, { q1234: { value: { latitude: 2, longitude: 3, altitude: 45 }}}
+        done()
+      )
 
   it "updates na/don't know", (done) ->
     formDesign = {
