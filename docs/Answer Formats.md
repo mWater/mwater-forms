@@ -38,6 +38,8 @@
     - {value: "entity _id"}
 * **"matrix"**
     - { value: { ITEM1ID: { QUESTION1ID: { value: somevalue }, QUESTION2ID: { ...}}, ITEM2ID: ... }
+* **"admin_region"**
+    - {value: "id_of_admin_region"}
 
 ## Alternates:
 * {alternate = "na" or "dontknow"}
