@@ -99,15 +99,17 @@ class DemoComponent extends React.Component
     #   data: @state.data
     #   onDataChange: (data) => @setState(data: data)
 
+    design = rosterFormDesign
+    # design: sampleForm2.design
+    # design: bigsampleForm2.design
+    # design: matrixFormDesign
+
     H.div className: "row",
       H.div(className: "col-md-6",
         R FormComponent, {
           formCtx: formCtx
-          # design: sampleForm2.design
-          # design: bigsampleForm2.design
-          design: matrixFormDesign
-          # design: rosterFormDesign
           # locale: React.PropTypes.string            # Locale. Defaults to English (en)
+          design: design
           data: @state.data
           onDataChange: @handleDataChange
           onSubmit: => alert("Submit")
@@ -125,7 +127,7 @@ class DemoComponent extends React.Component
       )
       H.div(className: "col-md-6",
         R ResponseDisplayComponent, {
-          form: {design: matrixFormDesign}
+          form: {design: design}
           response: {
             data: @state.data
           }
