@@ -145,7 +145,7 @@ module.exports = class MatrixAnswerComponent extends React.Component
 
   render: ->
     # Create table of 
-    H.table className: "table",
+    H.table className: "table", style: {borderCollapse: 'separate'},
       @renderHeader()
       H.tbody null,
         _.map(@props.items, (item, index) => @renderItem(item, index))
