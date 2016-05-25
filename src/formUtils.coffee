@@ -252,7 +252,7 @@ exports.getAnswerType = (q) ->
       return "matrix"
     when "LikertQuestion"
       return "items_choices"
-    else throw new Error("Unknown question type")
+    else throw new Error("Unknown question type #{q._type}")
 
 # Check if a form is all sections
 exports.isSectioned = (form) ->
