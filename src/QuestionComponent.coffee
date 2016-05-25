@@ -285,6 +285,7 @@ module.exports = class QuestionComponent extends React.Component
         return R MulticheckAnswerComponent, {
           ref: "answer"
           choices: @props.question.choices
+          data: @props.data
           answer: answer
           onAnswerChange: @handleAnswerChange
         }
