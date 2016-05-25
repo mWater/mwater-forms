@@ -516,7 +516,7 @@ module.exports = class FormSchemaBuilder
             name: name
             jsonql: {
               type: "op"
-              op: "::decimal"
+              op: "convert_to_decimal"
               exprs: [
                 {
                   type: "op"
@@ -749,6 +749,162 @@ module.exports = class FormSchemaBuilder
             }
           }
           addColumn(column)
+
+        when "items_choices"
+          # Create section
+          section = {
+            type: "section"
+            name: item.name
+            contents: []
+          }
+
+          # For each item
+          for itemItem in item.items
+            section.contents.push({
+              id: "data:#{item._id}:value:#{itemItem.id}"
+              type: "enum"
+              name: appendStr(appendStr(item.text, ": "), itemItem.label)
+              enumValues: _.map(item.choices, (c) -> { id: c.id, name: c.label })
+              jsonql: {
+                type: "op"
+                op: "#>>"
+                exprs: [
+                  { type: "field", tableAlias: "{alias}", column: "data" }
+                  "{#{item._id},value,#{itemItem.id}}"
+                ]
+              }
+           })
+          addColumn(section)
+
+        when "matrix"
+          sections = []
+          # For each item
+          for itemItem in item.items
+            # Create section
+            section = {
+              type: "section"
+              name: itemItem.label
+              contents: []
+            }
+            sections.push(section)
+
+            # For each column
+            for itemColumn in item.columns
+              # TextColumnQuestion
+              if itemColumn._type == "TextColumnQuestion"
+                section.contents.push({
+                  id: "data:#{item._id}:value:#{itemItem.id}:#{itemColumn._id}:value"
+                  type: "text"
+                  name: appendStr(appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "), itemColumn.text)
+                  jsonql: {
+                    type: "op"
+                    op: "#>>"
+                    exprs: [
+                      { type: "field", tableAlias: "{alias}", column: "data" }
+                      "{#{item._id},value,#{itemItem.id},#{itemColumn._id},value}"
+                    ]
+                  }
+               })
+
+              # NumberColumnQuestion
+              if itemColumn._type == "NumberColumnQuestion"
+                section.contents.push({
+                  id: "data:#{item._id}:value:#{itemItem.id}:#{itemColumn._id}:value"
+                  type: "number"
+                  name: appendStr(appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "), itemColumn.text)
+                  jsonql: {
+                    type: "op"
+                    op: "convert_to_decimal"
+                    exprs: [{
+                      type: "op"
+                      op: "#>>"
+                      exprs: [
+                        { type: "field", tableAlias: "{alias}", column: "data" }
+                        "{#{item._id},value,#{itemItem.id},#{itemColumn._id},value}"
+                      ]
+                    }]
+                  }
+               })
+
+              # CheckColumnQuestion
+              if itemColumn._type == "CheckColumnQuestion"
+                section.contents.push({
+                  id: "data:#{item._id}:value:#{itemItem.id}:#{itemColumn._id}:value"
+                  type: "boolean"
+                  name: appendStr(appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "), itemColumn.text)
+                  jsonql: {
+                    type: "op"
+                    op: "::boolean"
+                    exprs: [{
+                      type: "op"
+                      op: "#>>"
+                      exprs: [
+                        { type: "field", tableAlias: "{alias}", column: "data" }
+                        "{#{item._id},value,#{itemItem.id},#{itemColumn._id},value}"
+                      ]
+                    }]
+                  }
+               })
+
+              # DropdownColumnQuestion
+              if itemColumn._type == "DropdownColumnQuestion"
+                section.contents.push({
+                  id: "data:#{item._id}:value:#{itemItem.id}:#{itemColumn._id}:value"
+                  type: "enum"
+                  name: appendStr(appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "), itemColumn.text)
+                  enumValues: _.map(itemColumn.choices, (c) -> { id: c.id, name: c.label })
+                  jsonql: {
+                    type: "op"
+                    op: "#>>"
+                    exprs: [
+                      { type: "field", tableAlias: "{alias}", column: "data" }
+                      "{#{item._id},value,#{itemItem.id},#{itemColumn._id},value}"
+                    ]
+                  }
+               })
+
+              # UnitsColumnQuestion
+              if itemColumn._type == "UnitsColumnQuestion"
+                section.contents.push({
+                  id: "data:#{item._id}:value:#{itemItem.id}:#{itemColumn._id}:value:quantity"
+                  type: "number"
+                  name: appendStr(appendStr(appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "), itemColumn.text), " (magnitude)")
+                  jsonql: {
+                    type: "op"
+                    op: "convert_to_decimal"
+                    exprs: [{
+                      type: "op"
+                      op: "#>>"
+                      exprs: [
+                        { type: "field", tableAlias: "{alias}", column: "data" }
+                        "{#{item._id},value,#{itemItem.id},#{itemColumn._id},value,quantity}"
+                      ]
+                    }]
+                  }
+                })
+
+                section.contents.push({
+                  id: "data:#{item._id}:value:#{itemItem.id}:#{itemColumn._id}:value:units"
+                  type: "enum"
+                  name: appendStr(appendStr(appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "), itemColumn.text), " (units)")
+                  enumValues: _.map(itemColumn.units, (c) -> { id: c.id, name: c.label })
+                  jsonql: {
+                    type: "op"
+                    op: "#>>"
+                    exprs: [
+                      { type: "field", tableAlias: "{alias}", column: "data" }
+                      "{#{item._id},value,#{itemItem.id},#{itemColumn._id},value,units}"
+                    ]
+                  }
+               })
+
+          # Create section for this question
+          addColumn({
+            type: "section"
+            name: item.name
+            contents: sections
+            })
+
 
       # Add specify
       if answerType in ['choice', 'choices']

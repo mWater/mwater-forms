@@ -318,10 +318,10 @@ describe "FormSchemaBuilder addForm", ->
           id: "data:questionid:value:quantity"
           type: "number"
           name: { _base: "en", en: "Question (magnitude)" }
-          # data#>>'{questionid,value,quantity}::decimal
+          # convert_to_decimal(data#>>'{questionid,value,quantity})
           jsonql: {
             type: "op"
-            op: "::decimal"
+            op: "convert_to_decimal"
             exprs: [
               { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,quantity}"] }
             ]
@@ -352,10 +352,10 @@ describe "FormSchemaBuilder addForm", ->
           id: "data:questionid:value:quantity"
           type: "number"
           name: { _base: "en", en: "Question (magnitude)" }
-          # data#>>'{questionid,value,quantity}::decimal
+          # convert_to_decimal(data#>>'{questionid,value,quantity})
           jsonql: {
             type: "op"
-            op: "::decimal"
+            op: "convert_to_decimal"
             exprs: [
               { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,quantity}"] }
             ]
@@ -532,6 +532,146 @@ describe "FormSchemaBuilder addForm", ->
           }
         }
       ])
+
+    it "items_choices", ->
+      # items_choices (Likert) has a database column for each item, all in one section
+      # Each value is stored as follows: data:QUESTIONID:value:ITEMID, corresponding to the actual path to get data
+      @testQuestion({ 
+        _type: "LikertQuestion" 
+        items: [
+          { id: "item1", label: { _base:"en", en: "Item 1" } }
+          { id: "item2", label: { _base:"en", en: "Item 2" } }
+        ]
+        choices: [
+          { id: "yes", label: { _base:"en", en: "Yes"}}
+          { id: "no", label: { _base:"en", en: "No"}}
+        ]
+      }, 
+      [
+        # Item 1
+        { 
+          id: "data:questionid:value:item1" 
+          type: "enum"
+          name: { _base: "en", en: "Question: Item 1"}
+          enumValues: [
+            { id: "yes", name: { _base:"en", en: "Yes"} }
+            { id: "no", name: { _base:"en", en: "No"} }
+          ]
+          # data#>>'{questionid,value,item1}'
+          jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,item1}"] }
+        }
+        # Item 2
+        { 
+          id: "data:questionid:value:item2" 
+          type: "enum"
+          name: { _base: "en", en: "Question: Item 2"}
+          enumValues: [
+            { id: "yes", name: { _base:"en", en: "Yes"} }
+            { id: "no", name: { _base:"en", en: "No"} }
+          ]
+          # data#>>'{questionid,value,item2}'
+          jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,item2}"] }
+        }
+      ])
+
+    describe "matrix", ->
+      it "adds columns", ->
+        # Matrix has a database column for each column/item combination, sectioned by item
+        # Each value is stored as follows: data:QUESTIONID:value:ITEMID:COLUMNID:value, corresponding to the actual path to get data
+        @testQuestion({ 
+          _type: "MatrixQuestion" 
+          items: [
+            { id: "item1", label: { _base:"en", en: "Item 1" } }
+            { id: "item2", label: { _base:"en", en: "Item 2" } }
+          ]
+          columns: [
+            { _id: "col1", _type: "TextColumnQuestion", text: { _base: "en", en: "Col 1" } }
+            { _id: "col2", _type: "NumberColumnQuestion", text: { _base: "en", en: "Col 2" }, decimal: true }
+            { _id: "col3", _type: "CheckColumnQuestion", text: { _base: "en", en: "Col 3" } }
+            { _id: "col4", _type: "DropdownColumnQuestion", text: { _base: "en", en: "Col 4" }, choices: [
+              { id: "yes", label: { _base:"en", en: "Yes"}}
+              { id: "no", label: { _base:"en", en: "No"}}
+            ]}
+            { _id: "col5", _type: "UnitsColumnQuestion", text: { _base: "en", en: "Col 5" }, decimal: false, units: [
+              { id: "m", label: { _base:"en", en: "M"}}
+              { id: "ft", label: { _base:"en", en: "Ft"}}
+            ]}
+          ]
+        }, [
+          # TextColumnQuestion
+          { 
+            id: "data:questionid:value:item1:col1:value" 
+            type: "text"
+            name: { _base: "en", en: "Question: Item 1 - Col 1"}
+            # data#>>'{questionid,value,item1,col1,value}'
+            jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,item1,col1,value}"] }
+          }
+          # NumberColumnQuestion
+          { 
+            id: "data:questionid:value:item2:col2:value" 
+            type: "number"
+            name: { _base: "en", en: "Question: Item 2 - Col 2"}
+            # data#>>'{questionid,value,item1,col1,value}::boolean
+            jsonql: {
+              type: "op"
+              op: "convert_to_decimal"
+              exprs: [            
+                { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,item2,col2,value}"] }
+              ]
+            }
+          }
+          # Handles boolean field
+          { 
+            id: "data:questionid:value:item1:col3:value" 
+            type: "boolean"
+            name: { _base: "en", en: "Question: Item 1 - Col 3"}
+            # 
+            jsonql: {
+              type: "op"
+              op: "::boolean"
+              exprs: [            
+                { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,item1,col3,value}"] }
+              ]
+            }
+          }
+          # DropdownColumnQuestion
+          { 
+            id: "data:questionid:value:item1:col4:value" 
+            type: "enum"
+            name: { _base: "en", en: "Question: Item 1 - Col 4"}
+            enumValues: [
+              { id: "yes", name: { _base:"en", en: "Yes"} }
+              { id: "no", name: { _base:"en", en: "No"} }
+            ]
+            # data#>>'{questionid,value,item1,col4,value}'
+            jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,item1,col4,value}"] }
+          }
+          # UnitsColumnQuestion
+          { 
+            id: "data:questionid:value:item1:col5:value:quantity"
+            type: "number"
+            name: { _base: "en", en: "Question: Item 1 - Col 5 (magnitude)" }
+            # convert_to_decimal(data#>>'{questionid,value,item1,col5,value,quantity})
+            jsonql: {
+              type: "op"
+              op: "convert_to_decimal"
+              exprs: [
+                { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,item1,col5,value,quantity}"] }
+              ]
+            }
+          }
+          { 
+            id: "data:questionid:value:item1:col5:value:units"
+            type: "enum"
+            name: { _base: "en", en: "Question: Item 1 - Col 5 (units)" }
+            # data#>>'{questionid,value,item1,col1,value,units}'
+            jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,item1,col5,value,units}"] }
+            enumValues: [
+              { id: "m", name: { _base:"en", en: "M"} }
+              { id: "ft", name: { _base:"en", en: "Ft"} }
+            ]
+          }
+        ])
 
     it "adds location stamp", ->
       @testQuestion({ _type: "TextQuestion", recordLocation: true }, [

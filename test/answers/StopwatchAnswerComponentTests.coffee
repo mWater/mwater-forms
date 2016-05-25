@@ -37,7 +37,7 @@ describe 'StopwatchAnswerComponent', ->
     comp = @render({
       onValueChange: (value) ->
         if ready
-          assert.equal value, 1.2
+          assert.equal value, 1.23
           done()
     })
     btnStart = comp.findDOMNodeByText("Start")
@@ -63,46 +63,3 @@ describe 'StopwatchAnswerComponent', ->
     ReactTestUtils.Simulate.click(btnStop)
     ready = true
     ReactTestUtils.Simulate.click(btnReset)
-
-  it "records [start, ticks, stop, edit, save]", (done) ->
-    ready = false
-    comp = @render({
-      onValueChange: (value) ->
-        if ready
-          assert.equal value, 2.3
-          done()
-    })
-    btnStart = comp.findDOMNodeByText("Start")
-    btnStop = comp.findDOMNodeByText("Stop")
-    btnEdit = comp.findDOMNodeByText("Edit")
-    ReactTestUtils.Simulate.click(btnStart)
-    clock.tick(1234);
-    ReactTestUtils.Simulate.click(btnStop)
-    ReactTestUtils.Simulate.click(btnEdit)
-    btnSave = comp.findDOMNodeByText("Save")
-    input = comp.findInput()
-    TestComponent.changeValue(input, "2.3")
-    ready = true
-    ReactTestUtils.Simulate.click(btnSave)
-    
-
-  it "ignores [start, ticks, stop, edit, cancel]", () ->
-    ready = false
-    comp = @render({
-      onValueChange: (value) ->
-        if ready
-          assert.fail('should not change value')
-    })
-    btnStart = comp.findDOMNodeByText("Start")
-    btnStop = comp.findDOMNodeByText("Stop")
-    btnEdit = comp.findDOMNodeByText("Edit")
-    ReactTestUtils.Simulate.click(btnStart)
-    clock.tick(1234);
-    ReactTestUtils.Simulate.click(btnStop)
-    ReactTestUtils.Simulate.click(btnEdit)
-    input = comp.findInput()
-    btnCancel = comp.findDOMNodeByText("Cancel")
-    TestComponent.changeValue(input, "2.3")
-    ready = true
-    ReactTestUtils.Simulate.click(btnCancel)
-    

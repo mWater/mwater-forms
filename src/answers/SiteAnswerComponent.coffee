@@ -5,8 +5,6 @@ R = React.createElement
 formUtils = require '../formUtils'
 EntityDisplayComponent = require '../EntityDisplayComponent'
 
-# TODO: validate codes in answervalidator
-
 module.exports = class SiteAnswerComponent extends React.Component
   @contextTypes:
     selectEntity: React.PropTypes.func

@@ -18,7 +18,9 @@ DropdownAnswerComponent = require './answers/DropdownAnswerComponent'
 EntityAnswerComponent = require './answers/EntityAnswerComponent'
 ImageAnswerComponent = require './answers/ImageAnswerComponent'
 ImagesAnswerComponent = require './answers/ImagesAnswerComponent'
+LikertAnswerComponent = require './answers/LikertAnswerComponent'
 LocationAnswerComponent = require './answers/LocationAnswerComponent'
+MatrixAnswerComponent = require './answers/MatrixAnswerComponent'
 MulticheckAnswerComponent = require './answers/MulticheckAnswerComponent'
 NumberAnswerComponent = require './answers/NumberAnswerComponent'
 RadioAnswerComponent = require './answers/RadioAnswerComponent'
@@ -105,11 +107,16 @@ module.exports = class QuestionComponent extends React.Component
 
   # Returns true if validation error
   validate: (scrollToFirstInvalid) ->
+    if @refs.answer?.validate?(scrollToFirstInvalid)?
+      if scrollToFirstInvalid
+        @refs.prompt.scrollIntoView()
+      return true
+
     validationError = new AnswerValidator().validate(@props.question, @getAnswer())
 
     # Check for isValid function in answer component, as some answer components don't store invalid answers
     # like the number answer.
-    if not validationError and @refs.answer?.isValid and not @refs.answer?.isValid()
+    if not validationError and not @refs.answer?.isValid?()
       validationError = true
 
     if validationError?
@@ -140,7 +147,6 @@ module.exports = class QuestionComponent extends React.Component
     if @props.question.recordLocation and not oldAnswer.location?
       locationFinder = @context.locationFinder or new LocationFinder()
       locationFinder.getLocation (loc) =>
-        # TODO: SurveyorPro: Should check if component is still mounted!
         if loc? and not @unmounted?
           newAnswer = _.clone @getAnswer()
           newAnswer.location = _.pick(loc.coords, "latitude", "longitude", "accuracy", "altitude", "altitudeAccuracy")
@@ -272,6 +278,16 @@ module.exports = class QuestionComponent extends React.Component
           onAnswerChange: @handleAnswerChange
         }
 
+      when "LikertQuestion"
+        return R LikertAnswerComponent, {
+          ref: "answer"
+          items: @props.question.items
+          choices: @props.question.choices
+          answer: answer
+          data: @props.data
+          onAnswerChange: @handleAnswerChange
+        }
+
       when "RadioQuestion"
         return R RadioAnswerComponent, {
           ref: "answer"
@@ -379,6 +395,19 @@ module.exports = class QuestionComponent extends React.Component
           value: answer.value
           onValueChange: @handleValueChange
         }
+
+      when "MatrixQuestion"
+        return R MatrixAnswerComponent, {
+          ref: "answer"
+          value: answer.value
+          onValueChange: @handleValueChange
+          items: @props.question.items
+          columns: @props.question.columns
+          data: @props.data
+          parentData: @props.parentData
+          formExprEvaluator: @props.formExprEvaluator
+        }
+
       else
         return "Unknown type #{@props.question._type}"
     return null

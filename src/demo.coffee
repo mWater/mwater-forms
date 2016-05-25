@@ -12,7 +12,12 @@ ResponseDisplayComponent = require './ResponseDisplayComponent'
 ResponseAnswersComponent = require './ResponseAnswersComponent'
 
 # Setup mock localizer
-global.T = (str) -> str
+global.T = (str) ->
+  if arguments.length > 1
+    for subValue, index in Array.from(arguments).slice(1)
+      tag = "{#{index}}"
+      str = str.replace(tag, subValue)
+  return str
 
 canada = { id: "canada", level: 0, name: "Canada", type: "Country" }
 manitoba = { id: "manitoba", level: 1, name: "Manitoba", type: "Province" }
@@ -85,6 +90,7 @@ class DemoComponent extends React.Component
     @state = {data: data}
 
   handleDataChange: (data) =>
+    console.log data
     @setState(data: data)
 
   render: ->
@@ -93,14 +99,17 @@ class DemoComponent extends React.Component
     #   data: @state.data
     #   onDataChange: (data) => @setState(data: data)
 
+    design = rosterFormDesign
+    # design: sampleForm2.design
+    # design: bigsampleForm2.design
+    # design: matrixFormDesign
+
     H.div className: "row",
       H.div(className: "col-md-6",
         R FormComponent, {
           formCtx: formCtx
-          design: sampleForm2.design
-          # design: bigsampleForm2.design
-          # design: rosterFormDesign
           # locale: React.PropTypes.string            # Locale. Defaults to English (en)
+          design: design
           data: @state.data
           onDataChange: @handleDataChange
           onSubmit: => alert("Submit")
@@ -118,7 +127,7 @@ class DemoComponent extends React.Component
       )
       H.div(className: "col-md-6",
         R ResponseDisplayComponent, {
-          form: sampleForm2
+          form: {design: design}
           response: {
             data: @state.data
           }
@@ -151,7 +160,7 @@ rosterFormDesign = {
       allowRemove: true,
       contents: [
         { _id: "a", _type: "TextColumnQuestion", text: { en: "Name" }, required: true }
-        { _id: "b", _type: "NumberColumnQuestion", text: { en: "Age" } }
+        { _id: "b", _type: "NumberColumnQuestion", text: { en: "Age" }, decimal: false }
         { _id: "c", _type: "CheckColumnQuestion", text: { en: "Present" } }
         { _id: "d", _type: "DropdownColumnQuestion", text: { en: "Gender" }, choices: [{ label: { en: "Male"}, id: "male" }, { label: { en: "Female"}, id: "female" }] }
       ]
@@ -191,6 +200,49 @@ rosterFormDesign = {
             }
           ]
         }
+      ]
+    }
+  ]
+}
+
+matrixFormDesign = {
+  "_type": "Form",
+  _id: "form123"
+  "_schema": 11,
+  "name": {
+    "_base": "en",
+    "en": "Sample Form"
+  },
+  "contents": [
+    {
+      _id: "matrix01"
+      _type: "MatrixQuestion"
+      "name": {
+        "_base": "en",
+        "en": "Matrix"
+      },
+      items: [
+        { "id": "item1", "label": { "en": "First", "_base": "en" } }
+        { "id": "item2", "label": { "en": "Second", "_base": "en" } }
+        { "id": "item3", "label": { "en": "Third", "_base": "en" }, hint: { en: "Some hint"} }
+      ]
+      columns: [
+        { _id: "a", _type: "TextColumnQuestion", text: { en: "Name" }, required: true, validations: [{
+          "op": "lengthRange",
+          "rhs": {
+            "literal": {
+              "max": 10
+            }
+          },
+          "message": {
+            "en": "String is too long",
+            "_base": "en"
+          }
+        }] }
+        { _id: "b", _type: "NumberColumnQuestion", text: { en: "Age" }, decimal: false }
+        { _id: "c", _type: "CheckColumnQuestion", text: { en: "Present" } }
+        { _id: "d", _type: "DropdownColumnQuestion", text: { en: "Gender" }, choices: [{ label: { en: "Male"}, id: "male" }, { label: { en: "Female"}, id: "female" }] }
+        { _id: "e", _type: "UnitsColumnQuestion", text: { en: "Unit" }, units: [{ label: { en: "CM"}, id: "cm" }, { label: { en: "INCH"}, id: "inch" }] }
       ]
     }
   ]

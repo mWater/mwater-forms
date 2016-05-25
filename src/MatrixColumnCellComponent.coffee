@@ -13,7 +13,7 @@ module.exports = class MatrixColumnCellComponent extends React.Component
   @propTypes: 
     column: React.PropTypes.object.isRequired       # Column. See designSchema
     data: React.PropTypes.object.isRequired         # Data of the response. Used for text columns to render expressions and to evaluate conditional choices
-    parentData: React.PropTypes.object.isRequired   # Parent data if in a roster
+    parentData: React.PropTypes.object              # Parent data if in a roster
     answer: React.PropTypes.object                  # Answer of the cell
     onAnswerChange: React.PropTypes.func.isRequired   # Called with new answer of cell
     formExprEvaluator: React.PropTypes.object.isRequired # FormExprEvaluator for rendering strings with expression
@@ -40,8 +40,6 @@ module.exports = class MatrixColumnCellComponent extends React.Component
         cellText = @props.formExprEvaluator.renderString(column.cellText, column.cellTextExprs, @props.data, @props.parentData, @context.locale)
         elem = H.label null, cellText
       when "UnitsColumnQuestion"
-        console.log column
-        console.log answer
         answer = data?[column._id]
         elem = R UnitsAnswerComponent, {
           small: true
@@ -53,7 +51,7 @@ module.exports = class MatrixColumnCellComponent extends React.Component
           onValueChange: @handleValueChange
         }
       when "TextColumnQuestion"
-        elem = H.input type: "text", className: "form-control input-sm", value: value, onChange: (ev) => @handleValueChange(ev.target.value)
+        elem = H.input type: "text", className: "form-control input-sm", value: value or "", onChange: (ev) => @handleValueChange(ev.target.value)
       when "NumberColumnQuestion"
         elem = R NumberAnswerComponent, small: true, style: { maxWidth: "10em"}, decimal: column.decimal, value: value, onChange: @handleValueChange
       when "CheckColumnQuestion"

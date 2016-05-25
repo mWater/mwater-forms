@@ -153,6 +153,49 @@ module.exports = class ResponseAnswersComponent extends React.Component
           value: answer.value
         })
 
+      when "items_choices"
+        for item in q.items
+          choiceId = answer.value[item.id]
+          if choiceId?
+            choice = _.findWhere(q.choices, { id: choiceId })
+            if choice?
+              return H.div null,
+                formUtils.localizeString(choice.label, 'en')
+            else
+              return H.span className: "label label-danger", "Invalid Choice"
+
+  # Special render on multiple rows
+  renderMatrixAnswer: (q, answer) ->
+    if not answer
+      return null
+    if answer.alternate
+      return null
+    if not answer.value?
+      return null
+
+    if formUtils.getAnswerType(q) == "items_choices"
+      contents = []
+      for item in q.items
+        itemTd = H.td style: {textAlign: "center"},
+          formUtils.localizeString(item.label, @props.locale)
+        choiceId = answer.value[item.id]
+        if choiceId?
+          choice = _.findWhere(q.choices, { id: choiceId })
+          if choice?
+            contents.push H.tr null,
+              itemTd,
+              H.td null,
+                formUtils.localizeString(choice.label, @props.locale)
+          else
+            contents.push H.tr null,
+              itemTd,
+              H.td null,
+                H.span className: "label label-danger", "Invalid Choice"
+      return contents
+    else
+      return null
+
+
   renderQuestion: (q, dataId) ->
     # Get answer
     dataIds = dataId.split('.')
@@ -160,24 +203,34 @@ module.exports = class ResponseAnswersComponent extends React.Component
       answer = @props.data[dataId]
     else
       rosterData = @props.data[dataIds[0]]
-      answer = rosterData[dataIds[1]].data[dataIds[2]]
+      if rosterData.value?
+        rosterData = rosterData.value
+        answer = rosterData[dataIds[1]][dataIds[2]]
+      else
+        answer = rosterData[dataIds[1]].data[dataIds[2]]
 
     # Do not display if empty and hide empty true
     if @props.hideEmptyAnswers and not answer?.value? and not answer?.alternate
       return null
 
-    H.tr key: dataId,
-      H.td key: "name", style: { width: "50%" },
-        formUtils.localizeString(q.text, @props.locale)
-      H.td key: "value",
-        @renderAnswer(q, answer)
-        if answer and answer.timestamp
-          H.div null,
-            @props.T('Answered')
-            ": "
-            moment(answer.timestamp).format('llll')
-        if answer and answer.location
-          @renderLocation(answer.location)
+    matrixAnswer = @renderMatrixAnswer(q, answer)
+
+    return [
+      H.tr key: dataId,
+        H.td key: "name", style: { width: "50%" },
+          formUtils.localizeString(q.text, @props.locale)
+        H.td key: "value",
+          if not matrixAnswer?
+            @renderAnswer(q, answer)
+          if answer and answer.timestamp
+            H.div null,
+              @props.T('Answered')
+              ": "
+              moment(answer.timestamp).format('llll')
+          if answer and answer.location
+            @renderLocation(answer.location)
+      matrixAnswer
+    ]
 
   # Add all the items with the proper rosterId to items array
   # Looks inside groups and sections
@@ -272,6 +325,26 @@ module.exports = class ResponseAnswersComponent extends React.Component
                 contents
               ]
       ]
+
+    if item._type == "MatrixQuestion"
+      answer = @props.data[dataId]
+      if answer?
+        rows = []
+        rows.push H.tr key: item._id,
+          H.td colSpan: 2, style: { fontWeight: "bold" },
+            formUtils.localizeString(item.name, @props.locale)
+        for maxtrixItemId, itemValue of answer.value
+          matrixItem = _.findWhere item.items, {id: maxtrixItemId}
+          rows.push H.tr null,
+            H.td colSpan: 2, style: { fontStyle: 'italic' },
+              formUtils.localizeString(matrixItem.label, @props.locale)
+          for columnId, columnValue of itemValue
+            column = _.findWhere item.columns, {_id: columnId}
+            dataId = "#{item._id}.#{maxtrixItemId}.#{columnId}"
+            rows.push @renderItem(column, visibilityStructure, dataId)
+        return rows
+      else
+        return null
 
     if formUtils.isQuestion(item)
       return @renderQuestion(item, dataId)
