@@ -103,9 +103,9 @@ class DemoComponent extends React.Component
       H.div(className: "col-md-6",
         R FormComponent, {
           formCtx: formCtx
-          design: sampleForm2.design
+          #design: sampleForm2.design
           # design: bigsampleForm2.design
-          #design: matrixFormDesign
+          design: matrixFormDesign
           # design: rosterFormDesign
           # locale: React.PropTypes.string            # Locale. Defaults to English (en)
           data: @state.data
@@ -125,7 +125,7 @@ class DemoComponent extends React.Component
       )
       H.div(className: "col-md-6",
         R ResponseDisplayComponent, {
-          form: sampleForm2
+          form: {design: matrixFormDesign, _id: "1234"}
           response: {
             data: @state.data
           }
@@ -224,8 +224,19 @@ matrixFormDesign = {
         { "id": "item2", "label": { "en": "Second", "_base": "en" } }
         { "id": "item3", "label": { "en": "Third", "_base": "en" }, hint: { en: "Some hint"} }
       ]
-      contents: [
-        { _id: "a", _type: "TextColumnQuestion", text: { en: "Name" }, required: true }
+      columns: [
+        { _id: "a", _type: "TextColumnQuestion", text: { en: "Name" }, required: true, validations: [{
+          "op": "lengthRange",
+          "rhs": {
+            "literal": {
+              "max": 10
+            }
+          },
+          "message": {
+            "en": "String is too long",
+            "_base": "en"
+          }
+        }] }
         { _id: "b", _type: "NumberColumnQuestion", text: { en: "Age" }, decimal: false }
         { _id: "c", _type: "CheckColumnQuestion", text: { en: "Present" } }
         { _id: "d", _type: "DropdownColumnQuestion", text: { en: "Gender" }, choices: [{ label: { en: "Male"}, id: "male" }, { label: { en: "Female"}, id: "female" }] }

@@ -1,6 +1,11 @@
 siteCodes = require '../siteCodes'
 
+# AnswerValidator gets called when a form is submitted (or on next)
 module.exports = class AnswerValidator
+  # It returns null if everything is fine
+  # It makes sure required questions are properly answered
+  # It checks answer type specific validations
+  # It checks custom validations
   validate: (question, answer) ->
     # If it has an alternate value, it cannot be invalid
     if answer.alternate?

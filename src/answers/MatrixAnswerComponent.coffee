@@ -5,6 +5,8 @@ R = React.createElement
 formUtils = require '../formUtils'
 MatrixColumnCellComponent = require '../MatrixColumnCellComponent'
 
+AnswerValidator = require './AnswerValidator'
+
 # Matrix with columns and items
 module.exports = class MatrixAnswerComponent extends React.Component
   @contextTypes:
@@ -32,9 +34,45 @@ module.exports = class MatrixAnswerComponent extends React.Component
     parentData: React.PropTypes.object      # Data of overall response if in a roster
     formExprEvaluator: React.PropTypes.object.isRequired # FormExprEvaluator for rendering strings with expression
 
+  constructor: ->
+    super
+
+    @state = {
+      validationErrors: {}  # Map of "<item.id>_<column.id>" to validation error
+    }
+
   focus: () ->
     # TODO
     null
+
+  validate: (scrollToFirstInvalid) ->
+    validationErrors = {}
+
+    # Important to let know the caller if something has been found (so it can scrollToFirst properly)
+    foundInvalid = false
+    # For each entry
+    for item, rowIndex in @props.items
+      # For each column
+      for column, columnIndex in @props.columns
+        key = "#{item.id}_#{column._id}"
+
+        data = @props.value?[item.id]?[column._id]
+
+        if column.required and not data?.value?
+          foundInvalid = true
+          validationErrors[key] = true
+          continue
+
+        if column.validations and column.validations.length > 0
+          validationError = new AnswerValidator().compileValidations(column.validations)(data)
+          if validationError
+            foundInvalid = true
+            validationErrors[key] = validationError
+
+    # Save state
+    @setState(validationErrors: validationErrors)
+
+    return foundInvalid
 
   handleCellChange: (item, column, answer) =>
     matrixValue = @props.value or {}
@@ -79,10 +117,9 @@ module.exports = class MatrixAnswerComponent extends React.Component
     # Get cell answer which is inside the item data, indexed by column id
     cellAnswer = itemData[column._id] or {}
 
-    # Determine if invalid TODO
-    # key = "#{entryIndex}_#{column._id}"
-    # invalid = @state.validationErrors[key]
-    invalid = false # TODO
+    # Determine if invalid
+    key = "#{item.id}_#{column._id}"
+    invalid = @state.validationErrors[key]
 
     # Render cell
     return R MatrixColumnCellComponent, 
@@ -93,7 +130,7 @@ module.exports = class MatrixAnswerComponent extends React.Component
       answer: cellAnswer
       onAnswerChange: @handleCellChange.bind(null, item, column)
       formExprEvaluator: @props.formExprEvaluator
-      invalid: invalid
+      invalid: invalid?
 
   renderItem: (item, index) ->
     H.tr key: index,
