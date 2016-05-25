@@ -93,7 +93,7 @@ module.exports = class MatrixAnswerComponent extends React.Component
     @props.onValueChange(matrixValue)
 
   renderColumnHeader: (column, index) ->
-    H.th key: column._id,
+    H.th key: "header:#{column._id}",
       formUtils.localizeString(column.text, @context.locale)
 
       # Required star

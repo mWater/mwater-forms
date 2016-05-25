@@ -153,6 +153,10 @@ module.exports = class ResponseAnswersComponent extends React.Component
           value: answer.value
         })
 
+      when "items_choices"
+        return answer.value
+
+
   renderQuestion: (q, dataId) ->
     # Get answer
     dataIds = dataId.split('.')
@@ -160,7 +164,11 @@ module.exports = class ResponseAnswersComponent extends React.Component
       answer = @props.data[dataId]
     else
       rosterData = @props.data[dataIds[0]]
-      answer = rosterData[dataIds[1]].data[dataIds[2]]
+      if rosterData.value?
+        rosterData = rosterData.value
+        answer = rosterData[dataIds[1]][dataIds[2]]
+      else
+        answer = rosterData[dataIds[1]].data[dataIds[2]]
 
     # Do not display if empty and hide empty true
     if @props.hideEmptyAnswers and not answer?.value? and not answer?.alternate
@@ -272,6 +280,26 @@ module.exports = class ResponseAnswersComponent extends React.Component
                 contents
               ]
       ]
+
+    if item._type == "MatrixQuestion"
+      answer = @props.data[dataId]
+      if answer?
+        rows = []
+        rows.push H.tr key: item._id,
+          H.td colSpan: 2, style: { fontWeight: "bold" },
+            formUtils.localizeString(item.name, @props.locale)
+        for maxtrixItemId, itemValue of answer.value
+          matrixItem = _.findWhere item.items, {id: maxtrixItemId}
+          rows.push H.tr null,
+            H.td colSpan: 2, style: { fontStyle: 'italic' },
+              formUtils.localizeString(matrixItem.label, @props.locale)
+          for columnId, columnValue of itemValue
+            column = _.findWhere item.columns, {_id: columnId}
+            dataId = "#{item._id}.#{maxtrixItemId}.#{columnId}"
+            rows.push @renderItem(column, visibilityStructure, dataId)
+        return rows
+      else
+        return null
 
     if formUtils.isQuestion(item)
       return @renderQuestion(item, dataId)

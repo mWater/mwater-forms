@@ -74,6 +74,12 @@ module.exports = class VisibilityCalculator
       isVisible = true
     @visibilityStructure[prefix + question._id] = isVisible
 
+    if question._type == 'MatrixQuestion'
+      for item in question.items
+        for column in question.columns
+          newPrefix = "#{question._id}.#{item.id}."
+          @processItem(column, isVisible == false, data, newPrefix)
+
   # Behaves like a question
   processInstruction: (instruction, forceToInvisible, data, prefix) ->
     @processQuestion(instruction, forceToInvisible, data, prefix)
