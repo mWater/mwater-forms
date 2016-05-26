@@ -99,8 +99,8 @@ class DemoComponent extends React.Component
     #   data: @state.data
     #   onDataChange: (data) => @setState(data: data)
 
-    design = rosterFormDesign
-    # design: sampleForm2.design
+    # design = rosterFormDesign
+    design = sampleForm2.design
     # design: bigsampleForm2.design
     # design: matrixFormDesign
 

@@ -59,6 +59,7 @@ module.exports = class NumberAnswerComponent extends React.Component
   render: ->
     # Display red border if not valid
     style = _.clone(@props.style or {})
+    style.width = "12em"
     if not @isValid()
       style.borderColor = "#a94442"
       style.boxShadow = "inset 0 1px 1px rgba(0,0,0,.075)"
@@ -66,11 +67,10 @@ module.exports = class NumberAnswerComponent extends React.Component
 
     H.input
       ref: 'input'
-      type: "text"
+      type: if @props.decimal then "number" else "tel"
       className: "form-control #{if @props.small then "input-sm" else ""}"
       style: style
       value: @state.inputText
       onChange: (ev) => @setState(inputText: ev.target.value)
       onBlur: @handleBlur
       onKeyDown: @handleKeyDown
-
