@@ -45,12 +45,16 @@ exports.localizeString = (str, locale) ->
     return ""
 
   # Return for locale if present
-  if str[locale || "en"]
-    return str[locale || "en"]
+  if locale and str[locale]
+    return str[locale]
 
   # Return base if present
-  if str._base
+  if str._base and str[str._base]
     return str[str._base] || ""
+
+  # Return english
+  if str.en
+    return str.en
     
   return ""
 
