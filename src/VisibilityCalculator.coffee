@@ -112,4 +112,5 @@ module.exports = class VisibilityCalculator
       for rosterGroupData, index in subData
         for content in rosterGroup.contents
           newPrefix = "#{dataId}.#{index}."
-          @processItem(content, isVisible == false, rosterGroupData, newPrefix)
+          # Data is actually stored in .data subfield
+          @processItem(content, isVisible == false, rosterGroupData.data, newPrefix)
