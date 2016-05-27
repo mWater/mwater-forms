@@ -160,6 +160,30 @@ describe "FormSchemaBuilder addForm", ->
         }
       ])
 
+    it "text with code", ->
+      @testQuestion({ _type: "TextQuestion", code: "x" }, [
+        { 
+          id: "data:questionid:value" 
+          type: "text"
+          name: { _base: "en", en: "Question" } 
+          code: "x"
+          # data#>>'{questionid,value}'
+          jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }
+        }
+      ])
+
+    it "text with code and exportId", ->
+      @testQuestion({ _type: "TextQuestion", code: "x", exportId: "y" }, [
+        { 
+          id: "data:questionid:value" 
+          type: "text"
+          name: { _base: "en", en: "Question" } 
+          code: "y"
+          # data#>>'{questionid,value}'
+          jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }
+        }
+      ])
+
     it "number", ->
       @testQuestion({ _type: "NumberQuestion", decimal: false }, [
         { 

@@ -355,6 +355,10 @@ module.exports = class FormSchemaBuilder
     else if formUtils.isQuestion(item)
       # Get type of answer
       answerType = formUtils.getAnswerType(item)
+
+      # Get code
+      code = item.exportId or item.code
+
       switch answerType
         when "text"
           # Get a simple text column
@@ -362,6 +366,7 @@ module.exports = class FormSchemaBuilder
             id: "data:#{item._id}:value"
             type: "text"
             name: item.text
+            code: code
             jsonql: {
               type: "op"
               op: "#>>"
@@ -379,6 +384,7 @@ module.exports = class FormSchemaBuilder
             id: "data:#{item._id}:value"
             type: "number"
             name: item.text
+            code: code
             jsonql: {
               type: "op"
               op: "convert_to_decimal"
@@ -402,7 +408,8 @@ module.exports = class FormSchemaBuilder
             id: "data:#{item._id}:value"
             type: "enum"
             name: item.text
-            enumValues: _.map(item.choices, (c) -> { id: c.id, name: c.label })
+            code: code
+            enumValues: _.map(item.choices, (c) -> { id: c.id, name: c.label, code: c.code })
             jsonql: {
               type: "op"
               op: "#>>"
@@ -419,7 +426,8 @@ module.exports = class FormSchemaBuilder
             id: "data:#{item._id}:value"
             type: "enumset"
             name: item.text
-            enumValues: _.map(item.choices, (c) -> { id: c.id, name: c.label })
+            code: code
+            enumValues: _.map(item.choices, (c) -> { id: c.id, name: c.label, code: c.code })
             jsonql: {
               type: "op"
               op: "#>"
@@ -439,6 +447,7 @@ module.exports = class FormSchemaBuilder
               id: "data:#{item._id}:value"
               type: "datetime"
               name: item.text
+              code: code
               jsonql: {
                 type: "op"
                 op: "#>>"
@@ -455,6 +464,7 @@ module.exports = class FormSchemaBuilder
               id: "data:#{item._id}:value"
               type: "date"
               name: item.text
+              code: code
               # substr(rpad(data#>>'{questionid,value}',10, '-01-01'), 1, 10)
               jsonql: {
                 type: "op"
@@ -488,6 +498,7 @@ module.exports = class FormSchemaBuilder
             id: "data:#{item._id}:value"
             type: "boolean"
             name: item.text
+            code: code
             jsonql: {
               type: "op"
               op: "::boolean"
@@ -514,6 +525,7 @@ module.exports = class FormSchemaBuilder
             id: "data:#{item._id}:value:quantity"
             type: "number"
             name: name
+            code: if code then code + " (magnitude)"
             jsonql: {
               type: "op"
               op: "convert_to_decimal"
@@ -535,6 +547,7 @@ module.exports = class FormSchemaBuilder
             id: "data:#{item._id}:value:units"
             type: "enum"
             name: appendStr(item.text, " (units)")
+            code: if code then code + " (units)"
             jsonql: {
               type: "op"
               op: "#>>"
@@ -552,6 +565,7 @@ module.exports = class FormSchemaBuilder
             id: "data:#{item._id}:value"
             type: "geometry"
             name: item.text
+            code: code
             # ST_SetSRID(ST_MakePoint(data#>>'{questionid,value,longitude}'::decimal, data#>>'{questionid,value,latitude}'::decimal),4326)
             jsonql: {
               type: "op"
@@ -588,6 +602,7 @@ module.exports = class FormSchemaBuilder
             id: "data:#{item._id}:value:accuracy"
             type: "number"
             name: appendStr(item.text, " (accuracy)")
+            code: if code then code + " (accuracy)"
             # data#>>'{questionid,value,accuracy}'::decimal
             jsonql: {
               type: "op"
@@ -604,6 +619,7 @@ module.exports = class FormSchemaBuilder
             id: "data:#{item._id}:value:altitude"
             type: "number"
             name: appendStr(item.text, " (altitude)")
+            code: if code then code + " (altitude)"
             # data#>>'{questionid,value,accuracy}'::decimal
             jsonql: {
               type: "op"
@@ -645,6 +661,7 @@ module.exports = class FormSchemaBuilder
             id: "data:#{item._id}:value"
             type: "join"
             name: item.text
+            code: code
             join: {
               type: "n-1"
               toTable: if item.siteTypes then "entities." + _.first(item.siteTypes).toLowerCase().replace(/ /g, "_") else "entities.water_point"
@@ -660,6 +677,7 @@ module.exports = class FormSchemaBuilder
             id: "data:#{item._id}:value"
             type: "join"
             name: item.text
+            code: code
             join: {
               type: "n-1"
               toTable: "entities.#{item.entityType}"
@@ -683,6 +701,7 @@ module.exports = class FormSchemaBuilder
             id: "data:#{item._id}:value"
             type: "text[]"
             name: item.text
+            code: code
             jsonql: {
               type: "op"
               op: "#>>"
@@ -700,6 +719,7 @@ module.exports = class FormSchemaBuilder
             id: "data:#{item._id}:value"
             type: "image"
             name: item.text
+            code: code
             jsonql: {
               type: "op"
               op: "#>>"
@@ -717,6 +737,7 @@ module.exports = class FormSchemaBuilder
             id: "data:#{item._id}:value"
             type: "imagelist"
             name: item.text
+            code: code
             jsonql: {
               type: "op"
               op: "#>>"
@@ -733,6 +754,7 @@ module.exports = class FormSchemaBuilder
           column = {
             id: "data:#{item._id}:value"
             name: item.text
+            code: code
             type: "join"
             join: {
               type: "n-1"
@@ -760,10 +782,12 @@ module.exports = class FormSchemaBuilder
 
           # For each item
           for itemItem in item.items
+            itemCode = if code and itemItem.code then code + " - " + itemItem.code
             section.contents.push({
               id: "data:#{item._id}:value:#{itemItem.id}"
               type: "enum"
               name: appendStr(appendStr(item.text, ": "), itemItem.label)
+              code: itemCode
               enumValues: _.map(item.choices, (c) -> { id: c.id, name: c.label })
               jsonql: {
                 type: "op"
@@ -790,12 +814,15 @@ module.exports = class FormSchemaBuilder
 
             # For each column
             for itemColumn in item.columns
+              cellCode = if code and itemItem.code and itemColumn.code then code + " - " + itemItem.code + " - " + itemColumn.code
+
               # TextColumnQuestion
               if itemColumn._type == "TextColumnQuestion"
                 section.contents.push({
                   id: "data:#{item._id}:value:#{itemItem.id}:#{itemColumn._id}:value"
                   type: "text"
                   name: appendStr(appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "), itemColumn.text)
+                  code: cellCode
                   jsonql: {
                     type: "op"
                     op: "#>>"
@@ -812,6 +839,7 @@ module.exports = class FormSchemaBuilder
                   id: "data:#{item._id}:value:#{itemItem.id}:#{itemColumn._id}:value"
                   type: "number"
                   name: appendStr(appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "), itemColumn.text)
+                  code: cellCode
                   jsonql: {
                     type: "op"
                     op: "convert_to_decimal"
@@ -832,6 +860,7 @@ module.exports = class FormSchemaBuilder
                   id: "data:#{item._id}:value:#{itemItem.id}:#{itemColumn._id}:value"
                   type: "boolean"
                   name: appendStr(appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "), itemColumn.text)
+                  code: cellCode
                   jsonql: {
                     type: "op"
                     op: "::boolean"
@@ -852,6 +881,7 @@ module.exports = class FormSchemaBuilder
                   id: "data:#{item._id}:value:#{itemItem.id}:#{itemColumn._id}:value"
                   type: "enum"
                   name: appendStr(appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "), itemColumn.text)
+                  code: cellCode
                   enumValues: _.map(itemColumn.choices, (c) -> { id: c.id, name: c.label })
                   jsonql: {
                     type: "op"
@@ -869,6 +899,7 @@ module.exports = class FormSchemaBuilder
                   id: "data:#{item._id}:value:#{itemItem.id}:#{itemColumn._id}:value:quantity"
                   type: "number"
                   name: appendStr(appendStr(appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "), itemColumn.text), " (magnitude)")
+                  code: if cellCode then cellCode + " (magnitude)"
                   jsonql: {
                     type: "op"
                     op: "convert_to_decimal"
@@ -886,6 +917,7 @@ module.exports = class FormSchemaBuilder
                 section.contents.push({
                   id: "data:#{item._id}:value:#{itemItem.id}:#{itemColumn._id}:value:units"
                   type: "enum"
+                  code: if cellCode then cellCode + " (units)"
                   name: appendStr(appendStr(appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "), itemColumn.text), " (units)")
                   enumValues: _.map(itemColumn.units, (c) -> { id: c.id, name: c.label })
                   jsonql: {
@@ -914,6 +946,7 @@ module.exports = class FormSchemaBuilder
               id: "data:#{item._id}:specify:#{choice.id}"
               type: "text"
               name: appendStr(appendStr(appendStr(item.text, " ("), choice.label), ")")
+              code: if code then code + " (#{if choice.code then choice.code else formUtils.localizeString(choice.name)})"
               jsonql: {
                 type: "op"
                 op: "#>>"
@@ -931,6 +964,7 @@ module.exports = class FormSchemaBuilder
           id: "data:#{item._id}:comments"
           type: "text"
           name: appendStr(item.text, " (Comments)")
+          code: if code then code + " (Comments)"
           jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{#{item._id},comments}"] }
         }
 
@@ -942,6 +976,7 @@ module.exports = class FormSchemaBuilder
           id: "data:#{item._id}:timestamp"
           type: "datetime"
           name: appendStr(item.text, " (Time Answered)")
+          code: if code then code + " (Time Answered)"
           jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{#{item._id},timestamp}"] }
         }
 
@@ -953,6 +988,7 @@ module.exports = class FormSchemaBuilder
           id: "data:#{item._id}:location"
           type: "geometry"
           name: appendStr(item.text, " (Location Answered)")
+          code: if code then code + " (Location Answered)"
           # ST_SetSRID(ST_MakePoint(data#>>'{questionid,value,longitude}'::decimal, data#>>'{questionid,value,latitude}'::decimal),4326)
           jsonql: {
             type: "op"
@@ -989,6 +1025,7 @@ module.exports = class FormSchemaBuilder
           id: "data:#{item._id}:location:accuracy"
           type: "number"
           name: appendStr(item.text, " (Location Answered - accuracy)")
+          code: if code then code + " (Location Answered - accuracy)"
           # data#>>'{questionid,location,accuracy}'::decimal
           jsonql: {
             type: "op"
@@ -1005,6 +1042,7 @@ module.exports = class FormSchemaBuilder
           id: "data:#{item._id}:location:altitude"
           type: "number"
           name: appendStr(item.text, " (Location Answered - altitude)")
+          code: if code then code + " (Location Answered - altitude)"
           # data#>>'{questionid,location,accuracy}'::decimal
           jsonql: {
             type: "op"
@@ -1023,6 +1061,7 @@ module.exports = class FormSchemaBuilder
           id: "data:#{item._id}:na"
           type: "boolean"
           name: appendStr(item.text, " (Not Applicable)")
+          code: if code then code + " (Not Applicable)"
           # data#>>'{questionid,alternate}' = 'na'
           jsonql: {
             type: "op"
@@ -1041,6 +1080,7 @@ module.exports = class FormSchemaBuilder
           id: "data:#{item._id}:dontknow"
           type: "boolean"
           name: appendStr(item.text, " (Don't Know)")
+          code: if code then code + " (Don't Know)"
           # data#>>'{questionid,alternate}' = 'dontknow'
           jsonql: {
             type: "op"

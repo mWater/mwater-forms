@@ -103,9 +103,9 @@ describe 'VisibilityCalculator', ->
     it 'create a complete visibility structure', ->
       data = {
         mainRosterGroupId: [
-          {firstRosterQuestionId: {value: 'some text'}, firstSubRosterQuestionId: {value: 'sub text'}}
+          { data: {firstRosterQuestionId: {value: 'some text'}, firstSubRosterQuestionId: {value: 'sub text'}} }
           # This will make the second question invisible
-          {firstRosterQuestionId: {value: null}}
+          { data: {firstRosterQuestionId: {value: null}} }
         ]
       }
       visibilityStructure = @visibilityCalculator.createVisibilityStructure(data)
