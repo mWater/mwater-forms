@@ -68,6 +68,7 @@ module.exports = class ResponseDataExprValueUpdater
   updateData: (data, expr, value, callback) ->
     if not @canUpdate(expr)
       callback(new Error("Cannot update expression"))
+      return
 
     # Handle simple fields
     if expr.type == "field" and expr.column.match(/^data:[^:]+:value$/)
@@ -136,6 +137,7 @@ module.exports = class ResponseDataExprValueUpdater
     # Can update scalar with single join, non-aggr
     if expr.type == "scalar" and expr.joins.length == 1 and not expr.aggr and expr.joins[0].match(/^data:.+:value$/)
       @updateScalar(data, expr, value, callback) 
+      return
 
     callback(new Error("Cannot update expr #{JSON.stringify(expr)}"))
 
