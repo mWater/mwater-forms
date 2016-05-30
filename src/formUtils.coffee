@@ -157,7 +157,7 @@ exports.prepareQuestion = (q) ->
 
   # Get known fields
   knownFields = ['_id', '_type', 'text', 'textExprs', 'conditions', 'validations', 
-    'required', 'code', 'hint', 'help', 'alternates', 'commentsField', 'recordLocation', 'recordTimestamp', 'sticky', 'exportId']
+    'required', 'code', 'hint', 'help', 'alternates', 'commentsField', 'recordLocation', 'recordTimestamp', 'sticky', 'exportId', 'disabled']
 
   switch q._type
     when "TextQuestion", "DateQuestion" #, "DateTimeQuestion"
