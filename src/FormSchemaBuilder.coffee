@@ -123,6 +123,7 @@ module.exports = class FormSchemaBuilder
           id: "responses:#{form._id}:roster:#{item.rosterId or item._id}"
           name: appendStr(appendStr(form.design.name, ": "), item.name)
           primaryKey: "_id"
+          ordering: "index"
           contents: contents
         })
 
