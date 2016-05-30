@@ -16,9 +16,6 @@ exports.renderItem = (item, data, parentData, formExprEvaluator, onDataChange, i
     change[id] = answer
     onDataChange(_.extend({}, data, change))
 
-  if not isVisible(item._id) or item.disabled
-    return null
-
   if formUtils.isQuestion(item)
     component = R QuestionComponent,
       key: item._id,

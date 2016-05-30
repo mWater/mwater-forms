@@ -41,7 +41,8 @@ module.exports = class ItemListComponent extends React.Component
       @refs[@props.contents[index]._id]?.focus?()
 
   renderItem: (item, index) =>
-    formRenderUtils.renderItem(item, @props.data, @props.parentData, @props.formExprEvaluator, @props.onDataChange, @props.isVisible, @handleNext.bind(this, index))
+    if @props.isVisible(item._id) and not item.disabled
+      formRenderUtils.renderItem(item, @props.data, @props.parentData, @props.formExprEvaluator, @props.onDataChange, @props.isVisible, @handleNext.bind(this, index))
 
   render: ->
     H.div null,
