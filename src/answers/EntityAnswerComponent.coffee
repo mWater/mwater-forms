@@ -97,3 +97,6 @@ module.exports = class EntityAnswerComponent extends AsyncLoadComponent
         entityType: @props.entityType
         displayInWell: true
         entityId: @props.value
+        getEntityById: @context.getEntityById
+        renderEntitySummaryView: @context.renderEntitySummaryView
+        T: @context.T

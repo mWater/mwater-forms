@@ -8,7 +8,9 @@ EntityDisplayComponent = require '../EntityDisplayComponent'
 module.exports = class SiteAnswerComponent extends React.Component
   @contextTypes:
     selectEntity: React.PropTypes.func
-    getEntityById: React.PropTypes.func
+    getEntityById: React.PropTypes.func.isRequired
+    getEntityByCode: React.PropTypes.func.isRequired
+    renderEntitySummaryView: React.PropTypes.func.isRequired
     T: React.PropTypes.func.isRequired  # Localizer to use
 
   @propTypes:
@@ -67,3 +69,6 @@ module.exports = class SiteAnswerComponent extends React.Component
         displayInWell: true
         entityType: @getEntityType()
         entityCode: @props.value?.code
+        getEntityByCode: @context.getEntityByCode
+        renderEntitySummaryView: @context.renderEntitySummaryView
+        T: @context.T

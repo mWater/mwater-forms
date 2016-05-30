@@ -9,10 +9,8 @@ module.exports = class EntityDisplayComponent extends AsyncLoadComponent
     entityId: React.PropTypes.string     # _id of entity
     entityCode: React.PropTypes.string   # code of entity if _id not present
     displayInWell: React.PropTypes.bool         # True to render in well if present
-
-  @contextTypes:
-    getEntityById: React.PropTypes.func.isRequired     # Gets an entity by id (entityType, entityId, callback)
-    getEntityByCode: React.PropTypes.func.isRequired   # Gets an entity by code (entityType, entityCode, callback)
+    getEntityById: React.PropTypes.func     # Gets an entity by id (entityType, entityId, callback). Required if entityId
+    getEntityByCode: React.PropTypes.func   # Gets an entity by code (entityType, entityCode, callback). Required if entityCode
     renderEntitySummaryView: React.PropTypes.func.isRequired
     T: React.PropTypes.func.isRequired  # Localizer to use
 
@@ -27,23 +25,23 @@ module.exports = class EntityDisplayComponent extends AsyncLoadComponent
       return
 
     if props.entityId
-      @context.getEntityById(props.entityType, props.entityId, (entity) =>
+      @props.getEntityById(props.entityType, props.entityId, (entity) =>
         callback(entity: entity)
       )
     else
-      @context.getEntityByCode(props.entityType, props.entityCode, (entity) =>
+      @props.getEntityByCode(props.entityType, props.entityCode, (entity) =>
         callback(entity: entity)
       )
 
   render: ->
     if @state.loading
-      return H.div className: "alert alert-info", @context.T("Loading...")
+      return H.div className: "alert alert-info", @props.T("Loading...")
 
     if not @props.entityId and not @props.entityCode
       return null
 
     if not @state.entity 
-      return H.div className: "alert alert-danger", @context.T("Not found")
+      return H.div className: "alert alert-danger", @props.T("Not found")
 
     H.div className: (if @props.displayInWell then "well well-sm"),
-      @context.renderEntitySummaryView(@props.entityType, @state.entity)
+      @props.renderEntitySummaryView(@props.entityType, @state.entity)

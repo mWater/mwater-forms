@@ -168,6 +168,5 @@ module.exports = class ResponseDisplayComponent extends React.Component
         data: @props.response.data
         locale: @props.locale
         T: @props.T
-        getAdminRegionPath: @props.formCtx.getAdminRegionPath
-        displayMap: @props.formCtx.displayMap
+        formCtx: @props.formCtx
       })

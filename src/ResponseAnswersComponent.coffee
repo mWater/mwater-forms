@@ -3,29 +3,30 @@ H = React.DOM
 R = React.createElement
 
 formUtils = require './formUtils'
-ImageDisplayComponent = require './ImageDisplayComponent'
-EntityDisplayComponent = require './EntityDisplayComponent'
-AdminRegionDisplayComponent = require './AdminRegionDisplayComponent'
 moment = require 'moment'
 ezlocalize = require 'ez-localize'
 
 VisibilityCalculator = require './VisibilityCalculator'
+
+ImageDisplayComponent = require './ImageDisplayComponent'
+EntityDisplayComponent = require './EntityDisplayComponent'
+AdminRegionDisplayComponent = require './AdminRegionDisplayComponent'
 
 # Displays the answers of a response in a table
 module.exports = class ResponseAnswersComponent extends React.Component
   @propTypes:
     form: React.PropTypes.object.isRequired
     data: React.PropTypes.object.isRequired
-    locale: React.PropTypes.string # Defaults to english
+
     hideEmptyAnswers: React.PropTypes.bool # True to hide empty answers
 
-    getAdminRegionPath: React.PropTypes.func.isRequired # Call with (id, callback). Callback (error, [{ id:, level: <e.g. 1>, name: <e.g. Manitoba>, type: <e.g. Province>}] in level ascending order)
+    locale: React.PropTypes.string # Defaults to english
     T: React.PropTypes.func.isRequired  # Localizer to use
-    displayMap: React.PropTypes.func    # Open map to display location
+    formCtx: React.PropTypes.object.isRequired    # Form context to use
 
   handleLocationClick: (location) ->
-    if @props.displayMap
-      @props.displayMap(location)
+    if @props.formCtx.displayMap
+      @props.formCtx.displayMap(location)
 
   renderLocation: (location) ->
     if location
@@ -116,11 +117,11 @@ module.exports = class ResponseAnswersComponent extends React.Component
 
       when "image"
         if answer.value
-          return R(ImageDisplayComponent, id: answer.value.id)
+          return R(ImageDisplayComponent, id: answer.value.id, imageManager: @props.formCtx.imageManager)
 
       when "images"
         return _.map answer.value, (img) =>
-          R(ImageDisplayComponent, id: img.id)
+          R(ImageDisplayComponent, id: img.id, imageManager: @props.formCtx.imageManager)
 
       when "texts"
         return _.map answer.value, (txt) =>
@@ -139,18 +140,25 @@ module.exports = class ResponseAnswersComponent extends React.Component
         return R(EntityDisplayComponent, {
           entityCode: code
           entityType: entityType
+          getEntityByCode: @props.formCtx.getEntityByCode
+          renderEntitySummaryView: @props.formCtx.renderEntitySummaryView
+          T: @props.T
         })
 
       when "entity"
         return R(EntityDisplayComponent, {
           entityId: answer.value
           entityType: q.entityType
+          getEntityById: @props.formCtx.getEntityById
+          renderEntitySummaryView: @props.formCtx.renderEntitySummaryView
+          T: @props.T
         })
 
       when "admin_region"
         return R(AdminRegionDisplayComponent, {
-          getAdminRegionPath: @props.getAdminRegionPath
+          getAdminRegionPath: @props.formCtx.getAdminRegionPath
           value: answer.value
+          T: @props.T
         })
 
       when "items_choices"

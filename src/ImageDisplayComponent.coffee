@@ -7,8 +7,6 @@ ImagePopupComponent = require './ImagePopupComponent'
 module.exports = class ImageDisplayComponent extends React.Component
   @propTypes:
     id: React.PropTypes.string.isRequired  # Id of image
-
-  @contextTypes:
     imageManager: React.PropTypes.object.isRequired
 
   constructor: ->
@@ -20,7 +18,7 @@ module.exports = class ImageDisplayComponent extends React.Component
 
   update: (props) ->
     # Get URL of thumbnail
-    @context.imageManager.getImageThumbnailUrl props.id, (url) =>
+    @props.imageManager.getImageThumbnailUrl props.id, (url) =>
       @setState(url: url, error: false)
     , => @setState(error: true)
 
@@ -40,7 +38,7 @@ module.exports = class ImageDisplayComponent extends React.Component
       H.img className: "img-thumbnail", src: src, onError: @handleImgError, onClick: @handleImgClick, style: { maxHeight: 100 }
       if @state.popup
         React.createElement(ImagePopupComponent, {
-          imageManager: @context.imageManager
+          imageManager: @props.imageManager
           id: @props.id
           onClose: => @setState(popup: false)
         })

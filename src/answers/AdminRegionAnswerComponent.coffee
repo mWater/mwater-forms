@@ -5,8 +5,6 @@ H = React.DOM
 
 AdminRegionSelectComponent = require '../AdminRegionSelectComponent'
 
-# Done by Clayton
-
 # Displays a gps, map and manual select
 module.exports = class AdminRegionAnswerComponent extends React.Component
   @contextTypes:
