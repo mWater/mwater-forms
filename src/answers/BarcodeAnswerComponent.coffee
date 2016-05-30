@@ -9,7 +9,6 @@ formUtils = require '../formUtils'
 
 module.exports = class BarcodeAnswerComponent extends React.Component
   @contextTypes:
-    locale: React.PropTypes.string  # Current locale (e.g. "en")
     scanBarcode: React.PropTypes.func
     T: React.PropTypes.func.isRequired  # Localizer to use
 

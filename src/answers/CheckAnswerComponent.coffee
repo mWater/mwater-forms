@@ -8,9 +8,6 @@ formUtils = require '../formUtils'
 # TODO: SurveyorPro: Fix checkbox title size
 
 module.exports = class CheckAnswerComponent extends React.Component
-  @contextTypes:
-    locale: React.PropTypes.string  # Current locale (e.g. "en")
-
   @propTypes:
     value: React.PropTypes.bool
     onValueChange: React.PropTypes.func.isRequired
