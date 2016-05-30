@@ -107,7 +107,7 @@ module.exports = class QuestionComponent extends React.Component
 
   # Returns true if validation error
   validate: (scrollToFirstInvalid) ->
-    if @refs.answer?.validate?(scrollToFirstInvalid)?
+    if @refs.answer?.validate?(scrollToFirstInvalid)
       if scrollToFirstInvalid
         @refs.prompt.scrollIntoView()
       return true
