@@ -24,7 +24,17 @@ module.exports = class FormSchemaBuilder
     contents.push({ id: "deployment", type: "enum", name: { en: "Deployment" }, enumValues: deploymentValues })
 
     # Add user
-    contents.push({ id: "user", type: "text", name: { en: "Enumerator" } })
+    contents.push({ 
+      id: "user"
+      name: { en: "Enumerator" } 
+      type: "join"
+      join: {
+        type: "n-1"
+        toTable: "users"
+        fromColumn: "_created_by"
+        toColumn: "_id"
+      }
+    })
 
     # Add status
     contents.push({ id: "status", type: "enum", name: { en: "Status" }, enumValues: [
