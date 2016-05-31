@@ -31,7 +31,7 @@ module.exports = class FormSchemaBuilder
       join: {
         type: "n-1"
         toTable: "users"
-        fromColumn: "_created_by"
+        fromColumn: "user"
         toColumn: "_id"
       }
     })
