@@ -376,6 +376,10 @@
     {
       "_base": "en",
       "en": "Select..."
+    },
+    {
+      "_base": "en",
+      "en": "mWater ID of Site"
     }
   ]
 }

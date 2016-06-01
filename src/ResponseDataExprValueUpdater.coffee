@@ -44,7 +44,7 @@ module.exports = class ResponseDataExprValueUpdater
       return true
 
     # Can update scalar with single join, non-aggr
-    if expr.type == "scalar" and expr.joins.length == 1 and not expr.aggr
+    if expr.type == "scalar" and expr.joins.length == 1 and not expr.aggr and expr.joins[0].match(/^data:.+$/)
       return true
 
     if expr.type == "op" and expr.op == "contains" and expr.exprs[0].type == "field" and expr.exprs[0].column.match(/^data:[^:]+:value$/) and expr.exprs[1].value?.length == 1

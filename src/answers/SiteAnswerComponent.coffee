@@ -59,6 +59,7 @@ module.exports = class SiteAnswerComponent extends React.Component
           className: "form-control"
           onKeyDown: @handleKeyDown
           ref: 'input'
+          placeholder: @context.T("mWater ID of Site")
           value: @props.value?.code or ""
           onChange: @handleChange
         H.span className: "input-group-btn",
