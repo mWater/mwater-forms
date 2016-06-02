@@ -56,7 +56,7 @@ module.exports = class ResponseAnswersComponent extends React.Component
       when "choice"
         choice = _.findWhere(q.choices, { id: answer.value })
         if choice
-          label = formUtils.localizeString(choice.label, 'en')
+          label = formUtils.localizeString(choice.label, @props.locale)
           if answer.specify?
             specify = answer.specify[answer.value]
           else
@@ -74,7 +74,7 @@ module.exports = class ResponseAnswersComponent extends React.Component
           choice = _.findWhere(q.choices, { id: v })
           if choice
             return H.div null, 
-              formUtils.localizeString(choice.label, 'en')
+              formUtils.localizeString(choice.label, @props.locale)
               if answer.specify? and answer.specify[v]
                 ": "
                 H.em null, answer.specify[v]
@@ -96,7 +96,7 @@ module.exports = class ResponseAnswersComponent extends React.Component
           units = _.findWhere(q.units, { id: answer.value.units })
 
           valueStr = "" + answer.value.quantity
-          unitsStr = if units then formUtils.localizeString(units.label, 'en') else "(Invalid)"
+          unitsStr = if units then formUtils.localizeString(units.label, @props.locale) else "(Invalid)"
 
           if q.unitsPosition == "prefix" 
             return H.div null,
@@ -168,7 +168,7 @@ module.exports = class ResponseAnswersComponent extends React.Component
             choice = _.findWhere(q.choices, { id: choiceId })
             if choice?
               return H.div null,
-                formUtils.localizeString(choice.label, 'en')
+                formUtils.localizeString(choice.label, @props.locale)
             else
               return H.span className: "label label-danger", "Invalid Choice"
 
