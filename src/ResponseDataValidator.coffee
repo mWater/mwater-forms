@@ -19,32 +19,14 @@ module.exports = class ResponseDataValidator
       if content._type == "Section" or content._type == "Group"
         return @validate(content, data)
 
-      if content._type == "RosterGroup"
+      if content._type in ["RosterGroup", "RosterMatrix"]
         answerId = content.rosterId or content._id
         rosterData = data[answerId] or []
 
         for entry, index in rosterData
           [resultId, result] = @validate(content, entry.data)
           if result?
-            return ["#{content._id}_#{index}_#{resultId}", result]
-
-      if content._type == "RosterMatrix"
-        answerId = content.rosterId or content._id
-        rosterData = data[answerId] or []
-
-        for entry, rowIndex in rosterData
-          # For each column
-          for column, columnIndex in content.contents
-            key = "#{rowIndex}_#{column._id}"
-            completedId = content._id + '_' + key
-
-            if column.required and (not entry.data[column._id]?.value or entry.data[column._id]?.value == '')
-              return [completedId, 'column required']
-
-            if column.validations and column.validations.length > 0
-              validationError = new AnswerValidator().compileValidations(column.validations)(entry.data[column._id])
-              if validationError
-                return [completedId, validationError]
+            return ["#{content._id}:#{index}:#{resultId}", result]
 
       if formUtils.isQuestion(content)
         answer = data[content._id] or {}
@@ -53,13 +35,13 @@ module.exports = class ResponseDataValidator
           for item, rowIndex in content.items
             # For each column
             for column, columnIndex in content.columns
-              key = "#{item.id}_#{column._id}"
-              completedId = content._id + '_' + key
+              key = "#{item.id}:#{column._id}"
+              completedId = content._id + ':' + key
 
               data = answer[item.id]?[column._id]
 
               if column.required and not data?.value? or data?.value == ''
-                return [completedId, 'data required']
+                return [completedId, true]
 
               if column.validations and column.validations.length > 0
                 validationError = answerValidator.compileValidations(column.validations)(data)

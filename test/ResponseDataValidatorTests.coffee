@@ -167,13 +167,13 @@ describe "ResponseDataValidator", ->
     # Question a should be complaining (answer to a required)
     data = {matrix01: [data: {b: {value: 33}}]}
     [questionId, validationError] = validator.validate(design, data)
-    assert.equal questionId, 'matrix01_0_a'
-    assert.equal validationError, 'column required'
+    assert.equal questionId, 'matrix01:0:a'
+    assert.equal validationError, true
 
     # Question a2 should be complaining (answer to a is too long)
     data = {matrix01: [data: {a: {value: 'something'}, a2: {value: 'too long'}, b: {value: 33}}]}
     [questionId, validationError] = validator.validate(design, data)
-    assert.equal questionId, 'matrix02_0_a2'
+    assert.equal questionId, 'matrix02:0:a2'
     assert.equal validationError, 'String is too long'
 
     # Everything should be fine
@@ -231,20 +231,20 @@ describe "ResponseDataValidator", ->
     # Item1 should be complaining (answoer to a is too long)
     data = {matrix01: {item1: {a: {value: 'data too long'}}}}
     [questionId, validationError] = validator.validate(design, data)
-    assert.equal questionId, 'matrix01_item1_a'
+    assert.equal questionId, 'matrix01:item1:a'
     assert.equal validationError, 'String is too long'
 
     # Item1 should be complaining (missing required field)
     data = { }
     [questionId, validationError] = validator.validate(design, data)
-    assert.equal questionId, 'matrix01_item1_a'
-    assert.equal validationError, 'data required'
+    assert.equal questionId, 'matrix01:item1:a'
+    assert.equal validationError, true
 
     # Now Item2 should be complaining (missing required field)
     data = { matrix01: {item1: {a: {value: 'data'}}}}
     [questionId, validationError] = validator.validate(design, data)
-    assert.equal questionId, 'matrix01_item2_a'
-    assert.equal validationError, 'data required'
+    assert.equal questionId, 'matrix01:item2:a'
+    assert.equal validationError, true
 
     # Now there shouldn't be any error
     data = {
@@ -307,7 +307,7 @@ describe "ResponseDataValidator", ->
       }]
     }
     [questionId, validationError] = validator.validate(design, data)
-    assert.equal questionId, 'secondRosterGroupId_0_a'
+    assert.equal questionId, 'secondRosterGroupId:0:a'
     assert.equal validationError, 'String is too long'
 
     data = {
@@ -316,7 +316,7 @@ describe "ResponseDataValidator", ->
       ]
     }
     [questionId, validationError] = validator.validate(design, data)
-    assert.equal questionId, 'secondRosterGroupId_0_a'
+    assert.equal questionId, 'secondRosterGroupId:0:a'
     # TODO, Should give a better error than that!
     assert.equal validationError, true
 
