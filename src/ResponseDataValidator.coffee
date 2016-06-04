@@ -7,11 +7,13 @@ module.exports = class ResponseDataValidator
   # It returns null if everything is fine
   # It makes sure required questions are properly answered
   # It checks custom validations
-  # It retuns both the id of the question that caused the error and the error
-  #     If the question causing the error is nested (like a Matrix), the values are separated by a _
+  # It returns the id of the question that caused the error, the error and a message which is includes the error and question
+  #     If the question causing the error is nested (like a Matrix), the questionId is separated by a :
   #     RosterMatrix   -> matrixId_index_columnId
   #     RosterGroup   -> rosterGroupId_index_questionId
   #     QuestionMatrix -> matrixId_itemId_columnId
+
+  # TODO validate required only if visible!
   validate: (formDesign, data) ->
     answerValidator = new AnswerValidator()
 
@@ -24,9 +26,13 @@ module.exports = class ResponseDataValidator
         rosterData = data[answerId] or []
 
         for entry, index in rosterData
-          [resultId, result] = @validate(content, entry.data)
+          result = @validate(content, entry.data)
           if result?
-            return ["#{content._id}:#{index}:#{resultId}", result]
+            return { 
+              questionId: "#{content._id}.#{index}.#{result.questionId}"
+              error: result.error
+              message: formUtils.localizeString(content.name) + " (#{index + 1})" + result.message 
+            }
 
       if formUtils.isQuestion(content)
         answer = data[content._id] or {}
@@ -35,22 +41,34 @@ module.exports = class ResponseDataValidator
           for item, rowIndex in content.items
             # For each column
             for column, columnIndex in content.columns
-              key = "#{item.id}:#{column._id}"
-              completedId = content._id + ':' + key
+              key = "#{item.id}.#{column._id}"
+              completedId = content._id + '.' + key
 
               data = answer[item.id]?[column._id]
 
               if column.required and not data?.value? or data?.value == ''
-                return [completedId, true]
+                return { 
+                  questionId: completedId
+                  error: true
+                  message: formUtils.localizeString(content.text) + " (#{index + 1}) " + formUtils.localizeString(column.text) + " is required"
+                }
 
               if column.validations and column.validations.length > 0
                 validationError = answerValidator.compileValidations(column.validations)(data)
                 if validationError
+                  return { 
+                    questionId: completedId
+                    error: validationError
+                    message: formUtils.localizeString(content.text) + " (#{index + 1})" + formUtils.localizeString(column.text) + " #{validationError}"
+                  }
                   return [completedId, validationError]
         else
-          result = answerValidator.validate(content, answer)
-          if result?
-            return [content._id, result]
+          error = answerValidator.validate(content, answer)
+          if error?
+            return {
+              questionId: content._id
+              error: error
+              message: formUtils.localizeString(content.text) + " " + (if error == true then "is required" else error)
+            }
 
-    return [null, null]
-
+    return null
