@@ -2,6 +2,7 @@ formUtils = require './formUtils'
 ResponseCleaner = require './ResponseCleaner'
 VisibilityCalculator = require './VisibilityCalculator'
 ExprCompiler = require('mwater-expressions').ExprCompiler
+FormValidator = require './FormValidator'
 
 # Updates data in a response given an expression (mWater expression, see FormSchemaBuilder and also mwater-expressions package) and a value
 # When updates are complete for data, cleanData must be called to clean data (removing values that are invisble because of conditions).
@@ -61,6 +62,11 @@ module.exports = class ResponseDataExprValueUpdater
     responseCleaner = new ResponseCleaner()
     data = responseCleaner.cleanData(data, visibilityStructure, @formDesign)
     return data
+
+  # Returns an array containing [questionId, validationError]
+  # Look at the FormValidator documentation for more info!
+  validate: (data) ->
+    return new FormValidator().validate(@formDesign, data)
 
   # Updates the data of a response, given an expression and its value. For example,
   # if there is a text field in question q1234, the expression { type: "field", table: "responses:form123", column: "data:q1234:value" }
