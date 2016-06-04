@@ -1,9 +1,8 @@
-
 AnswerValidator = require './answers/AnswerValidator'
 formUtils = require './formUtils'
 
 
-# FormValidator
+# FormValidator checks whether 
 module.exports = class FormValidator
   # It returns null if everything is fine
   # It makes sure required questions are properly answered
