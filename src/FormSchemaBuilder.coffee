@@ -73,11 +73,11 @@ module.exports = class FormSchemaBuilder
 
     # Create table
     return schema
-
+ 
   # Add joins back from entities to site and entity questions
   addReverseEntityJoins: (schema, form) ->
     for column in schema.getColumns("responses:#{form._id}")
-      if column.type == "join" and column.join.type == "n-1" and column.join.toTable.match(/^entities:/)
+      if column.type == "join" and column.join.type == "n-1" and column.join.toTable.match(/^entities./)
         # Create reverse join
         join = {
           id: "responses:#{form._id}:#{column.id}"
