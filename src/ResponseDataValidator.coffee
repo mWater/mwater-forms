@@ -2,8 +2,8 @@ AnswerValidator = require './answers/AnswerValidator'
 formUtils = require './formUtils'
 
 
-# FormValidator checks whether 
-module.exports = class FormValidator
+# ResponseDataValidator checks whether the entire data is valid for a response
+module.exports = class ResponseDataValidator
   # It returns null if everything is fine
   # It makes sure required questions are properly answered
   # It checks custom validations
@@ -12,10 +12,10 @@ module.exports = class FormValidator
   #     RosterMatrix   -> matrixId_index_columnId
   #     RosterGroup   -> rosterGroupId_index_questionId
   #     QuestionMatrix -> matrixId_itemId_columnId
-  validate: (form, data) ->
+  validate: (formDesign, data) ->
     answerValidator = new AnswerValidator()
 
-    for content in form.contents
+    for content in formDesign.contents
       if content._type == "Section" or content._type == "Group"
         return @validate(content, data)
 
