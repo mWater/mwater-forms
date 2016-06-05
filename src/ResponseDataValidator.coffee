@@ -1,6 +1,6 @@
 AnswerValidator = require './answers/AnswerValidator'
 formUtils = require './formUtils'
-
+VisibilityCalculator = require './VisibilityCalculator'
 
 # ResponseDataValidator checks whether the entire data is valid for a response
 module.exports = class ResponseDataValidator
@@ -15,42 +15,60 @@ module.exports = class ResponseDataValidator
 
   # TODO validate required only if visible!
   validate: (formDesign, data) ->
+    # Compute visibility
+    visibilityCalculator = new VisibilityCalculator(formDesign)
+    visibilityStructure = visibilityCalculator.createVisibilityStructure(data)
+
+    return @validateParentItem(formDesign, visibilityStructure, data, "")
+
+  # Validates an parent row
+  #   keyPrefix: the part before the row id in the visibility structure. For rosters
+  validateParentItem: (parentItem, visibilityStructure, data, keyPrefix) ->
+    # Create validator
     answerValidator = new AnswerValidator()
 
-    for content in formDesign.contents
-      if content._type == "Section" or content._type == "Group"
-        return @validate(content, data)
+    # For each item
+    for item in parentItem.contents
+      # If not visible, ignore
+      if not visibilityStructure["#{keyPrefix}#{item._id}"]
+        console.log "INVISIBLE: " + "#{keyPrefix}#{item._id}"
+        console.log visibilityStructure
+        continue
 
-      if content._type in ["RosterGroup", "RosterMatrix"]
-        answerId = content.rosterId or content._id
+      if item._type == "Section" or item._type == "Group"
+        return @validateParentItem(item, visibilityStructure, data, keyPrefix)
+
+      if item._type in ["RosterGroup", "RosterMatrix"]
+        answerId = item.rosterId or item._id
         rosterData = data[answerId] or []
 
         for entry, index in rosterData
-          result = @validate(content, entry.data)
+          # Key prefix is itemid.indexinroster.
+          result = @validateParentItem(item, visibilityStructure, entry.data, "#{keyPrefix}#{answerId}.#{index}.")
           if result?
             return { 
-              questionId: "#{content._id}.#{index}.#{result.questionId}"
+              questionId: "#{item._id}.#{index}.#{result.questionId}"
               error: result.error
-              message: formUtils.localizeString(content.name) + " (#{index + 1})" + result.message 
+              message: formUtils.localizeString(item.name) + " (#{index + 1})" + result.message 
             }
 
-      if formUtils.isQuestion(content)
-        answer = data[content._id] or {}
+      if formUtils.isQuestion(item)
+        answer = data[item._id] or {}
 
-        if content._type == 'MatrixQuestion'
-          for item, rowIndex in content.items
+        if item._type == 'MatrixQuestion'
+          for row, rowIndex in item.items
             # For each column
-            for column, columnIndex in content.columns
-              key = "#{item.id}.#{column._id}"
-              completedId = content._id + '.' + key
+            for column, columnIndex in item.columns
+              key = "#{row.id}.#{column._id}"
+              completedId = item._id + '.' + key
 
-              data = answer[item.id]?[column._id]
+              data = answer[row.id]?[column._id]
 
               if column.required and not data?.value? or data?.value == ''
                 return { 
                   questionId: completedId
                   error: true
-                  message: formUtils.localizeString(content.text) + " (#{index + 1}) " + formUtils.localizeString(column.text) + " is required"
+                  message: formUtils.localizeString(item.text) + " (#{index + 1}) " + formUtils.localizeString(column.text) + " is required"
                 }
 
               if column.validations and column.validations.length > 0
@@ -59,16 +77,16 @@ module.exports = class ResponseDataValidator
                   return { 
                     questionId: completedId
                     error: validationError
-                    message: formUtils.localizeString(content.text) + " (#{index + 1})" + formUtils.localizeString(column.text) + " #{validationError}"
+                    message: formUtils.localizeString(item.text) + " (#{index + 1})" + formUtils.localizeString(column.text) + " #{validationError}"
                   }
                   return [completedId, validationError]
         else
-          error = answerValidator.validate(content, answer)
+          error = answerValidator.validate(item, answer)
           if error?
             return {
-              questionId: content._id
+              questionId: item._id
               error: error
-              message: formUtils.localizeString(content.text) + " " + (if error == true then "is required" else error)
+              message: formUtils.localizeString(item.text) + " " + (if error == true then "is required" else error)
             }
 
     return null

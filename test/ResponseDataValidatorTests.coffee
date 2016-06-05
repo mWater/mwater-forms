@@ -52,6 +52,48 @@ describe "ResponseDataValidator", ->
     assert.equal result.questionId, 'q1'
     assert.equal result.error, "String is too long"
 
+  it "allows invisible required questions", () ->
+    # Make a form with a condition
+    design = {
+      _type: "Form"
+      contents: [
+        {
+          _id: "q1"
+          _type: "TextQuestion"
+          text: { en: "Q1" }
+          conditions: []
+          validations: []
+        }
+        {
+          _id: "q2"
+          _type: "TextQuestion"
+          text: { en: "Q2" }
+          required: true
+          # Conditional on q1
+          conditions: [{ lhs: { question: "q1" }, op: "present" }]
+          validations: []
+        }
+      ]
+    }
+
+    validator = new ResponseDataValidator()
+
+    # No data is ok
+    data = { }
+    result = validator.validate(design, data)
+    assert.isNull result
+
+    # Requires q2 if q1
+    data = { q1: { value: "court" }}
+    result = validator.validate(design, data)
+    assert.equal result.questionId, 'q2'
+    assert.equal result.error, true
+
+    # Both is ok
+    data = { q1: { value: "trop long" }, q2: { value: "something" }}
+    result = validator.validate(design, data)
+    assert.isNull result
+    
   it "validates data with sections", () ->
     # Make a form with a condition
     design = {
