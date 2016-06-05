@@ -66,7 +66,7 @@ module.exports = class ResponseDataExprValueUpdater
 
   # Validates the data. Returns null if ok, otherwise string message. Clean first
   validateData: (data) ->
-    result = ResponseDataValidator().validate(@formDesign, data)
+    result = new ResponseDataValidator().validate(@formDesign, data)
     if result
       return result.message
     return null
