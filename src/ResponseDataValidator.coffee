@@ -8,12 +8,11 @@ module.exports = class ResponseDataValidator
   # It makes sure required questions are properly answered
   # It checks custom validations
   # It returns the id of the question that caused the error, the error and a message which is includes the error and question
-  #     If the question causing the error is nested (like a Matrix), the questionId is separated by a :
-  #     RosterMatrix   -> matrixId_index_columnId
-  #     RosterGroup   -> rosterGroupId_index_questionId
-  #     QuestionMatrix -> matrixId_itemId_columnId
-
-  # TODO validate required only if visible!
+  # e.g. { questionId: someid, error: true for required, message otherwise, message: complete message including question text }
+  #     If the question causing the error is nested (like a Matrix), the questionId is separated by a .
+  #     RosterMatrix   -> matrixId.index.columnId
+  #     RosterGroup   -> rosterGroupId.index.questionId
+  #     QuestionMatrix -> matrixId.itemId.columnId
   validate: (formDesign, data) ->
     # Compute visibility
     visibilityCalculator = new VisibilityCalculator(formDesign)
@@ -31,8 +30,6 @@ module.exports = class ResponseDataValidator
     for item in parentItem.contents
       # If not visible, ignore
       if not visibilityStructure["#{keyPrefix}#{item._id}"]
-        console.log "INVISIBLE: " + "#{keyPrefix}#{item._id}"
-        console.log visibilityStructure
         continue
 
       if item._type == "Section" or item._type == "Group"
