@@ -965,6 +965,90 @@ describe "FormSchemaBuilder addForm", ->
           }
       })
 
+    it "adds indicator calculations with filters as case", ->
+      # Create form with number question and indicator calculation
+      form = {
+        _id: "formid"
+        design: {
+          _type: "Form"
+          name: { en: "Form" }
+          contents: [
+            {
+              _id: "questionid"
+              _type: "NumberQuestion"
+              text: { _base: "en", en: "Question" } 
+              decimal: true
+              conditions: []
+            }              
+          ]
+        }
+        indicatorCalculations: [
+          {
+            _id: "ic1"
+            indicator: "ind1"
+            expressions: {
+              num1: {
+                type: "op"
+                op: "+"
+                exprs: [
+                  { type: "field", table: "responses:formid", column: "data:questionid:value" }
+                  { type: "literal", valueType: "number", value: 5 }
+                ]
+              }
+            }
+            # Condition on indicator
+            condition: {
+              type: "op"
+              op: ">"
+              exprs: [
+                { type: "field", table: "responses:formid", column: "data:questionid:value" }
+                { type: "literal", valueType: "number", value: 3 }
+              ]
+            }
+          }
+        ]
+      }
+      schema = new FormSchemaBuilder().addForm(@schema, form)
+
+      # Check that indicator calculation added with condition
+      compare(schema.getColumn("responses:formid", "indicator_calculation:ic1:num1"), {
+        id: "indicator_calculation:ic1:num1"
+        type: "number"
+        name: { en: "Number1" }
+        jsonql: 
+          { 
+            type: "case"
+            cases: [
+              { 
+                when: { type: "op", op: ">", exprs: [
+                    {
+                      type: "op"
+                      op: "convert_to_decimal"
+                      exprs: [
+                        { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }
+                      ]
+                    }
+                    { type: "literal", value: 3 }
+                  ]}
+                then: { 
+                  type: "op"
+                  op: "+"
+                  exprs: [
+                    {
+                      type: "op"
+                      op: "convert_to_decimal"
+                      exprs: [
+                        { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }
+                      ]
+                    }
+                    { type: "literal", value: 5 }
+                  ]
+                }
+              }
+            ]
+          }
+      })
+
     it "add indicators fields with no calculation as jsonql literal null", ->
       # Create form with number question and indicator calculation
       form = {

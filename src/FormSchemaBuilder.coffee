@@ -249,10 +249,15 @@ module.exports = class FormSchemaBuilder
           return col
 
         expression = indicatorCalculation.expressions[col.id]
+        condition = indicatorCalculation.condition
 
         # If master, hack expression to be from master_responses, not responses
         if isMaster and expression
           expression = JSON.parse(JSON.stringify(expression).replace(/table":"responses:/g, "table\":\"master_responses:"))
+
+        # If master, hack condition to be from master_responses, not responses
+        if isMaster and condition
+          condition = JSON.parse(JSON.stringify(condition).replace(/table":"responses:/g, "table\":\"master_responses:"))
 
         # Joins are special. Only handle "n-1" joins (which are from id fields in original indicator properties)
         if col.type == "join"
@@ -277,6 +282,19 @@ module.exports = class FormSchemaBuilder
         # jsonql null should be explicit so it doesn't just think there is no jsonql specified
         if not jsonql
           jsonql = { type: "literal", value: null }
+
+        # Add condition if present
+        if condition
+          compiledCondition = exprCompiler.compileExpr(expr: condition, tableAlias: "{alias}")
+
+          # Wrap in case statement
+          jsonql = {
+            type: "case"
+            cases: [
+              when: compiledCondition
+              then: jsonql
+            ]
+          }
 
         # Set jsonql and id
         col = update(col, { id: { $set: "indicator_calculation:#{indicatorCalculation._id}:#{col.id}" }, jsonql: { $set: jsonql }})
