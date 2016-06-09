@@ -817,7 +817,7 @@ module.exports = class FormSchemaBuilder
               type: "enum"
               name: appendStr(appendStr(item.text, ": "), itemItem.label)
               code: itemCode
-              enumValues: _.map(item.choices, (c) -> { id: c.id, name: c.label })
+              enumValues: _.map(item.choices, (c) -> { id: c.id, name: c.label, code: c.code })
               jsonql: {
                 type: "op"
                 op: "#>>"
