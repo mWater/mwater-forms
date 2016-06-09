@@ -194,6 +194,9 @@ module.exports = class LocationView extends Backbone.View
     @render()
 
   mapClicked: =>
+    # If we use the map, then stop the currentPositionFinder (or else it might overwrite the value)
+    if @currentPositionFinder.running
+      @currentPositionFinder.stop()
     @trigger('map', @loc)
 
   editLocation: ->
@@ -212,6 +215,10 @@ module.exports = class LocationView extends Backbone.View
     if isNaN(longitude) or longitude < -180 or longitude > 180
       alert("Invalid longitude. Must be a value between -180 and 180.")
       return
+
+    # If we save a value, then stop the currentPositionFinder (or else it might overwrite the value)
+    if @currentPositionFinder.running
+      @currentPositionFinder.stop()
 
     # Set location
     @loc = {
