@@ -383,6 +383,9 @@ module.exports = {
         # Header of roster column
         text: { $ref: "#/definitions/localizedString" } 
 
+        # Code, unique within the question that should be used for exporting
+        code: { type: "string" }
+
         # True if the column is required to be answered
         required: { type: "boolean" }
 
