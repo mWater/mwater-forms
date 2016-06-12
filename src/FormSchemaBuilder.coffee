@@ -911,7 +911,7 @@ module.exports = class FormSchemaBuilder
                   type: "enum"
                   name: appendStr(appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "), itemColumn.text)
                   code: cellCode
-                  enumValues: _.map(itemColumn.choices, (c) -> { id: c.id, name: c.label })
+                  enumValues: _.map(itemColumn.choices, (c) -> { id: c.id, code: c.code, name: c.label })
                   jsonql: {
                     type: "op"
                     op: "#>>"
@@ -948,7 +948,7 @@ module.exports = class FormSchemaBuilder
                   type: "enum"
                   code: if cellCode then cellCode + " (units)"
                   name: appendStr(appendStr(appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "), itemColumn.text), " (units)")
-                  enumValues: _.map(itemColumn.units, (c) -> { id: c.id, name: c.label })
+                  enumValues: _.map(itemColumn.units, (c) -> { id: c.id, code: c.code, name: c.label })
                   jsonql: {
                     type: "op"
                     op: "#>>"

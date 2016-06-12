@@ -39,7 +39,7 @@ deployments = {
         }
       }
 
-      # Settings for entity creation performed by this form. Deployment specific.
+      # DEPRECATED: Settings for entity creation performed by this form. Deployment specific. 
       entityCreationSettings: {
         type: "array"
         items: {
