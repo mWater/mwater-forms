@@ -627,6 +627,69 @@ module.exports = class FormSchemaBuilder
           
           addColumn(column)
 
+          # Add admin region
+          if item.calculateAdminRegion
+            # ST_Transform(ST_SetSRID(ST_MakePoint(data#>>'{questionid,value,longitude}'::decimal, data#>>'{questionid,value,latitude}'::decimal),4326), 3857)
+            webmercatorLocation = {
+              type: "op"
+              op: "ST_Transform"
+              exprs: [
+                {
+                  type: "op"
+                  op: "ST_SetSRID"
+                  exprs: [
+                    {
+                      type: "op"
+                      op: "ST_MakePoint"
+                      exprs: [
+                        {
+                          type: "op"
+                          op: "::decimal"
+                          exprs: [
+                            { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{from}", column: "data" }, "{#{item._id},value,longitude}"] }
+                          ]
+                        }
+                        {
+                          type: "op"
+                          op: "::decimal"
+                          exprs: [
+                            { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{from}", column: "data" }, "{#{item._id},value,latitude}"] }
+                          ]
+                        }
+                      ]
+                    }
+                    4326
+                  ]
+                }
+                3857
+              ]
+            }
+
+            column = {
+              id: "data:#{item._id}:value:admin_region"
+              type: "join"
+              name: appendStr(item.text, " (administrative region)")
+              code: if code then code + " (administrative region)"
+              join: {
+                type: "n-1"
+                toTable: "admin_regions"
+                jsonql: {
+                  type: "op"
+                  op: "and"
+                  exprs: [
+                    # Make sure leaf node
+                    { type: "field", tableAlias: "{to}", column: "leaf" }
+                    { type: "op", op: "ST_Intersects", exprs: [
+                      webmercatorLocation
+                      { type: "field", tableAlias: "{to}", column: "shape" }
+                    ]}
+                  ]
+                }
+              }
+            }
+
+            addColumn(column)
+
           column = {
             id: "data:#{item._id}:value:accuracy"
             type: "number"

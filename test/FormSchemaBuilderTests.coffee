@@ -414,7 +414,7 @@ describe "FormSchemaBuilder addForm", ->
       ])
 
     it "location", ->
-      @testQuestion({ _type: "LocationQuestion" }, [
+      @testQuestion({ _type: "LocationQuestion", calculateAdminRegion: true }, [
         { 
           id: "data:questionid:value" 
           type: "geometry"
@@ -446,6 +446,61 @@ describe "FormSchemaBuilder addForm", ->
               }
               4326
             ]
+          }
+        }
+        { 
+          id: "data:questionid:value:admin_region" 
+          type: "join"
+          name: { _base: "en", en: "Question (administrative region)" }
+          join: {
+            type: "n-1"
+            toTable: "admin_regions"
+            jsonql: {
+              type: "op"
+              op: "and"
+              exprs: [
+                # Make sure leaf node
+                { type: "field", tableAlias: "{to}", column: "leaf" }
+                { type: "op", op: "ST_Intersects", exprs: [
+                  # ST_Transform(ST_SetSRID(ST_MakePoint(data#>>'{questionid,value,longitude}'::decimal, data#>>'{questionid,value,latitude}'::decimal),4326), 3857)
+                  {
+                    type: "op"
+                    op: "ST_Transform"
+                    exprs: [
+                      {
+                        type: "op"
+                        op: "ST_SetSRID"
+                        exprs: [
+                          {
+                            type: "op"
+                            op: "ST_MakePoint"
+                            exprs: [
+                              {
+                                type: "op"
+                                op: "::decimal"
+                                exprs: [
+                                  { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{from}", column: "data" }, "{questionid,value,longitude}"] }
+                                ]
+                              }
+                              {
+                                type: "op"
+                                op: "::decimal"
+                                exprs: [
+                                  { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{from}", column: "data" }, "{questionid,value,latitude}"] }
+                                ]
+                              }
+                            ]
+                          }
+                          4326
+                        ]
+                      }
+                      3857
+                    ]
+                  }
+                  { type: "field", tableAlias: "{to}", column: "shape" }
+                ]}
+              ]
+            }
           }
         }
         { 

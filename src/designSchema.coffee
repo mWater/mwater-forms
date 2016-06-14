@@ -886,6 +886,9 @@ module.exports = {
       properties: extendQuestionProperties({
         _type: { enum: ["LocationQuestion"] }
 
+        # True if should calculate the admin region (done on the fly, server-side for now)
+        calculateAdminRegion: { type: "boolean" }
+
         # No validation available
         validations: { type: "array", maxItems: 0 } 
       })
