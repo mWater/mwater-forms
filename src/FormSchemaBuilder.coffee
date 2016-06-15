@@ -679,6 +679,10 @@ module.exports = class FormSchemaBuilder
                   exprs: [
                     # Make sure leaf node
                     { type: "field", tableAlias: "{to}", column: "leaf" }
+                    { type: "op", op: "&&", exprs: [
+                      webmercatorLocation
+                      { type: "field", tableAlias: "{to}", column: "shape" }
+                    ]}
                     { type: "op", op: "ST_Intersects", exprs: [
                       webmercatorLocation
                       { type: "field", tableAlias: "{to}", column: "shape" }
