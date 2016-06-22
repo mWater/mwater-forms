@@ -380,6 +380,10 @@
     {
       "_base": "en",
       "en": "mWater ID of Site"
+    },
+    {
+      "_base": "en",
+      "en": "Either site has been deleted or you do not have permission to view it"
     }
   ]
 }

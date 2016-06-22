@@ -41,7 +41,7 @@ module.exports = class EntityDisplayComponent extends AsyncLoadComponent
       return null
 
     if not @state.entity 
-      return H.div className: "alert alert-danger", @props.T("Not found")
+      return H.div className: "alert alert-danger", @props.T("Either site has been deleted or you do not have permission to view it")
 
     H.div className: (if @props.displayInWell then "well well-sm"),
       @props.renderEntitySummaryView(@props.entityType, @state.entity)
