@@ -45,9 +45,6 @@ module.exports = class ResponseDisplayComponent extends React.Component
         @setState(loadingUsernames: false, eventsUsernames: null)
 
   componentWillReceiveProps: (nextProps) ->
-    if @props.form.design != nextProps.form.design
-      @setState(formExprEvaluator: new FormExprEvaluator(nextProps.form.design))
-
     if @props.form.design != nextProps.form.design or @props.locale != nextProps.locale
       @setState(T: @createLocalizer(nextProps.form.design, nextProps.locale))
 
