@@ -94,6 +94,10 @@ module.exports = class QuestionComponent extends React.Component
   componentWillUnmount: () ->
     @unmounted = true
 
+    # Stop position finder
+    if @currentPositionFinder
+      @currentPositionFinder.stop()
+
   focus: ->
     answer = @refs.answer
     if answer? and answer.focus?
@@ -168,6 +172,7 @@ module.exports = class QuestionComponent extends React.Component
       # Listen to current position events (for setting location)
       @currentPositionFinder.on 'found', @handleCurrentPositionFound
       @currentPositionFinder.on 'status', @handleCurrentPositionStatus
+      @currentPositionFinder.start()
 
     @props.onAnswerChange(newAnswer)
 

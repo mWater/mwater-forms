@@ -7,12 +7,13 @@ initialDelay = 10000
 goodDelay = 5000
 
 # Uses an algorithm to accurately find current position (coords + timestamp). Fires status events and found event. 
+# Only call start once and be sure to call stop after
 module.exports = class CurrentPositionFinder
   constructor: (options={}) ->
     # Add events
     _.extend @, Backbone.Events 
 
-    @locationFinder = options.locationFinder
+    @locationFinder = options.locationFinder or new LocationFinder()
     @_reset()
 
   _reset: ->
@@ -25,6 +26,9 @@ module.exports = class CurrentPositionFinder
     @useable = false
 
   start: ->
+    if @running
+      @stop()
+
     @_reset()
 
     @running = true
@@ -38,6 +42,9 @@ module.exports = class CurrentPositionFinder
     setTimeout @afterInitialDelay, initialDelay
 
   stop: ->
+    if not @running
+      return
+
     @running = false
     @locationFinder.stopWatch()
     @stopListening()
