@@ -61,13 +61,13 @@ class LocationFinder
 
     # Get both high and low accuracy, as low is sufficient for initial display
     navigator.geolocation.getCurrentPosition(lowAccuracy, lowAccuracyError, {
-        maximumAge : 3600,
+        maximumAge : 1000*30,   # 30 seconds ok for low accuracy
         timeout : 30000,
         enableHighAccuracy : false
     })
 
     navigator.geolocation.getCurrentPosition(highAccuracy, highAccuracyError, {
-        timeout : 60000,
+        timeout : 60*1000*3,    # Up to 3 minutes wait
         enableHighAccuracy : true
     })
 
