@@ -83,10 +83,6 @@ class LocationFinder
     , 250
 
   startWatch: ->
-    # If already watching, continue silently
-    if @locationWatchId?
-      return
-
     # If no geolocation, trigger error
     if not navigator.geolocation
       console.error "No geolocation available"
@@ -126,8 +122,12 @@ class LocationFinder
     # Increment watch count
     @watchCount += 1
 
+    # If already watching, continue without doubling up watchPosition
+    if @locationWatchId?
+      return
+
     @locationWatchId = navigator.geolocation.watchPosition(highAccuracy, highAccuracyError, {
-        enableHighAccuracy : true
+      enableHighAccuracy : true
     })  
 
     # Listen for pause events to stop watching
