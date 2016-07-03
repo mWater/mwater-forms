@@ -13,7 +13,6 @@ module.exports = {
 
   locationFinder: React.PropTypes.object
   displayMap: React.PropTypes.func # Takes location ({ latitude, etc.}) and callback (called back with new location)
-  # storage: React.PropTypes.object   # Storage object for saving location
 
   stickyStorage: React.PropTypes.object
   scanBarcode: React.PropTypes.func
