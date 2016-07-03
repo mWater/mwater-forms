@@ -25,6 +25,9 @@ module.exports = class CurrentPositionFinder
     @useable = false
 
   start: ->
+    if @running
+      @stop()
+
     @_reset()
 
     @running = true
