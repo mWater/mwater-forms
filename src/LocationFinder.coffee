@@ -6,7 +6,11 @@ _ = require 'lodash'
 class LocationFinder
   constructor: (options = {}) ->
     _.extend @, Backbone.Events
+
     @storage = options.storage
+
+    # Keep count of watches
+    @watchCount = 0
 
   cacheLocation: (pos) ->
     if @storage?
@@ -114,10 +118,13 @@ class LocationFinder
 
     # Fire initial low-accuracy one
     navigator.geolocation.getCurrentPosition(lowAccuracy, lowAccuracyError, {
-        maximumAge : 3600,
+        maximumAge : 30*1000,
         timeout : 30000,
         enableHighAccuracy : false
     })
+
+    # Increment watch count
+    @watchCount += 1
 
     @locationWatchId = navigator.geolocation.watchPosition(highAccuracy, highAccuracyError, {
         enableHighAccuracy : true
@@ -138,6 +145,16 @@ class LocationFinder
     , 500
 
   stopWatch: ->
+    # Decrement watch count if watching
+    if @watchCount == 0
+      return
+
+    @watchCount -= 1
+
+    # Do nothing if still watching
+    if @watchCount > 0
+      return
+
     if @locationWatchId?
       console.log "Stopping location watch #{this.locationWatchId}"
       navigator.geolocation.clearWatch(@locationWatchId)

@@ -11,6 +11,7 @@ module.exports = class LocationAnswerComponent extends React.Component
     displayMap: React.PropTypes.func
     storage: React.PropTypes.object
     T: React.PropTypes.func.isRequired  # Localizer to use
+    locationFinder: React.PropTypes.object
 
   @propTypes:
     value: React.PropTypes.object
@@ -45,5 +46,5 @@ module.exports = class LocationAnswerComponent extends React.Component
       location: @props.value
       onLocationChange: @props.onValueChange
       onUseMap: @handleUseMap
-      # storage: @context.storage
+      locationFinder: @context.locationFinder
       T: @context.T

@@ -10,15 +10,16 @@ LocationView = require './legacy/LocationView'
 module.exports = class LocationEditorComponent extends React.Component
   @propTypes:
     location: React.PropTypes.object  # { latitude, longitude, accuracy, altitude?, altitudeAccuracy? }
+    locationFinder: React.PropTypes.object  # Location finder to use
     onLocationChange: React.PropTypes.func
     onUseMap: React.PropTypes.func    # Called if map use is requested
-    storage: React.PropTypes.object   # Storage object for saving location
     T: React.PropTypes.func           # Localizer
     
   componentDidMount: -> 
     @locationView = new LocationView({
       loc: @props.location
       hideMap: not @props.onUseMap?
+      locationFinder: @props.locationFinder
       T: @props.T
     })    
 

@@ -7,6 +7,7 @@ formUtils = require './formUtils'
 markdown = require("markdown").markdown
 
 LocationFinder = require './LocationFinder'
+CurrentPositionFinder = require './legacy/CurrentPositionFinder'
 
 AnswerValidator = require './answers/AnswerValidator'
 
@@ -134,6 +135,18 @@ module.exports = class QuestionComponent extends React.Component
   handleValueChange: (value) =>
     @handleAnswerChange(_.extend({}, @getAnswer(), { value: value }, alternate: null))
 
+  # Record a position found
+  handleCurrentPositionFound: (loc) =>
+    if not @unmounted
+      newAnswer = _.clone @getAnswer()
+      newAnswer.location = _.pick(loc.coords, "latitude", "longitude", "accuracy", "altitude", "altitudeAccuracy")
+      @props.onAnswerChange(newAnswer)
+
+  handleCurrentPositionStatus: (status) =>
+    # Always record useable positions
+    if status.useable
+      @handleCurrentPositionFound(status.pos)
+
   handleAnswerChange: (newAnswer) =>
     oldAnswer = @getAnswer()
     if @props.question.sticky and @context.stickyStorage? and newAnswer.value?
@@ -144,15 +157,18 @@ module.exports = class QuestionComponent extends React.Component
     if @props.question.recordTimestamp and not oldAnswer.timestamp?
       newAnswer.timestamp = new Date().toISOString()
 
-    if @props.question.recordLocation and not oldAnswer.location?
+    # Record location if no answer and not already getting location
+    if @props.question.recordLocation and not oldAnswer.location? and not @currentPositionFinder
+      # Create location finder
       locationFinder = @context.locationFinder or new LocationFinder()
-      locationFinder.getLocation (loc) =>
-        if loc? and not @unmounted?
-          newAnswer = _.clone @getAnswer()
-          newAnswer.location = _.pick(loc.coords, "latitude", "longitude", "accuracy", "altitude", "altitudeAccuracy")
-          @props.onAnswerChange(newAnswer)
-      , ->
-        console.log "Location not found for recordLocation in Question"
+
+      # Create position finder
+      @currentPositionFinder = new CurrentPositionFinder(locationFinder: locationFinder)
+
+      # Listen to current position events (for setting location)
+      @currentPositionFinder.on 'found', @handleCurrentPositionFound
+      @currentPositionFinder.on 'status', @handleCurrentPositionStatus
+
     @props.onAnswerChange(newAnswer)
 
   handleAlternate: (alternate) =>
