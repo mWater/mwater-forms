@@ -408,10 +408,7 @@ module.exports = {
         choices: { $ref: "#/definitions/choices" }
 
         # Site type (e.g. "water_point"). Required for SiteColumnQuestion
-        siteType: {
-          type: "array"
-          items: { type: "string" }
-        }                        
+        siteType: { type: "string" }
 
         # Validations for various types
         validations: {

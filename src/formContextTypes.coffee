@@ -6,6 +6,7 @@ module.exports = {
   selectEntity: React.PropTypes.func
   editEntity: React.PropTypes.func
   renderEntitySummaryView: React.PropTypes.func.isRequired
+  renderEntityListItemView: React.PropTypes.func.isRequired
   canEditEntity: React.PropTypes.func
 
   getEntityById: React.PropTypes.func     # Gets an entity by id (entityType, entityId, callback)
