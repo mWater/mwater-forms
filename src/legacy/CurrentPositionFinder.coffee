@@ -7,6 +7,7 @@ initialDelay = 10000
 goodDelay = 5000
 
 # Uses an algorithm to accurately find current position (coords + timestamp). Fires status events and found event. 
+# Only call start once and be sure to call stop after
 module.exports = class CurrentPositionFinder
   constructor: (options={}) ->
     # Add events
