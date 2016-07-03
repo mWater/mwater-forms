@@ -13,9 +13,8 @@ utils = require '../utils'
 # options hideMap is true to hide map
 # options disableMap is true to disable map
 # options locationFinder overrides default LocationFinder
-# options T is the localizer to use
-# options storage allows using of cached location if locationFinder not passed and currentPositionFinder not passed
 # options currentPositionFinder overrides default CurrentPositionFinder
+# options T is the localizer to use
 # Location is stored format { latitude, longitude, accuracy, altitude?, altitudeAccuracy? }
 module.exports = class LocationView extends Backbone.View
   constructor: (options) ->
@@ -25,8 +24,8 @@ module.exports = class LocationView extends Backbone.View
     @hideMap = options.hideMap
     @disableMap = options.disableMap
     @settingLocation = false
-    @locationFinder = options.locationFinder || new LocationFinder({ storage: options.storage })
-    @currentPositionFinder = options.currentPositionFinder || new CurrentPositionFinder({ storage: options.storage })
+    @locationFinder = options.locationFinder || new LocationFinder()
+    @currentPositionFinder = options.currentPositionFinder || new CurrentPositionFinder(locationFinder: @locationFinder)
 
     @T = options.T or ezlocalize.defaultT
 

@@ -12,7 +12,7 @@ module.exports = class CurrentPositionFinder
     # Add events
     _.extend @, Backbone.Events 
 
-    @locationFinder = options.locationFinder
+    @locationFinder = options.locationFinder or new LocationFinder()
     @_reset()
 
   _reset: ->
@@ -40,7 +40,7 @@ module.exports = class CurrentPositionFinder
   stop: ->
     if not @running
       return
-      
+
     @running = false
     @locationFinder.stopWatch()
     @stopListening()
