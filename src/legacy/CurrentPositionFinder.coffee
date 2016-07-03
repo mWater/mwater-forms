@@ -38,6 +38,9 @@ module.exports = class CurrentPositionFinder
     setTimeout @afterInitialDelay, initialDelay
 
   stop: ->
+    if not @running
+      return
+      
     @running = false
     @locationFinder.stopWatch()
     @stopListening()

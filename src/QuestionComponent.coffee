@@ -168,7 +168,8 @@ module.exports = class QuestionComponent extends React.Component
       # Listen to current position events (for setting location)
       @currentPositionFinder.on 'found', @handleCurrentPositionFound
       @currentPositionFinder.on 'status', @handleCurrentPositionStatus
-
+      @currentPositionFinder.start()
+      
     @props.onAnswerChange(newAnswer)
 
   handleAlternate: (alternate) =>
