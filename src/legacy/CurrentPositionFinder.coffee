@@ -6,16 +6,13 @@ utils = require '../utils'
 initialDelay = 10000
 goodDelay = 5000
 
-# TODO: Rewrite using React
-
 # Uses an algorithm to accurately find current position (coords + timestamp). Fires status events and found event. 
-# Pass storage as option (implementing LocalStorage API) to get caching
 module.exports = class CurrentPositionFinder
   constructor: (options={}) ->
     # Add events
     _.extend @, Backbone.Events 
 
-    @locationFinder = options.locationFinder or new LocationFinder({ storage: options.storage })
+    @locationFinder = options.locationFinder
     @_reset()
 
   _reset: ->
