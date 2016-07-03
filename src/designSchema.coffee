@@ -25,7 +25,8 @@ module.exports = {
     # Schema 12 adds admin regions
     # Schema 13 adds rosters and textExprs
     # Schema 14 adds matrix and likert and units columns and text columns
-    _schema: { enum: [1, 2, 3, 4, 5, 10, 11, 12, 13, 14] }
+    # Schema 15 adds site columns
+    _schema: { enum: [1, 2, 3, 4, 5, 10, 11, 12, 13, 14, 15] }
 
     # Name of the form
     name: { $ref: "#/definitions/localizedString" }
@@ -378,7 +379,7 @@ module.exports = {
       type: "object"
       properties: {
         _id: { $ref: "#/definitions/uuid" }
-        _type: { enum: ["TextColumnQuestion", "NumberColumnQuestion", "CheckColumnQuestion", "DropdownColumnQuestion", "UnitsColumnQuestion", "TextColumn"] }
+        _type: { enum: ["TextColumnQuestion", "NumberColumnQuestion", "CheckColumnQuestion", "DropdownColumnQuestion", "UnitsColumnQuestion", "TextColumn", "SiteColumnQuestion"] }
 
         # Header of roster column
         text: { $ref: "#/definitions/localizedString" } 
@@ -392,7 +393,7 @@ module.exports = {
         # For number columns 
         decimal: { type: "boolean" }
 
-        # List of units displayed
+        # List of units displayed for unit questions
         units: {
           $ref: "#/definitions/units"
         }
@@ -405,6 +406,12 @@ module.exports = {
 
         # For dropdown columns. Do not allow specify.
         choices: { $ref: "#/definitions/choices" }
+
+        # Site type (e.g. "water_point"). Required for SiteColumnQuestion
+        siteType: {
+          type: "array"
+          items: { type: "string" }
+        }                        
 
         # Validations for various types
         validations: {
@@ -944,16 +951,7 @@ module.exports = {
         # Optional list of site types to include
         siteTypes : {
           type: "array"
-          items: { 
-            enum: [
-              "Water point"
-              "Sanitation facility"
-              "Household"
-              "Community"
-              "School"
-              "Health facility"
-            ]
-          }
+          items: { type: "string" }
         }                        
 
         # No validation available

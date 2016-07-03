@@ -84,7 +84,11 @@ Gets all properties for an entity type (e.g. "water_point"). Note: synchronous c
 
 ## renderEntitySummaryView(entityType, entity)
 
-Renders an entity as a React element.
+Renders an entity as a React element for summary (small box)
+
+# renderEntityListItemView(entityType, entity) 
+
+Renders an entity as a React element for list (compact)
 
 ## canEditEntity(entityType, entity)
 
