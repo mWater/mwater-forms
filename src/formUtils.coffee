@@ -140,6 +140,8 @@ exports.prepareQuestion = (q) ->
       _.defaults q, { decimal: true }
     when "DropdownQuestion", "RadioQuestion", "MulticheckQuestion", "DropdownColumnQuestion"
       _.defaults q, { choices: [] }
+    when "SiteColumnQuestion"
+      _.defaults q, { siteType: "water_point" }
     when "LikertQuestion"
       _.defaults q, { items: [], choices: [] }
     when "DateQuestion" # , "DateTimeQuestion"??
@@ -178,6 +180,8 @@ exports.prepareQuestion = (q) ->
       knownFields.push "label"
     when "SiteQuestion"
       knownFields.push "siteTypes"
+    when "SiteColumnQuestion" 
+      knownFields.push "siteType"
     when "ImageQuestion", "ImagesQuestion"
       knownFields.push "consentPrompt"
     when "EntityQuestion"
@@ -244,7 +248,7 @@ exports.getAnswerType = (q) ->
       return "images"
     when "TextListQuestion"
       return "texts"
-    when "SiteQuestion"
+    when "SiteQuestion", "SiteColumnQuestion"
       return "site"
     when "BarcodeQuestion"
       return "text"

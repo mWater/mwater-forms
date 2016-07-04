@@ -1026,13 +1026,34 @@ module.exports = class FormSchemaBuilder
                   }
                })
 
+              # SiteColumnQuestion
+              if itemColumn._type == "SiteColumnQuestion"
+                section.contents.push({
+                  id: "data:#{item._id}:value:#{itemItem.id}:#{itemColumn._id}:value"
+                  type: "join"
+                  name: appendStr(appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "), itemColumn.text)
+                  code: cellCode
+                  join: {
+                    type: "n-1"
+                    toTable: "entities." + itemColumn.siteType
+                    fromColumn: { 
+                      type: "op"
+                      op: "#>>"
+                      exprs: [
+                        { type: "field", tableAlias: "{alias}", column: "data" }
+                        "{#{item._id},value,#{itemItem.id},#{itemColumn._id},value,code}"
+                      ]
+                    }
+                    toColumn: "code"
+                  }
+               })
+
           # Create section for this question
           addColumn({
             type: "section"
             name: item.name
             contents: sections
             })
-
 
       # Add specify
       if answerType in ['choice', 'choices']

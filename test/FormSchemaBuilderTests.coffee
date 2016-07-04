@@ -713,6 +713,7 @@ describe "FormSchemaBuilder addForm", ->
               { id: "m", label: { _base:"en", en: "M"}}
               { id: "ft", label: { _base:"en", en: "Ft"}}
             ]}
+            { _id: "col6", _type: "SiteColumnQuestion", text: { _base: "en", en: "Col 6" }, siteType: "water_point" }
           ]
         }, [
           # TextColumnQuestion
@@ -787,6 +788,23 @@ describe "FormSchemaBuilder addForm", ->
               { id: "m", name: { _base:"en", en: "M"} }
               { id: "ft", name: { _base:"en", en: "Ft"} }
             ]
+          }
+          # SiteColumnQuestion
+          { 
+            id: "data:questionid:value:item1:col6:value" 
+            type: "join"
+            name: { _base: "en", en: "Question: Item 1 - Col 6"}
+            # data#>>'{questionid,value,item1,col6,value,code}'
+            join: {
+              type: "n-1"
+              toTable: "entities.water_point"
+              fromColumn: { 
+                type: "op"
+                op: "#>>"
+                exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,item1,col6,value,code}"] 
+              }
+              toColumn: "code"
+            }
           }
         ])
 
