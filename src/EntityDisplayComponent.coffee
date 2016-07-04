@@ -11,7 +11,8 @@ module.exports = class EntityDisplayComponent extends AsyncLoadComponent
     displayInWell: React.PropTypes.bool         # True to render in well if present
     getEntityById: React.PropTypes.func     # Gets an entity by id (entityType, entityId, callback). Required if entityId
     getEntityByCode: React.PropTypes.func   # Gets an entity by code (entityType, entityCode, callback). Required if entityCode
-    renderEntitySummaryView: React.PropTypes.func.isRequired
+
+    renderEntityView: React.PropTypes.func.isRequired
     T: React.PropTypes.func.isRequired  # Localizer to use
 
   # Override to determine if a load is needed. Not called on mounting
@@ -44,4 +45,4 @@ module.exports = class EntityDisplayComponent extends AsyncLoadComponent
       return H.div className: "alert alert-danger", @props.T("Either site has been deleted or you do not have permission to view it")
 
     H.div className: (if @props.displayInWell then "well well-sm"),
-      @props.renderEntitySummaryView(@props.entityType, @state.entity)
+      @props.renderEntityView(@props.entityType, @state.entity)

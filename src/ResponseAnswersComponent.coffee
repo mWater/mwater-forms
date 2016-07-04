@@ -141,7 +141,7 @@ module.exports = class ResponseAnswersComponent extends React.Component
           entityCode: code
           entityType: entityType
           getEntityByCode: @props.formCtx.getEntityByCode
-          renderEntitySummaryView: @props.formCtx.renderEntitySummaryView
+          renderEntityView: @props.formCtx.renderEntitySummaryView
           T: @props.T
         })
 
@@ -150,7 +150,7 @@ module.exports = class ResponseAnswersComponent extends React.Component
           entityId: answer.value
           entityType: q.entityType
           getEntityById: @props.formCtx.getEntityById
-          renderEntitySummaryView: @props.formCtx.renderEntitySummaryView
+          renderEntityView: @props.formCtx.renderEntitySummaryView
           T: @props.T
         })
 

@@ -71,5 +71,5 @@ module.exports = class SiteAnswerComponent extends React.Component
         entityType: @getEntityType()
         entityCode: @props.value?.code
         getEntityByCode: @context.getEntityByCode
-        renderEntitySummaryView: @context.renderEntitySummaryView
+        renderEntityView: @context.renderEntitySummaryView
         T: @context.T

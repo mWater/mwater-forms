@@ -7,6 +7,7 @@ formUtils = require './formUtils'
 conditionsUtils = require './conditionsUtils'
 NumberAnswerComponent = require './answers/NumberAnswerComponent'
 UnitsAnswerComponent = require './answers/UnitsAnswerComponent'
+SiteColumnAnswerComponent = require './answers/SiteColumnAnswerComponent'
 
 # Cell of a matrix column
 module.exports = class MatrixColumnCellComponent extends React.Component
@@ -71,6 +72,11 @@ module.exports = class MatrixColumnCellComponent extends React.Component
               if @areConditionsValid(choice)
                 text = formUtils.localizeString(choice.label, @context.locale)
                 return H.option key: choice.id, value: choice.id, text
+      when "SiteColumnQuestion"
+        elem = R SiteColumnAnswerComponent,
+          value: value
+          onValueChange: @handleValueChange
+          siteType: column.siteType
 
     if @props.invalid
       className = "invalid"
