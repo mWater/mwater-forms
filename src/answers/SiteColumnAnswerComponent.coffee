@@ -33,7 +33,7 @@ module.exports = class SiteColumnAnswerComponent extends React.Component
   render: ->
     if @props.value?.code
       return H.div null,
-        H.button className: "btn btn-link pull-right", onClick: @handleClearClick,
+        H.button className: "btn btn-link btn-sm pull-right", onClick: @handleClearClick,
           H.span className: "glyphicon glyphicon-remove"
 
         R EntityDisplayComponent, 
