@@ -50,7 +50,7 @@ module.exports = class FormSchemaBuilder
     # Add submitted on
     contents.push({ id: "submittedOn", type: "datetime", name: { en: "Submitted On" } })
 
-    @addFormItem(form, form.design, contents, "responses:#{form._id}")
+    @addFormItem(form.design, contents, "responses:#{form._id}")
 
     # Add to schema
     schema = schema.addTable({
@@ -127,7 +127,7 @@ module.exports = class FormSchemaBuilder
 
         # Add contents
         for rosterItem in item.contents
-          @addFormItem(form, rosterItem, contents, "responses:#{form._id}:roster:#{item.rosterId or item._id}")
+          @addFormItem(rosterItem, contents, "responses:#{form._id}:roster:#{item.rosterId or item._id}")
 
         schema = schema.addTable({
           id: "responses:#{form._id}:roster:#{item.rosterId or item._id}"
@@ -162,7 +162,7 @@ module.exports = class FormSchemaBuilder
     contents.push({ id: "deployment", type: "enum", name: { en: "Deployment" }, enumValues: deploymentValues })
 
     # Add questions of form
-    @addFormItem(form, form.design, contents, "responses:#{form._id}")
+    @addFormItem(form.design, contents, "responses:#{form._id}")
 
     # Transform to reference master_responses flattened structure where all is stored as keys of data field
     contents = mapTree(contents, (item) =>
@@ -349,7 +349,7 @@ module.exports = class FormSchemaBuilder
     map = _.indexBy(indicatorCalculations, "_id")
     return _.map(orderedIds, (id) -> map[id])
 
-  addFormItem: (form, item, contents, tableId) ->
+  addFormItem: (item, contents, tableId) ->
     addColumn = (column) =>
       contents.push(column)
 
@@ -357,13 +357,13 @@ module.exports = class FormSchemaBuilder
     if item.contents
       if item._type == "Form"
         for subitem in item.contents
-          @addFormItem(form, subitem, contents, tableId)
+          @addFormItem(subitem, contents, tableId)
 
       else if item._type in ["Section", "Group"]
         # Create section contents
         sectionContents = []
         for subitem in item.contents
-          @addFormItem(form, subitem, sectionContents, tableId)
+          @addFormItem(subitem, sectionContents, tableId)
         contents.push({ type: "section", name: item.name, contents: sectionContents })
 
       else if item._type in ["RosterGroup", "RosterMatrix"]
