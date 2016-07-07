@@ -360,7 +360,7 @@ module.exports = class ResponseAnswersComponent extends React.Component
   render: ->
     visibilityStructure = new VisibilityCalculator(@props.formDesign).createVisibilityStructure(@props.data)
 
-    H.table className: "table table-bordered table-condensed",
+    H.table className: "table table-bordered table-condensed", style: { marginBottom: 0 },
       H.tbody null, 
         _.map @props.formDesign.contents, (item) =>
           @renderItem(item, visibilityStructure, item._id)
