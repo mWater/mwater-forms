@@ -15,7 +15,7 @@ AdminRegionDisplayComponent = require './AdminRegionDisplayComponent'
 # Displays the answers of a response in a table
 module.exports = class ResponseAnswersComponent extends React.Component
   @propTypes:
-    form: React.PropTypes.object.isRequired
+    formDesign: React.PropTypes.object.isRequired
     data: React.PropTypes.object.isRequired
 
     hideEmptyAnswers: React.PropTypes.bool # True to hide empty answers
@@ -287,7 +287,7 @@ module.exports = class ResponseAnswersComponent extends React.Component
         if @props.hideEmptyAnswers
           return null
 
-        referencedRoster = formUtils.findItem(@props.form.design, item.rosterId)
+        referencedRoster = formUtils.findItem(@props.formDesign, item.rosterId)
         return H.tr null,
           H.td style: { fontWeight: "bold" },
             formUtils.localizeString(item.name, @props.locale)
@@ -303,7 +303,7 @@ module.exports = class ResponseAnswersComponent extends React.Component
 
       # Get the questions of the other rosters referencing this one
       items = _.clone(item.contents)
-      @collectItemsReferencingRoster(items, @props.form.design.contents, item._id)
+      @collectItemsReferencingRoster(items, @props.formDesign.contents, item._id)
 
       return [
         H.tr key: item._id,
@@ -358,10 +358,10 @@ module.exports = class ResponseAnswersComponent extends React.Component
       return @renderQuestion(item, dataId)
 
   render: ->
-    visibilityStructure = new VisibilityCalculator(@props.form.design).createVisibilityStructure(@props.data)
+    visibilityStructure = new VisibilityCalculator(@props.formDesign).createVisibilityStructure(@props.data)
 
     H.table className: "table table-bordered table-condensed",
       H.tbody null, 
-        _.map @props.form.design.contents, (item) =>
+        _.map @props.formDesign.contents, (item) =>
           @renderItem(item, visibilityStructure, item._id)
 
