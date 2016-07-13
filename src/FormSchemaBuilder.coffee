@@ -872,7 +872,7 @@ module.exports = class FormSchemaBuilder
           # Create section
           section = {
             type: "section"
-            name: item.name
+            name: item.text
             contents: []
           }
 
@@ -903,7 +903,7 @@ module.exports = class FormSchemaBuilder
             # Create section
             section = {
               type: "section"
-              name: itemItem.label
+              name: itemItem.text
               contents: []
             }
             sections.push(section)
