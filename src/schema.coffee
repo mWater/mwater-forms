@@ -133,6 +133,8 @@ module.exports = {
           _id: { type: "string" } # Unique id of calculation
           indicator: { type: "string" } # Id of indicator
 
+          roster: { type: "string" } # Id of roster if from a roster
+
           expressions: { type: "object" } # Map of indicator property id to mwater-expression expression to create value
           condition: { type: ["object", "null"] } # Optional mwater-expression expression to restrict when to create indicator value
 
