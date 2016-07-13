@@ -1,3 +1,4 @@
+_ = require 'lodash'
 formUtils = require './formUtils'
 ResponseCleaner = require './ResponseCleaner'
 VisibilityCalculator = require './VisibilityCalculator'
