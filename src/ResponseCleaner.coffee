@@ -1,6 +1,7 @@
 # The ResponseCleaner has a very clear ans simple task: removes the data entry (answer) of invisible questions
 # The only complexity is the handling of Rosters
 
+_ = require 'lodash'
 formUtils = require './formUtils'
 conditionsUtils = require './conditionsUtils'
 
