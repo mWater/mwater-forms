@@ -25,7 +25,7 @@ module.exports = class VisibilityCalculator
 
     if @formDesign.contents[0] and @formDesign.contents[0]._type == "Section"
       for content in @formDesign.contents
-        @processGroupOrSection(content, data)
+        @processGroupOrSection(content, false, data, '')
     else
       for content in @formDesign.contents
         @processItem(content, false, data, '')
