@@ -31,20 +31,22 @@ module.exports = class VisibilityCalculator
         @processItem(content, false, data, '')
 
   # Process a section or a group (they both behave the same way when it comes to determining visibility)
-  processGroupOrSection: (groupOrSection, data) ->
+  processGroupOrSection: (groupOrSection, forceToInvisible, data, prefix) ->
     if groupOrSection._type != 'Section' and  groupOrSection._type != 'Group'
       throw new Error('Should be a section or a group')
 
     # Always visible if no condition has been set
-    if groupOrSection.conditions? and groupOrSection.conditions.length > 0
+    if forceToInvisible
+      isVisible = false
+    else if groupOrSection.conditions? and groupOrSection.conditions.length > 0
       conditions = conditionUtils.compileConditions(groupOrSection.conditions, @formDesign)
       isVisible = conditions(data)
     else
       isVisible = true
-    @visibilityStructure[groupOrSection._id] = isVisible
+    @visibilityStructure[prefix + groupOrSection._id] = isVisible
 
     for content in groupOrSection.contents
-      @processItem(content, isVisible == false, data, '')
+      @processItem(content, isVisible == false, data, prefix)
 
   # If the parent is invisible, forceToInvisible is set to true and the item will be invisible no matter what
   # The prefix contains the info set by a RosterGroup or a RosterMatrix
@@ -58,7 +60,7 @@ module.exports = class VisibilityCalculator
     else if item._type == "RosterGroup" or item._type == "RosterMatrix"
       @processRoster(item, forceToInvisible, data, prefix)
     else if item._type == "Group"
-      @processGroupOrSection(item, forceToInvisible, data)
+      @processGroupOrSection(item, forceToInvisible, data, prefix)
     else
       throw new Error('Unknow item type')
 
