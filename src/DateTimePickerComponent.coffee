@@ -78,10 +78,7 @@ module.exports = class DateTimePickerComponent extends React.Component
   render: ->
     input = H.input { type: "text", className: "form-control", placeholder: @props.placeholder, onFocus: @handleInputFocus }
 
-    H.div className: "row",
-      H.div className: 'col-sm-6',
-        H.div className: "form-group",
-          H.div className: 'input-group date', ref: "datetimepicker",
-            input
-            H.span className: "input-group-addon", onClick: @handleCalendarClick,
-              H.span className: "glyphicon glyphicon-calendar"
+    H.div className: 'input-group date', ref: "datetimepicker",
+      input
+      H.span className: "input-group-addon", onClick: @handleCalendarClick,
+        H.span className: "glyphicon glyphicon-calendar"
