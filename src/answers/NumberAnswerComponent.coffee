@@ -59,7 +59,7 @@ module.exports = class NumberAnswerComponent extends React.Component
   render: ->
     # Display red border if not valid
     style = _.clone(@props.style or {})
-    style.width = "12em"
+    style.width = "8em"
     if not @isValid()
       style.borderColor = "#a94442"
       style.boxShadow = "inset 0 1px 1px rgba(0,0,0,.075)"
