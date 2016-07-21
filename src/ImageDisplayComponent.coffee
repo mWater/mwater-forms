@@ -8,6 +8,7 @@ module.exports = class ImageDisplayComponent extends React.Component
   @propTypes:
     id: React.PropTypes.string.isRequired  # Id of image
     imageManager: React.PropTypes.object.isRequired
+    T: React.PropTypes.func.isRequired
 
   constructor: ->
     super
@@ -41,6 +42,7 @@ module.exports = class ImageDisplayComponent extends React.Component
           imageManager: @props.imageManager
           id: @props.id
           onClose: => @setState(popup: false)
+          T: @props.T
         })
 
 

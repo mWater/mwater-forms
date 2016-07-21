@@ -53,6 +53,7 @@ module.exports = class ImagesAnswerComponent extends React.Component
     modal = React.createElement ImagePopupComponent, 
       imageManager: @context.imageManager
       id: id
+      T: @context.T
       onRemove: onRemove
       onSetCover: onSetCover
       onClose: =>

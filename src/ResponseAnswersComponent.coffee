@@ -117,11 +117,11 @@ module.exports = class ResponseAnswersComponent extends React.Component
 
       when "image"
         if answer.value
-          return R(ImageDisplayComponent, id: answer.value.id, imageManager: @props.formCtx.imageManager)
+          return R(ImageDisplayComponent, id: answer.value.id, imageManager: @props.formCtx.imageManager, T: @props.T)
 
       when "images"
         return _.map answer.value, (img) =>
-          R(ImageDisplayComponent, id: img.id, imageManager: @props.formCtx.imageManager)
+          R(ImageDisplayComponent, id: img.id, imageManager: @props.formCtx.imageManager, @props.T)
 
       when "texts"
         return _.map answer.value, (txt) =>
