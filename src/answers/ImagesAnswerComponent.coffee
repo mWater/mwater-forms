@@ -9,6 +9,7 @@ module.exports = class ImagesAnswerComponent extends React.Component
   @contextTypes:
     imageManager: React.PropTypes.object.isRequired
     imageAcquirer: React.PropTypes.object
+    T: React.PropTypes.func.isRequired  # Localizer to use
 
   @propTypes:
     imagelist: React.PropTypes.array         # array of { id: someid, caption: caption, cover: true/false }
