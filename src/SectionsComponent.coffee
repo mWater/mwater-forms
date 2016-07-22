@@ -100,8 +100,7 @@ module.exports = class SectionsComponent extends React.Component
             "#{index + 1}."
       index++
 
-    currentSectionName = @props.contents[@state.sectionNum].name
-    currentSectionName = currentSectionName[currentSectionName._base]
+    currentSectionName = formUtils.localizeString(@props.contents[@state.sectionNum].name, @context.locale)
     breadcrumbs.push H.li {key: @state.sectionNum},
       H.b null,
         "#{@state.sectionNum + 1}. #{currentSectionName}"
