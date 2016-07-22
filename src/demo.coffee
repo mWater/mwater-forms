@@ -98,8 +98,8 @@ class DemoComponent extends React.Component
     #   data: @state.data
     #   onDataChange: (data) => @setState(data: data)
 
-    # design = rosterFormDesign
-    design = sampleForm2.design
+    design = rosterFormDesign
+    # design = sampleForm2.design
     # design: bigsampleForm2.design
     # design: matrixFormDesign
 
@@ -162,6 +162,7 @@ rosterFormDesign = {
         { _id: "b", _type: "NumberColumnQuestion", text: { en: "Age" }, decimal: false }
         { _id: "c", _type: "CheckColumnQuestion", text: { en: "Present" } }
         { _id: "d", _type: "DropdownColumnQuestion", text: { en: "Gender" }, choices: [{ label: { en: "Male"}, id: "male" }, { label: { en: "Female"}, id: "female" }] }
+        { _id: "e", _type: "DateColumnQuestion", text: { en: "Date" }, required: false }
       ]
     },
     {
