@@ -6,6 +6,7 @@ R = React.createElement
 formUtils = require './formUtils'
 conditionsUtils = require './conditionsUtils'
 NumberAnswerComponent = require './answers/NumberAnswerComponent'
+DateAnswerComponent = require './answers/DateAnswerComponent'
 UnitsAnswerComponent = require './answers/UnitsAnswerComponent'
 SiteColumnAnswerComponent = require './answers/SiteColumnAnswerComponent'
 
@@ -77,6 +78,8 @@ module.exports = class MatrixColumnCellComponent extends React.Component
           value: value
           onValueChange: @handleValueChange
           siteType: column.siteType
+      when "DateColumnQuestion"
+        elem = R DateAnswerComponent, {style: { maxWidth: "10em"}, format: column.format, placeholder: column.placeholder, value: value, onValueChange: @handleValueChange}
 
     if @props.invalid
       className = "invalid"

@@ -234,7 +234,7 @@ exports.getAnswerType = (q) ->
       return "choice"
     when "MulticheckQuestion"
       return "choices"
-    when "DateQuestion" # , "DateTimeQuestion"??
+    when "DateQuestion", "DateColumnQuestion" # , "DateTimeQuestion"??
       return "date"
     when "UnitsQuestion", "UnitsColumnQuestion"
       return "units"
