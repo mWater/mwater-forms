@@ -152,18 +152,18 @@ module.exports = class FormComponent extends React.Component
           formExprEvaluator: @state.formExprEvaluator
           onNext: @handleNext
 
-        H.button type: "button", className: "btn btn-primary", ref: 'submit', onClick: @handleSubmit,
+        H.button type: "button", key: 'submitButton', className: "btn btn-primary", ref: 'submit', onClick: @handleSubmit,
           @state.T("Submit")
 
         "\u00A0"
 
         if @props.onSaveLater
           [
-            H.button type: "button", className: "btn btn-default", onClick: @props.onSaveLater,
+            H.button type: "button", key: 'saveLaterButton', className: "btn btn-default", onClick: @props.onSaveLater,
               @state.T("Save for Later")
             "\u00A0"
           ]
 
-        H.button type:"button", className: "btn btn-default", onClick: @props.onDiscard,
+        H.button type:"button", key: 'discardButton', className: "btn btn-default", onClick: @props.onDiscard,
           H.span className: "glyphicon glyphicon-trash"
           " " + @state.T("Discard")

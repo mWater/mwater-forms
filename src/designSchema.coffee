@@ -379,7 +379,7 @@ module.exports = {
       type: "object"
       properties: {
         _id: { $ref: "#/definitions/uuid" }
-        _type: { enum: ["TextColumnQuestion", "NumberColumnQuestion", "CheckColumnQuestion", "DropdownColumnQuestion", "UnitsColumnQuestion", "TextColumn", "SiteColumnQuestion"] }
+        _type: { enum: ["TextColumnQuestion", "NumberColumnQuestion", "CheckColumnQuestion", "DropdownColumnQuestion", "UnitsColumnQuestion", "TextColumn", "SiteColumnQuestion", "DateColumnQuestion"] }
 
         # Header of roster column
         text: { $ref: "#/definitions/localizedString" } 
@@ -409,6 +409,11 @@ module.exports = {
 
         # Site type (e.g. "water_point"). Required for SiteColumnQuestion
         siteType: { type: "string" }
+
+        # moment.js format of the displayed date (is always stored in ISO 8601)
+        format: { type: "string" }
+
+        placeholder: { type: "string" }
 
         # Validations for various types
         validations: {
