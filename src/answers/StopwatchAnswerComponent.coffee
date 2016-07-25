@@ -22,6 +22,9 @@ getDisplayValue = (ticks) ->
 
 # Creates a stopwatch timer component on the form, can be start/stop/reset
 module.exports = class StopwatchAnswerComponent extends React.Component
+  @contextTypes:
+    T: React.PropTypes.func.isRequired  # Localizer to use
+
   @propTypes:
     onValueChange: React.PropTypes.func.isRequired
     value: React.PropTypes.number
@@ -65,6 +68,6 @@ module.exports = class StopwatchAnswerComponent extends React.Component
       H.h1 {style: {fontFamily: 'monospace'}}, getDisplayValue(@state.elapsedTicks)
       H.div {className: 'btn-toolbar', role: 'toolbar'},
         H.div {className: 'btn-group', role: 'group'},
-          H.button {className: 'btn btn-success', onClick: @handleStartClick, disabled: isRunning}, "Start"
-          H.button {className: 'btn btn-danger', onClick: @handleStopClick, disabled: !isRunning}, "Stop"
-          H.button {className: 'btn btn-default', onClick: @handleResetClick, disabled: !@state.elapsedTicks}, "Reset"
+          H.button {className: 'btn btn-success', onClick: @handleStartClick, disabled: isRunning}, @context.T("Start")
+          H.button {className: 'btn btn-danger', onClick: @handleStopClick, disabled: !isRunning}, @context.T("Stop")
+          H.button {className: 'btn btn-default', onClick: @handleResetClick, disabled: !@state.elapsedTicks}, @context.T("Reset")

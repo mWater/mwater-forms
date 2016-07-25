@@ -384,6 +384,18 @@
     {
       "_base": "en",
       "en": "Either site has been deleted or you do not have permission to view it"
+    },
+    {
+      "_base": "en",
+      "en": "Start"
+    },
+    {
+      "_base": "en",
+      "en": "Stop"
+    },
+    {
+      "_base": "en",
+      "en": "Reset"
     }
   ]
 }
