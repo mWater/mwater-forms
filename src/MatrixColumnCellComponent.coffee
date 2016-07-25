@@ -79,7 +79,8 @@ module.exports = class MatrixColumnCellComponent extends React.Component
           onValueChange: @handleValueChange
           siteType: column.siteType
       when "DateColumnQuestion"
-        elem = R DateAnswerComponent, {style: { maxWidth: "10em"}, format: column.format, placeholder: column.placeholder, value: value, onValueChange: @handleValueChange}
+        elem = H.div style: {maxWidth: "18em"},
+          R DateAnswerComponent, {format: column.format, placeholder: column.placeholder, value: value, onValueChange: @handleValueChange}
 
     if @props.invalid
       className = "invalid"
