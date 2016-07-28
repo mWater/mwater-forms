@@ -5,6 +5,7 @@ R = React.createElement
 
 QuestionComponent = require './QuestionComponent'
 InstructionsComponent = require './InstructionsComponent'
+TimerComponent = require './TimerComponent'
 GroupComponent = require './GroupComponent'
 RosterGroupComponent = require './RosterGroupComponent'
 RosterMatrixComponent = require './RosterMatrixComponent'
@@ -34,6 +35,11 @@ exports.renderItem = (item, data, parentData, formExprEvaluator, onDataChange, i
       data: data
       parentData: parentData
       formExprEvaluator: formExprEvaluator
+  else if item._type == "Timer"
+    return R TimerComponent,
+      key: item._id,
+      ref: item._id,
+      timer: item
   else if item._type == "Group"
     return R GroupComponent,
       key: item._id,

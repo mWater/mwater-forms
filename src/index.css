@@ -40,6 +40,18 @@ td.invalid {
   font-weight: bold;
 }
 
+.timer {
+  padding: 5px 5px 5px 5px;
+}
+
+.timer {
+  margin-bottom: 20px;
+}
+
+.timer  > .prompt {
+  font-weight: bold;
+}
+
 .required {
     color: Red;
     margin-left: 2px;
