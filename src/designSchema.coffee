@@ -306,6 +306,28 @@ module.exports = {
       required: ["_id", "_type", "text", "conditions"]
     }
 
+    # Timer item
+    timer: {
+      type: "object"
+      properties: {
+        _id: { $ref: "#/definitions/uuid" }
+        _type: { enum: ["timer"] }
+
+        # Markdown text on a per-language basis
+        text: { $ref: "#/definitions/localizedString" }
+
+        # Initial time, stored in ms
+        duration: {type: "number"}
+
+        # Localized hint which is displayed with question text
+        hint: { $ref: "#/definitions/localizedString" }
+
+        # Conditions for visibility of the instructions
+        conditions: { $ref: "#/definitions/conditions" }
+      }
+      required: ["_id", "_type", "duration", "text", "conditions"]
+    }
+
     # Group of questions which are repeated
     rosterGroup: {
       type: "object"

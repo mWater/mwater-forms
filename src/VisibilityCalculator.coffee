@@ -57,6 +57,8 @@ module.exports = class VisibilityCalculator
       @processQuestion(item, forceToInvisible, data, prefix)
     else if item._type == "Instructions"
       @processInstruction(item, forceToInvisible, data, prefix)
+    else if item._type == "Timer"
+      @processTimer(item, forceToInvisible, data, prefix)
     else if item._type == "RosterGroup" or item._type == "RosterMatrix"
       @processRoster(item, forceToInvisible, data, prefix)
     else if item._type == "Group"
@@ -84,6 +86,10 @@ module.exports = class VisibilityCalculator
 
   # Behaves like a question
   processInstruction: (instruction, forceToInvisible, data, prefix) ->
+    @processQuestion(instruction, forceToInvisible, data, prefix)
+
+  # Behaves like a question
+  processTimer: (instruction, forceToInvisible, data, prefix) ->
     @processQuestion(instruction, forceToInvisible, data, prefix)
 
   # Handles RosterGroup and RosterMatrix
