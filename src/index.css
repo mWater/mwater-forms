@@ -41,6 +41,10 @@ td.invalid {
 }
 
 .timer {
+  padding: 5px 5px 5px 5px;
+}
+
+.timer {
   margin-bottom: 20px;
 }
 
