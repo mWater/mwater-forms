@@ -47,6 +47,9 @@ module.exports = class FormSchemaBuilder
     # Add code
     contents.push({ id: "code", type: "text", name: { en: "Response Code" } })
 
+    # Add startedOn
+    contents.push({ id: "startedOn", type: "datetime", name: { en: "Drafted On" } })
+
     # Add submitted on
     contents.push({ id: "submittedOn", type: "datetime", name: { en: "Submitted On" } })
 
