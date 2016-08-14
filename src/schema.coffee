@@ -21,6 +21,9 @@ deployments = {
       # List of ids of users and groups who can edit/delete all responses. i.e. user:<username> or group:<groupname>
       admins: { type: "array", items: { type: "string" } }
 
+      # List of ids of users and groups who can view all indicator calculation. i.e. user:<username> or group:<groupname>
+      indicatorCalculationViewers: { type: "array", items: { type: "string" } }
+
       # True if enumerator retains admin role on final responses
       enumeratorAdminFinal: { type: "boolean" }
 
