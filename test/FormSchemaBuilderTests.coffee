@@ -637,14 +637,7 @@ describe "FormSchemaBuilder addForm", ->
           join: {
             type: "n-1"
             toTable: "entities.water_point"
-            fromColumn: { 
-              type: "op"
-              op: "coalesce"
-              exprs: [
-                { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,code}"] }
-                { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }
-              ]
-            }
+            fromColumn: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,code}"] }
             toColumn: "code"
           }
         }

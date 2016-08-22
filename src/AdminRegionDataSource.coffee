@@ -9,7 +9,7 @@ module.exports = class AdminRegionDataSource
     # select _id as id, level as level, name as name, type as type from admin_regions as ar inner join admin_region_subtrees as ars on ar._id = ars.ancestor
     # where ars.descendant = THE_ID order by ar.level
     query = {
-      type: "query"
+      type: "query" 
       selects: [
         { type: "select", expr: { type: "field", tableAlias: "ar", column: "_id" }, alias: "id" }
         { type: "select", expr: { type: "field", tableAlias: "ar", column: "level" }, alias: "level" }

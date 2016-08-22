@@ -732,27 +732,13 @@ module.exports = class FormSchemaBuilder
           addColumn(column)
 
         when "site"
-          # Legacy codes are stored under value directly, and newer ones under value: { code: "somecode" }
+          # { code: "somecode" }
           codeExpr = {
             type: "op"
-            op: "coalesce"
+            op: "#>>"
             exprs: [
-              {
-                type: "op"
-                op: "#>>"
-                exprs: [
-                  { type: "field", tableAlias: "{alias}", column: "data" }
-                  "{#{item._id},value,code}"
-                ]
-              }
-              {
-                type: "op"
-                op: "#>>"
-                exprs: [
-                  { type: "field", tableAlias: "{alias}", column: "data" }
-                  "{#{item._id},value}"
-                ]
-              }
+              { type: "field", tableAlias: "{alias}", column: "data" }
+              "{#{item._id},value,code}"
             ]
           }
 
