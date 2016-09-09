@@ -201,23 +201,28 @@ module.exports = class FormSchemaBuilder
 
   # Create a section in schema called Indicators with one subsection for each indicator calculated
   addIndicatorCalculations: (schema, form, isMaster) ->
-    tableId = if isMaster then "master_responses:#{form._id}" else "responses:#{form._id}"
-
     # If not calculations, don't add indicators section
     if not form.indicatorCalculations or form.indicatorCalculations.length == 0
       return schema
 
-    # Add indicator section
-    indicatorsSection = {
-      type: "section"
-      name: { _base: "en", en: "Indicators" }
-      contents: []
-    }
-    schema = schema.addTable(update(schema.getTable(tableId), { contents: { $push: [indicatorsSection] } }))
+    # Process indicator calculations 
+    for indicatorCalculation in form.indicatorCalculations
+      tableId = if isMaster then "master_responses:#{form._id}" else "responses:#{form._id}"
 
-    # Process indicator calculations topologically since the order to add indicator calculations is not clear (#1 might reference #2)
-    for indicatorCalculation in @orderIndicatorCalculation(form.indicatorCalculations)
+      if indicatorCalculation.roster
+        tableId += ":roster:#{indicatorCalculation.roster}"
+
+      # Add indicator section
       indicatorsSection = _.last(schema.getTable(tableId).contents)
+      if indicatorsSection.id != "indicators"
+        # Add indicator section
+        indicatorsSection = {
+          id: "indicators"
+          type: "section"
+          name: { _base: "en", en: "Indicators" }
+          contents: []
+        }
+        schema = schema.addTable(update(schema.getTable(tableId), { contents: { $push: [indicatorsSection] } }))
 
       # Add to indicators section
       indicatorSectionContents = indicatorsSection.contents.slice()
@@ -234,6 +239,7 @@ module.exports = class FormSchemaBuilder
 
   # Create a subsection of Indicators for an indicator calculation. Express in jsonql so that it can be computed direcly from the current response 
   # isMaster uses master_response as row to compute from
+  # TODO handle roster setting on calculations
   createIndicatorCalculationSection: (indicatorCalculation, schema, isMaster) ->
     # Get indicator table
     indicTable = schema.getTable("indicator_values:#{indicatorCalculation.indicator}")
@@ -280,28 +286,26 @@ module.exports = class FormSchemaBuilder
             }})
           return col
 
-        # Compile jsonql
-        jsonql = exprCompiler.compileExpr(expr: expression, tableAlias: "{alias}")
-
-        # jsonql null should be explicit so it doesn't just think there is no jsonql specified
-        if not jsonql
+        # If no expression, jsonql null should be explicit so it doesn't just think there is no jsonql specified
+        if not expression
           jsonql = { type: "literal", value: null }
+          col = update(col, { id: { $set: "indicator_calculation:#{indicatorCalculation._id}:#{col.id}" }, jsonql: { $set: jsonql }})
+          return col
 
         # Add condition if present
         if condition
-          compiledCondition = exprCompiler.compileExpr(expr: condition, tableAlias: "{alias}")
-
           # Wrap in case statement
-          jsonql = {
+          expression = {
             type: "case"
+            table: expression.table
             cases: [
-              when: compiledCondition
-              then: jsonql
+              when: condition
+              then: expression
             ]
           }
 
-        # Set jsonql and id
-        col = update(col, { id: { $set: "indicator_calculation:#{indicatorCalculation._id}:#{col.id}" }, jsonql: { $set: jsonql }})
+        # Set expr, type and id, clearing jsonql
+        col = _.omit(update(col, { id: { $set: "indicator_calculation:#{indicatorCalculation._id}:#{col.id}" }, expr: { $set: expression }, type: { $set: "expr" } }), "jsonql")
         return col
         )
       )
@@ -315,43 +319,6 @@ module.exports = class FormSchemaBuilder
     }
 
     return section
-
-  # Orders indicator calculations, since some can depend on others by using them in their expressions
-  # e.g if A depends on B, then B is first and then A
-  # Returns indicator calculations in order
-  # Throws if circular
-  orderIndicatorCalculation: (indicatorCalculations) ->
-    toposort = new TopoSort()
-
-    # No schema needed for this function
-    exprUtils = new ExprUtils()
-
-    # Check columns used in the calculations. Indicator calculation fields are in format
-    #  indicator_calculation:<indicator calculation _id>:<column id>
-    for ic in indicatorCalculations
-      # Get fields referenced in all expressions and condition
-      refedColumns = []
-      for id, expr of ic.expressions
-        refedColumns = _.union(refedColumns, exprUtils.getImmediateReferencedColumns(expr))
-
-      refedColumns = _.union(refedColumns, exprUtils.getImmediateReferencedColumns(ic.condition))
-
-      # Keep ones matching format
-      refedIndicatorCalculationIds = []
-      for col in refedColumns
-        match = col.match(/^indicator_calculation:(.+?):.+$/)
-        if match
-          refedIndicatorCalculationIds = _.union(refedIndicatorCalculationIds, [match[1]])
-
-      # Add to topo sort
-      toposort.add(ic._id, refedIndicatorCalculationIds);
-
-    # Get in reverse order (to build dependencies correctly)
-    orderedIds = toposort.sort()
-    orderedIds.reverse()
-
-    map = _.indexBy(indicatorCalculations, "_id")
-    return _.map(orderedIds, (id) -> map[id])
 
   addFormItem: (item, contents, tableId) ->
     addColumn = (column) =>

@@ -1030,6 +1030,7 @@ describe "FormSchemaBuilder addForm", ->
               num1: {
                 type: "op"
                 op: "+"
+                table: "responses:formid"
                 exprs: [
                   { type: "field", table: "responses:formid", column: "data:questionid:value" }
                   { type: "literal", valueType: "number", value: 5 }
@@ -1050,23 +1051,17 @@ describe "FormSchemaBuilder addForm", ->
       # Check that indicator calculation added
       compare(schema.getColumn("responses:formid", "indicator_calculation:ic1:num1"), {
         id: "indicator_calculation:ic1:num1"
-        type: "number"
+        type: "expr"
         name: { en: "Number1" }
-        jsonql: 
-          { 
-            type: "op"
-            op: "+"
-            exprs: [
-              {
-                type: "op"
-                op: "convert_to_decimal"
-                exprs: [
-                  { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }
-                ]
-              }
-              { type: "literal", value: 5 }
-            ]
-          }
+        expr: {
+          type: "op"
+          op: "+"
+          table: "responses:formid"
+          exprs: [
+            { type: "field", table: "responses:formid", column: "data:questionid:value" }
+            { type: "literal", valueType: "number", value: 5 }
+          ]
+        }
       })
 
     it "adds indicator calculations with filters as case", ->
@@ -1094,6 +1089,7 @@ describe "FormSchemaBuilder addForm", ->
               num1: {
                 type: "op"
                 op: "+"
+                table: "responses:formid"
                 exprs: [
                   { type: "field", table: "responses:formid", column: "data:questionid:value" }
                   { type: "literal", valueType: "number", value: 5 }
@@ -1104,6 +1100,7 @@ describe "FormSchemaBuilder addForm", ->
             condition: {
               type: "op"
               op: ">"
+              table: "responses:formid"
               exprs: [
                 { type: "field", table: "responses:formid", column: "data:questionid:value" }
                 { type: "literal", valueType: "number", value: 3 }
@@ -1117,40 +1114,34 @@ describe "FormSchemaBuilder addForm", ->
       # Check that indicator calculation added with condition
       compare(schema.getColumn("responses:formid", "indicator_calculation:ic1:num1"), {
         id: "indicator_calculation:ic1:num1"
-        type: "number"
+        type: "expr"
         name: { en: "Number1" }
-        jsonql: 
-          { 
-            type: "case"
-            cases: [
-              { 
-                when: { type: "op", op: ">", exprs: [
-                    {
-                      type: "op"
-                      op: "convert_to_decimal"
-                      exprs: [
-                        { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }
-                      ]
-                    }
-                    { type: "literal", value: 3 }
-                  ]}
-                then: { 
-                  type: "op"
-                  op: "+"
-                  exprs: [
-                    {
-                      type: "op"
-                      op: "convert_to_decimal"
-                      exprs: [
-                        { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }
-                      ]
-                    }
-                    { type: "literal", value: 5 }
-                  ]
-                }
+        expr: {
+          type: "case"
+          table: "responses:formid"
+          cases: [
+            { 
+              when: {
+                type: "op"
+                op: ">"
+                table: "responses:formid"
+                exprs: [
+                  { type: "field", table: "responses:formid", column: "data:questionid:value" }
+                  { type: "literal", valueType: "number", value: 3 }
+                ]
               }
-            ]
-          }
+              then: { 
+                type: "op"
+                op: "+"
+                table: "responses:formid"
+                exprs: [
+                  { type: "field", table: "responses:formid", column: "data:questionid:value" }
+                  { type: "literal", valueType: "number", value: 5 }
+                ]
+              }
+            }
+          ]
+        }
       })
 
     it "add indicators fields with no calculation as jsonql literal null", ->
@@ -1208,6 +1199,7 @@ describe "FormSchemaBuilder addForm", ->
               num2: {
                 type: "op"
                 op: "-"
+                table: "responses:formid"
                 exprs: [
                   { type: "field", table: "responses:formid", column: "indicator_calculation:ic1:num1" }  # References ic1 indicator calculation
                   { type: "literal", valueType: "number", value: 3 }
@@ -1236,68 +1228,115 @@ describe "FormSchemaBuilder addForm", ->
       # Check that indicator calculation added
       compare(schema.getColumn("responses:formid", "indicator_calculation:ic2:num2"), {
         id: "indicator_calculation:ic2:num2"
-        type: "number"
+        type: "expr"
         name: { en: "Number2" }
-        jsonql: 
-          {
-            type: "op"
-            op: "-"
-            exprs: [
-              { 
-                type: "op"
-                op: "+"
-                exprs: [
-                  {
-                    type: "op"
-                    op: "convert_to_decimal"
-                    exprs: [
-                      { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }
-                    ]
-                  }
-                  { type: "literal", value: 5 }
-                ]
-              }
-              { type: "literal", value: 3 }
-            ]
-          }
+        expr: {
+          type: "op"
+          op: "-"
+          table: "responses:formid"
+          exprs: [
+            { type: "field", table: "responses:formid", column: "indicator_calculation:ic1:num1" }  # References ic1 indicator calculation
+            { type: "literal", valueType: "number", value: 3 }
+          ]
+        }
       })
 
-    it "correctly orders indicators of indicators", ->
-      # Create form with number question and indicator calculation
-      indicatorCalculations = [ # Deliberately in opposite order to force testing dependency calculation
-        {
-          _id: "ic2"
-          indicator: "ind1"
-          expressions: {
-            num2: {
-              type: "op"
-              op: "-"
-              exprs: [
-                { type: "field", table: "responses:formid", column: "indicator_calculation:ic1:num1" }  # References ic1 indicator calculation
-                { type: "literal", valueType: "number", value: 3 }
-              ]
+    it "adds roster indicator calculations", ->
+      form = {
+        _id: "formid"
+        design: {
+          _type: "Form"
+          name: { en: "Form" }
+          contents: [{
+            _id: "roster1"
+            _type: "RosterGroup"
+            name: { en: "Roster1" }
+            contents: [
+              { _id: "q1", _type: "TextQuestion", text: { en: "Q1" }}
+              { _id: "q2", _type: "NumberQuestion", text: { en: "Q2" }}
+            ]
+          }]
+        }
+        indicatorCalculations: [
+          {
+            _id: "ic1"
+            indicator: "ind1"
+            roster: "roster1"
+            expressions: {
+              num1: {
+                type: "op"
+                op: "+"
+                table: "responses:formid:roster:roster1"
+                exprs: [
+                  { type: "field", table: "responses:formid:roster:roster1", column: "data:q2:value" }
+                  { type: "literal", valueType: "number", value: 5 }
+                ]
+              }
             }
           }
+        ]
+      }
+
+      schema = new FormSchemaBuilder().addForm(@schema, form)
+
+      # Check that indicators section exists
+      assert.equal _.last(schema.getTable("responses:formid:roster:roster1").contents).name.en, "Indicators"
+
+      # Check that indicator section exists
+      assert.equal _.last(schema.getTable("responses:formid:roster:roster1").contents).contents[0].name.en, "Indicator1"
+
+      # Check that indicator calculation added
+      compare(schema.getColumn("responses:formid:roster:roster1", "indicator_calculation:ic1:num1"), {
+        id: "indicator_calculation:ic1:num1"
+        type: "expr"
+        name: { en: "Number1" }
+        expr: {
+          type: "op"
+          op: "+"
+          table: "responses:formid:roster:roster1"
+          exprs: [
+            { type: "field", table: "responses:formid:roster:roster1", column: "data:q2:value" }
+            { type: "literal", valueType: "number", value: 5 }
+          ]
         }
-        {
-          _id: "ic1"
-          indicator: "ind1"
-          expressions: {
-            num1: {
-              type: "op"
-              op: "+"
-              exprs: [
-                { type: "field", table: "responses:formid", column: "data:questionid:value" }
-                { type: "literal", valueType: "number", value: 5 }
-              ]
-            }
-          }
-        }
-      ]
-      assert.deepEqual _.pluck(new FormSchemaBuilder().orderIndicatorCalculation(indicatorCalculations), "_id"), ["ic1", "ic2"]
+      })
+
+    # it "correctly orders indicators of indicators", ->
+    #   # Create form with number question and indicator calculation
+    #   indicatorCalculations = [ # Deliberately in opposite order to force testing dependency calculation
+    #     {
+    #       _id: "ic2"
+    #       indicator: "ind1"
+    #       expressions: {
+    #         num2: {
+    #           type: "op"
+    #           op: "-"
+    #           exprs: [
+    #             { type: "field", table: "responses:formid", column: "indicator_calculation:ic1:num1" }  # References ic1 indicator calculation
+    #             { type: "literal", valueType: "number", value: 3 }
+    #           ]
+    #         }
+    #       }
+    #     }
+    #     {
+    #       _id: "ic1"
+    #       indicator: "ind1"
+    #       expressions: {
+    #         num1: {
+    #           type: "op"
+    #           op: "+"
+    #           exprs: [
+    #             { type: "field", table: "responses:formid", column: "data:questionid:value" }
+    #             { type: "literal", valueType: "number", value: 5 }
+    #           ]
+    #         }
+    #       }
+    #     }
+    #   ]
+    #   assert.deepEqual _.pluck(new FormSchemaBuilder().orderIndicatorCalculation(indicatorCalculations), "_id"), ["ic1", "ic2"]
 
   describe "Roster Group", ->
-    before ->
+    beforeEach ->
       # Form with roster group
       form = {
         _id: "formid"
@@ -1310,6 +1349,7 @@ describe "FormSchemaBuilder addForm", ->
             name: { en: "Roster1" }
             contents: [
               { _id: "q1", _type: "TextQuestion", text: { en: "Q1" }}
+              { _id: "q2", _type: "NumberQuestion", text: { en: "Q2" }}
             ]
           }]
         }
@@ -1377,6 +1417,7 @@ describe "FormSchemaBuilder addForm", ->
       assert schema.getColumn("responses:formid:roster:roster1", "data:q2:value"), "new should be there"
 
     it "works with master forms"
+
   
   describe "Roster Matrix", ->
     it "adds columns", ->

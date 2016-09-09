@@ -415,6 +415,7 @@ module.exports = class QuestionComponent extends React.Component
           ref: "answer"
           value: answer.value
           onValueChange: @handleValueChange
+          T: @context.T
         }
 
       when "MatrixQuestion"

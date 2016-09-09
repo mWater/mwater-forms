@@ -20,6 +20,8 @@ describe 'StopwatchAnswerComponent', ->
     @toDestroy = []
 
     @render = (options = {}) =>
+      if not options.T
+        options.T = (str) -> str
       elem = R(StopwatchAnswerComponent, options)
       comp = new TestComponent(elem)
       @toDestroy.push(comp)
