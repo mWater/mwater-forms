@@ -200,6 +200,8 @@ exports.prepareQuestion = (q) ->
     when "MatrixQuestion"
       knownFields.push "items"
       knownFields.push "columns"
+    when "LocationQuestion"
+      knownFields.push "calculateAdminRegion"
 
   # Strip unknown fields
   for key in _.keys(q)
