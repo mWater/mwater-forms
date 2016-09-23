@@ -156,6 +156,8 @@ exports.prepareQuestion = (q) ->
       _.defaults q, { items: [], choices: [] }
     when "MatrixQuestion"
       _.defaults q, { items: [], columns: [] }
+    when "AquagenxCBTQuestion"
+      _.defaults q, {  }
 
   # Get known fields
   knownFields = ['_id', '_type', 'text', 'textExprs', 'conditions', 'validations', 
@@ -202,6 +204,8 @@ exports.prepareQuestion = (q) ->
       knownFields.push "columns"
     when "LocationQuestion"
       knownFields.push "calculateAdminRegion"
+    when "AquagenxCBTQuestion"
+      knownFields.push "aquagenxField"
 
   # Strip unknown fields
   for key in _.keys(q)

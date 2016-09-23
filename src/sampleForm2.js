@@ -23,6 +23,14 @@ module.exports = {
         "_type": "Section",
         "contents": [
           {
+            "_id": "aquagenxcbtid",
+            "_type": "AquagenxCBTQuestion",
+            "text": {
+              "en": "Aquagenx CBT Question",
+              "_base": "en"
+            }
+          },
+          {
             "_id": "timerid",
             "_type": "Timer",
             duration: 6000,
