@@ -29,10 +29,9 @@ module.exports = class AquagenxCBTAnswerComponent extends React.Component
   render: ->
     compartmentColors = _.map @state.compartments, (c) -> if c then '#fcf8d0' else '#32a89b'
     return H.div null,
-      # compartment1, 4 and 5 are single rect. 2 and 3 are groups of rect
       H.style null,
         "
-          #compartment1 {
+          #compartment1 rect {
             fill: #{compartmentColors[0]};
           }
           #compartment2 rect {
@@ -41,14 +40,14 @@ module.exports = class AquagenxCBTAnswerComponent extends React.Component
           #compartment3 rect {
             fill: #{compartmentColors[2]};
           }
-          #compartment4 {
+          #compartment4 rect {
             fill: #{compartmentColors[3]};
           }
-          #compartment5 {
+          #compartment5 rect {
             fill: #{compartmentColors[4]};
           }
 
-          #compartment1:hover {
+          #compartment1:hover > rect {
             fill: red;
           }
           #compartment2:hover > rect{
@@ -57,10 +56,10 @@ module.exports = class AquagenxCBTAnswerComponent extends React.Component
           #compartment3:hover > rect{
             fill: red;
           }
-          #compartment4:hover {
+          #compartment4:hover > rect {
             fill: red;
           }
-          #compartment5:hover {
+          #compartment5:hover > rect {
             fill: red;
           }
         "
