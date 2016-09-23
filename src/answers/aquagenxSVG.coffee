@@ -38,7 +38,7 @@ module.exports = '''
      inkscape:pageshadow="2"
      inkscape:zoom="1.8375"
      inkscape:cx="103.79885"
-     inkscape:cy="262.13094"
+     inkscape:cy="392.74318"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -101,7 +101,7 @@ module.exports = '''
          height="194.99998"
          width="70"
          id="rect4174"
-         style="fill:#01a698;fill-opacity:1" />
+         style="fill-opacity:1" />
       <rect
          ry="0"
          y="747.36212"
@@ -109,7 +109,7 @@ module.exports = '''
          height="159.99997"
          width="165"
          id="rect4176"
-         style="fill:#01a698;fill-opacity:1" />
+         style="fill-opacity:1" />
     </g>
     <rect
        style="fill:#b3b3b3;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.26699996;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
@@ -146,24 +146,35 @@ module.exports = '''
        height="10.00001"
        x="-4.4573262e-006"
        y="617.36206" />
-    <g
-       id="compartment1"
-       transform="translate(-1.3565775e-6,139.99999)"
-       inkscape:label="#g4382">
-      <rect
-         y="502.36209"
-         x="95"
-         height="244.99998"
-         width="5"
-         id="rect4277"
-         style="fill:#b3b3b3;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.26699996;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-      <rect
-         y="552.36212"
-         x="5"
-         height="190"
-         width="90"
-         id="rect4195"
-         style="fill:#01a698;fill-opacity:1;fill-rule:evenodd;stroke-width:1.26699996;stroke-miterlimit:4;stroke-dasharray:none" />
+    <rect
+       y="642.36212"
+       x="95"
+       height="244.99998"
+       width="5"
+       id="rect4277"
+       style="fill:#b3b3b3;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.26699996;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <g id="compartment1"
+      transform="translate(-1.3565775e-6,139.99999)"
+      >
+       <rect
+          y="552.36212"
+          x="4.9999976"
+          height="190"
+          width="90"
+          id="rect4195"
+          style="fill-opacity:1;fill-rule:evenodd;stroke-width:1.26699996;stroke-miterlimit:4;stroke-dasharray:none"
+          inkscape:label="#rect4195" />
+       <text
+              xml:space="preserve"
+              style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+              x="39.570313"
+              y="592.6875"
+              id="text4206"
+              sodipodi:linespacing="125%"><tspan
+                sodipodi:role="line"
+                id="tspan4208"
+                x="39.570313"
+                y="592.6875">1</tspan></text>
     </g>
     <rect
        style="fill:#b3b3b3;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.26699996;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
@@ -187,7 +198,7 @@ module.exports = '''
        x="255"
        y="797.36212" />
     <rect
-       style="display:inline;fill:#01a698;fill-opacity:1;fill-rule:evenodd;stroke-width:1.26699996;stroke-miterlimit:4;stroke-dasharray:none"
+       style="display:inline;fill-opacity:1;fill-rule:evenodd;stroke-width:1.26699996;stroke-miterlimit:4;stroke-dasharray:none"
        id="compartment4"
        width="70"
        height="105.00001"
@@ -195,7 +206,7 @@ module.exports = '''
        y="692.36212"
        inkscape:label="#rect4200" />
     <rect
-       style="display:inline;fill:#01a698;fill-opacity:1;fill-rule:evenodd;stroke-width:1.26699996;stroke-miterlimit:4;stroke-dasharray:none"
+       style="display:inline;fill-opacity:1;fill-rule:evenodd;stroke-width:1.26699996;stroke-miterlimit:4;stroke-dasharray:none"
        id="compartment5"
        width="65"
        height="49.999977"
@@ -213,7 +224,7 @@ module.exports = '''
          height="109.99998"
          width="75"
          id="rect4198"
-         style="fill:#01a698;fill-opacity:1;fill-rule:evenodd;stroke-width:1.26699996;stroke-miterlimit:4;stroke-dasharray:none" />
+         style="fill-opacity:1;fill-rule:evenodd;stroke-width:1.26699996;stroke-miterlimit:4;stroke-dasharray:none" />
       <rect
          ry="0"
          y="662.36212"
@@ -221,7 +232,21 @@ module.exports = '''
          height="244.99998"
          width="165"
          id="rect4204"
-         style="fill:#01a698;fill-opacity:1;fill-rule:evenodd;stroke-width:1.26699996;stroke-miterlimit:4;stroke-dasharray:none" />
+         style="fill-opacity:1;fill-rule:evenodd;stroke-width:1.26699996;stroke-miterlimit:4;stroke-dasharray:none" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="201.73828"
+         y="592.6875"
+         id="text4206-8-1"
+         sodipodi:linespacing="125%"
+         inkscape:transform-center-x="7.6964005">
+         <tspan
+           sodipodi:role="line"
+           id="tspan4271"
+           x="201.73828"
+           y="592.6875">3</tspan>
+      </text>
     </g>
     <g
        style="display:inline"
@@ -250,17 +275,6 @@ module.exports = '''
      transform="translate(0,-150)">
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="39.570313"
-       y="279.17969"
-       id="text4206"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan4208"
-         x="39.570313"
-         y="279.17969">1</tspan></text>
-    <text
-       xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        x="121.85547"
        y="280"
@@ -270,18 +284,6 @@ module.exports = '''
          id="tspan4231"
          x="121.85547"
          y="280">2</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="201.73828"
-       y="279.6875"
-       id="text4206-8-1"
-       sodipodi:linespacing="125%"
-       inkscape:transform-center-x="7.6964005"><tspan
-         sodipodi:role="line"
-         id="tspan4271"
-         x="201.73828"
-         y="279.6875">3</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
