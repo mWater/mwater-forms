@@ -103,7 +103,7 @@ module.exports = '''
          height="194.99998"
          width="70"
          id="rect4174"
-         style="fill:#eb0000;fill-opacity:1" />
+         style="fill-opacity:1" />
       <rect
          ry="0"
          y="747.36212"
@@ -111,7 +111,7 @@ module.exports = '''
          height="159.99997"
          width="165"
          id="rect4176"
-         style="fill:#eb0000;fill-opacity:1" />
+         style="fill-opacity:1" />
       <text
          xml:space="preserve"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
@@ -136,7 +136,7 @@ module.exports = '''
          height="190"
          width="90"
          id="rect4195"
-         style="fill:#eb0000;fill-opacity:1;fill-rule:evenodd;stroke-width:1.26699996;stroke-miterlimit:4;stroke-dasharray:none"
+         style="fill-opacity:1;fill-rule:evenodd;stroke-width:1.26699996;stroke-miterlimit:4;stroke-dasharray:none"
          inkscape:label="#rect4195" />
       <text
          xml:space="preserve"
@@ -155,7 +155,7 @@ module.exports = '''
        transform="translate(-1.3565775e-6,139.99999)"
        style="fill:#eb0000;fill-opacity:1">
       <rect
-         style="display:inline;fill:#eb0000;fill-opacity:1;fill-rule:evenodd;stroke-width:1.26699996;stroke-miterlimit:4;stroke-dasharray:none"
+         style="display:inline;fill-opacity:1;fill-rule:evenodd;stroke-width:1.26699996;stroke-miterlimit:4;stroke-dasharray:none"
          id="rectangle5"
          width="65"
          height="49.999977"
@@ -187,7 +187,7 @@ module.exports = '''
          height="109.99998"
          width="75"
          id="rect4198"
-         style="fill:#eb0000;fill-opacity:1;fill-rule:evenodd;stroke-width:1.26699996;stroke-miterlimit:4;stroke-dasharray:none" />
+         style="fill-opacity:1;fill-rule:evenodd;stroke-width:1.26699996;stroke-miterlimit:4;stroke-dasharray:none" />
       <rect
          ry="0"
          y="662.36212"
@@ -195,7 +195,7 @@ module.exports = '''
          height="244.99998"
          width="165"
          id="rect4204"
-         style="fill:#eb0000;fill-opacity:1;fill-rule:evenodd;stroke-width:1.26699996;stroke-miterlimit:4;stroke-dasharray:none" />
+         style="fill-opacity:1;fill-rule:evenodd;stroke-width:1.26699996;stroke-miterlimit:4;stroke-dasharray:none" />
       <text
          xml:space="preserve"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
@@ -239,7 +239,7 @@ module.exports = '''
          height="105.00001"
          width="70"
          id="rectangle4"
-         style="display:inline;fill:#eb0000;fill-opacity:1;fill-rule:evenodd;stroke-width:1.26699996;stroke-miterlimit:4;stroke-dasharray:none" />
+         style="display:inline;fill-opacity:1;fill-rule:evenodd;stroke-width:1.26699996;stroke-miterlimit:4;stroke-dasharray:none" />
       <text
          inkscape:transform-center-y="103.90141"
          inkscape:transform-center-x="95.435367"
