@@ -33,7 +33,9 @@ module.exports = class ResponseDataValidator
         continue
 
       if item._type == "Section" or item._type == "Group"
-        return @validateParentItem(item, visibilityStructure, data, keyPrefix)
+        result = @validateParentItem(item, visibilityStructure, data, keyPrefix)
+        if result?
+          return result
 
       if item._type in ["RosterGroup", "RosterMatrix"]
         answerId = item.rosterId or item._id
