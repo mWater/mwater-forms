@@ -157,7 +157,7 @@ exports.prepareQuestion = (q) ->
     when "MatrixQuestion"
       _.defaults q, { items: [], columns: [] }
     when "AquagenxCBTQuestion"
-      _.defaults q, {  }
+      _.defaults q, { c1: false, c2: false, c3: false, c4: false, c5: false, mpn: 0.0, confidence: 2.87, healthRisk: 'safe', photo: null }
 
   # Get known fields
   knownFields = ['_id', '_type', 'text', 'textExprs', 'conditions', 'validations', 
@@ -205,7 +205,15 @@ exports.prepareQuestion = (q) ->
     when "LocationQuestion"
       knownFields.push "calculateAdminRegion"
     when "AquagenxCBTQuestion"
-      knownFields.push "aquagenxField"
+      knownFields.push "c1"
+      knownFields.push "c2"
+      knownFields.push "c3"
+      knownFields.push "c4"
+      knownFields.push "c5"
+      knownFields.push "mpn"
+      knownFields.push "confidence"
+      knownFields.push "healthRisk"
+      knownFields.push "photo"
 
   # Strip unknown fields
   for key in _.keys(q)
@@ -266,6 +274,8 @@ exports.getAnswerType = (q) ->
       return "matrix"
     when "LikertQuestion"
       return "items_choices"
+    when "AquagenxCBTQuestion"
+      return "aquagenx_cbt"
     else throw new Error("Unknown question type #{q._type}")
 
 # Check if a form is all sections
