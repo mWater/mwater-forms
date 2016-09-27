@@ -7,6 +7,7 @@ ExprEvaluator = require('mwater-expressions').ExprEvaluator
 # Forms have fields like: "text" that contain localized strings e.g. { en: "My name is {0}", es: "Mi nombre es {0}" }
 # There is also a field "textExprs" that contains an array of mWater expressions. e.g. [{ type: "field", table: "responses:12345", column: "data:abc123:value" }]
 # This would substitute the value of the abc123 question into the string
+# Include locale to determine how units and enums are localized
 module.exports = class FormExprEvaluator 
   # Uses a form design
   constructor: (formDesign) ->
@@ -27,7 +28,7 @@ module.exports = class FormExprEvaluator
     str = str.replace(/\{(\d+)\}/g, (match, index) =>
       index = parseInt(index)
       if exprs?[index]
-        return @evaluateExpr(exprs[index], data, parentData) or ""
+        return @evaluateExpr(exprs[index], data, parentData, locale) or ""
       return ""
       )
     
@@ -36,12 +37,12 @@ module.exports = class FormExprEvaluator
   # Evaluate a single expression
   # data is the data to use. Usually response.data but when in a roster, is the data for the roster entry'
   # parentData is the response.data if in a roster, null otherwise
-  evaluateExpr: (expr, data, parentData) ->
-    row = @createRow(data, parentData)
+  evaluateExpr: (expr, data, parentData, locale) ->
+    row = @createRow(data, parentData, locale)
     return new ExprEvaluator().evaluate(expr, row)
 
   # Create row object that ExprEvaluator needs from data
-  createRow: (data, parentData) ->
+  createRow: (data, parentData, locale) ->
     return {
       # Returns primary key of row. Is the response id, but don't implement for now
       getPrimaryKey: -> throw new Error("Not implemented")
@@ -51,18 +52,42 @@ module.exports = class FormExprEvaluator
         if columnId == "response"
           return @createRow(parentData, null)
 
+
         match = columnId.match(/^data:(.+):value$/)
         if match
+          item = @itemMap[match[1]]
+          if not item
+            return null
+
           # Special case for location question
-          if @itemMap[match[1]]?._type == "LocationQuestion" and data[match[1]]?.value
+          if item._type == "LocationQuestion" and data[match[1]]?.value
             # GeoJSON
             return { type: "Point", coordinates: [data[match[1]].value.longitude, data[match[1]].value.latitude] }
 
           # Entity and Site always return null
-          if @itemMap[match[1]]?._type in ["EntityQuestion", "SiteQuestion"]
+          if item._type in ["EntityQuestion", "SiteQuestion"]
             return null
 
-          return data[match[1]]?.value
+          value = data[match[1]]?.value
+
+          # Localize choice
+          if formUtils.getAnswerType(item) == "choice"
+            choice = _.findWhere(item.choices, { id: value })
+            if choice
+              return formUtils.localizeString(choice.label, locale)
+            else
+              return "???"
+
+          # Localize choices
+          if formUtils.getAnswerType(item) == "choices"
+            return _.map(value, (v) => 
+              choice = _.findWhere(item.choices, { id: v })
+              if choice
+                return formUtils.localizeString(choice.label, locale)
+              else
+                return "???").join(", ")
+
+          return value
 
         match = columnId.match(/^data:(.+):value:accuracy$/)
         if match
@@ -78,7 +103,17 @@ module.exports = class FormExprEvaluator
 
         match = columnId.match(/^data:(.+):value:units$/)
         if match
-          return data[match[1]]?.value?.units
+          units = data[match[1]]?.value?.units
+          item = @itemMap[match[1]]
+
+          # Localize units
+          if units and item
+            units = _.findWhere(item.units, { id: units })
+            if units
+              return formUtils.localizeString(units.label, locale)
+            else
+              return "???"
+          return null
 
         match = columnId.match(/^data:(.+):timestamp$/)
         if match

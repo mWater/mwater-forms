@@ -10,7 +10,7 @@ describe "FormExprEvaluator", ->
           contents: []
         }
 
-        # Create question
+        # Create questions
         question = _.defaults(question, { _id: "a", _type: "TextQuestion", text: { en: "Question" }, conditions: [], validations: [] })
 
         # Add to form
@@ -40,6 +40,10 @@ describe "FormExprEvaluator", ->
     it "renders number expressions", ->
       @testEval({ _type: "NumberQuestion" }, { a: { value: 123 }}, null, { _base: "en", en: "test{0}" }, [{ type: "field", table: "responses:1234", column: "data:a:value" }], "en", "test123")
 
+    it "renders localized enum expressions", ->
+      @testEval({ _type: "RadioQuestion", choices: [{ id: "yes", label: { _base:"en", en: "Yes", fr: "Oui"}}, { id: "no", label: { _base:"en", en: "No"}}] },
+        { a: { value: "yes" }}, null, { _base: "en", en: "test{0}" }, [{ type: "field", table: "responses:1234", column: "data:a:value" }], "fr", "testOui")
+
   describe "evaluateExpr", ->
     beforeEach ->
       @testEval = (question, data, parentData, column, expected) =>
@@ -66,8 +70,13 @@ describe "FormExprEvaluator", ->
     it "evaluates number", ->
       @testEval({ _type: "NumberQuestion" }, { a: { value: 123 } }, null, "data:a:value", 123)
 
-    it "evaluates choice"
-    it "evaluates choices"
+    it "evaluates choice", ->
+      @testEval({ _type: "RadioQuestion", choices: [{ id: "yes", label: { _base:"en", en: "Yes"}}, { id: "no", label: { _base:"en", en: "No"}}] },
+        { a: { value: "yes" }}, null, "data:a:value", "Yes")
+
+    it "evaluates choices", ->
+      @testEval({ _type: "MulticheckQuestion", choices: [{ id: "yes", label: { _base:"en", en: "Yes"}}, { id: "no", label: { _base:"en", en: "No"}}] },
+        { a: { value: ["yes", "no"] }}, null, "data:a:value", "Yes, No")
 
     it "evaluates location as geojson", ->
       @testEval({ _type: "LocationQuestion" }, { a: { value: { longitude: 12, latitude: 34 } } }, null, "data:a:value", { type: "Point", coordinates: [12, 34] })
@@ -82,7 +91,10 @@ describe "FormExprEvaluator", ->
       @testEval({ _type: "UnitsQuestion" }, { a: { value: { quantity: 123, units: "abc" } } }, null, "data:a:value:quantity", 123)
 
     it "evaluates units unit", ->
-      @testEval({ _type: "UnitsQuestion" }, { a: { value: { quantity: 123, units: "abc" } } }, null, "data:a:value:units", "abc")
+      @testEval({ _type: "UnitsQuestion", units: [
+          { id: "m", label: { _base:"en", en: "M"}}
+          { id: "ft", label: { _base:"en", en: "Ft"}}
+        ] }, { a: { value: { quantity: 123, units: "m" } } }, null, "data:a:value:units", "M")
 
     it "evaluates na", ->
       @testEval({ _type: "TextQuestion", alternates: { na: true } }, { a: { alternate: "na" } }, null, "data:a:na", true)
