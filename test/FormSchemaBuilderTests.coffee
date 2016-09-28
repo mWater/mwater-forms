@@ -334,6 +334,41 @@ describe "FormSchemaBuilder addForm", ->
         _type: "AquagenxCBTQuestion"
       }, [
         {
+          id: "data:questionid:value:cbt:mpn"
+          type: "number"
+          name: { _base: "en", en: "Question (mpn)" }
+          jsonql: {
+            type: "op"
+            op: "#>>"
+            exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,cbt,mpn}"]
+          }
+        }
+        {
+          id: "data:questionid:value:cbt:confidence"
+          type: "number"
+          name: { _base: "en", en: "Question (confidence)" }
+          jsonql: {
+            type: "op"
+            op: "#>>"
+            exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,cbt,confidence}"]
+          }
+        }
+        {
+          id: "data:questionid:value:cbt:healthRisk"
+          type: "enum"
+          name: { _base: "en", en: "Question (healthRisk)" }
+          jsonql: {
+            type: "op",
+            op: "#>>",
+            exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,cbt,healthRisk}"]
+          }
+        }
+        {
+          id: "data:questionid:value:image"
+          type: "image"
+          jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,image}"] }
+        }
+        {
           id: "data:questionid:value:cbt:c1"
           type: "boolean"
           name: { _base: "en", en: "Question (c1)" }
@@ -392,41 +427,6 @@ describe "FormSchemaBuilder addForm", ->
               { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,cbt,c5}"] }
             ]
           }
-        }
-        {
-          id: "data:questionid:value:cbt:mpn"
-          type: "number"
-          name: { _base: "en", en: "Question (mpn)" }
-          jsonql: {
-            type: "op"
-            op: "#>>"
-            exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,cbt,mpn}"]
-          }
-        }
-        {
-          id: "data:questionid:value:cbt:confidence"
-          type: "number"
-          name: { _base: "en", en: "Question (confidence)" }
-          jsonql: {
-            type: "op"
-            op: "#>>"
-            exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,cbt,confidence}"]
-          }
-        }
-        {
-          id: "data:questionid:value:cbt:healthRisk"
-          type: "text"
-          name: { _base: "en", en: "Question (healthRisk)" }
-          jsonql: {
-            type: "op",
-            op: "#>>",
-            exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,cbt,healthRisk}"]
-          }
-        }
-        {
-          id: "data:questionid:value:image"
-          type: "image"
-          jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,image}"] }
         }
       ])
 

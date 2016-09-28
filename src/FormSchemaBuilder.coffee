@@ -14,6 +14,8 @@ update = require 'update-object'
 ColumnNotFoundException = require('mwater-expressions').ColumnNotFoundException
 TopoSort = require 'topo-sort'
 
+healthRiskEnum = require('./answers/aquagenxCBTUtils').healthRiskEnum
+
 module.exports = class FormSchemaBuilder
   # Pass clone forms if a master form
   addForm: (schema, form, cloneForms) ->
@@ -560,8 +562,78 @@ module.exports = class FormSchemaBuilder
           addColumn(column)
 
         when "aquagenx_cbt"
+          # Create section
+          section = {
+            type: "section"
+            name: item.text
+            contents: []
+          }
+
+
+          section.contents.push({
+            id: "data:#{item._id}:value:cbt:mpn"
+            type: "number"
+            name: appendStr(item.text, " (mpn)")
+            code: if code then code + " (mpn)"
+            jsonql: {
+              type: "op"
+              op: "#>>"
+              exprs: [
+                { type: "field", tableAlias: "{alias}", column: "data" }
+                "{#{item._id},value,cbt,mpn}"
+              ]
+            }
+          })
+
+          section.contents.push({
+            id: "data:#{item._id}:value:cbt:confidence"
+            type: "number"
+            name: appendStr(item.text, " (confidence)")
+            code: if code then code + " (confidence)"
+            jsonql: {
+              type: "op"
+              op: "#>>"
+              exprs: [
+                { type: "field", tableAlias: "{alias}", column: "data" }
+                "{#{item._id},value,cbt,confidence}"
+              ]
+            }
+          })
+
+          section.contents.push({
+            id: "data:#{item._id}:value:cbt:healthRisk"
+            type: "enum"
+            enumValues: healthRiskEnum
+            name: appendStr(item.text, " (healthRisk)")
+            code: if code then code + " (healthRisk)"
+            jsonql: {
+              type: "op"
+              op: "#>>"
+              exprs: [
+                { type: "field", tableAlias: "{alias}", column: "data" }
+                "{#{item._id},value,cbt,healthRisk}"
+              ]
+            }
+          })
+
+          # Get image
+          section.contents.push({
+            id: "data:#{item._id}:value:image"
+            type: "image"
+            name: appendStr(item.text, " (image)")
+            code: if code then code + " (image)"
+            jsonql: {
+              type: "op"
+              op: "#>>"
+              exprs: [
+                { type: "field", tableAlias: "{alias}", column: "data" }
+                "{#{item._id},value,image}"
+              ]
+            }
+          })
+
           addCxColumn = (v) ->
-            column = {
+            section.contents.push({
               id: "data:#{item._id}:value:cbt:#{v}"
               type: "boolean"
               name: appendStr(item.text, " (#{v})")
@@ -580,8 +652,7 @@ module.exports = class FormSchemaBuilder
                   }
                 ]
               }
-            }
-            addColumn(column)
+            })
 
           addCxColumn('c1')
           addCxColumn('c2')
@@ -589,70 +660,7 @@ module.exports = class FormSchemaBuilder
           addCxColumn('c4')
           addCxColumn('c5')
 
-          column = {
-            id: "data:#{item._id}:value:cbt:mpn"
-            type: "number"
-            name: appendStr(item.text, " (mpn)")
-            code: if code then code + " (mpn)"
-            jsonql: {
-              type: "op"
-              op: "#>>"
-              exprs: [
-                { type: "field", tableAlias: "{alias}", column: "data" }
-                "{#{item._id},value,cbt,mpn}"
-              ]
-            }
-          }
-          addColumn(column)
-
-          column = {
-            id: "data:#{item._id}:value:cbt:confidence"
-            type: "number"
-            name: appendStr(item.text, " (confidence)")
-            code: if code then code + " (confidence)"
-            jsonql: {
-              type: "op"
-              op: "#>>"
-              exprs: [
-                { type: "field", tableAlias: "{alias}", column: "data" }
-                "{#{item._id},value,cbt,confidence}"
-              ]
-            }
-          }
-          addColumn(column)
-
-          column = {
-            id: "data:#{item._id}:value:cbt:healthRisk"
-            type: "text"
-            name: appendStr(item.text, " (healthRisk)")
-            code: if code then code + " (healthRisk)"
-            jsonql: {
-              type: "op"
-              op: "#>>"
-              exprs: [
-                { type: "field", tableAlias: "{alias}", column: "data" }
-                "{#{item._id},value,cbt,healthRisk}"
-              ]
-            }
-          }
-          addColumn(column)
-
-          # Get image
-          column = {
-            id: "data:#{item._id}:value:image"
-            type: "image"
-            name: appendStr(item.text, " (image)")
-            code: if code then code + " (image)"
-            jsonql: {
-              type: "op"
-              op: "#>>"
-              exprs: [
-                { type: "field", tableAlias: "{alias}", column: "data" }
-                "{#{item._id},value,image}"
-              ]
-            }
-          }
-          addColumn(column)
+          addColumn(section)
 
         when "location"
           column = {
