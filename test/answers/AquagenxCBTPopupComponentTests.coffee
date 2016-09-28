@@ -28,7 +28,7 @@ class AquagenxCBTContext extends React.Component
   render: ->
     return @props.children
 
-describe.only 'AquagenxCBTPopupComponent', ->
+describe 'AquagenxCBTPopupComponent', ->
   beforeEach ->
     @toDestroy = []
 
@@ -63,13 +63,13 @@ describe.only 'AquagenxCBTPopupComponent', ->
     #assert compartment1, 'Could not find the compartment'
     #compartment1.click()
 
-    ReactTestUtils.findAllInRenderedTree(component, (c) ->
-      console.log c
-      console.log c.class
-      console.log c.id
-    )
+    #ReactTestUtils.findAllInRenderedTree(component, (c) ->
+    #  console.log c
+    #  console.log c.class
+    #  console.log c.id
+    #)
 
-    console.log(@comp.findComponentById('save'))
+    #console.log(@comp.findComponentById('save'))
 
 
     #TestComponent.click(@comp.findComponentById('save'))

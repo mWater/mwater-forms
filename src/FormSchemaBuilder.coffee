@@ -514,7 +514,6 @@ module.exports = class FormSchemaBuilder
               ]
             }
           }
-
           addColumn(column)
 
         when "units"
@@ -557,6 +556,101 @@ module.exports = class FormSchemaBuilder
               ]
             }
             enumValues: _.map(item.units, (c) -> { id: c.id, name: c.label })
+          }
+          addColumn(column)
+
+        when "aquagenx_cbt"
+          addCxColumn = (v) ->
+            column = {
+              id: "data:#{item._id}:value:cbt:#{v}"
+              type: "boolean"
+              name: appendStr(item.text, " (#{v})")
+              code: if code then code + " (#{v})"
+              jsonql: {
+                type: "op"
+                op: "::boolean"
+                exprs: [
+                  {
+                    type: "op"
+                    op: "#>>"
+                    exprs: [
+                      { type: "field", tableAlias: "{alias}", column: "data" }
+                      "{#{item._id},value,cbt,#{v}}"
+                    ]
+                  }
+                ]
+              }
+            }
+            addColumn(column)
+
+          addCxColumn('c1')
+          addCxColumn('c2')
+          addCxColumn('c3')
+          addCxColumn('c4')
+          addCxColumn('c5')
+
+          column = {
+            id: "data:#{item._id}:value:cbt:mpn"
+            type: "number"
+            name: appendStr(item.text, " (mpn)")
+            code: if code then code + " (mpn)"
+            jsonql: {
+              type: "op"
+              op: "#>>"
+              exprs: [
+                { type: "field", tableAlias: "{alias}", column: "data" }
+                "{#{item._id},value,cbt,mpn}"
+              ]
+            }
+          }
+          addColumn(column)
+
+          column = {
+            id: "data:#{item._id}:value:cbt:confidence"
+            type: "number"
+            name: appendStr(item.text, " (confidence)")
+            code: if code then code + " (confidence)"
+            jsonql: {
+              type: "op"
+              op: "#>>"
+              exprs: [
+                { type: "field", tableAlias: "{alias}", column: "data" }
+                "{#{item._id},value,cbt,confidence}"
+              ]
+            }
+          }
+          addColumn(column)
+
+          column = {
+            id: "data:#{item._id}:value:cbt:healthRisk"
+            type: "text"
+            name: appendStr(item.text, " (healthRisk)")
+            code: if code then code + " (healthRisk)"
+            jsonql: {
+              type: "op"
+              op: "#>>"
+              exprs: [
+                { type: "field", tableAlias: "{alias}", column: "data" }
+                "{#{item._id},value,cbt,healthRisk}"
+              ]
+            }
+          }
+          addColumn(column)
+
+          # Get image
+          column = {
+            id: "data:#{item._id}:value:image"
+            type: "image"
+            name: appendStr(item.text, " (image)")
+            code: if code then code + " (image)"
+            jsonql: {
+              type: "op"
+              op: "#>>"
+              exprs: [
+                { type: "field", tableAlias: "{alias}", column: "data" }
+                "{#{item._id},value,image}"
+              ]
+            }
           }
           addColumn(column)
 
