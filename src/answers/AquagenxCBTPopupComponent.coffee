@@ -5,6 +5,8 @@ aquagenxCBTSVGString = require './AquagenxCBTSVG'
 
 ModalPopupComponent = require('react-library/lib/ModalPopupComponent')
 
+getHealthRiskString = require('./aquagenxCBTUtils').getHealthRiskString
+
 possibleCombinations = {
   "false,false,false,false,false": {mpn: 0.0, confidence: 2.87, healthRisk: 'safe'}
   "false,false,false,true,false": {mpn: 1.0, confidence: 5.14, healthRisk: 'probably_safe'}
@@ -152,14 +154,14 @@ module.exports = class AquagenxCBTPopupComponent extends React.Component
       mpn = '>100'
     return H.div null,
       H.div null,
-        'MPN/100ml: '
+        @context.T('MPN/100ml:') + ' '
         H.b(null, mpn)
       H.div null,
-        'Upper 95% Confidence Interval/100ml: '
+        @context.T('Upper 95% Confidence Interval/100ml:') + ' '
         H.b(null, cbtValues.confidence)
       H.div null,
-        'Health Risk Category Based on MPN and Confidence Interval: '
-        H.b(null, cbtValues.healthRisk)
+        @context.T('Health Risk Category Based on MPN and Confidence Interval:') + ' '
+        H.b(null, getHealthRiskString(cbtValues.healthRisk, @context.T))
 
   render: ->
     return React.createElement ModalPopupComponent,

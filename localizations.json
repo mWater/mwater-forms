@@ -396,6 +396,63 @@
     {
       "_base": "en",
       "en": "Reset"
+    },
+    {
+      "_base": "en",
+      "en": "Set",
+      "_unused": true
+    },
+    {
+      "_base": "en",
+      "en": "Record"
+    },
+    {
+      "_base": "en",
+      "en": " Edit"
+    },
+    {
+      "_base": "en",
+      "en": " Clear"
+    },
+    {
+      "_base": "en",
+      "en": "Click on the compartments to change color"
+    },
+    {
+      "_base": "en",
+      "en": "MPN/100ml:"
+    },
+    {
+      "_base": "en",
+      "en": "Upper 95% Confidence Interval/100ml:"
+    },
+    {
+      "_base": "en",
+      "en": "Health Risk Category Based on MPN and Confidence Interval:"
+    },
+    {
+      "_base": "en",
+      "en": "Low Risk/Safe"
+    },
+    {
+      "_base": "en",
+      "en": "Intermediate Risk/Probably Safe"
+    },
+    {
+      "_base": "en",
+      "en": "Intermediate Risk/Possibly Safe"
+    },
+    {
+      "_base": "en",
+      "en": "High Risk/Possibly Unsafe"
+    },
+    {
+      "_base": "en",
+      "en": "High Risk/Probably Unsafe"
+    },
+    {
+      "_base": "en",
+      "en": "Unsafe"
     }
   ]
 }

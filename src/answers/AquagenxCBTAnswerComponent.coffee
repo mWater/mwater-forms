@@ -10,6 +10,7 @@ ImagePopupComponent = require '../ImagePopupComponent'
 AquagenxCBTPopupComponent = require './AquagenxCBTPopupComponent'
 AquagenxCBTDisplayComponent = require './AquagenxCBTDisplayComponent'
 
+# Based on https://www.aquagenx.com/wp-content/uploads/2013/12/Aquagenx-CBT-Instructions-v3.pdf
 module.exports = class AquagenxCBTAnswerComponent extends React.Component
   @contextTypes:
     imageManager: React.PropTypes.object.isRequired

@@ -2,8 +2,12 @@ React = require 'react'
 H = React.DOM
 
 AquagenxCBTDisplaySVGString = require './AquagenxCBTDisplaySVG'
+getHealthRiskString = require('./aquagenxCBTUtils').getHealthRiskString
 
 module.exports = class AquagenxCBTDisplayComponent extends React.Component
+  @contextTypes:
+    T: React.PropTypes.func.isRequired  # Localizer to use
+
   @propTypes:
     value: React.PropTypes.object
     questionId: React.PropTypes.object.isRequired
@@ -44,14 +48,14 @@ module.exports = class AquagenxCBTDisplayComponent extends React.Component
       mpn = '>100'
     return H.div null,
       H.div null,
-        'MPN/100ml: '
+        @context.T('MPN/100ml:') + ' '
         H.b(null, mpn)
       H.div null,
-        'Upper 95% Confidence Interval/100ml: '
+        @context.T('Upper 95% Confidence Interval/100ml:') + ' '
         H.b(null, cbtValues.confidence)
       H.div null,
-        'Health Risk Category Based on MPN and Confidence Interval: '
-        H.b(null, cbtValues.healthRisk)
+        @context.T('Health Risk Category Based on MPN and Confidence Interval:') + ' '
+        H.b(null, getHealthRiskString(cbtValues.healthRisk, @context.T))
 
   render: ->
     H.div id: "cbtDisplay#{@props.questionId}",
