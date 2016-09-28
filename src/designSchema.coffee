@@ -26,7 +26,8 @@ module.exports = {
     # Schema 13 adds rosters and textExprs
     # Schema 14 adds matrix and likert and units columns and text columns
     # Schema 15 adds site columns
-    _schema: { enum: [1, 2, 3, 4, 5, 10, 11, 12, 13, 14, 15] }
+    # Schema 16 adds AquagenxCBTQuestion type
+    _schema: { enum: [1, 2, 3, 4, 5, 10, 11, 12, 13, 14, 15, 16] }
 
     # Name of the form
     name: { $ref: "#/definitions/localizedString" }
@@ -284,6 +285,7 @@ module.exports = {
         { $ref: "#/definitions/StopwatchQuestion" }
         { $ref: "#/definitions/MatrixQuestion" }
         { $ref: "#/definitions/LikertQuestion" }
+        { $ref: "#/definitions/AquagenxCBTQuestion" }
       ]
     }
 
@@ -1078,6 +1080,16 @@ module.exports = {
         validations: { type: "array", maxItems: 0 } 
       })
       required: ["items", "columns"]
+      additionalProperties: false
+    }
+
+    AquagenxCBTQuestion: {
+      type: "object"
+      properties: extendQuestionProperties({
+        _type: { enum: ["AquagenxCBTQuestion"] }
+        # No validation available
+        validations: { type: "array", maxItems: 0 }
+      })
       additionalProperties: false
     }
 
