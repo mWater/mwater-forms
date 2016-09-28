@@ -10,7 +10,7 @@ module.exports = class AquagenxCBTDisplayComponent extends React.Component
 
   @propTypes:
     value: React.PropTypes.object
-    questionId: React.PropTypes.object.isRequired
+    questionId: React.PropTypes.string.isRequired
     onEdit: React.PropTypes.func
 
   handleClick: =>
