@@ -1,7 +1,7 @@
 assert = require('chai').assert
 conditionsUtils = require '../src/conditionsUtils'
 
-describe.only "conditionsUtils", ->
+describe "conditionsUtils", ->
   describe 'compileCondition', ->
     beforeEach ->
       @compileCondition = (lhs, op, rhs) =>
