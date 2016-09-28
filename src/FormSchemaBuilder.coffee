@@ -717,7 +717,7 @@ module.exports = class FormSchemaBuilder
             code: code
             join: {
               type: "n-1"
-              toTable: if item.siteTypes then "entities." + _.first(item.siteTypes).toLowerCase().replace(/ /g, "_") else "entities.water_point"
+              toTable: if item.siteTypes then "entities." + _.first(item.siteTypes).toLowerCase().replace(new RegExp(' ', 'g'), "_") else "entities.water_point"
               fromColumn: codeExpr
               toColumn: "code"
             }
