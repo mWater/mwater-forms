@@ -1,7 +1,7 @@
 assert = require('chai').assert
 conditionsUtils = require '../src/conditionsUtils'
 
-describe "conditionsUtils", ->
+describe.only "conditionsUtils", ->
   describe 'compileCondition', ->
     beforeEach ->
       @compileCondition = (lhs, op, rhs) =>
@@ -25,6 +25,9 @@ describe "conditionsUtils", ->
         assert.isFalse condition(data)
 
     describe "present", ->
+      it "handles null", ->
+        @testFalse(null, "present")
+
       it "handles empty string", ->
         @testTrue("abc", "present")
         @testFalse("", "present")
@@ -33,7 +36,15 @@ describe "conditionsUtils", ->
         @testTrue([""], "present")
         @testFalse([], "present")
 
+      it "handles empty objects", ->
+        @testTrue({something: 'value'}, "present")
+        @testFalse({something: null}, "present")
+        @testFalse({}, "present")
+
     describe "!present", ->
+      it "handles null", ->
+        @testTrue(null, "!present")
+
       it "handles empty string", ->
         @testTrue("", "!present")
         @testFalse("abc", "!present")
@@ -41,6 +52,11 @@ describe "conditionsUtils", ->
       it "handles empty list", ->
         @testTrue([], "!present")
         @testFalse([""], "!present")
+
+      it "handles empty objects", ->
+        @testFalse({something: 'value'}, "!present")
+        @testTrue({something: null}, "!present")
+        @testTrue({}, "!present")
 
     it "compiles contains", ->
       @testTrue("abc", "contains", "ab")
