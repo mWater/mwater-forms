@@ -71,7 +71,7 @@ module.exports = class AquagenxCBTAnswerComponent extends React.Component
 
   handleClearClick: () =>
     value = _.clone @props.value
-    delete value.cbt
+    value.cbt = null
     @props.onValueChange(value)
 
   renderImage: ->
