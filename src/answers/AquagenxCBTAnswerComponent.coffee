@@ -44,7 +44,7 @@ module.exports = class AquagenxCBTAnswerComponent extends React.Component
         @setState(imageModal: null)
         value = _.clone @props.value
         value.image = null
-        @props.onValueChange(null)
+        @props.onValueChange(value)
       onClose: =>
         @setState(imageModal: null)
 
@@ -54,7 +54,9 @@ module.exports = class AquagenxCBTAnswerComponent extends React.Component
     # Call imageAcquirer
     @context.imageAcquirer.acquire (id) =>
       # Add to model
-      @props.onValueChange({ image: id })
+      value = _.clone @props.value
+      value.image = id
+      @props.onValueChange(value)
     , (err) => throw err
 
   handleEditClick: =>
