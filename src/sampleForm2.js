@@ -23,10 +23,18 @@ module.exports = {
         "_type": "Section",
         "contents": [
           {
-            "_id": "aquagenxcbtid",
+            "_id": "aquagenxcbtid1",
             "_type": "AquagenxCBTQuestion",
             "text": {
-              "en": "Aquagenx CBT Question",
+              "en": "Aquagenx CBT Question 1",
+              "_base": "en"
+            }
+          },
+          {
+            "_id": "aquagenxcbtid2",
+            "_type": "AquagenxCBTQuestion",
+            "text": {
+              "en": "Aquagenx CBT Question 2",
               "_base": "en"
             }
           },

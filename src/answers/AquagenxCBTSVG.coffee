@@ -326,3 +326,4 @@ module.exports = '''
   </g>
 </svg>
 '''
+

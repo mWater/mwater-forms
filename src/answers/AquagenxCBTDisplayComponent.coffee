@@ -1,0 +1,55 @@
+React = require 'react'
+H = React.DOM
+
+AquagenxCBTDisplaySVGString = require './AquagenxCBTDisplaySVG'
+
+module.exports = class AquagenxCBTDisplayComponent extends React.Component
+  @propTypes:
+    value: React.PropTypes.object
+    questionId: React.PropTypes.object.isRequired
+
+  renderStyle: ->
+    mainId = "#cbtDisplay#{@props.questionId}"
+    cbtValues = @props.value.cbt
+    compartmentValues = [cbtValues.c1, cbtValues.c2, cbtValues.c3, cbtValues.c4, cbtValues.c5]
+    compartmentColors = _.map compartmentValues, (c) -> if c then '#32a89b' else '#ebe7c2'
+    return H.style null,
+      "
+        #{mainId} #compartment1 rect {
+          fill: #{compartmentColors[0]};
+        }
+        #{mainId} #compartment2 rect {
+          fill: #{compartmentColors[1]};
+        }
+        #{mainId} #compartment3 rect {
+          fill: #{compartmentColors[2]};
+        }
+        #{mainId} #compartment4 rect {
+          fill: #{compartmentColors[3]};
+        }
+        #{mainId} #compartment5 rect {
+          fill: #{compartmentColors[4]};
+        }
+      "
+
+  renderInfo: ->
+    cbtValues = @props.value.cbt
+    mpn = cbtValues.mpn
+    if mpn == 100
+      mpn = '>100'
+    return H.div null,
+      H.div null,
+        'MPN/100ml: '
+        H.b(null, mpn)
+      H.div null,
+        'Upper 95% Confidence Interval/100ml: '
+        H.b(null, cbtValues.confidence)
+      H.div null,
+        'Health Risk Category Based on MPN and Confidence Interval: '
+        H.b(null, cbtValues.healthRisk)
+
+  render: ->
+    H.div id: "cbtDisplay#{@props.questionId}",
+      @renderStyle()
+      H.div dangerouslySetInnerHTML: {__html: AquagenxCBTDisplaySVGString}
+      @renderInfo()

@@ -4,153 +4,111 @@ R = React.createElement
 
 formUtils = require '../formUtils'
 
-aquagenxSVGString = require './AquagenxSVG'
+ImageThumbnailComponent = require '../ImageThumbnailComponent'
+ImagePopupComponent = require '../ImagePopupComponent'
 
-possibleCombinations = {
-  "false,false,false,false,false": {mpn: 0.0, confidence: 2.87, healthRisk: 'safe'}
-  "false,false,false,true,false": {mpn: 1.0, confidence: 5.14, healthRisk: 'probably_safe'}
-  "false,false,false,false,true": {mpn: 1.0, confidence: 4.74, healthRisk: 'probably_safe'}
-  "true,false,false,false,false": {mpn: 1.1, confidence: 5.16, healthRisk: 'probably_safe'}
-
-  "false,true,false,false,false": {mpn: 1.2, confidence: 5.64, healthRisk: 'probably_safe'}
-  "false,false,true,false,false": {mpn: 1.5, confidence: 7.81, healthRisk: 'probably_safe'}
-  "false,false,false,true,true": {mpn: 2.0, confidence: 6.32, healthRisk: 'probably_safe'}
-  "true,false,false,true,false": {mpn: 2.1, confidence: 6.85, healthRisk: 'probably_safe'}
-
-  "true,false,false,false,true": {mpn: 2.1, confidence: 6.64, healthRisk: 'probably_safe'}
-  "false,true,false,true,false": {mpn: 2.4, confidence: 7.81, healthRisk: 'probably_safe'}
-  "false,true,false,false,true": {mpn: 2.4, confidence: 8.12, healthRisk: 'probably_safe'}
-  "true,true,false,false,false": {mpn: 2.6, confidence: 8.51, healthRisk: 'probably_safe'}
-
-  "true,false,false,true,true": {mpn: 3.2, confidence: 8.38, healthRisk: 'probably_safe'}
-  "false,true,false,true,true": {mpn: 3.7, confidence: 9.70, healthRisk: 'probably_safe'}
-  "false,false,true,false,true": {mpn: 3.1, confidence: 11.36, healthRisk: 'possibly_safe'}
-  "false,false,true,true,false": {mpn: 3.2, confidence: 11.82, healthRisk: 'possibly_safe'}
-
-  "true,false,true,false,false": {mpn: 3.4, confidence: 12.53, healthRisk: 'possibly_safe'}
-  "true,true,false,false,true": {mpn: 3.9, confidence: 10.43, healthRisk: 'possibly_safe'}
-  "true,true,false,true,false": {mpn: 4.0, confidence: 10.94, healthRisk: 'possibly_safe'}
-  "false,true,true,false,false": {mpn: 4.7, confidence: 22.75, healthRisk: 'possibly_safe'}
-
-  "false,false,true,true,true": {mpn: 5.2, confidence: 14.73, healthRisk: 'possibly_safe'}
-  "true,true,false,true,true": {mpn: 5.4, confidence: 12.93, healthRisk: 'possibly_safe'}
-  "true,false,true,false,true": {mpn: 5.6, confidence: 17.14, healthRisk: 'possibly_safe'}
-  "true,false,true,true,false": {mpn: 5.8, confidence: 16.87, healthRisk: 'possibly_safe'}
-
-  "true,false,true,true,true": {mpn: 8.4, confidence: 21.19, healthRisk: 'possibly_safe'}
-  "false,true,true,false,true": {mpn: 9.1, confidence: 37.04, healthRisk: 'possibly_safe'}
-  "false,true,true,true,false": {mpn: 9.6, confidence: 37.68, healthRisk: 'possibly_safe'}
-  "true,true,true,false,false": {mpn: 13.6, confidence: 83.06, healthRisk: 'possibly_unsafe'}
-
-  "false,true,true,true,true": {mpn: 17.1, confidence: 56.35, healthRisk: 'possibly_unsafe'}
-  "true,true,true,false,true": {mpn: 32.6, confidence: 145.55, healthRisk: 'probably_unsafe'}
-  "true,true,true,true,false": {mpn: 48.3, confidence: 351.91, healthRisk: 'probably_unsafe'}
-  "true,true,true,true,true": {mpn: 100, confidence: 9435.10, healthRisk: 'unsafe'}
-}
+AquagenxCBTPopupComponent = require './AquagenxCBTPopupComponent'
+AquagenxCBTDisplayComponent = require './AquagenxCBTDisplayComponent'
 
 module.exports = class AquagenxCBTAnswerComponent extends React.Component
+  @contextTypes:
+    imageManager: React.PropTypes.object.isRequired
+    imageAcquirer: React.PropTypes.object
+    T: React.PropTypes.func.isRequired  # Localizer to use
+
   @propTypes:
     value: React.PropTypes.object
     onValueChange: React.PropTypes.func.isRequired
-    label: React.PropTypes.object.isRequired
+    questionId: React.PropTypes.string.isRequired
 
   @defaultProps:
-    value: false
+    value: {image: null, cbt: null}
 
   constructor: (props) ->
     super
 
-  componentDidMount: ->
-    main = @refs.main
-    $( main ).find( "#compartment1" ).click((ev) =>
-      @handleCompartmentClick('c1')
-    )
-    $( main ).find( "#compartment2" ).click((ev) =>
-      @handleCompartmentClick('c2')
-    )
-    $( main ).find( "#compartment3" ).click((ev) =>
-      @handleCompartmentClick('c3')
-    )
-    $( main ).find( "#compartment4" ).click((ev) =>
-      @handleCompartmentClick('c4')
-    )
-    $( main ).find( "#compartment5" ).click((ev) =>
-      @handleCompartmentClick('c5')
-    )
-
-  handleCompartmentClick: (compartmentField) ->
-    value = _.clone(@props.value)
-    value[compartmentField] = !value[compartmentField]
-
-    compartmentValues = [value.c1, value.c2, value.c3, value.c4, value.c5]
-    computedValues = possibleCombinations["#{compartmentValues}"]
-
-    value.mpn = computedValues.mpn
-    value.confidence = computedValues.confidence
-    value.healthRisk = computedValues.healthRisk
-
-    @props.onValueChange(value)
+    @state = { imageModal: null, aquagenxModal: null }
 
   focus: () ->
     null
 
-  renderStyle: ->
-    return null
-    return H.style null,
-      "
-        #compartment1 rect {
-          fill: #{compartmentColors[0]};
-          }
-          #compartment2 rect {
-            fill: #{compartmentColors[1]};
-          }
-          #compartment3 rect {
-            fill: #{compartmentColors[2]};
-          }
-          #compartment4 rect {
-            fill: #{compartmentColors[3]};
-          }
-          #compartment5 rect {
-            fill: #{compartmentColors[4]};
-          }
+  handleClickImage: =>
+    modal = React.createElement ImagePopupComponent,
+      imageManager: @context.imageManager
+      id: @props.value.image
+      T: @context.T
+      onRemove: =>
+        @setState(imageModal: null)
+        value = _.clone @props.value
+        value.image = null
+        @props.onValueChange(null)
+      onClose: =>
+        @setState(imageModal: null)
 
-          #compartment1:hover > rect {
-            fill: #{hoverColors[0]};
-          }
-          #compartment2:hover > rect{
-            fill: #{hoverColors[1]};
-          }
-          #compartment3:hover > rect{
-            fill: #{hoverColors[2]};
-          }
-          #compartment4:hover > rect {
-            fill: #{hoverColors[3]};
-          }
-          #compartment5:hover > rect {
-            fill: #{hoverColors[4]};
-          }
-        "
+    @setState(imageModal: modal)
 
-  renderInfo: ->
-    return H.div null,
-      H.div null,
-        'MPN/100ml: '
-        H.b(null, @props.value.mpn)
-      H.div null,
-        'Upper 95% Confidence Interval/100ml: '
-        H.b(null, @props.value.confidence)
-      H.div null,
-        'Health Risk Category Based on MPN and Confidence Interval: '
-        H.b(null, @props.value.healthRisk)
+  handleAdd: =>
+    # Call imageAcquirer
+    @context.imageAcquirer.acquire (id) =>
+      # Add to model
+      @props.onValueChange({ image: id })
+    , (err) => throw err
+
+  handleEditClick: =>
+    modal = React.createElement AquagenxCBTPopupComponent,
+      value: @props.value
+      questionId: @props.questionId
+      onSave: (value) =>
+        @setState(aquagenxModal: null)
+        @props.onValueChange(value)
+      onClose: =>
+        @setState(aquagenxModal: null)
+
+    @setState(aquagenxModal: modal)
+
+  handleClearClick: () =>
+    value = _.clone @props.value
+    delete value.cbt
+    @props.onValueChange(value)
+
+  renderImage: ->
+    H.div null,
+      @state.imageModal
+
+      if @props.image
+        React.createElement(ImageThumbnailComponent, imageId: @props.image.id, onClick: @handleClickImage, imageManager: @context.imageManager)
+      else if @props.onImageChange and @context.imageAcquirer
+        H.img
+          src: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAAFzAgMAAABtAbdzAAAACVBMVEUAAQBsbmz7//tn1+0/AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3woHEjIHlG2SjgAAAxhJREFUeNrt3Mt1pjAMBWA2U8J0NnjhEtyPS/DCrjKbnDn/AUt+cK0AuSxD4APkBCwktt1g2YgQIUKEiCXyb9v+EiFChAgRIkSIECFC5JHIdlz+ECFC5L0I/0ESIUKECBEivxYJ5WNJRIgQeT5ynFAQIfISpICXWEE8GskVpMCXM+LwSDwhHo/kFyOhrIw8ESJEiBAhQoQIkXsiqX8KMI2MzGZmkf+b+XXIx7zGr0KiOInFIYfp8BrkMG/2K5DTvH4FckoBeDxSSVDgkUo2w6ORaqYFjVQTMx6L5CrisIiQl8IiQiLLI5EsIA6JiFk8JCIm/jwOySLicIiS88QhUUYCDFGysR6F5MP1yX1BGUPS6cC7gjKGxPNx9wRlDKkcdu4IyhCSa0ed2kEZQur7awdlDgnVn2KQWL8wzcgPIUKIUyvyU4gwHhwCEXeGRJJ07VMj8iNIlPaVG5GfQJy4FwQiD6KoD68JRB4SACQrY0gfXgNIUg5XH14gJKKQqPxCUjceR7R4XUfU4KrDaxjx2mleRnIH4kBI0IYeClHXXkZSB7JjkMaN6SoS7RCvrw5rkQRBukLm1yIZiJTnI7lrzuYeg/jGU9kTkNSF7I9Bms/8RAyR2IcEAFJ+GMlEiBAhQmQ1svh+wnv8XZH3PKYuRt420zJBWrPfi4jlPD78KJKeg9wh34VBunKQGMQkm7oY6clwoxCTXP1axPL9yT5xmjd9pxVG1828AnQKUlDIPhqvmdeyyrtfh0OCeLUAiFKlsONelVtWFsg1EggkNao9IIUY2bJu5RjgiETKrtcSYcp8ol4VFSCIbX3Xykq1rNbcgZCya9WDoMK+z6pRd9weVqKYjhWvfRWwF8pG+2t5b1gAa1PKa1KUbFJeXWau1j1L3k2K903aEGwaKkxaQ0yaXGzadUwaj2qnEuBItmgGs2lrM2nQs2k1NGmatGn/tGlktWnJ/f5zGTxtNnwTIULkyQi/RNb3SLDuE3QmyH5GTL7YZ/LtwaULESJEiBAhQoQIESJEiBAhQoQIESJEiBAhQoQIESJEiNwS+QJpMQICAeI7BAAAAABJRU5ErkJggg=="
+          className: "img-rounded"
+          onClick: @handleAdd
+          style: { maxHeight: 100 }
+      else
+        H.div className: "text-muted", @context.T("No images present")
+
+
+  renderAquagenxCBT: ->
+    H.div null,
+      @state.aquagenxModal
+
+      if not @props.value.cbt?
+        H.div null,
+          H.button className: 'btn btn-default', onClick: @handleEditClick,
+            @context.T('Set')
+      else
+        H.div null,
+          R AquagenxCBTDisplayComponent, value: @props.value, questionId: @props.questionId
+          H.div null,
+            H.button className: 'btn btn-default', onClick: @handleClearClick,
+              H.span(className:"glyphicon glyphicon-remove")
+              @context.T('Clear')
+            H.button className: 'btn btn-default', onClick: @handleEditClick, style: {marginLeft: '12px'},
+              H.span(className:"glyphicon glyphicon-edit")
+              @context.T('Edit')
 
   render: ->
-    value = @props.value
-    compartmentValues = [value.c1, value.c2, value.c3, value.c4, value.c5]
-    compartmentColors = _.map compartmentValues, (c) -> if c then '#32a89b' else '#ebe7c2'
-    hoverColors = _.map compartmentValues, (c) -> if c then '#62c5bb' else '#fcf8d6'
     return H.div null,
-      H.div {ref: 'main'},
-        @renderStyle()
-        H.div dangerouslySetInnerHTML: {__html: aquagenxSVGString}
-        @renderInfo()
+      @renderAquagenxCBT()
+      H.br()
+      @renderImage()
 

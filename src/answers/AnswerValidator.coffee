@@ -24,6 +24,9 @@ module.exports = class AnswerValidator
         for item in question.items
           if not answer.value[item.id]?
             return true
+      if question._type == 'AquagenxCBTQuestion'
+        if not answer.cbt?
+          return true
 
     # Check internal validation
     specificValidation = @validateSpecificAnswerType(question, answer)

@@ -1,5 +1,5 @@
 assert = require('chai').assert
-AquagenxCBTAnswerComponent = require '../../src/answers/AquagenxCBTAnswerComponent'
+AquagenxCBTPopupComponent = require '../../src/answers/AquagenxCBTPopupComponent'
 
 TestComponent = require('react-library/lib/TestComponent')
 ReactTestUtils = require('react-addons-test-utils')
@@ -28,13 +28,13 @@ class AquagenxCBTContext extends React.Component
   render: ->
     return @props.children
 
-describe 'AquagenxCBTAnswerComponent', ->
+describe.only 'AquagenxCBTPopupComponent', ->
   beforeEach ->
     @toDestroy = []
 
     @render = (options = {}) =>
       elem = R AquagenxCBTContext, {},
-        R(AquagenxCBTAnswerComponent, options)
+        R(AquagenxCBTPopupComponent, options)
       comp = new TestComponent(elem)
       @toDestroy.push(comp)
       return comp
@@ -44,20 +44,32 @@ describe 'AquagenxCBTAnswerComponent', ->
       comp.destroy()
 
   it "clicking updates the values", (callback) ->
-    onValueChange = (value) ->
+    onSave = (value) ->
       assert.deepEqual value, {cbt: {c1: true, c2: false, c3: false, c4: false, c5: false, mpn: 1.1, confidence: 5.16, healthRisk: 'probably_safe'}}
       callback()
+
+    onClose = () ->
+      null
 
     @comp = @render({
       value: {}
       questionId: 'questionId'
-      onValueChange: onValueChange
-      label: {en: 'test label', _base: 'en'}
+      onSave: onSave
+      onClose: onClose
     })
 
     component = @comp.getComponent()
-    compartment1 = $( component.refs.main ).find( "#compartment12" )
-    assert compartment1, 'Could not find the compartment'
-    compartment1.click()
+    #compartment1 = $( component.refs.main ).find( "#compartment1" )
+    #assert compartment1, 'Could not find the compartment'
+    #compartment1.click()
+
+    ReactTestUtils.findAllInRenderedTree(component, (c) ->
+      console.log c
+      console.log c.class
+      console.log c.id
+    )
+
+    console.log(@comp.findComponentById('save'))
 
 
+    #TestComponent.click(@comp.findComponentById('save'))
