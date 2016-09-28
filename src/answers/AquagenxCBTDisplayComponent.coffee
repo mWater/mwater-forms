@@ -7,6 +7,11 @@ module.exports = class AquagenxCBTDisplayComponent extends React.Component
   @propTypes:
     value: React.PropTypes.object
     questionId: React.PropTypes.object.isRequired
+    onEdit: React.PropTypes.func
+
+  handleClick: =>
+    if @props.onEdit
+      @props.onEdit()
 
   renderStyle: ->
     mainId = "#cbtDisplay#{@props.questionId}"
@@ -51,5 +56,5 @@ module.exports = class AquagenxCBTDisplayComponent extends React.Component
   render: ->
     H.div id: "cbtDisplay#{@props.questionId}",
       @renderStyle()
-      H.div dangerouslySetInnerHTML: {__html: AquagenxCBTDisplaySVGString}
+      H.div dangerouslySetInnerHTML: {__html: AquagenxCBTDisplaySVGString}, onClick: @handleClick
       @renderInfo()

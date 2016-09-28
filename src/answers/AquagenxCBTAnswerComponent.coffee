@@ -17,6 +17,8 @@ module.exports = class AquagenxCBTAnswerComponent extends React.Component
     T: React.PropTypes.func.isRequired  # Localizer to use
 
   @propTypes:
+    # Value contains two entries: image and cbt
+    # The cbt data contain c1,c2,c3,c4,c5 (All booleans) + healthRisk(String) + mpn (Number) + confidence(Number)
     value: React.PropTypes.object
     onValueChange: React.PropTypes.func.isRequired
     questionId: React.PropTypes.string.isRequired
@@ -94,17 +96,18 @@ module.exports = class AquagenxCBTAnswerComponent extends React.Component
       if not @props.value.cbt?
         H.div null,
           H.button className: 'btn btn-default', onClick: @handleEditClick,
-            @context.T('Set')
+            @context.T('Record')
       else
         H.div null,
-          R AquagenxCBTDisplayComponent, value: @props.value, questionId: @props.questionId
+          R AquagenxCBTDisplayComponent, value: @props.value, questionId: @props.questionId, onEdit: @handleEditClick
           H.div null,
-            H.button className: 'btn btn-default', onClick: @handleClearClick,
-              H.span(className:"glyphicon glyphicon-remove")
-              @context.T('Clear')
-            H.button className: 'btn btn-default', onClick: @handleEditClick, style: {marginLeft: '12px'},
+            H.button className: 'btn btn-default', onClick: @handleEditClick,
               H.span(className:"glyphicon glyphicon-edit")
-              @context.T('Edit')
+              @context.T(' Edit')
+            H.button className: 'btn btn-default', onClick: @handleClearClick, style: {marginLeft: '12px'},
+              H.span(className:"glyphicon glyphicon-remove")
+              @context.T(' Clear')
+
 
   render: ->
     return H.div null,

@@ -1,6 +1,5 @@
 React = require 'react'
 H = React.DOM
-ModalPopupComponent = require('react-library/lib/ModalPopupComponent')
 ImagePopupComponent = require './ImagePopupComponent'
 
 # Displays an image

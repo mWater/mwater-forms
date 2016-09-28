@@ -12,8 +12,8 @@ module.exports = '''
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="400"
-   height="450"
-   viewBox="0 0 400.00001 450.00001"
+   height="400"
+   viewBox="0 0 400.00001 400.00001"
    id="svg2"
    version="1.1"
    inkscape:version="0.91 r13725"
@@ -38,9 +38,9 @@ module.exports = '''
      inkscape:pageshadow="2"
      inkscape:zoom="1.8375"
      inkscape:cx="181.03148"
-     inkscape:cy="231.78663"
+     inkscape:cy="210.01792"
      inkscape:document-units="px"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="layer3"
      showgrid="true"
      inkscape:snap-grids="true"
      inkscape:window-width="1920"
@@ -53,7 +53,8 @@ module.exports = '''
      inkscape:snap-to-guides="true"
      inkscape:snap-bbox="true"
      inkscape:bbox-paths="true"
-     inkscape:bbox-nodes="true">
+     inkscape:bbox-nodes="true"
+     borderlayer="true">
     <inkscape:grid
        type="xygrid"
        id="grid4193"
@@ -68,7 +69,7 @@ module.exports = '''
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -77,24 +78,24 @@ module.exports = '''
      id="layer2"
      inkscape:label="Background"
      style="display:inline"
-     transform="translate(0,-602.3621)">
+     transform="translate(0,-652.3621)">
     <rect
        style="fill:#e6e6e6;fill-opacity:1"
        id="rect4182"
        width="390"
-       height="440.00003"
-       x="4.9999971"
-       y="607.36212" />
+       height="399.99994"
+       x="5.0000048"
+       y="652.36212" />
   </g>
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-602.3621)"
+     transform="translate(0,-652.3621)"
      style="display:inline">
     <g
        id="compartment2"
-       transform="translate(-1.3565775e-6,139.99999)"
+       transform="translate(6.0087893e-6,169.9999)"
        inkscape:label="#g4363"
        style="fill:#eb0000;fill-opacity:1">
       <rect
@@ -108,7 +109,7 @@ module.exports = '''
          ry="0"
          y="747.36212"
          x="5"
-         height="159.99997"
+         height="134.99998"
          width="165"
          id="rect4176"
          style="fill-opacity:1" />
@@ -128,7 +129,7 @@ module.exports = '''
     </g>
     <g
        id="compartment1"
-       transform="translate(-1.3565775e-6,139.99999)"
+       transform="translate(6.0087893e-6,169.9999)"
        style="fill:#eb0000;fill-opacity:1">
       <rect
          y="552.36212"
@@ -152,7 +153,7 @@ module.exports = '''
     </g>
     <g
        id="compartment5"
-       transform="translate(-1.3565775e-6,139.99999)"
+       transform="translate(6.0087893e-6,169.9999)"
        style="fill:#eb0000;fill-opacity:1">
       <rect
          style="display:inline;fill-opacity:1;fill-rule:evenodd;stroke-width:1.26699996;stroke-miterlimit:4;stroke-dasharray:none"
@@ -179,7 +180,7 @@ module.exports = '''
     <g
        style="display:inline;fill:#eb0000;fill-opacity:1"
        id="compartment3"
-       transform="translate(-1.3565775e-6,139.99999)"
+       transform="translate(6.0087893e-6,169.9999)"
        inkscape:label="#g4371">
       <rect
          y="552.36212"
@@ -192,7 +193,7 @@ module.exports = '''
          ry="0"
          y="662.36212"
          x="175"
-         height="244.99998"
+         height="219.99998"
          width="165"
          id="rect4204"
          style="fill-opacity:1;fill-rule:evenodd;stroke-width:1.26699996;stroke-miterlimit:4;stroke-dasharray:none" />
@@ -212,7 +213,7 @@ module.exports = '''
     <g
        style="display:inline"
        id="g4397"
-       transform="translate(-3.0619893e-6,139.99998)">
+       transform="translate(4.3033775e-6,169.99989)">
       <rect
          y="607.36212"
          x="330"
@@ -223,14 +224,14 @@ module.exports = '''
       <rect
          y="657.36212"
          x="345"
-         height="249.99997"
+         height="224.99998"
          width="50"
          id="rect4310"
          style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.26699996;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
     </g>
     <g
        style="fill:#eb0000;fill-opacity:1"
-       transform="translate(-1.3565775e-6,139.99999)"
+       transform="translate(6.0087893e-6,169.9999)"
        id="compartment4">
       <rect
          inkscape:label="#rect4200"
@@ -260,9 +261,9 @@ module.exports = '''
        inkscape:label="Lines"
        style="display:inline">
       <rect
-         y="642.36218"
-         x="94.999985"
-         height="244.99998"
+         y="677.36212"
+         x="95"
+         height="240"
          width="5"
          id="rect4277"
          style="fill:#b3b3b3;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.26699996;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
@@ -270,60 +271,59 @@ module.exports = '''
          style="fill:#b3b3b3;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.26699996;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          id="rect4277-0"
          width="4.9893589"
-         height="405"
-         x="170.03723"
-         y="642.36212" />
+         height="374.99994"
+         x="170.03725"
+         y="677.36212" />
       <rect
          style="fill:#b3b3b3;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.26699996;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          id="rect4277-3"
          width="4.9999981"
-         height="160"
-         x="249.99998"
-         y="642.36212" />
+         height="154.99995"
+         x="250"
+         y="677.36212" />
       <rect
          style="fill:#b3b3b3;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.26699996;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          id="rect4277-5"
          width="4.9999976"
-         height="154.99998"
+         height="149.99994"
          x="325"
-         y="642.36212" />
+         y="677.36212" />
       <rect
          style="fill:#b3b3b3;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.26699996;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          id="rect4277-4-7"
          width="85"
          height="4.999979"
-         x="254.99998"
-         y="797.36218" />
+         x="255"
+         y="827.36212" />
       <rect
          style="fill:#b3b3b3;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.26699996;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          id="rect4277-0-6"
          width="4.9999971"
-         height="249.99997"
+         height="224.99991"
          x="340"
-         y="797.36218" />
+         y="827.36212" />
       <rect
          style="fill:#b3b3b3;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.26699996;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          id="rect4277-4"
          width="90"
          height="5"
-         x="4.9999838"
-         y="882.36218" />
+         x="4.9999914"
+         y="912.36212" />
       <rect
          style="fill:#b3b3b3;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.26699996;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          id="rect4277-4-3"
          width="65"
          height="4.9468174"
          x="330"
-         y="742.41534" />
+         y="772.41528" />
       <rect
          style="display:inline;fill:#ffff00;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.26699996;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          id="rect4306"
          width="400"
          height="9.9999599"
-         x="-1.4741116e-005"
-         y="617.36218" />
+         x="-9.9999997e-006"
+         y="657.36212" />
     </g>
   </g>
 </svg>
 '''
-

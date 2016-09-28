@@ -164,8 +164,9 @@ module.exports = class AquagenxCBTPopupComponent extends React.Component
   render: ->
     return React.createElement ModalPopupComponent,
       footer: H.div id: 'footer',
-        H.button className: 'btn btn-default', id: 'save', onClick: @handleSaveClick, @context.T('Save')
-        H.button type: "button", className: "btn btn-default", id: 'close', onClick: @props.onClose, @context.T('Close')
+        H.button className: 'btn btn-primary', id: 'save', onClick: @handleSaveClick, @context.T('Save')
+        H.button type: "button", className: "btn btn-default", id: 'close', onClick: @props.onClose, @context.T('Cancel')
+      header: @context.T('Click on the compartments to change color')
       H.div {ref: 'main', id: "cbtPopup#{@props.questionId}"},
         @renderStyle()
         H.div dangerouslySetInnerHTML: {__html: aquagenxCBTSVGString}
