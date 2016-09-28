@@ -569,11 +569,10 @@ module.exports = class FormSchemaBuilder
             contents: []
           }
 
-
           section.contents.push({
             id: "data:#{item._id}:value:cbt:mpn"
             type: "number"
-            name: appendStr(item.text, " (mpn)")
+            name: appendStr(item.text, " (MPN/100ml)")
             code: if code then code + " (mpn)"
             jsonql: {
               type: "op"
@@ -588,7 +587,7 @@ module.exports = class FormSchemaBuilder
           section.contents.push({
             id: "data:#{item._id}:value:cbt:confidence"
             type: "number"
-            name: appendStr(item.text, " (confidence)")
+            name: appendStr(item.text, " (Upper 95% Confidence Interval/100ml)")
             code: if code then code + " (confidence)"
             jsonql: {
               type: "op"
@@ -604,7 +603,7 @@ module.exports = class FormSchemaBuilder
             id: "data:#{item._id}:value:cbt:healthRisk"
             type: "enum"
             enumValues: healthRiskEnum
-            name: appendStr(item.text, " (healthRisk)")
+            name: appendStr(item.text, " (Health Risk Category)")
             code: if code then code + " (healthRisk)"
             jsonql: {
               type: "op"
@@ -632,11 +631,11 @@ module.exports = class FormSchemaBuilder
             }
           })
 
-          addCxColumn = (v) ->
+          addCxColumn = (label, v) ->
             section.contents.push({
               id: "data:#{item._id}:value:cbt:#{v}"
               type: "boolean"
-              name: appendStr(item.text, " (#{v})")
+              name: appendStr(item.text, " (#{label})")
               code: if code then code + " (#{v})"
               jsonql: {
                 type: "op"
@@ -654,11 +653,11 @@ module.exports = class FormSchemaBuilder
               }
             })
 
-          addCxColumn('c1')
-          addCxColumn('c2')
-          addCxColumn('c3')
-          addCxColumn('c4')
-          addCxColumn('c5')
+          addCxColumn('Compartment 1', 'c1')
+          addCxColumn('Compartment 2', 'c2')
+          addCxColumn('Compartment 3', 'c3')
+          addCxColumn('Compartment 4', 'c4')
+          addCxColumn('Compartment 5', 'c5')
 
           addColumn(section)
 

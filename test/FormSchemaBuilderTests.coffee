@@ -336,7 +336,7 @@ describe "FormSchemaBuilder addForm", ->
         {
           id: "data:questionid:value:cbt:mpn"
           type: "number"
-          name: { _base: "en", en: "Question (mpn)" }
+          name: { _base: "en", en: "Question (MPN/100ml)" }
           jsonql: {
             type: "op"
             op: "#>>"
@@ -346,7 +346,7 @@ describe "FormSchemaBuilder addForm", ->
         {
           id: "data:questionid:value:cbt:confidence"
           type: "number"
-          name: { _base: "en", en: "Question (confidence)" }
+          name: { _base: "en", en: "Question (Upper 95% Confidence Interval/100ml)" }
           jsonql: {
             type: "op"
             op: "#>>"
@@ -356,7 +356,7 @@ describe "FormSchemaBuilder addForm", ->
         {
           id: "data:questionid:value:cbt:healthRisk"
           type: "enum"
-          name: { _base: "en", en: "Question (healthRisk)" }
+          name: { _base: "en", en: "Question (Health Risk Category)" }
           jsonql: {
             type: "op",
             op: "#>>",
@@ -371,7 +371,7 @@ describe "FormSchemaBuilder addForm", ->
         {
           id: "data:questionid:value:cbt:c1"
           type: "boolean"
-          name: { _base: "en", en: "Question (c1)" }
+          name: { _base: "en", en: "Question (Compartment 1)" }
           jsonql: {
             type: "op"
             op: "::boolean"
@@ -383,7 +383,7 @@ describe "FormSchemaBuilder addForm", ->
         {
           id: "data:questionid:value:cbt:c2"
           type: "boolean"
-          name: { _base: "en", en: "Question (c2)" }
+          name: { _base: "en", en: "Question (Compartment 2)" }
           jsonql: {
             type: "op"
             op: "::boolean"
@@ -395,7 +395,7 @@ describe "FormSchemaBuilder addForm", ->
         {
           id: "data:questionid:value:cbt:c3"
           type: "boolean"
-          name: { _base: "en", en: "Question (c3)" }
+          name: { _base: "en", en: "Question (Compartment 3)" }
           jsonql: {
             type: "op"
             op: "::boolean"
@@ -407,7 +407,7 @@ describe "FormSchemaBuilder addForm", ->
         {
           id: "data:questionid:value:cbt:c4"
           type: "boolean"
-          name: { _base: "en", en: "Question (c4)" }
+          name: { _base: "en", en: "Question (Compartment 4)" }
           jsonql: {
             type: "op"
             op: "::boolean"
@@ -419,7 +419,7 @@ describe "FormSchemaBuilder addForm", ->
         {
           id: "data:questionid:value:cbt:c5"
           type: "boolean"
-          name: { _base: "en", en: "Question (c5)" }
+          name: { _base: "en", en: "Question (Compartment 5)" }
           jsonql: {
             type: "op"
             op: "::boolean"
