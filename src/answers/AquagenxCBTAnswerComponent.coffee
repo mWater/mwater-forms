@@ -38,7 +38,7 @@ module.exports = class AquagenxCBTAnswerComponent extends React.Component
   handleClickImage: =>
     modal = React.createElement ImagePopupComponent,
       imageManager: @context.imageManager
-      id: @props.value.image
+      id: @props.value.image.id
       T: @context.T
       onRemove: =>
         @setState(imageModal: null)
@@ -55,7 +55,7 @@ module.exports = class AquagenxCBTAnswerComponent extends React.Component
     @context.imageAcquirer.acquire (id) =>
       # Add to model
       value = _.clone @props.value
-      value.image = id
+      value.image = {id: id}
       @props.onValueChange(value)
     , (err) => throw err
 
