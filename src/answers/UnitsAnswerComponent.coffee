@@ -75,21 +75,16 @@ module.exports = class UnitsAnswerComponent extends React.Component
 
   getSelectedUnit: (answer) ->
     if answer.value?
-      if answer.value.quantity != undefined
-        return answer.value.units
-      else
-        return answer.units
+      return answer.value.units
+
     if @props.defaultUnits?
       return @props.defaultUnits
+
     return null
 
   getSelectedQuantity: (answer) ->
-    answer = answer
-    if answer.value?
-      if answer.value.quantity != undefined
-        return answer.value.quantity
-      else
-        return answer.value
+    if answer.value?.quantity?
+      return answer.value.quantity
     return null
 
   createNumberInput: ->
@@ -102,7 +97,7 @@ module.exports = class UnitsAnswerComponent extends React.Component
         style: {width: "12em"},
         onBlur: @handleValueBlur,
         onChange: @handleValueChange,
-        value: @state.quantity or ""
+        value: if @state.quantity? then @state.quantity else ""
         ref: 'quantity'
         onKeyDown: if @props.prefix then @handleKeyDown else @handleInternalNext
       }
