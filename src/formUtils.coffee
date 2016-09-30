@@ -156,6 +156,8 @@ exports.prepareQuestion = (q) ->
       _.defaults q, { items: [], choices: [] }
     when "MatrixQuestion"
       _.defaults q, { items: [], columns: [] }
+    when "AquagenxCBTQuestion"
+      _.defaults q, {  }
 
   # Get known fields
   knownFields = ['_id', '_type', 'text', 'textExprs', 'conditions', 'validations', 
@@ -225,7 +227,7 @@ exports.changeQuestionType = (question, newType) ->
 
   return question
 
-# Gets type of the answer: text, number, choice, choices, date, units, boolean, location, image, images, texts, site, entity, admin_region, items_choices, matrix
+# Gets type of the answer: text, number, choice, choices, date, units, boolean, location, image, images, texts, site, entity, admin_region, items_choices, matrix, aquagenx_cbt
 exports.getAnswerType = (q) ->
   switch q._type
     when "TextQuestion", "TextColumnQuestion"
@@ -262,6 +264,8 @@ exports.getAnswerType = (q) ->
       return "matrix"
     when "LikertQuestion"
       return "items_choices"
+    when "AquagenxCBTQuestion"
+      return "aquagenx_cbt"
     else throw new Error("Unknown question type #{q._type}")
 
 # Check if a form is all sections

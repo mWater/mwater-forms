@@ -12,6 +12,7 @@ CurrentPositionFinder = require './legacy/CurrentPositionFinder'
 AnswerValidator = require './answers/AnswerValidator'
 
 AdminRegionAnswerComponent = require './answers/AdminRegionAnswerComponent'
+AquagenxCBTAnswerComponent = require './answers/AquagenxCBTAnswerComponent'
 BarcodeAnswerComponent = require './answers/BarcodeAnswerComponent'
 CheckAnswerComponent = require './answers/CheckAnswerComponent'
 DateAnswerComponent = require './answers/DateAnswerComponent'
@@ -30,6 +31,7 @@ StopwatchAnswerComponent = require './answers/StopwatchAnswerComponent'
 TextAnswerComponent = require './answers/TextAnswerComponent'
 TextListAnswerComponent = require './answers/TextListAnswerComponent'
 UnitsAnswerComponent = require './answers/UnitsAnswerComponent'
+
 
 # Question component that displays a question of any type.
 # Displays question text and hint
@@ -428,6 +430,14 @@ module.exports = class QuestionComponent extends React.Component
           data: @props.data
           parentData: @props.parentData
           formExprEvaluator: @props.formExprEvaluator
+        }
+
+      when "AquagenxCBTQuestion"
+        return R AquagenxCBTAnswerComponent, {
+          ref: "answer"
+          value: answer.value
+          onValueChange: @handleValueChange
+          questionId: @props.question._id
         }
 
       else

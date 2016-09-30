@@ -12,6 +12,8 @@ ImageDisplayComponent = require './ImageDisplayComponent'
 EntityDisplayComponent = require './EntityDisplayComponent'
 AdminRegionDisplayComponent = require './AdminRegionDisplayComponent'
 
+AquagenxCBTDisplayComponent = require './answers/AquagenxCBTDisplayComponent'
+
 # Displays the answers of a response in a table
 module.exports = class ResponseAnswersComponent extends React.Component
   @propTypes:
@@ -171,6 +173,9 @@ module.exports = class ResponseAnswersComponent extends React.Component
                 formUtils.localizeString(choice.label, @props.locale)
             else
               return H.span className: "label label-danger", "Invalid Choice"
+
+      when "aquagenx_cbt"
+        return R AquagenxCBTDisplayComponent, {value: answer.value, questionId: q._id}
 
   # Special render on multiple rows
   renderMatrixAnswer: (q, answer) ->

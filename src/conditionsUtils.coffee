@@ -13,11 +13,35 @@ exports.compileCondition = compileCondition = (cond) =>
     when "present"
       return (data) =>
         value = getValue(data)
-        return not(not value) and not (value instanceof Array and value.length == 0)
+        present = value? and value != '' and not (value instanceof Array and value.length == 0)
+        if not present
+          return false
+        # If present, let's make sure that at least one field is set if it's an object
+        else
+          if value instanceof Object
+            for key,v of value
+              if v?
+                return true
+            # Not present, since the object has no set fields
+            return false
+          else
+            return true
     when "!present"
       return (data) =>
         value = getValue(data)
-        return (not value) or (value instanceof Array and value.length == 0)
+        notPresent = not value? or value == '' or (value instanceof Array and value.length == 0)
+        if notPresent
+          return true
+        # If present, let's make sure that at least one field is set if it's an object
+        else
+          if value instanceof Object
+            for key,v of value
+              if v?
+                return false
+            # Not present, since the object has no set fields
+            return true
+          else
+            return false
     when "contains"
       return (data) =>
         return (getValue(data) or "").indexOf(cond.rhs.literal) != -1

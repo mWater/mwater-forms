@@ -328,7 +328,108 @@ describe "FormSchemaBuilder addForm", ->
           jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }
         }
       ])
-      
+
+    it "aquagenx CBT", ->
+      @testQuestion({
+        _type: "AquagenxCBTQuestion"
+      }, [
+        {
+          id: "data:questionid:value:cbt:mpn"
+          type: "number"
+          name: { _base: "en", en: "Question (MPN/100ml)" }
+          jsonql: {
+            type: "op"
+            op: "#>>"
+            exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,cbt,mpn}"]
+          }
+        }
+        {
+          id: "data:questionid:value:cbt:confidence"
+          type: "number"
+          name: { _base: "en", en: "Question (Upper 95% Confidence Interval/100ml)" }
+          jsonql: {
+            type: "op"
+            op: "#>>"
+            exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,cbt,confidence}"]
+          }
+        }
+        {
+          id: "data:questionid:value:cbt:healthRisk"
+          type: "enum"
+          name: { _base: "en", en: "Question (Health Risk Category)" }
+          jsonql: {
+            type: "op",
+            op: "#>>",
+            exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,cbt,healthRisk}"]
+          }
+        }
+        {
+          id: "data:questionid:value:image"
+          type: "image"
+          jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,image}"] }
+        }
+        {
+          id: "data:questionid:value:cbt:c1"
+          type: "boolean"
+          name: { _base: "en", en: "Question (Compartment 1)" }
+          jsonql: {
+            type: "op"
+            op: "::boolean"
+            exprs: [
+              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,cbt,c1}"] }
+            ]
+          }
+        }
+        {
+          id: "data:questionid:value:cbt:c2"
+          type: "boolean"
+          name: { _base: "en", en: "Question (Compartment 2)" }
+          jsonql: {
+            type: "op"
+            op: "::boolean"
+            exprs: [
+              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,cbt,c2}"] }
+            ]
+          }
+        }
+        {
+          id: "data:questionid:value:cbt:c3"
+          type: "boolean"
+          name: { _base: "en", en: "Question (Compartment 3)" }
+          jsonql: {
+            type: "op"
+            op: "::boolean"
+            exprs: [
+              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,cbt,c3}"] }
+            ]
+          }
+        }
+        {
+          id: "data:questionid:value:cbt:c4"
+          type: "boolean"
+          name: { _base: "en", en: "Question (Compartment 4)" }
+          jsonql: {
+            type: "op"
+            op: "::boolean"
+            exprs: [
+              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,cbt,c4}"] }
+            ]
+          }
+        }
+        {
+          id: "data:questionid:value:cbt:c5"
+          type: "boolean"
+          name: { _base: "en", en: "Question (Compartment 5)" }
+          jsonql: {
+            type: "op"
+            op: "::boolean"
+            exprs: [
+              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,cbt,c5}"] }
+            ]
+          }
+        }
+      ])
+
     it "units integer with multiple", ->
       @testQuestion({ 
         _type: "UnitsQuestion",  
