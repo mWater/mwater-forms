@@ -604,7 +604,7 @@ module.exports = class FormSchemaBuilder
             type: "enum"
             enumValues: healthRiskEnum
             name: appendStr(item.text, " (Health Risk Category)")
-            code: if code then code + " (healthRisk)"
+            code: if code then code + " (health_risk)"
             jsonql: {
               type: "op"
               op: "#>>"
