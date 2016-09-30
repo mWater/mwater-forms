@@ -25,7 +25,7 @@ module.exports = class AnswerValidator
           if not answer.value[item.id]?
             return true
       if question._type == 'AquagenxCBTQuestion'
-        if not answer.cbt?
+        if not answer.value.cbt?
           return true
 
     # Check internal validation
