@@ -28,6 +28,9 @@ describe "conditionsUtils", ->
       it "handles null", ->
         @testFalse(null, "present")
 
+      it "handles zero", ->
+        @testTrue(0, "present")
+
       it "handles empty string", ->
         @testTrue("abc", "present")
         @testFalse("", "present")
@@ -42,6 +45,9 @@ describe "conditionsUtils", ->
         @testFalse({}, "present")
 
     describe "!present", ->
+      it "handles zero", ->
+        @testFalse(0, "!present")
+
       it "handles null", ->
         @testTrue(null, "!present")
 
