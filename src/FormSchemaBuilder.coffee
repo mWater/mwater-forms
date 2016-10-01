@@ -239,9 +239,8 @@ module.exports = class FormSchemaBuilder
 
     return schema
 
-  # Create a subsection of Indicators for an indicator calculation. Express in jsonql so that it can be computed direcly from the current response 
+  # Create a subsection of Indicators for an indicator calculation.
   # isMaster uses master_response as row to compute from
-  # TODO handle roster setting on calculations
   createIndicatorCalculationSection: (indicatorCalculation, schema, isMaster) ->
     # Get indicator table
     indicTable = schema.getTable("indicator_values:#{indicatorCalculation.indicator}")
