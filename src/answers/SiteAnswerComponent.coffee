@@ -60,11 +60,13 @@ module.exports = class SiteAnswerComponent extends React.Component
           onKeyDown: @handleKeyDown
           ref: 'input'
           placeholder: @context.T("mWater ID of Site")
+          style: { zIndex: "inherit" } # Workaround for strange bootstrap z-index
           value: @props.value?.code or ""
           onChange: @handleChange
         H.span className: "input-group-btn",
-          H.button className: "btn btn-default", disabled: not @context.selectEntity?, type: "button", onClick: @handleSelectClick,
+          H.button className: "btn btn-default", disabled: not @context.selectEntity?, type: "button", onClick: @handleSelectClick, style: { zIndex: "inherit" },
             @context.T("Select")
+          
       H.br()
       R EntityDisplayComponent, 
         displayInWell: true

@@ -128,7 +128,7 @@ module.exports = {
     }
 
     # Links between a property and either a question or a calculation
-    # TODO document
+    # DEPRECATED
     propertyLink: {
       type: "object"
       properties: {
@@ -974,7 +974,8 @@ module.exports = {
       properties: extendQuestionProperties({
         _type: { enum: ["SiteQuestion"] }
 
-        # Optional list of site types to include
+        # Optional list of site types to include. e.g. "Water point", "Community". Should only be one in array.
+        # If none, defaults to "Water point"
         siteTypes : {
           type: "array"
           items: { type: "string" }
@@ -1027,6 +1028,7 @@ module.exports = {
         selectText: { $ref: "#/definitions/localizedString" } 
         
         # Property links that connect questions to properties
+        # DEPRECATED
         propertyLinks: { 
           type: "array",
           items: { $ref: "#/definitions/propertyLink" }
