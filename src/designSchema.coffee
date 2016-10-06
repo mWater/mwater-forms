@@ -213,8 +213,8 @@ module.exports = {
         # True if the question is required to be answered
         required: { type: "boolean" }
 
-        # True if the question is disbled (will never be shown in live form)
-        disbled: { type: "boolean" }
+        # True if the question is disabled (will never be shown in live form)
+        disabled: { type: "boolean" }
 
         # Conditions for visibility of the instructions
         conditions: { $ref: "#/definitions/conditions" }

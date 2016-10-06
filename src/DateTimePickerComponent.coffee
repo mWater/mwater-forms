@@ -76,7 +76,8 @@ module.exports = class DateTimePickerComponent extends React.Component
     $(node).data("DateTimePicker").show()
 
   render: ->
-    input = H.input { type: "text", className: "form-control", placeholder: @props.placeholder, onFocus: @handleInputFocus }
+    # Override z-index due to bootstrap oddness
+    input = H.input { type: "text", className: "form-control", placeholder: @props.placeholder, onFocus: @handleInputFocus, style: { zIndex: "inherit" } }
 
     H.div className: 'input-group date', ref: "datetimepicker",
       input
