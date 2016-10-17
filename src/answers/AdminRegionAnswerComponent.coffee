@@ -1,6 +1,5 @@
 _ = require 'lodash'
 React = require 'react'
-ReactDOM = require 'react-dom'
 H = React.DOM
 
 AdminRegionSelectComponent = require '../AdminRegionSelectComponent'

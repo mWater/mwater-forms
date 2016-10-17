@@ -1,7 +1,6 @@
 React = require 'react'
 R = React.createElement
 H = React.DOM
-ReactDOM = require 'react-dom'
 moment = require 'moment'
 
 # This only works in browser. Load datetime picker

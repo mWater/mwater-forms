@@ -40,6 +40,8 @@
     - { value: { ITEM1ID: { QUESTION1ID: { value: somevalue }, QUESTION2ID: { ...}}, ITEM2ID: ... }
 * **"admin_region"**
     - {value: "id_of_admin_region"}
+* **"aquagenx_cbt"**
+    - {value:{cbt: {c1,c2,c3,c4,c5 (All booleans), healthRisk(String), mpn (Number), confidence (Number)}, image: {id:"image_ID"}}
 
 ## Alternates:
 * {alternate = "na" or "dontknow"}
