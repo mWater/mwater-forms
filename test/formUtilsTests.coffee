@@ -5,6 +5,11 @@ simpleForm = require './simpleForm'
 sectionedForm = require './sectionedForm'
 propertyLinksFormDesign = require './propertyLinksFormDesign'
 
+canonical = require 'canonical-json'
+
+compare = (actual, expected) ->
+  assert.equal canonical(actual), canonical(expected), "\n" + canonical(actual) + "\n" + canonical(expected) + "\n"
+
 describe "FormUtils", ->
   describe "priorQuestions", ->
     context 'two prior questions, one following', ->
@@ -251,3 +256,116 @@ describe "FormUtils", ->
       strs = formUtils.extractLocalizedStrings(obj)
 
       assert.deepEqual strs, [{ _base: "en", en: "hello" }, { _base: "es", en: "hello2" }]
+
+  describe "extractEntityReferences", ->
+    it "extracts entity questions", ->
+      formDesign = {
+        _type: "Form"
+        contents: [
+          {
+            _id: "0001"
+            _type: "EntityQuestion"
+            entityType: "community"
+          }
+        ]
+      }
+
+      responseData = {
+        "0001": {
+          value: "123456"
+        }
+      }
+
+      compare formUtils.extractEntityReferences(formDesign, responseData), [
+        {
+          question: "0001"
+          roster: null
+          entityType: "community"
+          property: "_id"
+          value: "123456"
+        }
+      ]
+
+    it "extracts site questions", ->
+      formDesign = {
+        _type: "Form"
+        contents: [
+          {
+            _id: "0001"
+            _type: "SiteQuestion"
+            siteTypes: ["Health facility"]
+          }
+        ]
+      }
+
+      responseData = {
+        "0001": {
+          value: { code: "10007" }
+        }
+      }
+
+      compare formUtils.extractEntityReferences(formDesign, responseData), [
+        {
+          question: "0001"
+          roster: null
+          entityType: "health_facility"
+          property: "code"
+          value: "10007"
+        }
+      ]
+
+    it "extracts site questions in roster", ->
+      formDesign = {
+        _type: "Form"
+        contents: [
+          { 
+            _id: "rosterid"
+            _type: "RosterGroup"
+            contents: [
+              {
+                _id: "0001"
+                _type: "SiteQuestion"
+                siteTypes: ["Health facility"]
+              }
+            ]
+          }
+        ]
+      }
+
+      responseData = {
+        "rosterid": [
+          {
+            _id: "firstrid"
+            data: {
+              "0001": {
+                value: { code: "10007" }
+              }
+            }
+          }
+          {
+            _id: "secondrid"
+            data: {
+              "0001": {
+                value: { code: "10014" }
+              }
+            }
+          }
+        ]
+      }
+
+      compare formUtils.extractEntityReferences(formDesign, responseData), [
+        {
+          question: "0001"
+          roster: "firstrid"
+          entityType: "health_facility"
+          property: "code"
+          value: "10007"
+        }
+        {
+          question: "0001"
+          roster: "secondrid"
+          entityType: "health_facility"
+          property: "code"
+          value: "10014"
+        }
+      ]

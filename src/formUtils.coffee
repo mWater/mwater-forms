@@ -377,3 +377,44 @@ exports.findEntityQuestion = (form, entityType) ->
         return q
     return
   return question
+
+# Finds all references to entities in a response. Returns array of: 
+# {
+#   question: _id of question
+#   roster: _id of roster entry, null if not in roster
+#   entityType: e.g. "water_point"
+#   property: property code (e.g _id or code) of entity that is referenced in value
+#   value: value of entity property that is referenced
+# }
+exports.extractEntityReferences = (formDesign, responseData) ->
+  results = []
+
+  # Handle non-roster
+  for question in exports.priorQuestions(formDesign)
+    switch exports.getAnswerType(question)
+      when "site"
+        code = responseData[question._id]?.value?.code
+        entityType = if question.siteTypes then _.first(question.siteTypes).toLowerCase().replace(new RegExp(' ', 'g'), "_") else "water_point"
+        if code
+          results.push({ question: question._id, roster: null, entityType: entityType, property: "code", value: code })
+      when "entity"
+        value = responseData[question._id]?.value
+        if value
+          results.push({ question: question._id, roster: null, entityType: question.entityType, property: "_id", value: value })
+
+  for rosterId in exports.getRosterIds(formDesign)
+    for question in exports.priorQuestions(formDesign, null, rosterId)
+      switch exports.getAnswerType(question)
+        when "site"
+          for rosterEntry in (responseData[rosterId] or [])
+            code = rosterEntry.data[question._id]?.value?.code
+            entityType = if question.siteTypes then _.first(question.siteTypes).toLowerCase().replace(new RegExp(' ', 'g'), "_") else "water_point"
+            if code
+              results.push({ question: question._id, roster: rosterEntry._id, entityType: entityType, property: "code", value: code })
+        when "entity"
+          for rosterEntry in (responseData[rosterId] or [])
+            value = rosterEntry.data[question._id]?.value
+            if value
+              results.push({ question: question._id, roster: rosterEntry._id, entityType: question.entityType, property: "_id", value: value })
+
+  return results
