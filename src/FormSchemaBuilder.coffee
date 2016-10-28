@@ -575,10 +575,16 @@ module.exports = class FormSchemaBuilder
             code: if code then code + " (mpn)"
             jsonql: {
               type: "op"
-              op: "#>>"
+              op: "::decimal"
               exprs: [
-                { type: "field", tableAlias: "{alias}", column: "data" }
-                "{#{item._id},value,cbt,mpn}"
+                {
+                  type: "op"
+                  op: "#>>"
+                  exprs: [
+                    { type: "field", tableAlias: "{alias}", column: "data" }
+                    "{#{item._id},value,cbt,mpn}"
+                  ]
+                }
               ]
             }
           })
@@ -590,10 +596,16 @@ module.exports = class FormSchemaBuilder
             code: if code then code + " (confidence)"
             jsonql: {
               type: "op"
-              op: "#>>"
+              op: "::decimal"
               exprs: [
-                { type: "field", tableAlias: "{alias}", column: "data" }
-                "{#{item._id},value,cbt,confidence}"
+                {
+                  type: "op"
+                  op: "#>>"
+                  exprs: [
+                    { type: "field", tableAlias: "{alias}", column: "data" }
+                    "{#{item._id},value,cbt,confidence}"
+                  ]
+                }
               ]
             }
           })

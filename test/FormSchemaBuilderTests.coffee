@@ -339,8 +339,14 @@ describe "FormSchemaBuilder addForm", ->
           name: { _base: "en", en: "Question (MPN/100ml)" }
           jsonql: {
             type: "op"
-            op: "#>>"
-            exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,cbt,mpn}"]
+            op: "::decimal"
+            exprs: [
+              {
+                type: "op"
+                op: "#>>"
+                exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,cbt,mpn}"]
+              }
+            ]
           }
         }
         {
@@ -349,8 +355,14 @@ describe "FormSchemaBuilder addForm", ->
           name: { _base: "en", en: "Question (Upper 95% Confidence Interval/100ml)" }
           jsonql: {
             type: "op"
-            op: "#>>"
-            exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,cbt,confidence}"]
+            op: "::decimal"
+            exprs: [
+              {
+                type: "op"
+                op: "#>>"
+                exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,cbt,confidence}"]
+              }
+            ]
           }
         }
         {
