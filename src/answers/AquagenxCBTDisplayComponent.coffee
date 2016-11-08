@@ -58,6 +58,10 @@ module.exports = class AquagenxCBTDisplayComponent extends React.Component
         H.b(null, getHealthRiskString(cbtValues.healthRisk, @context.T))
 
   render: ->
+    # Can't display if not set
+    if not @props.value.cbt
+      return null
+
     H.div id: "cbtDisplay#{@props.questionId}",
       @renderStyle()
       H.div dangerouslySetInnerHTML: {__html: AquagenxCBTDisplaySVGString}, onClick: @handleClick
