@@ -1,3 +1,4 @@
+_ = require 'lodash'
 
 # This code has been copied from FromCompiler, only getValue and getAlternate have been changed
 exports.compileCondition = compileCondition = (cond) =>
