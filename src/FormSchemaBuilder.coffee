@@ -1248,13 +1248,20 @@ module.exports = class FormSchemaBuilder
           type: "boolean"
           name: appendStr(item.text, " (Not Applicable)")
           code: if code then code + " (Not Applicable)"
-          # data#>>'{questionid,alternate}' = 'na'
+          # nullif(data#>>'{questionid,alternate}' = 'na', false) (makes null if false)
           jsonql: {
             type: "op"
-            op: "="
+            op: "nullif"
             exprs: [
-              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{#{item._id},alternate}"] }
-              "na"
+              {
+                type: "op"
+                op: "="
+                exprs: [
+                  { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{#{item._id},alternate}"] }
+                  "na"
+                ]
+              }
+              false
             ]
           }
         }
@@ -1267,13 +1274,20 @@ module.exports = class FormSchemaBuilder
           type: "boolean"
           name: appendStr(item.text, " (Don't Know)")
           code: if code then code + " (Don't Know)"
-          # data#>>'{questionid,alternate}' = 'dontknow'
+          # nullif(data#>>'{questionid,alternate}' = 'dontknow', false) (makes null if false)
           jsonql: {
             type: "op"
-            op: "="
+            op: "nullif"
             exprs: [
-              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{#{item._id},alternate}"] }
-              "dontknow"
+              {
+                type: "op"
+                op: "="
+                exprs: [
+                  { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{#{item._id},alternate}"] }
+                  "dontknow"
+                ]
+              }
+              false
             ]
           }
         }
