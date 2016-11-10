@@ -1034,13 +1034,20 @@ describe "FormSchemaBuilder addForm", ->
           id: "data:questionid:na" 
           type: "boolean"
           name: { _base: "en", en: "Question (Not Applicable)" } 
-          # data#>>'{questionid,alternate}' = 'na'
+          # nullif(data#>>'{questionid,alternate}' = 'na', false)
           jsonql: {
             type: "op"
-            op: "="
+            op: "nullif"
             exprs: [
-              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,alternate}"] }
-              "na"
+              {
+                type: "op"
+                op: "="
+                exprs: [
+                  { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,alternate}"] }
+                  "na"
+                ]
+              }
+              false
             ]
           }
         }
@@ -1052,13 +1059,20 @@ describe "FormSchemaBuilder addForm", ->
           id: "data:questionid:dontknow" 
           type: "boolean"
           name: { _base: "en", en: "Question (Don't Know)" } 
-          # data#>>'{questionid,alternate}' = 'na'
+          # nullif(data#>>'{questionid,alternate}' = 'dontknow', false)
           jsonql: {
             type: "op"
-            op: "="
+            op: "nullif"
             exprs: [
-              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,alternate}"] }
-              "dontknow"
+              {
+                type: "op"
+                op: "="
+                exprs: [
+                  { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,alternate}"] }
+                  "dontknow"
+                ]
+              }
+              false
             ]
           }
         }
