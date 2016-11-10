@@ -14,6 +14,8 @@ update = require 'update-object'
 ColumnNotFoundException = require('mwater-expressions').ColumnNotFoundException
 TopoSort = require 'topo-sort'
 
+ConditionsExprCompiler = require './ConditionsExprCompiler'
+
 healthRiskEnum = require('./answers/aquagenxCBTUtils').healthRiskEnum
 
 module.exports = class FormSchemaBuilder
@@ -55,7 +57,9 @@ module.exports = class FormSchemaBuilder
     # Add submitted on
     contents.push({ id: "submittedOn", type: "datetime", name: { en: "Submitted On" } })
 
-    @addFormItem(form.design, contents, "responses:#{form._id}")
+    conditionsExprCompiler = new ConditionsExprCompiler(form.design)
+
+    @addFormItem(form.design, contents, "responses:#{form._id}", conditionsExprCompiler)
 
     # Add to schema
     schema = schema.addTable({
@@ -70,7 +74,7 @@ module.exports = class FormSchemaBuilder
     schema = @addReverseEntityJoins(schema, form)
 
     # Add any roster tables
-    schema = @addRosterTables(schema, form)
+    schema = @addRosterTables(schema, form, conditionsExprCompiler)
 
     schema = @addIndicatorCalculations(schema, form, false)
 
@@ -103,7 +107,7 @@ module.exports = class FormSchemaBuilder
 
     return schema
 
-  addRosterTables: (schema, form) ->
+  addRosterTables: (schema, form, conditionsExprCompiler) ->
     # For each item
     for item in formUtils.allItems(form.design)
       if item._type in ["RosterGroup", "RosterMatrix"]
@@ -133,7 +137,7 @@ module.exports = class FormSchemaBuilder
 
         # Add contents
         for rosterItem in item.contents
-          @addFormItem(rosterItem, contents, "responses:#{form._id}:roster:#{item.rosterId or item._id}")
+          @addFormItem(rosterItem, contents, "responses:#{form._id}:roster:#{item.rosterId or item._id}", conditionsExprCompiler)
 
         schema = schema.addTable({
           id: "responses:#{form._id}:roster:#{item.rosterId or item._id}"
@@ -321,7 +325,9 @@ module.exports = class FormSchemaBuilder
 
     return section
 
-  addFormItem: (item, contents, tableId) ->
+  # Adds a form item. existingConditionExpr is any conditions that already condition visibility of the form item. This does not cross roster boundaries.
+  # That is, if a roster is entirely invisible, roster items will not be conditioned on the overall visibility, as they simply won't exist
+  addFormItem: (item, contents, tableId, conditionsExprCompiler, existingConditionExpr) ->
     addColumn = (column) =>
       contents.push(column)
 
@@ -329,13 +335,15 @@ module.exports = class FormSchemaBuilder
     if item.contents
       if item._type == "Form"
         for subitem in item.contents
-          @addFormItem(subitem, contents, tableId)
+          @addFormItem(subitem, contents, tableId, conditionsExprCompiler, existingConditionExpr)
 
       else if item._type in ["Section", "Group"]
         # Create section contents
         sectionContents = []
+        sectionConditionExpr = ExprUtils.andExprs(existingConditionExpr, conditionsExprCompiler.compileConditions(item.conditions, tableId))
         for subitem in item.contents
-          @addFormItem(subitem, sectionContents, tableId)
+          # TODO add conditions of section/group
+          @addFormItem(subitem, sectionContents, tableId, conditionsExprCompiler, sectionConditionExpr)
         contents.push({ type: "section", name: item.name, contents: sectionContents })
 
       else if item._type in ["RosterGroup", "RosterMatrix"]
@@ -1290,6 +1298,30 @@ module.exports = class FormSchemaBuilder
               false
             ]
           }
+        }
+        
+        addColumn(column)
+
+      # Add conditions
+      if conditionsExprCompiler and ((item.conditions and item.conditions.length > 0) or existingConditionExpr)
+        # Guard against null
+        conditionExpr = ExprUtils.andExprs(existingConditionExpr, conditionsExprCompiler.compileConditions(item.conditions, tableId))
+        conditionExpr = {
+          type: "op"
+          op: "and"
+          table: tableId
+          exprs: [
+            { type: "op", table: tableId, op: "is not null", exprs: [conditionExpr] }
+            conditionExpr
+          ]
+        }
+
+        column = {
+          id: "data:#{item._id}:visible"
+          type: "expr"
+          name: appendStr(item.text, " (Asked)")
+          code: if code then code + " (Asked)"
+          expr: conditionExpr
         }
         
         addColumn(column)

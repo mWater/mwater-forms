@@ -1578,3 +1578,90 @@ describe "FormSchemaBuilder addForm", ->
       })
 
     it "works with master forms"
+
+  describe ":visible columns", ->
+    it "adds visible when conditional", ->
+      # Create form
+      form = {
+        _id: "formid"
+        design: {
+          _type: "Form"
+          name: { en: "Form" }
+          contents: [
+            { _id: "q1", _type: "NumberQuestion", text: { en: "Q1" }, conditions: [] }
+            { _id: "q2", _type: "NumberQuestion", text: { en: "Q2" }, conditions: [{ lhs: { question: "q1" }, op: ">", rhs: { literal: 3 }}] }
+          ]
+        }
+      }
+
+      # Add to blank schema
+      schema = new FormSchemaBuilder().addForm(new Schema(), form)
+
+      assert not schema.getColumn("responses:formid", "data:q1:visible"), "Not conditional"
+
+      col = schema.getColumn("responses:formid", "data:q2:visible")
+      assert.equal col.type, "expr"
+
+      conditionExpr = {
+        type: "op"
+        op: ">"
+        table: "responses:formid"
+        exprs: [
+          { type: "field", table: "responses:formid", column: "data:q1:value" }
+          { type: "literal", valueType: "number", value: 3 }
+        ]
+      }
+
+      # Ensure that is never null
+      compare col.expr, {
+        type: "op"
+        op: "and"
+        table: "responses:formid"
+        exprs: [
+          { type: "op", table: "responses:formid", op: "is not null", exprs: [conditionExpr] }
+          conditionExpr
+        ]
+      }
+
+    it "adds propagates visibility down tree", ->
+      # Create form
+      form = {
+        _id: "formid"
+        design: {
+          _type: "Form"
+          name: { en: "Form" }
+          contents: [
+            { _id: "q1", _type: "NumberQuestion", text: { en: "Q1" }, conditions: [] }
+            { _id: "g1", _type: "Group", name: { en: "G1" }, conditions: [{ lhs: { question: "q1" }, op: ">", rhs: { literal: 3 }}], contents: [
+              { _id: "q2", _type: "NumberQuestion", text: { en: "Q2" } }
+            ]}
+          ]
+        }
+      }
+
+      # Add to blank schema
+      schema = new FormSchemaBuilder().addForm(new Schema(), form)
+
+      col = schema.getColumn("responses:formid", "data:q2:visible")
+      assert.equal col.type, "expr"
+
+      conditionExpr = {
+        type: "op"
+        op: ">"
+        table: "responses:formid"
+        exprs: [
+          { type: "field", table: "responses:formid", column: "data:q1:value" }
+          { type: "literal", valueType: "number", value: 3 }
+        ]
+      }
+
+      # Ensure that is never null
+      compare col.expr, {
+        type: "op"
+        op: "and"
+        table: "responses:formid"
+        exprs: [
+          { type: "op", table: "responses:formid", op: "is not null", exprs: [conditionExpr] }
+          conditionExpr
+        ]
+      }
