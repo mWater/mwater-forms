@@ -4,7 +4,7 @@ H = React.DOM
 R = React.createElement
 
 formUtils = require './formUtils'
-conditionsUtils = require './conditionsUtils'
+conditionUtils = require './conditionUtils'
 NumberAnswerComponent = require './answers/NumberAnswerComponent'
 DateAnswerComponent = require './answers/DateAnswerComponent'
 UnitsAnswerComponent = require './answers/UnitsAnswerComponent'
@@ -30,7 +30,7 @@ module.exports = class MatrixColumnCellComponent extends React.Component
   areConditionsValid: (choice) ->
     if not choice.conditions?
       return true
-    return conditionsUtils.compileConditions(choice.conditions)(@props.data)
+    return conditionUtils.compileConditions(choice.conditions)(@props.data)
 
   render: ->
     column = @props.column

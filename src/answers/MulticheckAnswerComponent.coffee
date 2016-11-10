@@ -3,7 +3,7 @@ H = React.DOM
 R = React.createElement
 
 formUtils = require '../formUtils'
-conditionsUtils = require '../conditionsUtils'
+conditionUtils = require '../conditionUtils'
 
 # Multiple checkboxes where more than one can be checked
 module.exports = class MulticheckAnswerComponent extends React.Component
@@ -57,7 +57,7 @@ module.exports = class MulticheckAnswerComponent extends React.Component
   areConditionsValid: (choice) ->
     if not choice.conditions?
       return true
-    return conditionsUtils.compileConditions(choice.conditions)(@props.data)
+    return conditionUtils.compileConditions(choice.conditions)(@props.data)
 
   # Render specify input box
   renderSpecify: (choice) ->

@@ -1,5 +1,6 @@
 _ = require 'lodash'
 formUtils = require './formUtils'
+conditionUtils = require './conditionUtils'
 
 # Compiles conditions into mWater expressions
 module.exports = class ConditionsExprCompiler
@@ -21,6 +22,10 @@ module.exports = class ConditionsExprCompiler
     for cond in conditions
       item = @itemMap[cond.lhs.question]
       if not item
+        continue
+
+      # Ignore if invalid condition
+      if not conditionUtils.validateCondition(cond, @formDesign)
         continue
 
       type = formUtils.getAnswerType(item)
@@ -45,6 +50,8 @@ module.exports = class ConditionsExprCompiler
               { table: tableId, type: "op", op: "is not null", exprs: [{ table: tableId, type: "field", column: "data:#{item._id}:value:cbt:mpn" }] }
               { table: tableId, type: "op", op: "is not null", exprs: [{ table: tableId, type: "field", column: "data:#{item._id}:value:image" }] }
               ] })
+          when "units"
+            exprs.push({ table: tableId, type: "op", op: "is not null", exprs: [{ table: tableId, type: "field", column: "data:#{item._id}:value:quantity" }] })
           else
             exprs.push({ table: tableId, type: "op", op: "is not null", exprs: [{ table: tableId, type: "field", column: "data:#{item._id}:value" }] })
 
@@ -68,6 +75,8 @@ module.exports = class ConditionsExprCompiler
               { table: tableId, type: "op", op: "is null", exprs: [{ table: tableId, type: "field", column: "data:#{item._id}:value:cbt:mpn" }] }
               { table: tableId, type: "op", op: "is null", exprs: [{ table: tableId, type: "field", column: "data:#{item._id}:value:image" }] }
               ] })
+          when "units"
+            exprs.push({ table: tableId, type: "op", op: "is null", exprs: [{ table: tableId, type: "field", column: "data:#{item._id}:value:quantity" }] })
           else
             exprs.push({ table: tableId, type: "op", op: "is null", exprs: [{ table: tableId, type: "field", column: "data:#{item._id}:value" }] })
 
@@ -112,7 +121,7 @@ module.exports = class ConditionsExprCompiler
       else if cond.op == "is"
         # Special case for alternates
         if cond.rhs.literal in ['na', 'dontknow']
-          exprs.push({ table: tableId, type: "field", column: "data:#{item._id}:#{cond.rhs.literal}" })
+          exprs.push({ table: tableId, type: "op", op: "is not null", exprs: [{ table: tableId, type: "field", column: "data:#{item._id}:#{cond.rhs.literal}" }] })
         else
           exprs.push({ table: tableId, type: "op", op: "=", exprs: [
             { table: tableId, type: "field", column: "data:#{item._id}:value" }
@@ -122,7 +131,7 @@ module.exports = class ConditionsExprCompiler
       else if cond.op == "isnt"
         # Special case for alternates
         if cond.rhs.literal in ['na', 'dontknow']
-          exprs.push({ table: tableId, type: "op", op: "not", exprs: [{ table: tableId, type: "field", column: "data:#{item._id}:#{cond.rhs.literal}" }] })
+          exprs.push({ table: tableId, type: "op", op: "is null", exprs: [{ table: tableId, type: "field", column: "data:#{item._id}:#{cond.rhs.literal}" }] })
         else
           # Null or not equal
           exprs.push({ table: tableId, type: "op", op: "or", exprs: [
@@ -136,7 +145,7 @@ module.exports = class ConditionsExprCompiler
       else if cond.op == "includes"
         # Special case for alternates
         if cond.rhs.literal in ['na', 'dontknow']
-          exprs.push({ table: tableId, type: "field", column: "data:#{item._id}:#{cond.rhs.literal}" })
+          exprs.push({ table: tableId, type: "op", op: "is not null", exprs: [{ table: tableId, type: "field", column: "data:#{item._id}:#{cond.rhs.literal}" }] })
         else
           exprs.push({ table: tableId, type: "op", op: "contains", exprs: [
             { table: tableId, type: "field", column: "data:#{item._id}:value" }
@@ -191,9 +200,9 @@ module.exports = class ConditionsExprCompiler
 
         if type == "choice"
           if values.length == 0 and alternates.length == 1
-            exprs.push({ table: tableId, type: "field", column: "data:#{item._id}:#{alternates[0]}" })
+            exprs.push({ table: tableId, type: "op", op: "is not null", exprs: [{ table: tableId, type: "field", column: "data:#{item._id}:#{alternates[0]}" }]})
           else if values.length == 0 and alternates.length > 1
-            exprs.push({ table: tableId, type: "op", op: "or", exprs: _.map(alternates, ((alt) -> { table: tableId, type: "field", column: "data:#{item._id}:#{alt}" })) })
+            exprs.push({ table: tableId, type: "op", op: "or", exprs: _.map(alternates, ((alt) -> { table: tableId, type: "op", op: "is not null", exprs: [{ table: tableId, type: "field", column: "data:#{item._id}:#{alt}" }] })) })
           else 
             subexprs = [{ table: tableId, type: "op", op: "= any", exprs: [
               { table: tableId, type: "field", column: "data:#{item._id}:value" }
@@ -215,7 +224,7 @@ module.exports = class ConditionsExprCompiler
               { type: "literal", valueType: "enumset", value: [value] }
             ]})
           for alt in alternates
-            subexprs.push({ table: tableId, type: "field", column: "data:#{item._id}:#{alt}" })
+            subexprs.push({ table: tableId, type: "op", op: "is not null", exprs: [{ table: tableId, type: "field", column: "data:#{item._id}:#{alt}" }] })
 
           if subexprs.length == 1
             exprs.push(subexprs[0])

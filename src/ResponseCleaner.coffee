@@ -3,7 +3,7 @@
 
 _ = require 'lodash'
 formUtils = require './formUtils'
-conditionsUtils = require './conditionsUtils'
+conditionUtils = require './conditionUtils'
 
 module.exports = class ResponseCleaner
   # Returns an array containing the cleaned data
@@ -84,7 +84,7 @@ module.exports = class ResponseCleaner
                 # And it's the selected choice
                 if choice.id == selectedChoice
                   # Test the condition
-                  if not conditionsUtils.compileConditions(choice.conditions)(newData)
+                  if not conditionUtils.compileConditions(choice.conditions)(newData)
                     deleteAnswer()
 
 

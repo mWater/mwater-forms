@@ -7,7 +7,7 @@ exports.ResponseAnswersComponent = require './ResponseAnswersComponent'
 exports.LocationView = require './legacy/LocationView'
 
 exports.formUtils = require './formUtils'
-exports.conditionsUtils = require './conditionsUtils'
+exports.conditionUtils = require './conditionUtils'
 exports.AnswerValidator = require './answers/AnswerValidator'
 exports.formRenderUtils = require './formRenderUtils'
 exports.ECPlates = require './ECPlates'

@@ -1,6 +1,6 @@
 formUtils = require './formUtils'
 
-conditionUtils = require './conditionsUtils'
+conditionUtils = require './conditionUtils'
 
 # Uses conditions to defines the visibility status of all the Sections, Questions, Instructions, Group, RosterGroup and RosterMatrix
 # The result is kept in the visibilityStructure. It contains an entry with true or false for each element (should never be null or undefined)

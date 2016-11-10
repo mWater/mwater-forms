@@ -3,7 +3,7 @@ H = React.DOM
 R = React.createElement
 
 formUtils = require '../formUtils'
-conditionsUtils = require '../conditionsUtils'
+conditionUtils = require '../conditionUtils'
 
 module.exports = class DropdownAnswerComponent extends React.Component
   @contextTypes:
@@ -59,7 +59,7 @@ module.exports = class DropdownAnswerComponent extends React.Component
   areConditionsValid: (choice) ->
     if not choice.conditions?
       return true
-    return conditionsUtils.compileConditions(choice.conditions)(@props.data)
+    return conditionUtils.compileConditions(choice.conditions)(@props.data)
 
   render: ->
     H.div null,
