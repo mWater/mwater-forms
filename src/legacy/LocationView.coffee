@@ -168,6 +168,7 @@ module.exports = class LocationView extends Backbone.View
 
   currentPositionError: (err) ->
     @displayNotification @T("Cannot set location"), "alert-danger", true
+    @render()
 
   cancelSet: ->
     @currentPositionFinder.stop()
