@@ -340,7 +340,11 @@ module.exports = class FormSchemaBuilder
       else if item._type in ["Section", "Group"]
         # Create section contents
         sectionContents = []
-        sectionConditionExpr = ExprUtils.andExprs(existingConditionExpr, conditionsExprCompiler.compileConditions(item.conditions, tableId))
+        if conditionsExprCompiler 
+          sectionConditionExpr = ExprUtils.andExprs(existingConditionExpr, conditionsExprCompiler.compileConditions(item.conditions, tableId))
+        else
+          sectionConditionExpr = existingConditionExpr
+          
         for subitem in item.contents
           # TODO add conditions of section/group
           @addFormItem(subitem, sectionContents, tableId, conditionsExprCompiler, sectionConditionExpr)
