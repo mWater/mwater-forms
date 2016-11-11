@@ -110,6 +110,11 @@ class LocationFinder
 
     highAccuracyError = (err) =>
       console.error "High accuracy watch location error: #{err.message}"
+
+      # No longer watching since there was an error
+      @stopWatch()
+
+      # Send error message
       @trigger 'error'
 
     # Fire initial low-accuracy one
@@ -176,6 +181,11 @@ class LocationFinder
 
     highAccuracyError = (err) =>
       console.error "High accuracy watch location error: #{err.message}"
+
+      # No longer watching since there was an error
+      @stopWatch()
+
+      # Send error message
       @trigger 'error'
 
     if not @locationWatchId?
