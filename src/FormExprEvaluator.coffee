@@ -1,6 +1,8 @@
 _ = require 'lodash'
 formUtils = require './formUtils'
-ExprEvaluator = require('mwater-expressions').ExprEvaluator
+
+# Still uses old synchronous version (with limited functionality)
+ExprEvaluator = require('mwater-expressions').OldExprEvaluator
 
 # Evaluates mwater expressions that are embedded in questions, etc. 
 # Also substitutes them into strings.
