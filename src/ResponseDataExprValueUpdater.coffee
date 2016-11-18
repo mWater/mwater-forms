@@ -27,10 +27,6 @@ module.exports = class ResponseDataExprValueUpdater
       if expr.column.match(/^data:[^:]+:value(:.+)?$/) 
         return true
 
-      # Latitude/longitude of location question
-      if expr.type == "op" and expr.op in ['latitude', 'longitude'] and expr.expr.type == "field" and expr.expr.column.match(/^data:.+:value$/)
-        return true
-
       # Comments field
       if expr.column.match(/^data:[^:]+:comments$/)
         return true

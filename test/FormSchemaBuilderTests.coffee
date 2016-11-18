@@ -155,8 +155,8 @@ describe "FormSchemaBuilder addForm", ->
           id: "data:questionid:value" 
           type: "text"
           name: { _base: "en", en: "Question" } 
-          # data#>>'{questionid,value}'
-          jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }
+          # nullif(data#>>'{questionid,value}','')
+          jsonql: { type: "op", op: "nullif", exprs: [{ type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }, ''] }
         }
       ])
 
@@ -167,8 +167,8 @@ describe "FormSchemaBuilder addForm", ->
           type: "text"
           name: { _base: "en", en: "Question" } 
           code: "x"
-          # data#>>'{questionid,value}'
-          jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }
+          # nullif(data#>>'{questionid,value}','')
+          jsonql: { type: "op", op: "nullif", exprs: [{ type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }, ''] }
         }
       ])
 
@@ -179,8 +179,8 @@ describe "FormSchemaBuilder addForm", ->
           type: "text"
           name: { _base: "en", en: "Question" } 
           code: "y"
-          # data#>>'{questionid,value}'
-          jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }
+          # nullif(data#>>'{questionid,value}','')
+          jsonql: { type: "op", op: "nullif", exprs: [{ type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }, ''] }
         }
       ])
 
@@ -263,8 +263,11 @@ describe "FormSchemaBuilder addForm", ->
         { 
           id: "data:questionid:value"
           type: "enumset"
-          # data#>'{questionid,value}'
-          jsonql: { type: "op", op: "#>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }
+          # nullif(data#>'{questionid,value}', '[]'::jsonb)
+          jsonql: { type: "op", op: "nullif", exprs: [
+            { type: "op", op: "#>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }
+            { type: "op", op: "::jsonb", exprs: ["[]"] }
+          ] }
         }
       ])
 
@@ -827,8 +830,11 @@ describe "FormSchemaBuilder addForm", ->
             id: "data:questionid:value:item1:col1:value" 
             type: "text"
             name: { _base: "en", en: "Question: Item 1 - Col 1"}
-            # data#>>'{questionid,value,item1,col1,value}'
-            jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,item1,col1,value}"] }
+            # nullif(data#>>'{questionid,value,item1,col1,value}','')
+            jsonql: { type: "op", op: "nullif", exprs: [
+              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,item1,col1,value}"] }
+              ""
+            ]}
           }
           # NumberColumnQuestion
           { 
@@ -1491,10 +1497,17 @@ describe "FormSchemaBuilder addForm", ->
       # Check that column was added
       assert @schema.getColumn("responses:formid:roster:roster1", "data:q1:value")
       compare(@schema.getColumn("responses:formid:roster:roster1", "data:q1:value").jsonql, {
-        # data#>>'{questionid,value}'
+        # nullif(data#>>'{questionid,value}', '')
         type: "op"
-        op: "#>>"
-        exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{q1,value}"]
+        op: "nullif"
+        exprs: [
+          {
+            type: "op"
+            op: "#>>"
+            exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{q1,value}"]
+          }
+          ""
+        ]
       })
 
     it "adds index to roster table", ->
@@ -1570,11 +1583,18 @@ describe "FormSchemaBuilder addForm", ->
 
       # Check that was added
       assert schema.getColumn("responses:formid:roster:roster1", "data:q1:value")
+      # nullif(data#>>'{questionid,value}', '')
       compare(schema.getColumn("responses:formid:roster:roster1", "data:q1:value").jsonql, {
-        # data#>>'{questionid,value}'
         type: "op"
-        op: "#>>"
-        exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{q1,value}"]
+        op: "nullif"
+        exprs: [
+          {
+            type: "op"
+            op: "#>>"
+            exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{q1,value}"]
+          }
+          ""
+        ]
       })
 
     it "works with master forms"

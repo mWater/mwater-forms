@@ -374,7 +374,7 @@ module.exports = class FormSchemaBuilder
 
       switch answerType
         when "text"
-          # Get a simple text column
+          # Get a simple text column. Null if empty
           column = {
             id: "data:#{item._id}:value"
             type: "text"
@@ -382,10 +382,17 @@ module.exports = class FormSchemaBuilder
             code: code
             jsonql: {
               type: "op"
-              op: "#>>"
+              op: "nullif"
               exprs: [
-                { type: "field", tableAlias: "{alias}", column: "data" }
-                "{#{item._id},value}"
+                {
+                  type: "op"
+                  op: "#>>"
+                  exprs: [
+                    { type: "field", tableAlias: "{alias}", column: "data" }
+                    "{#{item._id},value}"
+                  ]
+                }
+                ""
               ]
             }
           }
@@ -435,6 +442,7 @@ module.exports = class FormSchemaBuilder
           addColumn(column)
 
         when "choices"
+          # Null if empty for simplicity
           column = {
             id: "data:#{item._id}:value"
             type: "enumset"
@@ -443,10 +451,17 @@ module.exports = class FormSchemaBuilder
             enumValues: _.map(item.choices, (c) -> { id: c.id, name: c.label, code: c.code })
             jsonql: {
               type: "op"
-              op: "#>"
+              op: "nullif"
               exprs: [
-                { type: "field", tableAlias: "{alias}", column: "data" }
-                "{#{item._id},value}"
+                {
+                  type: "op"
+                  op: "#>"
+                  exprs: [
+                    { type: "field", tableAlias: "{alias}", column: "data" }
+                    "{#{item._id},value}"
+                  ]
+                }
+                { type: "op", op: "::jsonb", exprs: ["[]"] }
               ]
             }
           }
@@ -1002,10 +1017,17 @@ module.exports = class FormSchemaBuilder
                   code: cellCode
                   jsonql: {
                     type: "op"
-                    op: "#>>"
+                    op: "nullif"
                     exprs: [
-                      { type: "field", tableAlias: "{alias}", column: "data" }
-                      "{#{item._id},value,#{itemItem.id},#{itemColumn._id},value}"
+                      {
+                        type: "op"
+                        op: "#>>"
+                        exprs: [
+                          { type: "field", tableAlias: "{alias}", column: "data" }
+                          "{#{item._id},value,#{itemItem.id},#{itemColumn._id},value}"
+                        ]
+                      }
+                      ""
                     ]
                   }
                })
