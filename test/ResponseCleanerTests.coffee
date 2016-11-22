@@ -1,7 +1,45 @@
+_ = require 'lodash'
 assert = require('chai').assert
 ResponseCleaner = require '../src/ResponseCleaner'
+VisibilityCalculator = require '../src/VisibilityCalculator'
 
 describe 'ResponseCleaner', ->
+  describe "cleanData", ->
+    it "handles cascading changes", (done) ->
+      # Simulate q1 making q2 appear which has a default value. q3 has a condition on q2 not being present, so it should
+      # have its value removed.
+      q1 = { _id: "q1", _type: "TextQuestion", conditions: [] }
+      q2 = { _id: "q2", _type: "TextQuestion", conditions: [{ lhs: { question: "q1" }, op: "present" }] }
+      q3 = { _id: "q3", _type: "TextQuestion", conditions: [{ lhs: { question: "q2" }, op: "!present" }] }
+
+      design = {
+        _type: "Form"
+        contents: [q1, q2, q3]
+      }
+
+      # Fake defaultValueApplier
+      defaultValueApplier = {
+        setStickyData: (newData, oldVisibilityStructure, newVisibilityStructure) ->
+          newData = _.cloneDeep(newData)
+          # Default q2
+          if not oldVisibilityStructure['q2'] and newVisibilityStructure['q2']
+            newData.q2 = { value: "defaulttext" }
+
+          return newData
+      }
+
+      visibilityCalculator = new VisibilityCalculator(design)
+      responseCleaner = new ResponseCleaner()
+
+      data = { q1: { value: "sometext" }, q3: { value: "moretext" } }
+      oldVisibilityStructure = { q1: true, q2: false, q3: true }
+
+      responseCleaner.cleanData design, visibilityCalculator, defaultValueApplier, data, oldVisibilityStructure, (error, results) =>
+        assert not error
+        assert.deepEqual results.data, { q1: { value: "sometext" }, q2: { value: "defaulttext" } }
+        assert.deepEqual results.visibilityStructure, { q1: true, q2: true, q3: false }
+        done()
+
   describe "cleanDataBasedOnVisibility", ->
     describe 'Simple cases', ->
       it 'keeps the data for all visible questions', ->

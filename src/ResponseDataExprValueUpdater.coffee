@@ -60,8 +60,8 @@ module.exports = class ResponseDataExprValueUpdater
         return callback(error)
 
       responseCleaner = new ResponseCleaner()
-      cleanData = responseCleaner.cleanData(data, visibilityStructure, @formDesign)
-      callback(null, cleanData)
+      responseCleaner.cleanData @formDesign, visibilityCalculator, null, data, {}, (error, results) =>
+        callback(error, results?.data)
     )
 
   # Validates the data. Callback null if ok, otherwise string message in second parameter. Clean first.

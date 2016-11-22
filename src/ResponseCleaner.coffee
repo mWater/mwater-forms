@@ -1,6 +1,7 @@
 _ = require 'lodash'
 formUtils = require './formUtils'
 conditionUtils = require './conditionUtils'
+async = require 'async'
 
 ###
 ResponseCleaner removes the data entry (answer) of invisible questions and defaults values
@@ -14,11 +15,55 @@ Therefore, it's an iterative process which is also asynchronous, as
 
 ###
 module.exports = class ResponseCleaner
-  # Returns an array containing the cleaned data
-  cleanData: (data, visibilityStructure, design) ->
-    newData = @cleanDataBasedOnVisibility(data, visibilityStructure)
-    newData = @cleanDataBasedOnChoiceConditions(newData, visibilityStructure, design)
-    return newData
+
+  # Cleans data, calling back with { data: cleaned data, visibilityStructure: final visibility structure (since expensive to compute) }
+  # The old visibility structure is needed as defaulting of values requires knowledge of how visibility has changed
+  # The process of computing visibility, cleaning data and applying stickyData/defaultValue can trigger more changes
+  # and should be repeated until the visibilityStructure is stable.
+  # A simple case: Question A, B and C with B only visible if A is set and C only visible if B is set and B containing a defaultValue
+  # Setting a value to A will make B visible and set to defaultValue, but C will remain invisible until the process is repeated
+  cleanData: (design, visibilityCalculator, defaultValueApplier, data, oldVisibilityStructure, callback) =>
+    nbIterations = 0
+    complete = false
+    newData = data
+    newVisibilityStructure = null
+
+    # This needs to be repeated until it stabilizes
+    async.whilst (-> not complete), (cb) =>
+      # Compute visibility
+      visibilityCalculator.createVisibilityStructure newData, (error, visibilityStructure) =>
+        if error
+          return cb(error)
+
+        newVisibilityStructure = visibilityStructure
+
+        # Clean data
+        newData = @cleanDataBasedOnVisibility(newData, newVisibilityStructure)
+        newData = @cleanDataBasedOnChoiceConditions(newData, newVisibilityStructure, design)
+
+        # Default values
+        if defaultValueApplier
+          newData = defaultValueApplier.setStickyData(newData, oldVisibilityStructure, newVisibilityStructure)
+
+        # Increment iterations
+        nbIterations++
+
+        # If the visibilityStructure is still the same twice, the process is now stable.
+        if _.isEqual(newVisibilityStructure, oldVisibilityStructure)
+          complete = true
+
+        if nbIterations >= 10
+          return cb(new Error('Impossible to compute question visibility. The question conditions must be looping'))
+  
+        # New is now old
+        oldVisibilityStructure = newVisibilityStructure
+
+        cb(null)
+    , (error) =>
+      if error
+        return callback(error)
+
+      callback(null, { data: newData, visibilityStructure: newVisibilityStructure })
 
   # Remove data entries for all the invisible questions
   cleanDataBasedOnVisibility: (data, visibilityStructure) ->
