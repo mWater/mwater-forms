@@ -108,3 +108,91 @@ describe 'ResponseCleaner', ->
       assert data != newData, "It returned data instead of a copy"
       assert.deepEqual expectedData, newData, "The whole matrix should have been deleted"
 
+  describe "Dropdown questions", ->
+    it "removes invalid dropdown options", ->
+      # Choice c1 conditional on q1 being present
+      design = { _type: "Form", contents: [
+        { _id: "q1", _type: "TextQuestion" }
+        { _id: "q2", _type: "DropdownQuestion", choices: [{ id: "c1", conditions: [{ lhs: { question: "q1" }, op: "present" }] }] }
+      ]}
+
+      responseCleaner = new ResponseCleaner()
+      data = { q2: { value: "c1" } }
+      visibilityStructure = { q1: true, q2: true }
+
+      newData = responseCleaner.cleanData(data, visibilityStructure, design)
+
+      expectedData = {}
+      assert.deepEqual expectedData, newData, "Choice should be deleted"
+
+    it "leaves valid dropdown options", ->
+      # Choice c1 conditional on q1 being present
+      design = { _type: "Form", contents: [
+        { _id: "q1", _type: "TextQuestion" }
+        { _id: "q2", _type: "DropdownQuestion", choices: [{ id: "c1", conditions: [{ lhs: { question: "q1" }, op: "present" }] }] }
+      ]}
+
+      responseCleaner = new ResponseCleaner()
+      data = { q1: { value: "sometext" }, q2: { value: "c1" } }
+      visibilityStructure = { q1: true, q2: true }
+
+      newData = responseCleaner.cleanData(data, visibilityStructure, design)
+
+      expectedData = { q1: { value: "sometext" }, q2: { value: "c1" } }
+      assert.deepEqual expectedData, newData, "Choice should be left"
+
+    describe "roster", ->
+      it "removes invalid dropdown options", ->
+        # Choice c1 conditional on q1 being present
+        design = { _type: "Form", contents: [
+          { _id: "r1", _type: "RosterGroup", contents: [
+            { _id: "q1", _type: "TextQuestion" }
+            { _id: "q2", _type: "DropdownQuestion", choices: [{ id: "c1", conditions: [{ lhs: { question: "q1" }, op: "present" }] }] }
+          ]}
+        ]}
+
+        responseCleaner = new ResponseCleaner()
+        data = { r1: [{ _id: "e1", data: { q2: { value: "c1" } } }] }
+        visibilityStructure = { r1: true, "r1.0.q1": true, "r1.0.q2": true }
+
+        newData = responseCleaner.cleanData(data, visibilityStructure, design)
+
+        expectedData = { r1: [{ _id: "e1", data: {}}] }
+        assert.deepEqual expectedData, newData, "Choice should be deleted"
+
+      it "leaves valid dropdown options", ->
+        # Choice c1 conditional on q1 being present
+        design = { _type: "Form", contents: [
+          { _id: "r1", _type: "RosterGroup", contents: [
+            { _id: "q1", _type: "TextQuestion" }
+            { _id: "q2", _type: "DropdownQuestion", choices: [{ id: "c1", conditions: [{ lhs: { question: "q1" }, op: "present" }] }] }
+          ]}
+        ]}
+
+        responseCleaner = new ResponseCleaner()
+        data = { r1: [{ _id: "e1", data: { q1: { value: "sometext" }, q2: { value: "c1" } } }] }
+        visibilityStructure = { r1: true, "r1.0.q1": true, "r1.0.q2": true }
+
+        newData = responseCleaner.cleanData(data, visibilityStructure, design)
+
+        expectedData = { r1: [{ _id: "e1", data: { q1: { value: "sometext" }, q2: { value: "c1" } } }] }
+        assert.deepEqual expectedData, newData, "Choice should be left"
+
+    it "leaves valid dropdown options", ->
+      # Choice c1 conditional on q1 being present
+      design = { _type: "Form", contents: [
+        { _id: "q1", _type: "TextQuestion" }
+        { _id: "q2", _type: "DropdownQuestion", choices: [{ id: "c1", conditions: [{ lhs: { question: "q1" }, op: "present" }] }] }
+      ]}
+
+      responseCleaner = new ResponseCleaner()
+      data = { q1: { value: "sometext" }, q2: { value: "c1" } }
+      visibilityStructure = { q1: true, q2: true }
+
+      newData = responseCleaner.cleanData(data, visibilityStructure, design)
+
+      expectedData = { q1: { value: "sometext" }, q2: { value: "c1" } }
+      assert.deepEqual expectedData, newData, "Choice should be left"
+      
+
+

@@ -1,10 +1,18 @@
-# The ResponseCleaner has a very clear ans simple task: removes the data entry (answer) of invisible questions
-# The only complexity is the handling of Rosters
-
 _ = require 'lodash'
 formUtils = require './formUtils'
 conditionUtils = require './conditionUtils'
 
+###
+ResponseCleaner removes the data entry (answer) of invisible questions and defaults values
+
+The process of cleaning data is an iterative one, as making a question invisible removes its answer, which in turn may make
+other questions invisible or visible. 
+
+To further complicate it, when a question becomes visible, it may get a default value, which may in turn trigger other visibility changes
+
+Therefore, it's an iterative process which is also asynchronous, as 
+
+###
 module.exports = class ResponseCleaner
   # Returns an array containing the cleaned data
   cleanData: (data, visibilityStructure, design) ->
@@ -25,7 +33,7 @@ module.exports = class ResponseCleaner
         # If the key doesn't contain any '.', simply remove the data entry
         if values.length == 1
           delete newData[key]
-          # Check if value is an array, which indicates roster
+        # Check if value is an array, which indicates roster
         else if _.isArray(newData[values[0]])
           # The id of the roster containing the data
           rosterGroupId = values[0]
@@ -59,12 +67,13 @@ module.exports = class ResponseCleaner
         # If the key doesn't contain any '.', simply remove the data entry
         if values.length == 1
           questionId = key
+          conditionData = newData
           selectedChoice = newData[questionId]?.value
           # A simple delete
           deleteAnswer = () ->
             delete newData[questionId]
-        # Else, it's a RosterGroup or a RosterMatrix
-        else
+        # Check if value is an array, which indicates roster
+        else if _.isArray(newData[values[0]])
           # The id of the roster containing the data
           rosterGroupId = values[0]
           # The index of the answer
@@ -73,10 +82,11 @@ module.exports = class ResponseCleaner
           questionId = values[2]
           if newData[rosterGroupId]? and newData[rosterGroupId][index]?
             # Delete the entry
-            selectedChoice = newData?[rosterGroupId]?[index]?[questionId]?.value
+            conditionData = newData[rosterGroupId][index].data
+            selectedChoice = conditionData?[questionId]?.value
             deleteAnswer = () ->
               # Need to find what needs to be cleaned first (with roster data)
-              answerToClean = newData[rosterGroupId][index]
+              answerToClean = newData[rosterGroupId][index].data
               delete answerToClean[questionId]
 
         # SECOND: look for conditional choices and delete their answer if the conditions are false
@@ -91,7 +101,7 @@ module.exports = class ResponseCleaner
                 # And it's the selected choice
                 if choice.id == selectedChoice
                   # Test the condition
-                  if not conditionUtils.compileConditions(choice.conditions)(newData)
+                  if not conditionUtils.compileConditions(choice.conditions)(conditionData)
                     deleteAnswer()
 
 
