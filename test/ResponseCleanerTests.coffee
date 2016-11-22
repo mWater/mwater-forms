@@ -32,10 +32,10 @@ describe 'ResponseCleaner', ->
       responseCleaner = new ResponseCleaner()
 
       design = {}
-      data = {'rosterGroupId': [{firstQuestionId: 'sometext'}]}
+      data = {'rosterGroupId': [{ data: { firstQuestionId: 'sometext'} }]}
       visibilityStructure = {rosterGroupId: true, 'rosterGroupId.0.firstQuestionId': true}
 
-      newData = responseCleaner.cleanData(data, visibilityStructure)
+      newData = responseCleaner.cleanData(data, visibilityStructure, design)
 
       assert data != newData, "It returned data instead of a copy"
       assert.deepEqual data, newData, "Data should have stayed the same"
@@ -44,26 +44,67 @@ describe 'ResponseCleaner', ->
       responseCleaner = new ResponseCleaner()
 
       design = {}
-      data = {'rosterGroupId': [{firstQuestionId: 'sometext', secondQuestionId: 'moretext'}]}
+      data = {'rosterGroupId': [{ data: {firstQuestionId: 'sometext', secondQuestionId: 'moretext'} }]}
       visibilityStructure = {rosterGroupId: true, 'rosterGroupId.0.firstQuestionId': true, 'rosterGroupId.0.secondQuestionId': false}
 
-      newData = responseCleaner.cleanData(data, visibilityStructure)
+      newData = responseCleaner.cleanData(data, visibilityStructure, design)
 
-      expectedData = {'rosterGroupId': [{firstQuestionId: 'sometext'}]}
+      expectedData = {'rosterGroupId': [{ data: {firstQuestionId: 'sometext'} }]}
 
       assert data != newData, "It returned data instead of a copy"
-      assert.deepEqual expectedData, newData, "Only the secondQuestionId should have been deleted"
+      assert.deepEqual expectedData, newData, "Only the secondQuestionId should have been deleted: " + JSON.stringify(newData)
 
     it 'removes all the data if the rosterGroupId is invisible', ->
       responseCleaner = new ResponseCleaner()
 
-      data = {'rosterGroupId': [{firstQuestionId: 'sometext', secondQuestionId: 'moretext'}]}
+      design = {}
+      data = {'rosterGroupId': [{data: { firstQuestionId: 'sometext', secondQuestionId: 'moretext'} }]}
       visibilityStructure = {rosterGroupId: false, 'rosterGroupId.0.firstQuestionId': false, 'rosterGroupId.0.secondQuestionId': false}
 
-      newData = responseCleaner.cleanData(data, visibilityStructure)
+      newData = responseCleaner.cleanData(data, visibilityStructure, design)
 
       expectedData = {}
 
       assert data != newData, "It returned data instead of a copy"
       assert.deepEqual expectedData, newData, "The whole roster entry should have been deleted"
+
+  describe 'Matrix', ->
+    it 'keeps the data for all visible questions', ->
+      responseCleaner = new ResponseCleaner()
+
+      design = {}
+      data = { matrixId: { item1Id: { firstQuestionId: 'sometext'} } }
+      visibilityStructure = { matrixId: true, 'matrixId.item1Id.firstQuestionId': true}
+
+      newData = responseCleaner.cleanData(data, visibilityStructure, design)
+
+      assert data != newData, "It returned data instead of a copy"
+      assert.deepEqual data, newData, "Data should have stayed the same"
+
+    it 'removes part of the data if sub question is not visible', ->
+      responseCleaner = new ResponseCleaner()
+
+      design = {}
+      data = { matrixId: { item1Id: { firstQuestionId: 'sometext', secondQuestionId: 'moretext' } } }
+      visibilityStructure = { matrixId: true, 'matrixId.item1Id.firstQuestionId': true, 'matrixId.item1Id.secondQuestionId': false }
+
+      newData = responseCleaner.cleanData(data, visibilityStructure, design)
+      expectedData = { matrixId: { item1Id: { firstQuestionId: 'sometext' } } }
+
+      assert data != newData, "It returned data instead of a copy"
+      assert.deepEqual expectedData, newData, "Only the secondQuestionId should have been deleted: " + JSON.stringify(newData)
+
+    it 'removes all the data if the whole thing is invisible', ->
+      responseCleaner = new ResponseCleaner()
+
+      design = {}
+      data = { matrixId: { item1Id: { firstQuestionId: 'sometext'} } }
+      visibilityStructure = { matrixId: false, 'matrixId.item1Id.firstQuestionId': true }
+
+      newData = responseCleaner.cleanData(data, visibilityStructure, design)
+
+      expectedData = {}
+
+      assert data != newData, "It returned data instead of a copy"
+      assert.deepEqual expectedData, newData, "The whole matrix should have been deleted"
 

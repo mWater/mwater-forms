@@ -1,6 +1,5 @@
 AnswerValidator = require './answers/AnswerValidator'
 formUtils = require './formUtils'
-VisibilityCalculator = require './VisibilityCalculator'
 
 # ResponseDataValidator checks whether the entire data is valid for a response
 module.exports = class ResponseDataValidator
@@ -13,11 +12,7 @@ module.exports = class ResponseDataValidator
   #     RosterMatrix   -> matrixId.index.columnId
   #     RosterGroup   -> rosterGroupId.index.questionId
   #     QuestionMatrix -> matrixId.itemId.columnId
-  validate: (formDesign, data) ->
-    # Compute visibility
-    visibilityCalculator = new VisibilityCalculator(formDesign)
-    visibilityStructure = visibilityCalculator.createVisibilityStructure(data)
-
+  validate: (formDesign, visibilityStructure, data) ->
     return @validateParentItem(formDesign, visibilityStructure, data, "")
 
   # Validates an parent row

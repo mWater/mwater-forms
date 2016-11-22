@@ -100,7 +100,7 @@ describe 'VisibilityCalculator', ->
     beforeEach ->
       @visibilityCalculator = new VisibilityCalculator(@form)
 
-    it 'create a complete visibility structure', ->
+    it 'create a complete visibility structure', (done) ->
       data = {
         mainRosterGroupId: [
           { data: {firstRosterQuestionId: {value: 'some text'}, firstSubRosterQuestionId: {value: 'sub text'}} }
@@ -108,25 +108,25 @@ describe 'VisibilityCalculator', ->
           { data: {firstRosterQuestionId: {value: null}} }
         ]
       }
-      visibilityStructure = @visibilityCalculator.createVisibilityStructure(data)
-
-      expectedVisibilityStructure = {
-        'sectionId': true
-        'checkboxQuestionId': true
-        'mainRosterGroupId': true
-        'mainRosterGroupId.0.firstRosterQuestionId': true
-        'mainRosterGroupId.0.secondRosterQuestionId': true
-        'mainRosterGroupId.1.firstRosterQuestionId': true
-        'mainRosterGroupId.1.secondRosterQuestionId': false
-        # Questions under subRosterGroup need to use the mainRosterGroup id.
-        # This makes the data cleaning easier.
-        'mainRosterGroupId.0.firstSubRosterQuestionId': true
-        'mainRosterGroupId.1.firstSubRosterQuestionId': true
-        'subRosterGroupId': true
-        groupId: false
-        groupQuestionId: false
-      }
-      assert.deepEqual visibilityStructure, expectedVisibilityStructure
+      @visibilityCalculator.createVisibilityStructure data, (error, visibilityStructure) =>
+        expectedVisibilityStructure = {
+          'sectionId': true
+          'checkboxQuestionId': true
+          'mainRosterGroupId': true
+          'mainRosterGroupId.0.firstRosterQuestionId': true
+          'mainRosterGroupId.0.secondRosterQuestionId': true
+          'mainRosterGroupId.1.firstRosterQuestionId': true
+          'mainRosterGroupId.1.secondRosterQuestionId': false
+          # Questions under subRosterGroup need to use the mainRosterGroup id.
+          # This makes the data cleaning easier.
+          'mainRosterGroupId.0.firstSubRosterQuestionId': true
+          'mainRosterGroupId.1.firstSubRosterQuestionId': true
+          'subRosterGroupId': true
+          groupId: false
+          groupQuestionId: false
+        }
+        assert.deepEqual visibilityStructure, expectedVisibilityStructure
+        done()
 
   describe 'processQuestion', ->
     beforeEach ->

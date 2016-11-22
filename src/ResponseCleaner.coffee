@@ -25,8 +25,8 @@ module.exports = class ResponseCleaner
         # If the key doesn't contain any '.', simply remove the data entry
         if values.length == 1
           delete newData[key]
-        # Else, it's a RosterGroup or a RosterMatrix
-        else
+          # Check if value is an array, which indicates roster
+        else if _.isArray(newData[values[0]])
           # The id of the roster containing the data
           rosterGroupId = values[0]
           # The index of the answer
@@ -36,8 +36,15 @@ module.exports = class ResponseCleaner
           # If a data entry exist for that roster and that answer index
           if newData[rosterGroupId]? and newData[rosterGroupId][index]?
             # Delete the entry
-            answerToClean = newData[rosterGroupId][index]
-            delete answerToClean[questionId]
+            answerToClean = newData[rosterGroupId][index].data
+            if answerToClean
+              delete answerToClean[questionId]
+        else # Must be a matrix
+          matrixId = values[0]
+          itemId = values[1]
+          questionId = values[2]
+          if itemId and questionId and newData[matrixId]?[itemId]?[questionId]
+            delete (newData[matrixId][itemId])[questionId]
 
   # Remove data entries for all the conditional choices that are false
   # 'DropdownQuestion', 'RadioQuestion' and 'DropdownColumnQuestion' can have choices that are only present if a condition
@@ -48,7 +55,7 @@ module.exports = class ResponseCleaner
         values = key.split('.')
         selectedChoice = null
 
-        # FIST: Setup what is needed for the cleaning the data (different for rosters)
+        # FIRST: Setup what is needed for the cleaning the data (different for rosters)
         # If the key doesn't contain any '.', simply remove the data entry
         if values.length == 1
           questionId = key

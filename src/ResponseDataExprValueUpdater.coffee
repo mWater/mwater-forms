@@ -51,22 +51,29 @@ module.exports = class ResponseDataExprValueUpdater
 
     return false    
 
-  # Cleans data. Must be called after last update is done.
-  cleanData: (data) ->
+  # Cleans data. Must be called after last update is done. Callback with (error, cleanedData)
+  cleanData: (data, callback) ->
     # Compute visibility
     visibilityCalculator = new VisibilityCalculator(@formDesign)
-    visibilityStructure = visibilityCalculator.createVisibilityStructure(data)
+    visibilityCalculator.createVisibilityStructure(data, (error, visibilityStructure) =>
+      if error
+        return callback(error)
 
-    responseCleaner = new ResponseCleaner()
-    data = responseCleaner.cleanData(data, visibilityStructure, @formDesign)
-    return data
+      responseCleaner = new ResponseCleaner()
+      cleanData = responseCleaner.cleanData(data, visibilityStructure, @formDesign)
+      callback(null, cleanData)
+    )
 
-  # Validates the data. Returns null if ok, otherwise string message. Clean first
-  validateData: (data) ->
-    result = new ResponseDataValidator().validate(@formDesign, data)
-    if result
-      return result.message
-    return null
+  # Validates the data. Callback null if ok, otherwise string message in second parameter. Clean first.
+  validateData: (data, callback) ->
+    visibilityCalculator = new VisibilityCalculator(@formDesign)
+    visibilityCalculator.createVisibilityStructure(data, (error, visibilityStructure) =>
+      if error
+        return callback(error)
+
+      result = new ResponseDataValidator().validate(@formDesign, visibilityStructure, data)
+      callback(null, result)
+    )
 
   # Updates the data of a response, given an expression and its value. For example,
   # if there is a text field in question q1234, the expression { type: "field", table: "responses:form123", column: "data:q1234:value" }

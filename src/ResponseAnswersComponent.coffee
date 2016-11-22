@@ -1,3 +1,4 @@
+_ = require 'lodash'
 React = require 'react'
 H = React.DOM
 R = React.createElement
@@ -6,6 +7,7 @@ formUtils = require './formUtils'
 moment = require 'moment'
 ezlocalize = require 'ez-localize'
 
+AsyncLoadComponent = require('react-library/lib/AsyncLoadComponent')
 VisibilityCalculator = require './VisibilityCalculator'
 
 ImageDisplayComponent = require './ImageDisplayComponent'
@@ -14,8 +16,9 @@ AdminRegionDisplayComponent = require './AdminRegionDisplayComponent'
 
 AquagenxCBTDisplayComponent = require './answers/AquagenxCBTDisplayComponent'
 
+
 # Displays the answers of a response in a table
-module.exports = class ResponseAnswersComponent extends React.Component
+module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
   @propTypes:
     formDesign: React.PropTypes.object.isRequired
     data: React.PropTypes.object.isRequired
@@ -25,6 +28,17 @@ module.exports = class ResponseAnswersComponent extends React.Component
     locale: React.PropTypes.string # Defaults to english
     T: React.PropTypes.func.isRequired  # Localizer to use
     formCtx: React.PropTypes.object.isRequired    # Form context to use
+
+  # Check if form design or data are different
+  isLoadNeeded: (newProps, oldProps) ->
+    return not _.isEqual(newProps.formDesign, oldProps.formDesign) or not _.isEqual(newProps.data, oldProps.data) 
+
+  # Call callback with state changes
+  load: (props, prevProps, callback) ->
+    # Calculate visibility asynchronously
+    new VisibilityCalculator(props.formDesign).createVisibilityStructure(props.data, (error, visibilityStructure) =>
+      callback(error: error, visibilityStructure: visibilityStructure)
+    )
 
   handleLocationClick: (location) ->
     if @props.formCtx.displayMap
@@ -363,10 +377,11 @@ module.exports = class ResponseAnswersComponent extends React.Component
       return @renderQuestion(item, dataId)
 
   render: ->
-    visibilityStructure = new VisibilityCalculator(@props.formDesign).createVisibilityStructure(@props.data)
+    if not @state.visibilityStructure
+      return H.div null, "Loading..."
 
     H.table className: "table table-bordered table-condensed", style: { marginBottom: 0 },
       H.tbody null, 
         _.map @props.formDesign.contents, (item) =>
-          @renderItem(item, visibilityStructure, item._id)
+          @renderItem(item, @state.visibilityStructure, item._id)
 

@@ -13,10 +13,10 @@ module.exports = class VisibilityCalculator
     @visibilityStructure = {}
 
   # Updates the visibilityStructure dictionary with one entry for each element
-  createVisibilityStructure: (data) ->
+  createVisibilityStructure: (data, callback) ->
     @visibilityStructure = {}
     @processForm(data)
-    return @visibilityStructure
+    callback(null, @visibilityStructure)
 
   # Process the whole form
   processForm: (data) ->
