@@ -16,17 +16,14 @@ Therefore, it's an iterative process which is also asynchronous, as
 module.exports = class ResponseCleaner
   # Returns an array containing the cleaned data
   cleanData: (data, visibilityStructure, design) ->
-    # NOTE: Always remember that data is immutable
-    # Creates a copy of the data and cleans it
-    newData = _.clone(data)
-
-    @cleanDataBasedOnVisibility(newData, visibilityStructure)
-    @cleanDataBasedOnChoiceConditions(newData, visibilityStructure, design)
-
+    newData = @cleanDataBasedOnVisibility(data, visibilityStructure)
+    newData = @cleanDataBasedOnChoiceConditions(newData, visibilityStructure, design)
     return newData
 
   # Remove data entries for all the invisible questions
-  cleanDataBasedOnVisibility: (newData, visibilityStructure) ->
+  cleanDataBasedOnVisibility: (data, visibilityStructure) ->
+    newData = _.cloneDeep(data)
+
     for key, visible of visibilityStructure
       if not visible
         values = key.split('.')
@@ -54,10 +51,14 @@ module.exports = class ResponseCleaner
           if itemId and questionId and newData[matrixId]?[itemId]?[questionId]
             delete (newData[matrixId][itemId])[questionId]
 
+    return newData
+
   # Remove data entries for all the conditional choices that are false
   # 'DropdownQuestion', 'RadioQuestion' and 'DropdownColumnQuestion' can have choices that are only present if a condition
   # is filled. If the condition is no longer filled, the answer data needs to be removed
-  cleanDataBasedOnChoiceConditions: (newData, visibilityStructure, design) ->
+  cleanDataBasedOnChoiceConditions: (data, visibilityStructure, design) ->
+    newData = _.cloneDeep(data)
+
     for key, visible of visibilityStructure
       if visible
         values = key.split('.')
@@ -104,5 +105,4 @@ module.exports = class ResponseCleaner
                   if not conditionUtils.compileConditions(choice.conditions)(conditionData)
                     deleteAnswer()
 
-
-
+    return newData

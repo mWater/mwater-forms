@@ -2,113 +2,114 @@ assert = require('chai').assert
 ResponseCleaner = require '../src/ResponseCleaner'
 
 describe 'ResponseCleaner', ->
-  describe 'Simple cases', ->
-    it 'keeps the data for all visible questions', ->
-      responseCleaner = new ResponseCleaner()
+  describe "cleanDataBasedOnVisibility", ->
+    describe 'Simple cases', ->
+      it 'keeps the data for all visible questions', ->
+        responseCleaner = new ResponseCleaner()
 
-      design = {}
-      data = {questionA: true, questionB: 'patate'}
-      visibilityStructure = {questionA: true, questionB: true}
+        design = {}
+        data = {questionA: true, questionB: 'patate'}
+        visibilityStructure = {questionA: true, questionB: true}
 
-      newData = responseCleaner.cleanData(data, visibilityStructure)
+        newData = responseCleaner.cleanDataBasedOnVisibility(data, visibilityStructure)
 
-      assert data != newData, "It returned data instead of a copy"
-      assert.deepEqual data, newData, "Data should have stayed the same"
+        assert data != newData, "It returned data instead of a copy"
+        assert.deepEqual data, newData, "Data should have stayed the same"
 
-    it 'removes the data for all invisible questions', ->
-      responseCleaner = new ResponseCleaner()
+      it 'removes the data for all invisible questions', ->
+        responseCleaner = new ResponseCleaner()
 
-      design = {}
-      data = {questionA: true, questionB: 'patate'}
-      visibilityStructure = {questionA: false, questionB: false}
+        design = {}
+        data = {questionA: true, questionB: 'patate'}
+        visibilityStructure = {questionA: false, questionB: false}
 
-      newData = responseCleaner.cleanData(data, visibilityStructure)
+        newData = responseCleaner.cleanDataBasedOnVisibility(data, visibilityStructure)
 
-      assert data != newData, "It returned data instead of a copy"
-      assert.deepEqual {}, newData, "All the data should have been removed"
+        assert data != newData, "It returned data instead of a copy"
+        assert.deepEqual {}, newData, "All the data should have been removed"
 
-  describe 'Roster groups', ->
-    it 'keeps the data for all visible questions', ->
-      responseCleaner = new ResponseCleaner()
+    describe 'Roster groups', ->
+      it 'keeps the data for all visible questions', ->
+        responseCleaner = new ResponseCleaner()
 
-      design = {}
-      data = {'rosterGroupId': [{ data: { firstQuestionId: 'sometext'} }]}
-      visibilityStructure = {rosterGroupId: true, 'rosterGroupId.0.firstQuestionId': true}
+        design = {}
+        data = {'rosterGroupId': [{ data: { firstQuestionId: 'sometext'} }]}
+        visibilityStructure = {rosterGroupId: true, 'rosterGroupId.0.firstQuestionId': true}
 
-      newData = responseCleaner.cleanData(data, visibilityStructure, design)
+        newData = responseCleaner.cleanDataBasedOnVisibility(data, visibilityStructure, design)
 
-      assert data != newData, "It returned data instead of a copy"
-      assert.deepEqual data, newData, "Data should have stayed the same"
+        assert data != newData, "It returned data instead of a copy"
+        assert.deepEqual data, newData, "Data should have stayed the same"
 
-    it 'removes part of the data if sub question is not visible', ->
-      responseCleaner = new ResponseCleaner()
+      it 'removes part of the data if sub question is not visible', ->
+        responseCleaner = new ResponseCleaner()
 
-      design = {}
-      data = {'rosterGroupId': [{ data: {firstQuestionId: 'sometext', secondQuestionId: 'moretext'} }]}
-      visibilityStructure = {rosterGroupId: true, 'rosterGroupId.0.firstQuestionId': true, 'rosterGroupId.0.secondQuestionId': false}
+        design = {}
+        data = {'rosterGroupId': [{ data: {firstQuestionId: 'sometext', secondQuestionId: 'moretext'} }]}
+        visibilityStructure = {rosterGroupId: true, 'rosterGroupId.0.firstQuestionId': true, 'rosterGroupId.0.secondQuestionId': false}
 
-      newData = responseCleaner.cleanData(data, visibilityStructure, design)
+        newData = responseCleaner.cleanDataBasedOnVisibility(data, visibilityStructure, design)
 
-      expectedData = {'rosterGroupId': [{ data: {firstQuestionId: 'sometext'} }]}
+        expectedData = {'rosterGroupId': [{ data: {firstQuestionId: 'sometext'} }]}
 
-      assert data != newData, "It returned data instead of a copy"
-      assert.deepEqual expectedData, newData, "Only the secondQuestionId should have been deleted: " + JSON.stringify(newData)
+        assert data != newData, "It returned data instead of a copy"
+        assert.deepEqual expectedData, newData, "Only the secondQuestionId should have been deleted: " + JSON.stringify(newData)
 
-    it 'removes all the data if the rosterGroupId is invisible', ->
-      responseCleaner = new ResponseCleaner()
+      it 'removes all the data if the rosterGroupId is invisible', ->
+        responseCleaner = new ResponseCleaner()
 
-      design = {}
-      data = {'rosterGroupId': [{data: { firstQuestionId: 'sometext', secondQuestionId: 'moretext'} }]}
-      visibilityStructure = {rosterGroupId: false, 'rosterGroupId.0.firstQuestionId': false, 'rosterGroupId.0.secondQuestionId': false}
+        design = {}
+        data = {'rosterGroupId': [{data: { firstQuestionId: 'sometext', secondQuestionId: 'moretext'} }]}
+        visibilityStructure = {rosterGroupId: false, 'rosterGroupId.0.firstQuestionId': false, 'rosterGroupId.0.secondQuestionId': false}
 
-      newData = responseCleaner.cleanData(data, visibilityStructure, design)
+        newData = responseCleaner.cleanDataBasedOnVisibility(data, visibilityStructure, design)
 
-      expectedData = {}
+        expectedData = {}
 
-      assert data != newData, "It returned data instead of a copy"
-      assert.deepEqual expectedData, newData, "The whole roster entry should have been deleted"
+        assert data != newData, "It returned data instead of a copy"
+        assert.deepEqual expectedData, newData, "The whole roster entry should have been deleted"
 
-  describe 'Matrix', ->
-    it 'keeps the data for all visible questions', ->
-      responseCleaner = new ResponseCleaner()
+    describe 'Matrix', ->
+      it 'keeps the data for all visible questions', ->
+        responseCleaner = new ResponseCleaner()
 
-      design = {}
-      data = { matrixId: { item1Id: { firstQuestionId: 'sometext'} } }
-      visibilityStructure = { matrixId: true, 'matrixId.item1Id.firstQuestionId': true}
+        design = {}
+        data = { matrixId: { item1Id: { firstQuestionId: 'sometext'} } }
+        visibilityStructure = { matrixId: true, 'matrixId.item1Id.firstQuestionId': true}
 
-      newData = responseCleaner.cleanData(data, visibilityStructure, design)
+        newData = responseCleaner.cleanDataBasedOnVisibility(data, visibilityStructure, design)
 
-      assert data != newData, "It returned data instead of a copy"
-      assert.deepEqual data, newData, "Data should have stayed the same"
+        assert data != newData, "It returned data instead of a copy"
+        assert.deepEqual data, newData, "Data should have stayed the same"
 
-    it 'removes part of the data if sub question is not visible', ->
-      responseCleaner = new ResponseCleaner()
+      it 'removes part of the data if sub question is not visible', ->
+        responseCleaner = new ResponseCleaner()
 
-      design = {}
-      data = { matrixId: { item1Id: { firstQuestionId: 'sometext', secondQuestionId: 'moretext' } } }
-      visibilityStructure = { matrixId: true, 'matrixId.item1Id.firstQuestionId': true, 'matrixId.item1Id.secondQuestionId': false }
+        design = {}
+        data = { matrixId: { item1Id: { firstQuestionId: 'sometext', secondQuestionId: 'moretext' } } }
+        visibilityStructure = { matrixId: true, 'matrixId.item1Id.firstQuestionId': true, 'matrixId.item1Id.secondQuestionId': false }
 
-      newData = responseCleaner.cleanData(data, visibilityStructure, design)
-      expectedData = { matrixId: { item1Id: { firstQuestionId: 'sometext' } } }
+        newData = responseCleaner.cleanDataBasedOnVisibility(data, visibilityStructure, design)
+        expectedData = { matrixId: { item1Id: { firstQuestionId: 'sometext' } } }
 
-      assert data != newData, "It returned data instead of a copy"
-      assert.deepEqual expectedData, newData, "Only the secondQuestionId should have been deleted: " + JSON.stringify(newData)
+        assert data != newData, "It returned data instead of a copy"
+        assert.deepEqual expectedData, newData, "Only the secondQuestionId should have been deleted: " + JSON.stringify(newData)
 
-    it 'removes all the data if the whole thing is invisible', ->
-      responseCleaner = new ResponseCleaner()
+      it 'removes all the data if the whole thing is invisible', ->
+        responseCleaner = new ResponseCleaner()
 
-      design = {}
-      data = { matrixId: { item1Id: { firstQuestionId: 'sometext'} } }
-      visibilityStructure = { matrixId: false, 'matrixId.item1Id.firstQuestionId': true }
+        design = {}
+        data = { matrixId: { item1Id: { firstQuestionId: 'sometext'} } }
+        visibilityStructure = { matrixId: false, 'matrixId.item1Id.firstQuestionId': true }
 
-      newData = responseCleaner.cleanData(data, visibilityStructure, design)
+        newData = responseCleaner.cleanDataBasedOnVisibility(data, visibilityStructure, design)
 
-      expectedData = {}
+        expectedData = {}
 
-      assert data != newData, "It returned data instead of a copy"
-      assert.deepEqual expectedData, newData, "The whole matrix should have been deleted"
+        assert data != newData, "It returned data instead of a copy"
+        assert.deepEqual expectedData, newData, "The whole matrix should have been deleted"
 
-  describe "Dropdown questions", ->
+  describe "cleanDataBasedOnChoiceConditions", ->
     it "removes invalid dropdown options", ->
       # Choice c1 conditional on q1 being present
       design = { _type: "Form", contents: [
@@ -120,7 +121,7 @@ describe 'ResponseCleaner', ->
       data = { q2: { value: "c1" } }
       visibilityStructure = { q1: true, q2: true }
 
-      newData = responseCleaner.cleanData(data, visibilityStructure, design)
+      newData = responseCleaner.cleanDataBasedOnChoiceConditions(data, visibilityStructure, design)
 
       expectedData = {}
       assert.deepEqual expectedData, newData, "Choice should be deleted"
@@ -136,7 +137,7 @@ describe 'ResponseCleaner', ->
       data = { q1: { value: "sometext" }, q2: { value: "c1" } }
       visibilityStructure = { q1: true, q2: true }
 
-      newData = responseCleaner.cleanData(data, visibilityStructure, design)
+      newData = responseCleaner.cleanDataBasedOnChoiceConditions(data, visibilityStructure, design)
 
       expectedData = { q1: { value: "sometext" }, q2: { value: "c1" } }
       assert.deepEqual expectedData, newData, "Choice should be left"
@@ -155,7 +156,7 @@ describe 'ResponseCleaner', ->
         data = { r1: [{ _id: "e1", data: { q2: { value: "c1" } } }] }
         visibilityStructure = { r1: true, "r1.0.q1": true, "r1.0.q2": true }
 
-        newData = responseCleaner.cleanData(data, visibilityStructure, design)
+        newData = responseCleaner.cleanDataBasedOnChoiceConditions(data, visibilityStructure, design)
 
         expectedData = { r1: [{ _id: "e1", data: {}}] }
         assert.deepEqual expectedData, newData, "Choice should be deleted"
@@ -173,7 +174,7 @@ describe 'ResponseCleaner', ->
         data = { r1: [{ _id: "e1", data: { q1: { value: "sometext" }, q2: { value: "c1" } } }] }
         visibilityStructure = { r1: true, "r1.0.q1": true, "r1.0.q2": true }
 
-        newData = responseCleaner.cleanData(data, visibilityStructure, design)
+        newData = responseCleaner.cleanDataBasedOnChoiceConditions(data, visibilityStructure, design)
 
         expectedData = { r1: [{ _id: "e1", data: { q1: { value: "sometext" }, q2: { value: "c1" } } }] }
         assert.deepEqual expectedData, newData, "Choice should be left"
@@ -189,7 +190,7 @@ describe 'ResponseCleaner', ->
       data = { q1: { value: "sometext" }, q2: { value: "c1" } }
       visibilityStructure = { q1: true, q2: true }
 
-      newData = responseCleaner.cleanData(data, visibilityStructure, design)
+      newData = responseCleaner.cleanDataBasedOnChoiceConditions(data, visibilityStructure, design)
 
       expectedData = { q1: { value: "sometext" }, q2: { value: "c1" } }
       assert.deepEqual expectedData, newData, "Choice should be left"
