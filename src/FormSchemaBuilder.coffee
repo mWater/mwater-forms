@@ -232,7 +232,9 @@ module.exports = class FormSchemaBuilder
 
       # Add to indicators section
       indicatorSectionContents = indicatorsSection.contents.slice()
-      indicatorSectionContents.push(@createIndicatorCalculationSection(indicatorCalculation, schema, isMaster))
+      indicatorCalculationSection = @createIndicatorCalculationSection(indicatorCalculation, schema, isMaster)
+      if indicatorCalculationSection
+        indicatorSectionContents.push(indicatorCalculationSection)
 
       # Update in original
       contents = schema.getTable(tableId).contents.slice()
@@ -251,7 +253,7 @@ module.exports = class FormSchemaBuilder
 
     # If not found, probably don't have permission
     if not indicTable
-      return schema
+      return null
 
     # Create compiler
     exprCompiler = new ExprCompiler(schema)
@@ -865,27 +867,29 @@ module.exports = class FormSchemaBuilder
           addColumn(column)
 
         when "entity"
-          column = {
-            id: "data:#{item._id}:value"
-            type: "join"
-            name: item.text
-            code: code
-            join: {
-              type: "n-1"
-              toTable: "entities.#{item.entityType}"
-              fromColumn: {
-                type: "op"
-                op: "#>>"
-                exprs: [
-                  { type: "field", tableAlias: "{alias}", column: "data" }
-                  "{#{item._id},value}"
-                ]
+          # Do not add if no entity type
+          if item.entityType
+            column = {
+              id: "data:#{item._id}:value"
+              type: "join"
+              name: item.text
+              code: code
+              join: {
+                type: "n-1"
+                toTable: "entities.#{item.entityType}"
+                fromColumn: {
+                  type: "op"
+                  op: "#>>"
+                  exprs: [
+                    { type: "field", tableAlias: "{alias}", column: "data" }
+                    "{#{item._id},value}"
+                  ]
+                }
+                toColumn: "_id"
               }
-              toColumn: "_id"
             }
-          }
 
-          addColumn(column)
+            addColumn(column)
 
         when "texts"
           # Get image
@@ -1332,25 +1336,26 @@ module.exports = class FormSchemaBuilder
       if conditionsExprCompiler and ((item.conditions and item.conditions.length > 0) or existingConditionExpr)
         # Guard against null
         conditionExpr = ExprUtils.andExprs(existingConditionExpr, conditionsExprCompiler.compileConditions(item.conditions, tableId))
-        conditionExpr = {
-          type: "op"
-          op: "and"
-          table: tableId
-          exprs: [
-            { type: "op", table: tableId, op: "is not null", exprs: [conditionExpr] }
-            conditionExpr
-          ]
-        }
+        if conditionExpr
+          conditionExpr = {
+            type: "op"
+            op: "and"
+            table: tableId
+            exprs: [
+              { type: "op", table: tableId, op: "is not null", exprs: [conditionExpr] }
+              conditionExpr
+            ]
+          }
 
-        column = {
-          id: "data:#{item._id}:visible"
-          type: "expr"
-          name: appendStr(item.text, " (Asked)")
-          code: if code then code + " (Asked)"
-          expr: conditionExpr
-        }
-        
-        addColumn(column)
+          column = {
+            id: "data:#{item._id}:visible"
+            type: "expr"
+            name: appendStr(item.text, " (Asked)")
+            code: if code then code + " (Asked)"
+            expr: conditionExpr
+          }
+          
+          addColumn(column)
 
 # Append a string to each language
 appendStr = (str, suffix) ->

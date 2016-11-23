@@ -1,5 +1,6 @@
 _ = require 'lodash'
 formUtils = require './formUtils'
+VisibilityCalculator = require './VisibilityCalculator'
 
 ###
 
@@ -64,6 +65,15 @@ module.exports = class ResponseRow
             return new ResponseRow(_.extend({}, @options, rosterId: parts[1], rosterEntryIndex: index))
             ))
 
+      # Visible
+      if parts.length == 3 and parts[2] == "visible"
+        visibilityCalculator = new VisibilityCalculator(@formDesign)
+        visibilityCalculator.createVisibilityStructure @responseData, (error, visibilityStructure) =>
+          if error
+            return callback(error)
+          callback(null, visibilityStructure[parts[1]])
+        return
+
       # Simple values
       if parts.length == 3 and parts[2] == "value"
         value = data[parts[1]]?.value
@@ -81,6 +91,18 @@ module.exports = class ResponseRow
           return callback(null, null)
 
         answerType = formUtils.getAnswerType(question)
+
+        # Pad to YYYY-MM-DD
+        if answerType == "date"
+          if value.length == 4
+            value = value + "-01-01"
+          if value.length == 7
+            value = value + "-01"
+
+          # If date only, truncate
+          if not question.format.match(/ss|LLL|lll|m|h|H/)
+            value = value.substr(0, 10)
+
         if answerType == "site"
           # Create site entity row
           siteType = (if question.siteTypes then question.siteTypes[0]) or "Water point" 
@@ -102,7 +124,8 @@ module.exports = class ResponseRow
         if value and value.latitude?
           return callback(null, { type: "Point", coordinates: [value.longitude, value.latitude]})
 
-        return callback(null, value)
+        return callback(null, nullify(value))
+
 
       # Value can also recurse for handing matrix, item_choices, altitude, accuracy and CBT
       if parts[2] == "value"
@@ -111,8 +134,16 @@ module.exports = class ResponseRow
         for part in _.drop(parts, 3)
           value = value?[part]
 
-        return callback(null, value)
-        
+        return callback(null, nullify(value))
+
+      # Specify
+      if parts[2] == "specify"
+        return callback(null, nullify(data[parts[1]]?.specify?[parts[3]])) 
+
+      # Comments
+      if parts[2] == "comments"
+        return callback(null, nullify(data[parts[1]]?.comments)) 
+
       # # Altitude and accuracy
       # if parts[2] == "value" and parts[3] in ["altitude", "accuracy"]
       #   return callback(null, data[parts[1]]?.value?[parts[3]])
@@ -134,7 +165,7 @@ module.exports = class ResponseRow
 
       # Timestamp
       if parts.length == 3 and parts[2] == "timestamp"
-        return callback(null, data[parts[1]]?.timestamp)
+        return callback(null, nullify(data[parts[1]]?.timestamp))
 
       # Location
       if parts.length == 3 and parts[2] == "location"
@@ -144,10 +175,10 @@ module.exports = class ResponseRow
           return callback(null, null)
 
       if parts.length == 4 and parts[2] == "location" and parts[3] == "accuracy"
-        return callback(null, data[parts[1]]?.location?.accuracy)
+        return callback(null, nullify(data[parts[1]]?.location?.accuracy))
 
       if parts.length == 4 and parts[2] == "location" and parts[3] == "altitude"
-        return callback(null, data[parts[1]]?.location?.altitude)
+        return callback(null, nullify(data[parts[1]]?.location?.altitude))
 
     return callback(null, null)
 
@@ -168,3 +199,10 @@ class EntityRow
   # For joins, getField will get array of rows for 1-n and n-n joins and a row for n-1 and 1-1 joins
   getField: (columnId, callback) ->
     callback(null, @entity[columnId])
+
+
+# Converts undefined to null
+nullify = (value) ->
+  if value?
+    return value
+  return null

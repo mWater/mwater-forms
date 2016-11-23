@@ -3,11 +3,13 @@ assert = require("chai").assert
 
 ResponseRow = require '../src/ResponseRow'
 
-describe.only "ResponseRow", ->
+describe "ResponseRow", ->
   before ->
     @formDesign = {
       contents: [
         { _id: "qtext", _type: "TextQuestion" }
+        { _id: "qdate", _type: "DateQuestion", format: "YYYY-MM-DD" }
+        { _id: "qchoice", _type: "RadioQuestion" }
         { _id: "qchoices", _type: "MulticheckQuestion" }
         { _id: "qunits", _type: "UnitsQuestion" }
         { _id: "qlocation", _type: "LocationQuestion" }
@@ -42,6 +44,9 @@ describe.only "ResponseRow", ->
 
     it "gets accuracy", (done) ->
       @testField({ qlocation: { value: { accuracy: 4 }}}, "data:qlocation:value:accuracy", 4, done)
+
+    it "normalizes date", (done) ->
+      @testField({ qdate: { value: "2012" }}, "data:qdate:value", "2012-01-01", done)
       
     it "nulls empty enumset", (done) ->
       @testField({ qchoices: { value: [] }}, "data:qchoices:value", null, done)
@@ -100,6 +105,15 @@ describe.only "ResponseRow", ->
 
     it "gets cbt image", (done) ->
       @testField({ qcbt: { value: { image: { id: "abc"}}}}, "data:qcbt:value:image", { id: "abc" }, done)
+
+  it "gets specify", (done) ->
+    @testField({ qchoice: { value: "abc", specify: { abc: "sometext" } }}, "data:qchoice:specify:abc", "sometext", done)
+
+  it "gets specify", (done) ->
+    @testField({ qchoice: { value: "abc", specify: { abc: "sometext" } }}, "data:qchoice:specify:abc", "sometext", done)
+
+  it "gets comments", (done) ->
+    @testField({ qchoice: { value: "abc", comments: "sometext" }}, "data:qchoice:comments", "sometext", done)
 
   it "gets na", (done) ->
     @testField({ qtext: { alternate: "na" }}, "data:qtext:na", true, done)
