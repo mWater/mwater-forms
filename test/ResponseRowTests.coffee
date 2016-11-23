@@ -6,6 +6,7 @@ ResponseRow = require '../src/ResponseRow'
 describe "ResponseRow", ->
   before ->
     @formDesign = {
+      _type: "Form"
       contents: [
         { _id: "qtext", _type: "TextQuestion" }
         { _id: "qdate", _type: "DateQuestion", format: "YYYY-MM-DD" }
@@ -19,6 +20,7 @@ describe "ResponseRow", ->
         { _id: "qroster", _type: "RosterGroup", contents: [
           { _id: "qrtext", _type: "TextQuestion" }
         ]}
+        { _id: "qconditional", _type: "TextQuestion", conditions: [{ lhs: { question: "qtext" }, op: "present" }] }
       ]
     }
 
@@ -134,6 +136,12 @@ describe "ResponseRow", ->
 
   it "gets location altitude", (done) ->
     @testField({ qtext: { location: { altitude: 4 }}}, "data:qtext:location:altitude", 4, done)
+
+  it "gets visibility false", (done) ->
+    @testField({}, "data:qconditional:visible", false, done)
+
+  it "gets visibility true", (done) ->
+    @testField({ qtext: { value: "abc" }}, "data:qconditional:visible", true, done)
 
   it "gets roster contents", (done) ->
     row = new ResponseRow({ 
