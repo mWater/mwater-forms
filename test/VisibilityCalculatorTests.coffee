@@ -133,35 +133,49 @@ describe 'VisibilityCalculator', ->
       @visibilityCalculator = new VisibilityCalculator(@form)
 
     describe "TextQuestion", ->
-      it 'sets visibility to false if forceToInvisible is set to true', ->
+      it 'sets visibility to false if forceToInvisible is set to true', (done) ->
         data = {}
 
         question = {_id: 'testId'}
-        @visibilityCalculator.processQuestion(question, true, data, '')
-        assert.deepEqual {testId: false}, @visibilityCalculator.visibilityStructure
+        visibilityStructure = {}
+        @visibilityCalculator.processQuestion(question, true, data, visibilityStructure, '', (error) =>
+          assert.deepEqual {testId: false}, visibilityStructure
+          done()
+        )
 
-      it 'sets visibility using the prefix', ->
+      it 'sets visibility using the prefix', (done) ->
         data = {}
         question = {_id: 'testId'}
-        @visibilityCalculator.processQuestion(question, false, data, 'testprefix.')
-        assert.deepEqual {'testprefix.testId': true}, @visibilityCalculator.visibilityStructure
+        visibilityStructure = {}
+        @visibilityCalculator.processQuestion(question, false, data, visibilityStructure, 'testprefix.', (error) =>
+          assert.deepEqual {'testprefix.testId': true}, visibilityStructure
+          done()
+        )
 
-      it 'sets visibility to true if conditions is null, undefined or empty', ->
+      it 'sets visibility to true if conditions is null, undefined or empty', (done) ->
         data = {}
 
         question = {_id: 'testId'}
-        @visibilityCalculator.processQuestion(question, false, data, '')
-        assert.deepEqual {testId: true}, @visibilityCalculator.visibilityStructure
+        visibilityStructure = {}
+        @visibilityCalculator.processQuestion(question, false, data, visibilityStructure, '', (error) =>
+          assert.deepEqual {testId: true}, visibilityStructure
 
-        question = {_id: 'testId', conditions: null}
-        @visibilityCalculator.processQuestion(question, false, data, '')
-        assert.deepEqual {testId: true}, @visibilityCalculator.visibilityStructure
+          question = {_id: 'testId', conditions: null}
+          visibilityStructure = {}
+          @visibilityCalculator.processQuestion(question, false, data, visibilityStructure, '', (error) =>
+            assert.deepEqual {testId: true}, visibilityStructure
 
-        question = {_id: 'testId', conditions: []}
-        @visibilityCalculator.processQuestion(question, false, data, '')
-        assert.deepEqual {testId: true}, @visibilityCalculator.visibilityStructure
+            question = {_id: 'testId', conditions: []}
+            visibilityStructure = {}
+            @visibilityCalculator.processQuestion(question, false, data, visibilityStructure, '', (error) =>
+              assert.deepEqual {testId: true}, visibilityStructure
+              done()
+            )
+          )
+        )
 
-      it 'sets visibility to true if conditions is true', ->
+
+      it 'sets visibility to true if conditions is true', (done) ->
         data = {checkboxQuestionId: {value: true}}
         question = {
           _id: 'testId'
@@ -169,10 +183,13 @@ describe 'VisibilityCalculator', ->
             {op: "true", lhs: {question: "checkboxQuestionId"}}
           ]
         }
-        @visibilityCalculator.processQuestion(question, false, data, '')
-        assert.deepEqual {testId: true}, @visibilityCalculator.visibilityStructure
+        visibilityStructure = {}
+        @visibilityCalculator.processQuestion(question, false, data, visibilityStructure, '', (error) =>
+          assert.deepEqual {testId: true}, visibilityStructure
+          done()
+        )
 
-      it 'sets visibility to false if conditions is false', ->
+      it 'sets visibility to false if conditions is false', (done) ->
         data = {checkboxQuestionId: {value: false}}
         question = {
           _id: 'testId'
@@ -180,13 +197,16 @@ describe 'VisibilityCalculator', ->
             {op: "true", lhs: {question: "checkboxQuestionId"}}
           ]
         }
-        @visibilityCalculator.processQuestion(question, false, data, '')
-        assert.deepEqual {testId: false}, @visibilityCalculator.visibilityStructure
+        visibilityStructure = {}
+        @visibilityCalculator.processQuestion(question, false, data, visibilityStructure, '', (error) =>
+          assert.deepEqual {testId: false}, visibilityStructure
+          done()
+        )
 
 
-  describe 'processGroupOrSection', ->
-    it 'sub questions are invisible if the section is invisible', ->
-      @form = {_type: 'Form', contents: [
+  describe 'processGroup', ->
+    it 'sub questions are invisible if the section is invisible', (done) ->
+      form = {_type: 'Form', contents: [
           {
             _id: "firstSectionId"
             _type: "Section"
@@ -226,15 +246,19 @@ describe 'VisibilityCalculator', ->
           }
         ]
       }
-      @visibilityCalculator = new VisibilityCalculator(@form)
+      
+      visibilityCalculator = new VisibilityCalculator(form)
+      visibilityStructure = {}
       data = {}
 
-      firstSection = @form.contents[0]
-      @visibilityCalculator.processGroupOrSection(firstSection, false, data, '')
-      assert.deepEqual {firstSectionId: true, checkboxQuestionId: true}, @visibilityCalculator.visibilityStructure
+      firstSection = form.contents[0]
+      visibilityCalculator.processGroup(firstSection, false, data, visibilityStructure, '', (error) =>
+        assert.deepEqual {firstSectionId: true, checkboxQuestionId: true}, visibilityStructure
 
-      secondSection = @form.contents[1]
-      @visibilityCalculator.processGroupOrSection(secondSection, true, data, '')
-      assert.deepEqual {firstSectionId: true, checkboxQuestionId: true, secondSectionId: false, anotherQuestionId: false}, @visibilityCalculator.visibilityStructure
-
+        secondSection = form.contents[1]
+        visibilityCalculator.processGroup(secondSection, true, data, visibilityStructure, '', (error) =>
+          assert.deepEqual {firstSectionId: true, checkboxQuestionId: true, secondSectionId: false, anotherQuestionId: false}, visibilityStructure
+          done()
+        )
+      )
 
