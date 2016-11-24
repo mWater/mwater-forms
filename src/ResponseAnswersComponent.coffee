@@ -9,6 +9,7 @@ ezlocalize = require 'ez-localize'
 
 AsyncLoadComponent = require('react-library/lib/AsyncLoadComponent')
 VisibilityCalculator = require './VisibilityCalculator'
+ResponseRow = require './ResponseRow'
 
 ImageDisplayComponent = require './ImageDisplayComponent'
 EntityDisplayComponent = require './EntityDisplayComponent'
@@ -35,8 +36,15 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
 
   # Call callback with state changes
   load: (props, prevProps, callback) ->
+    responseRow = new ResponseRow({
+      responseData: props.data
+      formDesign: props.formDesign
+      getEntityById: props.formCtx.getEntityById
+      getEntityByCode: props.formCtx.getEntityByCode
+    })
+
     # Calculate visibility asynchronously
-    new VisibilityCalculator(props.formDesign).createVisibilityStructure(props.data, (error, visibilityStructure) =>
+    new VisibilityCalculator(props.formDesign).createVisibilityStructure(props.data, responseRow, (error, visibilityStructure) =>
       callback(error: error, visibilityStructure: visibilityStructure)
     )
 

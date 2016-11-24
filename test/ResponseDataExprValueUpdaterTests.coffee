@@ -641,7 +641,7 @@ describe "ResponseDataExprValueUpdater", ->
     # Set q1 = null
     updater.updateData({ q1: { value: "a" }, q2: { value: "b" }}, expr, null, (error, data) =>
       assert not error
-      updater.cleanData(data, (error, cleanData) =>
+      updater.cleanData(data, (->), (error, cleanData) =>
         compare cleanData, { q1: { value: null } }, JSON.stringify(data)
         done()  
       )

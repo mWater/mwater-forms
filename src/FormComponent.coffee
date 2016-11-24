@@ -8,6 +8,7 @@ ItemListComponent = require './ItemListComponent'
 ezlocalize = require 'ez-localize'
 
 ResponseCleaner = require './ResponseCleaner'
+ResponseRow = require './ResponseRow'
 DefaultValueApplier = require './DefaultValueApplier'
 VisibilityCalculator = require './VisibilityCalculator'
 FormExprEvaluator = require './FormExprEvaluator'
@@ -88,9 +89,16 @@ module.exports = class FormComponent extends React.Component
     visibilityCalculator = new VisibilityCalculator(@props.design)
     defaultValueApplier = new DefaultValueApplier(@props.design, @props.formCtx.stickyStorage, @props.entity, @props.entityType)
     responseCleaner = new ResponseCleaner()
+    responseRowFactory = (data) =>
+      return new ResponseRow({
+        responseData: data
+        formDesign: @props.design
+        getEntityById: @props.formCtx.getEntityById
+        getEntityByCode: @props.formCtx.getEntityByCode
+      })
 
     # Clean response data
-    responseCleaner.cleanData @props.design, visibilityCalculator, defaultValueApplier, data, @state.visibilityStructure, (error, results) =>
+    responseCleaner.cleanData @props.design, visibilityCalculator, defaultValueApplier, data, responseRow, @state.visibilityStructure, (error, results) =>
       if error
         # TODO what to do with this?
         throw error

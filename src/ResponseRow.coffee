@@ -68,7 +68,7 @@ module.exports = class ResponseRow
       # Visible
       if parts.length == 3 and parts[2] == "visible"
         visibilityCalculator = new VisibilityCalculator(@formDesign)
-        visibilityCalculator.createVisibilityStructure @responseData, (error, visibilityStructure) =>
+        visibilityCalculator.createVisibilityStructure @responseData, this, (error, visibilityStructure) =>
           if error
             return callback(error)
           callback(null, visibilityStructure[parts[1]])

@@ -22,7 +22,8 @@ module.exports = class ResponseCleaner
   # and should be repeated until the visibilityStructure is stable.
   # A simple case: Question A, B and C with B only visible if A is set and C only visible if B is set and B containing a defaultValue
   # Setting a value to A will make B visible and set to defaultValue, but C will remain invisible until the process is repeated
-  cleanData: (design, visibilityCalculator, defaultValueApplier, data, oldVisibilityStructure, callback) =>
+  # responseRowFactory: returns responseRow when called with data
+  cleanData: (design, visibilityCalculator, defaultValueApplier, data, responseRowFactory, oldVisibilityStructure, callback) =>
     nbIterations = 0
     complete = false
     newData = data
@@ -31,7 +32,7 @@ module.exports = class ResponseCleaner
     # This needs to be repeated until it stabilizes
     async.whilst (-> not complete), (cb) =>
       # Compute visibility
-      visibilityCalculator.createVisibilityStructure newData, (error, visibilityStructure) =>
+      visibilityCalculator.createVisibilityStructure newData, responseRowFactory(newData), (error, visibilityStructure) =>
         if error
           return cb(error)
 
