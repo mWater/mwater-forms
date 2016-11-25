@@ -28,6 +28,10 @@ module.exports = class ResponseRow
     @getEntityById = options.getEntityById
     @getEntityByCode = options.getEntityByCode
 
+  # Gets the response row for a roster entry
+  getRosterResponseRow: (rosterId, rosterEntryIndex) ->
+    return new ResponseRow(_.extend({}, @options, rosterId: rosterId, rosterEntryIndex: rosterEntryIndex))
+
   # Gets primary key of row. callback is called with (error, value)
   getPrimaryKey: (callback) ->
     # Not available if not roster
@@ -61,9 +65,7 @@ module.exports = class ResponseRow
       # Roster
       if parts.length == 2
         if _.isArray(@responseData[parts[1]])
-          return callback(null, _.map(@responseData[parts[1]], (entry, index) =>
-            return new ResponseRow(_.extend({}, @options, rosterId: parts[1], rosterEntryIndex: index))
-            ))
+          return callback(null, _.map(@responseData[parts[1]], (entry, index) => @getRosterResponseRow(parts[1], index)))
 
       # Visible
       if parts.length == 3 and parts[2] == "visible"

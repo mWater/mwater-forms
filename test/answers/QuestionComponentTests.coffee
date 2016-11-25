@@ -6,7 +6,6 @@ ReactDOM = require 'react-dom'
 R = React.createElement
 H = React.DOM
 
-FormExprEvaluator = require '../../src/FormExprEvaluator'
 TestComponent = require('react-library/lib/TestComponent')
 ReactTestUtils = require('react-addons-test-utils')
 MockTContextWrapper = require '../MockTContextWrapper'
@@ -33,7 +32,6 @@ describe "QuestionComponent", ->
         data: {}
         onAnswerChange: () ->
           null
-        formExprEvaluator: new FormExprEvaluator()
       }, options
       elem = R(MockTContextWrapper, null, R(QuestionComponent, @options))
       comp = new TestComponent(elem)

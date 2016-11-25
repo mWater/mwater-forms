@@ -20,7 +20,7 @@ module.exports = class RosterMatrixComponent extends React.Component
     data: React.PropTypes.object      # Current data of response. 
     onDataChange: React.PropTypes.func.isRequired   # Called when data changes
     isVisible: React.PropTypes.func.isRequired # (id) tells if an item is visible or not
-    formExprEvaluator: React.PropTypes.object.isRequired # FormExprEvaluator for rendering strings with expression
+    schema: React.PropTypes.object.isRequired  # Schema to use, including form
 
   constructor: ->
     super
@@ -130,11 +130,11 @@ module.exports = class RosterMatrixComponent extends React.Component
       key: column._id
       column: column
       data: entryData
-      parentData: @props.data
+      responseRow: @props.responseRow.getRosterResponseRow(@getAnswerId(), entryIndex)
       answer: entryData?[column._id] or {}
       onAnswerChange: @handleCellChange.bind(null, entryIndex, column._id)
-      formExprEvaluator: @props.formExprEvaluator
       invalid: invalid
+      schema: @props.schema
 
   renderEntry: (entry, index) ->
     H.tr key: index,

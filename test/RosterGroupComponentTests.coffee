@@ -10,19 +10,22 @@ H = React.DOM
 TestComponent = require('react-library/lib/TestComponent')
 ReactTestUtils = require('react-addons-test-utils')
 RosterGroupComponent = require '../src/RosterGroupComponent'
-FormExprEvaluator = require '../src/FormExprEvaluator'
 MockTContextWrapper = require './MockTContextWrapper'
-
+ResponseRow = require '../src/ResponseRow'
 
 describe "RosterGroupComponent", ->
   beforeEach ->
     @toDestroy = []
 
+    # Options should include data
     @render = (options) =>
       elem = R(RosterGroupComponent, _.defaults(options, { 
         isVisible: (-> true)
-        formExprEvaluator: new FormExprEvaluator()
         onDataChange: ->
+        responseRow: new ResponseRow({
+          responseData: options.data
+          formDesign: { contents: [@rosterGroup] }
+          })
       }))
       comp = new TestComponent(R(MockTContextWrapper, null, elem))
       @toDestroy.push(comp)

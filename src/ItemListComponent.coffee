@@ -12,12 +12,12 @@ formRenderUtils = require './formRenderUtils'
 module.exports = class ItemListComponent extends React.Component
   @propTypes:
     contents: React.PropTypes.array.isRequired 
-    data: React.PropTypes.object      # Current data of response. Data of roster entry if in a roster
-    parentData: React.PropTypes.object      # Data of overall response if in a roster
+    data: React.PropTypes.object      # Current data of response (for roster entry if in roster)
+    responseRow: React.PropTypes.object    # ResponseRow object (for roster entry if in roster)
     onDataChange: React.PropTypes.func.isRequired
     onNext: React.PropTypes.func
     isVisible: React.PropTypes.func.isRequired # (id) tells if an item is visible or not
-    formExprEvaluator: React.PropTypes.object.isRequired # FormExprEvaluator for rendering strings with expression
+    schema: React.PropTypes.object.isRequired  # Schema to use, including form
 
   validate: (scrollToFirstInvalid) ->
     foundInvalid = false
@@ -37,7 +37,7 @@ module.exports = class ItemListComponent extends React.Component
 
   renderItem: (item, index) =>
     if @props.isVisible(item._id) and not item.disabled
-      formRenderUtils.renderItem(item, @props.data, @props.parentData, @props.formExprEvaluator, @props.onDataChange, @props.isVisible, @handleNext.bind(this, index))
+      formRenderUtils.renderItem(item, @props.data, @props.responseRow, @props.schema, @props.onDataChange, @props.isVisible, @handleNext.bind(this, index))
 
   render: ->
     H.div null,

@@ -30,9 +30,8 @@ module.exports = class MatrixAnswerComponent extends React.Component
     value: React.PropTypes.object                    # See answer format
     onValueChange: React.PropTypes.func.isRequired
 
-    data: React.PropTypes.object            # Current data of response. Data of roster entry if in a roster
-    parentData: React.PropTypes.object      # Data of overall response if in a roster
-    formExprEvaluator: React.PropTypes.object.isRequired # FormExprEvaluator for rendering strings with expression
+    data: React.PropTypes.object      # Current data of response (for roster entry if in roster)
+    responseRow: React.PropTypes.object    # ResponseRow object (for roster entry if in roster)
 
   constructor: ->
     super
@@ -126,10 +125,9 @@ module.exports = class MatrixAnswerComponent extends React.Component
       key: column._id
       column: column
       data: @props.data
-      parentData: @props.parentData
+      responseRow: @props.responseRow
       answer: cellAnswer
       onAnswerChange: @handleCellChange.bind(null, item, column)
-      formExprEvaluator: @props.formExprEvaluator
       invalid: invalid?
 
   renderItem: (item, index) ->

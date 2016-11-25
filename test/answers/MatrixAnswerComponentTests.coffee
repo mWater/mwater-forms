@@ -4,7 +4,6 @@ TestComponent = require('react-library/lib/TestComponent')
 ReactTestUtils = require('react-addons-test-utils')
 
 MatrixAnswerComponent = require '../../src/answers/MatrixAnswerComponent'
-FormExprEvaluator = require '../../src/FormExprEvaluator'
 
 React = require 'react'
 ReactDOM = require 'react-dom'
@@ -29,8 +28,6 @@ describe 'MatrixAnswerComponent', ->
           { _id: "c1", _type: "TextColumnQuestion", name: { en: "C1" } }
         ]
         data: {}
-        parentData: null
-        formExprEvaluator: new FormExprEvaluator()
       }, options
       elem = R(MatrixAnswerComponent, options)
       comp = new TestComponent(elem)

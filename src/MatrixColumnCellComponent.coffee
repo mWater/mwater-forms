@@ -9,17 +9,18 @@ NumberAnswerComponent = require './answers/NumberAnswerComponent'
 DateAnswerComponent = require './answers/DateAnswerComponent'
 UnitsAnswerComponent = require './answers/UnitsAnswerComponent'
 SiteColumnAnswerComponent = require './answers/SiteColumnAnswerComponent'
+TextExprsComponent = require './TextExprsComponent'
 
 # Cell of a matrix column
 module.exports = class MatrixColumnCellComponent extends React.Component
   @propTypes: 
     column: React.PropTypes.object.isRequired       # Column. See designSchema
-    data: React.PropTypes.object.isRequired         # Data of the response. Used for text columns to render expressions and to evaluate conditional choices
-    parentData: React.PropTypes.object              # Parent data if in a roster
+    data: React.PropTypes.object      # Current data of response (for roster entry if in roster)
+    responseRow: React.PropTypes.object    # ResponseRow object (for roster entry if in roster)
     answer: React.PropTypes.object                  # Answer of the cell
     onAnswerChange: React.PropTypes.func.isRequired   # Called with new answer of cell
-    formExprEvaluator: React.PropTypes.object.isRequired # FormExprEvaluator for rendering strings with expression
     invalid: React.PropTypes.bool                   # True if invalid
+    schema: React.PropTypes.object.isRequired  # Schema to use, including form
 
   @contextTypes:
     locale: React.PropTypes.string
@@ -39,8 +40,13 @@ module.exports = class MatrixColumnCellComponent extends React.Component
     # Create element
     switch column._type
       when "TextColumn"
-        cellText = @props.formExprEvaluator.renderString(column.cellText, column.cellTextExprs, @props.data, @props.parentData, @context.locale)
-        elem = H.label null, cellText
+        elem = H.label key: column._id, 
+          R TextExprsComponent,
+            localizedStr: column.cellText
+            exprs: column.cellTextExprs
+            schema: @props.schema
+            responseRow: @props.responseRow
+            locale: @context.locale
       when "UnitsColumnQuestion"
         answer = data?[column._id]
         elem = R UnitsAnswerComponent, {

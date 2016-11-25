@@ -11,7 +11,6 @@ ResponseCleaner = require './ResponseCleaner'
 ResponseRow = require './ResponseRow'
 DefaultValueApplier = require './DefaultValueApplier'
 VisibilityCalculator = require './VisibilityCalculator'
-FormExprEvaluator = require './FormExprEvaluator'
 
 # Displays a form that can be filled out
 module.exports = class FormComponent extends React.Component
@@ -21,6 +20,8 @@ module.exports = class FormComponent extends React.Component
   
     data: React.PropTypes.object.isRequired # Form response data. See docs/Answer Formats.md
     onDataChange: React.PropTypes.func.isRequired # Called when response data changes
+
+    schema: React.PropTypes.object.isRequired  # Schema to use, including form
 
     locale: React.PropTypes.string          # e.g. "fr"
     
@@ -43,7 +44,6 @@ module.exports = class FormComponent extends React.Component
 
     @state = {
       visibilityStructure: {}
-      formExprEvaluator: new FormExprEvaluator(@props.design)
       T: @createLocalizer(@props.design, @props.locale)
     }
 
@@ -54,9 +54,6 @@ module.exports = class FormComponent extends React.Component
     })
 
   componentWillReceiveProps: (nextProps) ->
-    if @props.design != nextProps.design
-      @setState(formExprEvaluator: new FormExprEvaluator(nextProps.design))
-
     if @props.design != nextProps.design or @props.locale != nextProps.locale
       @setState(T: @createLocalizer(nextProps.design, nextProps.locale))
 
@@ -85,20 +82,21 @@ module.exports = class FormComponent extends React.Component
   isVisible: (itemId) =>
     return @state.visibilityStructure[itemId]
 
+  createResponseRow: (data) =>
+    return new ResponseRow({
+      responseData: data
+      formDesign: @props.design
+      getEntityById: @props.formCtx.getEntityById
+      getEntityByCode: @props.formCtx.getEntityByCode
+    })
+
   handleDataChange: (data) =>
     visibilityCalculator = new VisibilityCalculator(@props.design)
     defaultValueApplier = new DefaultValueApplier(@props.design, @props.formCtx.stickyStorage, @props.entity, @props.entityType)
     responseCleaner = new ResponseCleaner()
-    responseRowFactory = (data) =>
-      return new ResponseRow({
-        responseData: data
-        formDesign: @props.design
-        getEntityById: @props.formCtx.getEntityById
-        getEntityByCode: @props.formCtx.getEntityByCode
-      })
 
     # Clean response data
-    responseCleaner.cleanData @props.design, visibilityCalculator, defaultValueApplier, data, responseRow, @state.visibilityStructure, (error, results) =>
+    responseCleaner.cleanData @props.design, visibilityCalculator, defaultValueApplier, data, @createResponseRow, @state.visibilityStructure, (error, results) =>
       if error
         # TODO what to do with this?
         throw error
@@ -119,7 +117,6 @@ module.exports = class FormComponent extends React.Component
         onSaveLater: @props.onSaveLater
         onDiscard: @props.onDiscard
         isVisible: @isVisible
-        formExprEvaluator: @state.formExprEvaluator 
     else
       H.div null,
         R ItemListComponent,
@@ -128,8 +125,8 @@ module.exports = class FormComponent extends React.Component
           data: @props.data
           onDataChange: @handleDataChange
           isVisible: @isVisible 
-          formExprEvaluator: @state.formExprEvaluator
           onNext: @handleNext
+          schema: @props.schema
 
         H.button type: "button", key: 'submitButton', className: "btn btn-primary", ref: 'submit', onClick: @handleSubmit,
           @state.T("Submit")
