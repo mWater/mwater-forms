@@ -57,6 +57,7 @@ module.exports = class QuestionComponent extends React.Component
     onAnswerChange: React.PropTypes.func.isRequired
     displayMissingRequired: React.PropTypes.bool
     onNext: React.PropTypes.func
+    schema: React.PropTypes.object.isRequired  # Schema to use, including form
 
   constructor: ->
     super

@@ -25,6 +25,7 @@ exports.renderItem = (item, data, responseRow, schema, onDataChange, isVisible, 
       onAnswerChange: handleAnswerChange.bind(null, item._id)
       data: data
       responseRow: responseRow
+      schema: schema
       onNext: onNext
   else if item._type == "Instructions"
     return R InstructionsComponent,
@@ -45,11 +46,11 @@ exports.renderItem = (item, data, responseRow, schema, onDataChange, isVisible, 
       ref: item._id,
       group: item
       data: data
-      responseRow: responseRow
       onDataChange: onDataChange
+      responseRow: responseRow
+      schema: schema
       isVisible: isVisible
       onNext: onNext
-      schema: schema
   else if item._type == "RosterGroup"
     return R RosterGroupComponent,
       key: item._id,
@@ -57,8 +58,9 @@ exports.renderItem = (item, data, responseRow, schema, onDataChange, isVisible, 
       rosterGroup: item
       data: data
       onDataChange: onDataChange
-      isVisible: isVisible
+      responseRow: responseRow
       schema: schema
+      isVisible: isVisible
   else if item._type == "RosterMatrix"
     return R RosterMatrixComponent,
       key: item._id,
@@ -66,8 +68,9 @@ exports.renderItem = (item, data, responseRow, schema, onDataChange, isVisible, 
       rosterMatrix: item
       data: data
       onDataChange: onDataChange
-      isVisible: isVisible
       schema: schema
+      responseRow: responseRow
+      isVisible: isVisible
   else if item._type == "Section"
     # Sections are not usually rendered like this, except when in single-page mode. In which case, render as a group
     return R GroupComponent,
@@ -75,8 +78,9 @@ exports.renderItem = (item, data, responseRow, schema, onDataChange, isVisible, 
       ref: item._id,
       group: item
       data: data
-      responseRow: responseRow
       onDataChange: onDataChange
+      responseRow: responseRow
+      schema: schema
       isVisible: isVisible
       onNext: onNext
   else

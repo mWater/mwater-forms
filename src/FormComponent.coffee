@@ -113,6 +113,8 @@ module.exports = class FormComponent extends React.Component
         contents: @props.design.contents
         data: @props.data
         onDataChange: @handleDataChange
+        responseRow: @createResponseRow(@props.data)
+        schema: @props.schema
         onSubmit: @props.onSubmit
         onSaveLater: @props.onSaveLater
         onDiscard: @props.onDiscard
@@ -124,9 +126,10 @@ module.exports = class FormComponent extends React.Component
           contents: @props.design.contents
           data: @props.data
           onDataChange: @handleDataChange
+          responseRow: @createResponseRow(@props.data)
+          schema: @props.schema
           isVisible: @isVisible 
           onNext: @handleNext
-          schema: @props.schema
 
         H.button type: "button", key: 'submitButton', className: "btn btn-primary", ref: 'submit', onClick: @handleSubmit,
           @state.T("Submit")

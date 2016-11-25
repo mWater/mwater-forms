@@ -13,7 +13,7 @@ module.exports = class ItemListComponent extends React.Component
   @propTypes:
     contents: React.PropTypes.array.isRequired 
     data: React.PropTypes.object      # Current data of response (for roster entry if in roster)
-    responseRow: React.PropTypes.object    # ResponseRow object (for roster entry if in roster)
+    responseRow: React.PropTypes.object.isRequired    # ResponseRow object (for roster entry if in roster)
     onDataChange: React.PropTypes.func.isRequired
     onNext: React.PropTypes.func
     isVisible: React.PropTypes.func.isRequired # (id) tells if an item is visible or not

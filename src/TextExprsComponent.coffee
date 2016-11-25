@@ -6,6 +6,7 @@ R = React.createElement
 async = require 'async'
 formUtils = require './formUtils'
 ExprEvaluator = require('mwater-expressions').ExprEvaluator
+ExprUtils = require('mwater-expressions').ExprUtils
 
 markdown = require("markdown").markdown
 
@@ -59,7 +60,7 @@ module.exports = class TextExprsComponent extends React.Component
     str = str.replace(/\{(\d+)\}/g, (match, index) =>
       index = parseInt(index)
       if @state.exprValueStrs[index]?
-        return @state.exprValueStrs[index]?
+        return @state.exprValueStrs[index]
       return "..."
     )
 

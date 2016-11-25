@@ -74,9 +74,11 @@ module.exports = class VisibilityCalculator
     else if item._type == 'TextColumn'
       @processQuestion(item, forceToInvisible, data, responseRow, visibilityStructure, prefix, callback)
     else if item._type == "Instructions"
-      @processInstruction(item, forceToInvisible, data, responseRow, visibilityStructure, prefix, callback)
+      # Behaves like a question
+      @processQuestion(item, forceToInvisible, data, responseRow, visibilityStructure, prefix, callback)
     else if item._type == "Timer"
-      @processTimer(item, forceToInvisible, data, responseRow, visibilityStructure, prefix, callback)
+      # Behaves like a question
+      @processQuestion(item, forceToInvisible, data, responseRow, visibilityStructure, prefix, callback)
     else if item._type == "RosterGroup" or item._type == "RosterMatrix"
       @processRoster(item, forceToInvisible, data, responseRow, visibilityStructure, prefix, callback)
     else if item._type in ['Section', "Group", "Form"]
@@ -122,14 +124,6 @@ module.exports = class VisibilityCalculator
         applyResult(isVisible)
     else
       applyResult(isVisible)
-
-  # Behaves like a question
-  processInstruction: (instruction, forceToInvisible, responseRow, data, visibilityStructure, prefix, callback) ->
-    @processQuestion(item, forceToInvisible, data, responseRow, visibilityStructure, prefix, callback)
-
-  # Behaves like a question
-  processTimer: (instruction, forceToInvisible, data, responseRow, visibilityStructure, prefix, callback) ->
-    @processQuestion(item, forceToInvisible, data, responseRow, visibilityStructure, prefix, callback)
 
   # Handles RosterGroup and RosterMatrix
   # The visibility of the Rosters are similar to questions, the extra logic is for handling the children

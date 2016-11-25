@@ -18,7 +18,7 @@ module.exports = class SectionsComponent extends React.Component
     onDataChange: React.PropTypes.func.isRequired
 
     schema: React.PropTypes.object.isRequired  # Schema to use, including form
-    responseRow: React.PropTypes.object    # ResponseRow object (for roster entry if in roster)
+    responseRow: React.PropTypes.object.isRequired    # ResponseRow object (for roster entry if in roster)
 
     isVisible: React.PropTypes.func.isRequired # (id) tells if an item is visible or not
 
