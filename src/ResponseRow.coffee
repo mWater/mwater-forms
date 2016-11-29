@@ -1,6 +1,7 @@
 _ = require 'lodash'
 formUtils = require './formUtils'
 VisibilityCalculator = require './VisibilityCalculator'
+EntityRow = require './EntityRow'
 
 ###
 
@@ -13,6 +14,7 @@ module.exports = class ResponseRow
   # Options:
   #  responseData: data of entire response
   #  formDesign: design of the form
+  #  schema: schema to use
   #  rosterId: id of roster if it is a roster row
   #  rosterEntryIndex: index of roster row
   #  getEntityById(entityType, entityId, callback): looks up entity
@@ -21,7 +23,9 @@ module.exports = class ResponseRow
   #    callback: called with an entity e.g. { _id: some id, a: "abc", b: 123 } or callback null if entity not found
   constructor: (options) ->
     @options = options
+
     @formDesign = options.formDesign
+    @schema = options.schema
     @responseData = options.responseData
     @rosterId = options.rosterId
     @rosterEntryIndex = options.rosterEntryIndex
@@ -112,14 +116,14 @@ module.exports = class ResponseRow
 
           code = value.code
           if code
-            @getEntityByCode(entityType, code, (entity) => callback(null, new EntityRow(entity)))
+            @getEntityByCode(entityType, code, (entity) => callback(null, new EntityRow({ entityType: entityType, entity: entity, schema: @schema, getEntityById: @getEntityById })))
           else
             callback(null, null)
           return
 
         if answerType == "entity"
           # Create site entity row
-          @getEntityById(question.entityType, value, (entity) => callback(null, new EntityRow(entity)))
+          @getEntityById(question.entityType, value, (entity) => callback(null, new EntityRow({ entityType: entityType, entity: entity, schema: @schema, getEntityById: @getEntityById })))
           return
 
         # Location
@@ -187,20 +191,6 @@ module.exports = class ResponseRow
   # Gets the ordering of a row if they are ordered. Otherwise, not defined or callback null
   getOrdering: (callback) ->
     callback(null, null)
-
-# Entity row created on demand
-class EntityRow
-  constructor: (entity) ->
-    @entity = entity
-
-  # Gets primary key of row. callback is called with (error, value)
-  getPrimaryKey: (callback) ->
-    callback(null, @entity._id)
-
-  # Gets the value of a column. callback is called with (error, value)    
-  # For joins, getField will get array of rows for 1-n and n-n joins and a row for n-1 and 1-1 joins
-  getField: (columnId, callback) ->
-    callback(null, @entity[columnId])
 
 
 # Converts undefined to null

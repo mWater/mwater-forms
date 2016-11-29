@@ -132,6 +132,35 @@ module.exports = class VisibilityCalculator
     if rosterGroup._type != 'RosterGroup' and rosterGroup._type != 'RosterMatrix'
       throw new Error('Should be a RosterGroup or RosterMatrix')
 
+    applyResult = (isVisible) =>
+      visibilityStructure[rosterGroup._id] = isVisible
+
+      # The data used (and passed down to sub items) is the one specified by rosterId if set
+      if rosterGroup.rosterId?
+        dataId = rosterGroup.rosterId
+      # Else the RosterGroup uses its own data
+      else
+        dataId = rosterGroup._id
+      subData = data[dataId]
+
+      if subData?
+        # Get subrows
+        responseRow.getField "data:#{dataId}", (error, rosterRows) =>
+          if error
+            return callback(error)
+
+          # For each entry of roster
+          async.forEachOf subData, (entry, index, cb) =>
+            async.each rosterGroup.contents, (item, cb2) =>
+              newPrefix = "#{dataId}.#{index}."
+
+              # Data is actually stored in .data subfield
+              @processItem(item, isVisible == false, entry.data, rosterRows[index], visibilityStructure, newPrefix, cb2)
+            , cb
+          , callback
+      else
+        callback(null)
+
     if forceToInvisible
       isVisible = false
     else if rosterGroup.conditions? and rosterGroup.conditions.length > 0
@@ -140,30 +169,16 @@ module.exports = class VisibilityCalculator
     else
       isVisible = true
 
-    visibilityStructure[rosterGroup._id] = isVisible
-
-    # The data used (and passed down to sub items) is the one specified by rosterId if set
-    if rosterGroup.rosterId?
-      dataId = rosterGroup.rosterId
-    # Else the RosterGroup uses its own data
-    else
-      dataId = rosterGroup._id
-    subData = data[dataId]
-
-    if subData?
-      # Get subrows
-      responseRow.getField "data:#{dataId}", (error, rosterRows) =>
+    # Apply conditionExpr
+    if rosterGroup.conditionExpr
+      new ExprEvaluator().evaluate rosterGroup.conditionExpr, { row: responseRow }, (error, value) =>
         if error
           return callback(error)
 
-        # For each entry of roster
-        async.forEachOf subData, (entry, index, cb) =>
-          async.each rosterGroup.contents, (item, cb2) =>
-            newPrefix = "#{dataId}.#{index}."
+        # Null or false is not visible
+        if not value 
+          isVisible = false
 
-            # Data is actually stored in .data subfield
-            @processItem(item, isVisible == false, entry.data, rosterRows[index], visibilityStructure, newPrefix, cb2)
-          , cb
-        , callback
+        applyResult(isVisible)
     else
-      callback(null)
+      applyResult(isVisible)

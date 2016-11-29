@@ -1,11 +1,3 @@
-
-###
-
-Topological sorting is done, but adding indicator calculations to schema can still fail if expressions are invalid
-since they are compiled to build the jsonql field.
-
-###
-
 _ = require 'lodash'
 formUtils = require '../src/formUtils'
 ExprUtils = require('mwater-expressions').ExprUtils
@@ -18,6 +10,7 @@ ConditionsExprCompiler = require './ConditionsExprCompiler'
 
 healthRiskEnum = require('./answers/aquagenxCBTUtils').healthRiskEnum
 
+# Adds a form to a mwater-expressions schema
 module.exports = class FormSchemaBuilder
   # Pass clone forms if a master form
   addForm: (schema, form, cloneForms) ->

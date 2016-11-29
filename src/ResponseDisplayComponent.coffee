@@ -11,6 +11,7 @@ module.exports = class ResponseDisplayComponent extends React.Component
   @propTypes:
     form: React.PropTypes.object.isRequired
     response: React.PropTypes.object.isRequired
+    schema: React.PropTypes.object.isRequired  # Schema including the form
     formCtx: React.PropTypes.object.isRequired
     apiUrl: React.PropTypes.string
     locale: React.PropTypes.string # Defaults to english
@@ -163,6 +164,7 @@ module.exports = class ResponseDisplayComponent extends React.Component
       React.createElement(ResponseAnswersComponent, {
         formDesign: @props.form.design
         data: @props.response.data
+        schema: @props.schema
         locale: @props.locale
         T: @props.T
         formCtx: @props.formCtx

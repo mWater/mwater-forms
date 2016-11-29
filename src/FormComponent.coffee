@@ -86,6 +86,7 @@ module.exports = class FormComponent extends React.Component
     return new ResponseRow({
       responseData: data
       formDesign: @props.design
+      schema: @props.schema
       getEntityById: @props.formCtx.getEntityById
       getEntityByCode: @props.formCtx.getEntityByCode
     })

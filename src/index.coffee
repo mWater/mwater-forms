@@ -26,6 +26,7 @@ exports.ResponseDisplayComponent = require './ResponseDisplayComponent'
 exports.FormComponent = require './FormComponent'
 exports.formContextTypes = require './formContextTypes'
 exports.FormSchemaBuilder = require './FormSchemaBuilder'
+exports.EntitySchemaBuilder = require './EntitySchemaBuilder'
 exports.AssignmentModel = require './AssignmentModel'
 
 exports.ResponseDataExprValueUpdater = require './ResponseDataExprValueUpdater'
@@ -34,7 +35,7 @@ exports.ResponseRow = require './ResponseRow'
 exports.schemaVersion = 17 # Version of the schema that this package supports (cannot compile if higher)
 exports.minSchemaVersion = 1 # Minimum version of forms schema that can be compiled
 
-# JSON schema of form
+# JSON schema of form. Note: Not the mwater-expressions schema of the form, but rather the Json schema of the form design
 exports.schema = require('./schema')
 
 # Simple form that displays a template based on loaded data

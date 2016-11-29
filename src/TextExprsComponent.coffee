@@ -66,6 +66,6 @@ module.exports = class TextExprsComponent extends React.Component
 
     if @props.markdown
       html = if str then markdown.toHTML(str)
-      return H.div null, dangerouslySetInnerHTML: { __html: html }
+      return H.div dangerouslySetInnerHTML: { __html: html }
     else
       return H.span(null, str)

@@ -23,6 +23,7 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
   @propTypes:
     formDesign: React.PropTypes.object.isRequired
     data: React.PropTypes.object.isRequired
+    schema: React.PropTypes.object.isRequired  # Schema of the 
 
     hideEmptyAnswers: React.PropTypes.bool # True to hide empty answers
 
