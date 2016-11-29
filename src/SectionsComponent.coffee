@@ -5,6 +5,7 @@ R = React.createElement
 
 ItemListComponent = require './ItemListComponent'
 formUtils = require './formUtils'
+TextExprsComponent = require './TextExprsComponent'
 
 module.exports = class SectionsComponent extends React.Component
   @contextTypes:
@@ -16,8 +17,10 @@ module.exports = class SectionsComponent extends React.Component
     data: React.PropTypes.object      # Current data of response. 
     onDataChange: React.PropTypes.func.isRequired
 
+    schema: React.PropTypes.object.isRequired  # Schema to use, including form
+    responseRow: React.PropTypes.object.isRequired    # ResponseRow object (for roster entry if in roster)
+
     isVisible: React.PropTypes.func.isRequired # (id) tells if an item is visible or not
-    formExprEvaluator: React.PropTypes.object.isRequired # FormExprEvaluator for rendering strings with expression
 
     onSubmit: React.PropTypes.func.isRequired     # Called when submit is pressed
     onSaveLater: React.PropTypes.func             # Optional save for later
@@ -120,8 +123,9 @@ module.exports = class SectionsComponent extends React.Component
         data: @props.data
         onDataChange: @props.onDataChange
         isVisible: @props.isVisible
-        formExprEvaluator: @props.formExprEvaluator
+        responseRow: @props.responseRow
         onNext: @handleItemListNext
+        schema: @props.schema
 
   renderButtons: ->
     H.div className: "form-controls",

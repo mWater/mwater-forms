@@ -4,6 +4,7 @@ H = React.DOM
 R = React.createElement
 
 formUtils = require './formUtils'
+TextExprsComponent = require './TextExprsComponent'
 
 # TODO Add focus()
 
@@ -19,7 +20,8 @@ module.exports = class RosterGroupComponent extends React.Component
     data: React.PropTypes.object      # Current data of response. 
     onDataChange: React.PropTypes.func.isRequired   # Called when data changes
     isVisible: React.PropTypes.func.isRequired # (id) tells if an item is visible or not
-    formExprEvaluator: React.PropTypes.object.isRequired # FormExprEvaluator for rendering strings with expression
+    responseRow: React.PropTypes.object    # ResponseRow object (for roster entry if in roster)
+    schema: React.PropTypes.object.isRequired  # Schema to use, including form
 
   # Gets the id that the answer is stored under
   getAnswerId: ->
@@ -68,7 +70,12 @@ module.exports = class RosterGroupComponent extends React.Component
       formUtils.localizeString(@props.rosterGroup.name, @context.locale)
 
   renderEntryTitle: (entry, index) ->
-    @props.formExprEvaluator.renderString(@props.rosterGroup.entryTitle, @props.rosterGroup.entryTitleExprs, @getAnswer()[index].data, @props.data, @context.locale)
+    R TextExprsComponent,
+      localizedStr: @props.rosterGroup.entryTitle
+      exprs: @props.rosterGroup.entryTitleExprs
+      schema: @props.schema
+      responseRow: @props.responseRow.getRosterResponseRow(@getAnswerId(), index)
+      locale: @context.locale
 
   renderEntry: (entry, index) ->
     # To avoid circularity
@@ -87,10 +94,10 @@ module.exports = class RosterGroupComponent extends React.Component
           ref: "itemlist_#{index}", 
           contents: @props.rosterGroup.contents
           data: @getAnswer()[index].data
-          parentData: @props.data
+          responseRow: @props.responseRow.getRosterResponseRow(@getAnswerId(), index)
           onDataChange: @handleEntryDataChange.bind(null, index)
           isVisible: @isChildVisible.bind(null, index)
-          formExprEvaluator: @props.formExprEvaluator  # TODO: SurveyorPro: ?
+          schema: @props.schema
 
   renderAdd: ->
     if @props.rosterGroup.allowAdd

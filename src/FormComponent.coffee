@@ -8,9 +8,9 @@ ItemListComponent = require './ItemListComponent'
 ezlocalize = require 'ez-localize'
 
 ResponseCleaner = require './ResponseCleaner'
+ResponseRow = require './ResponseRow'
 DefaultValueApplier = require './DefaultValueApplier'
 VisibilityCalculator = require './VisibilityCalculator'
-FormExprEvaluator = require './FormExprEvaluator'
 
 # Displays a form that can be filled out
 module.exports = class FormComponent extends React.Component
@@ -20,6 +20,8 @@ module.exports = class FormComponent extends React.Component
   
     data: React.PropTypes.object.isRequired # Form response data. See docs/Answer Formats.md
     onDataChange: React.PropTypes.func.isRequired # Called when response data changes
+
+    schema: React.PropTypes.object.isRequired  # Schema to use, including form
 
     locale: React.PropTypes.string          # e.g. "fr"
     
@@ -42,7 +44,6 @@ module.exports = class FormComponent extends React.Component
 
     @state = {
       visibilityStructure: {}
-      formExprEvaluator: new FormExprEvaluator(@props.design)
       T: @createLocalizer(@props.design, @props.locale)
     }
 
@@ -53,9 +54,6 @@ module.exports = class FormComponent extends React.Component
     })
 
   componentWillReceiveProps: (nextProps) ->
-    if @props.design != nextProps.design
-      @setState(formExprEvaluator: new FormExprEvaluator(nextProps.design))
-
     if @props.design != nextProps.design or @props.locale != nextProps.locale
       @setState(T: @createLocalizer(nextProps.design, nextProps.locale))
 
@@ -84,48 +82,28 @@ module.exports = class FormComponent extends React.Component
   isVisible: (itemId) =>
     return @state.visibilityStructure[itemId]
 
-  # The process of computing visibility, cleaning data and applying stickyData/defaultValue can trigger more changes
-  # and should be repeated until the visibilityStructure is stable.
-  # A simple case: Question A, B and C with B only visible if A is set and C only visible if B is set and B containing a defaultValue
-  # Setting a value to A will make B visible and set to defaultValue, but C will remain invisible until the process is repeated
-  computingVisibilityAndUpdatingData: (data, oldVisibilityStructure) ->
-    oldVisibilityStructure = @state.visibilityStructure
-    newVisibilityStructure = @computeVisibility(data)
-    newData = @cleanData(data, newVisibilityStructure)
-    newData = @stickyData(newData, oldVisibilityStructure, newVisibilityStructure)
-    return [newData, newVisibilityStructure]
+  createResponseRow: (data) =>
+    return new ResponseRow({
+      responseData: data
+      formDesign: @props.design
+      schema: @props.schema
+      getEntityById: @props.formCtx.getEntityById
+      getEntityByCode: @props.formCtx.getEntityByCode
+    })
 
   handleDataChange: (data) =>
-    newData = data
-    oldVisibilityStructure = @state.visibilityStructure
-    nbIterations = 0
-    # This needs to be repeated until it stabilizes
-    while true
-      [newData, newVisibilityStructure] = @computingVisibilityAndUpdatingData(newData, oldVisibilityStructure)
-      nbIterations++
-      # If the visibilityStructure is still the same twice, the process is now stable.
-      if _.isEqual(newVisibilityStructure, oldVisibilityStructure)
-        break
-      # Looping conditions???
-      if nbIterations >= 10
-        throw new Error('Impossible to compute question visibility. The question conditions must be looping')
-      # New is now old
-      oldVisibilityStructure = newVisibilityStructure
-
-    @setState(visibilityStructure: newVisibilityStructure)
-    @props.onDataChange(newData)
-
-  computeVisibility: (data) ->
     visibilityCalculator = new VisibilityCalculator(@props.design)
-    return visibilityCalculator.createVisibilityStructure(data)
-
-  cleanData: (data, visibilityStructure) ->
-    responseCleaner = new ResponseCleaner()
-    return responseCleaner.cleanData(data, visibilityStructure, @props.design)
-
-  stickyData: (data, previousVisibilityStructure, newVisibilityStructure) ->
     defaultValueApplier = new DefaultValueApplier(@props.design, @props.formCtx.stickyStorage, @props.entity, @props.entityType)
-    return defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure)
+    responseCleaner = new ResponseCleaner()
+
+    # Clean response data
+    responseCleaner.cleanData @props.design, visibilityCalculator, defaultValueApplier, data, @createResponseRow, @state.visibilityStructure, (error, results) =>
+      if error
+        # TODO what to do with this?
+        throw error
+
+      @setState(visibilityStructure: results.visibilityStructure)
+      @props.onDataChange(results.data)
 
   handleNext: () =>
     @refs.submit.focus()
@@ -136,11 +114,12 @@ module.exports = class FormComponent extends React.Component
         contents: @props.design.contents
         data: @props.data
         onDataChange: @handleDataChange
+        responseRow: @createResponseRow(@props.data)
+        schema: @props.schema
         onSubmit: @props.onSubmit
         onSaveLater: @props.onSaveLater
         onDiscard: @props.onDiscard
         isVisible: @isVisible
-        formExprEvaluator: @state.formExprEvaluator 
     else
       H.div null,
         R ItemListComponent,
@@ -148,8 +127,9 @@ module.exports = class FormComponent extends React.Component
           contents: @props.design.contents
           data: @props.data
           onDataChange: @handleDataChange
+          responseRow: @createResponseRow(@props.data)
+          schema: @props.schema
           isVisible: @isVisible 
-          formExprEvaluator: @state.formExprEvaluator
           onNext: @handleNext
 
         H.button type: "button", key: 'submitButton', className: "btn btn-primary", ref: 'submit', onClick: @handleSubmit,

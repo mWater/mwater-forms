@@ -160,7 +160,7 @@ exports.prepareQuestion = (q) ->
       _.defaults q, {  }
 
   # Get known fields
-  knownFields = ['_id', '_type', 'text', 'textExprs', 'conditions', 'validations', 
+  knownFields = ['_id', '_type', 'text', 'textExprs', 'conditions', 'conditionExpr', 'validations', 
     'required', 'code', 'hint', 'help', 'alternates', 'commentsField', 'recordLocation', 'recordTimestamp', 'sticky', 'exportId', 'disabled']
 
   switch q._type

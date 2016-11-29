@@ -36,6 +36,8 @@
     - Legacy: {value: "siteCode"}
 * **"entity"** 
     - {value: "entity _id"}
+* **"items_choices"**
+    - object of key = item id, value: choice id
 * **"matrix"**
     - { value: { ITEM1ID: { QUESTION1ID: { value: somevalue }, QUESTION2ID: { ...}}, ITEM2ID: ... }
 * **"admin_region"**

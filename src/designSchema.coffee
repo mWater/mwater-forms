@@ -4,7 +4,7 @@ _  = require 'lodash'
 # all basic properties but still use additionalProperties: false
 extendQuestionProperties = (properties) ->
   return _.defaults properties, {
-    _id: {}, code: {}, text: {}, textExprs: {}, required: {}, disabled: {}, conditions: {}, hint: {}, help: {}, sticky: {}
+    _id: {}, code: {}, text: {}, textExprs: {}, required: {}, disabled: {}, conditions: {}, conditionExpr: {}, hint: {}, help: {}, sticky: {}
     alternates: {}, commentsField: {}, recordTimestamp: {}, recordLocation: {}, sensor: {}, _basedOn: {}, exportId: {}, contents: {}, items: {}
   } 
 
@@ -27,7 +27,8 @@ module.exports = {
     # Schema 14 adds matrix and likert and units columns and text columns
     # Schema 15 adds site columns
     # Schema 16 adds AquagenxCBTQuestion type
-    _schema: { enum: [1, 2, 3, 4, 5, 10, 11, 12, 13, 14, 15, 16] }
+    # Schema 17 adds conditionExpr
+    _schema: { enum: [1, 2, 3, 4, 5, 10, 11, 12, 13, 14, 15, 16, 17] }
 
     # Name of the form
     name: { $ref: "#/definitions/localizedString" }
@@ -172,6 +173,9 @@ module.exports = {
         # Conditions for visibility of the section
         conditions: { $ref: "#/definitions/conditions" }
 
+        # Condition expression (mwater-expression) for visiblity of the section
+        conditionExpr: { type: "object" }
+
         # _id of the section that this section is a duplicate of.
         _basedOn : { $ref: "#/definitions/uuid" }
       }
@@ -216,8 +220,11 @@ module.exports = {
         # True if the question is disabled (will never be shown in live form)
         disabled: { type: "boolean" }
 
-        # Conditions for visibility of the instructions
+        # Conditions for visibility of the question
         conditions: { $ref: "#/definitions/conditions" }
+
+        # Condition expression (mwater-expression) for visiblity of the question
+        conditionExpr: { type: "object" }
 
         # Localized hint which is displayed with question text
         hint: { $ref: "#/definitions/localizedString" } 
@@ -304,6 +311,9 @@ module.exports = {
 
         # Conditions for visibility of the instructions
         conditions: { $ref: "#/definitions/conditions" }
+
+        # Condition expression (mwater-expression) for visiblity of the instructions
+        conditionExpr: { type: "object" }
       }
       required: ["_id", "_type", "text", "conditions"]
     }
@@ -326,6 +336,9 @@ module.exports = {
 
         # Conditions for visibility of the instructions
         conditions: { $ref: "#/definitions/conditions" }
+
+        # Condition expression (mwater-expression) for visiblity of the timer
+        conditionExpr: { type: "object" }
       }
       required: ["_id", "_type", "duration", "text", "conditions"]
     }
@@ -345,6 +358,9 @@ module.exports = {
 
         # Conditions for visibility of the group
         conditions: { $ref: "#/definitions/conditions" }
+
+        # Condition expression (mwater-expression) for visiblity of the group
+        conditionExpr: { type: "object" }
 
         # Allow user to add items
         allowAdd: { type: "boolean" }
@@ -382,6 +398,9 @@ module.exports = {
 
         # Conditions for visibility of the matrix
         conditions: { $ref: "#/definitions/conditions" }
+
+        # Condition expression (mwater-expression) for visiblity of the matrix
+        conditionExpr: { type: "object" }
 
         # Allow user to add items
         allowAdd: { type: "boolean" }
@@ -466,6 +485,9 @@ module.exports = {
 
         # Conditions for visibility of the group
         conditions: { $ref: "#/definitions/conditions" }
+
+        # Condition expression (mwater-expression) for visiblity of the group
+        conditionExpr: { type: "object" }
 
         # Contains a list of items
         contents: {

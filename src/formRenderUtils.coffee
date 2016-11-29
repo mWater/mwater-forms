@@ -11,7 +11,7 @@ RosterGroupComponent = require './RosterGroupComponent'
 RosterMatrixComponent = require './RosterMatrixComponent'
 
 # Render an item, given its data, visibility function, etc.
-exports.renderItem = (item, data, parentData, formExprEvaluator, onDataChange, isVisible, onNext) ->
+exports.renderItem = (item, data, responseRow, schema, onDataChange, isVisible, onNext) ->
   handleAnswerChange = (id, answer) =>
     change = {}
     change[id] = answer
@@ -24,17 +24,17 @@ exports.renderItem = (item, data, parentData, formExprEvaluator, onDataChange, i
       question: item
       onAnswerChange: handleAnswerChange.bind(null, item._id)
       data: data
-      parentData: parentData
+      responseRow: responseRow
+      schema: schema
       onNext: onNext
-      formExprEvaluator: formExprEvaluator
   else if item._type == "Instructions"
     return R InstructionsComponent,
       key: item._id,
       ref: item._id,
       instructions: item
       data: data
-      parentData: parentData
-      formExprEvaluator: formExprEvaluator
+      responseRow: responseRow
+      schema: schema
   else if item._type == "Timer"
     return R TimerComponent,
       key: item._id,
@@ -46,10 +46,10 @@ exports.renderItem = (item, data, parentData, formExprEvaluator, onDataChange, i
       ref: item._id,
       group: item
       data: data
-      parentData: parentData
       onDataChange: onDataChange
+      responseRow: responseRow
+      schema: schema
       isVisible: isVisible
-      formExprEvaluator: formExprEvaluator
       onNext: onNext
   else if item._type == "RosterGroup"
     return R RosterGroupComponent,
@@ -58,8 +58,9 @@ exports.renderItem = (item, data, parentData, formExprEvaluator, onDataChange, i
       rosterGroup: item
       data: data
       onDataChange: onDataChange
+      responseRow: responseRow
+      schema: schema
       isVisible: isVisible
-      formExprEvaluator: formExprEvaluator
   else if item._type == "RosterMatrix"
     return R RosterMatrixComponent,
       key: item._id,
@@ -67,8 +68,9 @@ exports.renderItem = (item, data, parentData, formExprEvaluator, onDataChange, i
       rosterMatrix: item
       data: data
       onDataChange: onDataChange
+      schema: schema
+      responseRow: responseRow
       isVisible: isVisible
-      formExprEvaluator: formExprEvaluator
   else if item._type == "Section"
     # Sections are not usually rendered like this, except when in single-page mode. In which case, render as a group
     return R GroupComponent,
@@ -76,10 +78,10 @@ exports.renderItem = (item, data, parentData, formExprEvaluator, onDataChange, i
       ref: item._id,
       group: item
       data: data
-      parentData: parentData
       onDataChange: onDataChange
+      responseRow: responseRow
+      schema: schema
       isVisible: isVisible
-      formExprEvaluator: formExprEvaluator
       onNext: onNext
   else
     throw new Error("Unknown item of type #{item._type}")

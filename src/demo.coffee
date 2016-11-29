@@ -9,6 +9,8 @@ sampleForm2 = require './sampleForm2'
 #bigsampleForm2 = require './bigsampleForm2'
 ItemListComponent = require './ItemListComponent'
 ResponseDisplayComponent = require './ResponseDisplayComponent'
+Schema = require('mwater-expressions').Schema
+FormSchemaBuilder = require './FormSchemaBuilder'
 
 # Setup mock localizer
 global.T = (str) ->
@@ -47,6 +49,9 @@ formCtx = {
       callback(null, [])
 
   renderEntitySummaryView: (entityType, entity) ->
+    JSON.stringify(entity)
+
+  renderEntityListItemView: (entityType, entity) ->
     JSON.stringify(entity)
 
   findAdminRegionByLatLng: (lat, lng, callback) -> callback("Not implemented")
@@ -98,8 +103,10 @@ class DemoComponent extends React.Component
     #   data: @state.data
     #   onDataChange: (data) => @setState(data: data)
 
+    schema = new Schema()
     #design = rosterFormDesign
-    design = sampleForm2.design
+    design = rosterFormDesign
+    schema = new FormSchemaBuilder().addForm(schema, { _id: "form1", design: rosterFormDesign })
     # design: bigsampleForm2.design
     # design: matrixFormDesign
 
@@ -110,6 +117,7 @@ class DemoComponent extends React.Component
           # locale: React.PropTypes.string            # Locale. Defaults to English (en)
           design: design
           data: @state.data
+          schema: schema
           onDataChange: @handleDataChange
           onSubmit: => alert("Submit")
           onSaveLater: => alert("SaveLater")
@@ -147,6 +155,7 @@ rosterFormDesign = {
     "_base": "en",
     "en": "Sample Form"
   },
+  localizedStrings: [],
   "contents": [
     {
       _id: "matrix01"
@@ -162,7 +171,7 @@ rosterFormDesign = {
         { _id: "b", _type: "NumberColumnQuestion", text: { en: "Age" }, decimal: false }
         { _id: "c", _type: "CheckColumnQuestion", text: { en: "Present" } }
         { _id: "d", _type: "DropdownColumnQuestion", text: { en: "Gender" }, choices: [{ label: { en: "Male"}, id: "male" }, { label: { en: "Female"}, id: "female" }] }
-        { _id: "e", _type: "DateColumnQuestion", text: { en: "Date" }, required: false }
+        { _id: "e", _type: "DateColumnQuestion", text: { en: "Date" }, format: "YYYY-MM-DD", required: false }
       ]
     },
     {
@@ -178,7 +187,7 @@ rosterFormDesign = {
           { "type": "field", "table": "responses:form123:roster:matrix01", "column": "data:a:value" }
         ],}
         {
-          id: "b2",
+          _id: "b2",
           _type: "UnitsColumnQuestion",
           text: { en: "Units" },
           "decimal": true,

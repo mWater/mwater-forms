@@ -5,6 +5,7 @@ R = React.createElement
 
 formUtils = require './formUtils'
 markdown = require("markdown").markdown
+TextExprsComponent = require './TextExprsComponent'
 
 LocationFinder = require './LocationFinder'
 CurrentPositionFinder = require './legacy/CurrentPositionFinder'
@@ -51,12 +52,12 @@ module.exports = class QuestionComponent extends React.Component
 
   @propTypes:
     question: React.PropTypes.object.isRequired # Design of question. See schema
-    data: React.PropTypes.object      # Current data of response. Data of roster entry if in a roster
-    parentData: React.PropTypes.object      # Data of overall response if in a roster
+    data: React.PropTypes.object      # Current data of response (for roster entry if in roster)
+    responseRow: React.PropTypes.object    # ResponseRow object (for roster entry if in roster)
     onAnswerChange: React.PropTypes.func.isRequired
     displayMissingRequired: React.PropTypes.bool
     onNext: React.PropTypes.func
-    formExprEvaluator: React.PropTypes.object.isRequired # FormExprEvaluator for rendering strings with expression
+    schema: React.PropTypes.object.isRequired  # Schema to use, including form
 
   constructor: ->
     super
@@ -69,6 +70,13 @@ module.exports = class QuestionComponent extends React.Component
       savedSpecify: null
     }
 
+  componentWillUnmount: ->
+    @unmounted = true
+
+    # Stop position finder
+    if @currentPositionFinder
+      @currentPositionFinder.stop()
+
   shouldComponentUpdate: (nextProps, nextState, nextContext) ->
     if @context.locale != nextContext.locale
       return true
@@ -79,8 +87,6 @@ module.exports = class QuestionComponent extends React.Component
         if choice.conditions? and choice.conditions.length > 0
           return true
 
-    if nextProps.formExprEvaluator? and nextProps.formExprEvaluator != @props.formExprEvaluator
-      return true
     if nextProps.question != @props.question
       return true
 
@@ -92,13 +98,6 @@ module.exports = class QuestionComponent extends React.Component
     if not _.isEqual @state, nextState
       return true
     return false
-
-  componentWillUnmount: () ->
-    @unmounted = true
-
-    # Stop position finder
-    if @currentPositionFinder
-      @currentPositionFinder.stop()
 
   focus: ->
     answer = @refs.answer
@@ -222,8 +221,13 @@ module.exports = class QuestionComponent extends React.Component
     promptDiv = H.div className: "prompt", ref: 'prompt',
       if @props.question.code
         H.span className: "question-code", @props.question.code + ": "
-      
-      @props.formExprEvaluator.renderString(@props.question.text, @props.question.textExprs, @props.data, @props.parentData, @context.locale)
+
+      R TextExprsComponent,
+        localizedStr: @props.question.text
+        exprs: @props.question.textExprs
+        schema: @props.schema
+        responseRow: @props.responseRow
+        locale: @context.locale
 
       # Required star
       if @props.question.required
@@ -428,8 +432,7 @@ module.exports = class QuestionComponent extends React.Component
           items: @props.question.items
           columns: @props.question.columns
           data: @props.data
-          parentData: @props.parentData
-          formExprEvaluator: @props.formExprEvaluator
+          responseRow: @props.responseRow
         }
 
       when "AquagenxCBTQuestion"

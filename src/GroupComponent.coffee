@@ -12,12 +12,12 @@ module.exports = class GroupComponent extends React.Component
 
   @propTypes:
     group: React.PropTypes.object.isRequired # Design of group. See schema
-    data: React.PropTypes.object      # Current data of response. 
-    parentData: React.PropTypes.object      # Data of overall response if in a roster
+    data: React.PropTypes.object      # Current data of response (for roster entry if in roster)
+    responseRow: React.PropTypes.object    # ResponseRow object (for roster entry if in roster)
     onDataChange: React.PropTypes.func.isRequired   # Called when data changes
     isVisible: React.PropTypes.func.isRequired # (id) tells if an item is visible or not
-    formExprEvaluator: React.PropTypes.object.isRequired # FormExprEvaluator for rendering strings with expression
     onNext: React.PropTypes.func.isRequired   # Called when moving out of the GroupComponent questions
+    schema: React.PropTypes.object.isRequired  # Schema to use, including form
 
   validate: (scrollToFirstInvalid) ->
     return @refs.itemlist.validate(scrollToFirstInvalid)
@@ -35,9 +35,9 @@ module.exports = class GroupComponent extends React.Component
           ref: "itemlist"
           contents: @props.group.contents
           data: @props.data
-          parentData: @props.parentData
+          responseRow: @props.responseRow
           onDataChange: @props.onDataChange
           isVisible: @props.isVisible
-          formExprEvaluator: @props.formExprEvaluator
           onNext: @props.onNext
+          schema: @props.schema
           
