@@ -408,11 +408,13 @@
     },
     {
       "_base": "en",
-      "en": " Edit"
+      "en": " Edit",
+      "_unused": true
     },
     {
       "_base": "en",
-      "en": " Clear"
+      "en": " Clear",
+      "_unused": true
     },
     {
       "_base": "en",
