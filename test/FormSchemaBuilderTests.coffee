@@ -205,6 +205,29 @@ describe "FormSchemaBuilder addForm", ->
     assert schema.getColumn("responses:formid", "submittedOn")
     assert schema.getColumn("responses:formid", "deployment")
 
+  it "adds calculations", ->
+    # Create form
+    form = {
+      _id: "formid"
+      design: {
+        _type: "Form"
+        name: { en: "Form" }
+        contents: [
+          { _id: "questionid", _type: "TextQuestion", text: { _base: "en", en: "Question" }, conditions: [] }
+        ]
+        calculations: [
+          { _id: "calc1", name: { _base: "en", en: "Calc1" }, expr: { type: "op", table: "responses:formid", op: "is not null", exprs: { type: "field", table: "responses:formid", column: "data:questionid:value" }} }
+        ]
+      }
+    }
+
+    # Add to blank schema
+    schema = new FormSchemaBuilder().addForm(new Schema(), form)
+
+    assert.deepEqual schema.getColumn("responses:formid", "calculations:calc1").name.en, "Calc1"
+    assert.deepEqual schema.getColumn("responses:formid", "calculations:calc1").type, "expr"
+    assert.deepEqual schema.getColumn("responses:formid", "calculations:calc1").expr, form.design.calculations[0].expr
+
   describe "Answer types", ->
     before ->
       @testQuestion = (questionOptions, expectedColumns) ->
