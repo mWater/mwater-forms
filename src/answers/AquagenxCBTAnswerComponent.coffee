@@ -106,10 +106,12 @@ module.exports = class AquagenxCBTAnswerComponent extends React.Component
           H.div null,
             H.button className: 'btn btn-default', onClick: @handleEditClick,
               H.span(className:"glyphicon glyphicon-edit")
-              @context.T(' Edit')
+              " "
+              @context.T('Edit')
             H.button className: 'btn btn-default', onClick: @handleClearClick, style: {marginLeft: '12px'},
               H.span(className:"glyphicon glyphicon-remove")
-              @context.T(' Clear')
+              " "
+              @context.T('Clear')
 
 
   render: ->

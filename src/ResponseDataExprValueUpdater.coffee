@@ -51,14 +51,14 @@ module.exports = class ResponseDataExprValueUpdater
 
     return false    
 
-  # Create responseRow
-
-  # Cleans data. Must be called after last update is done. Callback with (error, cleanedData)
-  cleanData: (data, responseRowFactory, callback) ->
+  # Cleans data. Must be called after last update is done. 
+  # createResponseRow takes one parameter (data) and returns a response row
+  # Callback with (error, cleanedData)
+  cleanData: (data, createResponseRow, callback) ->
     # Compute visibility
     visibilityCalculator = new VisibilityCalculator(@formDesign)
     responseCleaner = new ResponseCleaner()
-    responseCleaner.cleanData @formDesign, visibilityCalculator, null, data, responseRowFactory, null, (error, results) =>
+    responseCleaner.cleanData @formDesign, visibilityCalculator, null, data, createResponseRow, null, (error, results) =>
       callback(error, results?.data)
 
   # Validates the data. Callback null if ok, otherwise string message in second parameter. Clean first.
