@@ -54,6 +54,9 @@ module.exports = class FormSchemaBuilder
 
     @addFormItem(form.design, contents, "responses:#{form._id}", conditionsExprCompiler)
 
+    if form.design.calculations
+      @addCalculations(form.design.calculations, contents, "responses:#{form._id}")
+
     # Add to schema
     schema = schema.addTable({
       id: "responses:#{form._id}"
@@ -1349,6 +1352,24 @@ module.exports = class FormSchemaBuilder
           }
           
           addColumn(column)
+
+  addCalculations: (calculations, contents, tableId) ->
+    section = {
+      type: "section"
+      name: { _base: "en", en: "Calculations" }
+      contents: []
+    }
+
+    for calculation in calculations
+      section.contents.push({
+        id: "calculations:#{calculation._id}"
+        type: "expr"
+        name: calculation.name
+        desc: calculation.desc
+        expr: calculation.expr
+      })
+
+    contents.push(section)
 
 # Append a string to each language
 appendStr = (str, suffix) ->
