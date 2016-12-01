@@ -455,6 +455,18 @@
     {
       "_base": "en",
       "en": "Unsafe"
+    },
+    {
+      "_base": "en",
+      "en": "MPN/100ml"
+    },
+    {
+      "_base": "en",
+      "en": "Upper 95% Confidence Interval/100ml"
+    },
+    {
+      "_base": "en",
+      "en": "Health Risk Category Based on MPN and Confidence Interval"
     }
   ]
 }
