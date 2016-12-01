@@ -99,8 +99,8 @@ module.exports = class FormComponent extends React.Component
     # Clean response data
     responseCleaner.cleanData @props.design, visibilityCalculator, defaultValueApplier, data, @createResponseRow, @state.visibilityStructure, (error, results) =>
       if error
-        # TODO what to do with this?
-        throw error
+        alert(T("Error saving data") + ": #{error.message}")
+        return
 
       @setState(visibilityStructure: results.visibilityStructure)
       @props.onDataChange(results.data)

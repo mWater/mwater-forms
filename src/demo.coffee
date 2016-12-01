@@ -89,7 +89,7 @@ class DemoComponent extends React.Component
   constructor: ->
     super
 
-    data = {}
+    data = { site01: { value: { code: "10007"}}}
 
     @state = {data: data}
 
@@ -104,11 +104,11 @@ class DemoComponent extends React.Component
     #   onDataChange: (data) => @setState(data: data)
 
     schema = new Schema()
-    #design = rosterFormDesign
     design = rosterFormDesign
-    schema = new FormSchemaBuilder().addForm(schema, { _id: "form1", design: rosterFormDesign })
-    # design: bigsampleForm2.design
     # design: matrixFormDesign
+    # design = rosterFormDesign
+    # design = bigsampleForm2.design
+    schema = new FormSchemaBuilder().addForm(schema, { _id: "form1", design: design })
 
     H.div className: "row",
       H.div(className: "col-md-6",
@@ -157,6 +157,33 @@ rosterFormDesign = {
   },
   localizedStrings: [],
   "contents": [
+    {
+      _id: "site01"
+      _type: "SiteQuestion"
+      "text": {
+        "_base": "en",
+        "en": "Site?"
+      },
+      siteTypes: ['Water point']
+    },    
+    {
+      _id: "text01"
+      _type: "TextQuestion"
+      "text": {
+        "_base": "en",
+        "en": "Text {0}"
+      },
+      textExprs: [
+        { type: "scalar", table: "responses:form123", joins: ["data:site01:value"], expr: { type: "field", table: "entities.water_point", column: "code" }}
+      ]
+      siteTypes: ['Water point'],
+      conditionExpr: {
+        type: "op"
+        table: "responses:form123"
+        op: "is not null"
+        exprs: [{ type: "scalar", table: "responses:form123", joins: ["data:site01:value"], expr: { type: "field", table: "entities.water_point", column: "code" }}]
+      }
+    },    
     {
       _id: "matrix01"
       _type: "RosterMatrix"

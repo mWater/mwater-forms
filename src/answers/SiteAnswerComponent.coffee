@@ -18,6 +18,16 @@ module.exports = class SiteAnswerComponent extends React.Component
     onValueChange: React.PropTypes.func.isRequired
     siteTypes: React.PropTypes.array
 
+  constructor: (props) ->
+    super
+    
+    @state = {text: props.value?.code or ""}
+
+  componentWillReceiveProps: (nextProps) ->
+    # If different, override text
+    if nextProps.value?.code != @props.value?.code
+      @setState(text: if nextProps.value?.code then nextProps.value?.code else "")
+
   focus: () ->
     @refs.input.focus()
 
@@ -45,7 +55,10 @@ module.exports = class SiteAnswerComponent extends React.Component
       )
     }
 
-  handleChange: (ev) =>
+  handleChange: (ev) => 
+    @setState(text: ev.target.value)
+
+  handleBlur: (ev) =>
     if ev.target.value
       @props.onValueChange({ code: ev.target.value })
     else
@@ -61,7 +74,8 @@ module.exports = class SiteAnswerComponent extends React.Component
           ref: 'input'
           placeholder: @context.T("mWater ID of Site")
           style: { zIndex: "inherit" } # Workaround for strange bootstrap z-index
-          value: @props.value?.code or ""
+          value: @state.text
+          onBlur: @handleBlur
           onChange: @handleChange
         H.span className: "input-group-btn",
           H.button className: "btn btn-default", disabled: not @context.selectEntity?, type: "button", onClick: @handleSelectClick, style: { zIndex: "inherit" },

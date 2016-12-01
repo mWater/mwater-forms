@@ -17,9 +17,9 @@ module.exports = class ResponseRow
   #  schema: schema to use
   #  rosterId: id of roster if it is a roster row
   #  rosterEntryIndex: index of roster row
-  #  getEntityById(entityType, entityId, callback): looks up entity
+  #  getEntityById(entityType, entityId, callback): looks up entity. Any callbacks after first one will be ignored.
   #    callback: called with an entity e.g. { _id: some id, a: "abc", b: 123 } or callback null if entity not found
-  #  getEntityByCode(entityType, entityCode, callback): looks up an entity 
+  #  getEntityByCode(entityType, entityCode, callback): looks up an entity. Any callbacks after first one will be ignored.
   #    callback: called with an entity e.g. { _id: some id, a: "abc", b: 123 } or callback null if entity not found
   constructor: (options) ->
     @options = options
@@ -116,14 +116,27 @@ module.exports = class ResponseRow
 
           code = value.code
           if code
-            @getEntityByCode(entityType, code, (entity) => callback(null, new EntityRow({ entityType: entityType, entity: entity, schema: @schema, getEntityById: @getEntityById })))
+            @getEntityByCode(entityType, code, _.once((entity) => 
+              if entity
+                callback(null, new EntityRow({ entityType: entityType, entity: entity, schema: @schema, getEntityById: @getEntityById }))
+              else
+                callback(new Error("Site #{code} not found"))
+            ))
           else
             callback(null, null)
           return
 
         if answerType == "entity"
           # Create site entity row
-          @getEntityById(question.entityType, value, (entity) => callback(null, new EntityRow({ entityType: entityType, entity: entity, schema: @schema, getEntityById: @getEntityById })))
+          if value
+            @getEntityById(question.entityType, value, _.once((entity) => 
+              if entity
+                callback(null, new EntityRow({ entityType: entityType, entity: entity, schema: @schema, getEntityById: @getEntityById }))
+              else
+                callback(new Error("Entity #{value} not found"))
+            ))
+          else
+            callback(null, null)
           return
 
         # Location
@@ -131,7 +144,6 @@ module.exports = class ResponseRow
           return callback(null, { type: "Point", coordinates: [value.longitude, value.latitude]})
 
         return callback(null, nullify(value))
-
 
       # Value can also recurse for handing matrix, item_choices, altitude, accuracy and CBT
       if parts[2] == "value"

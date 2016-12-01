@@ -52,10 +52,14 @@ callback: called with _id of entity selected
 
 ## getEntityById(entityType, entityId, callback)
 
+entityType: e.g. "water_point"
+entityId: _id of entity
 callback: called with an entity e.g. { _id: some id, a: "abc", b: 123 } or callback null if entity not found
 
 ## getEntityByCode(entityType, entityCode, callback)
 
+entityType: e.g. "water_point"
+entityCode: code of entity
 callback: called with an entity e.g. { _id: some id, a: "abc", b: 123 } or callback null if entity not found
 
 ## getProperty(id)
