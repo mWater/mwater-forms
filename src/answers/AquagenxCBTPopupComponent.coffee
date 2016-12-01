@@ -154,13 +154,13 @@ module.exports = class AquagenxCBTPopupComponent extends React.Component
       mpn = '>100'
     return H.div null,
       H.div null,
-        @context.T('MPN/100ml:') + ' '
+        @context.T('MPN/100ml') + ': '
         H.b(null, mpn)
       H.div null,
-        @context.T('Upper 95% Confidence Interval/100ml:') + ' '
+        @context.T('Upper 95% Confidence Interval/100ml') + ': '
         H.b(null, cbtValues.confidence)
       H.div null,
-        @context.T('Health Risk Category Based on MPN and Confidence Interval:') + ' '
+        @context.T('Health Risk Category Based on MPN and Confidence Interval') + ': '
         H.b(null, getHealthRiskString(cbtValues.healthRisk, @context.T))
 
   render: ->

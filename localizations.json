@@ -422,15 +422,18 @@
     },
     {
       "_base": "en",
-      "en": "MPN/100ml:"
+      "en": "MPN/100ml:",
+      "_unused": true
     },
     {
       "_base": "en",
-      "en": "Upper 95% Confidence Interval/100ml:"
+      "en": "Upper 95% Confidence Interval/100ml:",
+      "_unused": true
     },
     {
       "_base": "en",
-      "en": "Health Risk Category Based on MPN and Confidence Interval:"
+      "en": "Health Risk Category Based on MPN and Confidence Interval:",
+      "_unused": true
     },
     {
       "_base": "en",
