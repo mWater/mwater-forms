@@ -80,7 +80,7 @@ module.exports = class AquagenxCBTAnswerComponent extends React.Component
     H.div null,
       @state.imageModal
 
-      if @props.value.image
+      if @props.value?.image
         React.createElement(ImageThumbnailComponent, imageId: @props.value.image.id, onClick: @handleClickImage, imageManager: @context.imageManager)
       else if @props.onValueChange and @context.imageAcquirer
         H.img
@@ -96,7 +96,7 @@ module.exports = class AquagenxCBTAnswerComponent extends React.Component
     H.div null,
       @state.aquagenxModal
 
-      if not @props.value.cbt?
+      if not @props.value?.cbt?
         H.div null,
           H.button className: 'btn btn-default', onClick: @handleEditClick,
             @context.T('Record')
