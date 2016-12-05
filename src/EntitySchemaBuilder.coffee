@@ -42,21 +42,32 @@ module.exports = class EntitySchemaBuilder
       # Get label column
       labelColumn = null
 
-      entityProps = _.filter(properties, (prop) -> prop.entity_type == entityType.code)
+      # Make filtered copy
+      entityProps = _.cloneDeep(_.filter(properties, (prop) -> prop.entity_type == entityType.code))
 
       # Sort obvious ones to top
       ordering = {
         name: 1
         desc: 2
         type: 3
-        location: 4
-        code: 5
+        admin_region: 4
+        location: 5
+        code: 6
       }
 
       entityProps = _.sortBy(entityProps, (prop) -> ordering[prop.code] or 999)
 
       # Add properties
       for prop in entityProps
+        # Fix names and descriptions pending a re-write of properties
+        if prop.code == "location"
+          prop.name = { _base: "en", en: "GPS Coordinates"}
+          prop.desc = { _base: "en", en: "Latitude/longitude of the site. Use 'Location' instead for filtering by country, state, etc."}
+
+        if prop.code == "admin_region"
+          prop.name = { _base: "en", en: "Location"}
+          prop.desc = { _base: "en", en: "Administrative region (country, state/province, district, village etc.)"}
+
         # Use unique code as label
         if prop.unique_code
           labelColumn = prop.code
@@ -88,6 +99,7 @@ module.exports = class EntitySchemaBuilder
           contents.push({ 
             id: "#{prop.code}"
             name: prop.name
+            desc: prop.desc
             type: "join"
             deprecated: deprecated or refEntityType.deprecated
             join: {
@@ -102,6 +114,7 @@ module.exports = class EntitySchemaBuilder
           contents.push({
             id: prop.code
             name: prop.name
+            desc: prop.desc
             type: prop.type
             enumValues: _.map(prop.values, (v) -> { id: v.code, name: v.name })
             deprecated: deprecated
@@ -112,6 +125,7 @@ module.exports = class EntitySchemaBuilder
           contents.push({
             id: prop.code
             name: prop.name
+            desc: prop.desc
             type: "number"
             deprecated: deprecated
           })
@@ -121,6 +135,7 @@ module.exports = class EntitySchemaBuilder
           contents.push({
             id: prop.code
             name: prop.name
+            desc: prop.desc
             type: "date"
             deprecated: deprecated
             # rpad(field ,10, '-01-01')
@@ -144,6 +159,7 @@ module.exports = class EntitySchemaBuilder
           contents.push({
             id: prop.code
             name: prop.name
+            desc: prop.desc
             type: "join"
             join: {
               type: "n-1"
@@ -158,6 +174,7 @@ module.exports = class EntitySchemaBuilder
           contents.push({
             id: prop.code
             name: prop.name
+            desc: prop.desc
             type: prop.type
             enumValues: prop.values
             deprecated: deprecated
@@ -167,6 +184,7 @@ module.exports = class EntitySchemaBuilder
       contents.push({
         id: "_managed_by"
         name: { en: "Managed By" }
+        desc: { en: "User or group that manages the data for the site"}
         type: "join"
         join: {
           type: "n-1"
