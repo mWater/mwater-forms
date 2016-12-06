@@ -14,6 +14,7 @@ module.exports = class ImagesAnswerComponent extends React.Component
   @propTypes:
     imagelist: React.PropTypes.array         # array of { id: someid, caption: caption, cover: true/false }
     onImagelistChange: React.PropTypes.func      # Called when image list changed
+    consentPrompt: React.PropTypes.string    # Question to prompt for consent
 
   constructor: ->
     super
@@ -25,6 +26,11 @@ module.exports = class ImagesAnswerComponent extends React.Component
     null
 
   handleAdd: =>
+    # Check consent
+    if @props.consentPrompt
+      if not confirm(@props.consentPrompt)
+        return
+
     # Call imageAcquirer
     @context.imageAcquirer.acquire (id) =>
       # Add to image list

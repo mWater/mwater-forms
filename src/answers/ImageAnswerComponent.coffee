@@ -13,6 +13,7 @@ module.exports = class ImageAnswerComponent extends React.Component
   @propTypes:
     image: React.PropTypes.object            # e.g. { id: someid, caption: caption }
     onImageChange: React.PropTypes.func      # Called when image changed
+    consentPrompt: React.PropTypes.string    # Question to prompt for consent
 
   constructor: ->
     super
@@ -37,6 +38,11 @@ module.exports = class ImageAnswerComponent extends React.Component
     @setState(modal: modal)
 
   handleAdd: =>
+    # Check consent
+    if @props.consentPrompt
+      if not confirm(@props.consentPrompt)
+        return
+
     # Call imageAcquirer
     @context.imageAcquirer.acquire (id) =>
       # Add to model

@@ -368,14 +368,17 @@ module.exports = class QuestionComponent extends React.Component
 
       when "ImageQuestion"
         return R ImageAnswerComponent,
+          ref: "answer"
           image: answer.value
           onImageChange: @handleValueChange 
+          consentPrompt: @props.question.consentPrompt
 
       when "ImagesQuestion"
         return R ImagesAnswerComponent, {
           ref: "answer"
           imagelist: answer.value
           onImagelistChange: @handleValueChange
+          consentPrompt: @props.question.consentPrompt
         }
 
       when "TextListQuestion"
