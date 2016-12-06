@@ -95,7 +95,7 @@ module.exports = class ResponseDisplayComponent extends React.Component
       " "
       @state.T("by")
       " "
-      @state.eventsUsernames[ev.by].username
+      @state.eventsUsernames[ev.by]?.username
       " "
       @state.T("on")
       " "
