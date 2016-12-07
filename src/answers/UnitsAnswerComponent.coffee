@@ -92,7 +92,8 @@ module.exports = class UnitsAnswerComponent extends React.Component
       H.input {
         id: 'quantity'
         className: "form-control",
-        type: "number",
+        type: "number"
+        lang: "en"
         step: "any",
         style: {width: "12em"},
         onBlur: @handleValueBlur,
