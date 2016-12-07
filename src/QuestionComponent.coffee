@@ -371,14 +371,14 @@ module.exports = class QuestionComponent extends React.Component
           ref: "answer"
           image: answer.value
           onImageChange: @handleValueChange 
-          consentPrompt: @props.question.consentPrompt
+          consentPrompt: if @props.question.consentPrompt then formUtils.localizeString(@props.question.consentPrompt, @context.locale)
 
       when "ImagesQuestion"
         return R ImagesAnswerComponent, {
           ref: "answer"
           imagelist: answer.value
           onImagelistChange: @handleValueChange
-          consentPrompt: @props.question.consentPrompt
+          consentPrompt: if @props.question.consentPrompt then formUtils.localizeString(@props.question.consentPrompt, @context.locale)
         }
 
       when "TextListQuestion"
