@@ -31,7 +31,7 @@ module.exports = class ItemListComponent extends React.Component
   handleNext: (index) ->
     index++
     if index >= @props.contents.length
-      @props.onNext()
+      @props.onNext?()
     else
       @refs[@props.contents[index]._id]?.focus?()
 
