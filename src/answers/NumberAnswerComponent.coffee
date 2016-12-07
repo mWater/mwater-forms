@@ -69,6 +69,7 @@ module.exports = class NumberAnswerComponent extends React.Component
       ref: 'input'
       type: if @props.decimal then "number" else "tel"
       className: "form-control #{if @props.small then "input-sm" else ""}"
+      lang: "en"
       style: style
       value: @state.inputText
       onChange: (ev) => @setState(inputText: ev.target.value)
