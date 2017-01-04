@@ -16,23 +16,24 @@ module.exports = class EntitySchemaBuilder
       if prop.type == "entity"
         # Lookup entity type 
         entityType = _.findWhere(entityTypes, code: prop.entity_type)
-        tableId = "entities.#{entityType.code}"
+        if entityType
+          tableId = "entities.#{entityType.code}"
 
-        reverseJoins.push({
-          table: "entities." + prop.ref_entity_type
-          column: {
-            id: "!#{tableId}.#{prop.code}"
-            name: entityType.name
-            deprecated: prop.deprecated or entityType.deprecated
-            type: "join"
-            join: {
-              type: "1-n"
-              toTable: tableId
-              fromColumn: "_id"
-              toColumn: prop.code
+          reverseJoins.push({
+            table: "entities." + prop.ref_entity_type
+            column: {
+              id: "!#{tableId}.#{prop.code}"
+              name: entityType.name
+              deprecated: prop.deprecated or entityType.deprecated
+              type: "join"
+              join: {
+                type: "1-n"
+                toTable: tableId
+                fromColumn: "_id"
+                toColumn: prop.code
+              }
             }
-          }
-        })
+          })
 
     # For each entity type
     for entityType in entityTypes
