@@ -56,9 +56,9 @@ module.exports = class ResponseDataValidator
               key = "#{row.id}.#{column._id}"
               completedId = item._id + '.' + key
 
-              data = answer[row.id]?[column._id]
+              cellData = answer[row.id]?[column._id]
 
-              if column.required and not data?.value? or data?.value == ''
+              if column.required and not cellData?.value? or cellData?.value == ''
                 return { 
                   questionId: completedId
                   error: true
@@ -66,7 +66,7 @@ module.exports = class ResponseDataValidator
                 }
 
               if column.validations and column.validations.length > 0
-                validationError = answerValidator.compileValidations(column.validations)(data)
+                validationError = answerValidator.compileValidations(column.validations)(cellData)
                 if validationError
                   return { 
                     questionId: completedId
