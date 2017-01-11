@@ -279,7 +279,6 @@ describe "FormUtils", ->
       compare formUtils.extractEntityReferences(formDesign, responseData), [
         {
           question: "0001"
-          roster: null
           entityType: "community"
           property: "_id"
           value: "123456"
@@ -307,7 +306,6 @@ describe "FormUtils", ->
       compare formUtils.extractEntityReferences(formDesign, responseData), [
         {
           question: "0001"
-          roster: null
           entityType: "health_facility"
           property: "code"
           value: "10007"

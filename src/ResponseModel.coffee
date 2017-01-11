@@ -50,7 +50,7 @@ module.exports = class ResponseModel
       @response.deployment = deployments[0]._id
 
     @fixRoles()
-    @_updateEntities()
+    @updateEntities()
 
   # Return all active deployments that the user can enumerate
   listEnumeratorDeployments: ->
@@ -64,7 +64,7 @@ module.exports = class ResponseModel
   # and other housekeeping before saving it
   saveForLater: ->
     @fixRoles()
-    @_updateEntities()
+    @updateEntities()
 
   # Submit (either to final or pending as appropriate)
   submit: ->
@@ -84,7 +84,7 @@ module.exports = class ResponseModel
     @_addEvent("submit")
 
     @fixRoles()
-    @_updateEntities()
+    @updateEntities()
 
   # Approve response
   approve: ->
@@ -114,7 +114,7 @@ module.exports = class ResponseModel
     @_addEvent("approve", override: _.intersection(approvers, subjects).length == 0)
 
     @fixRoles()
-    @_updateEntities()
+    @updateEntities()
 
   # Reject a response with a specific rejection message
   reject: (message) ->
@@ -135,7 +135,7 @@ module.exports = class ResponseModel
     @_addEvent("reject", message: message)
 
     @fixRoles()
-    @_updateEntities()
+    @updateEntities()
 
   # Record that an edit was done, if not by enumerator
   recordEdit: ->
@@ -149,30 +149,11 @@ module.exports = class ResponseModel
 
   # Performs special operation when a response goes from final to other
   _unfinalize: ->
-    # Unset any entity questions that were set because a create happened
-    if @response.pendingEntityCreates
-      for create in @response.pendingEntityCreates
-        @response.data[create.questionId].value = null
-        delete @response.data[create.questionId].created
+    return
 
-    # Remove any pending entity operations
-    @response.pendingEntityUpdates = []
-    @response.pendingEntityCreates = []
-
-  # Updates entities field
-  _updateEntities: ->
-    entities = []
-    for question in formUtils.priorQuestions(@form.design)    
-      if question._type == "EntityQuestion"
-        if @response.data and @response.data[question._id] and @response.data[question._id].value
-          entities.push({ 
-            questionId: question._id
-            entityType: question.entityType
-            entityId: @response.data[question._id].value
-            created: @response.data[question._id].created == true
-          })
-
-    @response.entities = entities
+  # Updates entities field. Stores a list of all entity references in the response
+  updateEntities: ->
+    @response.entities = formUtils.extractEntityReferences(@form.design, @response.data)
 
   # Fixes roles to reflect status and approved fields
   fixRoles: ->

@@ -603,6 +603,12 @@ describe "ResponseModel", ->
             text: { _base: "en", en: "English" }
             entityType: "type1"
           }
+          {
+            _id: "q2"
+            _type: "SiteQuestion"
+            text: { _base: "en", en: "English" }
+            siteTypes: ['community']
+          }
         ]
       }
 
@@ -616,21 +622,21 @@ describe "ResponseModel", ->
 
       # Check that entities was filled out
       assert.deepEqual @response.entities, [
-        { questionId: "q1", entityType: "type1", entityId: "entityid123", created: false }
+        { question: "q1", entityType: "type1", property: "_id", value: "entityid123" }
       ], JSON.stringify(@response.entities)
 
-    it "sets entities created flag", ->
+    it "sets sites", ->
       @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep2en1"])
       @model.draft()
 
       # Set entity question value
-      @response.data = { q1: { value: "entityid123", created: true } }
+      @response.data = { q2: { value: { code: "10007" } } }
       @model.submit()
 
       # Check that entities was filled out
       assert.deepEqual @response.entities, [
-        { questionId: "q1", entityType: "type1", entityId: "entityid123", created: true }
-      ]
+        { question: "q2", entityType: "community", property: "code", value: "10007" }
+      ], JSON.stringify(@response.entities)
 
     it "resets entities", ->
       @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep2en1"])
