@@ -52,7 +52,9 @@ module.exports = class FormSchemaBuilder
 
     conditionsExprCompiler = new ConditionsExprCompiler(form.design)
 
-    @addFormItem(form.design, contents, "responses:#{form._id}", conditionsExprCompiler)
+    # List of joins in format: { table: destination table, column: join column to add }
+    reverseJoins = []
+    @addFormItem(form.design, contents, "responses:#{form._id}", conditionsExprCompiler, null, reverseJoins)
 
     # Add to schema
     schema = schema.addTable({
@@ -64,7 +66,7 @@ module.exports = class FormSchemaBuilder
     })
 
     # Add reverse joins from entity and site questions
-    schema = @addReverseEntityJoins(schema, form)
+    schema = @addReverseJoins(schema, form, reverseJoins)
 
     # Add any roster tables
     schema = @addRosterTables(schema, form, conditionsExprCompiler)
@@ -78,25 +80,17 @@ module.exports = class FormSchemaBuilder
     return schema
  
   # Add joins back from entities to site and entity questions
-  addReverseEntityJoins: (schema, form) ->
-    for column in schema.getColumns("responses:#{form._id}")
-      if column.type == "join" and column.join.type == "n-1" and column.join.toTable.match(/^entities./)
-        # Create reverse join
-        join = {
-          id: "responses:#{form._id}:#{column.id}"
-          name: appendStr(appendStr(form.design.name, ": "), column.name)
-          type: "join"
-          join: {
-            type: "1-n"
-            toTable: "responses:#{form._id}"
-            fromColumn: column.join.toColumn
-            toColumn: column.join.fromColumn
-          }
-        }
+  # reverseJoins: list of joins in format: { table: destination table, column: join column to add }
+  addReverseJoins: (schema, form, reverseJoins) ->
+    for reverseJoin in reverseJoins
+      # Prefix form name, since it was not available when join was created
+      column = _.clone(reverseJoin.column)
+      column.name = appendStr(appendStr(form.design.name, ": "), column.name)
 
-        # Add to entities table if it exists
-        if schema.getTable(column.join.toTable)
-          schema = schema.addTable(update(schema.getTable(column.join.toTable), { contents: { $push: [join] } }))        
+      # Add to entities table if it exists
+      if schema.getTable(reverseJoin.table)
+        schema = schema.addTable(update(schema.getTable(reverseJoin.table), { contents: { $push: [column] } }))
+        console.log "done"
 
     return schema
 
@@ -322,7 +316,8 @@ module.exports = class FormSchemaBuilder
 
   # Adds a form item. existingConditionExpr is any conditions that already condition visibility of the form item. This does not cross roster boundaries.
   # That is, if a roster is entirely invisible, roster items will not be conditioned on the overall visibility, as they simply won't exist
-  addFormItem: (item, contents, tableId, conditionsExprCompiler, existingConditionExpr) ->
+  # reverseJoins: list of reverse joins to add to. In format: { table: destination table, column: join column to add }. This list will be mutated. Pass in empty list in general.
+  addFormItem: (item, contents, tableId, conditionsExprCompiler, existingConditionExpr, reverseJoins = []) ->
     addColumn = (column) =>
       contents.push(column)
 
@@ -330,7 +325,7 @@ module.exports = class FormSchemaBuilder
     if item.contents
       if item._type == "Form"
         for subitem in item.contents
-          @addFormItem(subitem, contents, tableId, conditionsExprCompiler, existingConditionExpr)
+          @addFormItem(subitem, contents, tableId, conditionsExprCompiler, existingConditionExpr, reverseJoins)
 
       else if item._type in ["Section", "Group"]
         # Create section contents
@@ -342,7 +337,7 @@ module.exports = class FormSchemaBuilder
           
         for subitem in item.contents
           # TODO add conditions of section/group
-          @addFormItem(subitem, sectionContents, tableId, conditionsExprCompiler, sectionConditionExpr)
+          @addFormItem(subitem, sectionContents, tableId, conditionsExprCompiler, sectionConditionExpr, reverseJoins)
         contents.push({ type: "section", name: item.name, contents: sectionContents })
 
       else if item._type in ["RosterGroup", "RosterMatrix"]
@@ -844,6 +839,8 @@ module.exports = class FormSchemaBuilder
             ]
           }
 
+          entityType = if item.siteTypes?[0] then _.first(item.siteTypes).toLowerCase().replace(new RegExp(' ', 'g'), "_") else "water_point"
+
           column = {
             id: "data:#{item._id}:value"
             type: "join"
@@ -851,13 +848,85 @@ module.exports = class FormSchemaBuilder
             code: code
             join: {
               type: "n-1"
-              toTable: if item.siteTypes then "entities." + _.first(item.siteTypes).toLowerCase().replace(new RegExp(' ', 'g'), "_") else "entities.water_point"
+              toTable: "entities.#{entityType}"
               fromColumn: codeExpr
               toColumn: "code"
             }
           }
 
           addColumn(column)
+
+          # Add reverse join if directly from responses table
+          if tableId.match(/^responses:[^:]+$/)
+            formId = tableId.split(":")[1]
+
+            # Use CTE for speed. Indexing with @> and entities field is still far too slow
+            # {to}._id = any(
+            #  (with rjcte as 
+            #    (select responses.data #>>'{de057801c0ba451bac5bab9e1e0402b2,value,code}' as value, responses._id as response from responses where form = '269cda7d99a0469b9bebd297bb3ef8f1' order by 2)
+            #  select rj.response from rjcte as rj where rj.value = {from}.code)))
+            jsonql = {
+              type: "op"
+              op: "="
+              modifier: "any"
+              exprs: [
+                { type: "field", tableAlias: "{to}", column: "_id" }
+                {
+                  type: "scalar"
+                  withs: [
+                    {
+                      query: {
+                        type: "query"
+                        selects: [
+                          {
+                            expr: { type: "field", tableAlias: "responses", column: "_id" }
+                            alias: "response"
+                          }
+                          {
+                            expr: {
+                              type: "op"
+                              op: "#>>"
+                              exprs: [
+                                { type: "field", tableAlias: "responses", column: "data" }
+                                "{#{item._id},value,code}"
+                              ]
+                            }
+                            alias: "value"
+                          }
+                        ]
+                        from: { type: "table", table: "responses", alias: "responses" }
+                        where: { type: "op", op: "=", exprs: [
+                          { type: "field", tableAlias: "responses", column: "form" }
+                          formId
+                          ]}
+                        orderBy: [{ ordinal: 2 }]
+                      }
+                      alias: "rjcte"
+                    }
+                  ]
+                  expr: { type: "field", tableAlias: "rj", column: "response" }
+                  from: { type: "table", table: "rjcte", alias: "rj" }
+                  where: { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "rj", column: "value" }, { type: "field", tableAlias: "{from}", column: "code" }]}
+                }
+              ]
+            }
+
+            reverseJoin = {
+              table: "entities.#{entityType}"
+              column: {
+                id: "#{tableId}:data:#{item._id}:value"
+                # Form name is not available here. Prefix later.
+                name: item.text
+                type: "join"
+                join: {
+                  type: "1-n"
+                  toTable: tableId
+                  jsonql: jsonql
+                }
+              }
+            }
+            reverseJoins.push(reverseJoin)
+
 
         when "entity"
           # Do not add if no entity type
@@ -883,6 +952,79 @@ module.exports = class FormSchemaBuilder
             }
 
             addColumn(column)
+
+            # Add reverse join if directly from responses table
+            if tableId.match(/^responses:[^:]+$/)
+              formId = tableId.split(":")[1]
+              
+              # Use CTE for speed. Indexing with @> and entities field is still far too slow
+              # {to}._id = any(
+              #  (with rjcte as 
+              #    (select responses.data #>>'{de057801c0ba451bac5bab9e1e0402b2,value}' as value, responses._id as response from responses where form = '269cda7d99a0469b9bebd297bb3ef8f1' order by 2)
+              #  select rj.response from rjcte as rj where rj.value = {from}._id)))
+              jsonql = {
+                type: "op"
+                op: "="
+                modifier: "any"
+                exprs: [
+                  { type: "field", tableAlias: "{to}", column: "_id" }
+                  {
+                    type: "scalar"
+                    withs: [
+                      {
+                        query: {
+                          type: "query"
+                          selects: [
+                            {
+                              expr: { type: "field", tableAlias: "responses", column: "_id" }
+                              alias: "response"
+                            }
+                            {
+                              expr: {
+                                type: "op"
+                                op: "#>>"
+                                exprs: [
+                                  { type: "field", tableAlias: "responses", column: "data" }
+                                  "{#{item._id},value}"
+                                ]
+                              }
+                              alias: "value"
+                            }
+                          ]
+                          from: { type: "table", table: "responses", alias: "responses" }
+                          where: { type: "op", op: "=", exprs: [
+                            { type: "field", tableAlias: "responses", column: "form" }
+                            formId
+                            ]}
+                          orderBy: [{ ordinal: 2 }]
+                        }
+                        alias: "rjcte"
+                      }
+                    ]
+                    expr: { type: "field", tableAlias: "rj", column: "response" }
+                    from: { type: "table", table: "rjcte", alias: "rj" }
+                    where: { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "rj", column: "value" }, { type: "field", tableAlias: "{from}", column: "_id" }]}
+                  }
+                ]
+              }
+
+              # Use {to}.entities @> jsonb_build_object('questionId', 'site1', 'entityType', 'water_point', 'property', '_id', 'value', {from}._id)
+              # for indexed speed
+              reverseJoin = {
+                table: "entities.#{item.entityType}"
+                column: {
+                  id: "#{tableId}:data:#{item._id}:value"
+                  # Form name is not available here. Prefix later.
+                  name: item.text
+                  type: "join"
+                  join: {
+                    type: "1-n"
+                    toTable: tableId
+                    jsonql: jsonql
+                  }
+                }
+              }
+              reverseJoins.push(reverseJoin)
 
         when "texts"
           # Get image

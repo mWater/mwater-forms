@@ -27,7 +27,7 @@ describe "FormSchemaBuilder addForm", ->
     compare(table.id, "responses:formid")
     compare(table.name, { en: "Form" })
 
-  it "adds form join to entity", ->
+  it "adds form join to entity for site question", ->
     # Add water point table
     schema = new Schema()
     schema = schema.addTable({
@@ -64,6 +64,143 @@ describe "FormSchemaBuilder addForm", ->
     assert.equal column.type, "join"
     assert.equal column.join.type, "1-n"
     assert.equal column.join.toTable, "responses:formid"
+    # {to}._id = any(
+    #  (with rjcte as 
+    #    (select responses.data #>>'{site1,value,code}' as value, responses._id as response from responses where form = 'formid' order by 2)
+    #  select rj.response from rjcte as rj where rj.value = {from}.code)))
+    compare column.join.jsonql, {
+      type: "op"
+      op: "="
+      modifier: "any"
+      exprs: [
+        { type: "field", tableAlias: "{to}", column: "_id" }
+        {
+          type: "scalar"
+          withs: [
+            {
+              query: {
+                type: "query"
+                selects: [
+                  {
+                    expr: { type: "field", tableAlias: "responses", column: "_id" }
+                    alias: "response"
+                  }
+                  {
+                    expr: {
+                      type: "op"
+                      op: "#>>"
+                      exprs: [
+                        { type: "field", tableAlias: "responses", column: "data" }
+                        "{site1,value,code}"
+                      ]
+                    }
+                    alias: "value"
+                  }
+                ]
+                from: { type: "table", table: "responses", alias: "responses" }
+                where: { type: "op", op: "=", exprs: [
+                  { type: "field", tableAlias: "responses", column: "form" }
+                  "formid"
+                  ]}
+                orderBy: [{ ordinal: 2 }]
+              }
+              alias: "rjcte"
+            }
+          ]
+          expr: { type: "field", tableAlias: "rj", column: "response" }
+          from: { type: "table", table: "rjcte", alias: "rj" }
+          where: { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "rj", column: "value" }, { type: "field", tableAlias: "{from}", column: "code" }]}
+        }
+      ]
+    }
+
+  it "adds form join to entity for entity question", ->
+    # Add water point table
+    schema = new Schema()
+    schema = schema.addTable({
+      id: "entities.water_point"
+      name: { en: "Water Points" }
+      contents: [
+        { id: "name", name: { en: "Name" }, type: "text" }
+      ]
+    })
+
+    # Add form with one site question
+    form = {
+      _id: "formid"
+      design: {
+        _type: "Form"
+        name: { en: "Form" }
+        contents: [
+          { 
+            _id: "entity1"
+            _type: "EntityQuestion" 
+            text: { en: "Entity1" }
+            entityType: "water_point"
+          } 
+        ]
+      }
+    }
+
+    schema = new FormSchemaBuilder().addForm(schema, form)
+
+    # Check that join to form is present
+    column = schema.getColumn("entities.water_point", "responses:formid:data:entity1:value")
+    assert column, "Column should exist"
+    assert.equal column.name.en, "Form: Entity1"
+    assert.equal column.type, "join"
+    assert.equal column.join.type, "1-n"
+    assert.equal column.join.toTable, "responses:formid"
+    # {to}._id = any(
+    #  (with rjcte as 
+    #    (select responses.data #>>'{entity1,value}' as value, responses._id as response from responses where form = 'formid' order by 2)
+    #  select rj.response from rjcte as rj where rj.value = {from}._id)))
+    compare column.join.jsonql, {
+      type: "op"
+      op: "="
+      modifier: "any"
+      exprs: [
+        { type: "field", tableAlias: "{to}", column: "_id" }
+        {
+          type: "scalar"
+          withs: [
+            {
+              query: {
+                type: "query"
+                selects: [
+                  {
+                    expr: { type: "field", tableAlias: "responses", column: "_id" }
+                    alias: "response"
+                  }
+                  {
+                    expr: {
+                      type: "op"
+                      op: "#>>"
+                      exprs: [
+                        { type: "field", tableAlias: "responses", column: "data" }
+                        "{entity1,value}"
+                      ]
+                    }
+                    alias: "value"
+                  }
+                ]
+                from: { type: "table", table: "responses", alias: "responses" }
+                where: { type: "op", op: "=", exprs: [
+                  { type: "field", tableAlias: "responses", column: "form" }
+                  "formid"
+                  ]}
+                orderBy: [{ ordinal: 2 }]
+              }
+              alias: "rjcte"
+            }
+          ]
+          expr: { type: "field", tableAlias: "rj", column: "response" }
+          from: { type: "table", table: "rjcte", alias: "rj" }
+          where: { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "rj", column: "value" }, { type: "field", tableAlias: "{from}", column: "_id" }]}
+        }
+      ]
+    }
+
 
   it "adds structure", ->
     # Create form
