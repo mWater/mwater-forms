@@ -1163,7 +1163,7 @@ module.exports = class FormSchemaBuilder
               id: "data:#{item._id}:specify:#{choice.id}"
               type: "text"
               name: appendStr(appendStr(appendStr(item.text, " ("), choice.label), ")")
-              code: if code then code + " (#{if choice.code then choice.code else formUtils.localizeString(choice.label)})"
+              code: if code then code + " (#{if choice.code then choice.code else formUtils.localizeString(choice.label)}) - specify"
               jsonql: {
                 type: "op"
                 op: "#>>"
