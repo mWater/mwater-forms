@@ -1162,8 +1162,8 @@ module.exports = class FormSchemaBuilder
             column = {
               id: "data:#{item._id}:specify:#{choice.id}"
               type: "text"
-              name: appendStr(appendStr(appendStr(item.text, " ("), choice.label), ")")
-              code: if code then code + " (#{if choice.code then choice.code else formUtils.localizeString(choice.label)}) - specify"
+              name: appendStr(appendStr(appendStr(item.text, " ("), choice.label), ") - specify")
+              code: if code then code + " (#{if choice.code then choice.code else formUtils.localizeString(choice.label)})"
               jsonql: {
                 type: "op"
                 op: "#>>"

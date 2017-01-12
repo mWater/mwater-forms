@@ -246,7 +246,7 @@ describe "FormSchemaBuilder addForm", ->
         { 
           id: "data:questionid:specify:yes"
           type: "text"
-          name: { _base: "en", en: "Question (Yes)" } 
+          name: { _base: "en", en: "Question (Yes) - specify" } 
           # data#>>'{questionid,specify,yes}''
           jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,specify,yes}"] }
         }
@@ -282,7 +282,7 @@ describe "FormSchemaBuilder addForm", ->
         { 
           id: "data:questionid:specify:yes"
           type: "text"
-          name: { _base: "en", en: "Question (Yes)" } 
+          name: { _base: "en", en: "Question (Yes) - specify" } 
           # data#>>'{questionid,specify,yes}''
           jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,specify,yes}"] }
         }
