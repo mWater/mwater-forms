@@ -90,7 +90,6 @@ module.exports = class FormSchemaBuilder
       # Add to entities table if it exists
       if schema.getTable(reverseJoin.table)
         schema = schema.addTable(update(schema.getTable(reverseJoin.table), { contents: { $push: [column] } }))
-        console.log "done"
 
     return schema
 
@@ -956,7 +955,7 @@ module.exports = class FormSchemaBuilder
             # Add reverse join if directly from responses table
             if tableId.match(/^responses:[^:]+$/)
               formId = tableId.split(":")[1]
-              
+
               # Use CTE for speed. Indexing with @> and entities field is still far too slow
               # {to}._id = any(
               #  (with rjcte as 
