@@ -5,11 +5,8 @@ module.exports = class EntitySchemaBuilder
   # Pass in:
   #   entityTypes: list of entity types objects
   #   properties: list of all properties objects (filtered to visible)
-  #   units: list of all units objects
-  #   user: current username
-  #   groups: current groups
   # Returns updated schema
-  addEntities: (schema, entityTypes, properties, units) ->
+  addEntities: (schema, entityTypes, properties) ->
     # Keep list of reverse join columns (one to many) to add later. table and column
     reverseJoins = []
     for prop in properties
@@ -75,24 +72,7 @@ module.exports = class EntitySchemaBuilder
 
         deprecated = prop.deprecated
 
-        if prop.type == "measurement"
-          # Add magnitude and units
-          contents.push({
-            id: prop.code + ".magnitude"
-            name: appendStr(prop.name, " (magnitude)")
-            type: "number"
-            deprecated: deprecated
-          })
-
-          contents.push({
-            id: prop.code + ".unit"
-            name: appendStr(prop.name, " (units)")
-            type: "enum"
-            enumValues: _.map(prop.units, (u) -> { id: u, name: _.findWhere(units, { code: u }).name })
-            deprecated: deprecated
-          })
-
-        else if prop.type == "entity"
+        if prop.type == "entity"
           # Check if referenced entity is deprecated
           refEntityType = _.findWhere(entityTypes, code: prop.ref_entity_type)
 
