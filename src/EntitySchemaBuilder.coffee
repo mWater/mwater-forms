@@ -42,11 +42,11 @@ module.exports = class EntitySchemaBuilder
 
       # Add properties
       contents = mapTree(entityType.properties, (prop) =>
-        prop = _.clone(prop)
-
         # Use unique code as label
         if prop.uniqueCode
           labelColumn = prop.id
+
+        prop = _.pick(prop, "id", "name", "code", "desc", "type", "idTable", "enumValues")
 
         # Don't include roles
         delete prop.roles

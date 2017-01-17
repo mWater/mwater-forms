@@ -7,7 +7,7 @@ canonical = require 'canonical-json'
 compare = (actual, expected) ->
   assert.equal canonical(actual), canonical(expected), "\n" + canonical(actual) + "\n" + canonical(expected) + "\n"
 
-describe.only "EntitySchemaBuilder addEntities", ->
+describe "EntitySchemaBuilder addEntities", ->
   it "adds properties", ->
     entityTypes = [
       {
