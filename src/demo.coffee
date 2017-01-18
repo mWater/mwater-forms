@@ -145,18 +145,19 @@ class DemoComponent extends React.Component
         }
       )
 
-class ImageUploaderTestComponent extends React.Component
-  render: ->
-    R ImageUploaderModalComponent, 
-      T: window.T
-      apiUrl: "http://localhost:1234/v3/"
-      onSuccess: (id) => console.log(id)
-      onCancel: => console.log "Cancel"
+# class ImageUploaderTestComponent extends React.Component
+#   render: ->
+#     R ImageUploaderModalComponent, 
+#       T: window.T
+#       apiUrl: "http://localhost:1234/v3/"
+#       onSuccess: (id) => console.log(id)
+#       onCancel: => console.log "Cancel"
 
 
 $ ->
-  # ReactDOM.render(R(DemoComponent), document.getElementById("main"))
-  ReactDOM.render(R(ImageUploaderTestComponent), document.getElementById("main"))
+  ReactDOM.render(R(DemoComponent), document.getElementById("main"))
+  ImageUploaderModalComponent.show("http://localhost:1234/v3/", null, window.T, (id) -> alert(id))
+  # ReactDOM.render(R(ImageUploaderTestComponent), document.getElementById("main"))
 
 rosterFormDesign = {
   "_type": "Form",

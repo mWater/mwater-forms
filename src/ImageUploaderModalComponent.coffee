@@ -24,6 +24,18 @@ module.exports = class ImageUploaderModalComponent extends React.Component
       percentComplete: null # Percent upload completed
     }
 
+  # Static function to show modal easily
+  @show: (apiUrl, client, T, success) =>
+    ModalPopupComponent.show (onClose) =>
+      R ImageUploaderModalComponent,
+        apiUrl: apiUrl
+        client: client
+        T: T
+        onCancel: onClose
+        onSuccess: (id) =>
+          onClose()
+          success(id)
+
   handleUploadProgress: (evt) =>
     if evt.lengthComputable
       percentComplete = Math.round(evt.loaded * 100 / evt.total)
