@@ -474,6 +474,30 @@
     {
       "_base": "en",
       "en": "Error saving data"
+    },
+    {
+      "_base": "en",
+      "en": "Upload failed: {0}"
+    },
+    {
+      "_base": "en",
+      "en": "Error uploading file"
+    },
+    {
+      "_base": "en",
+      "en": "Upload cancelled"
+    },
+    {
+      "_base": "en",
+      "en": "Image must be a jpeg file"
+    },
+    {
+      "_base": "en",
+      "en": "Uploading Image..."
+    },
+    {
+      "_base": "en",
+      "en": "Upload Image"
     }
   ]
 }
