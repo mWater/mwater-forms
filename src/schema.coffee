@@ -12,6 +12,9 @@ deployments = {
       # True if deployment is accepting new responses
       active: { type: "boolean" }
 
+      # True if deployment is public (anonymous responses allowed)
+      public: { type: "boolean" }
+
       # List of ids of users and groups who can complete form. i.e. user:<username> or group:<groupname>
       enumerators: { type: "array", items: { type: "string" } }
 
