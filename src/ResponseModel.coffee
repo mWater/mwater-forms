@@ -1,6 +1,5 @@
 _ = require 'lodash'
 formUtils = require './formUtils'
-uuid = require 'node-uuid'
 
 # Model of a response object that allows manipulation and asking of questions
 # Options are:

@@ -1,6 +1,5 @@
 _ = require 'lodash'
 formUtils = require './formUtils'
-uuid = require 'node-uuid'
 
 # Model of an assignment object that allows manipulation
 # Options are:

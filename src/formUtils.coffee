@@ -1,9 +1,9 @@
 _ = require 'lodash'
 localizations = require '../localizations.json'
-uuid = require 'node-uuid'
+uuid = require 'uuid'
 
 # Create ~ 128-bit uid without dashes
-exports.createUid = -> uuid.v4().replace(/-/g, "")
+exports.createUid = -> uuid().replace(/-/g, "")
 
 # Create short unique id, with ~42 bits randomness to keep unique amoung a few choices
 exports.createShortUid = ->
