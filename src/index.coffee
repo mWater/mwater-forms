@@ -32,6 +32,8 @@ exports.AssignmentModel = require './AssignmentModel'
 exports.ResponseDataExprValueUpdater = require './ResponseDataExprValueUpdater'
 exports.ResponseRow = require './ResponseRow'
 
+exports.ImageUploaderModalComponent = require './ImageUploaderModalComponent'
+
 exports.schemaVersion = 17 # Version of the schema that this package supports (cannot compile if higher)
 exports.minSchemaVersion = 1 # Minimum version of forms schema that can be compiled
 

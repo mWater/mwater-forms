@@ -11,6 +11,8 @@ ItemListComponent = require './ItemListComponent'
 ResponseDisplayComponent = require './ResponseDisplayComponent'
 Schema = require('mwater-expressions').Schema
 FormSchemaBuilder = require './FormSchemaBuilder'
+ImageUploaderModalComponent = require './ImageUploaderModalComponent'
+
 
 # Setup mock localizer
 global.T = (str) ->
@@ -143,9 +145,18 @@ class DemoComponent extends React.Component
         }
       )
 
+class ImageUploaderTestComponent extends React.Component
+  render: ->
+    R ImageUploaderModalComponent, 
+      T: window.T
+      apiUrl: "http://localhost:1234/v3/"
+      onSuccess: (id) => console.log(id)
+      onCancel: => console.log "Cancel"
+
 
 $ ->
-  ReactDOM.render(R(DemoComponent), document.getElementById("main"))
+  # ReactDOM.render(R(DemoComponent), document.getElementById("main"))
+  ReactDOM.render(R(ImageUploaderTestComponent), document.getElementById("main"))
 
 rosterFormDesign = {
   "_type": "Form",
