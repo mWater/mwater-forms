@@ -4,162 +4,84 @@ _ = require 'lodash'
 module.exports = class EntitySchemaBuilder  
   # Pass in:
   #   entityTypes: list of entity types objects
-  #   properties: list of all properties objects (filtered to visible)
   # Returns updated schema
-  addEntities: (schema, entityTypes, properties) ->
+  addEntities: (schema, entityTypes) ->
     # Keep list of reverse join columns (one to many) to add later. table and column
     reverseJoins = []
-    for prop in properties
-      if prop.type == "entity"
-        # Lookup entity type 
-        entityType = _.findWhere(entityTypes, code: prop.entity_type)
-        if entityType
-          tableId = "entities.#{entityType.code}"
+
+    # For each entity type, finding reverse joins
+    for entityType in entityTypes
+      mapTree entityType.properties, (prop) =>
+        if prop.type == "id" and prop.idTable.match(/^entities\./)
+          entityCode = prop.idTable.split(".")[1]
+
+          # Check that exists
+          if not _.findWhere(entityTypes, code: entityCode)
+            return
 
           reverseJoins.push({
-            table: "entities." + prop.ref_entity_type
+            table: prop.idTable
             column: {
-              id: "!#{tableId}.#{prop.code}"
+              id: "!entities.#{entityType.code}.#{prop.id}"
               name: entityType.name
               deprecated: prop.deprecated or entityType.deprecated
               type: "join"
               join: {
                 type: "1-n"
-                toTable: tableId
+                toTable: "entities.#{entityType.code}"
                 fromColumn: "_id"
-                toColumn: prop.code
+                toColumn: prop.id
               }
             }
           })
 
     # For each entity type
     for entityType in entityTypes
-      # Columns and sections
-      contents = []
-
       # Get label column
       labelColumn = null
 
-      # Make filtered copy
-      entityProps = _.cloneDeep(_.filter(properties, (prop) -> prop.entity_type == entityType.code))
-
-      # Sort obvious ones to top
-      ordering = {
-        name: 1
-        desc: 2
-        type: 3
-        admin_region: 4
-        location: 5
-        code: 6
-      }
-
-      entityProps = _.sortBy(entityProps, (prop) -> ordering[prop.code] or 999)
-
       # Add properties
-      for prop in entityProps
-        # Fix names and descriptions pending a re-write of properties
-        if prop.code == "location"
-          prop.name = { _base: "en", en: "GPS Coordinates"}
-          prop.desc = { _base: "en", en: "Latitude/longitude of the site. Use 'Location' instead for filtering by country, state, etc."}
-
-        if prop.code == "admin_region"
-          prop.name = { _base: "en", en: "Location"}
-          prop.desc = { _base: "en", en: "Administrative region (country, state/province, district, village etc.)"}
-
+      contents = mapTree(entityType.properties, (prop) =>
         # Use unique code as label
-        if prop.unique_code
-          labelColumn = prop.code
+        if prop.uniqueCode
+          labelColumn = prop.id
 
-        deprecated = prop.deprecated
+        prop = _.pick(prop, "id", "name", "code", "desc", "type", "idTable", "enumValues")
 
-        if prop.type == "entity"
-          # Check if referenced entity is deprecated
-          refEntityType = _.findWhere(entityTypes, code: prop.ref_entity_type)
+        # Don't include roles
+        delete prop.roles
 
-          # Add two joins (to and from)
-          contents.push({ 
-            id: "#{prop.code}"
-            name: prop.name
-            desc: prop.desc
-            type: "join"
-            deprecated: deprecated or refEntityType.deprecated
-            join: {
-              type: "n-1"
-              toTable: "entities." + prop.ref_entity_type
-              fromColumn: prop.code
-              toColumn: "_id"
-            }
-          })
+        # Convert id to join
+        if prop.type == "id"
+          prop.type = "join"
+          prop.join = {
+            type: "n-1"
+            toTable: prop.idTable
+            fromColumn: prop.id
+            toColumn: "_id"
+          }
+          delete prop.idTable
 
-        else if prop.type in ["enum", "enumset"]
-          contents.push({
-            id: prop.code
-            name: prop.name
-            desc: prop.desc
-            type: prop.type
-            enumValues: _.map(prop.values, (v) -> { id: v.code, name: v.name })
-            deprecated: deprecated
-          })
+        # Pad date fields
+        if prop.type == "date"
+          # rpad(field ,10, '-01-01')
+          prop.jsonql = {
+            type: "op"
+            op: "rpad"
+            exprs:[
+              {
+                type: "field"
+                tableAlias: "{alias}"
+                column: prop.id
+              }
+              10
+              '-01-01'
+            ]
+          }
 
-        # integer and decimal will eventually become number
-        else if prop.type in ["integer", "decimal", "number"]
-          contents.push({
-            id: prop.code
-            name: prop.name
-            desc: prop.desc
-            type: "number"
-            deprecated: deprecated
-          })
+        return prop
+        )
 
-        # date is padded to yyyy-mm-dd
-        else if prop.type == "date"
-          contents.push({
-            id: prop.code
-            name: prop.name
-            desc: prop.desc
-            type: "date"
-            deprecated: deprecated
-            # rpad(field ,10, '-01-01')
-            jsonql: {
-              type: "op"
-              op: "rpad"
-              exprs:[
-                {
-                  type: "field"
-                  tableAlias: "{alias}"
-                  column: prop.code
-                }
-                10
-                '-01-01'
-              ]
-            }
-          })
-
-        # admin_region is a join
-        else if prop.type == "admin_region"
-          contents.push({
-            id: prop.code
-            name: prop.name
-            desc: prop.desc
-            type: "join"
-            join: {
-              type: "n-1"
-              toTable: "admin_regions"
-              fromColumn: prop.code
-              toColumn: "_id"
-            }
-            deprecated: deprecated
-          })
-
-        else if prop.type not in ['json']
-          contents.push({
-            id: prop.code
-            name: prop.name
-            desc: prop.desc
-            type: prop.type
-            enumValues: prop.values
-            deprecated: deprecated
-          })
 
       # Add extra columns
       contents.push({
@@ -260,4 +182,21 @@ appendStr = (str, suffix) ->
         output[key] = value + suffix
       else
         output[key] = value + (suffix[key] or suffix[suffix._base] or suffix.en)
+  return output
+
+# Map a tree that consists of items with optional 'contents' array. null means to discard item
+mapTree = (tree, func) ->
+  if not tree
+    return tree
+
+  if _.isArray(tree)
+    return _.map(tree, (item) -> mapTree(item, func))
+
+  # Map item
+  output = func(tree)
+
+  # Map contents
+  if tree.contents
+    output.contents = _.compact(_.map(tree.contents, (item) -> func(item)))
+
   return output
