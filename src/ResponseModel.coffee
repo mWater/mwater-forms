@@ -255,6 +255,10 @@ module.exports = class ResponseModel
 
   # Determine if can reject response
   canReject: ->
+    # Cannot reject anonymous responses
+    if not @response.user 
+      return false
+
     deployment = _.findWhere(@form.deployments, { _id: @response.deployment })
     if not deployment
       throw new Error("No matching deployments for #{@form._id} user #{@username}")
