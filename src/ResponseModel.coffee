@@ -174,9 +174,15 @@ module.exports = class ResponseModel
     if deployment.active
       if @response.status == 'final' and not deployment.enumeratorAdminFinal
         admins = []
-        viewers = ["user:" + @response.user]
+        if @response.user
+          viewers = ["user:" + @response.user]
+        else
+          viewers = []
       else
-        admins = ["user:" + @response.user]
+        if @response.user
+          admins = ["user:" + @response.user]
+        else
+          admins = []
         viewers = []
     else
       admins = []
