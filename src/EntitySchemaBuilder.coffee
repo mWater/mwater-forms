@@ -1,4 +1,5 @@
 _ = require 'lodash'
+formUtils = require './formUtils'
 
 # Builds schema for entities. Always add entities before forms
 module.exports = class EntitySchemaBuilder  
@@ -144,6 +145,15 @@ module.exports = class EntitySchemaBuilder
             ]
           }
         }
+      })
+
+      # Add related forms placeholder section
+      contents.push({
+        type: "section"
+        id: "!related_forms"
+        name: { en: "Related Forms" }
+        desc: { en: "Forms (surveys) that are linked by a question to #{formUtils.localizeString(entityType.name)}" }
+        contents: []
       })
 
       tableId = "entities.#{entityType.code}"

@@ -95,7 +95,7 @@ module.exports = class FormSchemaBuilder
         # Create related forms section
         sectionIndex = _.findIndex(table.contents, (item) -> item.id == "!related_forms")
         if sectionIndex < 0
-          # Add section
+          # Add section (this should already be added in for all entities. Add to be safe)
           section = {
             type: "section"
             id: "!related_forms"
