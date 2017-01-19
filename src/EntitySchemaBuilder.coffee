@@ -41,7 +41,7 @@ module.exports = class EntitySchemaBuilder
       labelColumn = null
 
       # Add properties
-      contents = mapTree(entityType.properties, (prop) =>
+      contents = mapTree(entityType.properties or [], (prop) =>
         # Use unique code as label
         if prop.uniqueCode
           labelColumn = prop.id
