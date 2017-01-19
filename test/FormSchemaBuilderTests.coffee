@@ -57,6 +57,11 @@ describe "FormSchemaBuilder addForm", ->
 
     schema = new FormSchemaBuilder().addForm(schema, form)
 
+    # Check that section exists
+    section = _.findWhere(schema.getTable("entities.water_point").contents, { id: "!related_forms" })
+    assert section
+    assert.equal section.contents.length, 1
+
     # Check that join to form is present
     column = schema.getColumn("entities.water_point", "responses:formid:data:site1:value")
     assert column, "Column should exist"

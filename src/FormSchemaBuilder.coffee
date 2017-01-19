@@ -81,6 +81,7 @@ module.exports = class FormSchemaBuilder
  
   # Add joins back from entities to site and entity questions
   # reverseJoins: list of joins in format: { table: destination table, column: join column to add }
+  # Adds to section with id "!related_forms" with name "Related Forms"
   addReverseJoins: (schema, form, reverseJoins) ->
     for reverseJoin in reverseJoins
       # Prefix form name, since it was not available when join was created
@@ -89,7 +90,28 @@ module.exports = class FormSchemaBuilder
 
       # Add to entities table if it exists
       if schema.getTable(reverseJoin.table)
-        schema = schema.addTable(update(schema.getTable(reverseJoin.table), { contents: { $push: [column] } }))
+        table = schema.getTable(reverseJoin.table)
+
+        # Create related forms section
+        sectionIndex = _.findIndex(table.contents, (item) -> item.id == "!related_forms")
+        if sectionIndex < 0
+          # Add section
+          section = {
+            type: "section"
+            id: "!related_forms"
+            name: { en: "Related Forms" }
+            desc: { en: "Forms (surveys) that are linked by a question to #{table.name.en}" }
+            contents: []
+          }
+          table = update(table, { contents: { $push: [section] }})
+          sectionIndex = _.findIndex(table.contents, (item) -> item.id == "!related_forms")
+
+          # Add join
+          section = update(table.contents[sectionIndex], { contents: { $push: [column] } })
+          table = update(table, { contents: { $splice: [[sectionIndex, 1, section]] }})
+
+          # Replace table
+          schema = schema.addTable(table)
 
     return schema
 
