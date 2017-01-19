@@ -46,7 +46,7 @@ module.exports = class EntitySchemaBuilder
         if prop.uniqueCode
           labelColumn = prop.id
 
-        prop = _.pick(prop, "id", "name", "code", "desc", "type", "idTable", "enumValues")
+        prop = _.pick(prop, "id", "name", "code", "desc", "type", "idTable", "enumValues", "deprecated")
 
         # Don't include roles
         delete prop.roles
