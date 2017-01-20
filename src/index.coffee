@@ -4,7 +4,6 @@ _ = require 'lodash'
 exports.ImageEditorComponent = require './ImageEditorComponent'
 exports.ImagelistEditorComponent = require './ImagelistEditorComponent'
 exports.ResponseAnswersComponent = require './ResponseAnswersComponent'
-exports.LocationView = require './legacy/LocationView'
 
 exports.formUtils = require './formUtils'
 exports.conditionUtils = require './conditionUtils'
