@@ -106,12 +106,12 @@ module.exports = class FormSchemaBuilder
           table = update(table, { contents: { $push: [section] }})
           sectionIndex = _.findIndex(table.contents, (item) -> item.id == "!related_forms")
 
-          # Add join
-          section = update(table.contents[sectionIndex], { contents: { $push: [column] } })
-          table = update(table, { contents: { $splice: [[sectionIndex, 1, section]] }})
+        # Add join
+        section = update(table.contents[sectionIndex], { contents: { $push: [column] } })
+        table = update(table, { contents: { $splice: [[sectionIndex, 1, section]] }})
 
-          # Replace table
-          schema = schema.addTable(table)
+        # Replace table
+        schema = schema.addTable(table)
 
     return schema
 
