@@ -881,53 +881,32 @@ module.exports = class FormSchemaBuilder
           if tableId.match(/^responses:[^:]+$/)
             formId = tableId.split(":")[1]
 
-            # Use CTE for speed. Indexing with @> and entities field is still far too slow
-            # {to}._id = any(
-            #  (with rjcte as 
-            #    (select responses.data #>>'{de057801c0ba451bac5bab9e1e0402b2,value,code}' as value, responses._id as response from responses where form = '269cda7d99a0469b9bebd297bb3ef8f1' order by 2)
-            #  select rj.response from rjcte as rj where rj.value = {from}.code)))
+            # Use {to}.entities @> jsonb_build_array(jsonb_build_object('question', 'site1', 'entityType', 'water_point', 'property', 'code', 'value', {from}.code))
+            # for indexed speed
             jsonql = {
               type: "op"
-              op: "="
-              modifier: "any"
+              op: "@>"
               exprs: [
-                { type: "field", tableAlias: "{to}", column: "_id" }
+                { type: "field", tableAlias: "{to}", column: "entities" }
                 {
-                  type: "scalar"
-                  withs: [
+                  type: "op"
+                  op: "jsonb_build_array"
+                  exprs: [
                     {
-                      query: {
-                        type: "query"
-                        selects: [
-                          {
-                            expr: { type: "field", tableAlias: "responses", column: "_id" }
-                            alias: "response"
-                          }
-                          {
-                            expr: {
-                              type: "op"
-                              op: "#>>"
-                              exprs: [
-                                { type: "field", tableAlias: "responses", column: "data" }
-                                "{#{item._id},value,code}"
-                              ]
-                            }
-                            alias: "value"
-                          }
-                        ]
-                        from: { type: "table", table: "responses", alias: "responses" }
-                        where: { type: "op", op: "=", exprs: [
-                          { type: "field", tableAlias: "responses", column: "form" }
-                          formId
-                          ]}
-                        orderBy: [{ ordinal: 2 }]
-                      }
-                      alias: "rjcte"
+                      type: "op"
+                      op: "jsonb_build_object"
+                      exprs: [
+                        "question"
+                        item._id
+                        "entityType"
+                        entityType
+                        "property"
+                        "code"
+                        "value"
+                        { type: "field", tableAlias: "{from}", column: "code" }
+                      ]
                     }
                   ]
-                  expr: { type: "field", tableAlias: "rj", column: "response" }
-                  from: { type: "table", table: "rjcte", alias: "rj" }
-                  where: { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "rj", column: "value" }, { type: "field", tableAlias: "{from}", column: "code" }]}
                 }
               ]
             }
@@ -978,59 +957,36 @@ module.exports = class FormSchemaBuilder
             if tableId.match(/^responses:[^:]+$/)
               formId = tableId.split(":")[1]
 
-              # Use CTE for speed. Indexing with @> and entities field is still far too slow
-              # {to}._id = any(
-              #  (with rjcte as 
-              #    (select responses.data #>>'{de057801c0ba451bac5bab9e1e0402b2,value}' as value, responses._id as response from responses where form = '269cda7d99a0469b9bebd297bb3ef8f1' order by 2)
-              #  select rj.response from rjcte as rj where rj.value = {from}._id)))
+              # Use {to}.entities @> jsonb_build_array(jsonb_build_object('question', 'site1', 'entityType', 'water_point', 'property', '_id', 'value', {from}._id))
+              # for indexed speed
               jsonql = {
                 type: "op"
-                op: "="
-                modifier: "any"
+                op: "@>"
                 exprs: [
-                  { type: "field", tableAlias: "{to}", column: "_id" }
+                  { type: "field", tableAlias: "{to}", column: "entities" }
                   {
-                    type: "scalar"
-                    withs: [
+                    type: "op"
+                    op: "jsonb_build_array"
+                    exprs: [
                       {
-                        query: {
-                          type: "query"
-                          selects: [
-                            {
-                              expr: { type: "field", tableAlias: "responses", column: "_id" }
-                              alias: "response"
-                            }
-                            {
-                              expr: {
-                                type: "op"
-                                op: "#>>"
-                                exprs: [
-                                  { type: "field", tableAlias: "responses", column: "data" }
-                                  "{#{item._id},value}"
-                                ]
-                              }
-                              alias: "value"
-                            }
-                          ]
-                          from: { type: "table", table: "responses", alias: "responses" }
-                          where: { type: "op", op: "=", exprs: [
-                            { type: "field", tableAlias: "responses", column: "form" }
-                            formId
-                            ]}
-                          orderBy: [{ ordinal: 2 }]
-                        }
-                        alias: "rjcte"
+                        type: "op"
+                        op: "jsonb_build_object"
+                        exprs: [
+                          "question"
+                          item._id
+                          "entityType"
+                          item.entityType
+                          "property"
+                          "_id"
+                          "value"
+                          { type: "field", tableAlias: "{from}", column: "_id" }
+                        ]
                       }
                     ]
-                    expr: { type: "field", tableAlias: "rj", column: "response" }
-                    from: { type: "table", table: "rjcte", alias: "rj" }
-                    where: { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "rj", column: "value" }, { type: "field", tableAlias: "{from}", column: "_id" }]}
                   }
                 ]
               }
 
-              # Use {to}.entities @> jsonb_build_object('questionId', 'site1', 'entityType', 'water_point', 'property', '_id', 'value', {from}._id)
-              # for indexed speed
               reverseJoin = {
                 table: "entities.#{item.entityType}"
                 column: {

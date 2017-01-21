@@ -69,52 +69,15 @@ describe "FormSchemaBuilder addForm", ->
     assert.equal column.type, "join"
     assert.equal column.join.type, "1-n"
     assert.equal column.join.toTable, "responses:formid"
-    # {to}._id = any(
-    #  (with rjcte as 
-    #    (select responses.data #>>'{site1,value,code}' as value, responses._id as response from responses where form = 'formid' order by 2)
-    #  select rj.response from rjcte as rj where rj.value = {from}.code)))
+    # Use {to}.entities @> jsonb_build_array(jsonb_build_object('question', 'site1', 'entityType', 'water_point', 'property', '_id', 'value', {from}._id))
     compare column.join.jsonql, {
       type: "op"
-      op: "="
-      modifier: "any"
+      op: "@>"
       exprs: [
-        { type: "field", tableAlias: "{to}", column: "_id" }
-        {
-          type: "scalar"
-          withs: [
-            {
-              query: {
-                type: "query"
-                selects: [
-                  {
-                    expr: { type: "field", tableAlias: "responses", column: "_id" }
-                    alias: "response"
-                  }
-                  {
-                    expr: {
-                      type: "op"
-                      op: "#>>"
-                      exprs: [
-                        { type: "field", tableAlias: "responses", column: "data" }
-                        "{site1,value,code}"
-                      ]
-                    }
-                    alias: "value"
-                  }
-                ]
-                from: { type: "table", table: "responses", alias: "responses" }
-                where: { type: "op", op: "=", exprs: [
-                  { type: "field", tableAlias: "responses", column: "form" }
-                  "formid"
-                  ]}
-                orderBy: [{ ordinal: 2 }]
-              }
-              alias: "rjcte"
-            }
+        { type: "field", tableAlias: "{to}", column: "entities" }
+        { type: "op", op: "jsonb_build_array", exprs: [
+          { type: "op", op: "jsonb_build_object", exprs: ['question', 'site1', 'entityType', 'water_point', 'property', 'code', 'value', { type: "field", tableAlias: "{from}", column: "code" }] }
           ]
-          expr: { type: "field", tableAlias: "rj", column: "response" }
-          from: { type: "table", table: "rjcte", alias: "rj" }
-          where: { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "rj", column: "value" }, { type: "field", tableAlias: "{from}", column: "code" }]}
         }
       ]
     }
@@ -156,56 +119,18 @@ describe "FormSchemaBuilder addForm", ->
     assert.equal column.type, "join"
     assert.equal column.join.type, "1-n"
     assert.equal column.join.toTable, "responses:formid"
-    # {to}._id = any(
-    #  (with rjcte as 
-    #    (select responses.data #>>'{entity1,value}' as value, responses._id as response from responses where form = 'formid' order by 2)
-    #  select rj.response from rjcte as rj where rj.value = {from}._id)))
+    # Use {to}.entities @> jsonb_build_array(jsonb_build_object('question', 'site1', 'entityType', 'water_point', 'property', '_id', 'value', {from}._id))
     compare column.join.jsonql, {
       type: "op"
-      op: "="
-      modifier: "any"
+      op: "@>"
       exprs: [
-        { type: "field", tableAlias: "{to}", column: "_id" }
-        {
-          type: "scalar"
-          withs: [
-            {
-              query: {
-                type: "query"
-                selects: [
-                  {
-                    expr: { type: "field", tableAlias: "responses", column: "_id" }
-                    alias: "response"
-                  }
-                  {
-                    expr: {
-                      type: "op"
-                      op: "#>>"
-                      exprs: [
-                        { type: "field", tableAlias: "responses", column: "data" }
-                        "{entity1,value}"
-                      ]
-                    }
-                    alias: "value"
-                  }
-                ]
-                from: { type: "table", table: "responses", alias: "responses" }
-                where: { type: "op", op: "=", exprs: [
-                  { type: "field", tableAlias: "responses", column: "form" }
-                  "formid"
-                  ]}
-                orderBy: [{ ordinal: 2 }]
-              }
-              alias: "rjcte"
-            }
+        { type: "field", tableAlias: "{to}", column: "entities" }
+        { type: "op", op: "jsonb_build_array", exprs: [
+          { type: "op", op: "jsonb_build_object", exprs: ['question', 'entity1', 'entityType', 'water_point', 'property', '_id', 'value', { type: "field", tableAlias: "{from}", column: "_id" }] }
           ]
-          expr: { type: "field", tableAlias: "rj", column: "response" }
-          from: { type: "table", table: "rjcte", alias: "rj" }
-          where: { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "rj", column: "value" }, { type: "field", tableAlias: "{from}", column: "_id" }]}
         }
       ]
     }
-
 
   it "adds structure", ->
     # Create form
