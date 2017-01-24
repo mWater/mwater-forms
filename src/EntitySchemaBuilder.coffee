@@ -13,7 +13,7 @@ module.exports = class EntitySchemaBuilder
 
     # For each entity type, finding reverse joins
     for entityType in entityTypes
-      mapTree entityType.properties, (prop) =>
+      traverseTree entityType.properties, (prop) =>
         if propFilter and not propFilter(prop)
           return null
 
@@ -210,14 +210,19 @@ mapTree = (tree, func) ->
   if not tree
     return tree
 
-  if _.isArray(tree)
-    return _.map(tree, (item) -> mapTree(item, func))
+  return _.compact(_.map(tree, (item) ->
+    newItem = func(item)
+    if newItem and item.contents
+      newItem.contents = mapTree(item.contents, func)
+    return newItem
+  ))
 
-  # Map item
-  output = func(tree)
+# Traverse a tree, calling func for each item
+traverseTree = (tree, func) ->
+  if not tree
+    return
 
-  # Map contents
-  if tree.contents
-    output.contents = _.compact(_.map(tree.contents, (item) -> func(item)))
-
-  return output
+  for item in tree
+    func(item)
+    if item.contents
+      traverseTree(tree.contents, func)
