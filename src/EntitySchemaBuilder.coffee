@@ -5,14 +5,18 @@ formUtils = require './formUtils'
 module.exports = class EntitySchemaBuilder  
   # Pass in:
   #   entityTypes: list of entity types objects
+  #   propFilter: optional filter function that takes a property and returns true to include, false to exclude
   # Returns updated schema
-  addEntities: (schema, entityTypes) ->
+  addEntities: (schema, entityTypes, propFilter) ->
     # Keep list of reverse join columns (one to many) to add later. table and column
     reverseJoins = []
 
     # For each entity type, finding reverse joins
     for entityType in entityTypes
       mapTree entityType.properties, (prop) =>
+        if propFilter and not propFilter(prop)
+          return null
+
         if prop.type == "id" and prop.idTable.match(/^entities\./)
           entityCode = prop.idTable.split(".")[1]
 
@@ -43,6 +47,9 @@ module.exports = class EntitySchemaBuilder
 
       # Add properties
       contents = mapTree(entityType.properties or [], (prop) =>
+        if propFilter and not propFilter(prop)
+          return null
+
         # Use unique code as label
         if prop.uniqueCode
           labelColumn = prop.id
