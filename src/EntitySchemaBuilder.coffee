@@ -50,6 +50,10 @@ module.exports = class EntitySchemaBuilder
         if propFilter and not propFilter(prop)
           return null
 
+        # Sections are untouched unless filtered
+        if prop.type == "section"
+          return prop
+
         # Use unique code as label
         if prop.uniqueCode
           labelColumn = prop.id
