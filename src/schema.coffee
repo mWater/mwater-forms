@@ -15,6 +15,10 @@ deployments = {
       # True if deployment is public (anonymous responses allowed)
       public: { type: "boolean" }
 
+      # Contact name and email for person responsible for deployment. Used for public deployments
+      contactName: { type: "string" }
+      contactEmail: { type: "string" }
+
       # List of ids of users and groups who can complete form. i.e. user:<username> or group:<groupname>
       enumerators: { type: "array", items: { type: "string" } }
 
