@@ -68,7 +68,8 @@ module.exports = class DateTimePickerComponent extends React.Component
     # If format changed, recreate
     if nextProps.format != @props.format
       @destroyNativeComponent()
-      @createNativeComponent(nextProps)
+      _.defer () =>
+        @createNativeComponent(nextProps)
       return
 
     # If unchanged
