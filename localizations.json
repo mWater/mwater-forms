@@ -481,7 +481,8 @@
     },
     {
       "_base": "en",
-      "en": "Error uploading file"
+      "en": "Error uploading file",
+      "_unused": true
     },
     {
       "_base": "en",
@@ -498,6 +499,10 @@
     {
       "_base": "en",
       "en": "Upload Image"
+    },
+    {
+      "_base": "en",
+      "en": "Error uploading file. You must be connected to the Internet for image upload to work from a web browser."
     }
   ]
 }

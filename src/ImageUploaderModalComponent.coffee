@@ -52,7 +52,7 @@ module.exports = class ImageUploaderModalComponent extends React.Component
       @props.onCancel()
 
   handleUploadFailed: (evt) =>
-    alert(@props.T("Error uploading file"))
+    alert(@props.T("Error uploading file. You must be connected to the Internet for image upload to work from a web browser."))
     @props.onCancel()
 
   handleUploadCanceled: (evt) =>
