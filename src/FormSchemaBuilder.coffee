@@ -99,8 +99,8 @@ module.exports = class FormSchemaBuilder
           section = {
             type: "section"
             id: "!related_forms"
-            name: { en: "Related Forms" }
-            desc: { en: "Forms (surveys) that are linked by a question to #{table.name.en}" }
+            name: { en: "Related Surveys" }
+            desc: { en: "Surveys that are linked by a question to #{table.name.en}" }
             contents: []
           }
           table = update(table, { contents: { $push: [section] }})

@@ -99,7 +99,7 @@ module.exports = class EntitySchemaBuilder
       contents.push({
         id: "_managed_by"
         name: { en: "Managed By" }
-        desc: { en: "User or group that manages the data for the site"}
+        desc: { en: "User or group that manages the data for this #{formUtils.localizeString(entityType.name)}"}
         type: "join"
         join: {
           type: "n-1"
@@ -112,6 +112,7 @@ module.exports = class EntitySchemaBuilder
       contents.push({
         id: "_created_by"
         name: { en: "Added by user" }
+        desc: { en: "User that added this #{formUtils.localizeString(entityType.name)} to the database" }
         type: "join"
         join: {
           type: "n-1"
@@ -124,6 +125,7 @@ module.exports = class EntitySchemaBuilder
       contents.push({
         id: "_created_on"
         name: { en: "Date added" }
+        desc: { en: "Date that this #{formUtils.localizeString(entityType.name)} was added to the database" }
         type: "datetime"
       })
 
@@ -131,6 +133,7 @@ module.exports = class EntitySchemaBuilder
       contents.push({
         id: "!datasets"
         name: "Datasets"
+        desc: { en: "Datasets that this #{formUtils.localizeString(entityType.name)} is a part of" }
         type: "join"
         join: {
           type: "n-n"
@@ -162,8 +165,8 @@ module.exports = class EntitySchemaBuilder
       contents.push({
         type: "section"
         id: "!related_forms"
-        name: { en: "Related Forms" }
-        desc: { en: "Forms (surveys) that are linked by a question to #{formUtils.localizeString(entityType.name)}" }
+        name: { en: "Related Surveys" }
+        desc: { en: "Surveys that are linked by a question to #{formUtils.localizeString(entityType.name)}" }
         contents: []
       })
 
