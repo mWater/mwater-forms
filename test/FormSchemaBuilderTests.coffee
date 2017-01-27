@@ -448,7 +448,7 @@ describe "FormSchemaBuilder addForm", ->
         {
           id: "data:questionid:value:image"
           type: "image"
-          jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,image}"] }
+          jsonql: { type: "op", op: "#>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,image}"] }
         }
         {
           id: "data:questionid:value:cbt:c1"
@@ -1072,20 +1072,20 @@ describe "FormSchemaBuilder addForm", ->
         { 
           id: "data:questionid:value" 
           type: "image"
-          # data#>>'{questionid,value}'
-          jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }
+          # data#>'{questionid,value}'
+          jsonql: { type: "op", op: "#>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }
         }
       ])
 
-    it "image", ->
+    it "images", ->
       @testQuestion({ 
         _type: "ImagesQuestion" 
       }, [
         { 
           id: "data:questionid:value" 
           type: "imagelist"
-          # data#>>'{questionid,value}'
-          jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }
+          # data#>'{questionid,value}'
+          jsonql: { type: "op", op: "#>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }
         }
       ])
 

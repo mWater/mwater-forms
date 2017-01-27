@@ -672,7 +672,7 @@ module.exports = class FormSchemaBuilder
             code: if code then code + " (image)"
             jsonql: {
               type: "op"
-              op: "#>>"
+              op: "#>"
               exprs: [
                 { type: "field", tableAlias: "{alias}", column: "data" }
                 "{#{item._id},value,image}"
@@ -1030,7 +1030,7 @@ module.exports = class FormSchemaBuilder
             code: code
             jsonql: {
               type: "op"
-              op: "#>>"
+              op: "#>"
               exprs: [
                 { type: "field", tableAlias: "{alias}", column: "data" }
                 "{#{item._id},value}"
@@ -1048,7 +1048,7 @@ module.exports = class FormSchemaBuilder
             code: code
             jsonql: {
               type: "op"
-              op: "#>>"
+              op: "#>"
               exprs: [
                 { type: "field", tableAlias: "{alias}", column: "data" }
                 "{#{item._id},value}"
