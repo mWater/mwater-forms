@@ -32,6 +32,7 @@ module.exports = class MatrixAnswerComponent extends React.Component
 
     data: React.PropTypes.object      # Current data of response (for roster entry if in roster)
     responseRow: React.PropTypes.object    # ResponseRow object (for roster entry if in roster)
+    schema: React.PropTypes.object.isRequired  # Schema to use, including form
 
   constructor: ->
     super
@@ -129,6 +130,7 @@ module.exports = class MatrixAnswerComponent extends React.Component
       answer: cellAnswer
       onAnswerChange: @handleCellChange.bind(null, item, column)
       invalid: invalid?
+      schema: @props.schema
 
   renderItem: (item, index) ->
     H.tr key: index,

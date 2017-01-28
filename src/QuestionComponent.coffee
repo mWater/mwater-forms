@@ -436,6 +436,7 @@ module.exports = class QuestionComponent extends React.Component
           columns: @props.question.columns
           data: @props.data
           responseRow: @props.responseRow
+          schema: @props.schema
         }
 
       when "AquagenxCBTQuestion"
