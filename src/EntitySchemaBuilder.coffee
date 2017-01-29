@@ -228,4 +228,4 @@ traverseTree = (tree, func) ->
   for item in tree
     func(item)
     if item.contents
-      traverseTree(tree.contents, func)
+      traverseTree(item.contents, func)
