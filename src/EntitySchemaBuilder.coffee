@@ -183,6 +183,7 @@ module.exports = class EntitySchemaBuilder
         primaryKey: "_id"
         label: labelColumn
         contents: contents
+        deprecated: entityType.deprecated
       }
 
       # Legacy only
