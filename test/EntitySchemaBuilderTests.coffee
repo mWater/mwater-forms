@@ -85,6 +85,38 @@ describe "EntitySchemaBuilder addEntities", ->
       }
     })
 
+  it "adds reverse joins for entity references in a section", ->
+    entityTypes = [
+      {
+        code: "water_point"
+        name: { en: "Water point"}
+        properties: [
+          { id: "linked_sites", type: "section", name: { en: "Linked Sites" }, contents: [
+            { id: "community", type: "id", idTable: "entities.community", name: { en: "Community" }, roles: [{ id: "all", role: "admin" }] }
+          ]}
+        ]
+      }
+      {
+        code: "community"
+        name: { en: "Community"}
+        properties: []
+      }
+    ]
+    schema = new EntitySchemaBuilder().addEntities(new Schema(), entityTypes)
+
+    compare(schema.getColumn("entities.community", "!entities.water_point.community"), {
+      id: "!entities.water_point.community"
+      type: "join"
+      name: { en: "Water point"}
+      join: {
+        type: "1-n"
+        toTable: "entities.water_point"
+        fromColumn: "_id"
+        toColumn: "community"
+      }
+    })
+
+
   it "converts ids to joins", ->
     entityTypes = [
       {
