@@ -21,6 +21,12 @@ module.exports = class DateAnswerComponent extends React.Component
 
   constructor: (props) ->
     super
+    @updateState(props)
+
+  componentWillReceiveProps: (nextProps) =>
+    @updateState(nextProps)
+    
+  updateState: (props) =>
     format = props.format
     isoFormat = null
     if format.match /ss|LLL|lll/
