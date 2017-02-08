@@ -69,15 +69,27 @@ describe "FormSchemaBuilder addForm", ->
     assert.equal column.type, "join"
     assert.equal column.join.type, "1-n"
     assert.equal column.join.toTable, "responses:formid"
-    # Use {to}.entities @> jsonb_build_array(jsonb_build_object('question', 'site1', 'entityType', 'water_point', 'property', '_id', 'value', {from}._id))
+    # Use {to}._id in (select response from response_entities where question = 'site1' and "entityType" = 'water_point' and property = 'code' and value = {from}."code"))
     compare column.join.jsonql, {
       type: "op"
-      op: "@>"
+      op: "in"
       exprs: [
-        { type: "field", tableAlias: "{to}", column: "entities" }
-        { type: "op", op: "jsonb_build_array", exprs: [
-          { type: "op", op: "jsonb_build_object", exprs: ['question', 'site1', 'entityType', 'water_point', 'property', 'code', 'value', { type: "field", tableAlias: "{from}", column: "code" }] }
-          ]
+        { type: "field", tableAlias: "{to}", column: "_id" }
+        {
+          type: "scalar"
+          expr: { type: "field", tableAlias: "response_entities", column: "response" }
+          from: { type: "table", table: "response_entities", alias: "response_entities" }
+          where: {
+            type: "op"
+            op: "and"
+            exprs: [
+              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "question" }, "site1"] }
+              { type: "op", op: "is null", exprs: [{ type: "field", tableAlias: "response_entities", column: "roster" }] }
+              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "entityType" }, "water_point"] }
+              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "property" }, "code"] }
+              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "value" }, { type: "field", tableAlias: "{from}", column: "code" }] }
+            ]
+          }
         }
       ]
     }
@@ -119,15 +131,27 @@ describe "FormSchemaBuilder addForm", ->
     assert.equal column.type, "join"
     assert.equal column.join.type, "1-n"
     assert.equal column.join.toTable, "responses:formid"
-    # Use {to}.entities @> jsonb_build_array(jsonb_build_object('question', 'site1', 'entityType', 'water_point', 'property', '_id', 'value', {from}._id))
+    # Use {to}._id in (select response from response_entities where question = 'site1' and "entityType" = 'water_point' and property = '_id' and value = {from}."_id"))
     compare column.join.jsonql, {
       type: "op"
-      op: "@>"
+      op: "in"
       exprs: [
-        { type: "field", tableAlias: "{to}", column: "entities" }
-        { type: "op", op: "jsonb_build_array", exprs: [
-          { type: "op", op: "jsonb_build_object", exprs: ['question', 'entity1', 'entityType', 'water_point', 'property', '_id', 'value', { type: "field", tableAlias: "{from}", column: "_id" }] }
-          ]
+        { type: "field", tableAlias: "{to}", column: "_id" }
+        {
+          type: "scalar"
+          expr: { type: "field", tableAlias: "response_entities", column: "response" }
+          from: { type: "table", table: "response_entities", alias: "response_entities" }
+          where: {
+            type: "op"
+            op: "and"
+            exprs: [
+              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "question" }, "entity1"] }
+              { type: "op", op: "is null", exprs: [{ type: "field", tableAlias: "response_entities", column: "roster" }] }
+              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "entityType" }, "water_point"] }
+              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "property" }, "_id"] }
+              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "value" }, { type: "field", tableAlias: "{from}", column: "_id" }] }
+            ]
+          }
         }
       ]
     }
