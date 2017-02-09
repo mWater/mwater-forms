@@ -49,6 +49,9 @@ module.exports = class FormSchemaBuilder
 
     # Add submitted on
     contents.push({ id: "submittedOn", type: "datetime", name: { en: "Submitted On" } })
+    
+    # Add IpAddress
+    contents.push({ id: "ipAddress", type: "text", name: { en: "IP Address" } })
 
     conditionsExprCompiler = new ConditionsExprCompiler(form.design)
 
