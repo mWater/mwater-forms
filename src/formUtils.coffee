@@ -349,7 +349,7 @@ exports.updateLocalizations = (formDesign) ->
 
   # Add new localizations
   for str in localizations.strings
-    if str.en and not existing[str.en]
+    if str.en and not existing[str.en] and not str._unused
       formDesign.localizedStrings.push str
       existing[str.en] = true
 
