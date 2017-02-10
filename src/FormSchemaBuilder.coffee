@@ -16,12 +16,14 @@ module.exports = class FormSchemaBuilder
   addForm: (schema, form, cloneForms) ->
     contents = []
     
+    metadata = []
+
     # Get deployments
     deploymentValues = _.map(form.deployments, (dep) -> { id: dep._id, name: { en: dep.name } })
-    contents.push({ id: "deployment", type: "enum", name: { en: "Deployment" }, enumValues: deploymentValues })
+    metadata.push({ id: "deployment", type: "enum", name: { en: "Deployment" }, enumValues: deploymentValues })
 
     # Add user
-    contents.push({ 
+    metadata.push({ 
       id: "user"
       name: { en: "Enumerator" } 
       type: "join"
@@ -34,7 +36,7 @@ module.exports = class FormSchemaBuilder
     })
 
     # Add status
-    contents.push({ id: "status", type: "enum", name: { en: "Status" }, enumValues: [
+    metadata.push({ id: "status", type: "enum", name: { en: "Status" }, enumValues: [
       { id: "draft", name: { en: "Draft" } }
       { id: "pending", name: { en: "Pending" } }
       { id: "final", name: { en: "Final" } }
@@ -42,16 +44,18 @@ module.exports = class FormSchemaBuilder
     ]})
 
     # Add code
-    contents.push({ id: "code", type: "text", name: { en: "Response Code" } })
+    metadata.push({ id: "code", type: "text", name: { en: "Response Code" } })
 
     # Add startedOn
-    contents.push({ id: "startedOn", type: "datetime", name: { en: "Drafted On" } })
+    metadata.push({ id: "startedOn", type: "datetime", name: { en: "Drafted On" } })
 
     # Add submitted on
-    contents.push({ id: "submittedOn", type: "datetime", name: { en: "Submitted On" } })
+    metadata.push({ id: "submittedOn", type: "datetime", name: { en: "Submitted On" } })
     
     # Add IpAddress
-    contents.push({ id: "ipAddress", type: "text", name: { en: "IP Address" } })
+    metadata.push({ id: "ipAddress", type: "text", name: { en: "IP Address" } })
+
+    contents.push({ id: "metadata", type: "section", name: { en: "Response Metadata"}, desc: { en: "Information about the response such as status, date, and IP Address" }, contents: metadata })
 
     conditionsExprCompiler = new ConditionsExprCompiler(form.design)
 

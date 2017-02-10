@@ -184,9 +184,8 @@ describe "FormSchemaBuilder addForm", ->
     schema = new FormSchemaBuilder().addForm(new Schema(), form)
 
     # Adds section
-    assert.equal _.findWhere(schema.getTable("responses:formid").contents, type: "section").type, "section"
-    compare(_.findWhere(schema.getTable("responses:formid").contents, type: "section").name, { en: "Section X" })
-    assert.equal _.findWhere(schema.getTable("responses:formid").contents, type: "section").contents.length, 1
+    section = _.find(schema.getTable("responses:formid").contents, (item) -> item.type == "section" and item.name.en == "Section X")
+    assert.equal section.contents.length, 1
 
   it "adds metadata fields", ->
     # Create form

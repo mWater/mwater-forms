@@ -156,6 +156,9 @@ module.exports = class ResponseDisplayComponent extends React.Component
       if @props.response and @props.response.modified
         H.div key: "date", 
           @state.T('Date'), ": ", H.b(null, moment(@props.response.modified.on).format('lll'))
+      if @props.response.ipAddress
+        H.div key: "ipAddress", 
+          @state.T('IP Address'), ": ", H.b(null, @props.response.ipAddress)
       @renderStatus()
       @renderHistory()
 

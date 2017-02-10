@@ -503,6 +503,10 @@
     {
       "_base": "en",
       "en": "Error uploading file. You must be connected to the Internet for image upload to work from a web browser."
+    },
+    {
+      "_base": "en",
+      "en": "IP Address"
     }
   ]
 }
