@@ -41,11 +41,12 @@ module.exports = class ResponseModel
 
     if deploymentId
       @response.deployment = deploymentId
-    else # Select deployment if not specified
+    else if not @response.deployment # Select first deployment if not specified and not already present
       deployments = @listEnumeratorDeployments()
 
       if deployments.length == 0
         throw new Error("No matching deployments for #{@form._id} user #{@username}")
+
       @response.deployment = deployments[0]._id
 
     @fixRoles()
