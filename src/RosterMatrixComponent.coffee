@@ -49,7 +49,7 @@ module.exports = class RosterMatrixComponent extends React.Component
       for column, columnIndex in @props.rosterMatrix.contents
         key = "#{rowIndex}_#{column._id}"
 
-        if column.required and (not entry.data[column._id]?.value or entry.data[column._id]?.value == '')
+        if column.required and (not entry.data[column._id]?.value? or entry.data[column._id]?.value == '')
           foundInvalid = true
           validationErrors[key] = true
 
