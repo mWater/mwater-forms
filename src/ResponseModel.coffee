@@ -98,7 +98,7 @@ module.exports = class ResponseModel
     approval = { by: @user, on: new Date().toISOString() }
 
     # Determine if approver (vs admin)
-    approvers = deployment.approvalStages[@response.approvals.length].approvers
+    approvers = deployment.approvalStages[@response.approvals.length]?.approvers or []
     subjects = ["user:" + @user]
     subjects = subjects.concat(_.map @groups, (g) -> "group:" + g)
 
@@ -199,9 +199,9 @@ module.exports = class ResponseModel
     if @response.status == 'pending'
       for i in [0...deployment.approvalStages.length]
         if @response.approvals.length == i
-          admins = _.union admins, deployment.approvalStages[i].approvers
+          admins = _.union admins, deployment.approvalStages[i]?.approvers or []
         else
-          viewers = _.union viewers, deployment.approvalStages[i].approvers
+          viewers = _.union viewers, deployment.approvalStages[i]?.approvers or []
     else
       for approvalStage in deployment.approvalStages
         viewers = _.union viewers, approvalStage.approvers
@@ -226,7 +226,7 @@ module.exports = class ResponseModel
       return false
 
     # Get list of admins at both deployment and form level and add approvers
-    admins = _.union(_.pluck(_.where(@form.roles, { role: "admin"}), "id"), deployment.admins, deployment.approvalStages[@response.approvals.length].approvers)
+    admins = _.union(_.pluck(_.where(@form.roles, { role: "admin"}), "id"), deployment.admins, deployment.approvalStages[@response.approvals.length]?.approvers or [])
     subjects = ["user:" + @user, "all"]
     subjects = subjects.concat(_.map @groups, (g) -> "group:" + g)
 
@@ -269,7 +269,7 @@ module.exports = class ResponseModel
 
     if @response.status == "pending"
       # Get list of admins at both deployment and form level and add approvers
-      admins = _.union(_.pluck(_.where(@form.roles, { role: "admin"}), "id"), deployment.admins, deployment.approvalStages[@response.approvals.length].approvers)
+      admins = _.union(_.pluck(_.where(@form.roles, { role: "admin"}), "id"), deployment.admins, deployment.approvalStages[@response.approvals.length]?.approvers or [])
       subjects = ["user:" + @user, "all"]
       subjects = subjects.concat(_.map @groups, (g) -> "group:" + g)
 
