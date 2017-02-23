@@ -31,7 +31,11 @@ module.exports = class ResponseDisplayComponent extends React.Component
       T: @createLocalizer(@props.form.design, @props.formCtx.locale)
     }
 
-  componentWillMount: () ->
+  componentWillMount: ->
+    @loadEventUsernames(@props.response.events)
+
+  # Load user names related to events
+  loadEventUsernames: (events) ->
     events = @props.response.events or []
     
     byArray = _.compact(_.pluck(events, "by"))
@@ -49,6 +53,9 @@ module.exports = class ResponseDisplayComponent extends React.Component
   componentWillReceiveProps: (nextProps) ->
     if @props.form.design != nextProps.form.design or @props.locale != nextProps.locale
       @setState(T: @createLocalizer(nextProps.form.design, nextProps.locale))
+
+    if not _.isEqual(@props.response.events, nextProps.response.events)
+      @loadEventUsernames(nextProps.response.events)
 
     events = @props.response.events or []
 
