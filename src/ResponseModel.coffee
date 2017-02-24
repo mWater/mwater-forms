@@ -234,6 +234,24 @@ module.exports = class ResponseModel
       return true
     return false
 
+  # Determine if am an approver for the response, as opposed to admin who could still approve
+  amApprover: ->
+    deployment = _.findWhere(@form.deployments, { _id: @response.deployment })
+    if not deployment
+      throw new Error("No matching deployments for #{@form._id} user #{@username}")
+
+    if @response.status != "pending"
+      return false
+
+    # Get list of approvers
+    approvers = deployment.approvalStages[@response.approvals.length]?.approvers or []
+    subjects = ["user:" + @user, "all"]
+    subjects = subjects.concat(_.map @groups, (g) -> "group:" + g)
+
+    if _.intersection(approvers, subjects).length > 0
+      return true
+    return false
+
   # Determine if can delete response
   canDelete: ->
     admins = _.pluck(_.where(@response.roles, { role: "admin"}), "id")

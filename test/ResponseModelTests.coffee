@@ -569,6 +569,31 @@ describe "ResponseModel", ->
       @model = new ResponseModel(response: @response, form: @form, user: "formadmin", username: "formadmin", groups: [])
       assert @model.canApprove()
 
+  describe "amApprover", ->
+    beforeEach ->
+      @response = { }
+      @form = _.cloneDeep(sampleForm)
+
+      @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep1en1"])
+      @model.draft()
+
+    it "am approver if approver", ->
+      @model.submit()
+      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
+      assert @model.amApprover()
+
+    it "am not approver if deployment admin", ->
+      @model.submit()
+      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1admin1"])
+      assert.isFalse @model.amApprover()
+
+    it "am not approver if form admin", ->
+      @model.submit()
+      @model = new ResponseModel(response: @response, form: @form, user: "formadmin", username: "formadmin", groups: [])
+      assert.isFalse @model.amApprover()
+
+
+
   describe "inactive deployments", ->
     it "skips over inactive deployments", ->
       @response = { }
