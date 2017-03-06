@@ -148,6 +148,8 @@ exports.prepareQuestion = (q) ->
       _.defaults q, { format: "YYYY-MM-DD" }
     when "UnitsQuestion", "UnitsColumnQuestion"
       _.defaults q, { units: [], defaultUnits: null, unitsPosition: "suffix", decimal: true  }
+    when "LocationQuestion"
+      _.defaults q, { calculateAdminRegion: true }
     when "CheckQuestion"
       _.defaults q, { label: {} }
     when "EntityQuestion"
