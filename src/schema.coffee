@@ -43,6 +43,9 @@ deployments = {
           properties: {
             # List of ids of users and groups who can approve/reject responses at this step. i.e. user:<username> or group:<groupname>
             "approvers": { type: "array", items: { type: "string" } }
+
+            # If true, prevents approvers from editing/deleting
+            preventEditing: { type: "boolean" }
           }
           required: ['approvers']
           additionalProperties: false
