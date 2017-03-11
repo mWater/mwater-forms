@@ -43,6 +43,6 @@ module.exports = class RotationAwareImageComponent extends AsyncLoadComponent
       imageStyle.MsTransform = "rotate(#{@props.image.rotation}deg)"
 
     if @state.url 
-      return H.img(src: @state.url, style: imageStyle, className: classes, onClick: @props.onClick)
+      return H.img(src: @state.url, style: imageStyle, className: classes, onClick: @props.onClick, alt: @props.image.caption or "")
     else
       return null
