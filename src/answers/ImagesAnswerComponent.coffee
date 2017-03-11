@@ -1,7 +1,7 @@
 _ = require 'lodash'
 React = require 'react'
 H = React.DOM
-ImageThumbnailComponent = require '../ImageThumbnailComponent'
+RotationAwareImageComponent = require '../RotationAwareImageComponent'
 ImagePopupComponent = require '../ImagePopupComponent'
 
 # Edit an image 
@@ -32,13 +32,13 @@ module.exports = class ImagesAnswerComponent extends React.Component
         return
 
     # Call imageAcquirer
-    @context.imageAcquirer.acquire (id) =>
+    @context.imageAcquirer.acquire (id, rotation = 0) =>
       # Add to image list
       imagelist = @props.imagelist or []
       imagelist = imagelist.slice()
-      imagelist.push({ id: id, cover: imagelist.length == 0 })
+      imagelist.push({ id: id, cover: imagelist.length == 0 , rotation: rotation})
       @props.onImagelistChange(imagelist)
-    , (err) => throw err
+    , (err) => alert err
 
   handleClickImage: (id) =>
     if @props.onImagelistChange
@@ -57,12 +57,23 @@ module.exports = class ImagesAnswerComponent extends React.Component
         imagelist = _.map(@props.imagelist or [], (image) -> _.extend({}, image, cover: image.id == id))
         @props.onImagelistChange(imagelist)
 
+      onRotate = () =>
+        @setState(modal: null)
+        imagelist = _.map(@props.imagelist or [], (image) -> 
+          if image.id == id
+            return _.extend({}, image, rotation: (image.rotation + 90) % 360 )
+          else
+            return image
+        )
+        @props.onImagelistChange(imagelist)
+
     modal = React.createElement ImagePopupComponent, 
       imageManager: @context.imageManager
       id: id
       T: @context.T
       onRemove: onRemove
       onSetCover: onSetCover
+      onRotate: onRotate
       onClose: =>
         @setState(modal: null)
 
@@ -73,10 +84,11 @@ module.exports = class ImagesAnswerComponent extends React.Component
       @state.modal
 
       _.map @props.imagelist, (image) =>
-        React.createElement ImageThumbnailComponent, 
+        React.createElement RotationAwareImageComponent, 
           key: image.id
           imageManager: @context.imageManager
-          imageId: image.id
+          image: image
+          thumbnail: true
           onClick: @handleClickImage.bind(null, image.id)
 
       if @props.onImagelistChange and @context.imageAcquirer # If can add

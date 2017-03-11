@@ -11,6 +11,7 @@ module.exports = class ImagePopupComponent extends AsyncLoadComponent
     id: React.PropTypes.string.isRequired   # ID of image
     onRemove: React.PropTypes.func
     onSetCover: React.PropTypes.func
+    onRotate: React.PropTypes.func
     onClose: React.PropTypes.func.isRequired
     T: React.PropTypes.func.isRequired  # Localizer to use
 
@@ -43,6 +44,9 @@ module.exports = class ImagePopupComponent extends AsyncLoadComponent
           " "
           if @props.onRemove
             H.button type: "button", className: "btn btn-link", onClick: @props.onRemove, @props.T("Remove")
+          " "
+          if @props.onRotate
+            H.button type: "button", className: "btn btn-link", onClick: @props.onRotate, @props.T("Rotate")
 
         # Render image
         H.img src: @state.url, style: { width: "100%" }
