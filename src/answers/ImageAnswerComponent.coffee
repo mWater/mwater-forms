@@ -36,7 +36,7 @@ module.exports = class ImageAnswerComponent extends React.Component
         @setState(modal: null)
       onRotate: =>
         @setState(modal: null)
-        image = _.extend({}, @props.image, rotation: ((@props.image.rotation or 0) + 90) % 360 )
+        image = _.extend({}, @props.image, rotation: ((@props.image.rotation or 0) + 90) % 360)
         @props.onImageChange(image)
 
     @setState(modal: modal)
@@ -50,7 +50,7 @@ module.exports = class ImageAnswerComponent extends React.Component
     # Call imageAcquirer
     @context.imageAcquirer.acquire (id, rotation = 0) =>
       # Add to model
-      @props.onImageChange({ id: id,rotation: rotation })
+      @props.onImageChange({ id: id, rotation: rotation })
     , (err) => throw err
 
   render: ->
