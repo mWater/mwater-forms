@@ -180,6 +180,7 @@ module.exports = class EntitySchemaBuilder
       table = { 
         id: tableId
         name: entityType.name
+        desc: entityType.desc
         primaryKey: "_id"
         label: labelColumn
         contents: contents

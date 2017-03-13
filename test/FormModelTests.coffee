@@ -106,3 +106,24 @@ describe "FormModel", ->
     assert model.amAdmin("a", [])
     assert model.amAdmin("x", "b")
     assert not model.amAdmin("x", "c")
+
+  it "determines if deployment admin", ->
+    form = {
+      roles: [
+      ]
+
+      deployments: [
+        {
+          enumerators: ["user:a"]
+          approvalStages: [
+            { approvers: [ "user:b" ] }
+          ]
+          viewers: [ "user:d" ]
+          admins: [ "user:e" ]
+        }
+      ]
+    }
+    model = new FormModel(form)
+    assert.isTrue model.amDeploymentAdmin("e", [])
+    assert.isFalse model.amDeploymentAdmin("b", [])
+

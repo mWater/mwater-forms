@@ -507,6 +507,10 @@
     {
       "_base": "en",
       "en": "Rotate"
+    },
+    {
+      "_base": "en",
+      "en": "IP Address"
     }
   ]
 }

@@ -16,12 +16,14 @@ module.exports = class FormSchemaBuilder
   addForm: (schema, form, cloneForms) ->
     contents = []
     
+    metadata = []
+
     # Get deployments
     deploymentValues = _.map(form.deployments, (dep) -> { id: dep._id, name: { en: dep.name } })
-    contents.push({ id: "deployment", type: "enum", name: { en: "Deployment" }, enumValues: deploymentValues })
+    metadata.push({ id: "deployment", type: "enum", name: { en: "Deployment" }, enumValues: deploymentValues })
 
     # Add user
-    contents.push({ 
+    metadata.push({ 
       id: "user"
       name: { en: "Enumerator" } 
       type: "join"
@@ -34,7 +36,7 @@ module.exports = class FormSchemaBuilder
     })
 
     # Add status
-    contents.push({ id: "status", type: "enum", name: { en: "Status" }, enumValues: [
+    metadata.push({ id: "status", type: "enum", name: { en: "Status" }, enumValues: [
       { id: "draft", name: { en: "Draft" } }
       { id: "pending", name: { en: "Pending" } }
       { id: "final", name: { en: "Final" } }
@@ -42,13 +44,18 @@ module.exports = class FormSchemaBuilder
     ]})
 
     # Add code
-    contents.push({ id: "code", type: "text", name: { en: "Response Code" } })
+    metadata.push({ id: "code", type: "text", name: { en: "Response Code" } })
 
     # Add startedOn
-    contents.push({ id: "startedOn", type: "datetime", name: { en: "Drafted On" } })
+    metadata.push({ id: "startedOn", type: "datetime", name: { en: "Drafted On" } })
 
     # Add submitted on
-    contents.push({ id: "submittedOn", type: "datetime", name: { en: "Submitted On" } })
+    metadata.push({ id: "submittedOn", type: "datetime", name: { en: "Submitted On" } })
+    
+    # Add IpAddress
+    metadata.push({ id: "ipAddress", type: "text", name: { en: "IP Address" } })
+
+    contents.push({ id: "metadata", type: "section", name: { en: "Response Metadata"}, desc: { en: "Information about the response such as status, date, and IP Address" }, contents: metadata })
 
     conditionsExprCompiler = new ConditionsExprCompiler(form.design)
 
@@ -881,32 +888,28 @@ module.exports = class FormSchemaBuilder
           if tableId.match(/^responses:[^:]+$/)
             formId = tableId.split(":")[1]
 
-            # Use {to}.entities @> jsonb_build_array(jsonb_build_object('question', 'site1', 'entityType', 'water_point', 'property', 'code', 'value', {from}.code))
+            # Use {to}._id in (select response from response_entities where question = 'site1' and "entityType" = 'water_point' and property = 'code' and value = {from}."code"))
             # for indexed speed
             jsonql = {
               type: "op"
-              op: "@>"
+              op: "in"
               exprs: [
-                { type: "field", tableAlias: "{to}", column: "entities" }
+                { type: "field", tableAlias: "{to}", column: "_id" }
                 {
-                  type: "op"
-                  op: "jsonb_build_array"
-                  exprs: [
-                    {
-                      type: "op"
-                      op: "jsonb_build_object"
-                      exprs: [
-                        "question"
-                        item._id
-                        "entityType"
-                        entityType
-                        "property"
-                        "code"
-                        "value"
-                        { type: "field", tableAlias: "{from}", column: "code" }
-                      ]
-                    }
-                  ]
+                  type: "scalar"
+                  expr: { type: "field", tableAlias: "response_entities", column: "response" }
+                  from: { type: "table", table: "response_entities", alias: "response_entities" }
+                  where: {
+                    type: "op"
+                    op: "and"
+                    exprs: [
+                      { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "question" }, item._id] }
+                      { type: "op", op: "is null", exprs: [{ type: "field", tableAlias: "response_entities", column: "roster" }] }
+                      { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "entityType" }, entityType] }
+                      { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "property" }, "code"] }
+                      { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "value" }, { type: "field", tableAlias: "{from}", column: "code" }] }
+                    ]
+                  }
                 }
               ]
             }
@@ -957,32 +960,28 @@ module.exports = class FormSchemaBuilder
             if tableId.match(/^responses:[^:]+$/)
               formId = tableId.split(":")[1]
 
-              # Use {to}.entities @> jsonb_build_array(jsonb_build_object('question', 'site1', 'entityType', 'water_point', 'property', '_id', 'value', {from}._id))
+              # Use {to}._id in (select response from response_entities where question = 'site1' and "entityType" = 'water_point' and property = '_id' and value = {from}."_id"))
               # for indexed speed
               jsonql = {
                 type: "op"
-                op: "@>"
+                op: "in"
                 exprs: [
-                  { type: "field", tableAlias: "{to}", column: "entities" }
+                  { type: "field", tableAlias: "{to}", column: "_id" }
                   {
-                    type: "op"
-                    op: "jsonb_build_array"
-                    exprs: [
-                      {
-                        type: "op"
-                        op: "jsonb_build_object"
-                        exprs: [
-                          "question"
-                          item._id
-                          "entityType"
-                          item.entityType
-                          "property"
-                          "_id"
-                          "value"
-                          { type: "field", tableAlias: "{from}", column: "_id" }
-                        ]
-                      }
-                    ]
+                    type: "scalar"
+                    expr: { type: "field", tableAlias: "response_entities", column: "response" }
+                    from: { type: "table", table: "response_entities", alias: "response_entities" }
+                    where: {
+                      type: "op"
+                      op: "and"
+                      exprs: [
+                        { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "question" }, item._id] }
+                        { type: "op", op: "is null", exprs: [{ type: "field", tableAlias: "response_entities", column: "roster" }] }
+                        { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "entityType" }, item.entityType] }
+                        { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "property" }, "_id"] }
+                        { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "value" }, { type: "field", tableAlias: "{from}", column: "_id" }] }
+                      ]
+                    }
                   }
                 ]
               }
@@ -1282,7 +1281,7 @@ module.exports = class FormSchemaBuilder
               id: "data:#{item._id}:specify:#{choice.id}"
               type: "text"
               name: appendStr(appendStr(appendStr(item.text, " ("), choice.label), ") - specify")
-              code: if code then code + " (#{if choice.code then choice.code else formUtils.localizeString(choice.label)})"
+              code: if code then code + " (#{if choice.code then choice.code else formUtils.localizeString(choice.label)})" + " - specify"
               jsonql: {
                 type: "op"
                 op: "#>>"

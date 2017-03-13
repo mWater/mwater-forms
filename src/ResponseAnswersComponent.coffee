@@ -364,20 +364,21 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
 
     if item._type == "MatrixQuestion"
       answer = @props.data[dataId]
-      if answer?
+      if answer?.value?
         rows = []
         rows.push H.tr key: item._id,
           H.td colSpan: 2, style: { fontWeight: "bold" },
             formUtils.localizeString(item.name, @props.locale)
-        for maxtrixItemId, itemValue of answer.value
-          matrixItem = _.findWhere item.items, {id: maxtrixItemId}
-          rows.push H.tr null,
-            H.td colSpan: 2, style: { fontStyle: 'italic' },
-              formUtils.localizeString(matrixItem.label, @props.locale)
-          for columnId, columnValue of itemValue
-            column = _.findWhere item.columns, {_id: columnId}
-            dataId = "#{item._id}.#{maxtrixItemId}.#{columnId}"
-            rows.push @renderItem(column, visibilityStructure, dataId)
+        for rowItem in item.items
+          itemValue = answer.value[rowItem.id]
+          if itemValue
+            rows.push H.tr null,
+              H.td colSpan: 2, style: { fontStyle: 'italic' },
+                formUtils.localizeString(rowItem.label, @props.locale)
+            for column in item.columns
+              if itemValue[column._id]
+                dataId = "#{item._id}.#{rowItem.id}.#{column._id}"
+                rows.push @renderItem(column, visibilityStructure, dataId)
         return rows
       else
         return null

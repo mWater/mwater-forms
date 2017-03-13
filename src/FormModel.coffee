@@ -46,3 +46,9 @@ module.exports = class FormModel
     subjects = ["all", "user:" + user]
     subjects = subjects.concat(_.map groups, (g) -> "group:" + g)
     return _.any(@form.roles, (r) -> r.id in subjects and r.role in ['admin', 'deploy'])
+
+  # Check if user is admin of a deployment
+  amDeploymentAdmin: (user, groups) ->
+    subjects = ["all", "user:" + user]
+    subjects = subjects.concat(_.map groups, (g) -> "group:" + g)
+    return _.any(@form.deployments, (dep) => _.intersection(dep.admins, subjects).length > 0)

@@ -58,7 +58,7 @@ module.exports = class MatrixAnswerComponent extends React.Component
 
         data = @props.value?[item.id]?[column._id]
 
-        if column.required and not data?.value? or data?.value == ''
+        if column.required and (not data?.value? or data?.value == '')
           foundInvalid = true
           validationErrors[key] = true
           continue

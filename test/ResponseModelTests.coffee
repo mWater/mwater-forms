@@ -77,10 +77,6 @@ describe "ResponseModel", ->
       assert.equal @response.events[0].by, "user"
       assert @response.events[0].on
 
-    it "does not create draft event if already in draft", ->
-      @model.draft()
-      assert.equal @response.events.length, 1
-
   describe "draft when deployed to all", ->
     beforeEach ->
       @response = { }
@@ -325,7 +321,7 @@ describe "ResponseModel", ->
       @model.draft()
       @origId = @response._id
       @model.submit()
-      @model.draft()
+      @model.redraft()
 
     it "does not overwrite id", ->
       assert.equal @response._id, @origId
@@ -335,6 +331,11 @@ describe "ResponseModel", ->
       assert.equal @response.events[2].type, "draft"
       assert.equal @response.events[2].by, "user"
       assert @response.events[2].on
+
+    it "does not create repeated draft event if already in draft", ->
+      @model.redraft()
+      assert.equal @response.events.length, 3
+
 
   describe "reject", ->
     beforeEach ->
@@ -402,6 +403,62 @@ describe "ResponseModel", ->
       assert.equal response.events[1].type, "edit"
       assert.equal response.events[1].by, "user2"
 
+  describe "canSubmit", ->
+    beforeEach ->
+      @response = { }
+      @form = _.cloneDeep(sampleForm)
+
+      @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep1en1"])
+      @model.draft()
+
+    it "enumerator can submit", ->
+      @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep1en1"])
+      assert @model.canSubmit()
+
+    it "admin can submit from draft", ->
+      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1admin1"])
+      assert @model.canSubmit()
+
+    it "admin cannot submit from pending", ->
+      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1admin1"])
+      @model.submit()
+      assert not @model.canSubmit()
+
+  describe "canRedraft", ->
+    beforeEach ->
+      @response = { }
+      @form = _.cloneDeep(sampleForm)
+
+      @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep1en1"])
+      @model.draft()
+
+    it "enumerator can redraft final if enumeratorAdminFinal=true", ->
+      # Setup
+      @form.deployments[0].enumeratorAdminFinal = true
+      @model.submit()
+      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
+      @model.approve()
+
+      @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep1en1"])
+      assert @model.canRedraft()
+
+    it "enumerator cannot redraft final if enumeratorAdminFinal=false", ->
+      @model.submit()
+      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
+      @model.approve()
+      assert not @model.canRedraft()
+
+    it "admin cannot redraft (only can edit)", ->
+      @model.submit()
+      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1admin1"])
+      @model.approve()
+      assert.isFalse @model.canRedraft()
+
+    it "approvers cannot redraft (only can edit)", ->
+      @model.submit()
+      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
+      assert.isFalse @model.canRedraft()
+
   describe "canReject", ->
     beforeEach ->
       @response = { }
@@ -457,12 +514,12 @@ describe "ResponseModel", ->
       @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep1en1"])
       @model.draft()
 
-    it "can delete if enumerator", ->
+    it "can delete if enumerator and in draft", ->
       assert @model.canDelete()
 
-    it "can delete pending if enumerator", ->
+    it "cannot delete pending if enumerator", ->
       @model.submit()
-      assert @model.canDelete()
+      assert.isFalse @model.canDelete()
 
     it "can delete rejected if enumerator", ->
       @model.submit()
@@ -476,6 +533,17 @@ describe "ResponseModel", ->
       @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
       @model.approve()
       @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep2en1"])
+      assert not @model.canDelete()
+
+    it "can delete pending if approver with preventEditing=false or null", ->
+      @model.submit()
+      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
+      assert @model.canDelete()
+
+    it "cannot delete pending if approver with preventEditing=true", ->
+      @model.submit()
+      @form.deployments[0].approvalStages[0].preventEditing = true
+      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
       assert not @model.canDelete()
 
     it "cannot delete final if approver", ->
@@ -499,7 +567,7 @@ describe "ResponseModel", ->
       @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep1en1"])
       @model.draft()
 
-    it "can edit if enumerator", ->
+    it "can edit if enumerator and in draft", ->
       assert @model.canEdit()
 
     it "cannot edit pending if enumerator", ->
@@ -518,6 +586,17 @@ describe "ResponseModel", ->
       @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
       @model.approve()
       @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep2en1"])
+      assert not @model.canEdit()
+
+    it "can edit pending if approver with preventEditing=false or null", ->
+      @model.submit()
+      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
+      assert @model.canEdit()
+
+    it "cannot edit pending if approver with preventEditing=true", ->
+      @model.submit()
+      @form.deployments[0].approvalStages[0].preventEditing = true
+      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
       assert not @model.canEdit()
 
     it "cannot edit final if approver", ->
@@ -568,6 +647,31 @@ describe "ResponseModel", ->
       @model.submit()
       @model = new ResponseModel(response: @response, form: @form, user: "formadmin", username: "formadmin", groups: [])
       assert @model.canApprove()
+
+  describe "amApprover", ->
+    beforeEach ->
+      @response = { }
+      @form = _.cloneDeep(sampleForm)
+
+      @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep1en1"])
+      @model.draft()
+
+    it "am approver if approver", ->
+      @model.submit()
+      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
+      assert @model.amApprover()
+
+    it "am not approver if deployment admin", ->
+      @model.submit()
+      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1admin1"])
+      assert.isFalse @model.amApprover()
+
+    it "am not approver if form admin", ->
+      @model.submit()
+      @model = new ResponseModel(response: @response, form: @form, user: "formadmin", username: "formadmin", groups: [])
+      assert.isFalse @model.amApprover()
+
+
 
   describe "inactive deployments", ->
     it "skips over inactive deployments", ->
@@ -647,7 +751,7 @@ describe "ResponseModel", ->
       @model.submit()
 
       # Reset 
-      @model.draft()
+      @model.redraft()
       @response.data = { q1: { value: "" } }
       @model.submit()
 
