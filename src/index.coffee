@@ -30,6 +30,7 @@ exports.AssignmentModel = require './AssignmentModel'
 
 exports.ResponseDataExprValueUpdater = require './ResponseDataExprValueUpdater'
 exports.ResponseRow = require './ResponseRow'
+exports.RotationAwareImageComponent = require './RotationAwareImageComponent'
 
 exports.ImageUploaderModalComponent = require './ImageUploaderModalComponent'
 

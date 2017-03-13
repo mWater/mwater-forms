@@ -23,6 +23,7 @@
   "dependencies": {
     "async": "^1.2.0",
     "backbone": "~1.1.2",
+    "classnames": "^2.2.5",
     "coffeeify": "^1.0.0",
     "eonasdan-bootstrap-datetimepicker": "^4.15.35",
     "ez-localize": "^1.0.0",

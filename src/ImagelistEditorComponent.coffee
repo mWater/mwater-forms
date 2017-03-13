@@ -8,7 +8,7 @@ module.exports = class ImagelistEditorComponent extends React.Component
   @propTypes:
     imageManager: React.PropTypes.object.isRequired
     imageAcquirer: React.PropTypes.object
-    imagelist: React.PropTypes.object             # e.g. [{ id: someid, caption: caption }]
+    imagelist: React.PropTypes.array             # e.g. [{ id: someid, caption: caption }]
     onImagelistChange: React.PropTypes.func       # Called when image list changed
     T: React.PropTypes.func.isRequired        # Localizer to use
 
