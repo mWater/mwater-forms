@@ -38,7 +38,7 @@ module.exports = class ImagesAnswerComponent extends React.Component
       imagelist = imagelist.slice()
       imagelist.push({ id: id, cover: imagelist.length == 0 , rotation: rotation})
       @props.onImagelistChange(imagelist)
-    , (err) => alert err
+    , (err) => throw err
 
   handleClickImage: (id) =>
     if @props.onImagelistChange
@@ -61,7 +61,7 @@ module.exports = class ImagesAnswerComponent extends React.Component
         @setState(modal: null)
         imagelist = _.map(@props.imagelist or [], (image) -> 
           if image.id == id
-            return _.extend({}, image, rotation: (image.rotation + 90) % 360 )
+            return _.extend({}, image, rotation: ((image.rotation or 0) + 90) % 360 )
           else
             return image
         )

@@ -35,7 +35,7 @@ module.exports = class RotationAwareImageComponent extends AsyncLoadComponent
 
     if @props.thumbnail
       imageStyle.maxHeight = @props.height or 160
-      imageStyle.width = 160
+      imageStyle.width = @props.width or 160
 
     if @props.image.rotation > 0
       imageStyle.transform = "rotate(#{@props.image.rotation}deg)"
