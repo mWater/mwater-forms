@@ -51,7 +51,7 @@ module.exports = class ImageAnswerComponent extends React.Component
     @context.imageAcquirer.acquire (id, rotation = 0) =>
       # Add to model
       @props.onImageChange({ id: id, rotation: rotation })
-    , (err) => throw err
+    , (err) => alert(err)
 
   render: ->
     H.div null,
