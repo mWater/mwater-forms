@@ -99,7 +99,7 @@ module.exports = class ImageUploaderModalComponent extends React.Component
 
   renderContents: ->
     H.div null,
-      H.form enctype: "multipart/form-data", method: "post",
+      H.form encType: "multipart/form-data", method: "post",
         H.label className: "btn btn-default btn-lg", style: { display: (if @state.xhr then "none") },
           H.span className: "glyphicon glyphicon-camera"
           " "
