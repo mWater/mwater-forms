@@ -2,6 +2,7 @@ React = require 'react'
 H = React.DOM
 ImageThumbnailComponent = require '../ImageThumbnailComponent'
 ImagePopupComponent = require '../ImagePopupComponent'
+RotationAwareImageComponent = require '../RotationAwareImageComponent'
 
 # Edit an image 
 module.exports = class ImageAnswerComponent extends React.Component
