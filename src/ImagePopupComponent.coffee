@@ -9,7 +9,7 @@ RotationAwareImageComponent = require './RotationAwareImageComponent'
 module.exports = class ImagePopupComponent extends AsyncLoadComponent
   @propTypes:
     imageManager: React.PropTypes.object.isRequired
-    image: React.PropTypes.object.isRequired   # ID of image
+    image: React.PropTypes.object.isRequired   # The image object
     onRemove: React.PropTypes.func
     onSetCover: React.PropTypes.func
     onRotate: React.PropTypes.func
