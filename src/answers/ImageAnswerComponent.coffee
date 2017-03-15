@@ -19,28 +19,14 @@ module.exports = class ImageAnswerComponent extends React.Component
   constructor: ->
     super
 
-    @state = { modal: null }
+    @state = { modalOpen: false }
 
   focus: () ->
     # Nothing to focus
     null
 
   handleClickImage: =>
-    modal = React.createElement ImagePopupComponent, 
-      imageManager: @context.imageManager
-      image: @props.image
-      T: @context.T
-      onRemove: => 
-        @setState(modal: null)
-        @props.onImageChange(null)
-      onClose: =>
-        @setState(modal: null)
-      onRotate: =>
-        @setState(modal: null)
-        image = _.extend({}, @props.image, rotation: ((@props.image.rotation or 0) + 90) % 360)
-        @props.onImageChange(image)
-
-    @setState(modal: modal)
+    @setState(modalOpen: true)
 
   handleAdd: =>
     # Check consent
@@ -54,9 +40,26 @@ module.exports = class ImageAnswerComponent extends React.Component
       @props.onImageChange({ id: id, rotation: rotation })
     , (err) => alert(err)
 
+  renderModal: ->
+    if not @state.modalOpen
+      return null
+      
+    return React.createElement ImagePopupComponent, 
+      imageManager: @context.imageManager
+      image: @props.image
+      T: @context.T
+      onRemove: => 
+        @setState(modalOpen: false)
+        @props.onImageChange(null)
+      onClose: =>
+        @setState(modalOpen: false)
+      onRotate: =>
+        image = _.extend({}, @props.image, rotation: ((@props.image.rotation or 0) + 90) % 360)
+        @props.onImageChange(image)
+
   render: ->
     H.div null,
-      @state.modal
+      @renderModal()
 
       if @props.image
         React.createElement RotationAwareImageComponent, 

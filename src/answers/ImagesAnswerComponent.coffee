@@ -19,7 +19,7 @@ module.exports = class ImagesAnswerComponent extends React.Component
   constructor: ->
     super
 
-    @state = { modal: null }
+    @state = { modalImageId: null } # Image id of modal. null if not open
 
   focus: () ->
     # Nothing to focus
@@ -41,24 +41,31 @@ module.exports = class ImagesAnswerComponent extends React.Component
     , (err) => alert(err)
 
   handleClickImage: (id) =>
+    @setState(modalImageId: id)
+
+  renderModal: ->
+    if not @state.modalImageId
+      return null
+      
+    id = @state.modalImageId
+
     if @props.onImagelistChange
       onRemove = () => 
-        @setState(modal: null)
-        
+        @setState(modalImageId: null)
+    
         # Remove from list
         imagelist = _.filter(@props.imagelist or [], (image) -> image.id != id)
         @props.onImagelistChange(imagelist)
 
       # TODO: SurveyorPro: only onSetCover if not already cover
       onSetCover = () =>
-        @setState(modal: null)
+        @setState(modalImageId: null)
 
         # Remove from list
         imagelist = _.map(@props.imagelist or [], (image) -> _.extend({}, image, cover: image.id == id))
         @props.onImagelistChange(imagelist)
 
       onRotate = () =>
-        @setState(modal: null)
         imagelist = _.map(@props.imagelist or [], (image) -> 
           if image.id == id
             return _.extend({}, image, rotation: ((image.rotation or 0) + 90) % 360 )
@@ -67,21 +74,19 @@ module.exports = class ImagesAnswerComponent extends React.Component
         )
         @props.onImagelistChange(imagelist)
 
-    modal = React.createElement ImagePopupComponent, 
+    return React.createElement ImagePopupComponent, 
       imageManager: @context.imageManager
-      image: _.find(@props.imagelist, {id: id})
+      image: _.find(@props.imagelist, { id: id })
       T: @context.T
       onRemove: onRemove
       onSetCover: onSetCover
       onRotate: onRotate
       onClose: =>
-        @setState(modal: null)
-
-    @setState(modal: modal)
+        @setState(modalImageId: null)
 
   render: ->
     H.div null,
-      @state.modal
+      @renderModal()
 
       _.map @props.imagelist, (image) =>
         React.createElement RotationAwareImageComponent, 

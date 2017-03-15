@@ -106,10 +106,10 @@ class DemoComponent extends React.Component
     #   onDataChange: (data) => @setState(data: data)
 
     schema = new Schema()
-    design = rosterFormDesign
+    # design = rosterFormDesign
     # design: matrixFormDesign
     # design = rosterFormDesign
-    # design = bigsampleForm2.design
+    design = sampleForm2.design
     schema = new FormSchemaBuilder().addForm(schema, { _id: "form1", design: design })
 
     H.div className: "row",
