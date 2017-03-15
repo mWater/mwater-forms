@@ -29,20 +29,41 @@ module.exports = class RotationAwareImageComponent extends AsyncLoadComponent
 
   render: ->
     imageStyle = {}
+    containerStyle = {}
     classes = classNames({
       "img-thumbnail": @props.thumbnail
+      "rotated": @props.image.rotation
+      "rotate-90": @props.image.rotation and @props.image.rotation == 90
+      "rotate-180": @props.image.rotation and @props.image.rotation == 180
+      "rotate-270": @props.image.rotation and @props.image.rotation == 270 
+    })
+
+    containerClasses= classNames({
+      "rotated-image-container": true
     })
 
     if @props.thumbnail
-      imageStyle.maxHeight = @props.height or 160
-      imageStyle.width = @props.width or 160
-
-    if @props.image.rotation > 0
-      imageStyle.transform = "rotate(#{@props.image.rotation}deg)"
-      imageStyle.WebkitTransform = "rotate(#{@props.image.rotation}deg)"
-      imageStyle.MsTransform = "rotate(#{@props.image.rotation}deg)"
+      if @props.image.rotation == 90 or @props.image.rotation == 270
+        imageStyle.height = @props.width or 160
+        imageStyle.maxWidth = @props.height or 160
+      else
+        imageStyle.maxHeight = @props.height or 160
+        imageStyle.width = @props.width or 160
+    else
+      imageStyle.maxWidth = "100%"
 
     if @state.url 
-      return H.img(src: @state.url, style: imageStyle, className: classes, onClick: @props.onClick, alt: @props.image.caption or "")
+      return H.span 
+        ref: (c) => @parent = c
+        className: containerClasses
+        style: containerStyle,
+          H.img
+            ref: (c) => @image = c
+            src: @state.url
+            style: imageStyle
+            className: classes
+            onClick: @props.onClick
+            alt: @props.image.caption or ""
+      
     else
       return null

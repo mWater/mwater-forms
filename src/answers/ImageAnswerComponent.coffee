@@ -28,7 +28,7 @@ module.exports = class ImageAnswerComponent extends React.Component
   handleClickImage: =>
     modal = React.createElement ImagePopupComponent, 
       imageManager: @context.imageManager
-      id: @props.image.id
+      image: @props.image
       T: @context.T
       onRemove: => 
         @setState(modal: null)

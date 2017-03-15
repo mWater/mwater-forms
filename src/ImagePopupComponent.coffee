@@ -3,12 +3,13 @@ H = React.DOM
 
 ModalPopupComponent = require('react-library/lib/ModalPopupComponent')
 AsyncLoadComponent = require('react-library/lib/AsyncLoadComponent')
+RotationAwareImageComponent = require './RotationAwareImageComponent'
 
 # Displays an image in a popup and allows removing or setting as cover image
 module.exports = class ImagePopupComponent extends AsyncLoadComponent
   @propTypes:
     imageManager: React.PropTypes.object.isRequired
-    id: React.PropTypes.string.isRequired   # ID of image
+    image: React.PropTypes.object.isRequired   # ID of image
     onRemove: React.PropTypes.func
     onSetCover: React.PropTypes.func
     onRotate: React.PropTypes.func
@@ -20,7 +21,7 @@ module.exports = class ImagePopupComponent extends AsyncLoadComponent
 
   # Call callback with state changes
   load: (props, prevProps, callback) ->
-    @props.imageManager.getImageUrl(props.id, (url) =>
+    @props.imageManager.getImageUrl(props.image.id, (url) =>
       callback(url: url, error: false)
     , => callback(error: true)
     )
@@ -49,5 +50,9 @@ module.exports = class ImagePopupComponent extends AsyncLoadComponent
             H.button type: "button", className: "btn btn-link", onClick: @props.onRotate, @props.T("Rotate")
 
         # Render image
-        H.img src: @state.url, style: { width: "100%" }
+        React.createElement RotationAwareImageComponent, 
+          key: @props.image.id
+          imageManager: @props.imageManager
+          image: @props.image
+          onClick: @handleClickImage
 
