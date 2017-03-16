@@ -142,11 +142,11 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
 
       when "image"
         if answer.value
-          return R(ImageDisplayComponent, id: answer.value.id, imageManager: @props.formCtx.imageManager, T: @props.T)
+          return R(ImageDisplayComponent, image: answer.value, imageManager: @props.formCtx.imageManager, T: @props.T)
 
       when "images"
         return _.map answer.value, (img) =>
-          R(ImageDisplayComponent, id: img.id, imageManager: @props.formCtx.imageManager, T: @props.T)
+          R(ImageDisplayComponent, image: img, imageManager: @props.formCtx.imageManager, T: @props.T)
 
       when "texts"
         return _.map answer.value, (txt) =>

@@ -2,10 +2,12 @@ React = require 'react'
 H = React.DOM
 ImagePopupComponent = require './ImagePopupComponent'
 
+RotationAwareImageComponent = require './RotationAwareImageComponent'
+
 # Displays an image
 module.exports = class ImageDisplayComponent extends React.Component
   @propTypes:
-    id: React.PropTypes.string.isRequired  # Id of image
+    image: React.PropTypes.object.isRequired  # Image object to display
     imageManager: React.PropTypes.object.isRequired
     T: React.PropTypes.func.isRequired
 
@@ -18,7 +20,7 @@ module.exports = class ImageDisplayComponent extends React.Component
 
   update: (props) ->
     # Get URL of thumbnail
-    @props.imageManager.getImageThumbnailUrl props.id, (url) =>
+    @props.imageManager.getImageThumbnailUrl props.image.id, (url) =>
       @setState(url: url, error: false)
     , => @setState(error: true)
 
@@ -35,11 +37,11 @@ module.exports = class ImageDisplayComponent extends React.Component
       src = "img/image-loading.png"
 
     H.span null,
-      H.img className: "img-thumbnail", src: src, onError: @handleImgError, onClick: @handleImgClick, style: { maxHeight: 100 }
+      R RotationAwareImageComponent, image: @props.image, imageManager: @props.imageManager, onClick: @handleImgClick, height: 100, thumbnail: true
       if @state.popup
         React.createElement(ImagePopupComponent, {
           imageManager: @props.imageManager
-          id: @props.id
+          image: @props.image
           onClose: => @setState(popup: false)
           T: @props.T
         })
