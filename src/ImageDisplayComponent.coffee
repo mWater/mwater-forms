@@ -37,7 +37,7 @@ module.exports = class ImageDisplayComponent extends React.Component
       src = "img/image-loading.png"
 
     H.span null,
-      R RotationAwareImageComponent, image: @props.image, imageManager: @props.imageManager, onClick: @handleImgClick, height: 100, thumbnail: true
+      React.createElement(RotationAwareImageComponent, image: @props.image, imageManager: @props.imageManager, onClick: @handleImgClick, height: 100, thumbnail: true)
       if @state.popup
         React.createElement(ImagePopupComponent, {
           imageManager: @props.imageManager
