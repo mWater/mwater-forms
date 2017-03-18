@@ -44,13 +44,16 @@ module.exports = class RotationAwareImageComponent extends AsyncLoadComponent
 
     if @props.thumbnail
       if @props.image.rotation == 90 or @props.image.rotation == 270
-        imageStyle.height = @props.width or 160
+        imageStyle.maxHeight = @props.width or 160
         imageStyle.maxWidth = @props.height or 160
       else
         imageStyle.maxHeight = @props.height or 160
-        imageStyle.width = @props.width or 160
+        imageStyle.maxWidth = @props.width or 160
+
+      containerStyle.height = @props.height or 160
     else
       imageStyle.maxWidth = "100%"
+      containerStyle.height = "100%"
 
     if @state.url 
       return H.span 
@@ -64,6 +67,6 @@ module.exports = class RotationAwareImageComponent extends AsyncLoadComponent
             className: classes
             onClick: @props.onClick
             alt: @props.image.caption or ""
-      
+
     else
       return null
