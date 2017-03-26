@@ -15,7 +15,6 @@ module.exports = class ResponseViewEditComponent extends React.Component
     formCtx: React.PropTypes.object.isRequired # FormContext
     response: React.PropTypes.object.isRequired  # Response object
   
-    # TODO remove this and instead pass in immutable response model  
     login: React.PropTypes.object  # Current login (contains user, username, groups)
     apiUrl: React.PropTypes.string.isRequired  # api url to use e.g. https://api.mwater.co/v3/
 
@@ -23,7 +22,6 @@ module.exports = class ResponseViewEditComponent extends React.Component
     onDeleteResponse: React.PropTypes.func.isRequired # Called when response is removed
 
     schema: React.PropTypes.object.isRequired # Schema, including the form
-    onClose: React.PropTypes.func # Called when editing is done (usually by reject, etc.)
     locale: React.PropTypes.string # The locale to display the response in
 
   constructor: (props) ->
