@@ -150,6 +150,7 @@ module.exports = {
 
           expressions: { type: "object" } # Map of indicator property id to mwater-expression expression to create value
           condition: { type: ["object", "null"] } # Optional mwater-expression expression to restrict when to create indicator value
+          datetimeExpr: { type: ["object", "null"] } # Optional mwater-expression expression to select datetime of indicator value. Defaults to submittedOn
 
           # List of ids of users and groups who can view created indicator values i.e. user:<username> or group:<groupname>
           viewers: { type: "array", items: { type: "string" } }
