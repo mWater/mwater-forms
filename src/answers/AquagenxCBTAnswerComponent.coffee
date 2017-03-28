@@ -38,7 +38,7 @@ module.exports = class AquagenxCBTAnswerComponent extends React.Component
   handleClickImage: =>
     modal = React.createElement ImagePopupComponent,
       imageManager: @context.imageManager
-      id: @props.value.image.id
+      image: @props.value.image
       T: @context.T
       onRemove: =>
         @setState(imageModal: null)
@@ -47,6 +47,10 @@ module.exports = class AquagenxCBTAnswerComponent extends React.Component
         @props.onValueChange(value)
       onClose: =>
         @setState(imageModal: null)
+      onRotate: =>
+        value = _.clone @props.value
+        value.image = _.extend({}, value.image, rotation: ((value.image.rotation or 0) + 90) % 360)
+        @props.onValueChange(value)
 
     @setState(imageModal: modal)
 
