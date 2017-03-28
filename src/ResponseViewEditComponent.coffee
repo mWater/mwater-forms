@@ -3,8 +3,8 @@ React = require 'react'
 H = React.DOM
 R = React.createElement
 
-FormComponent = './FormComponent'
-ResponseModel = './ResponseModel'
+FormComponent = require './FormComponent'
+ResponseModel = require './ResponseModel'
 ResponseDisplayComponent = require './ResponseDisplayComponent'
 
 # Displays a view of a response that can be edited, rejected, etc. 
