@@ -113,10 +113,14 @@ module.exports = class QuestionComponent extends React.Component
 
   # Returns true if validation error
   validate: (scrollToFirstInvalid) ->
-    if @refs.answer?.validate?(scrollToFirstInvalid)
-      if scrollToFirstInvalid
+    # If answer has custom validation, use that
+    if @refs.answer?.validate
+      answerInvalid = @refs.answer?.validate()
+
+      if answerInvalid and scrollToFirstInvalid
         @refs.prompt.scrollIntoView()
-      return true
+
+      return answerInvalid
 
     validationError = new AnswerValidator().validate(@props.question, @getAnswer())
 
@@ -432,6 +436,7 @@ module.exports = class QuestionComponent extends React.Component
           ref: "answer"
           value: answer.value
           onValueChange: @handleValueChange
+          alternate: answer.alternate
           items: @props.question.items
           columns: @props.question.columns
           data: @props.data

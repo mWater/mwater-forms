@@ -107,9 +107,9 @@ class DemoComponent extends React.Component
 
     schema = new Schema()
     # design = rosterFormDesign
-    # design: matrixFormDesign
+    design = matrixFormDesign
     # design = rosterFormDesign
-    design = sampleForm2.design
+    # design = sampleForm2.design
     schema = new FormSchemaBuilder().addForm(schema, { _id: "form1", design: design })
 
     H.div className: "row",
@@ -292,6 +292,7 @@ matrixFormDesign = {
         { _id: "d", _type: "DropdownColumnQuestion", text: { en: "Gender" }, choices: [{ label: { en: "Male"}, id: "male" }, { label: { en: "Female"}, id: "female" }] }
         { _id: "e", _type: "UnitsColumnQuestion", text: { en: "Unit" }, units: [{ label: { en: "CM"}, id: "cm" }, { label: { en: "INCH"}, id: "inch" }] }
       ]
+      alternates: { na: 1 }
     }
   ]
 }

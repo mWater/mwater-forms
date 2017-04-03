@@ -29,6 +29,7 @@ module.exports = class MatrixAnswerComponent extends React.Component
 
     value: React.PropTypes.object                    # See answer format
     onValueChange: React.PropTypes.func.isRequired
+    alternate: React.PropTypes.string                # Alternate value if selected
 
     data: React.PropTypes.object      # Current data of response (for roster entry if in roster)
     responseRow: React.PropTypes.object    # ResponseRow object (for roster entry if in roster)
@@ -45,11 +46,17 @@ module.exports = class MatrixAnswerComponent extends React.Component
     # TODO
     null
 
-  validate: (scrollToFirstInvalid) ->
+  # Validate a matrix answer. Returns true if invalid was found, false otherwise
+  validate: ->
+    # Alternate selected means cannot be invalid
+    if @props.alternate
+      return false
+
     validationErrors = {}
 
     # Important to let know the caller if something has been found (so it can scrollToFirst properly)
     foundInvalid = false
+
     # For each entry
     for item, rowIndex in @props.items
       # For each column
