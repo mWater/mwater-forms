@@ -290,7 +290,7 @@ matrixFormDesign = {
         { _id: "b", _type: "NumberColumnQuestion", text: { en: "Age" }, decimal: false }
         { _id: "c", _type: "CheckColumnQuestion", text: { en: "Present" } }
         { _id: "d", _type: "DropdownColumnQuestion", text: { en: "Gender" }, choices: [{ label: { en: "Male"}, id: "male" }, { label: { en: "Female"}, id: "female" }] }
-        { _id: "e", _type: "UnitsColumnQuestion", text: { en: "Unit" }, units: [{ label: { en: "CM"}, id: "cm" }, { label: { en: "INCH"}, id: "inch" }] }
+        { _id: "e", _type: "UnitsColumnQuestion", text: { en: "Unit" }, decimal: true, units: [{ label: { en: "CM"}, id: "cm" }, { label: { en: "INCH"}, id: "inch" }] }
       ]
       alternates: { na: 1 }
     }

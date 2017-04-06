@@ -3,9 +3,9 @@ H = React.DOM
 R = React.createElement
 
 formUtils = require '../formUtils'
+ui = require 'react-library/lib/bootstrap'
 
 # Not tested
-
 module.exports = class UnitsAnswerComponent extends React.Component
   @contextTypes:
     locale: React.PropTypes.string  # Current locale (e.g. "en")
@@ -28,9 +28,9 @@ module.exports = class UnitsAnswerComponent extends React.Component
 
   focus: () ->
     if @props.prefix
-      @refs.quantity.focus()
+      @quantity.focus()
     else
-      @refs.units.focus()
+      @units.focus()
 
   handleKeyDown: (ev) =>
     if @props.onNextOrComments?
@@ -44,33 +44,20 @@ module.exports = class UnitsAnswerComponent extends React.Component
     # When pressing ENTER or TAB
     if ev.keyCode == 13 or ev.keyCode == 9
       if @props.prefix
-        @refs.quantity.focus()
+        @quantity.focus()
       else
-        @refs.units.focus()
+        @units.focus()
       # It's important to prevent the default behavior when handling tabs (or else the tab is applied after the focus change)
       ev.preventDefault()
 
-  # onChange callback only set the quantity state or else typing '1.' results in NaN and is then replaced with an empty string
   handleValueChange: (val) =>
-    @setState(quantity: val.target.value)
-
-  # Uses onBlur for updating the value instead of onChange (look at the justification above)
-  handleValueBlur: (val) =>
-    @changed(val.target.value, @state.selectedUnits)
+    @changed(val, @state.selectedUnits)
 
   handleUnitChange: (val) =>
     @changed(@state.quantity, val.target.value)
 
   changed: (quantity, unit) ->
-    if quantity == null or quantity == ''
-      quantity = null
-    else
-      quantity = if @props.decimal then parseFloat(quantity) else parseInt(quantity)
     unit = if unit then unit else @props.defaultUnits
-
-    if isNaN(quantity)
-      quantity = null
-
     @props.onValueChange({quantity: quantity, units: unit})
 
   getSelectedUnit: (answer) ->
@@ -89,19 +76,13 @@ module.exports = class UnitsAnswerComponent extends React.Component
 
   createNumberInput: ->
     return H.td null,
-      H.input {
-        id: 'quantity'
-        className: "form-control",
-        type: "number"
-        lang: "en"
-        step: "any",
-        style: {width: "12em"},
-        onBlur: @handleValueBlur,
-        onChange: @handleValueChange,
-        value: if @state.quantity? then @state.quantity else ""
-        ref: 'quantity'
-        onKeyDown: if @props.prefix then @handleKeyDown else @handleInternalNext
-      }
+      R ui.NumberInput,
+        ref: (c) => @quantity = c
+        decimal: @props.decimal
+        value: if @state.quantity? then @state.quantity
+        onChange: @handleValueChange
+        onTab: if @props.prefix then @props.onNextOrComments else @handleInternalNext
+        onEnter: if @props.prefix then @props.onNextOrComments else @handleInternalNext
 
   render: ->
     H.table null,
@@ -111,13 +92,13 @@ module.exports = class UnitsAnswerComponent extends React.Component
             @createNumberInput()
           H.td null,
             H.select {
-                id: "units"
-                ref: "units"
-                className: "form-control"
-                style: {width: "auto"}
-                onChange: @handleUnitChange
-                value: if @state.selectedUnits == null then '' else @state.selectedUnits
-              },
+              id: "units"
+              ref: (c) => @units = c
+              className: "form-control"
+              style: {width: "auto"}
+              onChange: @handleUnitChange
+              value: if @state.selectedUnits == null then '' else @state.selectedUnits
+            },
               if not @props.defaultUnits
                 H.option value: "",
                   "Select units"
