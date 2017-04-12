@@ -1,9 +1,9 @@
 _ = require 'lodash'
 localizations = require '../localizations.json'
-uuid = require 'node-uuid'
+uuid = require 'uuid'
 
 # Create ~ 128-bit uid without dashes
-exports.createUid = -> uuid.v4().replace(/-/g, "")
+exports.createUid = -> uuid().replace(/-/g, "")
 
 # Create short unique id, with ~42 bits randomness to keep unique amoung a few choices
 exports.createShortUid = ->
@@ -148,6 +148,8 @@ exports.prepareQuestion = (q) ->
       _.defaults q, { format: "YYYY-MM-DD" }
     when "UnitsQuestion", "UnitsColumnQuestion"
       _.defaults q, { units: [], defaultUnits: null, unitsPosition: "suffix", decimal: true  }
+    when "LocationQuestion"
+      _.defaults q, { calculateAdminRegion: true }
     when "CheckQuestion"
       _.defaults q, { label: {} }
     when "EntityQuestion"
@@ -338,19 +340,19 @@ exports.extractLocalizedStrings = (obj) ->
 
   return strs
 
-exports.updateLocalizations = (form) ->
-  form.localizedStrings = form.localizedStrings or []
+exports.updateLocalizations = (formDesign) ->
+  formDesign.localizedStrings = formDesign.localizedStrings or []
 
   # Map existing ones in form
   existing = {}
-  for str in form.localizedStrings
+  for str in formDesign.localizedStrings
     if str.en
       existing[str.en] = true
 
   # Add new localizations
   for str in localizations.strings
-    if str.en and not existing[str.en]
-      form.localizedStrings.push str
+    if str.en and not existing[str.en] and not str._unused
+      formDesign.localizedStrings.push str
       existing[str.en] = true
 
 # Determines if has at least one localization in locale
@@ -359,8 +361,8 @@ exports.hasLocalizations = (obj, locale) ->
   return _.any(strs, (str) -> str[locale])
 
 # Finds an entity question of the specified type, or a legacy site question
-exports.findEntityQuestion = (form, entityType) ->
-  question = _.find exports.priorQuestions(form), (q) -> 
+exports.findEntityQuestion = (formDesign, entityType) ->
+  question = _.find exports.priorQuestions(formDesign), (q) -> 
     if q._type == "EntityQuestion" and q.entityType == entityType
       return q
 
@@ -383,7 +385,7 @@ exports.findEntityQuestion = (form, entityType) ->
 #   question: _id of question
 #   roster: _id of roster entry, null if not in roster
 #   entityType: e.g. "water_point"
-#   property: property code (e.g _id or code) of entity that is referenced in value
+#   property: property code (e.g "_id" or "code") of entity that is referenced in value
 #   value: value of entity property that is referenced
 # }
 exports.extractEntityReferences = (formDesign, responseData) ->
@@ -396,11 +398,11 @@ exports.extractEntityReferences = (formDesign, responseData) ->
         code = responseData[question._id]?.value?.code
         entityType = if question.siteTypes then _.first(question.siteTypes).toLowerCase().replace(new RegExp(' ', 'g'), "_") else "water_point"
         if code
-          results.push({ question: question._id, roster: null, entityType: entityType, property: "code", value: code })
+          results.push({ question: question._id, entityType: entityType, property: "code", value: code })
       when "entity"
         value = responseData[question._id]?.value
         if value
-          results.push({ question: question._id, roster: null, entityType: question.entityType, property: "_id", value: value })
+          results.push({ question: question._id, entityType: question.entityType, property: "_id", value: value })
 
   for rosterId in exports.getRosterIds(formDesign)
     for question in exports.priorQuestions(formDesign, null, rosterId)

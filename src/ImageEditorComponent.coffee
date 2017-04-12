@@ -11,6 +11,7 @@ module.exports = class ImageEditorComponent extends React.Component
     image: React.PropTypes.object             # e.g. { id: someid, caption: caption }
     onImageChange: React.PropTypes.func       # Called when image changed
     T: React.PropTypes.func.isRequired        # Localizer to use
+    consentPrompt: React.PropTypes.string    # Question to prompt for consent
 
   @childContextTypes:
     imageManager: React.PropTypes.object.isRequired
@@ -28,3 +29,4 @@ module.exports = class ImageEditorComponent extends React.Component
     R ImageAnswerComponent, 
       image: @props.image
       onImageChange: @props.onImageChange
+      consentPrompt: @props.consentPrompt

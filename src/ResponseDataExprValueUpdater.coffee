@@ -69,7 +69,7 @@ module.exports = class ResponseDataExprValueUpdater
         return callback(error)
 
       result = new ResponseDataValidator().validate(@formDesign, visibilityStructure, data)
-      callback(null, result)
+      callback(null, if result then result.message else null)
 
   # Updates the data of a response, given an expression and its value. For example,
   # if there is a text field in question q1234, the expression { type: "field", table: "responses:form123", column: "data:q1234:value" }

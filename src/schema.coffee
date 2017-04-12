@@ -12,6 +12,13 @@ deployments = {
       # True if deployment is accepting new responses
       active: { type: "boolean" }
 
+      # True if deployment is public (anonymous responses allowed)
+      public: { type: "boolean" }
+
+      # Contact name and email for person responsible for deployment. Used for public deployments
+      contactName: { type: "string" }
+      contactEmail: { type: "string" }
+
       # List of ids of users and groups who can complete form. i.e. user:<username> or group:<groupname>
       enumerators: { type: "array", items: { type: "string" } }
 
@@ -36,6 +43,9 @@ deployments = {
           properties: {
             # List of ids of users and groups who can approve/reject responses at this step. i.e. user:<username> or group:<groupname>
             "approvers": { type: "array", items: { type: "string" } }
+
+            # If true, prevents approvers from editing/deleting
+            preventEditing: { type: "boolean" }
           }
           required: ['approvers']
           additionalProperties: false
@@ -140,6 +150,7 @@ module.exports = {
 
           expressions: { type: "object" } # Map of indicator property id to mwater-expression expression to create value
           condition: { type: ["object", "null"] } # Optional mwater-expression expression to restrict when to create indicator value
+          datetimeExpr: { type: ["object", "null"] } # Optional mwater-expression expression to select datetime of indicator value. Defaults to submittedOn
 
           # List of ids of users and groups who can view created indicator values i.e. user:<username> or group:<groupname>
           viewers: { type: "array", items: { type: "string" } }

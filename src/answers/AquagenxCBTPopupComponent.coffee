@@ -62,8 +62,8 @@ module.exports = class AquagenxCBTPopupComponent extends React.Component
   constructor: (props) ->
     super
 
-    value = _.clone(props.value)
-    if not props.value.cbt?
+    value = _.clone(props.value) or {}
+    if not value.cbt?
       cbt = _.clone possibleCombinations["false,false,false,false,false"]
       cbt.c1 = cbt.c2 = cbt.c3 = cbt.c4 = cbt.c5 = false
       value.cbt = cbt

@@ -70,6 +70,7 @@ describe 'SiteAnswerComponent', ->
     })
     input = testComponent.findInput()
     TestComponent.changeValue(input, "10007")
+    ReactTestUtils.Simulate.blur(input)
 
   it "rejects invalid site codes", (done) ->
     testComponent = @render({
@@ -86,4 +87,5 @@ describe 'SiteAnswerComponent', ->
     })
     input = testComponent.findInput()
     TestComponent.changeValue(input, "10008")
+    ReactTestUtils.Simulate.blur(input)
 

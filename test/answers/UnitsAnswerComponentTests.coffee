@@ -65,10 +65,7 @@ describe 'UnitsAnswerComponent', ->
         done()
     })
 
-    quantityInput = ReactTestUtils.findAllInRenderedTree testComponent.getComponent(), (inst) ->
-      return ReactTestUtils.isDOMComponent(inst) && inst.id == 'quantity'
-
-    quantityInput = quantityInput[0]
+    quantityInput = ReactTestUtils.findRenderedDOMComponentWithTag testComponent.getComponent(), "INPUT"
 
     TestComponent.changeValue(quantityInput, '13.33')
     ReactTestUtils.Simulate.blur(quantityInput)
@@ -85,12 +82,9 @@ describe 'UnitsAnswerComponent', ->
         done()
     })
 
-    quantityInput = ReactTestUtils.findAllInRenderedTree testComponent.getComponent(), (inst) ->
-      return ReactTestUtils.isDOMComponent(inst) && inst.id == 'quantity'
+    quantityInput = ReactTestUtils.findRenderedDOMComponentWithTag testComponent.getComponent(), "INPUT"
 
-    quantityInput = quantityInput[0]
-
-    TestComponent.changeValue(quantityInput, '13.33')
+    TestComponent.changeValue(quantityInput, '13')
     ReactTestUtils.Simulate.blur(quantityInput)
 
   it "defaults unit", (done) ->
@@ -106,10 +100,7 @@ describe 'UnitsAnswerComponent', ->
         done()
     })
 
-    quantityInput = ReactTestUtils.findAllInRenderedTree testComponent.getComponent(), (inst) ->
-      return ReactTestUtils.isDOMComponent(inst) && inst.id == 'quantity'
-
-    quantityInput = quantityInput[0]
+    quantityInput = ReactTestUtils.findRenderedDOMComponentWithTag testComponent.getComponent(), "INPUT"
 
     TestComponent.changeValue(quantityInput, '13.33')
     ReactTestUtils.Simulate.blur(quantityInput)

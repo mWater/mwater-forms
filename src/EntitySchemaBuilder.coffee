@@ -1,172 +1,105 @@
 _ = require 'lodash'
+formUtils = require './formUtils'
 
 # Builds schema for entities. Always add entities before forms
 module.exports = class EntitySchemaBuilder  
   # Pass in:
   #   entityTypes: list of entity types objects
-  #   properties: list of all properties objects (filtered to visible)
-  #   units: list of all units objects
-  #   user: current username
-  #   groups: current groups
+  #   propFilter: optional filter function that takes a property and returns true to include, false to exclude
   # Returns updated schema
-  addEntities: (schema, entityTypes, properties, units) ->
+  addEntities: (schema, entityTypes, propFilter) ->
     # Keep list of reverse join columns (one to many) to add later. table and column
     reverseJoins = []
-    for prop in properties
-      if prop.type == "entity"
-        # Lookup entity type 
-        entityType = _.findWhere(entityTypes, code: prop.entity_type)
-        tableId = "entities.#{entityType.code}"
 
-        reverseJoins.push({
-          table: "entities." + prop.ref_entity_type
-          column: {
-            id: "!#{tableId}.#{prop.code}"
-            name: entityType.name
-            deprecated: prop.deprecated or entityType.deprecated
-            type: "join"
-            join: {
-              type: "1-n"
-              toTable: tableId
-              fromColumn: "_id"
-              toColumn: prop.code
+    # For each entity type, finding reverse joins
+    for entityType in entityTypes
+      traverseTree entityType.properties, (prop) =>
+        if propFilter and not propFilter(prop)
+          return null
+
+        if prop.type == "id" and prop.idTable.match(/^entities\./)
+          entityCode = prop.idTable.split(".")[1]
+
+          # Check that exists
+          if not _.findWhere(entityTypes, code: entityCode)
+            return
+
+          reverseJoins.push({
+            table: prop.idTable
+            column: {
+              id: "!entities.#{entityType.code}.#{prop.id}"
+              name: entityType.name
+              deprecated: prop.deprecated or entityType.deprecated
+              type: "join"
+              join: {
+                type: "1-n"
+                toTable: "entities.#{entityType.code}"
+                fromColumn: "_id"
+                toColumn: prop.id
+              }
             }
-          }
-        })
+          })
 
     # For each entity type
     for entityType in entityTypes
-      # Columns and sections
-      contents = []
-
       # Get label column
       labelColumn = null
 
-      entityProps = _.filter(properties, (prop) -> prop.entity_type == entityType.code)
-
-      # Sort obvious ones to top
-      ordering = {
-        name: 1
-        desc: 2
-        type: 3
-        location: 4
-        code: 5
-      }
-
-      entityProps = _.sortBy(entityProps, (prop) -> ordering[prop.code] or 999)
-
       # Add properties
-      for prop in entityProps
+      contents = mapTree(entityType.properties or [], (prop) =>
+        if propFilter and not propFilter(prop)
+          return null
+
+        # Sections are untouched unless filtered
+        if prop.type == "section"
+          return prop
+
         # Use unique code as label
-        if prop.unique_code
-          labelColumn = prop.code
+        if prop.uniqueCode
+          labelColumn = prop.id
 
-        deprecated = prop.deprecated
+        prop = _.pick(prop, "id", "name", "code", "desc", "type", "idTable", "enumValues", "deprecated")
 
-        if prop.type == "measurement"
-          # Add magnitude and units
-          contents.push({
-            id: prop.code + ".magnitude"
-            name: appendStr(prop.name, " (magnitude)")
-            type: "number"
-            deprecated: deprecated
-          })
+        # Don't include roles
+        delete prop.roles
 
-          contents.push({
-            id: prop.code + ".unit"
-            name: appendStr(prop.name, " (units)")
-            type: "enum"
-            enumValues: _.map(prop.units, (u) -> { id: u, name: _.findWhere(units, { code: u }).name })
-            deprecated: deprecated
-          })
+        # Convert id to join
+        if prop.type == "id"
+          prop.type = "join"
+          prop.join = {
+            type: "n-1"
+            toTable: prop.idTable
+            fromColumn: prop.id
+            toColumn: "_id"
+          }
+          delete prop.idTable
 
-        else if prop.type == "entity"
-          # Check if referenced entity is deprecated
-          refEntityType = _.findWhere(entityTypes, code: prop.ref_entity_type)
+        # Pad date fields
+        if prop.type == "date"
+          # rpad(field ,10, '-01-01')
+          prop.jsonql = {
+            type: "op"
+            op: "rpad"
+            exprs:[
+              {
+                type: "field"
+                tableAlias: "{alias}"
+                column: prop.id
+              }
+              10
+              '-01-01'
+            ]
+          }
 
-          # Add two joins (to and from)
-          contents.push({ 
-            id: "#{prop.code}"
-            name: prop.name
-            type: "join"
-            deprecated: deprecated or refEntityType.deprecated
-            join: {
-              type: "n-1"
-              toTable: "entities." + prop.ref_entity_type
-              fromColumn: prop.code
-              toColumn: "_id"
-            }
-          })
+        return prop
+        )
 
-        else if prop.type in ["enum", "enumset"]
-          contents.push({
-            id: prop.code
-            name: prop.name
-            type: prop.type
-            enumValues: _.map(prop.values, (v) -> { id: v.code, name: v.name })
-            deprecated: deprecated
-          })
-
-        # integer and decimal will eventually become number
-        else if prop.type in ["integer", "decimal", "number"]
-          contents.push({
-            id: prop.code
-            name: prop.name
-            type: "number"
-            deprecated: deprecated
-          })
-
-        # date is padded to yyyy-mm-dd
-        else if prop.type == "date"
-          contents.push({
-            id: prop.code
-            name: prop.name
-            type: "date"
-            deprecated: deprecated
-            # rpad(field ,10, '-01-01')
-            jsonql: {
-              type: "op"
-              op: "rpad"
-              exprs:[
-                {
-                  type: "field"
-                  tableAlias: "{alias}"
-                  column: prop.code
-                }
-                10
-                '-01-01'
-              ]
-            }
-          })
-
-        # admin_region is a join
-        else if prop.type == "admin_region"
-          contents.push({
-            id: prop.code
-            name: prop.name
-            type: "join"
-            join: {
-              type: "n-1"
-              toTable: "admin_regions"
-              fromColumn: prop.code
-              toColumn: "_id"
-            }
-            deprecated: deprecated
-          })
-
-        else if prop.type not in ['json']
-          contents.push({
-            id: prop.code
-            name: prop.name
-            type: prop.type
-            enumValues: prop.values
-            deprecated: deprecated
-          })
 
       # Add extra columns
       contents.push({
         id: "_managed_by"
         name: { en: "Managed By" }
+        desc: { en: "User or group that manages the data for this #{formUtils.localizeString(entityType.name)}"}
         type: "join"
         join: {
           type: "n-1"
@@ -179,6 +112,7 @@ module.exports = class EntitySchemaBuilder
       contents.push({
         id: "_created_by"
         name: { en: "Added by user" }
+        desc: { en: "User that added this #{formUtils.localizeString(entityType.name)} to the database" }
         type: "join"
         join: {
           type: "n-1"
@@ -191,6 +125,7 @@ module.exports = class EntitySchemaBuilder
       contents.push({
         id: "_created_on"
         name: { en: "Date added" }
+        desc: { en: "Date that this #{formUtils.localizeString(entityType.name)} was added to the database" }
         type: "datetime"
       })
 
@@ -198,6 +133,7 @@ module.exports = class EntitySchemaBuilder
       contents.push({
         id: "!datasets"
         name: "Datasets"
+        desc: { en: "Datasets that this #{formUtils.localizeString(entityType.name)} is a part of" }
         type: "join"
         join: {
           type: "n-n"
@@ -225,6 +161,15 @@ module.exports = class EntitySchemaBuilder
         }
       })
 
+      # Add related forms placeholder section
+      contents.push({
+        type: "section"
+        id: "!related_forms"
+        name: { en: "Related Surveys" }
+        desc: { en: "Surveys that are linked by a question to #{formUtils.localizeString(entityType.name)}" }
+        contents: []
+      })
+
       tableId = "entities.#{entityType.code}"
 
       # Add reverse join columns
@@ -235,9 +180,11 @@ module.exports = class EntitySchemaBuilder
       table = { 
         id: tableId
         name: entityType.name
+        desc: entityType.desc
         primaryKey: "_id"
         label: labelColumn
         contents: contents
+        deprecated: entityType.deprecated
       }
 
       # Legacy only
@@ -262,3 +209,25 @@ appendStr = (str, suffix) ->
       else
         output[key] = value + (suffix[key] or suffix[suffix._base] or suffix.en)
   return output
+
+# Map a tree that consists of items with optional 'contents' array. null means to discard item
+mapTree = (tree, func) ->
+  if not tree
+    return tree
+
+  return _.compact(_.map(tree, (item) ->
+    newItem = func(item)
+    if newItem and item.contents
+      newItem.contents = mapTree(item.contents, func)
+    return newItem
+  ))
+
+# Traverse a tree, calling func for each item
+traverseTree = (tree, func) ->
+  if not tree
+    return
+
+  for item in tree
+    func(item)
+    if item.contents
+      traverseTree(item.contents, func)

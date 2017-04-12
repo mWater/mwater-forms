@@ -4,7 +4,6 @@ _ = require 'lodash'
 exports.ImageEditorComponent = require './ImageEditorComponent'
 exports.ImagelistEditorComponent = require './ImagelistEditorComponent'
 exports.ResponseAnswersComponent = require './ResponseAnswersComponent'
-exports.LocationView = require './legacy/LocationView'
 
 exports.formUtils = require './formUtils'
 exports.conditionUtils = require './conditionUtils'
@@ -23,6 +22,7 @@ exports.DateTimePickerComponent = require './DateTimePickerComponent'
 exports.FormModel = require './FormModel'
 exports.ResponseModel = require './ResponseModel'
 exports.ResponseDisplayComponent = require './ResponseDisplayComponent'
+exports.ResponseViewEditComponent = require './ResponseViewEditComponent'
 exports.FormComponent = require './FormComponent'
 exports.formContextTypes = require './formContextTypes'
 exports.FormSchemaBuilder = require './FormSchemaBuilder'
@@ -31,6 +31,9 @@ exports.AssignmentModel = require './AssignmentModel'
 
 exports.ResponseDataExprValueUpdater = require './ResponseDataExprValueUpdater'
 exports.ResponseRow = require './ResponseRow'
+exports.RotationAwareImageComponent = require './RotationAwareImageComponent'
+
+exports.ImageUploaderModalComponent = require './ImageUploaderModalComponent'
 
 exports.schemaVersion = 17 # Version of the schema that this package supports (cannot compile if higher)
 exports.minSchemaVersion = 1 # Minimum version of forms schema that can be compiled

@@ -25,9 +25,13 @@ module.exports = class FormComponent extends React.Component
 
     locale: React.PropTypes.string          # e.g. "fr"
     
-    onSubmit: React.PropTypes.func.isRequired     # Called when submit is pressed
+    onSubmit: React.PropTypes.func                # Called when submit is pressed
     onSaveLater: React.PropTypes.func             # Optional save for later
-    onDiscard: React.PropTypes.func.isRequired    # Called when discard is pressed
+    onDiscard: React.PropTypes.func               # Called when discard is pressed
+
+    submitLabel: React.PropTypes.string           # To override submit label
+    saveLaterLabel: React.PropTypes.string        # To override Save For Later label
+    discardLabel: React.PropTypes.string          # To override Discard label
 
     entity: React.PropTypes.object            # Form-level entity to load
     entityType: React.PropTypes.string        # Type of form-level entity to load
@@ -132,18 +136,31 @@ module.exports = class FormComponent extends React.Component
           isVisible: @isVisible 
           onNext: @handleNext
 
-        H.button type: "button", key: 'submitButton', className: "btn btn-primary", ref: 'submit', onClick: @handleSubmit,
-          @state.T("Submit")
+        if @props.onSubmit
+          H.button type: "button", key: 'submitButton', className: "btn btn-primary", ref: 'submit', onClick: @handleSubmit,
+            if @props.submitLabel
+              @props.submitLabel
+            else
+              @state.T("Submit")
 
         "\u00A0"
 
         if @props.onSaveLater
           [
             H.button type: "button", key: 'saveLaterButton', className: "btn btn-default", onClick: @props.onSaveLater,
-              @state.T("Save for Later")
+              if @props.saveLaterLabel
+                @props.saveLaterLabel
+              else
+                @state.T("Save for Later")
             "\u00A0"
           ]
 
-        H.button type:"button", key: 'discardButton', className: "btn btn-default", onClick: @props.onDiscard,
-          H.span className: "glyphicon glyphicon-trash"
-          " " + @state.T("Discard")
+        if @props.onDiscard
+          H.button type:"button", key: 'discardButton', className: "btn btn-default", onClick: @props.onDiscard,
+            if @props.discardLabel
+              @props.discardLabel
+            else
+              [
+                H.span className: "glyphicon glyphicon-trash"
+                " " + @state.T("Discard")
+              ]

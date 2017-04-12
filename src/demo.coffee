@@ -11,6 +11,8 @@ ItemListComponent = require './ItemListComponent'
 ResponseDisplayComponent = require './ResponseDisplayComponent'
 Schema = require('mwater-expressions').Schema
 FormSchemaBuilder = require './FormSchemaBuilder'
+ImageUploaderModalComponent = require './ImageUploaderModalComponent'
+
 
 # Setup mock localizer
 global.T = (str) ->
@@ -104,10 +106,10 @@ class DemoComponent extends React.Component
     #   onDataChange: (data) => @setState(data: data)
 
     schema = new Schema()
-    design = rosterFormDesign
-    # design: matrixFormDesign
     # design = rosterFormDesign
-    # design = bigsampleForm2.design
+    design = matrixFormDesign
+    # design = rosterFormDesign
+    # design = sampleForm2.design
     schema = new FormSchemaBuilder().addForm(schema, { _id: "form1", design: design })
 
     H.div className: "row",
@@ -143,9 +145,19 @@ class DemoComponent extends React.Component
         }
       )
 
+# class ImageUploaderTestComponent extends React.Component
+#   render: ->
+#     R ImageUploaderModalComponent, 
+#       T: window.T
+#       apiUrl: "http://localhost:1234/v3/"
+#       onSuccess: (id) => console.log(id)
+#       onCancel: => console.log "Cancel"
+
 
 $ ->
   ReactDOM.render(R(DemoComponent), document.getElementById("main"))
+  # ImageUploaderModalComponent.show("http://localhost:1234/v3/", null, window.T, (id) -> alert(id))
+  # ReactDOM.render(R(ImageUploaderTestComponent), document.getElementById("main"))
 
 rosterFormDesign = {
   "_type": "Form",
@@ -278,8 +290,9 @@ matrixFormDesign = {
         { _id: "b", _type: "NumberColumnQuestion", text: { en: "Age" }, decimal: false }
         { _id: "c", _type: "CheckColumnQuestion", text: { en: "Present" } }
         { _id: "d", _type: "DropdownColumnQuestion", text: { en: "Gender" }, choices: [{ label: { en: "Male"}, id: "male" }, { label: { en: "Female"}, id: "female" }] }
-        { _id: "e", _type: "UnitsColumnQuestion", text: { en: "Unit" }, units: [{ label: { en: "CM"}, id: "cm" }, { label: { en: "INCH"}, id: "inch" }] }
+        { _id: "e", _type: "UnitsColumnQuestion", text: { en: "Unit" }, decimal: true, units: [{ label: { en: "CM"}, id: "cm" }, { label: { en: "INCH"}, id: "inch" }] }
       ]
+      alternates: { na: 1 }
     }
   ]
 }

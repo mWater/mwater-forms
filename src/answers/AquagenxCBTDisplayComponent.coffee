@@ -59,7 +59,7 @@ module.exports = class AquagenxCBTDisplayComponent extends React.Component
 
   render: ->
     # Can't display if not set
-    if not @props.value.cbt
+    if not @props.value?.cbt
       return null
 
     H.div id: "cbtDisplay#{@props.questionId}",

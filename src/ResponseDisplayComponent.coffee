@@ -31,12 +31,17 @@ module.exports = class ResponseDisplayComponent extends React.Component
       T: @createLocalizer(@props.form.design, @props.formCtx.locale)
     }
 
-  componentWillMount: () ->
+  componentWillMount: ->
+    @loadEventUsernames(@props.response.events)
+
+  # Load user names related to events
+  loadEventUsernames: (events) ->
     events = @props.response.events or []
     
-    if events.length > 0 and @props.apiUrl?
-      byArray = _.map(events, (event) -> "\"#{event.by}\"" )
-      url = @props.apiUrl + 'users_public_data?filter={"_id":{"$in":[' + byArray.join(',') + ']}}'
+    byArray = _.compact(_.pluck(events, "by"))
+    if byArray.length > 0 and @props.apiUrl?
+      filter = { _id: { $in: byArray } }
+      url = @props.apiUrl + 'users_public_data?filter=' + JSON.stringify(filter)
       @setState(loadingUsernames: true)
       $.ajax({ dataType: "json", url: url })
       .done (rows) =>
@@ -48,6 +53,9 @@ module.exports = class ResponseDisplayComponent extends React.Component
   componentWillReceiveProps: (nextProps) ->
     if @props.form.design != nextProps.form.design or @props.locale != nextProps.locale
       @setState(T: @createLocalizer(nextProps.form.design, nextProps.locale))
+
+    if not _.isEqual(@props.response.events, nextProps.response.events)
+      @loadEventUsernames(nextProps.response.events)
 
     events = @props.response.events or []
 
@@ -95,7 +103,7 @@ module.exports = class ResponseDisplayComponent extends React.Component
       " "
       @state.T("by")
       " "
-      @state.eventsUsernames[ev.by].username
+      if ev.by then @state.eventsUsernames[ev.by]?.username else "Anonymous"
       " "
       @state.T("on")
       " "
@@ -149,12 +157,15 @@ module.exports = class ResponseDisplayComponent extends React.Component
   renderHeader: ->
     H.div style: { paddingBottom: 10 },
       H.div key: "user", 
-        @state.T('User'), ": ", H.b(null, @props.response.username)
+        @state.T('User'), ": ", H.b(null, @props.response.username or "Anonymous")
       H.div key: "code", 
         @state.T('Response Id'), ": ", H.b(null, @props.response.code)
       if @props.response and @props.response.modified
         H.div key: "date", 
           @state.T('Date'), ": ", H.b(null, moment(@props.response.modified.on).format('lll'))
+      if @props.response.ipAddress
+        H.div key: "ipAddress", 
+          @state.T('IP Address'), ": ", H.b(null, @props.response.ipAddress)
       @renderStatus()
       @renderHistory()
 

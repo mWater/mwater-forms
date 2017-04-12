@@ -1,6 +1,5 @@
 _ = require 'lodash'
 formUtils = require './formUtils'
-uuid = require 'node-uuid'
 
 # Model of a response object that allows manipulation and asking of questions
 # Options are:
@@ -18,18 +17,40 @@ module.exports = class ResponseModel
 
   # Setup draft. deploymentId is optional _id of deployment to use for cases where ambiguous
   draft: (deploymentId) ->
-    if not @response._id
-      @response._id = formUtils.createUid()
-      @response.form = @form._id
-      @response.user = @user
-      @response.startedOn = new Date().toISOString()
-      @response.data = {}
-      @response.approvals = []
-      @response.events = []
+    if @response._id
+      throw new Error("Response already has _id")
 
-      # Create code. Not unique, but unique per user if logged in once.
-      @response.code = @username + "-" + formUtils.createBase32TimeCode(new Date())
+    @response._id = formUtils.createUid()
+    @response.form = @form._id
+    @response.user = @user
+    @response.startedOn = new Date().toISOString()
+    @response.data = {}
+    @response.approvals = []
+    @response.events = []
+
+    # Create code. Not unique, but unique per user if logged in once.
+    @response.code = @username + "-" + formUtils.createBase32TimeCode(new Date())
   
+    @response.formRev = @form._rev
+    @response.status = "draft"
+
+    @_addEvent("draft")
+
+    if deploymentId
+      @response.deployment = deploymentId
+    else if not @response.deployment # Select first deployment if not specified and not already present
+      deployments = @listEnumeratorDeployments()
+
+      if deployments.length == 0
+        throw new Error("No matching deployments for #{@form._id} user #{@username}")
+
+      @response.deployment = deployments[0]._id
+
+    @fixRoles()
+    @updateEntities()
+
+  # Switch back to draft mode
+  redraft: ->
     # Add event if not in draft
     if @response.status != "draft"
       @_addEvent("draft")
@@ -37,20 +58,11 @@ module.exports = class ResponseModel
     # Unfinalize if final
     if @response.status == "final" then @_unfinalize()
 
-    @response.formRev = @form._rev
     @response.status = "draft"
-
-    if deploymentId
-      @response.deployment = deploymentId
-    else # Select deployment if not specified
-      deployments = @listEnumeratorDeployments()
-
-      if deployments.length == 0
-        throw new Error("No matching deployments for #{@form._id} user #{@username}")
-      @response.deployment = deployments[0]._id
+    @response.approvals = []
 
     @fixRoles()
-    @_updateEntities()
+    @updateEntities()
 
   # Return all active deployments that the user can enumerate
   listEnumeratorDeployments: ->
@@ -64,7 +76,7 @@ module.exports = class ResponseModel
   # and other housekeeping before saving it
   saveForLater: ->
     @fixRoles()
-    @_updateEntities()
+    @updateEntities()
 
   # Submit (either to final or pending as appropriate)
   submit: ->
@@ -84,7 +96,31 @@ module.exports = class ResponseModel
     @_addEvent("submit")
 
     @fixRoles()
-    @_updateEntities()
+    @updateEntities()
+
+  # Can submit if in draft/rejected and am enumerator or admin
+  canSubmit: ->
+    if @response.status not in ['draft', 'rejected']
+      return false
+
+    # Anonymous can submit
+    if not @response.user
+      return true
+
+    deployment = _.findWhere(@form.deployments, { _id: @response.deployment })
+    if not deployment
+      throw new Error("No matching deployments for #{@form._id} user #{@username}")
+
+    # Get list of admins at both deployment and form level 
+    admins = _.union(_.pluck(_.where(@form.roles, { role: "admin"}), "id"), deployment.admins)
+
+    # Add enumerator 
+    admins = _.union(admins, ["user:#{@response.user}"])
+
+    subjects = ["user:" + @user, "all"]
+    subjects = subjects.concat(_.map @groups, (g) -> "group:" + g)
+
+    return _.intersection(admins, subjects).length > 0
 
   # Approve response
   approve: ->
@@ -98,7 +134,7 @@ module.exports = class ResponseModel
     approval = { by: @user, on: new Date().toISOString() }
 
     # Determine if approver (vs admin)
-    approvers = deployment.approvalStages[@response.approvals.length].approvers
+    approvers = deployment.approvalStages[@response.approvals.length]?.approvers or []
     subjects = ["user:" + @user]
     subjects = subjects.concat(_.map @groups, (g) -> "group:" + g)
 
@@ -114,7 +150,7 @@ module.exports = class ResponseModel
     @_addEvent("approve", override: _.intersection(approvers, subjects).length == 0)
 
     @fixRoles()
-    @_updateEntities()
+    @updateEntities()
 
   # Reject a response with a specific rejection message
   reject: (message) ->
@@ -135,7 +171,7 @@ module.exports = class ResponseModel
     @_addEvent("reject", message: message)
 
     @fixRoles()
-    @_updateEntities()
+    @updateEntities()
 
   # Record that an edit was done, if not by enumerator
   recordEdit: ->
@@ -149,30 +185,11 @@ module.exports = class ResponseModel
 
   # Performs special operation when a response goes from final to other
   _unfinalize: ->
-    # Unset any entity questions that were set because a create happened
-    if @response.pendingEntityCreates
-      for create in @response.pendingEntityCreates
-        @response.data[create.questionId].value = null
-        delete @response.data[create.questionId].created
+    return
 
-    # Remove any pending entity operations
-    @response.pendingEntityUpdates = []
-    @response.pendingEntityCreates = []
-
-  # Updates entities field
-  _updateEntities: ->
-    entities = []
-    for question in formUtils.priorQuestions(@form.design)    
-      if question._type == "EntityQuestion"
-        if @response.data and @response.data[question._id] and @response.data[question._id].value
-          entities.push({ 
-            questionId: question._id
-            entityType: question.entityType
-            entityId: @response.data[question._id].value
-            created: @response.data[question._id].created == true
-          })
-
-    @response.entities = entities
+  # Updates entities field. Stores a list of all entity references in the response
+  updateEntities: ->
+    @response.entities = formUtils.extractEntityReferences(@form.design, @response.data)
 
   # Fixes roles to reflect status and approved fields
   fixRoles: ->
@@ -194,9 +211,15 @@ module.exports = class ResponseModel
     if deployment.active
       if @response.status == 'final' and not deployment.enumeratorAdminFinal
         admins = []
-        viewers = ["user:" + @response.user]
+        if @response.user
+          viewers = ["user:" + @response.user]
+        else
+          viewers = []
       else
-        admins = ["user:" + @response.user]
+        if @response.user
+          admins = ["user:" + @response.user]
+        else
+          admins = []
         viewers = []
     else
       admins = []
@@ -212,9 +235,9 @@ module.exports = class ResponseModel
     if @response.status == 'pending'
       for i in [0...deployment.approvalStages.length]
         if @response.approvals.length == i
-          admins = _.union admins, deployment.approvalStages[i].approvers
+          admins = _.union admins, deployment.approvalStages[i]?.approvers or []
         else
-          viewers = _.union viewers, deployment.approvalStages[i].approvers
+          viewers = _.union viewers, deployment.approvalStages[i]?.approvers or []
     else
       for approvalStage in deployment.approvalStages
         viewers = _.union viewers, approvalStage.approvers
@@ -239,7 +262,7 @@ module.exports = class ResponseModel
       return false
 
     # Get list of admins at both deployment and form level and add approvers
-    admins = _.union(_.pluck(_.where(@form.roles, { role: "admin"}), "id"), deployment.admins, deployment.approvalStages[@response.approvals.length].approvers)
+    admins = _.union(_.pluck(_.where(@form.roles, { role: "admin"}), "id"), deployment.admins, deployment.approvalStages[@response.approvals.length]?.approvers or [])
     subjects = ["user:" + @user, "all"]
     subjects = subjects.concat(_.map @groups, (g) -> "group:" + g)
 
@@ -247,9 +270,42 @@ module.exports = class ResponseModel
       return true
     return false
 
+  # Determine if am an approver for the response, as opposed to admin who could still approve
+  amApprover: ->
+    deployment = _.findWhere(@form.deployments, { _id: @response.deployment })
+    if not deployment
+      throw new Error("No matching deployments for #{@form._id} user #{@username}")
+
+    if @response.status != "pending"
+      return false
+
+    # Get list of approvers
+    approvers = deployment.approvalStages[@response.approvals.length]?.approvers or []
+    subjects = ["user:" + @user, "all"]
+    subjects = subjects.concat(_.map @groups, (g) -> "group:" + g)
+
+    if _.intersection(approvers, subjects).length > 0
+      return true
+    return false
+
   # Determine if can delete response
   canDelete: ->
-    admins = _.pluck(_.where(@response.roles, { role: "admin"}), "id")
+    deployment = _.findWhere(@form.deployments, { _id: @response.deployment })
+    if not deployment
+      throw new Error("No matching deployments for #{@form._id} user #{@username}")
+
+    # Get list of admins at both deployment and form level 
+    admins = _.union(_.pluck(_.where(@form.roles, { role: "admin"}), "id"), deployment.admins)
+
+    # Add approvers if level allows editing
+    if @response.status == "pending"
+      approvalStage = deployment.approvalStages[@response.approvals.length]
+      if approvalStage? and not approvalStage.preventEditing
+        admins = _.union(admins, approvalStage.approvers)
+
+    # Add enumerator if in draft or rejected
+    if @response.status in ['draft', 'rejected'] and @response.user
+      admins = _.union(admins, ["user:#{@response.user}"])
 
     subjects = ["user:" + @user, "all"]
     subjects = subjects.concat(_.map @groups, (g) -> "group:" + g)
@@ -258,17 +314,32 @@ module.exports = class ResponseModel
 
   # Determine if can edit response
   canEdit: ->
-    # Cannot edit if in pending and are not an admin
-    if @response.status == "pending" and not @canApprove()
-      return false
     return @canDelete()
 
-  # Determine if can switch back to draft phase
+  # Determine if can switch back to draft phase. Only enumerators can do this and only if pending, rejected, draft or enumerators can edit final
   canRedraft: ->
-    return @canDelete()
+    # Cannot redraft anonymous responses
+    if not @response.user 
+      return false
+
+    deployment = _.findWhere(@form.deployments, { _id: @response.deployment })
+    if not deployment
+      throw new Error("No matching deployments for #{@form._id} user #{@username}")
+
+    subjects = ["user:" + @user, "all"]
+    subjects = subjects.concat(_.map @groups, (g) -> "group:" + g)
+
+    if @response.status in ['pending', 'rejected', 'draft']
+      return "user:#{@response.user}" in subjects
+    else # Final
+      return "user:#{@response.user}" in subjects and deployment.enumeratorAdminFinal
 
   # Determine if can reject response
   canReject: ->
+    # Cannot reject anonymous responses
+    if not @response.user 
+      return false
+
     deployment = _.findWhere(@form.deployments, { _id: @response.deployment })
     if not deployment
       throw new Error("No matching deployments for #{@form._id} user #{@username}")
@@ -278,7 +349,7 @@ module.exports = class ResponseModel
 
     if @response.status == "pending"
       # Get list of admins at both deployment and form level and add approvers
-      admins = _.union(_.pluck(_.where(@form.roles, { role: "admin"}), "id"), deployment.admins, deployment.approvalStages[@response.approvals.length].approvers)
+      admins = _.union(_.pluck(_.where(@form.roles, { role: "admin"}), "id"), deployment.admins, deployment.approvalStages[@response.approvals.length]?.approvers or [])
       subjects = ["user:" + @user, "all"]
       subjects = subjects.concat(_.map @groups, (g) -> "group:" + g)
 

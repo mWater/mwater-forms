@@ -9,14 +9,14 @@ describe 'AdminRegionDataSource', ->
 
   it "gets countries and then one in particular", (done) ->
     @dataSource.getSubAdminRegions null, 0, (error, items) =>
-      assert not error
+      assert not error, "getSubAdminRegions:" + error?.message
 
       canada = _.findWhere(items, { name: "Canada" })
       assert.equal canada.level, 0
       assert.equal canada.type, "Country"
 
       @dataSource.getSubAdminRegions canada.id, 1, (error, items) =>
-        assert not error
+        assert not error, "getSubAdminRegions:" + error?.message
 
         manitoba = _.findWhere(items, { name: "Manitoba" })
         assert.equal manitoba.level, 1
@@ -24,7 +24,7 @@ describe 'AdminRegionDataSource', ->
 
         # Get item
         @dataSource.getAdminRegionPath manitoba.id, (error, path) =>
-          assert not error
+          assert not error, "getAdminRegionPath:" + error?.message
 
           assert.equal path.length, 2
           assert.equal path[0].name, "Canada"
@@ -34,10 +34,10 @@ describe 'AdminRegionDataSource', ->
 
   it "finds point by lat lng", (done) ->
     @dataSource.findAdminRegionByLatLng 49.8844000, -97.1470400, (error, id) =>
-      assert not error
+      assert not error, "findAdminRegionByLatLng:" + error?.message
 
       @dataSource.getAdminRegionPath id, (error, path) =>
-        assert not error
+        assert not error, "getAdminRegionPath:" + error?.message
 
         assert.equal path[1].name, "Manitoba"
 

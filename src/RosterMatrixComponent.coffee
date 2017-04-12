@@ -6,6 +6,7 @@ R = React.createElement
 formUtils = require './formUtils'
 AnswerValidator = require './answers/AnswerValidator'
 
+ReorderableListComponent = require("react-library/lib/reorderable/ReorderableListComponent")
 MatrixColumnCellComponent = require './MatrixColumnCellComponent'
 
 # Rosters are repeated information, such as asking questions about household members N times.
@@ -48,7 +49,7 @@ module.exports = class RosterMatrixComponent extends React.Component
       for column, columnIndex in @props.rosterMatrix.contents
         key = "#{rowIndex}_#{column._id}"
 
-        if column.required and (not entry.data[column._id]?.value or entry.data[column._id]?.value == '')
+        if column.required and (not entry.data[column._id]?.value? or entry.data[column._id]?.value == '')
           foundInvalid = true
           validationErrors[key] = true
 
@@ -136,13 +137,15 @@ module.exports = class RosterMatrixComponent extends React.Component
       invalid: invalid
       schema: @props.schema
 
-  renderEntry: (entry, index) ->
-    H.tr key: index,
+  renderEntry: (entry, index, connectDragSource, connectDragPreview, connectDropTarget) =>
+    elem = H.tr key: index,
       _.map @props.rosterMatrix.contents, (column, columnIndex) => @renderCell(entry, index, column, columnIndex)
       if @props.rosterMatrix.allowRemove
         H.td key: "_remove",
           H.button type: "button", className: "btn btn-sm btn-link", onClick: @handleRemove.bind(null, index),
             H.span className: "glyphicon glyphicon-remove"  
+
+    return connectDropTarget(connectDragPreview(connectDragSource(elem)))
 
   renderAdd: ->
     if @props.rosterMatrix.allowAdd
@@ -151,13 +154,29 @@ module.exports = class RosterMatrixComponent extends React.Component
           H.span className: "glyphicon glyphicon-plus"
           " " + @context.T("Add")
 
+  renderBody: ->
+    items: React.PropTypes.array.isRequired # items to be reordered
+    onReorder: React.PropTypes.func.isRequired # callback function, called when an item is dropped, gets passed the reordered item list
+    # function which renders the item, gets passed the current item and react dnd connectors
+    # signature: function(item, index, connectDragSource, connectDragPreview, connectDropTarget)
+    renderItem: React.PropTypes.func.isRequired
+    listId: React.PropTypes.string # a uniqid for the list
+    getItemId: React.PropTypes.func.isRequired # function which should return the identifier of the current item, gets passed the current item
+    element: React.PropTypes.object # the element to render this component as
+
+    R ReorderableListComponent,
+      items: @getAnswer()
+      onReorder: @handleAnswerChange
+      renderItem: @renderEntry
+      getItemId: (entry) => entry._id
+      element: H.tbody(null)
+
   render: ->
     H.div style: { padding: 5, marginBottom: 20 },
       @renderName()
       H.table className: "table",
         @renderHeader()
-        H.tbody null,
-          _.map(@getAnswer(), (entry, index) => @renderEntry(entry, index))
+        @renderBody()
 
       # Display message if none
       if @getAnswer().length == 0

@@ -27,7 +27,7 @@ describe "FormSchemaBuilder addForm", ->
     compare(table.id, "responses:formid")
     compare(table.name, { en: "Form" })
 
-  it "adds form join to entity", ->
+  it "adds form join to entity for site question", ->
     # Add water point table
     schema = new Schema()
     schema = schema.addTable({
@@ -57,6 +57,11 @@ describe "FormSchemaBuilder addForm", ->
 
     schema = new FormSchemaBuilder().addForm(schema, form)
 
+    # Check that section exists
+    section = _.findWhere(schema.getTable("entities.water_point").contents, { id: "!related_forms" })
+    assert section
+    assert.equal section.contents.length, 1
+
     # Check that join to form is present
     column = schema.getColumn("entities.water_point", "responses:formid:data:site1:value")
     assert column, "Column should exist"
@@ -64,6 +69,92 @@ describe "FormSchemaBuilder addForm", ->
     assert.equal column.type, "join"
     assert.equal column.join.type, "1-n"
     assert.equal column.join.toTable, "responses:formid"
+    # Use {to}._id in (select response from response_entities where question = 'site1' and "entityType" = 'water_point' and property = 'code' and value = {from}."code"))
+    compare column.join.jsonql, {
+      type: "op"
+      op: "in"
+      exprs: [
+        { type: "field", tableAlias: "{to}", column: "_id" }
+        {
+          type: "scalar"
+          expr: { type: "field", tableAlias: "response_entities", column: "response" }
+          from: { type: "table", table: "response_entities", alias: "response_entities" }
+          where: {
+            type: "op"
+            op: "and"
+            exprs: [
+              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "question" }, "site1"] }
+              { type: "op", op: "is null", exprs: [{ type: "field", tableAlias: "response_entities", column: "roster" }] }
+              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "entityType" }, "water_point"] }
+              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "property" }, "code"] }
+              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "value" }, { type: "field", tableAlias: "{from}", column: "code" }] }
+            ]
+          }
+        }
+      ]
+    }
+
+  it "adds form join to entity for entity question", ->
+    # Add water point table
+    schema = new Schema()
+    schema = schema.addTable({
+      id: "entities.water_point"
+      name: { en: "Water Points" }
+      contents: [
+        { id: "name", name: { en: "Name" }, type: "text" }
+      ]
+    })
+
+    # Add form with one site question
+    form = {
+      _id: "formid"
+      design: {
+        _type: "Form"
+        name: { en: "Form" }
+        contents: [
+          { 
+            _id: "entity1"
+            _type: "EntityQuestion" 
+            text: { en: "Entity1" }
+            entityType: "water_point"
+          } 
+        ]
+      }
+    }
+
+    schema = new FormSchemaBuilder().addForm(schema, form)
+
+    # Check that join to form is present
+    column = schema.getColumn("entities.water_point", "responses:formid:data:entity1:value")
+    assert column, "Column should exist"
+    assert.equal column.name.en, "Form: Entity1"
+    assert.equal column.type, "join"
+    assert.equal column.join.type, "1-n"
+    assert.equal column.join.toTable, "responses:formid"
+    # Use {to}._id in (select response from response_entities where question = 'site1' and "entityType" = 'water_point' and property = '_id' and value = {from}."_id"))
+    compare column.join.jsonql, {
+      type: "op"
+      op: "in"
+      exprs: [
+        { type: "field", tableAlias: "{to}", column: "_id" }
+        {
+          type: "scalar"
+          expr: { type: "field", tableAlias: "response_entities", column: "response" }
+          from: { type: "table", table: "response_entities", alias: "response_entities" }
+          where: {
+            type: "op"
+            op: "and"
+            exprs: [
+              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "question" }, "entity1"] }
+              { type: "op", op: "is null", exprs: [{ type: "field", tableAlias: "response_entities", column: "roster" }] }
+              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "entityType" }, "water_point"] }
+              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "property" }, "_id"] }
+              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "value" }, { type: "field", tableAlias: "{from}", column: "_id" }] }
+            ]
+          }
+        }
+      ]
+    }
 
   it "adds structure", ->
     # Create form
@@ -93,9 +184,8 @@ describe "FormSchemaBuilder addForm", ->
     schema = new FormSchemaBuilder().addForm(new Schema(), form)
 
     # Adds section
-    assert.equal _.findWhere(schema.getTable("responses:formid").contents, type: "section").type, "section"
-    compare(_.findWhere(schema.getTable("responses:formid").contents, type: "section").name, { en: "Section X" })
-    assert.equal _.findWhere(schema.getTable("responses:formid").contents, type: "section").contents.length, 1
+    section = _.find(schema.getTable("responses:formid").contents, (item) -> item.type == "section" and item.name.en == "Section X")
+    assert.equal section.contents.length, 1
 
   it "adds metadata fields", ->
     # Create form
@@ -269,7 +359,7 @@ describe "FormSchemaBuilder addForm", ->
         { 
           id: "data:questionid:specify:yes"
           type: "text"
-          name: { _base: "en", en: "Question (Yes)" } 
+          name: { _base: "en", en: "Question (Yes) - specify" } 
           # data#>>'{questionid,specify,yes}''
           jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,specify,yes}"] }
         }
@@ -305,7 +395,7 @@ describe "FormSchemaBuilder addForm", ->
         { 
           id: "data:questionid:specify:yes"
           type: "text"
-          name: { _base: "en", en: "Question (Yes)" } 
+          name: { _base: "en", en: "Question (Yes) - specify" } 
           # data#>>'{questionid,specify,yes}''
           jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,specify,yes}"] }
         }
@@ -404,7 +494,7 @@ describe "FormSchemaBuilder addForm", ->
         {
           id: "data:questionid:value:image"
           type: "image"
-          jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,image}"] }
+          jsonql: { type: "op", op: "#>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,image}"] }
         }
         {
           id: "data:questionid:value:cbt:c1"
@@ -1028,20 +1118,20 @@ describe "FormSchemaBuilder addForm", ->
         { 
           id: "data:questionid:value" 
           type: "image"
-          # data#>>'{questionid,value}'
-          jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }
+          # data#>'{questionid,value}'
+          jsonql: { type: "op", op: "#>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }
         }
       ])
 
-    it "image", ->
+    it "images", ->
       @testQuestion({ 
         _type: "ImagesQuestion" 
       }, [
         { 
           id: "data:questionid:value" 
           type: "imagelist"
-          # data#>>'{questionid,value}'
-          jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }
+          # data#>'{questionid,value}'
+          jsonql: { type: "op", op: "#>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }
         }
       ])
 

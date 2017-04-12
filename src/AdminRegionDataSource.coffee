@@ -6,8 +6,8 @@ module.exports = class AdminRegionDataSource
     @apiUrl = apiUrl
 
   getAdminRegionPath: (id, callback) =>
-    # select _id as id, level as level, name as name, type as type from admin_regions as ar inner join admin_region_subtrees as ars on ar._id = ars.ancestor
-    # where ars.descendant = THE_ID order by ar.level
+    # select _id as id, level as level, name as name, type as type from admin_regions as ar 
+    # where ar._id = any((select jsonb_array_elements_text(path) from admin_regions as ar2 where ar2._id = THE_ID))
     query = {
       type: "query" 
       selects: [
@@ -17,26 +17,26 @@ module.exports = class AdminRegionDataSource
         { type: "select", expr: { type: "field", tableAlias: "ar", column: "full_name" }, alias: "full_name" }
         { type: "select", expr: { type: "field", tableAlias: "ar", column: "type" }, alias: "type" }
       ]
-      from: {
-        type: "join"
-        kind: "inner"
-        left: { type: "table", table: "admin_regions", alias: "ar" }
-        right: { type: "table", table: "admin_region_subtrees", alias: "ars" }
-        on: {
-          type: "op"
-          op: "="
-          exprs: [
-            { type: "field", tableAlias: "ar", column: "_id" }
-            { type: "field", tableAlias: "ars", column: "ancestor" }
-          ]
-        }
-      }
+      from: { type: "table", table: "admin_regions", alias: "ar" }
       where: {
         type: "op"
         op: "="
+        modifier: "any"
         exprs: [
-          { type: "field", tableAlias: "ars", column: "descendant" }
-          id
+          { type: "field", tableAlias: "ar", column: "_id" }
+          { 
+            type: "scalar"
+            expr: { type: "op", op: "jsonb_array_elements_text", exprs: [{ type: "field", tableAlias: "ar2", column: "path" }] }
+            from: { type: "table", table: "admin_regions", alias: "ar2" }
+            where: {
+              type: "op"
+              op: "="
+              exprs: [
+                { type: "field", tableAlias: "ar2", column: "_id" }
+                id
+              ]
+            }
+          }
         ]
       }
       orderBy: [
@@ -47,8 +47,8 @@ module.exports = class AdminRegionDataSource
     @_executeQuery(query, callback)
 
   getSubAdminRegions: (id, level, callback) =>
-    # select _id as id, level as level, name as name, type as type from admin_regions as ar inner join admin_region_subtrees as ars on ar._id = ars.descendant
-    # where ars.ancestor = ID and ar.level = LEVEL order by ar.name
+    # select _id as id, level as level, name as name, type as type from admin_regions as ar
+    # where path @> '[ID]'::jsonb and ar.level = LEVEL order by ar.name
     query = {
       type: "query"
       selects: [
@@ -58,20 +58,7 @@ module.exports = class AdminRegionDataSource
         { type: "select", expr: { type: "field", tableAlias: "ar", column: "full_name" }, alias: "full_name" }
         { type: "select", expr: { type: "field", tableAlias: "ar", column: "type" }, alias: "type" }
       ]
-      from: {
-        type: "join"
-        kind: "inner"
-        left: { type: "table", table: "admin_regions", alias: "ar" }
-        right: { type: "table", table: "admin_region_subtrees", alias: "ars" }
-        on: {
-          type: "op"
-          op: "="
-          exprs: [
-            { type: "field", tableAlias: "ar", column: "_id" }
-            { type: "field", tableAlias: "ars", column: "descendant" }
-          ]
-        }
-      }
+      from: { type: "table", table: "admin_regions", alias: "ar" }
       where: {
         type: "op"
         op: "and"
@@ -95,13 +82,12 @@ module.exports = class AdminRegionDataSource
     if id
       query.where.exprs.push({
         type: "op"
-        op: "="
+        op: "@>"
         exprs: [
-          { type: "field", tableAlias: "ars", column: "ancestor" }
-          id
+          { type: "field", tableAlias: "ar", column: "path" }
+          { type: "op", op: "::jsonb", exprs: [JSON.stringify([id])]}
         ]
       })
-
 
     @_executeQuery(query, callback)
 

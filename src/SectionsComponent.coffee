@@ -22,9 +22,9 @@ module.exports = class SectionsComponent extends React.Component
 
     isVisible: React.PropTypes.func.isRequired # (id) tells if an item is visible or not
 
-    onSubmit: React.PropTypes.func.isRequired     # Called when submit is pressed
+    onSubmit: React.PropTypes.func                # Called when submit is pressed
     onSaveLater: React.PropTypes.func             # Optional save for later
-    onDiscard: React.PropTypes.func.isRequired    # Called when discard is pressed
+    onDiscard: React.PropTypes.func               # Called when discard is pressed
 
   constructor: ->
     super
@@ -143,7 +143,7 @@ module.exports = class SectionsComponent extends React.Component
         H.button key: "next", type: "button", ref: 'nextOrSubmit', className: "btn btn-primary", onClick: @handleNextSection,
           @context.T("Next") + " " 
           H.span className: "glyphicon glyphicon-forward"
-      else  
+      else if @props.onSubmit
         H.button key: "submit", type: "button", ref: 'nextOrSubmit', className: "btn btn-primary", onClick: @handleSubmit,
           @context.T("Submit")
 
@@ -156,9 +156,10 @@ module.exports = class SectionsComponent extends React.Component
           "\u00A0"
         ]
 
-      H.button key: "discard", type:"button", className: "btn btn-default", onClick: @props.onDiscard,
-        H.span className: "glyphicon glyphicon-trash"
-        " " + @context.T("Discard")
+      if @props.onDiscard
+        H.button key: "discard", type:"button", className: "btn btn-default", onClick: @props.onDiscard,
+          H.span className: "glyphicon glyphicon-trash"
+          " " + @context.T("Discard")
 
   render: ->
     H.div ref: "sections",
