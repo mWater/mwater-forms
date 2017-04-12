@@ -14,6 +14,9 @@ browserSync = require 'browser-sync'
 reload = browserSync.reload
 watchify = require 'watchify'
 envify = require('envify/custom')
+webpack = require 'webpack'
+WebpackDevServer = require 'webpack-dev-server'
+path = require 'path'
 
 # Compile coffeescript to js in lib/
 gulp.task 'coffee', ->
@@ -102,27 +105,44 @@ gulp.task 'compile', gulp.series('coffee', 'copy', 'localize')
 
 gulp.task 'default', gulp.series('compile')
 
-gulp.task 'watch', gulp.series([
-  'demo', 
+gulp.task 'watch', gulp.series(["libs_js", "libs_css", "copy_fonts", "copy_assets", "index_css", ->
+  webpackConfig = require './webpack.config.js'
+
+  webpackConfig.output.publicPath = 'http://localhost:3006/js/'
+
+  webpackConfig.plugins = [
+    # new webpack.HotModuleReplacementPlugin()
+    new webpack.NamedModulesPlugin()
+  ]
+  # webpackConfig.entry.unshift('webpack-dev-server/client?http://localhost:3006', 'webpack/hot/only-dev-server');
+  webpackConfig.entry.unshift('webpack-dev-server/client?http://localhost:3006')
+  # # Add hot loader
+  # webpackConfig.module.loaders[0].loader.unshift("react-hot-loader/webpack")
+
+  compiler = webpack(webpackConfig)
+
+  # hot: true
+  new WebpackDevServer(compiler, { contentBase: "dist", publicPath: "/js/" }).listen 3006, "localhost", (err) =>
+    if err 
+      throw new gutil.PluginError("webpack-dev-server", err)
+
+    # Server listening
+    gutil.log("[webpack-dev-server]", "http://localhost:3006/demo.html")
+])
+
+gulp.task "test", gulp.series([
+  "copy_assets"
   ->
-    b = makeBrowserifyBundle()
-    w = watchify(b)
+    webpackConfig = require './webpack.config.tests.js'
+    compiler = webpack(webpackConfig)
 
-    first = true
-    w.on 'bytes', ->
-      if first
-        browserSync({ server: "./dist", startPath: "/demo.html", ghostMode: false,  notify: false })
-        first = false
-      else
-        browserSync.reload()
+    new WebpackDevServer(compiler, { }).listen 8081, "localhost", (err) =>
+      if err 
+        throw new gutil.PluginError("webpack-dev-server", err)
 
-    # Needs to be run at least once
-    bundleDemoJs(w)
-
-    # Redo on update
-    w.on 'update', ->
-      bundleDemoJs(w)
-  ])
+      # Server listening
+      gutil.log("[webpack-dev-server]", "http://localhost:8081/mocha.html")
+])
 
 # Shim non-browserify friendly libraries to allow them to be 'require'd
 shim = (instance) ->
