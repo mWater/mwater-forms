@@ -216,7 +216,11 @@ describe "FormSchemaBuilder addForm", ->
           { _id: "questionid", _type: "TextQuestion", text: { _base: "en", en: "Question" }, conditions: [] }
         ]
         calculations: [
-          { _id: "calc1", name: { _base: "en", en: "Calc1" }, expr: { type: "op", table: "responses:formid", op: "is not null", exprs: { type: "field", table: "responses:formid", column: "data:questionid:value" }} }
+          { 
+            _id: "calc1"
+            name: { _base: "en", en: "Calc1" }
+            desc: { _base: "en", en: "desc1" }
+            expr: { type: "op", table: "responses:formid", op: "is not null", exprs: { type: "field", table: "responses:formid", column: "data:questionid:value" }} }
         ]
       }
     }
@@ -224,9 +228,10 @@ describe "FormSchemaBuilder addForm", ->
     # Add to blank schema
     schema = new FormSchemaBuilder().addForm(new Schema(), form)
 
-    assert.deepEqual schema.getColumn("responses:formid", "calculations:calc1").name.en, "Calc1"
-    assert.deepEqual schema.getColumn("responses:formid", "calculations:calc1").type, "expr"
-    assert.deepEqual schema.getColumn("responses:formid", "calculations:calc1").expr, form.design.calculations[0].expr
+    assert.deepEqual schema.getColumn("responses:formid", "calculation:calc1").name.en, "Calc1"
+    assert.deepEqual schema.getColumn("responses:formid", "calculation:calc1").desc.en, "desc1"
+    assert.deepEqual schema.getColumn("responses:formid", "calculation:calc1").type, "expr"
+    assert.deepEqual schema.getColumn("responses:formid", "calculation:calc1").expr, form.design.calculations[0].expr
 
   describe "Answer types", ->
     before ->

@@ -117,12 +117,16 @@ describe "ResponseRow", ->
   it "gets comments", (done) ->
     @testField({ qchoice: { value: "abc", comments: "sometext" }}, "data:qchoice:comments", "sometext", done)
 
-  it "gets na", (done) ->
+  it "gets na true", (done) ->
     @testField({ qtext: { alternate: "na" }}, "data:qtext:na", true, done)
+
+  it "gets na false", (done) ->
     @testField({ qtext: { }}, "data:qtext:na", null, done)
 
-  it "gets dontknow", (done) ->
+  it "gets dontknow true", (done) ->
     @testField({ qtext: { alternate: "dontknow" }}, "data:qtext:dontknow", true, done)
+
+  it "gets dontknow false", (done) ->
     @testField({ qtext: { }}, "data:qtext:dontknow", null, done)
 
   it "gets timestamp", (done) ->
