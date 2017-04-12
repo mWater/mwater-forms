@@ -63,9 +63,6 @@ module.exports = class FormSchemaBuilder
     reverseJoins = []
     @addFormItem(form.design, contents, "responses:#{form._id}", conditionsExprCompiler, null, reverseJoins)
 
-    if form.design.calculations and form.design.calculations.length > 0
-      @addCalculations(form.design.calculations, contents, "responses:#{form._id}")
-
     # Add to schema
     schema = schema.addTable({
       id: "responses:#{form._id}"
@@ -80,6 +77,8 @@ module.exports = class FormSchemaBuilder
 
     # Add any roster tables
     schema = @addRosterTables(schema, form, conditionsExprCompiler)
+
+    schema = @addCalculations(schema, form)
 
     schema = @addIndicatorCalculations(schema, form, false)
 
@@ -1471,15 +1470,33 @@ module.exports = class FormSchemaBuilder
           
           addColumn(column)
 
-  addCalculations: (calculations, contents, tableId) ->
-    section = {
-      type: "section"
-      name: { _base: "en", en: "Calculations" }
-      contents: []
-    }
+  addCalculations: (schema, form) ->
+    # If not calculations, don't add  section
+    if not form.design.calculations or form.design.calculations.length == 0
+      return schema
 
-    for calculation in calculations
-      section.contents.push({
+    # Process indicator calculations 
+    for calculation in form.design.calculations
+      tableId = "responses:#{form._id}"
+
+      if calculation.roster
+        tableId += ":roster:#{calculation.roster}"
+
+      # Add calculations section
+      calculationsSection = _.last(schema.getTable(tableId).contents)
+      if calculationsSection.id != "calculations"
+        # Add calculations section
+        calculationsSection = {
+          id: "calculations"
+          type: "section"
+          name: { _base: "en", en: "Calculations" }
+          contents: []
+        }
+        schema = schema.addTable(update(schema.getTable(tableId), { contents: { $push: [calculationsSection] } }))
+
+      # Add to calculations section
+      calculationsSectionContents = calculationsSection.contents.slice()
+      calculationsSectionContents.push({
         id: "calculation:#{calculation._id}"
         type: "expr"
         name: calculation.name
@@ -1487,7 +1504,14 @@ module.exports = class FormSchemaBuilder
         expr: calculation.expr
       })
 
-    contents.push(section)
+      # Update in original
+      contents = schema.getTable(tableId).contents.slice()
+      contents[contents.length - 1] = update(calculationsSection, { contents: { $set: calculationsSectionContents } })
+
+      # Re-add table
+      schema = schema.addTable(update(schema.getTable(tableId), { contents: { $set: contents } }))
+
+    return schema
 
 # Append a string to each language
 appendStr = (str, suffix) ->

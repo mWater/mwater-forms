@@ -74,6 +74,8 @@ module.exports = {
           # Description of the calculation (optional)
           desc: { $ref: "#/definitions/localizedString" } 
 
+          roster: { type: "string" } # Id of roster if from a roster
+
           # Expression (mwater-expression) for the value of the calculation
           expr: { type: "object" }
         }
