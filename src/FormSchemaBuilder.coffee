@@ -63,7 +63,7 @@ module.exports = class FormSchemaBuilder
     reverseJoins = []
     @addFormItem(form.design, contents, "responses:#{form._id}", conditionsExprCompiler, null, reverseJoins)
 
-    if form.design.calculations
+    if form.design.calculations and form.design.calculations.length > 0
       @addCalculations(form.design.calculations, contents, "responses:#{form._id}")
 
     # Add to schema
@@ -1480,7 +1480,7 @@ module.exports = class FormSchemaBuilder
 
     for calculation in calculations
       section.contents.push({
-        id: "calculations:#{calculation._id}"
+        id: "calculation:#{calculation._id}"
         type: "expr"
         name: calculation.name
         desc: calculation.desc
