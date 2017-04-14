@@ -92,6 +92,7 @@ select {
   font-size: 10pt;
   font-weight: normal;
   color: gray;
+  margin-left: 10px;
 }
 
 .touch-radio {
@@ -116,6 +117,7 @@ select {
   font-size: 10pt;
   font-weight: normal;
   color: gray;
+  margin-left: 10px;
 }
 
 .form-controls button {
