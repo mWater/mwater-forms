@@ -28,7 +28,8 @@ module.exports = {
     # Schema 15 adds site columns
     # Schema 16 adds AquagenxCBTQuestion type
     # Schema 17 adds conditionExpr
-    _schema: { enum: [1, 2, 3, 4, 5, 10, 11, 12, 13, 14, 15, 16, 17] }
+    # Schema 18 adds calculations
+    _schema: { enum: [1, 2, 3, 4, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18] }
 
     # Name of the form
     name: { $ref: "#/definitions/localizedString" }
@@ -57,6 +58,30 @@ module.exports = {
     localizedStrings: { 
       type: "array" 
       items: { $ref: "#/definitions/localizedString" } 
+    }
+
+    # Calculated values
+    calculations: {
+      type: "array"
+      items: {
+        type: "object"
+        properties: { 
+          _id: { type: "string" } # Unique id of calculation
+
+          # Name of the calculation
+          name: { $ref: "#/definitions/localizedString" } 
+
+          # Description of the calculation (optional)
+          desc: { $ref: "#/definitions/localizedString" } 
+
+          roster: { type: "string" } # Id of roster if from a roster
+
+          # Expression (mwater-expression) for the value of the calculation
+          expr: { type: "object" }
+        }
+        required: ["_id", "name", "expr"]
+        additionalProperties: false
+      }
     }
 
     # Deprecated!!

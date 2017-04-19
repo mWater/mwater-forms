@@ -205,6 +205,74 @@ describe "FormSchemaBuilder addForm", ->
     assert schema.getColumn("responses:formid", "submittedOn")
     assert schema.getColumn("responses:formid", "deployment")
 
+  it "adds calculations", ->
+    # Create form
+    form = {
+      _id: "formid"
+      design: {
+        _type: "Form"
+        name: { en: "Form" }
+        contents: [
+          { _id: "questionid", _type: "TextQuestion", text: { _base: "en", en: "Question" }, conditions: [] }
+        ]
+        calculations: [
+          { 
+            _id: "calc1"
+            name: { _base: "en", en: "Calc1" }
+            desc: { _base: "en", en: "desc1" }
+            expr: { type: "op", table: "responses:formid", op: "is not null", exprs: [{ type: "field", table: "responses:formid", column: "data:questionid:value" }]} 
+          }
+        ]
+      }
+    }
+
+    # Add to blank schema
+    schema = new FormSchemaBuilder().addForm(new Schema(), form)
+
+    column = schema.getColumn("responses:formid", "calculation:calc1")
+    assert.deepEqual column.name.en, "Calc1"
+    assert.deepEqual column.desc.en, "desc1"
+    assert.deepEqual column.type, "expr"
+    assert.deepEqual column.expr, form.design.calculations[0].expr
+
+  it "adds calculations in rosters", ->
+    form = {
+      _id: "formid"
+      design: {
+        _type: "Form"
+        name: { en: "Form" }
+        contents: [{
+          _id: "roster1"
+          _type: "RosterGroup"
+          name: { en: "Roster1" }
+          contents: [
+            { _id: "q1", _type: "TextQuestion", text: { en: "Q1" }}
+            { _id: "q2", _type: "NumberQuestion", text: { en: "Q2" }}
+          ]
+        }]
+        calculations: [
+          { 
+            _id: "calc1"
+            name: { _base: "en", en: "Calc1" }
+            desc: { _base: "en", en: "desc1" }
+            roster: "roster1"
+            expr: { type: "op", table: "responses:formid:roster:roster1", op: "is not null", exprs: [
+              { type: "field", table: "responses:formid:roster:roster1", column: "data:q1:value" }
+            ]}
+          }
+        ]
+      }
+    }
+
+    # Add to blank schema
+    schema = new FormSchemaBuilder().addForm(new Schema(), form)
+
+    column = schema.getColumn("responses:formid:roster:roster1", "calculation:calc1")
+    assert.deepEqual column.name.en, "Calc1"
+    assert.deepEqual column.desc.en, "desc1"
+    assert.deepEqual column.type, "expr"
+    assert.deepEqual column.expr, form.design.calculations[0].expr
+
   describe "Answer types", ->
     before ->
       @testQuestion = (questionOptions, expectedColumns) ->

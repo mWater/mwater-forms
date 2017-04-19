@@ -78,6 +78,8 @@ module.exports = class FormSchemaBuilder
     # Add any roster tables
     schema = @addRosterTables(schema, form, conditionsExprCompiler)
 
+    schema = @addCalculations(schema, form)
+
     schema = @addIndicatorCalculations(schema, form, false)
 
     if form.isMaster
@@ -1467,6 +1469,49 @@ module.exports = class FormSchemaBuilder
           }
           
           addColumn(column)
+
+  addCalculations: (schema, form) ->
+    # If not calculations, don't add  section
+    if not form.design.calculations or form.design.calculations.length == 0
+      return schema
+
+    # Process indicator calculations 
+    for calculation in form.design.calculations
+      tableId = "responses:#{form._id}"
+
+      if calculation.roster
+        tableId += ":roster:#{calculation.roster}"
+
+      # Add calculations section
+      calculationsSection = _.last(schema.getTable(tableId).contents)
+      if calculationsSection.id != "calculations"
+        # Add calculations section
+        calculationsSection = {
+          id: "calculations"
+          type: "section"
+          name: { _base: "en", en: "Calculations" }
+          contents: []
+        }
+        schema = schema.addTable(update(schema.getTable(tableId), { contents: { $push: [calculationsSection] } }))
+
+      # Add to calculations section
+      calculationsSectionContents = calculationsSection.contents.slice()
+      calculationsSectionContents.push({
+        id: "calculation:#{calculation._id}"
+        type: "expr"
+        name: calculation.name
+        desc: calculation.desc
+        expr: calculation.expr
+      })
+
+      # Update in original
+      contents = schema.getTable(tableId).contents.slice()
+      contents[contents.length - 1] = update(calculationsSection, { contents: { $set: calculationsSectionContents } })
+
+      # Re-add table
+      schema = schema.addTable(update(schema.getTable(tableId), { contents: { $set: contents } }))
+
+    return schema
 
 # Append a string to each language
 appendStr = (str, suffix) ->
