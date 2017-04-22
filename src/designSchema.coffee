@@ -339,6 +339,9 @@ module.exports = {
 
         # Condition expression (mwater-expression) for visiblity of the instructions
         conditionExpr: { type: "object" }
+
+        # True if the instructions are disabled (will never be shown in live form)
+        disabled: { type: "boolean" }
       }
       required: ["_id", "_type", "text", "conditions"]
     }
