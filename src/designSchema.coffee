@@ -275,6 +275,9 @@ module.exports = {
         # Id used for exporting responses
         exportId: { type: "string" }
 
+        # True if the question contains sensitive data
+        sensitive: { type: "string" }
+
         # Alternative answers that are non-answers to the specific question
         # such as "Don't Know" or "Not Applicable"
         alternates: {
