@@ -278,6 +278,9 @@ module.exports = {
         # True if the question contains sensitive data
         sensitive: { type: "string" }
 
+        # Distance in meters to scramble coordinates by
+        sensitiveRadius: { type: "integer" }
+
         # Alternative answers that are non-answers to the specific question
         # such as "Don't Know" or "Not Applicable"
         alternates: {
