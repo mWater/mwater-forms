@@ -276,7 +276,7 @@ module.exports = {
         exportId: { type: "string" }
 
         # True if the question contains sensitive data
-        sensitive: { type: "string" }
+        sensitive: { type: "boolean" }
 
         # Distance in meters to scramble coordinates by
         sensitiveRadius: { type: "integer" }
