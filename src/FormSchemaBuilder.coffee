@@ -1070,10 +1070,16 @@ module.exports = class FormSchemaBuilder
               toTable: "admin_regions"
               fromColumn: {
                 type: "op"
-                op: "#>>"
+                op: "::integer"
                 exprs: [
-                  { type: "field", tableAlias: "{alias}", column: "data" }
-                  "{#{item._id},value}"
+                  {
+                    type: "op"
+                    op: "#>>"
+                    exprs: [
+                      { type: "field", tableAlias: "{alias}", column: "data" }
+                      "{#{item._id},value}"
+                    ]
+                  }
                 ]
               }
               toColumn: "_id"
