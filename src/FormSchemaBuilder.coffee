@@ -1013,7 +1013,7 @@ module.exports = class FormSchemaBuilder
             code: code
             jsonql: {
               type: "op"
-              op: "#>>"
+              op: "#>"
               exprs: [
                 { type: "field", tableAlias: "{alias}", column: "data" }
                 "{#{item._id},value}"

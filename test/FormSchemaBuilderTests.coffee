@@ -1188,7 +1188,7 @@ describe "FormSchemaBuilder addForm", ->
           id: "data:questionid:value" 
           type: "text[]"
           # data#>>'{questionid,value}'
-          jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }
+          jsonql: { type: "op", op: "#>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }
         }
       ])
 
