@@ -11,7 +11,7 @@ other questions invisible or visible.
 
 To further complicate it, when a question becomes visible, it may get a default value, which may in turn trigger other visibility changes
 
-Therefore, it's an iterative process which is also asynchronous, as 
+Therefore, it's an iterative process which is also asynchronous, as condition evaluation is asynchronous.
 
 ###
 module.exports = class ResponseCleaner
