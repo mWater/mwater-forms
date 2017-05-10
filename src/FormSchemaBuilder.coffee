@@ -12,6 +12,14 @@ healthRiskEnum = require('./answers/aquagenxCBTUtils').healthRiskEnum
 
 # Adds a form to a mwater-expressions schema
 module.exports = class FormSchemaBuilder
+  constructor: (options) ->
+    @roles = ['all']
+
+    if options.user
+      @roles.push("user:#{options.user}")
+    
+    @roles = @roles.concat(_.map(options.groups, (g) -> "group:" + g))
+
   # Pass clone forms if a master form
   addForm: (schema, form, cloneForms) ->
     contents = []
@@ -56,6 +64,20 @@ module.exports = class FormSchemaBuilder
     metadata.push({ id: "ipAddress", type: "text", name: { en: "IP Address" } })
 
     contents.push({ id: "metadata", type: "section", name: { en: "Response Metadata"}, desc: { en: "Information about the response such as status, date, and IP Address" }, contents: metadata })
+
+    # Add sensitive data if the user is form admin
+    matchingRoles = _.compact(_.map @roles, (role) ->
+      _.find(form.roles, {id: role})
+    )
+
+    sensitiveData = []
+    if _.some(matchingRoles, {role: 'admin'})
+      for question in form.design.contents
+        if question.sensitive?
+          sensitiveData.push({ id: "sensitiveData:#{question._id}:value", type: question._type, name: question.text, sensitive: true })
+    
+
+      contents.push({ id: "sensitiveData", type: "section", name: { en: "Sensitive Data"}, desc: { en: "Sensitive Data" }, contents: sensitiveData })
 
     conditionsExprCompiler = new ConditionsExprCompiler(form.design)
 
@@ -401,7 +423,6 @@ module.exports = class FormSchemaBuilder
             type: "text"
             name: item.text
             code: code
-            sensitive: sensitive
             jsonql: {
               type: "op"
               op: "nullif"
@@ -427,7 +448,6 @@ module.exports = class FormSchemaBuilder
             type: "number"
             name: item.text
             code: code
-            sensitive: sensitive
             jsonql: {
               type: "op"
               op: "convert_to_decimal"
@@ -452,7 +472,6 @@ module.exports = class FormSchemaBuilder
             type: "enum"
             name: item.text
             code: code
-            sensitive: sensitive
             enumValues: _.map(item.choices, (c) -> { id: c.id, name: c.label, code: c.code })
             jsonql: {
               type: "op"
@@ -472,7 +491,6 @@ module.exports = class FormSchemaBuilder
             type: "enumset"
             name: item.text
             code: code
-            sensitive: sensitive
             enumValues: _.map(item.choices, (c) -> { id: c.id, name: c.label, code: c.code })
             jsonql: {
               type: "op"
@@ -501,7 +519,6 @@ module.exports = class FormSchemaBuilder
               type: "datetime"
               name: item.text
               code: code
-              sensitive: sensitive
               jsonql: {
                 type: "op"
                 op: "#>>"
@@ -519,7 +536,6 @@ module.exports = class FormSchemaBuilder
               type: "date"
               name: item.text
               code: code
-              sensitive: sensitive
               # substr(rpad(data#>>'{questionid,value}',10, '-01-01'), 1, 10)
               jsonql: {
                 type: "op"
@@ -554,7 +570,6 @@ module.exports = class FormSchemaBuilder
             type: "boolean"
             name: item.text
             code: code
-            sensitive: sensitive
             jsonql: {
               type: "op"
               op: "::boolean"
@@ -581,7 +596,6 @@ module.exports = class FormSchemaBuilder
             type: "number"
             name: name
             code: if code then code + " (magnitude)"
-            sensitive: sensitive
             jsonql: {
               type: "op"
               op: "convert_to_decimal"
@@ -604,7 +618,6 @@ module.exports = class FormSchemaBuilder
             type: "enum"
             name: appendStr(item.text, " (units)")
             code: if code then code + " (units)"
-            sensitive: sensitive
             jsonql: {
               type: "op"
               op: "#>>"
@@ -630,7 +643,6 @@ module.exports = class FormSchemaBuilder
             type: "number"
             name: appendStr(item.text, " (MPN/100ml)")
             code: if code then code + " (mpn)"
-            sensitive: sensitive
             jsonql: {
               type: "op"
               op: "::decimal"
@@ -652,7 +664,6 @@ module.exports = class FormSchemaBuilder
             type: "number"
             name: appendStr(item.text, " (Upper 95% Confidence Interval/100ml)")
             code: if code then code + " (confidence)"
-            sensitive: sensitive
             jsonql: {
               type: "op"
               op: "::decimal"
@@ -675,7 +686,6 @@ module.exports = class FormSchemaBuilder
             enumValues: healthRiskEnum
             name: appendStr(item.text, " (Health Risk Category)")
             code: if code then code + " (health_risk)"
-            sensitive: sensitive
             jsonql: {
               type: "op"
               op: "#>>"
@@ -692,7 +702,6 @@ module.exports = class FormSchemaBuilder
             type: "image"
             name: appendStr(item.text, " (image)")
             code: if code then code + " (image)"
-            sensitive: sensitive
             jsonql: {
               type: "op"
               op: "#>"
@@ -709,7 +718,6 @@ module.exports = class FormSchemaBuilder
               type: "boolean"
               name: appendStr(item.text, " (#{label})")
               code: if code then code + " (#{v})"
-              sensitive: sensitive
               jsonql: {
                 type: "op"
                 op: "::boolean"
@@ -740,7 +748,6 @@ module.exports = class FormSchemaBuilder
             type: "geometry"
             name: item.text
             code: code
-            sensitive: sensitive
             # ST_SetSRID(ST_MakePoint(data#>>'{questionid,value,longitude}'::decimal, data#>>'{questionid,value,latitude}'::decimal),4326)
             jsonql: {
               type: "op"
@@ -816,7 +823,6 @@ module.exports = class FormSchemaBuilder
               type: "join"
               name: appendStr(item.text, " (administrative region)")
               code: if code then code + " (administrative region)"
-              sensitive: sensitive
               join: {
                 type: "n-1"
                 toTable: "admin_regions"
@@ -846,7 +852,6 @@ module.exports = class FormSchemaBuilder
             type: "number"
             name: appendStr(item.text, " (accuracy)")
             code: if code then code + " (accuracy)"
-            sensitive: sensitive
             # data#>>'{questionid,value,accuracy}'::decimal
             jsonql: {
               type: "op"
@@ -864,7 +869,6 @@ module.exports = class FormSchemaBuilder
             type: "number"
             name: appendStr(item.text, " (altitude)")
             code: if code then code + " (altitude)"
-            sensitive: sensitive
             # data#>>'{questionid,value,accuracy}'::decimal
             jsonql: {
               type: "op"
@@ -895,7 +899,6 @@ module.exports = class FormSchemaBuilder
             type: "join"
             name: item.text
             code: code
-            sensitive: sensitive
             join: {
               type: "n-1"
               toTable: "entities.#{entityType}"
@@ -961,7 +964,6 @@ module.exports = class FormSchemaBuilder
               type: "join"
               name: item.text
               code: code
-              sensitive: sensitive
               join: {
                 type: "n-1"
                 toTable: "entities.#{item.entityType}"
@@ -1032,7 +1034,6 @@ module.exports = class FormSchemaBuilder
             type: "text[]"
             name: item.text
             code: code
-            sensitive: sensitive
             jsonql: {
               type: "op"
               op: "#>>"
@@ -1051,7 +1052,6 @@ module.exports = class FormSchemaBuilder
             type: "image"
             name: item.text
             code: code
-            sensitive: sensitive
             jsonql: {
               type: "op"
               op: "#>"
@@ -1070,7 +1070,6 @@ module.exports = class FormSchemaBuilder
             type: "imagelist"
             name: item.text
             code: code
-            sensitive: sensitive
             jsonql: {
               type: "op"
               op: "#>"
@@ -1088,7 +1087,6 @@ module.exports = class FormSchemaBuilder
             id: "data:#{item._id}:value"
             name: item.text
             code: code
-            sensitive: sensitive
             type: "join"
             join: {
               type: "n-1"
@@ -1122,7 +1120,6 @@ module.exports = class FormSchemaBuilder
               type: "enum"
               name: appendStr(appendStr(item.text, ": "), itemItem.label)
               code: itemCode
-              sensitive: sensitive
               enumValues: _.map(item.choices, (c) -> { id: c.id, name: c.label, code: c.code })
               jsonql: {
                 type: "op"
@@ -1299,7 +1296,6 @@ module.exports = class FormSchemaBuilder
             type: "section"
             name: item.text
             contents: sections
-            sensitive: sensitive
             })
 
       # Add specify
@@ -1311,7 +1307,6 @@ module.exports = class FormSchemaBuilder
               type: "text"
               name: appendStr(appendStr(appendStr(item.text, " ("), choice.label), ") - specify")
               code: if code then code + " (#{if choice.code then choice.code else formUtils.localizeString(choice.label)})" + " - specify"
-              sensitive: sensitive
               jsonql: {
                 type: "op"
                 op: "#>>"
@@ -1330,7 +1325,6 @@ module.exports = class FormSchemaBuilder
           type: "text"
           name: appendStr(item.text, " (Comments)")
           code: if code then code + " (Comments)"
-          sensitive: sensitive
           jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{#{item._id},comments}"] }
         }
 
@@ -1343,7 +1337,6 @@ module.exports = class FormSchemaBuilder
           type: "datetime"
           name: appendStr(item.text, " (Time Answered)")
           code: if code then code + " (Time Answered)"
-          sensitive: sensitive
           jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{#{item._id},timestamp}"] }
         }
 
@@ -1356,7 +1349,6 @@ module.exports = class FormSchemaBuilder
           type: "geometry"
           name: appendStr(item.text, " (Location Answered)")
           code: if code then code + " (Location Answered)"
-          sensitive: sensitive
           # ST_SetSRID(ST_MakePoint(data#>>'{questionid,value,longitude}'::decimal, data#>>'{questionid,value,latitude}'::decimal),4326)
           jsonql: {
             type: "op"
@@ -1394,7 +1386,6 @@ module.exports = class FormSchemaBuilder
           type: "number"
           name: appendStr(item.text, " (Location Answered - accuracy)")
           code: if code then code + " (Location Answered - accuracy)"
-          sensitive: sensitive
           # data#>>'{questionid,location,accuracy}'::decimal
           jsonql: {
             type: "op"
@@ -1412,7 +1403,6 @@ module.exports = class FormSchemaBuilder
           type: "number"
           name: appendStr(item.text, " (Location Answered - altitude)")
           code: if code then code + " (Location Answered - altitude)"
-          sensitive: sensitive
           # data#>>'{questionid,location,accuracy}'::decimal
           jsonql: {
             type: "op"
@@ -1432,7 +1422,6 @@ module.exports = class FormSchemaBuilder
           type: "boolean"
           name: appendStr(item.text, " (Not Applicable)")
           code: if code then code + " (Not Applicable)"
-          sensitive: sensitive
           # nullif(data#>>'{questionid,alternate}' = 'na', false) (makes null if false)
           jsonql: {
             type: "op"
@@ -1459,7 +1448,6 @@ module.exports = class FormSchemaBuilder
           type: "boolean"
           name: appendStr(item.text, " (Don't Know)")
           code: if code then code + " (Don't Know)"
-          sensitive: sensitive
           # nullif(data#>>'{questionid,alternate}' = 'dontknow', false) (makes null if false)
           jsonql: {
             type: "op"
@@ -1501,7 +1489,6 @@ module.exports = class FormSchemaBuilder
             name: appendStr(item.text, " (Asked)")
             code: if code then code + " (Asked)"
             expr: conditionExpr
-            sensitive: sensitive
           }
           
           addColumn(column)
