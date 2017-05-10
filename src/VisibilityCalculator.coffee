@@ -15,7 +15,10 @@ which need access to the entities which the questions may reference.
 
 Non-rosters are just referenced by id: e.g. { "somequestionid": true }
 
+Unless it is a matrix, in which case it is referenced by "questionid.itemid.columnid"
+
 Rosters are referenced by entry index: e.g. { "somerosterid.2.somequestionid": true }
+
 
 ###
 module.exports = class VisibilityCalculator

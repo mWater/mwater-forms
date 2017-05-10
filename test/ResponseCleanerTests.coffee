@@ -71,6 +71,17 @@ describe 'ResponseCleaner', ->
         assert data != newData, "It returned data instead of a copy"
         assert.deepEqual {}, newData, "All the data should have been removed"
 
+      it 'keeps randomAsked for invisible questions so that the decision is not lost', ->
+        responseCleaner = new ResponseCleaner()
+
+        design = {}
+        data = { questionA: { value: "apple", randomAsked: false } }
+        visibilityStructure = { questionA: false }
+
+        newData = responseCleaner.cleanDataBasedOnVisibility(data, visibilityStructure)
+
+        assert.deepEqual newData, { questionA: { randomAsked: false } }, "Should keep randomAsked"
+
     describe 'Roster groups', ->
       it 'keeps the data for all visible questions', ->
         responseCleaner = new ResponseCleaner()
