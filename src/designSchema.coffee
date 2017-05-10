@@ -294,6 +294,9 @@ module.exports = {
 
         # _id of the item that this item is a duplicate of
         _basedOn : { $ref: "#/definitions/uuid" }
+
+        # If present, only ask with this probability, hide otherwise. 0-1
+        randomAskProbability: { type: "number" }
       }
       required: ["_id", "_type", "text", "conditions", "validations"]
 

@@ -2,6 +2,7 @@ _ = require 'lodash'
 formUtils = require './formUtils'
 ResponseCleaner = require './ResponseCleaner'
 VisibilityCalculator = require './VisibilityCalculator'
+RandomAskedCalculator = require './RandomAskedCalculator'
 ExprCompiler = require('mwater-expressions').ExprCompiler
 ResponseDataValidator = require './ResponseDataValidator'
 
@@ -57,8 +58,9 @@ module.exports = class ResponseDataExprValueUpdater
   cleanData: (data, createResponseRow, callback) ->
     # Compute visibility
     visibilityCalculator = new VisibilityCalculator(@formDesign)
+    randomAskedCalculator = new RandomAskedCalculator(@formDesign)
     responseCleaner = new ResponseCleaner()
-    responseCleaner.cleanData @formDesign, visibilityCalculator, null, data, createResponseRow, null, (error, results) =>
+    responseCleaner.cleanData @formDesign, visibilityCalculator, null, randomAskedCalculator, data, createResponseRow, null, (error, results) =>
       callback(error, results?.data)
 
   # Validates the data. Callback null if ok, otherwise string message in second parameter. Clean first.

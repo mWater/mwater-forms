@@ -13,6 +13,10 @@ The usage is fairly simple. It's created with a form and then the visibilityStru
 Visibility is based both on simple conditions (see conditionUtils), but also on conditionExpr (advanced conditions made of mwater-expressions) 
 which need access to the entities which the questions may reference.
 
+Non-rosters are just referenced by id: e.g. { "somequestionid": true }
+
+Rosters are referenced by entry index: e.g. { "somerosterid.2.somequestionid": true }
+
 ###
 module.exports = class VisibilityCalculator
   constructor: (formDesign) ->
@@ -108,6 +112,8 @@ module.exports = class VisibilityCalculator
     else if question.conditions? and question.conditions.length > 0
       conditions = conditionUtils.compileConditions(question.conditions, @formDesign)
       isVisible = conditions(data)
+    else if question.randomAskProbability? and data[question._id]?.randomAsked == false
+      isVisible = false
     else
       isVisible = true
 

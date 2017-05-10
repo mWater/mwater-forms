@@ -23,7 +23,7 @@ module.exports = class ResponseCleaner
   # A simple case: Question A, B and C with B only visible if A is set and C only visible if B is set and B containing a defaultValue
   # Setting a value to A will make B visible and set to defaultValue, but C will remain invisible until the process is repeated
   # responseRowFactory: returns responseRow when called with data
-  cleanData: (design, visibilityCalculator, defaultValueApplier, data, responseRowFactory, oldVisibilityStructure, callback) =>
+  cleanData: (design, visibilityCalculator, defaultValueApplier, randomAskedCalculator, data, responseRowFactory, oldVisibilityStructure, callback) =>
     nbIterations = 0
     complete = false
     newData = data
@@ -45,6 +45,10 @@ module.exports = class ResponseCleaner
         # Default values
         if defaultValueApplier
           newData = defaultValueApplier.setStickyData(newData, oldVisibilityStructure, newVisibilityStructure)
+
+        # Set random asked
+        if randomAskedCalculator
+          newData = randomAskedCalculator.calculateRandomAsked(newData, newVisibilityStructure)
 
         # Increment iterations
         nbIterations++

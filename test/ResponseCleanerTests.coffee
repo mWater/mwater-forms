@@ -28,13 +28,18 @@ describe 'ResponseCleaner', ->
           return newData
       }
 
+      # Fake random asked calculator
+      randomAskedCalculator = {
+        calculateRandomAsked: (data, visibilityStructure) -> return data
+      }
+
       visibilityCalculator = new VisibilityCalculator(design)
       responseCleaner = new ResponseCleaner()
 
       data = { q1: { value: "sometext" }, q3: { value: "moretext" } }
       oldVisibilityStructure = { q1: true, q2: false, q3: true }
 
-      responseCleaner.cleanData design, visibilityCalculator, defaultValueApplier, data, (->), oldVisibilityStructure, (error, results) =>
+      responseCleaner.cleanData design, visibilityCalculator, defaultValueApplier, randomAskedCalculator, data, (->), oldVisibilityStructure, (error, results) =>
         assert not error
         assert.deepEqual results.data, { q1: { value: "sometext" }, q2: { value: "defaulttext" } }
         assert.deepEqual results.visibilityStructure, { q1: true, q2: true, q3: false }

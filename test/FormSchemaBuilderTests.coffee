@@ -1757,6 +1757,35 @@ describe "FormSchemaBuilder addForm", ->
 
     it "works with master forms"
 
+  describe ":randomAsked columns", ->
+    it "adds column if random asked", ->
+      # Create form
+      form = {
+        _id: "formid"
+        design: {
+          _type: "Form"
+          name: { en: "Form" }
+          contents: [
+            { _id: "q1", _type: "NumberQuestion", text: { en: "Q1" }, conditions: [], randomAskProbability: 0.4 }
+          ]
+        }
+      }
+
+      # Add to blank schema
+      schema = new FormSchemaBuilder().addForm(new Schema(), form)
+
+      compare schema.getColumn("responses:formid", "data:q1:randomAsked").jsonql, {
+        type: "op"
+        op: "::boolean"
+        exprs: [
+          {
+            type: "op"
+            op: "#>>"
+            exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{q1,randomAsked}"]
+          }
+        ]
+      }
+
   describe ":visible columns", ->
     it "adds visible when conditional", ->
       # Create form
