@@ -3,6 +3,8 @@ assert = require('chai').assert
 Schema = require('mwater-expressions').Schema
 FormSchemaBuilder = require '../src/FormSchemaBuilder'
 canonical = require 'canonical-json'
+formUtils = require '../src/formUtils'
+sensitiveDataForm = require './sensitiveDataForm'
 
 compare = (actual, expected) ->
   assert.equal canonical(actual), canonical(expected), "\n" + canonical(actual) + "\n" + canonical(expected) + "\n"
@@ -276,49 +278,25 @@ describe "FormSchemaBuilder addForm", ->
   describe "SensitiveData", ->
     it "adds sensitive data section when the user is admin", ->
       # Create form
-      form = {
-        _id: "formid"
-        design: {
-          _type: "Form"
-          name: { en: "Form" }
-          contents: [
-            { _id: "questionid", _type: "TextQuestion", text: { _base: "en", en: "Question" }, sensitive: true, conditions: [] }
-          ]
-        }
-        roles: [
-          {id: 'user:bob', role: 'view'}
-          {id: 'user:alice', role: 'admin'}
-        ]
-      }
+      form = sensitiveDataForm()
 
       # Add to blank schema
-      schema = new FormSchemaBuilder({user: 'alice'}).addForm(new Schema(), form)
+      schema = new FormSchemaBuilder({user: 'user1'}).addForm(new Schema(), form)
 
-      assert _.find(schema.getTable('responses:formid').contents, {id: "sensitiveData"})
-      assert schema.getColumn("responses:formid", "sensitiveData:questionid:value")
+      assert _.find(schema.getTable('responses:abc123').contents, {id: "sensitiveData"})
+      assert schema.getColumn("responses:abc123", "sensitiveData:a1:value")
+
+      assert _.find(schema.getTable('responses:abc123:roster:r1').contents, {id: "sensitiveData"})
 
     it "does not add sensitive data section when the user is admin", ->
       # Create form
-      form = {
-        _id: "formid"
-        design: {
-          _type: "Form"
-          name: { en: "Form" }
-          contents: [
-            { _id: "questionid", _type: "TextQuestion", text: { _base: "en", en: "Question" }, sensitive: true, conditions: [] }
-          ]
-        }
-        roles: [
-          {id: 'user:bob', role: 'view'}
-          {id: 'user:alice', role: 'admin'}
-        ]
-      }
+      form = sensitiveDataForm()
 
       # Add to blank schema
       schema = new FormSchemaBuilder({user: 'bob'}).addForm(new Schema(), form)
       
-      assert.isUndefined _.find(schema.getTable('responses:formid').contents, {id: 'sensitivedata'})
-      assert.isUndefined schema.getColumn("responses:formid", "sensitiveData:questionid:value")
+      assert.isUndefined _.find(schema.getTable('responses:abc123').contents, {id: 'sensitivedata'})
+      assert.isUndefined schema.getColumn("responses:abc123", "sensitiveData:a1:value")
 
   describe "Answer types", ->
     before ->

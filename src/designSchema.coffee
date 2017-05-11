@@ -37,6 +37,9 @@ module.exports = {
     # When set to true, the response will be assigned a name at creation (instead of only when being saved as a draft)
     draftNameRequired: { type: "boolean" }
 
+    # When set to true, users will be able to add questions with sensitive anserts
+    sensitiveMode: { type: "boolean"}
+
     # Contents of the form
     contents: { 
       oneOf: [

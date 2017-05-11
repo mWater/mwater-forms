@@ -70,14 +70,17 @@ module.exports = class FormSchemaBuilder
       _.find(form.roles, {id: role})
     )
 
-    sensitiveData = []
-    if _.some(matchingRoles, {role: 'admin'})
-      for question in form.design.contents
-        if question.sensitive?
-          sensitiveData.push({ id: "sensitiveData:#{question._id}:value", type: question._type, name: question.text, sensitive: true })
-    
+    # if _.some(matchingRoles, {role: 'admin'})
+    #   schema = @addSensitiveData(schema, form)
+      # sensitiveData = []
 
-      contents.push({ id: "sensitiveData", type: "section", name: { en: "Sensitive Data"}, desc: { en: "Sensitive Data" }, contents: sensitiveData })
+      # for question in formUtils.allItems(form.design)
+      #   console.log question.sensitive?
+      #   if question.sensitive?
+      #     sensitiveData.push({ id: "sensitiveData:#{question._id}:value", _type: question._type, name: question.text, sensitive: true })
+    
+      # if sensitiveData.length > 0
+      #   contents.push({ id: "sensitiveData", type: "section", name: { en: "Sensitive Data"}, desc: { en: "Sensitive Data" }, contents: sensitiveData })
 
     conditionsExprCompiler = new ConditionsExprCompiler(form.design)
 
@@ -99,6 +102,10 @@ module.exports = class FormSchemaBuilder
 
     # Add any roster tables
     schema = @addRosterTables(schema, form, conditionsExprCompiler)
+
+    if _.some(matchingRoles, {role: 'admin'})
+      schema = @addSensitiveData(schema, form)
+      schema = @addSensitiveDataForRosters(schema, form, conditionsExprCompiler)
 
     schema = @addCalculations(schema, form)
 
@@ -174,10 +181,12 @@ module.exports = class FormSchemaBuilder
           # Use existing contents
           contents = schema.getTable("responses:#{form._id}:roster:#{item.rosterId}").contents.slice()
 
+        
+
         # Add contents
         for rosterItem in item.contents
           @addFormItem(rosterItem, contents, "responses:#{form._id}:roster:#{item.rosterId or item._id}", conditionsExprCompiler)
-
+          
         schema = schema.addTable({
           id: "responses:#{form._id}:roster:#{item.rosterId or item._id}"
           name: appendStr(appendStr(form.design.name, ": "), item.name)
@@ -366,10 +375,97 @@ module.exports = class FormSchemaBuilder
 
     return section
 
+  addSensitiveDataForRosters: (schema, form, conditionsExprCompiler) ->
+    for item in formUtils.allItems(form.design)
+      if item._type in ["RosterGroup", "RosterMatrix"]
+
+        tableId = "responses:#{form._id}:roster:#{item.rosterId or item._id}"
+
+        contents = schema.getTable(tableId).contents.slice()
+
+        for rosterItem in item.contents
+          if rosterItem.sensitive?
+            sensitiveDataSection = _.find(contents, {id: "sensitiveData"}) 
+
+            if not sensitiveDataSection
+              sensitiveDataSection = {
+                id: "sensitiveData"
+                type: "section"
+                name: { _base: "en", en: "Sensitive Data" }
+                contents: []
+              }
+              schema = schema.addTable(update(schema.getTable(tableId), { contents: { $push: [sensitiveDataSection] } }))
+
+
+            sensitiveDataSectionContents = sensitiveDataSection.contents.slice()
+
+            @addFormItem(
+              rosterItem, 
+              sensitiveDataSectionContents, 
+              tableId,
+              conditionsExprCompiler,
+              null,
+              [],
+              true
+            )
+
+            # Update in original
+            contents = schema.getTable(tableId).contents.slice()
+            index = _.findIndex(contents, {id: "sensitiveData"})
+            contents[index] = update(sensitiveDataSection, { contents: { $set: sensitiveDataSectionContents } })
+            schema = schema.addTable(update(schema.getTable(tableId), { contents: { $set: contents } }))
+
+    console.log schema.getTable(tableId)
+    return schema
+
+
+  addSensitiveData: (schema, form) ->
+    # If not calculations, don't add indicators section
+    # if not form.indicatorCalculations or form.indicatorCalculations.length == 0
+    #   return schema
+
+    tableId = "responses:#{form._id}"
+
+    for question in formUtils.allItems(form.design)
+      if question.sensitive? and question not in ["RosterGroup", "RosterMatrix"]
+
+        sensitiveDataSection = _.find(schema.getTable(tableId).contents, { id: "sensitiveData" })
+
+        if not sensitiveDataSection
+          sensitiveDataSection = {
+            id: "sensitiveData"
+            type: "section"
+            name: { _base: "en", en: "Sensitive Data" }
+            contents: []
+          }
+          schema = schema.addTable(update(schema.getTable(tableId), { contents: { $push: [sensitiveDataSection] } }))
+
+        sensitiveDataSectionContents = sensitiveDataSection.contents.slice()
+
+        @addFormItem(
+          question, 
+          sensitiveDataSectionContents, 
+          "responses:#{form._id}",
+          null,
+          null,
+          [],
+          true
+        )
+
+        # Update in original
+        contents = schema.getTable(tableId).contents.slice()
+        index = _.findIndex(contents, {id: "sensitiveData"})
+        contents[index] = update(sensitiveDataSection, { contents: { $set: sensitiveDataSectionContents } })
+
+        # Re-add table
+        schema = schema.addTable(update(schema.getTable(tableId), { contents: { $set: contents } }))
+    
+    return schema
+
   # Adds a form item. existingConditionExpr is any conditions that already condition visibility of the form item. This does not cross roster boundaries.
   # That is, if a roster is entirely invisible, roster items will not be conditioned on the overall visibility, as they simply won't exist
   # reverseJoins: list of reverse joins to add to. In format: { table: destination table, column: join column to add }. This list will be mutated. Pass in empty list in general.
-  addFormItem: (item, contents, tableId, conditionsExprCompiler, existingConditionExpr, reverseJoins = []) ->
+  addFormItem: (item, contents, tableId, conditionsExprCompiler, existingConditionExpr, reverseJoins = [], sensitiveData = false) ->
     addColumn = (column) =>
       contents.push(column)
 
@@ -408,18 +504,20 @@ module.exports = class FormSchemaBuilder
           })
 
     else if formUtils.isQuestion(item)
+
       # Get type of answer
       answerType = formUtils.getAnswerType(item)
 
       # Get code
       code = item.exportId or item.code
-      sensitive = item.sensitive or false
+      
+      dataColumn = if sensitiveData then "sensitiveData" else "data"
 
       switch answerType
         when "text"
           # Get a simple text column. Null if empty
           column = {
-            id: "data:#{item._id}:value"
+            id: "#{dataColumn}:#{item._id}:value"
             type: "text"
             name: item.text
             code: code
@@ -431,7 +529,7 @@ module.exports = class FormSchemaBuilder
                   type: "op"
                   op: "#>>"
                   exprs: [
-                    { type: "field", tableAlias: "{alias}", column: "data" }
+                    { type: "field", tableAlias: "{alias}", column: dataColumn }
                     "{#{item._id},value}"
                   ]
                 }
