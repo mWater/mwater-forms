@@ -3,7 +3,7 @@ VisibilityCalculator = require '../src/VisibilityCalculator'
 ResponseRow = require '../src/ResponseRow'
 
 describe 'VisibilityCalculator', ->
-  before ->
+  beforeEach ->
     @formDesign = {_type: 'Form', contents: [
         {
           _id: "sectionId"
@@ -231,9 +231,41 @@ describe 'VisibilityCalculator', ->
         }
         visibilityStructure = {}
         @visibilityCalculator.processQuestion(question, false, data, null, visibilityStructure, '', (error) =>
-          assert.deepEqual {testId: false}, visibilityStructure
+          assert.deepEqual visibilityStructure, {testId: false}
           done()
         )
+
+      it "sets visibility to true if randomAsked is null", (done) ->
+        data = {testId: {value: ""}}
+        question = {
+          _id: 'testId'
+          _type: "TextQuestion"
+          conditions: []
+          randomAskProbability: 0.4
+        }
+
+        visibilityStructure = {}
+        @visibilityCalculator.processQuestion(question, false, data, null, visibilityStructure, '', (error) =>
+          assert.deepEqual visibilityStructure, {testId: true}
+          done()
+        )
+
+      it "sets visibility to false if randomAsked is false", (done) ->
+        data = { testId: { value: "", randomAsked: false } }
+
+        question = {
+          _id: 'testId'
+          _type: "TextQuestion"
+          conditions: []
+          randomAskProbability: 0.4
+        }
+
+        visibilityStructure = {}
+        @visibilityCalculator.processQuestion(question, false, data, null, visibilityStructure, '', (error) =>
+          assert.deepEqual visibilityStructure, {testId: false}
+          done()
+        )
+
 
 
   describe 'processGroup', ->

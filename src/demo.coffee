@@ -107,9 +107,10 @@ class DemoComponent extends React.Component
 
     schema = new Schema()
     # design = rosterFormDesign
-    design = matrixFormDesign
+    # design = matrixFormDesign
     # design = rosterFormDesign
     # design = sampleForm2.design
+    design = randomAskFormDesign
     schema = new FormSchemaBuilder().addForm(schema, { _id: "form1", design: design })
 
     H.div className: "row",
@@ -293,6 +294,32 @@ matrixFormDesign = {
         { _id: "e", _type: "UnitsColumnQuestion", text: { en: "Unit" }, decimal: true, units: [{ label: { en: "CM"}, id: "cm" }, { label: { en: "INCH"}, id: "inch" }] }
       ]
       alternates: { na: 1 }
+    }
+  ]
+}
+
+
+randomAskFormDesign = {
+  "name": {
+    "en": "Visualization Test",
+    "_base": "en"
+  },
+  "_type": "Form",
+  "locales": [
+    {
+      "code": "en",
+      "name": "English"
+    }
+  ],
+  "contents": [
+    {
+      "_id": "textid",
+      "text": {
+        "en": "Random Question",
+        "_base": "en"
+      },
+      "_type": "TextQuestion",
+      "randomAskProbability": 0.2
     }
   ]
 }

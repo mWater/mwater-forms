@@ -11,6 +11,7 @@ ResponseCleaner = require './ResponseCleaner'
 ResponseRow = require './ResponseRow'
 DefaultValueApplier = require './DefaultValueApplier'
 VisibilityCalculator = require './VisibilityCalculator'
+RandomAskedCalculator = require './RandomAskedCalculator'
 
 # Displays a form that can be filled out
 module.exports = class FormComponent extends React.Component
@@ -98,10 +99,11 @@ module.exports = class FormComponent extends React.Component
   handleDataChange: (data) =>
     visibilityCalculator = new VisibilityCalculator(@props.design)
     defaultValueApplier = new DefaultValueApplier(@props.design, @props.formCtx.stickyStorage, @props.entity, @props.entityType)
+    randomAskedCalculator = new RandomAskedCalculator(@props.design)
     responseCleaner = new ResponseCleaner()
 
     # Clean response data
-    responseCleaner.cleanData @props.design, visibilityCalculator, defaultValueApplier, data, @createResponseRow, @state.visibilityStructure, (error, results) =>
+    responseCleaner.cleanData @props.design, visibilityCalculator, defaultValueApplier, randomAskedCalculator, data, @createResponseRow, @state.visibilityStructure, (error, results) =>
       if error
         alert(T("Error saving data") + ": #{error.message}")
         return

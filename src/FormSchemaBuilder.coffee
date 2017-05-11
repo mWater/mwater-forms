@@ -1451,8 +1451,26 @@ module.exports = class FormSchemaBuilder
         
         addColumn(column)
 
-      # Add conditions
-      if conditionsExprCompiler and ((item.conditions and item.conditions.length > 0) or existingConditionExpr)
+      # Add randomAsked if randomAsked
+      if item.randomAskProbability? 
+        column = {
+          id: "data:#{item._id}:randomAsked"
+          type: "boolean"
+          name: appendStr(item.text, " (Randomly Asked)")
+          code: if code then code + " (Randomly Asked)"
+          jsonql: {
+            type: "op"
+            op: "::boolean"
+            exprs: [
+              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{#{item._id},randomAsked}"] }
+            ]
+          }
+        }
+        
+        addColumn(column)
+
+      # Add visible if has conditions and not randomly asked
+      if not item.randomAskProbability? and (conditionsExprCompiler and ((item.conditions and item.conditions.length > 0) or existingConditionExpr))
         # Guard against null
         conditionExpr = ExprUtils.andExprs(existingConditionExpr, conditionsExprCompiler.compileConditions(item.conditions, tableId))
         if conditionExpr
