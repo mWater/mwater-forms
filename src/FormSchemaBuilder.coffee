@@ -104,7 +104,7 @@ module.exports = class FormSchemaBuilder
     schema = @addRosterTables(schema, form, conditionsExprCompiler)
 
     if _.some(matchingRoles, {role: 'admin'})
-      schema = @addSensitiveData(schema, form)
+      schema = @addSensitiveData(schema, form, conditionsExprCompiler)
       schema = @addSensitiveDataForRosters(schema, form, conditionsExprCompiler)
 
     schema = @addCalculations(schema, form)
@@ -419,16 +419,11 @@ module.exports = class FormSchemaBuilder
     return schema
 
 
-  addSensitiveData: (schema, form) ->
-    # If not calculations, don't add indicators section
-    # if not form.indicatorCalculations or form.indicatorCalculations.length == 0
-    #   return schema
-
+  addSensitiveData: (schema, form, conditionsExprCompiler) ->
     tableId = "responses:#{form._id}"
 
-    for question in formUtils.allItems(form.design)
-      if question.sensitive? and question not in ["RosterGroup", "RosterMatrix"]
-
+    addData = (question) =>
+      if question.sensitive?
         sensitiveDataSection = _.find(schema.getTable(tableId).contents, { id: "sensitiveData" })
 
         if not sensitiveDataSection
@@ -446,7 +441,7 @@ module.exports = class FormSchemaBuilder
           question, 
           sensitiveDataSectionContents, 
           "responses:#{form._id}",
-          null,
+          conditionsExprCompiler,
           null,
           [],
           true
@@ -459,7 +454,15 @@ module.exports = class FormSchemaBuilder
 
         # Re-add table
         schema = schema.addTable(update(schema.getTable(tableId), { contents: { $set: contents } }))
-    
+      return schema
+
+    for item in form.design.contents
+      if item.contents and item._type in ["Section", "Group"]
+        for subItem in item.contents
+          schema = addData(subItem)
+      else if formUtils.isQuestion(item)
+        schema = addData(item)
+      
     return schema
 
   # Adds a form item. existingConditionExpr is any conditions that already condition visibility of the form item. This does not cross roster boundaries.
