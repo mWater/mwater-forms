@@ -28,7 +28,8 @@ module.exports = {
             "text": {
               "en": "Aquagenx CBT Question 1",
               "_base": "en"
-            }
+            },
+            "randomAskProbability": 0.5
           },
           {
             "_id": "aquagenxcbtid2",

@@ -28,13 +28,18 @@ describe 'ResponseCleaner', ->
           return newData
       }
 
+      # Fake random asked calculator
+      randomAskedCalculator = {
+        calculateRandomAsked: (data, visibilityStructure) -> return data
+      }
+
       visibilityCalculator = new VisibilityCalculator(design)
       responseCleaner = new ResponseCleaner()
 
       data = { q1: { value: "sometext" }, q3: { value: "moretext" } }
       oldVisibilityStructure = { q1: true, q2: false, q3: true }
 
-      responseCleaner.cleanData design, visibilityCalculator, defaultValueApplier, data, (->), oldVisibilityStructure, (error, results) =>
+      responseCleaner.cleanData design, visibilityCalculator, defaultValueApplier, randomAskedCalculator, data, (->), oldVisibilityStructure, (error, results) =>
         assert not error
         assert.deepEqual results.data, { q1: { value: "sometext" }, q2: { value: "defaulttext" } }
         assert.deepEqual results.visibilityStructure, { q1: true, q2: true, q3: false }
@@ -65,6 +70,17 @@ describe 'ResponseCleaner', ->
 
         assert data != newData, "It returned data instead of a copy"
         assert.deepEqual {}, newData, "All the data should have been removed"
+
+      it 'keeps randomAsked for invisible questions so that the decision is not lost', ->
+        responseCleaner = new ResponseCleaner()
+
+        design = {}
+        data = { questionA: { value: "apple", randomAsked: false } }
+        visibilityStructure = { questionA: false }
+
+        newData = responseCleaner.cleanDataBasedOnVisibility(data, visibilityStructure)
+
+        assert.deepEqual newData, { questionA: { randomAsked: false } }, "Should keep randomAsked"
 
     describe 'Roster groups', ->
       it 'keeps the data for all visible questions', ->

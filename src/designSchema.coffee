@@ -29,7 +29,8 @@ module.exports = {
     # Schema 16 adds AquagenxCBTQuestion type
     # Schema 17 adds conditionExpr
     # Schema 18 adds calculations
-    _schema: { enum: [1, 2, 3, 4, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18] }
+    # Schema 19 adds randomAskProbability
+    _schema: { enum: [1, 2, 3, 4, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19] }
 
     # Name of the form
     name: { $ref: "#/definitions/localizedString" }
@@ -303,6 +304,9 @@ module.exports = {
 
         # _id of the item that this item is a duplicate of
         _basedOn : { $ref: "#/definitions/uuid" }
+
+        # If present, only ask with this probability, hide otherwise. 0-1
+        randomAskProbability: { type: "number" }
       }
       required: ["_id", "_type", "text", "conditions", "validations"]
 

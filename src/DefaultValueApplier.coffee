@@ -5,13 +5,11 @@ formUtils = require './formUtils'
 #    - The question needs to be newly visible
 #    - The question needs to have a default value
 #    - The data for that question needs to be undefined or null, alternate needs to be null or undefined
-# The DefaultValueApplier is not a substitute for regular exercise :)
-
 module.exports = class DefaultValueApplier
   # entity is an object
   # entityType is a string
-  constructor: (form, stickyStorage, entity, entityType) ->
-    @form = form
+  constructor: (formDesign, stickyStorage, entity, entityType) ->
+    @formDesign = formDesign
     @stickyStorage = stickyStorage
     @entity = entity
     @entityType = entityType
@@ -50,7 +48,7 @@ module.exports = class DefaultValueApplier
   # - sticky with a stored sticky value
   # - defaultValue
   getHighestPriorityDefaultValue: (questionId) ->
-    question = formUtils.findItem(@form, questionId)
+    question = formUtils.findItem(@formDesign, questionId)
 
     if not question?
       return null
