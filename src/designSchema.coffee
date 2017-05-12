@@ -38,6 +38,9 @@ module.exports = {
     # When set to true, the response will be assigned a name at creation (instead of only when being saved as a draft)
     draftNameRequired: { type: "boolean" }
 
+    # When set to true, users will be able to add questions with sensitive answers
+    confidentialMode: { type: "boolean"}
+
     # Contents of the form
     contents: { 
       oneOf: [
@@ -275,6 +278,12 @@ module.exports = {
 
         # Id used for exporting responses
         exportId: { type: "string" }
+
+        # True if the question contains confidential data
+        confidential: { type: "boolean" }
+
+        # Distance in meters to scramble coordinates by
+        confidentialRadius: { type: "integer" }
 
         # Alternative answers that are non-answers to the specific question
         # such as "Don't Know" or "Not Applicable"

@@ -12,6 +12,14 @@ healthRiskEnum = require('./answers/aquagenxCBTUtils').healthRiskEnum
 
 # Adds a form to a mwater-expressions schema
 module.exports = class FormSchemaBuilder
+  constructor: (options = {}) ->
+    @roles = ['all']
+
+    if options.user
+      @roles.push("user:#{options.user}")
+    
+    @roles = @roles.concat(_.map(options.groups, (g) -> "group:" + g))
+
   # Pass clone forms if a master form
   addForm: (schema, form, cloneForms) ->
     contents = []
@@ -78,6 +86,15 @@ module.exports = class FormSchemaBuilder
     # Add any roster tables
     schema = @addRosterTables(schema, form, conditionsExprCompiler)
 
+    # Add confidential data if the user is form admin
+    matchingRoles = _.compact(_.map @roles, (role) ->
+      _.find(form.roles, {id: role})
+    )
+
+    if _.some(matchingRoles, {role: 'admin'})
+      schema = @addConfidentialData(schema, form, conditionsExprCompiler)
+      schema = @addConfidentialDataForRosters(schema, form, conditionsExprCompiler)
+
     schema = @addCalculations(schema, form)
 
     schema = @addIndicatorCalculations(schema, form, false)
@@ -87,7 +104,7 @@ module.exports = class FormSchemaBuilder
 
     # Create table
     return schema
- 
+  
   # Add joins back from entities to site and entity questions
   # reverseJoins: list of joins in format: { table: destination table, column: join column to add }
   # Adds to section with id "!related_forms" with name "Related Forms"
@@ -152,10 +169,12 @@ module.exports = class FormSchemaBuilder
           # Use existing contents
           contents = schema.getTable("responses:#{form._id}:roster:#{item.rosterId}").contents.slice()
 
+        
+
         # Add contents
         for rosterItem in item.contents
           @addFormItem(rosterItem, contents, "responses:#{form._id}:roster:#{item.rosterId or item._id}", conditionsExprCompiler)
-
+          
         schema = schema.addTable({
           id: "responses:#{form._id}:roster:#{item.rosterId or item._id}"
           name: appendStr(appendStr(form.design.name, ": "), item.name)
@@ -344,11 +363,107 @@ module.exports = class FormSchemaBuilder
 
     return section
 
+  addConfidentialDataForRosters: (schema, form, conditionsExprCompiler) ->
+    for item in formUtils.allItems(form.design)
+      if item._type in ["RosterGroup", "RosterMatrix"]
+
+        tableId = "responses:#{form._id}:roster:#{item.rosterId or item._id}"
+
+        contents = schema.getTable(tableId).contents.slice()
+
+        for rosterItem in item.contents
+          if rosterItem.confidential
+            confidentialDataSection = _.find(contents, {id: "confidentialData"}) 
+
+            if not confidentialDataSection
+              confidentialDataSection = {
+                id: "confidentialData"
+                type: "section"
+                name: { _base: "en", en: "Confidential Data" }
+                contents: []
+              }
+              schema = schema.addTable(update(schema.getTable(tableId), { contents: { $push: [confidentialDataSection] } }))
+
+
+            confidentialDataSectionContents = confidentialDataSection.contents.slice()
+
+            @addFormItem(
+              rosterItem, 
+              confidentialDataSectionContents, 
+              tableId,
+              conditionsExprCompiler,
+              null,
+              [],
+              true
+            )
+
+            # Update in original
+            contents = schema.getTable(tableId).contents.slice()
+            index = _.findIndex(contents, {id: "confidentialData"})
+            contents[index] = update(confidentialDataSection, { contents: { $set: confidentialDataSectionContents } })
+            schema = schema.addTable(update(schema.getTable(tableId), { contents: { $set: contents } }))
+
+    return schema
+
+
+  addConfidentialData: (schema, form, conditionsExprCompiler) ->
+    tableId = "responses:#{form._id}"
+
+    addData = (question) =>
+      if question.confidential
+        confidentialDataSection = _.find(schema.getTable(tableId).contents, { id: "confidentialData" })
+
+        if not confidentialDataSection
+          confidentialDataSection = {
+            id: "confidentialData"
+            type: "section"
+            name: { _base: "en", en: "Confidential Data" }
+            contents: []
+          }
+          schema = schema.addTable(update(schema.getTable(tableId), { contents: { $push: [confidentialDataSection] } }))
+
+        confidentialDataSectionContents = confidentialDataSection.contents.slice()
+
+        @addFormItem(
+          question, 
+          confidentialDataSectionContents, 
+          "responses:#{form._id}",
+          conditionsExprCompiler,
+          null,
+          [],
+          true
+        )
+
+        # Update in original
+        contents = schema.getTable(tableId).contents.slice()
+        index = _.findIndex(contents, {id: "confidentialData"})
+        contents[index] = update(confidentialDataSection, { contents: { $set: confidentialDataSectionContents } })
+
+        # Re-add table
+        schema = schema.addTable(update(schema.getTable(tableId), { contents: { $set: contents } }))
+      return schema
+
+    for item in form.design.contents
+      if item.contents and item._type in ["Section", "Group"]
+        for subItem in item.contents
+          schema = addData(subItem)
+      else if formUtils.isQuestion(item)
+        schema = addData(item)
+      
+    return schema
+
   # Adds a form item. existingConditionExpr is any conditions that already condition visibility of the form item. This does not cross roster boundaries.
   # That is, if a roster is entirely invisible, roster items will not be conditioned on the overall visibility, as they simply won't exist
   # reverseJoins: list of reverse joins to add to. In format: { table: destination table, column: join column to add }. This list will be mutated. Pass in empty list in general.
-  addFormItem: (item, contents, tableId, conditionsExprCompiler, existingConditionExpr, reverseJoins = []) ->
+  addFormItem: (item, contents, tableId, conditionsExprCompiler, existingConditionExpr, reverseJoins = [], confidentialData = false) ->
     addColumn = (column) =>
+      if formUtils.isQuestion(item) and item.confidential
+        if confidentialData
+          column["confidential"] = true
+          column["name"] = appendStr(column.name, " (confidential)")
+        else 
+          column["redacted"] = true
+          column["name"] = appendStr(column.name, " (redacted)")
       contents.push(column)
 
     # Add sub-items
@@ -386,17 +501,20 @@ module.exports = class FormSchemaBuilder
           })
 
     else if formUtils.isQuestion(item)
+
       # Get type of answer
       answerType = formUtils.getAnswerType(item)
 
       # Get code
       code = item.exportId or item.code
+      
+      dataColumn = if confidentialData then "confidentialData" else "data"
 
       switch answerType
         when "text"
           # Get a simple text column. Null if empty
           column = {
-            id: "data:#{item._id}:value"
+            id: "#{dataColumn}:#{item._id}:value"
             type: "text"
             name: item.text
             code: code
@@ -408,7 +526,7 @@ module.exports = class FormSchemaBuilder
                   type: "op"
                   op: "#>>"
                   exprs: [
-                    { type: "field", tableAlias: "{alias}", column: "data" }
+                    { type: "field", tableAlias: "{alias}", column: dataColumn }
                     "{#{item._id},value}"
                   ]
                 }
@@ -421,7 +539,7 @@ module.exports = class FormSchemaBuilder
         when "number"
           # Get a decimal column always as integer can run out of room
           column = {
-            id: "data:#{item._id}:value"
+            id: "#{dataColumn}:#{item._id}:value"
             type: "number"
             name: item.text
             code: code
@@ -433,7 +551,7 @@ module.exports = class FormSchemaBuilder
                   type: "op"
                   op: "#>>"
                   exprs: [
-                    { type: "field", tableAlias: "{alias}", column: "data" }
+                    { type: "field", tableAlias: "{alias}", column: dataColumn }
                     "{#{item._id},value}"
                   ]
                 }
@@ -445,7 +563,7 @@ module.exports = class FormSchemaBuilder
         when "choice"
           # Get a simple text column
           column = {
-            id: "data:#{item._id}:value"
+            id: "#{dataColumn}:#{item._id}:value"
             type: "enum"
             name: item.text
             code: code
@@ -454,7 +572,7 @@ module.exports = class FormSchemaBuilder
               type: "op"
               op: "#>>"
               exprs: [
-                { type: "field", tableAlias: "{alias}", column: "data" }
+                { type: "field", tableAlias: "{alias}", column: dataColumn }
                 "{#{item._id},value}"
               ]
             }
@@ -464,7 +582,7 @@ module.exports = class FormSchemaBuilder
         when "choices"
           # Null if empty for simplicity
           column = {
-            id: "data:#{item._id}:value"
+            id: "#{dataColumn}:#{item._id}:value"
             type: "enumset"
             name: item.text
             code: code
@@ -477,7 +595,7 @@ module.exports = class FormSchemaBuilder
                   type: "op"
                   op: "#>"
                   exprs: [
-                    { type: "field", tableAlias: "{alias}", column: "data" }
+                    { type: "field", tableAlias: "{alias}", column: dataColumn }
                     "{#{item._id},value}"
                   ]
                 }
@@ -492,7 +610,7 @@ module.exports = class FormSchemaBuilder
           if item.format.match /ss|LLL|lll|m|h|H/
             # Fill in month and year and remove timestamp
             column = {
-              id: "data:#{item._id}:value"
+              id: "#{dataColumn}:#{item._id}:value"
               type: "datetime"
               name: item.text
               code: code
@@ -500,7 +618,7 @@ module.exports = class FormSchemaBuilder
                 type: "op"
                 op: "#>>"
                 exprs: [
-                  { type: "field", tableAlias: "{alias}", column: "data" }
+                  { type: "field", tableAlias: "{alias}", column: dataColumn }
                   "{#{item._id},value}"
                 ]
               }
@@ -509,7 +627,7 @@ module.exports = class FormSchemaBuilder
           else
             # Fill in month and year and remove timestamp
             column = {
-              id: "data:#{item._id}:value"
+              id: "#{dataColumn}:#{item._id}:value"
               type: "date"
               name: item.text
               code: code
@@ -526,7 +644,7 @@ module.exports = class FormSchemaBuilder
                         type: "op"
                         op: "#>>"
                         exprs: [
-                          { type: "field", tableAlias: "{alias}", column: "data" }
+                          { type: "field", tableAlias: "{alias}", column: dataColumn }
                           "{#{item._id},value}"
                         ]
                       }
@@ -543,7 +661,7 @@ module.exports = class FormSchemaBuilder
 
         when "boolean"
           column = {
-            id: "data:#{item._id}:value"
+            id: "#{dataColumn}:#{item._id}:value"
             type: "boolean"
             name: item.text
             code: code
@@ -555,7 +673,7 @@ module.exports = class FormSchemaBuilder
                   type: "op"
                   op: "#>>"
                   exprs: [
-                    { type: "field", tableAlias: "{alias}", column: "data" }
+                    { type: "field", tableAlias: "{alias}", column: dataColumn }
                     "{#{item._id},value}"
                   ]
                 }
@@ -569,7 +687,7 @@ module.exports = class FormSchemaBuilder
           name = appendStr(item.text, " (magnitude)")
 
           column = {
-            id: "data:#{item._id}:value:quantity"
+            id: "#{dataColumn}:#{item._id}:value:quantity"
             type: "number"
             name: name
             code: if code then code + " (magnitude)"
@@ -581,7 +699,7 @@ module.exports = class FormSchemaBuilder
                   type: "op"
                   op: "#>>"
                   exprs: [
-                    { type: "field", tableAlias: "{alias}", column: "data" }
+                    { type: "field", tableAlias: "{alias}", column: dataColumn }
                     "{#{item._id},value,quantity}"
                   ]
                 }
@@ -591,7 +709,7 @@ module.exports = class FormSchemaBuilder
           addColumn(column)
 
           column = {
-            id: "data:#{item._id}:value:units"
+            id: "#{dataColumn}:#{item._id}:value:units"
             type: "enum"
             name: appendStr(item.text, " (units)")
             code: if code then code + " (units)"
@@ -599,7 +717,7 @@ module.exports = class FormSchemaBuilder
               type: "op"
               op: "#>>"
               exprs: [
-                { type: "field", tableAlias: "{alias}", column: "data" }
+                { type: "field", tableAlias: "{alias}", column: dataColumn }
                 "{#{item._id},value,units}"
               ]
             }
@@ -616,7 +734,7 @@ module.exports = class FormSchemaBuilder
           }
 
           section.contents.push({
-            id: "data:#{item._id}:value:cbt:mpn"
+            id: "#{dataColumn}:#{item._id}:value:cbt:mpn"
             type: "number"
             name: appendStr(item.text, " (MPN/100ml)")
             code: if code then code + " (mpn)"
@@ -628,7 +746,7 @@ module.exports = class FormSchemaBuilder
                   type: "op"
                   op: "#>>"
                   exprs: [
-                    { type: "field", tableAlias: "{alias}", column: "data" }
+                    { type: "field", tableAlias: "{alias}", column: dataColumn }
                     "{#{item._id},value,cbt,mpn}"
                   ]
                 }
@@ -637,7 +755,7 @@ module.exports = class FormSchemaBuilder
           })
 
           section.contents.push({
-            id: "data:#{item._id}:value:cbt:confidence"
+            id: "#{dataColumn}:#{item._id}:value:cbt:confidence"
             type: "number"
             name: appendStr(item.text, " (Upper 95% Confidence Interval/100ml)")
             code: if code then code + " (confidence)"
@@ -649,7 +767,7 @@ module.exports = class FormSchemaBuilder
                   type: "op"
                   op: "#>>"
                   exprs: [
-                    { type: "field", tableAlias: "{alias}", column: "data" }
+                    { type: "field", tableAlias: "{alias}", column: dataColumn }
                     "{#{item._id},value,cbt,confidence}"
                   ]
                 }
@@ -658,7 +776,7 @@ module.exports = class FormSchemaBuilder
           })
 
           section.contents.push({
-            id: "data:#{item._id}:value:cbt:healthRisk"
+            id: "#{dataColumn}:#{item._id}:value:cbt:healthRisk"
             type: "enum"
             enumValues: healthRiskEnum
             name: appendStr(item.text, " (Health Risk Category)")
@@ -667,7 +785,7 @@ module.exports = class FormSchemaBuilder
               type: "op"
               op: "#>>"
               exprs: [
-                { type: "field", tableAlias: "{alias}", column: "data" }
+                { type: "field", tableAlias: "{alias}", column: dataColumn }
                 "{#{item._id},value,cbt,healthRisk}"
               ]
             }
@@ -675,7 +793,7 @@ module.exports = class FormSchemaBuilder
 
           # Get image
           section.contents.push({
-            id: "data:#{item._id}:value:image"
+            id: "#{dataColumn}:#{item._id}:value:image"
             type: "image"
             name: appendStr(item.text, " (image)")
             code: if code then code + " (image)"
@@ -683,7 +801,7 @@ module.exports = class FormSchemaBuilder
               type: "op"
               op: "#>"
               exprs: [
-                { type: "field", tableAlias: "{alias}", column: "data" }
+                { type: "field", tableAlias: "{alias}", column: dataColumn }
                 "{#{item._id},value,image}"
               ]
             }
@@ -691,7 +809,7 @@ module.exports = class FormSchemaBuilder
 
           addCxColumn = (label, v) ->
             section.contents.push({
-              id: "data:#{item._id}:value:cbt:#{v}"
+              id: "#{dataColumn}:#{item._id}:value:cbt:#{v}"
               type: "boolean"
               name: appendStr(item.text, " (#{label})")
               code: if code then code + " (#{v})"
@@ -703,7 +821,7 @@ module.exports = class FormSchemaBuilder
                     type: "op"
                     op: "#>>"
                     exprs: [
-                      { type: "field", tableAlias: "{alias}", column: "data" }
+                      { type: "field", tableAlias: "{alias}", column: dataColumn }
                       "{#{item._id},value,cbt,#{v}}"
                     ]
                   }
@@ -721,7 +839,7 @@ module.exports = class FormSchemaBuilder
 
         when "location"
           column = {
-            id: "data:#{item._id}:value"
+            id: "#{dataColumn}:#{item._id}:value"
             type: "geometry"
             name: item.text
             code: code
@@ -738,14 +856,14 @@ module.exports = class FormSchemaBuilder
                       type: "op"
                       op: "::decimal"
                       exprs: [
-                        { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{#{item._id},value,longitude}"] }
+                        { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, "{#{item._id},value,longitude}"] }
                       ]
                     }
                     {
                       type: "op"
                       op: "::decimal"
                       exprs: [
-                        { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{#{item._id},value,latitude}"] }
+                        { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, "{#{item._id},value,latitude}"] }
                       ]
                     }
                   ]
@@ -776,14 +894,14 @@ module.exports = class FormSchemaBuilder
                           type: "op"
                           op: "::decimal"
                           exprs: [
-                            { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{from}", column: "data" }, "{#{item._id},value,longitude}"] }
+                            { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{from}", column: dataColumn }, "{#{item._id},value,longitude}"] }
                           ]
                         }
                         {
                           type: "op"
                           op: "::decimal"
                           exprs: [
-                            { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{from}", column: "data" }, "{#{item._id},value,latitude}"] }
+                            { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{from}", column: dataColumn }, "{#{item._id},value,latitude}"] }
                           ]
                         }
                       ]
@@ -796,7 +914,7 @@ module.exports = class FormSchemaBuilder
             }
 
             column = {
-              id: "data:#{item._id}:value:admin_region"
+              id: "#{dataColumn}:#{item._id}:value:admin_region"
               type: "join"
               name: appendStr(item.text, " (administrative region)")
               code: if code then code + " (administrative region)"
@@ -825,7 +943,7 @@ module.exports = class FormSchemaBuilder
             addColumn(column)
 
           column = {
-            id: "data:#{item._id}:value:accuracy"
+            id: "#{dataColumn}:#{item._id}:value:accuracy"
             type: "number"
             name: appendStr(item.text, " (accuracy)")
             code: if code then code + " (accuracy)"
@@ -834,7 +952,7 @@ module.exports = class FormSchemaBuilder
               type: "op"
               op: "::decimal"
               exprs: [
-                { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{#{item._id},value,accuracy}"] }
+                { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, "{#{item._id},value,accuracy}"] }
               ]
             }
           }
@@ -842,7 +960,7 @@ module.exports = class FormSchemaBuilder
           addColumn(column)
 
           column = {
-            id: "data:#{item._id}:value:altitude"
+            id: "#{dataColumn}:#{item._id}:value:altitude"
             type: "number"
             name: appendStr(item.text, " (altitude)")
             code: if code then code + " (altitude)"
@@ -851,7 +969,7 @@ module.exports = class FormSchemaBuilder
               type: "op"
               op: "::decimal"
               exprs: [
-                { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{#{item._id},value,altitude}"] }
+                { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, "{#{item._id},value,altitude}"] }
               ]
             }
           }
@@ -864,7 +982,7 @@ module.exports = class FormSchemaBuilder
             type: "op"
             op: "#>>"
             exprs: [
-              { type: "field", tableAlias: "{alias}", column: "data" }
+              { type: "field", tableAlias: "{alias}", column: dataColumn }
               "{#{item._id},value,code}"
             ]
           }
@@ -872,7 +990,7 @@ module.exports = class FormSchemaBuilder
           entityType = if item.siteTypes?[0] then _.first(item.siteTypes).toLowerCase().replace(new RegExp(' ', 'g'), "_") else "water_point"
 
           column = {
-            id: "data:#{item._id}:value"
+            id: "#{dataColumn}:#{item._id}:value"
             type: "join"
             name: item.text
             code: code
@@ -937,7 +1055,7 @@ module.exports = class FormSchemaBuilder
           # Do not add if no entity type
           if item.entityType
             column = {
-              id: "data:#{item._id}:value"
+              id: "#{dataColumn}:#{item._id}:value"
               type: "join"
               name: item.text
               code: code
@@ -948,7 +1066,7 @@ module.exports = class FormSchemaBuilder
                   type: "op"
                   op: "#>>"
                   exprs: [
-                    { type: "field", tableAlias: "{alias}", column: "data" }
+                    { type: "field", tableAlias: "{alias}", column: dataColumn }
                     "{#{item._id},value}"
                   ]
                 }
@@ -1007,7 +1125,7 @@ module.exports = class FormSchemaBuilder
         when "texts"
           # Get image
           column = {
-            id: "data:#{item._id}:value"
+            id: "#{dataColumn}:#{item._id}:value"
             type: "text[]"
             name: item.text
             code: code
@@ -1015,7 +1133,7 @@ module.exports = class FormSchemaBuilder
               type: "op"
               op: "#>"
               exprs: [
-                { type: "field", tableAlias: "{alias}", column: "data" }
+                { type: "field", tableAlias: "{alias}", column: dataColumn }
                 "{#{item._id},value}"
               ]
             }
@@ -1025,7 +1143,7 @@ module.exports = class FormSchemaBuilder
         when "image"
           # Get image
           column = {
-            id: "data:#{item._id}:value"
+            id: "#{dataColumn}:#{item._id}:value"
             type: "image"
             name: item.text
             code: code
@@ -1033,7 +1151,7 @@ module.exports = class FormSchemaBuilder
               type: "op"
               op: "#>"
               exprs: [
-                { type: "field", tableAlias: "{alias}", column: "data" }
+                { type: "field", tableAlias: "{alias}", column: dataColumn }
                 "{#{item._id},value}"
               ]
             }
@@ -1043,7 +1161,7 @@ module.exports = class FormSchemaBuilder
         when "images"
           # Get images
           column = {
-            id: "data:#{item._id}:value"
+            id: "#{dataColumn}:#{item._id}:value"
             type: "imagelist"
             name: item.text
             code: code
@@ -1051,7 +1169,7 @@ module.exports = class FormSchemaBuilder
               type: "op"
               op: "#>"
               exprs: [
-                { type: "field", tableAlias: "{alias}", column: "data" }
+                { type: "field", tableAlias: "{alias}", column: dataColumn }
                 "{#{item._id},value}"
               ]
             }
@@ -1061,7 +1179,7 @@ module.exports = class FormSchemaBuilder
         when "admin_region"
           # Add join to admin region
           column = {
-            id: "data:#{item._id}:value"
+            id: "#{dataColumn}:#{item._id}:value"
             name: item.text
             code: code
             type: "join"
@@ -1076,7 +1194,7 @@ module.exports = class FormSchemaBuilder
                     type: "op"
                     op: "#>>"
                     exprs: [
-                      { type: "field", tableAlias: "{alias}", column: "data" }
+                      { type: "field", tableAlias: "{alias}", column: dataColumn }
                       "{#{item._id},value}"
                     ]
                   }
@@ -1099,7 +1217,7 @@ module.exports = class FormSchemaBuilder
           for itemItem in item.items
             itemCode = if code and itemItem.code then code + " - " + itemItem.code
             section.contents.push({
-              id: "data:#{item._id}:value:#{itemItem.id}"
+              id: "#{dataColumn}:#{item._id}:value:#{itemItem.id}"
               type: "enum"
               name: appendStr(appendStr(item.text, ": "), itemItem.label)
               code: itemCode
@@ -1108,7 +1226,7 @@ module.exports = class FormSchemaBuilder
                 type: "op"
                 op: "#>>"
                 exprs: [
-                  { type: "field", tableAlias: "{alias}", column: "data" }
+                  { type: "field", tableAlias: "{alias}", column: dataColumn }
                   "{#{item._id},value,#{itemItem.id}}"
                 ]
               }
@@ -1134,7 +1252,7 @@ module.exports = class FormSchemaBuilder
               # TextColumnQuestion
               if itemColumn._type == "TextColumnQuestion"
                 section.contents.push({
-                  id: "data:#{item._id}:value:#{itemItem.id}:#{itemColumn._id}:value"
+                  id: "#{dataColumn}:#{item._id}:value:#{itemItem.id}:#{itemColumn._id}:value"
                   type: "text"
                   name: appendStr(appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "), itemColumn.text)
                   code: cellCode
@@ -1146,7 +1264,7 @@ module.exports = class FormSchemaBuilder
                         type: "op"
                         op: "#>>"
                         exprs: [
-                          { type: "field", tableAlias: "{alias}", column: "data" }
+                          { type: "field", tableAlias: "{alias}", column: dataColumn }
                           "{#{item._id},value,#{itemItem.id},#{itemColumn._id},value}"
                         ]
                       }
@@ -1158,7 +1276,7 @@ module.exports = class FormSchemaBuilder
               # NumberColumnQuestion
               if itemColumn._type == "NumberColumnQuestion"
                 section.contents.push({
-                  id: "data:#{item._id}:value:#{itemItem.id}:#{itemColumn._id}:value"
+                  id: "#{dataColumn}:#{item._id}:value:#{itemItem.id}:#{itemColumn._id}:value"
                   type: "number"
                   name: appendStr(appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "), itemColumn.text)
                   code: cellCode
@@ -1169,7 +1287,7 @@ module.exports = class FormSchemaBuilder
                       type: "op"
                       op: "#>>"
                       exprs: [
-                        { type: "field", tableAlias: "{alias}", column: "data" }
+                        { type: "field", tableAlias: "{alias}", column: dataColumn }
                         "{#{item._id},value,#{itemItem.id},#{itemColumn._id},value}"
                       ]
                     }]
@@ -1179,7 +1297,7 @@ module.exports = class FormSchemaBuilder
               # CheckColumnQuestion
               if itemColumn._type == "CheckColumnQuestion"
                 section.contents.push({
-                  id: "data:#{item._id}:value:#{itemItem.id}:#{itemColumn._id}:value"
+                  id: "#{dataColumn}:#{item._id}:value:#{itemItem.id}:#{itemColumn._id}:value"
                   type: "boolean"
                   name: appendStr(appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "), itemColumn.text)
                   code: cellCode
@@ -1190,7 +1308,7 @@ module.exports = class FormSchemaBuilder
                       type: "op"
                       op: "#>>"
                       exprs: [
-                        { type: "field", tableAlias: "{alias}", column: "data" }
+                        { type: "field", tableAlias: "{alias}", column: dataColumn }
                         "{#{item._id},value,#{itemItem.id},#{itemColumn._id},value}"
                       ]
                     }]
@@ -1200,7 +1318,7 @@ module.exports = class FormSchemaBuilder
               # DropdownColumnQuestion
               if itemColumn._type == "DropdownColumnQuestion"
                 section.contents.push({
-                  id: "data:#{item._id}:value:#{itemItem.id}:#{itemColumn._id}:value"
+                  id: "#{dataColumn}:#{item._id}:value:#{itemItem.id}:#{itemColumn._id}:value"
                   type: "enum"
                   name: appendStr(appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "), itemColumn.text)
                   code: cellCode
@@ -1209,7 +1327,7 @@ module.exports = class FormSchemaBuilder
                     type: "op"
                     op: "#>>"
                     exprs: [
-                      { type: "field", tableAlias: "{alias}", column: "data" }
+                      { type: "field", tableAlias: "{alias}", column: dataColumn }
                       "{#{item._id},value,#{itemItem.id},#{itemColumn._id},value}"
                     ]
                   }
@@ -1218,7 +1336,7 @@ module.exports = class FormSchemaBuilder
               # UnitsColumnQuestion
               if itemColumn._type == "UnitsColumnQuestion"
                 section.contents.push({
-                  id: "data:#{item._id}:value:#{itemItem.id}:#{itemColumn._id}:value:quantity"
+                  id: "#{dataColumn}:#{item._id}:value:#{itemItem.id}:#{itemColumn._id}:value:quantity"
                   type: "number"
                   name: appendStr(appendStr(appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "), itemColumn.text), " (magnitude)")
                   code: if cellCode then cellCode + " (magnitude)"
@@ -1229,7 +1347,7 @@ module.exports = class FormSchemaBuilder
                       type: "op"
                       op: "#>>"
                       exprs: [
-                        { type: "field", tableAlias: "{alias}", column: "data" }
+                        { type: "field", tableAlias: "{alias}", column: dataColumn }
                         "{#{item._id},value,#{itemItem.id},#{itemColumn._id},value,quantity}"
                       ]
                     }]
@@ -1237,7 +1355,7 @@ module.exports = class FormSchemaBuilder
                 })
 
                 section.contents.push({
-                  id: "data:#{item._id}:value:#{itemItem.id}:#{itemColumn._id}:value:units"
+                  id: "#{dataColumn}:#{item._id}:value:#{itemItem.id}:#{itemColumn._id}:value:units"
                   type: "enum"
                   code: if cellCode then cellCode + " (units)"
                   name: appendStr(appendStr(appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "), itemColumn.text), " (units)")
@@ -1246,7 +1364,7 @@ module.exports = class FormSchemaBuilder
                     type: "op"
                     op: "#>>"
                     exprs: [
-                      { type: "field", tableAlias: "{alias}", column: "data" }
+                      { type: "field", tableAlias: "{alias}", column: dataColumn }
                       "{#{item._id},value,#{itemItem.id},#{itemColumn._id},value,units}"
                     ]
                   }
@@ -1255,7 +1373,7 @@ module.exports = class FormSchemaBuilder
               # SiteColumnQuestion
               if itemColumn._type == "SiteColumnQuestion"
                 section.contents.push({
-                  id: "data:#{item._id}:value:#{itemItem.id}:#{itemColumn._id}:value"
+                  id: "#{dataColumn}:#{item._id}:value:#{itemItem.id}:#{itemColumn._id}:value"
                   type: "join"
                   name: appendStr(appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "), itemColumn.text)
                   code: cellCode
@@ -1266,7 +1384,7 @@ module.exports = class FormSchemaBuilder
                       type: "op"
                       op: "#>>"
                       exprs: [
-                        { type: "field", tableAlias: "{alias}", column: "data" }
+                        { type: "field", tableAlias: "{alias}", column: dataColumn }
                         "{#{item._id},value,#{itemItem.id},#{itemColumn._id},value,code}"
                       ]
                     }
@@ -1286,7 +1404,7 @@ module.exports = class FormSchemaBuilder
         for choice in item.choices
           if choice.specify
             column = {
-              id: "data:#{item._id}:specify:#{choice.id}"
+              id: "#{dataColumn}:#{item._id}:specify:#{choice.id}"
               type: "text"
               name: appendStr(appendStr(appendStr(item.text, " ("), choice.label), ") - specify")
               code: if code then code + " (#{if choice.code then choice.code else formUtils.localizeString(choice.label)})" + " - specify"
@@ -1294,7 +1412,7 @@ module.exports = class FormSchemaBuilder
                 type: "op"
                 op: "#>>"
                 exprs: [
-                  { type: "field", tableAlias: "{alias}", column: "data" }
+                  { type: "field", tableAlias: "{alias}", column: dataColumn }
                   "{#{item._id},specify,#{choice.id}}"
                 ]
               }
