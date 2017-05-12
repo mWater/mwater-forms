@@ -30,6 +30,7 @@ module.exports = {
     # Schema 17 adds conditionExpr
     # Schema 18 adds calculations
     # Schema 19 adds randomAskProbability
+    # Schema 20 adds confidential data mode
     _schema: { enum: [1, 2, 3, 4, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19] }
 
     # Name of the form
@@ -38,7 +39,7 @@ module.exports = {
     # When set to true, the response will be assigned a name at creation (instead of only when being saved as a draft)
     draftNameRequired: { type: "boolean" }
 
-    # When set to true, users will be able to add questions with sensitive answers
+    # When set to true, users will be able to add questions with confidential answers
     confidentialMode: { type: "boolean"}
 
     # Contents of the form
