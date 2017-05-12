@@ -295,7 +295,7 @@ describe "FormSchemaBuilder addForm", ->
       form = confidentialDataForm()
 
       # Add to blank schema
-      schema = new FormSchemaBuilder({user: 'bob'}).addForm(new Schema(), form)
+      schema = new FormSchemaBuilder().addForm(new Schema(), form)
       
       assert.isUndefined _.find(schema.getTable('responses:abc123').contents, {id: 'confidentialdata'})
       assert.isUndefined schema.getColumn("responses:abc123", "confidentialData:a1:value")

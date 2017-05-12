@@ -12,7 +12,7 @@ healthRiskEnum = require('./answers/aquagenxCBTUtils').healthRiskEnum
 
 # Adds a form to a mwater-expressions schema
 module.exports = class FormSchemaBuilder
-  constructor: (options) ->
+  constructor: (options = {}) ->
     @roles = ['all']
 
     if options.user
