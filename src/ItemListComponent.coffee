@@ -6,8 +6,6 @@ R = React.createElement
 formUtils = require './formUtils'
 formRenderUtils = require './formRenderUtils'
 
-#ReactCSSTransitionGroup = require('react-addons-css-transition-group')
-
 # Display a list of items
 module.exports = class ItemListComponent extends React.Component
   @propTypes:
@@ -41,9 +39,5 @@ module.exports = class ItemListComponent extends React.Component
 
   render: ->
     H.div null,
-      # Fade in and out
-      # TODO: Not working on my phone (mbriau) It sometimes fail when transitioning IN but always fail when transitioning out.
-      #       There's no error reported, the order of the questions is just wrong after the transition...
-      #R ReactCSSTransitionGroup, transitionName: "fade", transitionEnterTimeout: 300, transitionLeaveTimeout: 300,
       _.map(@props.contents, @renderItem)
 

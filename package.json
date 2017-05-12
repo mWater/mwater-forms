@@ -35,7 +35,6 @@
     "moment": "^2.8.3",
     "mwater-expressions": "git+ssh://github.com/mWater/mwater-expressions.git",
     "react": "^15.0.1",
-    "react-addons-css-transition-group": "^15.0.1",
     "react-dom": "^15.0.1",
     "react-library": "github:mwater/react-library",
     "topo-sort": "^1.0.0",
