@@ -61,3 +61,11 @@
 
 ## Comments
 `{ comments: "some comment" }`
+
+## Randomly asked questions
+
+Stores value in `randomAsked` as boolean. This is a special value that is computed when the item is shown for the first time
+based on the probability and is not deleted when cleaning the response when the question becomes invisible so it remains stable.
+
+This also prevents a loop of hiding the question because it was randomly invisible and then making it visible again and recomputing
+the randomness.

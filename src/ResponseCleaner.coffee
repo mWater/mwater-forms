@@ -11,7 +11,7 @@ other questions invisible or visible.
 
 To further complicate it, when a question becomes visible, it may get a default value, which may in turn trigger other visibility changes
 
-Therefore, it's an iterative process which is also asynchronous, as 
+Therefore, it's an iterative process which is also asynchronous, as condition evaluation is asynchronous.
 
 ###
 module.exports = class ResponseCleaner
@@ -23,7 +23,7 @@ module.exports = class ResponseCleaner
   # A simple case: Question A, B and C with B only visible if A is set and C only visible if B is set and B containing a defaultValue
   # Setting a value to A will make B visible and set to defaultValue, but C will remain invisible until the process is repeated
   # responseRowFactory: returns responseRow when called with data
-  cleanData: (design, visibilityCalculator, defaultValueApplier, data, responseRowFactory, oldVisibilityStructure, callback) =>
+  cleanData: (design, visibilityCalculator, defaultValueApplier, randomAskedCalculator, data, responseRowFactory, oldVisibilityStructure, callback) =>
     nbIterations = 0
     complete = false
     newData = data
@@ -45,6 +45,10 @@ module.exports = class ResponseCleaner
         # Default values
         if defaultValueApplier
           newData = defaultValueApplier.setStickyData(newData, oldVisibilityStructure, newVisibilityStructure)
+
+        # Set random asked
+        if randomAskedCalculator
+          newData = randomAskedCalculator.calculateRandomAsked(newData, newVisibilityStructure)
 
         # Increment iterations
         nbIterations++
@@ -73,9 +77,12 @@ module.exports = class ResponseCleaner
     for key, visible of visibilityStructure
       if not visible
         values = key.split('.')
-        # If the key doesn't contain any '.', simply remove the data entry
+        # If the key doesn't contain any '.', simply remove the data entry unless has randomAsked
         if values.length == 1
-          delete newData[key]
+          if newData[key]?.randomAsked?
+            newData[key] = { randomAsked: newData[key].randomAsked }
+          else
+            delete newData[key]
         # Check if value is an array, which indicates roster
         else if _.isArray(newData[values[0]])
           # The id of the roster containing the data
@@ -86,10 +93,14 @@ module.exports = class ResponseCleaner
           questionId = values[2]
           # If a data entry exist for that roster and that answer index
           if newData[rosterGroupId]? and newData[rosterGroupId][index]?
-            # Delete the entry
+            # Delete the entry, but keep randomAsked
             answerToClean = newData[rosterGroupId][index].data
             if answerToClean
-              delete answerToClean[questionId]
+              if answerToClean[questionId]?.randomAsked?
+                answerToClean[questionId] = { randomAsked: answerToClean[questionId].randomAsked }
+              else
+                delete answerToClean[questionId]
+
         else # Must be a matrix
           matrixId = values[0]
           itemId = values[1]

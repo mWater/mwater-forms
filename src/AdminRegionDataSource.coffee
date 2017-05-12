@@ -26,7 +26,9 @@ module.exports = class AdminRegionDataSource
           { type: "field", tableAlias: "ar", column: "_id" }
           { 
             type: "scalar"
-            expr: { type: "op", op: "jsonb_array_elements_text", exprs: [{ type: "field", tableAlias: "ar2", column: "path" }] }
+            expr: { type: "op", op: "::integer", exprs: [
+              { type: "op", op: "jsonb_array_elements_text", exprs: [{ type: "field", tableAlias: "ar2", column: "path" }] }
+            ]}
             from: { type: "table", table: "admin_regions", alias: "ar2" }
             where: {
               type: "op"

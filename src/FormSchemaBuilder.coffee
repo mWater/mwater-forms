@@ -104,7 +104,7 @@ module.exports = class FormSchemaBuilder
 
     # Create table
     return schema
- 
+  
   # Add joins back from entities to site and entity questions
   # reverseJoins: list of joins in format: { table: destination table, column: join column to add }
   # Adds to section with id "!related_forms" with name "Related Forms"
@@ -1126,7 +1126,7 @@ module.exports = class FormSchemaBuilder
             code: code
             jsonql: {
               type: "op"
-              op: "#>>"
+              op: "#>"
               exprs: [
                 { type: "field", tableAlias: "{alias}", column: dataColumn }
                 "{#{item._id},value}"
@@ -1183,10 +1183,16 @@ module.exports = class FormSchemaBuilder
               toTable: "admin_regions"
               fromColumn: {
                 type: "op"
-                op: "#>>"
+                op: "::integer"
                 exprs: [
-                  { type: "field", tableAlias: "{alias}", column: dataColumn }
-                  "{#{item._id},value}"
+                  {
+                    type: "op"
+                    op: "#>>"
+                    exprs: [
+                      { type: "field", tableAlias: "{alias}", column: dataColumn" }
+                      "{#{item._id},value}"
+                    ]
+                  }
                 ]
               }
               toColumn: "_id"
@@ -1558,8 +1564,26 @@ module.exports = class FormSchemaBuilder
         
         addColumn(column)
 
-      # Add conditions
-      if conditionsExprCompiler and ((item.conditions and item.conditions.length > 0) or existingConditionExpr)
+      # Add randomAsked if randomAsked
+      if item.randomAskProbability? 
+        column = {
+          id: "data:#{item._id}:randomAsked"
+          type: "boolean"
+          name: appendStr(item.text, " (Randomly Asked)")
+          code: if code then code + " (Randomly Asked)"
+          jsonql: {
+            type: "op"
+            op: "::boolean"
+            exprs: [
+              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{#{item._id},randomAsked}"] }
+            ]
+          }
+        }
+        
+        addColumn(column)
+
+      # Add visible if has conditions and not randomly asked
+      if not item.randomAskProbability? and (conditionsExprCompiler and ((item.conditions and item.conditions.length > 0) or existingConditionExpr))
         # Guard against null
         conditionExpr = ExprUtils.andExprs(existingConditionExpr, conditionsExprCompiler.compileConditions(item.conditions, tableId))
         if conditionExpr
