@@ -11,7 +11,7 @@ module.exports = -> {
         _id: "a1"
         _type: "TextQuestion"
         format: "singleline"
-        sensitive: true
+        confidential: true
         text: {}
         conditions: []
         validations: []
@@ -30,8 +30,8 @@ module.exports = -> {
         text: {}
         conditions: []
         validations: []
-        sensitive: true
-        sensitiveRadius: 10000
+        confidential: true
+        confidentialRadius: 10000
       }
       {
         "_id": "r1",
@@ -50,7 +50,7 @@ module.exports = -> {
             },
             "_type": "TextQuestion",
             "format": "singleline",
-            "sensitive": true,
+            "confidential": true,
             "textExprs": [],
             "conditions": [],
             "validations": []

@@ -275,28 +275,30 @@ describe "FormSchemaBuilder addForm", ->
     assert.deepEqual column.type, "expr"
     assert.deepEqual column.expr, form.design.calculations[0].expr
 
-  describe "SensitiveData", ->
-    it "adds sensitive data section when the user is admin", ->
+  describe "ConfidentialData", ->
+    it "adds confidential data section when the user is admin", ->
       # Create form
       form = sensitiveDataForm()
 
       # Add to blank schema
       schema = new FormSchemaBuilder({user: 'user1'}).addForm(new Schema(), form)
 
-      assert _.find(schema.getTable('responses:abc123').contents, {id: "sensitiveData"})
-      assert schema.getColumn("responses:abc123", "sensitiveData:a1:value")
+      assert _.find(schema.getTable('responses:abc123').contents, {id: "confidentialData"})
 
-      assert _.find(schema.getTable('responses:abc123:roster:r1').contents, {id: "sensitiveData"})
+      assert schema.getColumn("responses:abc123", "confidentialData:a1:value")
 
-    it "does not add sensitive data section when the user is admin", ->
+      assert.isTrue schema.getColumn("responses:abc123", "confidentialData:a1:value").confidential
+      assert _.find(schema.getTable('responses:abc123:roster:r1').contents, {id: "confidentialData"})
+
+    it "does not add confidential data section when the user is admin", ->
       # Create form
       form = sensitiveDataForm()
 
       # Add to blank schema
       schema = new FormSchemaBuilder({user: 'bob'}).addForm(new Schema(), form)
       
-      assert.isUndefined _.find(schema.getTable('responses:abc123').contents, {id: 'sensitivedata'})
-      assert.isUndefined schema.getColumn("responses:abc123", "sensitiveData:a1:value")
+      assert.isUndefined _.find(schema.getTable('responses:abc123').contents, {id: 'confidentialdata'})
+      assert.isUndefined schema.getColumn("responses:abc123", "confidentialData:a1:value")
 
   describe "Answer types", ->
     before ->

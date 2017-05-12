@@ -65,23 +65,6 @@ module.exports = class FormSchemaBuilder
 
     contents.push({ id: "metadata", type: "section", name: { en: "Response Metadata"}, desc: { en: "Information about the response such as status, date, and IP Address" }, contents: metadata })
 
-    # Add sensitive data if the user is form admin
-    matchingRoles = _.compact(_.map @roles, (role) ->
-      _.find(form.roles, {id: role})
-    )
-
-    # if _.some(matchingRoles, {role: 'admin'})
-    #   schema = @addSensitiveData(schema, form)
-      # sensitiveData = []
-
-      # for question in formUtils.allItems(form.design)
-      #   console.log question.sensitive?
-      #   if question.sensitive?
-      #     sensitiveData.push({ id: "sensitiveData:#{question._id}:value", _type: question._type, name: question.text, sensitive: true })
-    
-      # if sensitiveData.length > 0
-      #   contents.push({ id: "sensitiveData", type: "section", name: { en: "Sensitive Data"}, desc: { en: "Sensitive Data" }, contents: sensitiveData })
-
     conditionsExprCompiler = new ConditionsExprCompiler(form.design)
 
     # List of joins in format: { table: destination table, column: join column to add }
@@ -103,9 +86,14 @@ module.exports = class FormSchemaBuilder
     # Add any roster tables
     schema = @addRosterTables(schema, form, conditionsExprCompiler)
 
+    # Add confidential data if the user is form admin
+    matchingRoles = _.compact(_.map @roles, (role) ->
+      _.find(form.roles, {id: role})
+    )
+
     if _.some(matchingRoles, {role: 'admin'})
-      schema = @addSensitiveData(schema, form, conditionsExprCompiler)
-      schema = @addSensitiveDataForRosters(schema, form, conditionsExprCompiler)
+      schema = @addConfidentialData(schema, form, conditionsExprCompiler)
+      schema = @addConfidentialDataForRosters(schema, form, conditionsExprCompiler)
 
     schema = @addCalculations(schema, form)
 
@@ -375,7 +363,7 @@ module.exports = class FormSchemaBuilder
 
     return section
 
-  addSensitiveDataForRosters: (schema, form, conditionsExprCompiler) ->
+  addConfidentialDataForRosters: (schema, form, conditionsExprCompiler) ->
     for item in formUtils.allItems(form.design)
       if item._type in ["RosterGroup", "RosterMatrix"]
 
@@ -384,24 +372,24 @@ module.exports = class FormSchemaBuilder
         contents = schema.getTable(tableId).contents.slice()
 
         for rosterItem in item.contents
-          if rosterItem.sensitive?
-            sensitiveDataSection = _.find(contents, {id: "sensitiveData"}) 
+          if rosterItem.confidential?
+            confidentialDataSection = _.find(contents, {id: "confidentialData"}) 
 
-            if not sensitiveDataSection
-              sensitiveDataSection = {
-                id: "sensitiveData"
+            if not confidentialDataSection
+              confidentialDataSection = {
+                id: "confidentialData"
                 type: "section"
-                name: { _base: "en", en: "Sensitive Data" }
+                name: { _base: "en", en: "Confidential Data" }
                 contents: []
               }
-              schema = schema.addTable(update(schema.getTable(tableId), { contents: { $push: [sensitiveDataSection] } }))
+              schema = schema.addTable(update(schema.getTable(tableId), { contents: { $push: [confidentialDataSection] } }))
 
 
-            sensitiveDataSectionContents = sensitiveDataSection.contents.slice()
+            confidentialDataSectionContents = confidentialDataSection.contents.slice()
 
             @addFormItem(
               rosterItem, 
-              sensitiveDataSectionContents, 
+              confidentialDataSectionContents, 
               tableId,
               conditionsExprCompiler,
               null,
@@ -411,35 +399,34 @@ module.exports = class FormSchemaBuilder
 
             # Update in original
             contents = schema.getTable(tableId).contents.slice()
-            index = _.findIndex(contents, {id: "sensitiveData"})
-            contents[index] = update(sensitiveDataSection, { contents: { $set: sensitiveDataSectionContents } })
+            index = _.findIndex(contents, {id: "confidentialData"})
+            contents[index] = update(confidentialDataSection, { contents: { $set: confidentialDataSectionContents } })
             schema = schema.addTable(update(schema.getTable(tableId), { contents: { $set: contents } }))
 
-    console.log schema.getTable(tableId)
     return schema
 
 
-  addSensitiveData: (schema, form, conditionsExprCompiler) ->
+  addConfidentialData: (schema, form, conditionsExprCompiler) ->
     tableId = "responses:#{form._id}"
 
     addData = (question) =>
-      if question.sensitive?
-        sensitiveDataSection = _.find(schema.getTable(tableId).contents, { id: "sensitiveData" })
+      if question.confidential?
+        confidentialDataSection = _.find(schema.getTable(tableId).contents, { id: "confidentialData" })
 
-        if not sensitiveDataSection
-          sensitiveDataSection = {
-            id: "sensitiveData"
+        if not confidentialDataSection
+          confidentialDataSection = {
+            id: "confidentialData"
             type: "section"
-            name: { _base: "en", en: "Sensitive Data" }
+            name: { _base: "en", en: "Confidential Data" }
             contents: []
           }
-          schema = schema.addTable(update(schema.getTable(tableId), { contents: { $push: [sensitiveDataSection] } }))
+          schema = schema.addTable(update(schema.getTable(tableId), { contents: { $push: [confidentialDataSection] } }))
 
-        sensitiveDataSectionContents = sensitiveDataSection.contents.slice()
+        confidentialDataSectionContents = confidentialDataSection.contents.slice()
 
         @addFormItem(
           question, 
-          sensitiveDataSectionContents, 
+          confidentialDataSectionContents, 
           "responses:#{form._id}",
           conditionsExprCompiler,
           null,
@@ -449,8 +436,8 @@ module.exports = class FormSchemaBuilder
 
         # Update in original
         contents = schema.getTable(tableId).contents.slice()
-        index = _.findIndex(contents, {id: "sensitiveData"})
-        contents[index] = update(sensitiveDataSection, { contents: { $set: sensitiveDataSectionContents } })
+        index = _.findIndex(contents, {id: "confidentialData"})
+        contents[index] = update(confidentialDataSection, { contents: { $set: confidentialDataSectionContents } })
 
         # Re-add table
         schema = schema.addTable(update(schema.getTable(tableId), { contents: { $set: contents } }))
@@ -468,8 +455,10 @@ module.exports = class FormSchemaBuilder
   # Adds a form item. existingConditionExpr is any conditions that already condition visibility of the form item. This does not cross roster boundaries.
   # That is, if a roster is entirely invisible, roster items will not be conditioned on the overall visibility, as they simply won't exist
   # reverseJoins: list of reverse joins to add to. In format: { table: destination table, column: join column to add }. This list will be mutated. Pass in empty list in general.
-  addFormItem: (item, contents, tableId, conditionsExprCompiler, existingConditionExpr, reverseJoins = [], sensitiveData = false) ->
+  addFormItem: (item, contents, tableId, conditionsExprCompiler, existingConditionExpr, reverseJoins = [], confidentialData = false) ->
     addColumn = (column) =>
+      if formUtils.isQuestion(item) and confidentialData and item.confidential
+        column["confidential"] = true
       contents.push(column)
 
     # Add sub-items
@@ -514,7 +503,7 @@ module.exports = class FormSchemaBuilder
       # Get code
       code = item.exportId or item.code
       
-      dataColumn = if sensitiveData then "sensitiveData" else "data"
+      dataColumn = if confidentialData then "confidentialData" else "data"
 
       switch answerType
         when "text"
