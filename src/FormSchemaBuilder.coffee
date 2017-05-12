@@ -1189,7 +1189,7 @@ module.exports = class FormSchemaBuilder
                     type: "op"
                     op: "#>>"
                     exprs: [
-                      { type: "field", tableAlias: "{alias}", column: dataColumn" }
+                      { type: "field", tableAlias: "{alias}", column: dataColumn }
                       "{#{item._id},value}"
                     ]
                   }
