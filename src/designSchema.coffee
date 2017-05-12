@@ -39,7 +39,7 @@ module.exports = {
     draftNameRequired: { type: "boolean" }
 
     # When set to true, users will be able to add questions with sensitive anserts
-    sensitiveMode: { type: "boolean"}
+    confidentialMode: { type: "boolean"}
 
     # Contents of the form
     contents: { 
@@ -279,11 +279,14 @@ module.exports = {
         # Id used for exporting responses
         exportId: { type: "string" }
 
-        # True if the question contains sensitive data
-        sensitive: { type: "boolean" }
+        # True if the item is confidential and data is redacted
+        redacted: { type: "boolean" }
+
+        # True if the question contains confidential data
+        confidential: { type: "boolean" }
 
         # Distance in meters to scramble coordinates by
-        sensitiveRadius: { type: "integer" }
+        confidentialRadius: { type: "integer" }
 
         # Alternative answers that are non-answers to the specific question
         # such as "Don't Know" or "Not Applicable"

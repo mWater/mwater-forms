@@ -4,7 +4,7 @@ Schema = require('mwater-expressions').Schema
 FormSchemaBuilder = require '../src/FormSchemaBuilder'
 canonical = require 'canonical-json'
 formUtils = require '../src/formUtils'
-sensitiveDataForm = require './sensitiveDataForm'
+confidentialDataForm = require './confidentialDataForm'
 
 compare = (actual, expected) ->
   assert.equal canonical(actual), canonical(expected), "\n" + canonical(actual) + "\n" + canonical(expected) + "\n"
@@ -278,7 +278,7 @@ describe "FormSchemaBuilder addForm", ->
   describe "ConfidentialData", ->
     it "adds confidential data section when the user is admin", ->
       # Create form
-      form = sensitiveDataForm()
+      form = confidentialDataForm()
 
       # Add to blank schema
       schema = new FormSchemaBuilder({user: 'user1'}).addForm(new Schema(), form)
@@ -292,7 +292,7 @@ describe "FormSchemaBuilder addForm", ->
 
     it "does not add confidential data section when the user is admin", ->
       # Create form
-      form = sensitiveDataForm()
+      form = confidentialDataForm()
 
       # Add to blank schema
       schema = new FormSchemaBuilder({user: 'bob'}).addForm(new Schema(), form)
