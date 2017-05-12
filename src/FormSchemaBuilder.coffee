@@ -372,7 +372,7 @@ module.exports = class FormSchemaBuilder
         contents = schema.getTable(tableId).contents.slice()
 
         for rosterItem in item.contents
-          if rosterItem.confidential?
+          if rosterItem.confidential
             confidentialDataSection = _.find(contents, {id: "confidentialData"}) 
 
             if not confidentialDataSection
@@ -410,7 +410,7 @@ module.exports = class FormSchemaBuilder
     tableId = "responses:#{form._id}"
 
     addData = (question) =>
-      if question.confidential?
+      if question.confidential
         confidentialDataSection = _.find(schema.getTable(tableId).contents, { id: "confidentialData" })
 
         if not confidentialDataSection
@@ -457,8 +457,13 @@ module.exports = class FormSchemaBuilder
   # reverseJoins: list of reverse joins to add to. In format: { table: destination table, column: join column to add }. This list will be mutated. Pass in empty list in general.
   addFormItem: (item, contents, tableId, conditionsExprCompiler, existingConditionExpr, reverseJoins = [], confidentialData = false) ->
     addColumn = (column) =>
-      if formUtils.isQuestion(item) and confidentialData and item.confidential
-        column["confidential"] = true
+      if formUtils.isQuestion(item) and item.confidential
+        if confidentialData
+          column["confidential"] = true
+          column["name"] = appendStr(column.name, " (confidential)")
+        else 
+          column["redacted"] = true
+          column["name"] = appendStr(column.name, " (redacted)")
       contents.push(column)
 
     # Add sub-items
