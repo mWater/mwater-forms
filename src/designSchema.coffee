@@ -500,6 +500,9 @@ module.exports = {
 
         placeholder: { type: "string" }
 
+        # True if the column contains confidential data
+        confidential: { type: "boolean" }
+
         # Validations for various types
         validations: {
           type: "array"
