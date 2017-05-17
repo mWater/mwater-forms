@@ -281,7 +281,7 @@ describe "FormSchemaBuilder addForm", ->
       form = confidentialDataForm()
 
       # Add to blank schema
-      schema = new FormSchemaBuilder({user: 'user1'}).addForm(new Schema(), form)
+      schema = new FormSchemaBuilder({admin: true}).addForm(new Schema(), form, null, true)
 
       assert _.find(schema.getTable('responses:abc123').contents, {id: "confidentialData"})
 
@@ -290,12 +290,12 @@ describe "FormSchemaBuilder addForm", ->
       assert.isTrue schema.getColumn("responses:abc123", "confidentialData:a1:value").confidential
       assert _.find(schema.getTable('responses:abc123:roster:r1').contents, {id: "confidentialData"})
 
-    it "does not add confidential data section when the user is admin", ->
+    it "does not add confidential data section when the user is not admin", ->
       # Create form
       form = confidentialDataForm()
 
       # Add to blank schema
-      schema = new FormSchemaBuilder().addForm(new Schema(), form)
+      schema = new FormSchemaBuilder().addForm(new Schema(), form, null, false)
       
       assert.isUndefined _.find(schema.getTable('responses:abc123').contents, {id: 'confidentialdata'})
       assert.isUndefined schema.getColumn("responses:abc123", "confidentialData:a1:value")

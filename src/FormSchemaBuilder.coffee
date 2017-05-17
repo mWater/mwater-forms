@@ -12,16 +12,10 @@ healthRiskEnum = require('./answers/aquagenxCBTUtils').healthRiskEnum
 
 # Adds a form to a mwater-expressions schema
 module.exports = class FormSchemaBuilder
-  constructor: (options = {}) ->
-    @roles = ['all']
-
-    if options.user
-      @roles.push("user:#{options.user}")
-    
-    @roles = @roles.concat(_.map(options.groups, (g) -> "group:" + g))
+  constructor: () ->
 
   # Pass clone forms if a master form
-  addForm: (schema, form, cloneForms) ->
+  addForm: (schema, form, cloneForms, isAdmin = true) ->
     contents = []
     
     metadata = []
@@ -86,12 +80,7 @@ module.exports = class FormSchemaBuilder
     # Add any roster tables
     schema = @addRosterTables(schema, form, conditionsExprCompiler)
 
-    # Add confidential data if the user is form admin
-    matchingRoles = _.compact(_.map @roles, (role) ->
-      _.find(form.roles, {id: role})
-    )
-
-    if _.some(matchingRoles, {role: 'admin'})
+    if isAdmin
       schema = @addConfidentialData(schema, form, conditionsExprCompiler)
       schema = @addConfidentialDataForRosters(schema, form, conditionsExprCompiler)
 
