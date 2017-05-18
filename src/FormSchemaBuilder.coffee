@@ -12,8 +12,6 @@ healthRiskEnum = require('./answers/aquagenxCBTUtils').healthRiskEnum
 
 # Adds a form to a mwater-expressions schema
 module.exports = class FormSchemaBuilder
-  constructor: () ->
-
   # Pass clone forms if a master form
   addForm: (schema, form, cloneForms, isAdmin = true) ->
     contents = []
