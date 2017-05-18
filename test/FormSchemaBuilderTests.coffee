@@ -22,7 +22,7 @@ describe "FormSchemaBuilder addForm", ->
     }
 
     # Add to blank schema
-    schema = new FormSchemaBuilder({}).addForm(new Schema(), form)
+    schema = new FormSchemaBuilder().addForm(new Schema(), form)
 
     table = schema.getTable("responses:formid")
 
@@ -57,7 +57,7 @@ describe "FormSchemaBuilder addForm", ->
       }
     }
 
-    schema = new FormSchemaBuilder({}).addForm(schema, form)
+    schema = new FormSchemaBuilder().addForm(schema, form)
 
     # Check that section exists
     section = _.findWhere(schema.getTable("entities.water_point").contents, { id: "!related_forms" })
@@ -124,7 +124,7 @@ describe "FormSchemaBuilder addForm", ->
       }
     }
 
-    schema = new FormSchemaBuilder({}).addForm(schema, form)
+    schema = new FormSchemaBuilder().addForm(schema, form)
 
     # Check that join to form is present
     column = schema.getColumn("entities.water_point", "responses:formid:data:entity1:value")
@@ -183,7 +183,7 @@ describe "FormSchemaBuilder addForm", ->
     }
 
     # Add to blank schema
-    schema = new FormSchemaBuilder({}).addForm(new Schema(), form)
+    schema = new FormSchemaBuilder().addForm(new Schema(), form)
 
     # Adds section
     section = _.find(schema.getTable("responses:formid").contents, (item) -> item.type == "section" and item.name.en == "Section X")
@@ -201,7 +201,7 @@ describe "FormSchemaBuilder addForm", ->
     }
 
     # Add to blank schema
-    schema = new FormSchemaBuilder({}).addForm(new Schema(), form)
+    schema = new FormSchemaBuilder().addForm(new Schema(), form)
 
     assert schema.getColumn("responses:formid", "user")
     assert schema.getColumn("responses:formid", "submittedOn")
@@ -229,7 +229,7 @@ describe "FormSchemaBuilder addForm", ->
     }
 
     # Add to blank schema
-    schema = new FormSchemaBuilder({}).addForm(new Schema(), form)
+    schema = new FormSchemaBuilder().addForm(new Schema(), form)
 
     column = schema.getColumn("responses:formid", "calculation:calc1")
     assert.deepEqual column.name.en, "Calc1"
@@ -267,7 +267,7 @@ describe "FormSchemaBuilder addForm", ->
     }
 
     # Add to blank schema
-    schema = new FormSchemaBuilder({}).addForm(new Schema(), form)
+    schema = new FormSchemaBuilder().addForm(new Schema(), form)
 
     column = schema.getColumn("responses:formid:roster:roster1", "calculation:calc1")
     assert.deepEqual column.name.en, "Calc1"
@@ -281,7 +281,7 @@ describe "FormSchemaBuilder addForm", ->
       form = confidentialDataForm()
 
       # Add to blank schema
-      schema = new FormSchemaBuilder({user: 'user1'}).addForm(new Schema(), form)
+      schema = new FormSchemaBuilder().addForm(new Schema(), form, null, true)
 
       assert _.find(schema.getTable('responses:abc123').contents, {id: "confidentialData"})
 
@@ -290,12 +290,12 @@ describe "FormSchemaBuilder addForm", ->
       assert.isTrue schema.getColumn("responses:abc123", "confidentialData:a1:value").confidential
       assert _.find(schema.getTable('responses:abc123:roster:r1').contents, {id: "confidentialData"})
 
-    it "does not add confidential data section when the user is admin", ->
+    it "does not add confidential data section when the user is not admin", ->
       # Create form
       form = confidentialDataForm()
 
       # Add to blank schema
-      schema = new FormSchemaBuilder().addForm(new Schema(), form)
+      schema = new FormSchemaBuilder().addForm(new Schema(), form, null, false)
       
       assert.isUndefined _.find(schema.getTable('responses:abc123').contents, {id: 'confidentialdata'})
       assert.isUndefined schema.getColumn("responses:abc123", "confidentialData:a1:value")
@@ -322,7 +322,7 @@ describe "FormSchemaBuilder addForm", ->
         }
 
         # Add to blank schema
-        schema = new FormSchemaBuilder({}).addForm(new Schema(), form)
+        schema = new FormSchemaBuilder().addForm(new Schema(), form)
 
         # Get column
         for expectedColumn in expectedColumns
@@ -1358,7 +1358,7 @@ describe "FormSchemaBuilder addForm", ->
           }
         ]
       }
-      schema = new FormSchemaBuilder({}).addForm(@schema, form)
+      schema = new FormSchemaBuilder().addForm(@schema, form)
 
       # Check that indicators section exists
       assert.equal _.last(schema.getTable("responses:formid").contents).name.en, "Indicators"
@@ -1427,7 +1427,7 @@ describe "FormSchemaBuilder addForm", ->
           }
         ]
       }
-      schema = new FormSchemaBuilder({}).addForm(@schema, form)
+      schema = new FormSchemaBuilder().addForm(@schema, form)
 
       # Check that indicator calculation added with condition
       compare(schema.getColumn("responses:formid", "indicator_calculation:ic1:num1"), {
@@ -1487,7 +1487,7 @@ describe "FormSchemaBuilder addForm", ->
           }
         ]
       }
-      schema = new FormSchemaBuilder({}).addForm(@schema, form)
+      schema = new FormSchemaBuilder().addForm(@schema, form)
 
       # Check that indicator calculation not added
       assert.deepEqual schema.getColumn("responses:formid", "indicator_calculation:ic1:num1").jsonql, { type: "literal", value: null }
@@ -1541,7 +1541,7 @@ describe "FormSchemaBuilder addForm", ->
           }
         ]
       }
-      schema = new FormSchemaBuilder({}).addForm(@schema, form)
+      schema = new FormSchemaBuilder().addForm(@schema, form)
 
       # Check that indicator calculation added
       compare(schema.getColumn("responses:formid", "indicator_calculation:ic2:num2"), {
@@ -1595,7 +1595,7 @@ describe "FormSchemaBuilder addForm", ->
         ]
       }
 
-      schema = new FormSchemaBuilder({}).addForm(@schema, form)
+      schema = new FormSchemaBuilder().addForm(@schema, form)
 
       # Check that indicators section exists
       assert.equal _.last(schema.getTable("responses:formid:roster:roster1").contents).name.en, "Indicators"
@@ -1651,7 +1651,7 @@ describe "FormSchemaBuilder addForm", ->
     #       }
     #     }
     #   ]
-    #   assert.deepEqual _.pluck(new FormSchemaBuilder({}).orderIndicatorCalculation(indicatorCalculations), "_id"), ["ic1", "ic2"]
+    #   assert.deepEqual _.pluck(new FormSchemaBuilder().orderIndicatorCalculation(indicatorCalculations), "_id"), ["ic1", "ic2"]
 
   describe "Roster Group", ->
     beforeEach ->
@@ -1674,7 +1674,7 @@ describe "FormSchemaBuilder addForm", ->
       }
 
       # Add to blank schema
-      @schema = new FormSchemaBuilder({}).addForm(new Schema(), form)
+      @schema = new FormSchemaBuilder().addForm(new Schema(), form)
 
     it "creates new table with column", ->
       assert.equal @schema.getTable("responses:formid:roster:roster1").name.en, "Form: Roster1"
@@ -1735,7 +1735,7 @@ describe "FormSchemaBuilder addForm", ->
       }
 
       # Add to blank schema
-      schema = new FormSchemaBuilder({}).addForm(new Schema(), form)
+      schema = new FormSchemaBuilder().addForm(new Schema(), form)
 
       # Check that was added
       assert schema.getColumn("responses:formid:roster:roster1", "data:q1:value"), "original should be there"
@@ -1764,7 +1764,7 @@ describe "FormSchemaBuilder addForm", ->
       }
 
       # Add to blank schema
-      schema = new FormSchemaBuilder({}).addForm(new Schema(), form)
+      schema = new FormSchemaBuilder().addForm(new Schema(), form)
 
       # Check that was added
       assert schema.getColumn("responses:formid:roster:roster1", "data:q1:value")
@@ -1829,7 +1829,7 @@ describe "FormSchemaBuilder addForm", ->
       }
 
       # Add to blank schema
-      schema = new FormSchemaBuilder({}).addForm(new Schema(), form)
+      schema = new FormSchemaBuilder().addForm(new Schema(), form)
 
       assert not schema.getColumn("responses:formid", "data:q1:visible"), "Not conditional"
 
@@ -1874,7 +1874,7 @@ describe "FormSchemaBuilder addForm", ->
       }
 
       # Add to blank schema
-      schema = new FormSchemaBuilder({}).addForm(new Schema(), form)
+      schema = new FormSchemaBuilder().addForm(new Schema(), form)
 
       col = schema.getColumn("responses:formid", "data:q2:visible")
       assert.equal col.type, "expr"
