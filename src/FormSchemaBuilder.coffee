@@ -446,11 +446,11 @@ module.exports = class FormSchemaBuilder
     addColumn = (column) =>
       if formUtils.isQuestion(item) and item.confidential
         if confidentialData
-          column["confidential"] = true
-          column["name"] = appendStr(column.name, " (confidential)")
+          column.confidential = true
+          column.name = appendStr(column.name, " (confidential)")
         else 
-          column["redacted"] = true
-          column["name"] = appendStr(column.name, " (redacted)")
+          column.redacted = true
+          column.name = appendStr(column.name, " (redacted)")
       contents.push(column)
 
     # Add sub-items
@@ -1591,7 +1591,7 @@ module.exports = class FormSchemaBuilder
 
           column = {
             id: "data:#{item._id}:visible"
-            type: "expr"
+            type: "boolean"
             name: appendStr(item.text, " (Asked)")
             code: if code then code + " (Asked)"
             expr: conditionExpr
@@ -1627,7 +1627,7 @@ module.exports = class FormSchemaBuilder
       calculationsSectionContents = calculationsSection.contents.slice()
       calculationsSectionContents.push({
         id: "calculation:#{calculation._id}"
-        type: "expr"
+        type: "number"
         name: calculation.name
         desc: calculation.desc
         expr: calculation.expr

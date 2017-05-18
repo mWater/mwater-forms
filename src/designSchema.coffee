@@ -81,7 +81,7 @@ module.exports = {
 
           roster: { type: "string" } # Id of roster if from a roster
 
-          # Expression (mwater-expression) for the value of the calculation
+          # Expression (mwater-expression) for the value of the calculation of type number
           expr: { type: "object" }
         }
         required: ["_id", "name", "expr"]
