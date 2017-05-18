@@ -1,4 +1,5 @@
 formUtils = require './formUtils'
+_ = require 'lodash'
 
 # The RandomAskedCalculator sets the randomAsked property of visible answers, determining if the question will be visible.
 # If question has randomAskProbability, it is visible unless randomAsked is set to false, which this class determines.
