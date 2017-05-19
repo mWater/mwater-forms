@@ -288,7 +288,12 @@ module.exports = class FormSchemaBuilder
         if col.type == "section"
           return col
 
-        expression = indicatorCalculation.expressions[col.id]
+        # If has expression already, use that
+        if col.expr
+          expression = col.expr
+        else
+          expression = indicatorCalculation.expressions[col.id]
+          
         condition = indicatorCalculation.condition
 
         # If master, hack expression to be from master_responses, not responses
