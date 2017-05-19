@@ -234,7 +234,7 @@ describe "FormSchemaBuilder addForm", ->
     column = schema.getColumn("responses:formid", "calculation:calc1")
     assert.deepEqual column.name.en, "Calc1"
     assert.deepEqual column.desc.en, "desc1"
-    assert.deepEqual column.type, "expr"
+    assert.deepEqual column.type, "number"
     assert.deepEqual column.expr, form.design.calculations[0].expr
 
   it "adds calculations in rosters", ->
@@ -272,7 +272,7 @@ describe "FormSchemaBuilder addForm", ->
     column = schema.getColumn("responses:formid:roster:roster1", "calculation:calc1")
     assert.deepEqual column.name.en, "Calc1"
     assert.deepEqual column.desc.en, "desc1"
-    assert.deepEqual column.type, "expr"
+    assert.deepEqual column.type, "number"
     assert.deepEqual column.expr, form.design.calculations[0].expr
 
   describe "ConfidentialData", ->
@@ -1369,7 +1369,7 @@ describe "FormSchemaBuilder addForm", ->
       # Check that indicator calculation added
       compare(schema.getColumn("responses:formid", "indicator_calculation:ic1:num1"), {
         id: "indicator_calculation:ic1:num1"
-        type: "expr"
+        type: "number"
         name: { en: "Number1" }
         expr: {
           type: "op"
@@ -1432,7 +1432,7 @@ describe "FormSchemaBuilder addForm", ->
       # Check that indicator calculation added with condition
       compare(schema.getColumn("responses:formid", "indicator_calculation:ic1:num1"), {
         id: "indicator_calculation:ic1:num1"
-        type: "expr"
+        type: "number"
         name: { en: "Number1" }
         expr: {
           type: "case"
@@ -1546,7 +1546,7 @@ describe "FormSchemaBuilder addForm", ->
       # Check that indicator calculation added
       compare(schema.getColumn("responses:formid", "indicator_calculation:ic2:num2"), {
         id: "indicator_calculation:ic2:num2"
-        type: "expr"
+        type: "number"
         name: { en: "Number2" }
         expr: {
           type: "op"
@@ -1606,7 +1606,7 @@ describe "FormSchemaBuilder addForm", ->
       # Check that indicator calculation added
       compare(schema.getColumn("responses:formid:roster:roster1", "indicator_calculation:ic1:num1"), {
         id: "indicator_calculation:ic1:num1"
-        type: "expr"
+        type: "number"
         name: { en: "Number1" }
         expr: {
           type: "op"
@@ -1834,7 +1834,7 @@ describe "FormSchemaBuilder addForm", ->
       assert not schema.getColumn("responses:formid", "data:q1:visible"), "Not conditional"
 
       col = schema.getColumn("responses:formid", "data:q2:visible")
-      assert.equal col.type, "expr"
+      assert.equal col.type, "boolean"
 
       conditionExpr = {
         type: "op"
@@ -1877,7 +1877,7 @@ describe "FormSchemaBuilder addForm", ->
       schema = new FormSchemaBuilder().addForm(new Schema(), form)
 
       col = schema.getColumn("responses:formid", "data:q2:visible")
-      assert.equal col.type, "expr"
+      assert.equal col.type, "boolean"
 
       conditionExpr = {
         type: "op"

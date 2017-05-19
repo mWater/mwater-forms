@@ -335,7 +335,7 @@ module.exports = class FormSchemaBuilder
           }
 
         # Set expr, type and id, clearing jsonql
-        col = _.omit(update(col, { id: { $set: "indicator_calculation:#{indicatorCalculation._id}:#{col.id}" }, expr: { $set: expression }, type: { $set: "expr" } }), "jsonql")
+        col = _.omit(update(col, { id: { $set: "indicator_calculation:#{indicatorCalculation._id}:#{col.id}" }, expr: { $set: expression }}), "jsonql")
         return col
         )
       )
