@@ -3,6 +3,7 @@ H = React.DOM
 
 AquagenxCBTDisplaySVGString = require './AquagenxCBTDisplaySVG'
 getHealthRiskString = require('./aquagenxCBTUtils').getHealthRiskString
+ImageDisplayComponent = require '../ImageDisplayComponent'
 
 module.exports = class AquagenxCBTDisplayComponent extends React.Component
   @contextTypes:
@@ -12,6 +13,7 @@ module.exports = class AquagenxCBTDisplayComponent extends React.Component
     value: React.PropTypes.object
     questionId: React.PropTypes.string.isRequired
     onEdit: React.PropTypes.func
+    imageManager: React.PropTypes.object.isRequired
 
   handleClick: =>
     if @props.onEdit
@@ -57,6 +59,15 @@ module.exports = class AquagenxCBTDisplayComponent extends React.Component
         @context.T('Health Risk Category Based on MPN and Confidence Interval') + ': '
         H.b(null, getHealthRiskString(cbtValues.healthRisk, @context.T))
 
+  renderPhoto: ->
+    # Displays an image
+    if @props.value.image
+      H.div null,
+        React.createElement ImageDisplayComponent,
+          image: @props.value.image
+          imageManager: @props.imageManager
+          T: @context.T
+
   render: ->
     # Can't display if not set
     if not @props.value?.cbt
@@ -66,3 +77,4 @@ module.exports = class AquagenxCBTDisplayComponent extends React.Component
       @renderStyle()
       H.div dangerouslySetInnerHTML: {__html: AquagenxCBTDisplaySVGString}, onClick: @handleClick
       @renderInfo()
+      @renderPhoto()

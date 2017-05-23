@@ -109,8 +109,8 @@ class DemoComponent extends React.Component
     # design = rosterFormDesign
     # design = matrixFormDesign
     # design = rosterFormDesign
-    # design = sampleForm2.design
-    design = randomAskFormDesign
+    design = sampleForm2.design
+    # design = randomAskFormDesign
     schema = new FormSchemaBuilder({user: "bob"}).addForm(schema, { _id: "form1", design: design })
 
     H.div className: "row",

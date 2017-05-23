@@ -198,7 +198,10 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
               return H.span className: "label label-danger", "Invalid Choice"
 
       when "aquagenx_cbt"
-        return R AquagenxCBTDisplayComponent, {value: answer.value, questionId: q._id}
+        return R AquagenxCBTDisplayComponent, 
+          value: answer.value
+          questionId: q._id
+          imageManager: @props.formCtx.imageManager
 
   # Special render on multiple rows
   renderMatrixAnswer: (q, answer) ->
