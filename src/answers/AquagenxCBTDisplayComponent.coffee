@@ -13,7 +13,7 @@ module.exports = class AquagenxCBTDisplayComponent extends React.Component
     value: React.PropTypes.object
     questionId: React.PropTypes.string.isRequired
     onEdit: React.PropTypes.func
-    imageManager: React.PropTypes.object.isRequired
+    imageManager: React.PropTypes.object # If not specified, do not display image
 
   handleClick: =>
     if @props.onEdit
@@ -61,7 +61,7 @@ module.exports = class AquagenxCBTDisplayComponent extends React.Component
 
   renderPhoto: ->
     # Displays an image
-    if @props.value.image
+    if @props.value.image and @props.imageManager
       H.div null,
         React.createElement ImageDisplayComponent,
           image: @props.value.image

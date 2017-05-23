@@ -110,7 +110,6 @@ module.exports = class AquagenxCBTAnswerComponent extends React.Component
             value: @props.value
             questionId: @props.questionId
             onEdit: @handleEditClick
-            imageManager: @context.imageManager
           H.div null,
             H.button className: 'btn btn-default', onClick: @handleEditClick,
               H.span(className:"glyphicon glyphicon-edit")
