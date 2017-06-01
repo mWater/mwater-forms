@@ -89,7 +89,7 @@ module.exports = class DateTimePickerComponent extends React.Component
 
   render: ->
     # Override z-index due to bootstrap oddness
-    input = H.input { type: "text", className: "form-control", placeholder: @props.placeholder, onFocus: @handleInputFocus, style: { zIndex: "inherit" } }
+    input = H.input { type: "text", className: "form-control", placeholder: @props.placeholder, onFocus: @handleInputFocus, style: { zIndex: "inherit", minWidth: "12em" } }
 
     H.div className: 'input-group date', ref: "datetimepicker",
       input
