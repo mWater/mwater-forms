@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 React = require 'react'
 H = React.DOM
 R = React.createElement
@@ -8,13 +9,13 @@ LocationEditorComponent = require '../LocationEditorComponent'
 
 module.exports = class LocationAnswerComponent extends React.Component
   @contextTypes:
-    displayMap: React.PropTypes.func
-    T: React.PropTypes.func.isRequired  # Localizer to use
-    locationFinder: React.PropTypes.object
+    displayMap: PropTypes.func
+    T: PropTypes.func.isRequired  # Localizer to use
+    locationFinder: PropTypes.object
 
   @propTypes:
-    value: React.PropTypes.object
-    onValueChange: React.PropTypes.func.isRequired
+    value: PropTypes.object
+    onValueChange: PropTypes.func.isRequired
 
   constructor: (props) ->
     super

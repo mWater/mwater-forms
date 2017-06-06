@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 R = React.createElement
@@ -8,12 +9,12 @@ ui = require 'react-library/lib/bootstrap'
 # Number input component that handles parsing and maintains state when number is invalid
 module.exports = class NumberAnswerComponent extends React.Component
   @propTypes:
-    decimal: React.PropTypes.bool.isRequired
-    value: React.PropTypes.number
-    onChange: React.PropTypes.func.isRequired
-    style: React.PropTypes.object     # Will be merged with style of input box
-    small: React.PropTypes.bool       # True to render with input-sm
-    onNextOrComments: React.PropTypes.func
+    decimal: PropTypes.bool.isRequired
+    value: PropTypes.number
+    onChange: PropTypes.func.isRequired
+    style: PropTypes.object     # Will be merged with style of input box
+    small: PropTypes.bool       # True to render with input-sm
+    onNextOrComments: PropTypes.func
 
   focus: ->
     @input?.focus()

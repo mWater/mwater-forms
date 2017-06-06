@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 React = require 'react'
 H = React.DOM
 
@@ -51,13 +52,13 @@ possibleCombinations = {
 
 module.exports = class AquagenxCBTPopupComponent extends React.Component
   @contextTypes:
-    T: React.PropTypes.func.isRequired  # Localizer to use
+    T: PropTypes.func.isRequired  # Localizer to use
 
   @propTypes:
-    value: React.PropTypes.object
-    questionId: React.PropTypes.string.isRequired
-    onSave: React.PropTypes.func.isRequired
-    onClose: React.PropTypes.func.isRequired
+    value: PropTypes.object
+    questionId: PropTypes.string.isRequired
+    onSave: PropTypes.func.isRequired
+    onClose: PropTypes.func.isRequired
 
   constructor: (props) ->
     super

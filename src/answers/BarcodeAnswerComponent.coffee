@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 React = require 'react'
 H = React.DOM
 R = React.createElement
@@ -9,12 +10,12 @@ formUtils = require '../formUtils'
 
 module.exports = class BarcodeAnswerComponent extends React.Component
   @contextTypes:
-    scanBarcode: React.PropTypes.func
-    T: React.PropTypes.func.isRequired  # Localizer to use
+    scanBarcode: PropTypes.func
+    T: PropTypes.func.isRequired  # Localizer to use
 
   @propTypes:
-    value: React.PropTypes.string
-    onValueChange: React.PropTypes.func.isRequired
+    value: PropTypes.string
+    onValueChange: PropTypes.func.isRequired
 
   focus: () ->
     # Nothing to focus

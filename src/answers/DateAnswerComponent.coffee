@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 React = require 'react'
 H = React.DOM
 R = React.createElement
@@ -10,11 +11,11 @@ DateTimePickerComponent = require '../DateTimePickerComponent'
 
 module.exports = class DateAnswerComponent extends React.Component
   @propTypes:
-    value: React.PropTypes.string
-    onValueChange: React.PropTypes.func.isRequired
-    format: React.PropTypes.string
-    placeholder: React.PropTypes.string
-    onNextOrComments: React.PropTypes.func
+    value: PropTypes.string
+    onValueChange: PropTypes.func.isRequired
+    format: PropTypes.string
+    placeholder: PropTypes.string
+    onNextOrComments: PropTypes.func
 
   @defaultProps:
     format: "YYYY-MM-DD"

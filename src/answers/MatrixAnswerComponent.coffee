@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 React = require 'react'
 H = React.DOM
 R = React.createElement
@@ -10,30 +11,30 @@ AnswerValidator = require './AnswerValidator'
 # Matrix with columns and items
 module.exports = class MatrixAnswerComponent extends React.Component
   @contextTypes:
-    locale: React.PropTypes.string  # Current locale (e.g. "en")
+    locale: PropTypes.string  # Current locale (e.g. "en")
 
   @propTypes:
-    items: React.PropTypes.arrayOf(React.PropTypes.shape({
+    items: PropTypes.arrayOf(PropTypes.shape({
       # Unique (within the question) id of the item. Cannot be "na" or "dontknow" as they are reserved for alternates
-      id: React.PropTypes.string.isRequired
+      id: PropTypes.string.isRequired
 
       # Label of the choice, localized
-      label: React.PropTypes.object.isRequired
+      label: PropTypes.object.isRequired
 
       # Hint associated with a choice
-      hint: React.PropTypes.object
+      hint: PropTypes.object
     })).isRequired
 
     # Array of matrix columns
-    columns: React.PropTypes.array.isRequired
+    columns: PropTypes.array.isRequired
 
-    value: React.PropTypes.object                    # See answer format
-    onValueChange: React.PropTypes.func.isRequired
-    alternate: React.PropTypes.string                # Alternate value if selected
+    value: PropTypes.object                    # See answer format
+    onValueChange: PropTypes.func.isRequired
+    alternate: PropTypes.string                # Alternate value if selected
 
-    data: React.PropTypes.object      # Current data of response (for roster entry if in roster)
-    responseRow: React.PropTypes.object    # ResponseRow object (for roster entry if in roster)
-    schema: React.PropTypes.object.isRequired  # Schema to use, including form
+    data: PropTypes.object      # Current data of response (for roster entry if in roster)
+    responseRow: PropTypes.object    # ResponseRow object (for roster entry if in roster)
+    schema: PropTypes.object.isRequired  # Schema to use, including form
 
   constructor: ->
     super

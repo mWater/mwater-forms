@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 React = require 'react'
 H = React.DOM
 R = React.createElement
@@ -8,28 +9,28 @@ conditionUtils = require '../conditionUtils'
 # Multiple checkboxes where more than one can be checked
 module.exports = class MulticheckAnswerComponent extends React.Component
   @contextTypes:
-    locale: React.PropTypes.string  # Current locale (e.g. "en")
+    locale: PropTypes.string  # Current locale (e.g. "en")
 
   @propTypes:
-    choices: React.PropTypes.arrayOf(React.PropTypes.shape({
+    choices: PropTypes.arrayOf(PropTypes.shape({
       # Unique (within the question) id of the choice. Cannot be "na" or "dontknow" as they are reserved for alternates
-      id: React.PropTypes.string.isRequired
+      id: PropTypes.string.isRequired
 
       # Label of the choice, localized
-      label: React.PropTypes.object.isRequired
+      label: PropTypes.object.isRequired
 
       # Hint associated with a choice
-      hint: React.PropTypes.object
+      hint: PropTypes.object
 
       # True to require a text field to specify the value when selected
       # Usually used for "Other" options.
       # Value is stored in specify[id]
-      specify: React.PropTypes.bool
+      specify: PropTypes.bool
     })).isRequired
 
-    answer: React.PropTypes.object.isRequired # See answer format
-    onAnswerChange: React.PropTypes.func.isRequired
-    data: React.PropTypes.object.isRequired
+    answer: PropTypes.object.isRequired # See answer format
+    onAnswerChange: PropTypes.func.isRequired
+    data: PropTypes.object.isRequired
 
   focus: () ->
     # Nothing to focus

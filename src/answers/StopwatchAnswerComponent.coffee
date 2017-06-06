@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 React = require 'react'
 H = React.DOM
 R = React.createElement
@@ -23,9 +24,9 @@ getDisplayValue = (ticks) ->
 # Creates a stopwatch timer component on the form, can be start/stop/reset
 module.exports = class StopwatchAnswerComponent extends React.Component
   @propTypes:
-    onValueChange: React.PropTypes.func.isRequired
-    value: React.PropTypes.number
-    T: React.PropTypes.func.isRequired  # Localizer to use
+    onValueChange: PropTypes.func.isRequired
+    value: PropTypes.number
+    T: PropTypes.func.isRequired  # Localizer to use
 
   constructor: (props) ->
     super

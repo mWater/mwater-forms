@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 React = require 'react'
 H = React.DOM
 R = React.createElement
@@ -8,16 +9,16 @@ ui = require 'react-library/lib/bootstrap'
 # Not tested
 module.exports = class UnitsAnswerComponent extends React.Component
   @contextTypes:
-    locale: React.PropTypes.string  # Current locale (e.g. "en")
+    locale: PropTypes.string  # Current locale (e.g. "en")
 
   @propTypes:
-    answer: React.PropTypes.object.isRequired
-    onValueChange: React.PropTypes.func.isRequired
-    units: React.PropTypes.array.isRequired
-    defaultUnits: React.PropTypes.string
-    prefix: React.PropTypes.bool.isRequired
-    decimal: React.PropTypes.bool.isRequired
-    onNextOrComments: React.PropTypes.func
+    answer: PropTypes.object.isRequired
+    onValueChange: PropTypes.func.isRequired
+    units: PropTypes.array.isRequired
+    defaultUnits: PropTypes.string
+    prefix: PropTypes.bool.isRequired
+    decimal: PropTypes.bool.isRequired
+    onNextOrComments: PropTypes.func
 
   constructor: (props) ->
     super

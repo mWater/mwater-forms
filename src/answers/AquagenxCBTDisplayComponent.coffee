@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 React = require 'react'
 H = React.DOM
 
@@ -7,13 +8,13 @@ ImageDisplayComponent = require '../ImageDisplayComponent'
 
 module.exports = class AquagenxCBTDisplayComponent extends React.Component
   @contextTypes:
-    T: React.PropTypes.func.isRequired  # Localizer to use
+    T: PropTypes.func.isRequired  # Localizer to use
 
   @propTypes:
-    value: React.PropTypes.object
-    questionId: React.PropTypes.string.isRequired
-    onEdit: React.PropTypes.func
-    imageManager: React.PropTypes.object # If not specified, do not display image
+    value: PropTypes.object
+    questionId: PropTypes.string.isRequired
+    onEdit: PropTypes.func
+    imageManager: PropTypes.object # If not specified, do not display image
 
   handleClick: =>
     if @props.onEdit

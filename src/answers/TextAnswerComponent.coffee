@@ -1,14 +1,15 @@
+PropTypes = require('prop-types')
 React = require 'react'
 H = React.DOM
 R = React.createElement
 
 module.exports = class TextAnswerComponent extends React.Component
   @propTypes:
-    value: React.PropTypes.string
-    format: React.PropTypes.string.isRequired
-    readOnly: React.PropTypes.bool
-    onValueChange: React.PropTypes.func.isRequired
-    onNextOrComments: React.PropTypes.func
+    value: PropTypes.string
+    format: PropTypes.string.isRequired
+    readOnly: PropTypes.bool
+    onValueChange: PropTypes.func.isRequired
+    onNextOrComments: PropTypes.func
 
   @defaultProps:
     readOnly: false

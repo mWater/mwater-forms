@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 React = require 'react'
 H = React.DOM
 ImageThumbnailComponent = require '../ImageThumbnailComponent'
@@ -7,14 +8,14 @@ RotationAwareImageComponent = require '../RotationAwareImageComponent'
 # Edit an image 
 module.exports = class ImageAnswerComponent extends React.Component
   @contextTypes:
-    imageManager: React.PropTypes.object.isRequired
-    imageAcquirer: React.PropTypes.object
-    T: React.PropTypes.func.isRequired  # Localizer to use
+    imageManager: PropTypes.object.isRequired
+    imageAcquirer: PropTypes.object
+    T: PropTypes.func.isRequired  # Localizer to use
 
   @propTypes:
-    image: React.PropTypes.object            # e.g. { id: someid, caption: caption }
-    onImageChange: React.PropTypes.func      # Called when image changed
-    consentPrompt: React.PropTypes.string    # Question to prompt for consent
+    image: PropTypes.object            # e.g. { id: someid, caption: caption }
+    onImageChange: PropTypes.func      # Called when image changed
+    consentPrompt: PropTypes.string    # Question to prompt for consent
 
   constructor: ->
     super
