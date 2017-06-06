@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 H = React.DOM
@@ -6,9 +7,9 @@ AsyncLoadComponent = require('react-library/lib/AsyncLoadComponent')
 # Loads and displays an admin region
 module.exports = class AdminRegionDisplayComponent extends AsyncLoadComponent
   @propTypes:
-    getAdminRegionPath: React.PropTypes.func.isRequired # Call with (id, callback). Callback (error, [{ id:, level: <e.g. 1>, name: <e.g. Manitoba>, type: <e.g. Province>}] in level ascending order)
-    value: React.PropTypes.string     # _id of entity
-    T: React.PropTypes.func.isRequired  # Localizer to use
+    getAdminRegionPath: PropTypes.func.isRequired # Call with (id, callback). Callback (error, [{ id:, level: <e.g. 1>, name: <e.g. Manitoba>, type: <e.g. Province>}] in level ascending order)
+    value: PropTypes.string     # _id of entity
+    T: PropTypes.func.isRequired  # Localizer to use
 
   # Override to determine if a load is needed. Not called on mounting
   isLoadNeeded: (newProps, oldProps) ->

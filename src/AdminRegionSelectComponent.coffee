@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 H = React.DOM
@@ -7,11 +8,11 @@ AsyncLoadComponent = require('react-library/lib/AsyncLoadComponent')
 # Allows selecting an admin region via cascading dropdowns
 module.exports = class AdminRegionSelectComponent extends AsyncLoadComponent 
   @propTypes: 
-    getAdminRegionPath: React.PropTypes.func.isRequired # Call with (id, callback). Callback (error, [{ id:, level: <e.g. 1>, name: <e.g. Manitoba>, type: <e.g. Province>}] in level ascending order)
-    getSubAdminRegions: React.PropTypes.func.isRequired # Call with (id, callback). Callback (error, [{ id:, level: <e.g. 1>, name: <e.g. Manitoba>, type: <e.g. Province>}] of admin regions directly under the specified id)
-    value: React.PropTypes.string     # id of admin region
-    onChange: React.PropTypes.func.isRequired  # Called with new id
-    T: React.PropTypes.func.isRequired  # Localizer to use
+    getAdminRegionPath: PropTypes.func.isRequired # Call with (id, callback). Callback (error, [{ id:, level: <e.g. 1>, name: <e.g. Manitoba>, type: <e.g. Province>}] in level ascending order)
+    getSubAdminRegions: PropTypes.func.isRequired # Call with (id, callback). Callback (error, [{ id:, level: <e.g. 1>, name: <e.g. Manitoba>, type: <e.g. Province>}] of admin regions directly under the specified id)
+    value: PropTypes.string     # id of admin region
+    onChange: PropTypes.func.isRequired  # Called with new id
+    T: PropTypes.func.isRequired  # Localizer to use
 
   componentWillMount: ->
     super

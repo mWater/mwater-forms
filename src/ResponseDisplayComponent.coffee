@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 H = React.DOM
@@ -9,16 +10,16 @@ ResponseAnswersComponent = require './ResponseAnswersComponent'
 # Static view of a response
 module.exports = class ResponseDisplayComponent extends React.Component
   @propTypes:
-    form: React.PropTypes.object.isRequired
-    response: React.PropTypes.object.isRequired
-    schema: React.PropTypes.object.isRequired  # Schema including the form
-    formCtx: React.PropTypes.object.isRequired
-    apiUrl: React.PropTypes.string
-    locale: React.PropTypes.string # Defaults to english
+    form: PropTypes.object.isRequired
+    response: PropTypes.object.isRequired
+    schema: PropTypes.object.isRequired  # Schema including the form
+    formCtx: PropTypes.object.isRequired
+    apiUrl: PropTypes.string
+    locale: PropTypes.string # Defaults to english
 
   @childContextTypes: _.extend({}, require('./formContextTypes'), {
-    T: React.PropTypes.func.isRequired
-    locale: React.PropTypes.string          # e.g. "fr"
+    T: PropTypes.func.isRequired
+    locale: PropTypes.string          # e.g. "fr"
   })
 
   constructor: (props) ->

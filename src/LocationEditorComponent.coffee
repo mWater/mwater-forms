@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 H = React.DOM
@@ -9,11 +10,11 @@ LocationView = require './legacy/LocationView'
 # TODO reimplement in pure react
 module.exports = class LocationEditorComponent extends React.Component
   @propTypes:
-    location: React.PropTypes.object  # { latitude, longitude, accuracy, altitude?, altitudeAccuracy? }
-    locationFinder: React.PropTypes.object  # Location finder to use
-    onLocationChange: React.PropTypes.func
-    onUseMap: React.PropTypes.func    # Called if map use is requested
-    T: React.PropTypes.func           # Localizer
+    location: PropTypes.object  # { latitude, longitude, accuracy, altitude?, altitudeAccuracy? }
+    locationFinder: PropTypes.object  # Location finder to use
+    onLocationChange: PropTypes.func
+    onUseMap: PropTypes.func    # Called if map use is requested
+    T: PropTypes.func           # Localizer
     
   componentDidMount: -> 
     @locationView = new LocationView({

@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 H = React.DOM
@@ -9,22 +10,22 @@ TextExprsComponent = require './TextExprsComponent'
 
 module.exports = class SectionsComponent extends React.Component
   @contextTypes:
-    locale: React.PropTypes.string
-    T: React.PropTypes.func.isRequired  # Localizer to use
+    locale: PropTypes.string
+    T: PropTypes.func.isRequired  # Localizer to use
 
   @propTypes:
-    contents: React.PropTypes.array.isRequired 
-    data: React.PropTypes.object      # Current data of response. 
-    onDataChange: React.PropTypes.func.isRequired
+    contents: PropTypes.array.isRequired 
+    data: PropTypes.object      # Current data of response. 
+    onDataChange: PropTypes.func.isRequired
 
-    schema: React.PropTypes.object.isRequired  # Schema to use, including form
-    responseRow: React.PropTypes.object.isRequired    # ResponseRow object (for roster entry if in roster)
+    schema: PropTypes.object.isRequired  # Schema to use, including form
+    responseRow: PropTypes.object.isRequired    # ResponseRow object (for roster entry if in roster)
 
-    isVisible: React.PropTypes.func.isRequired # (id) tells if an item is visible or not
+    isVisible: PropTypes.func.isRequired # (id) tells if an item is visible or not
 
-    onSubmit: React.PropTypes.func                # Called when submit is pressed
-    onSaveLater: React.PropTypes.func             # Optional save for later
-    onDiscard: React.PropTypes.func               # Called when discard is pressed
+    onSubmit: PropTypes.func                # Called when submit is pressed
+    onSaveLater: PropTypes.func             # Optional save for later
+    onDiscard: PropTypes.func               # Called when discard is pressed
 
   constructor: ->
     super

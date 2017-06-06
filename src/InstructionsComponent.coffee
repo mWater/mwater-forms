@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 H = React.DOM
@@ -8,13 +9,13 @@ TextExprsComponent = require './TextExprsComponent'
 
 module.exports = class InstructionsComponent extends React.Component
   @contextTypes: 
-    locale: React.PropTypes.string
+    locale: PropTypes.string
 
   @propTypes:
-    instructions: React.PropTypes.object.isRequired # Design of instructions. See schema
-    data: React.PropTypes.object      # Current data of response (for roster entry if in roster)
-    responseRow: React.PropTypes.object    # ResponseRow object (for roster entry if in roster)
-    schema: React.PropTypes.object.isRequired  # Schema to use, including form
+    instructions: PropTypes.object.isRequired # Design of instructions. See schema
+    data: PropTypes.object      # Current data of response (for roster entry if in roster)
+    responseRow: PropTypes.object    # ResponseRow object (for roster entry if in roster)
+    schema: PropTypes.object.isRequired  # Schema to use, including form
 
   shouldComponentUpdate: (nextProps, nextState, nextContext) ->
     if @context.locale != nextContext.locale

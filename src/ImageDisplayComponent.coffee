@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 React = require 'react'
 H = React.DOM
 ImagePopupComponent = require './ImagePopupComponent'
@@ -7,9 +8,9 @@ RotationAwareImageComponent = require './RotationAwareImageComponent'
 # Displays an image
 module.exports = class ImageDisplayComponent extends React.Component
   @propTypes:
-    image: React.PropTypes.object.isRequired  # Image object to display
-    imageManager: React.PropTypes.object.isRequired
-    T: React.PropTypes.func.isRequired
+    image: PropTypes.object.isRequired  # Image object to display
+    imageManager: PropTypes.object.isRequired
+    T: PropTypes.func.isRequired
 
   constructor: ->
     super

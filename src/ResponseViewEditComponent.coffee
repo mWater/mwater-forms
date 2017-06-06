@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 H = React.DOM
@@ -11,18 +12,18 @@ ResponseDisplayComponent = require './ResponseDisplayComponent'
 # When editing, shows in single-page mode.
 module.exports = class ResponseViewEditComponent extends React.Component
   @propTypes:
-    form: React.PropTypes.object.isRequired  # Form to use
-    formCtx: React.PropTypes.object.isRequired # FormContext
-    response: React.PropTypes.object.isRequired  # Response object
+    form: PropTypes.object.isRequired  # Form to use
+    formCtx: PropTypes.object.isRequired # FormContext
+    response: PropTypes.object.isRequired  # Response object
   
-    login: React.PropTypes.object  # Current login (contains user, username, groups)
-    apiUrl: React.PropTypes.string.isRequired  # api url to use e.g. https://api.mwater.co/v3/
+    login: PropTypes.object  # Current login (contains user, username, groups)
+    apiUrl: PropTypes.string.isRequired  # api url to use e.g. https://api.mwater.co/v3/
 
-    onUpdateResponse: React.PropTypes.func.isRequired # Called when response is updated with new response
-    onDeleteResponse: React.PropTypes.func.isRequired # Called when response is removed
+    onUpdateResponse: PropTypes.func.isRequired # Called when response is updated with new response
+    onDeleteResponse: PropTypes.func.isRequired # Called when response is removed
 
-    schema: React.PropTypes.object.isRequired # Schema, including the form
-    locale: React.PropTypes.string # The locale to display the response in
+    schema: PropTypes.object.isRequired # Schema, including the form
+    locale: PropTypes.string # The locale to display the response in
 
   constructor: (props) ->
     super

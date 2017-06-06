@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 React = require 'react'
 R = React.createElement
 H = React.DOM
@@ -10,23 +11,23 @@ if process.browser
 module.exports = class DateTimePickerComponent extends React.Component
   @propTypes:
     # date format
-    format: React.PropTypes.string
+    format: PropTypes.string
 
     # do we need time picker?  (Only useful if format is not set)
-    timepicker: React.PropTypes.bool
+    timepicker: PropTypes.bool
 
-    showTodayButton: React.PropTypes.bool # Show the today button
-    showClear: React.PropTypes.bool # Show the clear button
+    showTodayButton: PropTypes.bool # Show the today button
+    showClear: PropTypes.bool # Show the clear button
 
     # callback on date change
     # argument: {date: moment object for currently selected datetime, oldDate: moment object for previous datetime}
-    onChange: React.PropTypes.func
+    onChange: PropTypes.func
 
     # date as moment
-    date: React.PropTypes.object
+    date: PropTypes.object
 
     # default date as moment
-    defaultDate: React.PropTypes.object
+    defaultDate: PropTypes.object
 
   @defaultProps:
     timepicker: false

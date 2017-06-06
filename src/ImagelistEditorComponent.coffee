@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 React = require 'react'
 H = React.DOM
 R = React.createElement
@@ -6,16 +7,16 @@ ImagesAnswerComponent = require './answers/ImagesAnswerComponent'
 # Edit an image list
 module.exports = class ImagelistEditorComponent extends React.Component
   @propTypes:
-    imageManager: React.PropTypes.object.isRequired
-    imageAcquirer: React.PropTypes.object
-    imagelist: React.PropTypes.array             # e.g. [{ id: someid, caption: caption }]
-    onImagelistChange: React.PropTypes.func       # Called when image list changed
-    T: React.PropTypes.func.isRequired        # Localizer to use
+    imageManager: PropTypes.object.isRequired
+    imageAcquirer: PropTypes.object
+    imagelist: PropTypes.array             # e.g. [{ id: someid, caption: caption }]
+    onImagelistChange: PropTypes.func       # Called when image list changed
+    T: PropTypes.func.isRequired        # Localizer to use
 
   @childContextTypes:
-    imageManager: React.PropTypes.object.isRequired
-    imageAcquirer: React.PropTypes.object
-    T: React.PropTypes.func.isRequired  # Localizer to use
+    imageManager: PropTypes.object.isRequired
+    imageAcquirer: PropTypes.object
+    T: PropTypes.func.isRequired  # Localizer to use
 
   getChildContext: -> 
     {

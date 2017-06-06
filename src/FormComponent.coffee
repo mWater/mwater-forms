@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 H = React.DOM
@@ -16,32 +17,32 @@ RandomAskedCalculator = require './RandomAskedCalculator'
 # Displays a form that can be filled out
 module.exports = class FormComponent extends React.Component
   @propTypes:
-    formCtx: React.PropTypes.object.isRequired   # Context to use for form. See docs/FormsContext.md
-    design: React.PropTypes.object.isRequired # Form design. See schema.coffee
+    formCtx: PropTypes.object.isRequired   # Context to use for form. See docs/FormsContext.md
+    design: PropTypes.object.isRequired # Form design. See schema.coffee
   
-    data: React.PropTypes.object.isRequired # Form response data. See docs/Answer Formats.md
-    onDataChange: React.PropTypes.func.isRequired # Called when response data changes
+    data: PropTypes.object.isRequired # Form response data. See docs/Answer Formats.md
+    onDataChange: PropTypes.func.isRequired # Called when response data changes
 
-    schema: React.PropTypes.object.isRequired  # Schema to use, including form
+    schema: PropTypes.object.isRequired  # Schema to use, including form
 
-    locale: React.PropTypes.string          # e.g. "fr"
+    locale: PropTypes.string          # e.g. "fr"
     
-    onSubmit: React.PropTypes.func                # Called when submit is pressed
-    onSaveLater: React.PropTypes.func             # Optional save for later
-    onDiscard: React.PropTypes.func               # Called when discard is pressed
+    onSubmit: PropTypes.func                # Called when submit is pressed
+    onSaveLater: PropTypes.func             # Optional save for later
+    onDiscard: PropTypes.func               # Called when discard is pressed
 
-    submitLabel: React.PropTypes.string           # To override submit label
-    saveLaterLabel: React.PropTypes.string        # To override Save For Later label
-    discardLabel: React.PropTypes.string          # To override Discard label
+    submitLabel: PropTypes.string           # To override submit label
+    saveLaterLabel: PropTypes.string        # To override Save For Later label
+    discardLabel: PropTypes.string          # To override Discard label
 
-    entity: React.PropTypes.object            # Form-level entity to load
-    entityType: React.PropTypes.string        # Type of form-level entity to load
+    entity: PropTypes.object            # Form-level entity to load
+    entityType: PropTypes.string        # Type of form-level entity to load
 
-    singlePageMode: React.PropTypes.bool      # True to render as a single page, not divided into sections
+    singlePageMode: PropTypes.bool      # True to render as a single page, not divided into sections
 
   @childContextTypes: _.extend({}, require('./formContextTypes'), {
-    T: React.PropTypes.func.isRequired
-    locale: React.PropTypes.string          # e.g. "fr"
+    T: PropTypes.func.isRequired
+    locale: PropTypes.string          # e.g. "fr"
   })
 
   constructor: (props) ->

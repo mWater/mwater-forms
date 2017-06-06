@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 H = React.DOM
@@ -13,12 +14,12 @@ markdown = require("markdown").markdown
 # Displays a text string with optional expressions embedded in it that are computed
 module.exports = class TextExprsComponent extends React.Component
   @propTypes:
-    localizedStr: React.PropTypes.object  # String to render (localized)
-    exprs: React.PropTypes.array          # Array of mwater-expressions to insert at {0}, {1}, etc.
-    schema: React.PropTypes.object.isRequired # Schema that includes the current form
-    responseRow: React.PropTypes.object.isRequired # response row to use
-    locale: React.PropTypes.string        # locale (e.g. "en") to use
-    markdown: React.PropTypes.bool        # True to render as markdown text
+    localizedStr: PropTypes.object  # String to render (localized)
+    exprs: PropTypes.array          # Array of mwater-expressions to insert at {0}, {1}, etc.
+    schema: PropTypes.object.isRequired # Schema that includes the current form
+    responseRow: PropTypes.object.isRequired # response row to use
+    locale: PropTypes.string        # locale (e.g. "en") to use
+    markdown: PropTypes.bool        # True to render as markdown text
 
   constructor: ->
     super
