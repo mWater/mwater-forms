@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 React = require 'react'
 H = React.DOM
 AsyncLoadComponent = require('react-library/lib/AsyncLoadComponent')
@@ -5,15 +6,15 @@ AsyncLoadComponent = require('react-library/lib/AsyncLoadComponent')
 # Loads and displays an entity
 module.exports = class EntityDisplayComponent extends AsyncLoadComponent
   @propTypes:
-    entityType: React.PropTypes.string.isRequired   # _id of entity
-    entityId: React.PropTypes.string     # _id of entity
-    entityCode: React.PropTypes.string   # code of entity if _id not present
-    displayInWell: React.PropTypes.bool         # True to render in well if present
-    getEntityById: React.PropTypes.func     # Gets an entity by id (entityType, entityId, callback). Required if entityId
-    getEntityByCode: React.PropTypes.func   # Gets an entity by code (entityType, entityCode, callback). Required if entityCode
+    entityType: PropTypes.string.isRequired   # _id of entity
+    entityId: PropTypes.string     # _id of entity
+    entityCode: PropTypes.string   # code of entity if _id not present
+    displayInWell: PropTypes.bool         # True to render in well if present
+    getEntityById: PropTypes.func     # Gets an entity by id (entityType, entityId, callback). Required if entityId
+    getEntityByCode: PropTypes.func   # Gets an entity by code (entityType, entityCode, callback). Required if entityCode
 
-    renderEntityView: React.PropTypes.func.isRequired
-    T: React.PropTypes.func.isRequired  # Localizer to use
+    renderEntityView: PropTypes.func.isRequired
+    T: PropTypes.func.isRequired  # Localizer to use
 
   # Override to determine if a load is needed. Not called on mounting
   isLoadNeeded: (newProps, oldProps) ->

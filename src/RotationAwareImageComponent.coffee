@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 React = require 'react'
 H = React.DOM
 R = React.createElement
@@ -6,11 +7,11 @@ classNames = require('classnames')
 
 module.exports = class RotationAwareImageComponent extends AsyncLoadComponent
   @propTypes: 
-    image: React.PropTypes.object.isRequired
-    imageManager: React.PropTypes.object.isRequired
-    thumbnail: React.PropTypes.bool
-    height: React.PropTypes.number
-    onClick: React.PropTypes.func
+    image: PropTypes.object.isRequired
+    imageManager: PropTypes.object.isRequired
+    thumbnail: PropTypes.bool
+    height: PropTypes.number
+    onClick: PropTypes.func
 
   # Override to determine if a load is needed. Not called on mounting
   isLoadNeeded: (newProps, oldProps) ->

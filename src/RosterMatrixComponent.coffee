@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 H = React.DOM
@@ -13,15 +14,15 @@ MatrixColumnCellComponent = require './MatrixColumnCellComponent'
 # A roster matrix is a list of column-type questions with one row for each entry in the roster
 module.exports = class RosterMatrixComponent extends React.Component
   @contextTypes:
-    locale: React.PropTypes.string
-    T: React.PropTypes.func.isRequired  # Localizer to use
+    locale: PropTypes.string
+    T: PropTypes.func.isRequired  # Localizer to use
 
   @propTypes:
-    rosterMatrix: React.PropTypes.object.isRequired # Design of roster matrix. See schema
-    data: React.PropTypes.object      # Current data of response. 
-    onDataChange: React.PropTypes.func.isRequired   # Called when data changes
-    isVisible: React.PropTypes.func.isRequired # (id) tells if an item is visible or not
-    schema: React.PropTypes.object.isRequired  # Schema to use, including form
+    rosterMatrix: PropTypes.object.isRequired # Design of roster matrix. See schema
+    data: PropTypes.object      # Current data of response. 
+    onDataChange: PropTypes.func.isRequired   # Called when data changes
+    isVisible: PropTypes.func.isRequired # (id) tells if an item is visible or not
+    schema: PropTypes.object.isRequired  # Schema to use, including form
 
   constructor: ->
     super
@@ -155,14 +156,14 @@ module.exports = class RosterMatrixComponent extends React.Component
           " " + @context.T("Add")
 
   renderBody: ->
-    items: React.PropTypes.array.isRequired # items to be reordered
-    onReorder: React.PropTypes.func.isRequired # callback function, called when an item is dropped, gets passed the reordered item list
+    items: PropTypes.array.isRequired # items to be reordered
+    onReorder: PropTypes.func.isRequired # callback function, called when an item is dropped, gets passed the reordered item list
     # function which renders the item, gets passed the current item and react dnd connectors
     # signature: function(item, index, connectDragSource, connectDragPreview, connectDropTarget)
-    renderItem: React.PropTypes.func.isRequired
-    listId: React.PropTypes.string # a uniqid for the list
-    getItemId: React.PropTypes.func.isRequired # function which should return the identifier of the current item, gets passed the current item
-    element: React.PropTypes.object # the element to render this component as
+    renderItem: PropTypes.func.isRequired
+    listId: PropTypes.string # a uniqid for the list
+    getItemId: PropTypes.func.isRequired # function which should return the identifier of the current item, gets passed the current item
+    element: PropTypes.object # the element to render this component as
 
     R ReorderableListComponent,
       items: @getAnswer()

@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 React = require 'react'
 H = React.DOM
 R = React.createElement
@@ -8,16 +9,16 @@ formUtils = require '../formUtils'
 # Displays a site answer in a cell. No direct code entering, but stores answer as a code.
 module.exports = class SiteColumnAnswerComponent extends React.Component
   @contextTypes:
-    selectEntity: React.PropTypes.func
-    getEntityById: React.PropTypes.func.isRequired
-    getEntityByCode: React.PropTypes.func.isRequired
-    renderEntityListItemView: React.PropTypes.func.isRequired
-    T: React.PropTypes.func.isRequired  # Localizer to use
+    selectEntity: PropTypes.func
+    getEntityById: PropTypes.func.isRequired
+    getEntityByCode: PropTypes.func.isRequired
+    renderEntityListItemView: PropTypes.func.isRequired
+    T: PropTypes.func.isRequired  # Localizer to use
 
   @propTypes:
-    value: React.PropTypes.object
-    onValueChange: React.PropTypes.func.isRequired
-    siteType: React.PropTypes.string.isRequired
+    value: PropTypes.object
+    onValueChange: PropTypes.func.isRequired
+    siteType: PropTypes.string.isRequired
 
   handleSelectClick: =>
     @context.selectEntity { entityType: @props.siteType, callback: (entityId) =>

@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 H = React.DOM
@@ -21,15 +22,15 @@ AquagenxCBTDisplayComponent = require './answers/AquagenxCBTDisplayComponent'
 # Displays the answers of a response in a table
 module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
   @propTypes:
-    formDesign: React.PropTypes.object.isRequired
-    data: React.PropTypes.object.isRequired
-    schema: React.PropTypes.object.isRequired  # Schema of the 
+    formDesign: PropTypes.object.isRequired
+    data: PropTypes.object.isRequired
+    schema: PropTypes.object.isRequired  # Schema of the 
 
-    hideEmptyAnswers: React.PropTypes.bool # True to hide empty answers
+    hideEmptyAnswers: PropTypes.bool # True to hide empty answers
 
-    locale: React.PropTypes.string # Defaults to english
-    T: React.PropTypes.func.isRequired  # Localizer to use
-    formCtx: React.PropTypes.object.isRequired    # Form context to use
+    locale: PropTypes.string # Defaults to english
+    T: PropTypes.func.isRequired  # Localizer to use
+    formCtx: PropTypes.object.isRequired    # Form context to use
 
   # Check if form design or data are different
   isLoadNeeded: (newProps, oldProps) ->

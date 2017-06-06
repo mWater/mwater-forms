@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 H = React.DOM
@@ -14,16 +15,16 @@ TextExprsComponent = require './TextExprsComponent'
 # Cell of a matrix column
 module.exports = class MatrixColumnCellComponent extends React.Component
   @propTypes: 
-    column: React.PropTypes.object.isRequired       # Column. See designSchema
-    data: React.PropTypes.object      # Current data of response (for roster entry if in roster)
-    responseRow: React.PropTypes.object    # ResponseRow object (for roster entry if in roster)
-    answer: React.PropTypes.object                  # Answer of the cell
-    onAnswerChange: React.PropTypes.func.isRequired   # Called with new answer of cell
-    invalid: React.PropTypes.bool                   # True if invalid
-    schema: React.PropTypes.object.isRequired  # Schema to use, including form
+    column: PropTypes.object.isRequired       # Column. See designSchema
+    data: PropTypes.object      # Current data of response (for roster entry if in roster)
+    responseRow: PropTypes.object    # ResponseRow object (for roster entry if in roster)
+    answer: PropTypes.object                  # Answer of the cell
+    onAnswerChange: PropTypes.func.isRequired   # Called with new answer of cell
+    invalid: PropTypes.bool                   # True if invalid
+    schema: PropTypes.object.isRequired  # Schema to use, including form
 
   @contextTypes:
-    locale: React.PropTypes.string
+    locale: PropTypes.string
 
   handleValueChange: (value) =>
     @props.onAnswerChange(_.extend({}, @props.answer, value: value))

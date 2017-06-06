@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 React = require 'react'
 ReactDOM = require 'react-dom'
 R = React.createElement
@@ -117,7 +118,7 @@ class DemoComponent extends React.Component
       H.div(className: "col-md-6",
         R FormComponent, {
           formCtx: formCtx
-          # locale: React.PropTypes.string            # Locale. Defaults to English (en)
+          # locale: PropTypes.string            # Locale. Defaults to English (en)
           design: design
           data: @state.data
           schema: schema
@@ -125,10 +126,10 @@ class DemoComponent extends React.Component
           onSubmit: => alert("Submit")
           onSaveLater: => alert("SaveLater")
           onDiscard:  => alert("Discard")
-          # submitLabel: React.PropTypes.string           # Label for submit button
-          # discardLabel: React.PropTypes.string           # Label for discard button
-          # entity: React.PropTypes.object            # Form-level entity to load
-          # entityType: React.PropTypes.string        # Type of form-level entity to load      getAdminRegionPath: getAdminRegionPath
+          # submitLabel: PropTypes.string           # Label for submit button
+          # discardLabel: PropTypes.string           # Label for discard button
+          # entity: PropTypes.object            # Form-level entity to load
+          # entityType: PropTypes.string        # Type of form-level entity to load      getAdminRegionPath: getAdminRegionPath
           #   getSubAdminRegions: getSubAdminRegions
           #   onChange: onChange
           #   value: value

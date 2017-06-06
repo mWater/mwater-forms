@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 H = React.DOM
@@ -25,11 +26,11 @@ getDisplayValue = (ticks) ->
 
 module.exports = class TimerComponent extends React.Component
   @contextTypes:
-    T: React.PropTypes.func.isRequired  # Localizer to use
-    locale: React.PropTypes.string
+    T: PropTypes.func.isRequired  # Localizer to use
+    locale: PropTypes.string
 
   @propTypes:
-    timer: React.PropTypes.object.isRequired # Design of instructions. See schema
+    timer: PropTypes.object.isRequired # Design of instructions. See schema
 
   constructor: (props) ->
     super

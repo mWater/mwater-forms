@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 H = React.DOM
@@ -7,14 +8,14 @@ ImagePopupComponent = require '../ImagePopupComponent'
 # Edit an image 
 module.exports = class ImagesAnswerComponent extends React.Component
   @contextTypes:
-    imageManager: React.PropTypes.object.isRequired
-    imageAcquirer: React.PropTypes.object
-    T: React.PropTypes.func.isRequired  # Localizer to use
+    imageManager: PropTypes.object.isRequired
+    imageAcquirer: PropTypes.object
+    T: PropTypes.func.isRequired  # Localizer to use
 
   @propTypes:
-    imagelist: React.PropTypes.array         # array of { id: someid, caption: caption, cover: true/false }
-    onImagelistChange: React.PropTypes.func      # Called when image list changed
-    consentPrompt: React.PropTypes.string    # Question to prompt for consent
+    imagelist: PropTypes.array         # array of { id: someid, caption: caption, cover: true/false }
+    onImagelistChange: PropTypes.func      # Called when image list changed
+    consentPrompt: PropTypes.string    # Question to prompt for consent
 
   constructor: ->
     super

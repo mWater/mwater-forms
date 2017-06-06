@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 H = React.DOM
@@ -9,17 +10,17 @@ AsyncLoadComponent = require('react-library/lib/AsyncLoadComponent')
 # State is needed for canEditEntity which requires entire entity
 module.exports = class EntityAnswerComponent extends AsyncLoadComponent
   @contextTypes:
-    selectEntity: React.PropTypes.func
-    editEntity: React.PropTypes.func
-    renderEntitySummaryView: React.PropTypes.func.isRequired
-    getEntityById: React.PropTypes.func.isRequired     # Gets an entity by id (entityType, entityId, callback)
-    canEditEntity: React.PropTypes.func
-    T: React.PropTypes.func.isRequired  # Localizer to use
+    selectEntity: PropTypes.func
+    editEntity: PropTypes.func
+    renderEntitySummaryView: PropTypes.func.isRequired
+    getEntityById: PropTypes.func.isRequired     # Gets an entity by id (entityType, entityId, callback)
+    canEditEntity: PropTypes.func
+    T: PropTypes.func.isRequired  # Localizer to use
 
   @propTypes:
-    value: React.PropTypes.string
-    entityType: React.PropTypes.string.isRequired
-    onValueChange: React.PropTypes.func.isRequired
+    value: PropTypes.string
+    entityType: PropTypes.string.isRequired
+    onValueChange: PropTypes.func.isRequired
 
   focus: () ->
     # Nothing to focus

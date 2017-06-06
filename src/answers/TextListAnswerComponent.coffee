@@ -1,12 +1,13 @@
+PropTypes = require('prop-types')
 React = require 'react'
 H = React.DOM
 R = React.createElement
 
 module.exports = class TextListAnswerComponent extends React.Component
   @propTypes:
-    value: React.PropTypes.array
-    onValueChange: React.PropTypes.func.isRequired
-    onNextOrComments: React.PropTypes.func
+    value: PropTypes.array
+    onValueChange: PropTypes.func.isRequired
+    onNextOrComments: PropTypes.func
 
   focus: () ->
     @refs.newLine?.focus()

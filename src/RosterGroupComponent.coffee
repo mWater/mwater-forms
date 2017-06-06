@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 H = React.DOM
@@ -12,16 +13,16 @@ TextExprsComponent = require './TextExprsComponent'
 # A roster group is a group of questions that is asked once for each roster entry
 module.exports = class RosterGroupComponent extends React.Component
   @contextTypes:
-    locale: React.PropTypes.string
-    T: React.PropTypes.func.isRequired  # Localizer to use
+    locale: PropTypes.string
+    T: PropTypes.func.isRequired  # Localizer to use
 
   @propTypes:
-    rosterGroup: React.PropTypes.object.isRequired # Design of roster group. See schema
-    data: React.PropTypes.object      # Current data of response. 
-    onDataChange: React.PropTypes.func.isRequired   # Called when data changes
-    isVisible: React.PropTypes.func.isRequired # (id) tells if an item is visible or not
-    responseRow: React.PropTypes.object    # ResponseRow object (for roster entry if in roster)
-    schema: React.PropTypes.object.isRequired  # Schema to use, including form
+    rosterGroup: PropTypes.object.isRequired # Design of roster group. See schema
+    data: PropTypes.object      # Current data of response. 
+    onDataChange: PropTypes.func.isRequired   # Called when data changes
+    isVisible: PropTypes.func.isRequired # (id) tells if an item is visible or not
+    responseRow: PropTypes.object    # ResponseRow object (for roster entry if in roster)
+    schema: PropTypes.object.isRequired  # Schema to use, including form
 
   # Gets the id that the answer is stored under
   getAnswerId: ->

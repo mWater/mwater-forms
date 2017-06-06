@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 React = require 'react'
 H = React.DOM
 
@@ -8,13 +9,13 @@ RotationAwareImageComponent = require './RotationAwareImageComponent'
 # Displays an image in a popup and allows removing or setting as cover image
 module.exports = class ImagePopupComponent extends AsyncLoadComponent
   @propTypes:
-    imageManager: React.PropTypes.object.isRequired
-    image: React.PropTypes.object.isRequired   # The image object
-    onRemove: React.PropTypes.func
-    onSetCover: React.PropTypes.func
-    onRotate: React.PropTypes.func
-    onClose: React.PropTypes.func.isRequired
-    T: React.PropTypes.func.isRequired  # Localizer to use
+    imageManager: PropTypes.object.isRequired
+    image: PropTypes.object.isRequired   # The image object
+    onRemove: PropTypes.func
+    onSetCover: PropTypes.func
+    onRotate: PropTypes.func
+    onClose: PropTypes.func.isRequired
+    T: PropTypes.func.isRequired  # Localizer to use
 
   # Override to determine if a load is needed. Not called on mounting
   isLoadNeeded: (newProps, oldProps) -> return newProps.id != oldProps.id

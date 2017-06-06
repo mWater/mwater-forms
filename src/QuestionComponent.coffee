@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 H = React.DOM
@@ -45,19 +46,19 @@ UnitsAnswerComponent = require './answers/UnitsAnswerComponent'
 # Displays alternates and makes exclusive with answer
 module.exports = class QuestionComponent extends React.Component
   @contextTypes:
-    locale: React.PropTypes.string
-    stickyStorage: React.PropTypes.object   # Storage for sticky values
-    locationFinder: React.PropTypes.object
-    T: React.PropTypes.func.isRequired  # Localizer to use
+    locale: PropTypes.string
+    stickyStorage: PropTypes.object   # Storage for sticky values
+    locationFinder: PropTypes.object
+    T: PropTypes.func.isRequired  # Localizer to use
 
   @propTypes:
-    question: React.PropTypes.object.isRequired # Design of question. See schema
-    data: React.PropTypes.object      # Current data of response (for roster entry if in roster)
-    responseRow: React.PropTypes.object    # ResponseRow object (for roster entry if in roster)
-    onAnswerChange: React.PropTypes.func.isRequired
-    displayMissingRequired: React.PropTypes.bool
-    onNext: React.PropTypes.func
-    schema: React.PropTypes.object.isRequired  # Schema to use, including form
+    question: PropTypes.object.isRequired # Design of question. See schema
+    data: PropTypes.object      # Current data of response (for roster entry if in roster)
+    responseRow: PropTypes.object    # ResponseRow object (for roster entry if in roster)
+    onAnswerChange: PropTypes.func.isRequired
+    displayMissingRequired: PropTypes.bool
+    onNext: PropTypes.func
+    schema: PropTypes.object.isRequired  # Schema to use, including form
 
   constructor: ->
     super

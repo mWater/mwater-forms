@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 # Modal that allows upload of an image to the server
 React = require 'react'
 H = React.DOM
@@ -9,11 +10,11 @@ ModalPopupComponent = require('react-library/lib/ModalPopupComponent')
 # Based on http://www.matlus.com/html5-file-upload-with-progress/
 module.exports = class ImageUploaderModalComponent extends React.Component
   @propTypes:
-    apiUrl: React.PropTypes.string.isRequired
-    client: React.PropTypes.string
-    onCancel: React.PropTypes.func.isRequired
-    onSuccess: React.PropTypes.func.isRequired # Called with id of image
-    T: React.PropTypes.func.isRequired        # Localizer to use
+    apiUrl: PropTypes.string.isRequired
+    client: PropTypes.string
+    onCancel: PropTypes.func.isRequired
+    onSuccess: PropTypes.func.isRequired # Called with id of image
+    T: PropTypes.func.isRequired        # Localizer to use
 
   constructor: (props) ->
     super

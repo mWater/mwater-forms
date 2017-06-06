@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 React = require 'react'
 H = React.DOM
 R = React.createElement
@@ -13,16 +14,16 @@ AquagenxCBTDisplayComponent = require './AquagenxCBTDisplayComponent'
 # Based on https://www.aquagenx.com/wp-content/uploads/2013/12/Aquagenx-CBT-Instructions-v3.pdf
 module.exports = class AquagenxCBTAnswerComponent extends React.Component
   @contextTypes:
-    imageManager: React.PropTypes.object.isRequired
-    imageAcquirer: React.PropTypes.object
-    T: React.PropTypes.func.isRequired  # Localizer to use
+    imageManager: PropTypes.object.isRequired
+    imageAcquirer: PropTypes.object
+    T: PropTypes.func.isRequired  # Localizer to use
 
   @propTypes:
     # Value contains two entries: image and cbt
     # The cbt data contain c1,c2,c3,c4,c5 (All booleans) + healthRisk(String) + mpn (Number) + confidence(Number)
-    value: React.PropTypes.object
-    onValueChange: React.PropTypes.func.isRequired
-    questionId: React.PropTypes.string.isRequired
+    value: PropTypes.object
+    onValueChange: PropTypes.func.isRequired
+    questionId: PropTypes.string.isRequired
 
   @defaultProps:
     value: {image: null, cbt: null}

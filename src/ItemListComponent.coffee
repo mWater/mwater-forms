@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 H = React.DOM
@@ -9,13 +10,13 @@ formRenderUtils = require './formRenderUtils'
 # Display a list of items
 module.exports = class ItemListComponent extends React.Component
   @propTypes:
-    contents: React.PropTypes.array.isRequired 
-    data: React.PropTypes.object      # Current data of response (for roster entry if in roster)
-    responseRow: React.PropTypes.object.isRequired    # ResponseRow object (for roster entry if in roster)
-    onDataChange: React.PropTypes.func.isRequired
-    onNext: React.PropTypes.func
-    isVisible: React.PropTypes.func.isRequired # (id) tells if an item is visible or not
-    schema: React.PropTypes.object.isRequired  # Schema to use, including form
+    contents: PropTypes.array.isRequired 
+    data: PropTypes.object      # Current data of response (for roster entry if in roster)
+    responseRow: PropTypes.object.isRequired    # ResponseRow object (for roster entry if in roster)
+    onDataChange: PropTypes.func.isRequired
+    onNext: PropTypes.func
+    isVisible: PropTypes.func.isRequired # (id) tells if an item is visible or not
+    schema: PropTypes.object.isRequired  # Schema to use, including form
 
   validate: (scrollToFirstInvalid) ->
     foundInvalid = false

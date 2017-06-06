@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 React = require 'react'
 H = React.DOM
 R = React.createElement
@@ -9,9 +10,9 @@ formUtils = require '../formUtils'
 
 module.exports = class CheckAnswerComponent extends React.Component
   @propTypes:
-    value: React.PropTypes.bool
-    onValueChange: React.PropTypes.func.isRequired
-    label: React.PropTypes.object.isRequired
+    value: PropTypes.bool
+    onValueChange: PropTypes.func.isRequired
+    label: PropTypes.object.isRequired
 
   @defaultProps:
     value: false

@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 H = React.DOM
@@ -7,16 +8,16 @@ AdminRegionSelectComponent = require '../AdminRegionSelectComponent'
 # Displays a gps, map and manual select
 module.exports = class AdminRegionAnswerComponent extends React.Component
   @contextTypes:
-    locationFinder: React.PropTypes.object
-    displayMap: React.PropTypes.func # Takes location ({ latitude, etc.}) and callback (called back with new location)
-    getAdminRegionPath: React.PropTypes.func.isRequired # Call with (id, callback). Callback (error, [{ id:, level: <e.g. 1>, name: <e.g. Manitoba>, type: <e.g. Province>}] in level ascending order)
-    getSubAdminRegions: React.PropTypes.func.isRequired # Call with (id, callback). Callback (error, [{ id:, level: <e.g. 1>, name: <e.g. Manitoba>, type: <e.g. Province>}] of admin regions directly under the specified id)
-    findAdminRegionByLatLng: React.PropTypes.func.isRequired # Call with (lat, lng, callback). Callback (error, id)
-    T: React.PropTypes.func.isRequired  # Localizer to use
+    locationFinder: PropTypes.object
+    displayMap: PropTypes.func # Takes location ({ latitude, etc.}) and callback (called back with new location)
+    getAdminRegionPath: PropTypes.func.isRequired # Call with (id, callback). Callback (error, [{ id:, level: <e.g. 1>, name: <e.g. Manitoba>, type: <e.g. Province>}] in level ascending order)
+    getSubAdminRegions: PropTypes.func.isRequired # Call with (id, callback). Callback (error, [{ id:, level: <e.g. 1>, name: <e.g. Manitoba>, type: <e.g. Province>}] of admin regions directly under the specified id)
+    findAdminRegionByLatLng: PropTypes.func.isRequired # Call with (lat, lng, callback). Callback (error, id)
+    T: PropTypes.func.isRequired  # Localizer to use
 
   @propTypes:
-    value: React.PropTypes.string     # id of admin region
-    onChange: React.PropTypes.func.isRequired  # Called with new id
+    value: PropTypes.string     # id of admin region
+    onChange: PropTypes.func.isRequired  # Called with new id
 
   constructor: ->
     super

@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 React = require 'react'
 H = React.DOM
 R = React.createElement
@@ -6,32 +7,32 @@ formUtils = require '../formUtils'
 
 module.exports = class LikertAnswerComponent extends React.Component
   @contextTypes:
-    locale: React.PropTypes.string  # Current locale (e.g. "en")
+    locale: PropTypes.string  # Current locale (e.g. "en")
 
   @propTypes:
-    choices: React.PropTypes.arrayOf(React.PropTypes.shape({
+    choices: PropTypes.arrayOf(PropTypes.shape({
       # Unique (within the question) id of the choice. Cannot be "na" or "dontknow" as they are reserved for alternates
-      id: React.PropTypes.string.isRequired
+      id: PropTypes.string.isRequired
 
       # Label of the choice, localized
-      label: React.PropTypes.object.isRequired
+      label: PropTypes.object.isRequired
 
       # Hint associated with a choice
-      hint: React.PropTypes.object
+      hint: PropTypes.object
     })).isRequired
-    choices: React.PropTypes.arrayOf(React.PropTypes.shape({
+    choices: PropTypes.arrayOf(PropTypes.shape({
       # Unique (within the question) id of the choice. Cannot be "na" or "dontknow" as they are reserved for alternates
-      id: React.PropTypes.string.isRequired
+      id: PropTypes.string.isRequired
 
       # Label of the choice, localized
-      label: React.PropTypes.object.isRequired
+      label: PropTypes.object.isRequired
 
       # Hint associated with a choice
-      hint: React.PropTypes.object
+      hint: PropTypes.object
     })).isRequired
-    onAnswerChange: React.PropTypes.func.isRequired
-    answer: React.PropTypes.object.isRequired # See answer format
-    data: React.PropTypes.object.isRequired
+    onAnswerChange: PropTypes.func.isRequired
+    answer: PropTypes.object.isRequired # See answer format
+    data: PropTypes.object.isRequired
 
   focus: () ->
     # Nothing to focus

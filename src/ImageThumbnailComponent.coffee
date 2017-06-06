@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 React = require 'react'
 H = React.DOM
 R = React.createElement
@@ -6,9 +7,9 @@ AsyncLoadComponent = require('react-library/lib/AsyncLoadComponent')
 # Displays a thumbnail of an image
 module.exports = class ImageThumbnailComponent extends AsyncLoadComponent 
   @propTypes: 
-    imageManager: React.PropTypes.object.isRequired
-    imageId: React.PropTypes.string.isRequired
-    onClick: React.PropTypes.func
+    imageManager: PropTypes.object.isRequired
+    imageId: PropTypes.string.isRequired
+    onClick: PropTypes.func
 
   # Override to determine if a load is needed. Not called on mounting
   isLoadNeeded: (newProps, oldProps) ->

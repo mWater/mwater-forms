@@ -1,3 +1,4 @@
+PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 H = React.DOM
@@ -8,16 +9,16 @@ formUtils = require './formUtils'
 # A group is a list of questions/other items that can have a common condition and a header
 module.exports = class GroupComponent extends React.Component
   @contextTypes:
-    locale: React.PropTypes.string
+    locale: PropTypes.string
 
   @propTypes:
-    group: React.PropTypes.object.isRequired # Design of group. See schema
-    data: React.PropTypes.object      # Current data of response (for roster entry if in roster)
-    responseRow: React.PropTypes.object    # ResponseRow object (for roster entry if in roster)
-    onDataChange: React.PropTypes.func.isRequired   # Called when data changes
-    isVisible: React.PropTypes.func.isRequired # (id) tells if an item is visible or not
-    onNext: React.PropTypes.func.isRequired   # Called when moving out of the GroupComponent questions
-    schema: React.PropTypes.object.isRequired  # Schema to use, including form
+    group: PropTypes.object.isRequired # Design of group. See schema
+    data: PropTypes.object      # Current data of response (for roster entry if in roster)
+    responseRow: PropTypes.object    # ResponseRow object (for roster entry if in roster)
+    onDataChange: PropTypes.func.isRequired   # Called when data changes
+    isVisible: PropTypes.func.isRequired # (id) tells if an item is visible or not
+    onNext: PropTypes.func.isRequired   # Called when moving out of the GroupComponent questions
+    schema: PropTypes.object.isRequired  # Schema to use, including form
 
   validate: (scrollToFirstInvalid) ->
     return @refs.itemlist.validate(scrollToFirstInvalid)
