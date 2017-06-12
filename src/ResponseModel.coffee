@@ -196,7 +196,7 @@ module.exports = class ResponseModel
     # Determine deployment
     deployment = _.findWhere(@form.deployments, { _id: @response.deployment })
     if not deployment
-      throw new Error("No matching deployments for #{@form._id} user #{@username}")
+      throw new Error("Deployment #{@response.deployment} not found for form #{@form._id}")
 
     # If deleted, no viewers
     if @form.state == "deleted"
