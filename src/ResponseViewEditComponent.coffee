@@ -41,7 +41,7 @@ module.exports = class ResponseViewEditComponent extends React.Component
 
   handleApprove: =>
     # TODO no longer needed if response model becomes immutable
-    response = _.cloneDeep(response)
+    response = _.cloneDeep(@props.response)
     responseModel = @createResponseModel(response)
 
     if not responseModel.canApprove()
@@ -52,7 +52,7 @@ module.exports = class ResponseViewEditComponent extends React.Component
 
   handleReject: =>
     # TODO no longer needed if response model becomes immutable
-    response = _.cloneDeep(response)
+    response = _.cloneDeep(@props.response)
     responseModel = @createResponseModel(response)
 
     if not responseModel.canReject()
@@ -67,7 +67,7 @@ module.exports = class ResponseViewEditComponent extends React.Component
 
   handleUnreject: =>
     # TODO no longer needed if response model becomes immutable
-    response = _.cloneDeep(response)
+    response = _.cloneDeep(@props.response)
     responseModel = @createResponseModel(response)
 
     if not responseModel.canSubmit(@props.response)
@@ -90,7 +90,7 @@ module.exports = class ResponseViewEditComponent extends React.Component
 
   handleSubmit: =>
     # TODO no longer needed if response model becomes immutable
-    response = _.cloneDeep(response)
+    response = _.cloneDeep(@props.response)
     responseModel = @createResponseModel(response)
 
     # Draft if done by enumerator
