@@ -70,7 +70,7 @@ module.exports = class EntitySchemaBuilder
             type: "n-1"
             toTable: prop.idTable
             fromColumn: prop.id
-            toColumn: "_id"
+            toColumn: schema.getTable(prop.idTable)?.primaryKey or "_id"
           }
           delete prop.idTable
 
