@@ -19,8 +19,7 @@ module.exports = class DateTimePickerComponent extends React.Component
     showTodayButton: PropTypes.bool # Show the today button
     showClear: PropTypes.bool # Show the clear button
 
-    # callback on date change
-    # argument: {date: moment object for currently selected datetime, oldDate: moment object for previous datetime}
+    # callback on date change (argument: moment date)
     onChange: PropTypes.func
 
     # date as moment
