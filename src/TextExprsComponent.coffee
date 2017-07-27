@@ -42,7 +42,7 @@ module.exports = class TextExprsComponent extends React.Component
 
     # Evaluate each expression
     async.map @props.exprs, (expr, cb) =>
-      new ExprEvaluator().evaluate expr, { row: @props.responseRow }, (error, value) =>      
+      new ExprEvaluator(@props.schema).evaluate expr, { row: @props.responseRow }, (error, value) =>      
         if error
           return cb(null, "<error>")
 
