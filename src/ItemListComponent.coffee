@@ -17,9 +17,6 @@ module.exports = class ItemListComponent extends React.Component
     onNext: PropTypes.func
     isVisible: PropTypes.func.isRequired # (id) tells if an item is visible or not
     schema: PropTypes.object.isRequired  # Schema to use, including form
-
-  @contextTypes:
-    disableConfidentialFields: PropTypes.bool
     
   validate: (scrollToFirstInvalid) ->
     foundInvalid = false
