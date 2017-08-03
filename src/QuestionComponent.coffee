@@ -295,13 +295,14 @@ module.exports = class QuestionComponent extends React.Component
   renderAnswer: ->
     answer = @getAnswer()
     readonly = @context.disableConfidentialFields and @props.question.confidential 
+
     switch @props.question._type
       when "TextQuestion"
         return R TextAnswerComponent, {
           ref: "answer"
           value: answer.value
           format: @props.question.format
-          readonly: readonly
+          readOnly: readonly
           onValueChange: @handleValueChange
           onNextOrComments: @handleNextOrComments
         }
@@ -310,7 +311,7 @@ module.exports = class QuestionComponent extends React.Component
         return R NumberAnswerComponent, {
           ref: "answer"
           value: answer.value
-          onChange: @handleValueChange
+          onChange: if not readonly then @handleValueChange
           decimal: @props.question.decimal
           onNextOrComments: @handleNextOrComments
         }

@@ -11,7 +11,7 @@ module.exports = class NumberAnswerComponent extends React.Component
   @propTypes:
     decimal: PropTypes.bool.isRequired
     value: PropTypes.number
-    onChange: PropTypes.func.isRequired
+    onChange: PropTypes.func
     style: PropTypes.object     # Will be merged with style of input box
     small: PropTypes.bool       # True to render with input-sm
     onNextOrComments: PropTypes.func
