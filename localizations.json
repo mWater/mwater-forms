@@ -511,6 +511,10 @@
     {
       "_base": "en",
       "en": "IP Address"
+    },
+    {
+      "_base": "en",
+      "en": "Confidential answers may not be edited."
     }
   ]
 }
