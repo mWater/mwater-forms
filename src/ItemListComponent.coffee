@@ -17,7 +17,7 @@ module.exports = class ItemListComponent extends React.Component
     onNext: PropTypes.func
     isVisible: PropTypes.func.isRequired # (id) tells if an item is visible or not
     schema: PropTypes.object.isRequired  # Schema to use, including form
-
+    
   validate: (scrollToFirstInvalid) ->
     foundInvalid = false
     for item in @props.contents
@@ -25,6 +25,7 @@ module.exports = class ItemListComponent extends React.Component
       if @refs[item._id]?.validate?(scrollToFirstInvalid and not foundInvalid)
         # DO NOT BREAK, it's important to call validate on each item
         foundInvalid = true
+
     return foundInvalid
 
   handleNext: (index) ->

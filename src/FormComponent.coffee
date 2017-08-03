@@ -39,10 +39,12 @@ module.exports = class FormComponent extends React.Component
     entityType: PropTypes.string        # Type of form-level entity to load
 
     singlePageMode: PropTypes.bool      # True to render as a single page, not divided into sections
+    disableConfidentialFields: PropTypes.bool # True to disable the confidential fields, used during editing responses with confidential data
 
   @childContextTypes: _.extend({}, require('./formContextTypes'), {
     T: PropTypes.func.isRequired
     locale: PropTypes.string          # e.g. "fr"
+    disableConfidentialFields: PropTypes.bool
   })
 
   constructor: (props) ->
@@ -57,6 +59,7 @@ module.exports = class FormComponent extends React.Component
     _.extend({}, @props.formCtx, {
       T: @state.T
       locale: @props.locale
+      disableConfidentialFields: @props.disableConfidentialFields
     })
 
   componentWillReceiveProps: (nextProps) ->
