@@ -163,6 +163,10 @@ module.exports = class QuestionComponent extends React.Component
       @handleCurrentPositionFound(status.pos)
 
   handleAnswerChange: (newAnswer) =>
+    readonly = @context.disableConfidentialFields and @props.question.confidential 
+    if readonly
+      return
+
     oldAnswer = @getAnswer()
     if @props.question.sticky and @context.stickyStorage? and newAnswer.value?
       # TODO: SurveyorPro: What should happen if value is set to null?
@@ -297,7 +301,8 @@ module.exports = class QuestionComponent extends React.Component
           ref: "answer"
           value: answer.value
           format: @props.question.format
-          onValueChange: if readonly then null else @handleValueChange
+          readonly: readonly
+          onValueChange: @handleValueChange
           onNextOrComments: @handleNextOrComments
         }
 
@@ -305,7 +310,7 @@ module.exports = class QuestionComponent extends React.Component
         return R NumberAnswerComponent, {
           ref: "answer"
           value: answer.value
-          onChange: if readonly then null else @handleValueChange
+          onChange: @handleValueChange
           decimal: @props.question.decimal
           onNextOrComments: @handleNextOrComments
         }
@@ -316,7 +321,7 @@ module.exports = class QuestionComponent extends React.Component
           choices: @props.question.choices
           answer: answer
           data: @props.data
-          onAnswerChange: if readonly then null else @handleAnswerChange
+          onAnswerChange: @handleAnswerChange
         }
 
       when "LikertQuestion"
@@ -326,7 +331,7 @@ module.exports = class QuestionComponent extends React.Component
           choices: @props.question.choices
           answer: answer
           data: @props.data
-          onAnswerChange: if readonly then null else @handleAnswerChange
+          onAnswerChange: @handleAnswerChange
         }
 
       when "RadioQuestion"
@@ -335,7 +340,7 @@ module.exports = class QuestionComponent extends React.Component
           choices: @props.question.choices
           answer: answer
           data: @props.data
-          onAnswerChange: if readonly then null else @handleAnswerChange
+          onAnswerChange: @handleAnswerChange
         }
 
       when "MulticheckQuestion"
@@ -344,14 +349,14 @@ module.exports = class QuestionComponent extends React.Component
           choices: @props.question.choices
           data: @props.data
           answer: answer
-          onAnswerChange: if readonly then null else @handleAnswerChange
+          onAnswerChange: @handleAnswerChange
         }
 
       when "DateQuestion"
         return R DateAnswerComponent, {
           ref: "answer"
           value: answer.value
-          onValueChange: if readonly then null else @handleValueChange
+          onValueChange: @handleValueChange
           format: @props.question.format
           placeholder: @props.question.placeholder
           onNextOrComments: @handleNextOrComments
@@ -361,7 +366,7 @@ module.exports = class QuestionComponent extends React.Component
         return R UnitsAnswerComponent, {
           ref: "answer"
           answer: answer
-          onValueChange: if readonly then null else @handleValueChange
+          onValueChange: @handleValueChange
           units: @props.question.units
           defaultUnits: @props.question.defaultUnits
           prefix: @props.question.unitsPosition == 'prefix'
@@ -377,21 +382,21 @@ module.exports = class QuestionComponent extends React.Component
         return R LocationAnswerComponent, {
           ref: "answer"
           value: answer.value
-          onValueChange: if readonly then null else @handleValueChange
+          onValueChange: @handleValueChange
         }
 
       when "ImageQuestion"
         return R ImageAnswerComponent,
           ref: "answer"
           image: answer.value
-          onImageChange: if readonly then null else @handleValueChange
+          onImageChange: @handleValueChange
           consentPrompt: if @props.question.consentPrompt then formUtils.localizeString(@props.question.consentPrompt, @context.locale)
 
       when "ImagesQuestion"
         return R ImagesAnswerComponent, {
           ref: "answer"
           imagelist: answer.value
-          onImagelistChange: if readonly then null else @handleValueChange
+          onImagelistChange: @handleValueChange
           consentPrompt: if @props.question.consentPrompt then formUtils.localizeString(@props.question.consentPrompt, @context.locale)
         }
 
@@ -399,7 +404,7 @@ module.exports = class QuestionComponent extends React.Component
         return R TextListAnswerComponent, {
           ref: "answer"
           value: answer.value
-          onValueChange: if readonly then null else @handleValueChange
+          onValueChange: @handleValueChange
           onNextOrComments: @handleNextOrComments
         }
 
@@ -407,7 +412,7 @@ module.exports = class QuestionComponent extends React.Component
         return R SiteAnswerComponent, {
           ref: "answer"
           value: answer.value
-          onValueChange: if readonly then null else @handleValueChange
+          onValueChange: @handleValueChange
           siteTypes: @props.question.siteTypes
         }
 
@@ -415,7 +420,7 @@ module.exports = class QuestionComponent extends React.Component
         return R BarcodeAnswerComponent, {
           ref: "answer"
           value: answer.value
-          onValueChange: if readonly then null else @handleValueChange
+          onValueChange: @handleValueChange
         }
 
       when "EntityQuestion"
@@ -423,21 +428,21 @@ module.exports = class QuestionComponent extends React.Component
           ref: "answer"
           value: answer.value
           entityType: @props.question.entityType
-          onValueChange: if readonly then null else @handleValueChange
+          onValueChange: @handleValueChange
         }
 
       when "AdminRegionQuestion"
         return R AdminRegionAnswerComponent, {
           ref: "answer"
           value: answer.value
-          onChange: if readonly then null else @handleValueChange
+          onChange: @handleValueChange
         }
 
       when "StopwatchQuestion"
         return R StopwatchAnswerComponent, {
           ref: "answer"
           value: answer.value
-          onValueChange: if readonly then null else @handleValueChange
+          onValueChange: @handleValueChange
           T: @context.T
         }
 
@@ -445,7 +450,7 @@ module.exports = class QuestionComponent extends React.Component
         return R MatrixAnswerComponent, {
           ref: "answer"
           value: answer.value
-          onValueChange: if readonly then null else @handleValueChange
+          onValueChange: @handleValueChange
           alternate: answer.alternate
           items: @props.question.items
           columns: @props.question.columns
@@ -458,7 +463,7 @@ module.exports = class QuestionComponent extends React.Component
         return R AquagenxCBTAnswerComponent, {
           ref: "answer"
           value: answer.value
-          onValueChange: if readonly then null else @handleValueChange
+          onValueChange: @handleValueChange
           questionId: @props.question._id
         }
 
