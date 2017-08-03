@@ -40,9 +40,6 @@ module.exports = class ItemListComponent extends React.Component
       @refs[@props.contents[index]._id]?.focus?()
 
   renderItem: (item, index) =>
-    # if @props.disableConfidentialFields and item.confidential
-    #   return null
-
     if @props.isVisible(item._id) and not item.disabled
       formRenderUtils.renderItem(item, @props.data, @props.responseRow, @props.schema, @props.onDataChange, @props.isVisible, @handleNext.bind(this, index))
 
