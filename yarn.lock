@@ -1297,6 +1297,14 @@ create-hmac@^1.1.0, create-hmac@^1.1.2, create-hmac@^1.1.4:
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
 
+create-react-class@^15.6.0:
+  version "15.6.0"
+  resolved "https://registry.yarnpkg.com/create-react-class/-/create-react-class-15.6.0.tgz#ab448497c26566e1e29413e883207d57cfe7bed4"
+  dependencies:
+    fbjs "^0.8.9"
+    loose-envify "^1.3.1"
+    object-assign "^4.1.1"
+
 cryptiles@2.x.x:
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/cryptiles/-/cryptiles-2.0.5.tgz#3bdfecdc608147c1c67202fa291e7dca59eaa3b8"
@@ -4741,20 +4749,30 @@ react-dom@^15.0.1:
     object-assign "^4.1.0"
     prop-types "~15.5.7"
 
+react-dom@^15.5.1:
+  version "15.6.1"
+  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-15.6.1.tgz#2cb0ed4191038e53c209eb3a79a23e2a4cf99470"
+  dependencies:
+    fbjs "^0.8.9"
+    loose-envify "^1.1.0"
+    object-assign "^4.1.0"
+    prop-types "^15.5.10"
+
 "react-library@github:mwater/react-library":
-  version "1.13.0"
-  resolved "https://codeload.github.com/mwater/react-library/tar.gz/eefc6578db9c94b5ea212108966131ade74f1bfa"
+  version "1.13.3"
+  resolved "https://codeload.github.com/mwater/react-library/tar.gz/6542faf5c977dfaaf6b78a032f565584a5b635c1"
   dependencies:
     async "^1.5.0"
     classnames "^2.2.1"
     lodash "^3.10.1"
     object-assign "^4.1.0"
     object-path-immutable "^0.5.1"
-    react "^15.0.1"
+    prop-types "^15.5.10"
+    react "^15.5.1"
     react-bootstrap "^0.30.3"
     react-dnd "^2.1.4"
     react-dnd-html5-backend "^2.1.2"
-    react-dom "^15.0.1"
+    react-dom "^15.5.1"
     react-overlays "^0.5.4"
     to-px "^1.0.1"
     uuid "^3.0.1"
@@ -4797,6 +4815,16 @@ react@^15.0.1:
     loose-envify "^1.1.0"
     object-assign "^4.1.0"
     prop-types "^15.5.7"
+
+react@^15.5.1:
+  version "15.6.1"
+  resolved "https://registry.yarnpkg.com/react/-/react-15.6.1.tgz#baa8434ec6780bde997cdc380b79cd33b96393df"
+  dependencies:
+    create-react-class "^15.6.0"
+    fbjs "^0.8.9"
+    loose-envify "^1.1.0"
+    object-assign "^4.1.0"
+    prop-types "^15.5.10"
 
 read-only-stream@^1.1.1:
   version "1.1.1"

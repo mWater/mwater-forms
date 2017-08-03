@@ -8,6 +8,9 @@ ui = require 'react-library/lib/bootstrap'
 
 # Number input component that handles parsing and maintains state when number is invalid
 module.exports = class NumberAnswerComponent extends React.Component
+  @contextTypes:
+    disableConfidentialFields: PropTypes.bool
+
   @propTypes:
     decimal: PropTypes.bool.isRequired
     value: PropTypes.number

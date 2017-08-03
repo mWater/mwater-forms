@@ -18,13 +18,18 @@ module.exports = class ItemListComponent extends React.Component
     isVisible: PropTypes.func.isRequired # (id) tells if an item is visible or not
     schema: PropTypes.object.isRequired  # Schema to use, including form
 
+  @contextTypes:
+    disableConfidentialFields: PropTypes.bool
+    
   validate: (scrollToFirstInvalid) ->
     foundInvalid = false
     for item in @props.contents
       # Only if validation is possible
       if @refs[item._id]?.validate?(scrollToFirstInvalid and not foundInvalid)
+        console.log(item)
         # DO NOT BREAK, it's important to call validate on each item
         foundInvalid = true
+
     return foundInvalid
 
   handleNext: (index) ->
@@ -35,6 +40,9 @@ module.exports = class ItemListComponent extends React.Component
       @refs[@props.contents[index]._id]?.focus?()
 
   renderItem: (item, index) =>
+    # if @props.disableConfidentialFields and item.confidential
+    #   return null
+
     if @props.isVisible(item._id) and not item.disabled
       formRenderUtils.renderItem(item, @props.data, @props.responseRow, @props.schema, @props.onDataChange, @props.isVisible, @handleNext.bind(this, index))
 
