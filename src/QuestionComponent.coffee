@@ -264,10 +264,10 @@ module.exports = class QuestionComponent extends React.Component
 
   renderHint: ->
     H.div null,
-    if @props.question.hint
-      H.div className: "text-muted", formUtils.localizeString(@props.question.hint, @context.locale)
-    if @context.disableConfidentialFields and @props.question.confidential
-      H.div className: "text-muted", @context.T("Confidential answers may not be edited.")
+      if @props.question.hint
+        H.div className: "text-muted", formUtils.localizeString(@props.question.hint, @context.locale)
+      if @context.disableConfidentialFields and @props.question.confidential
+        H.div className: "text-muted", @context.T("Confidential answers may not be edited.")
 
   renderHelp: ->
     if @state.helpVisible and @props.question.help
