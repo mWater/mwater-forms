@@ -23,6 +23,7 @@ module.exports = class ResponseModel
     @response._id = formUtils.createUid()
     @response.form = @form._id
     @response.user = @user
+    @response.username = @username
     @response.startedOn = new Date().toISOString()
     @response.data = {}
     @response.approvals = []
