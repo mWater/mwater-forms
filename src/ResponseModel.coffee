@@ -308,6 +308,10 @@ module.exports = class ResponseModel
     if @response.status in ['draft', 'rejected'] and @response.user
       admins = _.union(admins, ["user:#{@response.user}"])
 
+    # Add enumerator if final and enumeratorAdminFinal
+    if @response.status == "final" and @response.user and deployment.enumeratorAdminFinal
+      admins = _.union(admins, ["user:#{@response.user}"])      
+
     subjects = ["user:" + @user, "all"]
     subjects = subjects.concat(_.map @groups, (g) -> "group:" + g)
 
@@ -315,7 +319,27 @@ module.exports = class ResponseModel
 
   # Determine if can edit response
   canEdit: ->
-    return @canDelete()
+    deployment = _.findWhere(@form.deployments, { _id: @response.deployment })
+    if not deployment
+      throw new Error("No matching deployments for #{@form._id} user #{@username}")
+
+    # Get list of admins at both deployment and form level 
+    admins = _.union(_.pluck(_.where(@form.roles, { role: "admin"}), "id"), deployment.admins)
+
+    # Add approvers if level allows editing
+    if @response.status == "pending"
+      approvalStage = deployment.approvalStages[@response.approvals.length]
+      if approvalStage? and not approvalStage.preventEditing
+        admins = _.union(admins, approvalStage.approvers)
+
+    # Add enumerator if in draft or rejected (can delete but not edit)
+    if @response.status in ['draft', 'rejected'] and @response.user
+      admins = _.union(admins, ["user:#{@response.user}"])
+
+    subjects = ["user:" + @user, "all"]
+    subjects = subjects.concat(_.map @groups, (g) -> "group:" + g)
+
+    return _.intersection(admins, subjects).length > 0
 
   # Determine if can switch back to draft phase. Only enumerators can do this and only if pending, rejected, draft or enumerators can edit final
   canRedraft: ->

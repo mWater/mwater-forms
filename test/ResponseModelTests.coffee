@@ -535,6 +535,14 @@ describe "ResponseModel", ->
       @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep2en1"])
       assert not @model.canDelete()
 
+    it "can delete final if enumerator and enumeratorAdminFinal", ->
+      @model.submit()
+      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
+      @model.approve()
+      @form.deployments[0].enumeratorAdminFinal = true
+      @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep2en1"])
+      assert @model.canDelete()
+
     it "can delete pending if approver with preventEditing=false or null", ->
       @model.submit()
       @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
@@ -585,6 +593,14 @@ describe "ResponseModel", ->
       @model.submit()
       @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
       @model.approve()
+      @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep2en1"])
+      assert not @model.canEdit()
+
+    it "can edit final if enumerator and even if enumeratorAdminFinal", ->
+      @model.submit()
+      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
+      @model.approve()
+      @form.deployments[0].enumeratorAdminFinal = true
       @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep2en1"])
       assert not @model.canEdit()
 
