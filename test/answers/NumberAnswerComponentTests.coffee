@@ -68,3 +68,23 @@ describe 'NumberAnswerComponent', ->
     input = comp.findInput()
     TestComponent.changeValue(input, "123.4")
     ReactTestUtils.Simulate.blur(input)
+
+  it "validates decimal number", ->
+    comp = @render({
+      decimal: true
+      onChange: ->
+    })
+    input = comp.findInput()
+    TestComponent.changeValue(input, "123.4")
+    ReactTestUtils.Simulate.blur(input)
+    assert not comp.getComponent().validate()
+
+  it "fails validation if invalid whole number", ->
+    comp = @render({
+      decimal: false
+      onChange: ->
+    })
+    input = comp.findInput()
+    TestComponent.changeValue(input, "123abc")
+    ReactTestUtils.Simulate.blur(input)
+    assert comp.getComponent().validate()

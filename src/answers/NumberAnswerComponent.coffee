@@ -19,9 +19,14 @@ module.exports = class NumberAnswerComponent extends React.Component
   focus: ->
     @input?.focus()
 
+  validate: ->
+    if not @input.isValid()
+      return "Invalid number"
+    return null
+
   render: ->
     R ui.NumberInput,
-      ref: (c) -> @input = c
+      ref: (c) => @input = c
       decimal: @props.decimal
       value: @props.value
       onChange: @props.onChange
