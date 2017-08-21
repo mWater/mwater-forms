@@ -37,7 +37,7 @@ module.exports = class ResponseViewEditComponent extends React.Component
 
   # Create a response model
   createResponseModel: (response) ->
-    responseModel = new ResponseModel(response: response, form: @props.form, user: @props.login.user, username: @props.login.username, groups: @props.login.groups)
+    responseModel = new ResponseModel(response: response, form: @props.form, user: @props.login?.user, username: @props.login?.username, groups: @props.login?.groups)
 
   handleApprove: =>
     # TODO no longer needed if response model becomes immutable
@@ -155,7 +155,7 @@ module.exports = class ResponseViewEditComponent extends React.Component
         onDiscard: @handleDiscard)
     else
       # Determine if can edit
-      responseModel = new ResponseModel(response: @props.response, form: @props.form, user: @props.login.user, username: @props.login.username, groups: @props.login.groups)
+      responseModel = new ResponseModel(response: @props.response, form: @props.form, user: @props.login?.user, username: @props.login?.username, groups: @props.login?.groups)
 
       actions = H.div style: { width: "auto", float: "right", margin: 5 },
         @renderOperations()
