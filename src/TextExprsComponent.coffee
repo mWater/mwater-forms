@@ -55,7 +55,7 @@ module.exports = class TextExprsComponent extends React.Component
 
   render: ->
     # Localize string
-    str = formUtils.localizeString(@props.localizedStr, @props.locale)
+    str = formUtils.localizeString(@props.localizedStr, @props.locale) or ""
 
     # Perform substitutions ({0}, {1}, etc.)
     str = str.replace(/\{(\d+)\}/g, (match, index) =>
@@ -66,7 +66,7 @@ module.exports = class TextExprsComponent extends React.Component
     )
 
     if @props.markdown
-      html = if str then markdown.toHTML(str)
+      html = if str then markdown.toHTML(str) else ""
       
       # Make sure links are external
       html = html.replace(/<a href=/g, '<a target="_blank" href=')
