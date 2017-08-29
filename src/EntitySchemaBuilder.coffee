@@ -170,6 +170,15 @@ module.exports = class EntitySchemaBuilder
         contents: []
       })
 
+      # Add related indicators placeholder section
+      contents.push({
+        type: "section"
+        id: "!indicators" # Special section name
+        name: { en: "Related Indicators" }
+        desc: { en: "Indicators are standardized information that are related to this site" }
+        contents: []
+      })
+
       tableId = "entities.#{entityType.code}"
 
       # Add reverse join columns
