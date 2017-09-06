@@ -21,6 +21,7 @@ module.exports = class ResponseViewEditComponent extends React.Component
 
     onUpdateResponse: PropTypes.func.isRequired # Called when response is updated with new response
     onDeleteResponse: PropTypes.func.isRequired # Called when response is removed
+    onClose: PropTypes.func                     # Called when response is approved, rejected, unrejected or deleted
 
     schema: PropTypes.object.isRequired # Schema, including the form
     locale: PropTypes.string # The locale to display the response in
@@ -49,6 +50,7 @@ module.exports = class ResponseViewEditComponent extends React.Component
 
     responseModel.approve()
     @props.onUpdateResponse(response)
+    @props.onClose?()
 
   handleReject: =>
     # TODO no longer needed if response model becomes immutable
@@ -64,6 +66,7 @@ module.exports = class ResponseViewEditComponent extends React.Component
 
     responseModel.reject(message)
     @props.onUpdateResponse(response)
+    @props.onClose?()
 
   handleUnreject: =>
     # TODO no longer needed if response model becomes immutable
@@ -75,12 +78,14 @@ module.exports = class ResponseViewEditComponent extends React.Component
 
     responseModel.submit()
     @props.onUpdateResponse(response)
+    @props.onClose?()
 
   handleDelete: () =>
     if not confirm("Permanently delete response?")
       return
 
     @props.onDeleteResponse()
+    @props.onClose?()
 
   handleDataChange: (data) => @setState(unsavedData: data)
   handleDiscard: => @setState(editMode: false, unsavedData: null)
