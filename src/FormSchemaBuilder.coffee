@@ -174,7 +174,7 @@ module.exports = class FormSchemaBuilder
     return schema
 
   # Adds a table which references master form data from master_responses table
-  addMasterForm: (schema, form, cloneForms) ->
+  addMasterForm: (schema, form, cloneForms, indicators) ->
     contents = []
 
     # Add user
