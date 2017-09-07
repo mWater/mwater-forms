@@ -1287,41 +1287,30 @@ describe "FormSchemaBuilder addForm", ->
   describe "indicator calculations", ->
     before ->
       # Indicator table with num1 and num2
-      indicatorTableWithTwoFields = {
-        id: "indicator_values:ind1",
-        name: { en: "Indicator1" }
-        primaryKey: "_id"
-        ordering: "datetime"
-        contents: [
-          {
-            id: "num1",
-            name: { en: "Number1" }
-            type: "number"
-            jsonql: {
-              type: "op",
-              op: "::decimal"
-              exprs: [{ type: "op", op: "->>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "num1"] }]
-            }
+      indicatorWithTwoFields = {
+        _id: "ind1"
+        design: {
+          name: { en: "Indicator1" }
+          properties: {
+            values: [
+              {
+                id: "num1",
+                name: { en: "Number1" }
+                type: "number"
+              }
+              {
+                id: "num2",
+                name: { en: "Number2" }
+                type: "number"
+              }
+            ]
           }
-          {
-            id: "num2",
-            name: { en: "Number2" }
-            type: "number"
-            jsonql: {
-              type: "op",
-              op: "::decimal"
-              exprs: [{ type: "op", op: "->>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "num2"] }]
-            }
-          }
-          {
-            id: "datetime"
-            name: { en: "Date" }
-            type: "datetime"
-          }
-        ]
+        }
       }
 
-      @schema = new Schema().addTable(indicatorTableWithTwoFields)
+      @indicators = [indicatorWithTwoFields]
+
+      @schema = new Schema()
 
     it "adds indicator calculations to section called Indicators", ->
       # Create form with number question and indicator calculation
@@ -1358,7 +1347,7 @@ describe "FormSchemaBuilder addForm", ->
           }
         ]
       }
-      schema = new FormSchemaBuilder().addForm(@schema, form)
+      schema = new FormSchemaBuilder().addForm(@schema, form, null, true, @indicators)
 
       # Check that indicators section exists
       assert.equal _.last(schema.getTable("responses:formid").contents).name.en, "Indicators"
@@ -1427,7 +1416,7 @@ describe "FormSchemaBuilder addForm", ->
           }
         ]
       }
-      schema = new FormSchemaBuilder().addForm(@schema, form)
+      schema = new FormSchemaBuilder().addForm(@schema, form, null, true, @indicators)
 
       # Check that indicator calculation added with condition
       compare(schema.getColumn("responses:formid", "indicator_calculation:ic1:num1"), {
@@ -1487,7 +1476,7 @@ describe "FormSchemaBuilder addForm", ->
           }
         ]
       }
-      schema = new FormSchemaBuilder().addForm(@schema, form)
+      schema = new FormSchemaBuilder().addForm(@schema, form, null, true, @indicators)
 
       # Check that indicator calculation not added
       assert.deepEqual schema.getColumn("responses:formid", "indicator_calculation:ic1:num1").jsonql, { type: "literal", value: null }
@@ -1541,7 +1530,7 @@ describe "FormSchemaBuilder addForm", ->
           }
         ]
       }
-      schema = new FormSchemaBuilder().addForm(@schema, form)
+      schema = new FormSchemaBuilder().addForm(@schema, form, null, true, @indicators)
 
       # Check that indicator calculation added
       compare(schema.getColumn("responses:formid", "indicator_calculation:ic2:num2"), {
@@ -1595,7 +1584,7 @@ describe "FormSchemaBuilder addForm", ->
         ]
       }
 
-      schema = new FormSchemaBuilder().addForm(@schema, form)
+      schema = new FormSchemaBuilder().addForm(@schema, form, null, true, @indicators)
 
       # Check that indicators section exists
       assert.equal _.last(schema.getTable("responses:formid:roster:roster1").contents).name.en, "Indicators"

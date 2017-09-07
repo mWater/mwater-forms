@@ -13,7 +13,8 @@ healthRiskEnum = require('./answers/aquagenxCBTUtils').healthRiskEnum
 # Adds a form to a mwater-expressions schema
 module.exports = class FormSchemaBuilder
   # Pass clone forms if a master form
-  addForm: (schema, form, cloneForms, isAdmin = true) ->
+  # indicators is at least all indicators referenced in indicator calculations. Can be empty and indicator calculations will be omitted
+  addForm: (schema, form, cloneForms, isAdmin = true, indicators) ->
     contents = []
     
     metadata = []
@@ -84,10 +85,10 @@ module.exports = class FormSchemaBuilder
 
     schema = @addCalculations(schema, form)
 
-    schema = @addIndicatorCalculations(schema, form, false)
+    schema = @addIndicatorCalculations(schema, form, indicators, false)
 
     if form.isMaster
-      schema = @addMasterForm(schema, form, cloneForms)
+      schema = @addMasterForm(schema, form, cloneForms, indicators)
 
     # Create table
     return schema
@@ -226,10 +227,10 @@ module.exports = class FormSchemaBuilder
       contents: contents
     })
 
-    schema = @addIndicatorCalculations(schema, form, true)
+    schema = @addIndicatorCalculations(schema, form, indicators, true)
 
   # Create a section in schema called Indicators with one subsection for each indicator calculated
-  addIndicatorCalculations: (schema, form, isMaster) ->
+  addIndicatorCalculations: (schema, form, indicators, isMaster) ->
     # If not calculations, don't add indicators section
     if not form.indicatorCalculations or form.indicatorCalculations.length == 0
       return schema
@@ -255,7 +256,7 @@ module.exports = class FormSchemaBuilder
 
       # Add to indicators section
       indicatorSectionContents = indicatorsSection.contents.slice()
-      indicatorCalculationSection = @createIndicatorCalculationSection(indicatorCalculation, schema, isMaster)
+      indicatorCalculationSection = @createIndicatorCalculationSection(indicatorCalculation, schema, indicators, isMaster)
       if indicatorCalculationSection
         indicatorSectionContents.push(indicatorCalculationSection)
 
@@ -270,31 +271,28 @@ module.exports = class FormSchemaBuilder
 
   # Create a subsection of Indicators for an indicator calculation.
   # isMaster uses master_response as row to compute from
-  createIndicatorCalculationSection: (indicatorCalculation, schema, isMaster) ->
-    # Get indicator table
-    indicTable = schema.getTable("indicator_values:#{indicatorCalculation.indicator}")
+  createIndicatorCalculationSection: (indicatorCalculation, schema, indicators, isMaster) ->
+    # Find indicator
+    indicator = _.findWhere(indicators, _id: indicatorCalculation.indicator)
 
     # If not found, probably don't have permission
-    if not indicTable
+    if not indicator
       return null
 
     # Create compiler
     exprCompiler = new ExprCompiler(schema)
 
-    # Map columns, replacing jsonql with compiled expression
-    contents = _.compact(_.map(indicTable.contents, (item) ->
-      return mapTree(item, (col) ->
-        # Sections are passed through
-        if col.type == "section"
-          return col
-
+    # Map properties
+    contents = []
+    for properties in _.values(indicator.design.properties)
+      for property in properties
         # If has expression already, skip it as we can't evaluate it easily at the form level
         # To do so, we'd need to replace the references to this indicator with the indicator calculations
         # and it would be quite messy
-        if col.expr
-          return null
+        if property.expr
+          continue
 
-        expression = indicatorCalculation.expressions[col.id]
+        expression = indicatorCalculation.expressions[property.id]
         condition = indicatorCalculation.condition
 
         # If master, hack expression to be from master_responses, not responses
@@ -305,52 +303,52 @@ module.exports = class FormSchemaBuilder
         if isMaster and condition
           condition = JSON.parse(JSON.stringify(condition).replace(/table":"responses:/g, "table\":\"master_responses:"))
 
-        # Joins are special. Only handle "n-1" joins (which are from id fields in original indicator properties)
-        if col.type == "join"
-          if col.join.type != "n-1"
-            return null
+        # Create column from property
+        column = _.extend({}, property, id: "indicator_calculation:#{indicatorCalculation._id}:#{property.id}")
 
+        # ids are special
+        if property.type == "id"
           # Compile to an jsonql of the id of the "to" table
           fromColumn = exprCompiler.compileExpr(expr: expression, tableAlias: "{alias}")
 
           # Create a join expression
-          toColumn = schema.getTable(col.join.toTable).primaryKey
+          toColumn = schema.getTable(property.idTable).primaryKey
 
-          col = update(col, { id: { $set: "indicator_calculation:#{indicatorCalculation._id}:#{col.id}" }, join: { 
-            fromColumn: { $set: fromColumn }
-            toColumn: { $set: toColumn }
-            }})
-          return col
+          column.type = "join"
+          column.join = {
+            type: "n-1"
+            toTable: property.idTable
+            fromColumn: fromColumn 
+            toColumn: toColumn
+          }
+
+          contents.push(column)
+          continue
 
         # If no expression, jsonql null should be explicit so it doesn't just think there is no jsonql specified
         if not expression
-          jsonql = { type: "literal", value: null }
-          col = update(col, { id: { $set: "indicator_calculation:#{indicatorCalculation._id}:#{col.id}" }, jsonql: { $set: jsonql }})
-          return col
+          column.jsonql = { type: "literal", value: null }
+        else
+          # Add condition if present
+          if condition
+            # Wrap in case statement
+            expression = {
+              type: "case"
+              table: expression.table
+              cases: [
+                when: condition
+                then: expression
+              ]
+            }
 
-        # Add condition if present
-        if condition
-          # Wrap in case statement
-          expression = {
-            type: "case"
-            table: expression.table
-            cases: [
-              when: condition
-              then: expression
-            ]
-          }
+          column.expr = expression
 
-        # Set expr, type and id, clearing jsonql
-        col = _.omit(update(col, { id: { $set: "indicator_calculation:#{indicatorCalculation._id}:#{col.id}" }, expr: { $set: expression }}), "jsonql")
-        return col
-        )
-      )
-    )
+        contents.push(column)
 
     # Create section
     section = {
       type: "section"
-      name: schema.getTable("indicator_values:#{indicatorCalculation.indicator}").name
+      name: indicator.design.name
       contents: contents
     }
 
