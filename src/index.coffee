@@ -27,6 +27,7 @@ exports.FormComponent = require './FormComponent'
 exports.formContextTypes = require './formContextTypes'
 exports.FormSchemaBuilder = require './FormSchemaBuilder'
 exports.EntitySchemaBuilder = require './EntitySchemaBuilder'
+exports.IndicatorSchemaBuilder = require './IndicatorSchemaBuilder'
 exports.AssignmentModel = require './AssignmentModel'
 
 exports.ResponseDataExprValueUpdater = require './ResponseDataExprValueUpdater'
