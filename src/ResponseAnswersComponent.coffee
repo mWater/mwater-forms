@@ -7,7 +7,7 @@ R = React.createElement
 formUtils = require './formUtils'
 moment = require 'moment'
 ezlocalize = require 'ez-localize'
-
+ui = require 'react-library/lib/bootstrap'
 AsyncLoadComponent = require('react-library/lib/AsyncLoadComponent')
 VisibilityCalculator = require './VisibilityCalculator'
 ResponseRow = require './ResponseRow'
@@ -31,6 +31,13 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
     locale: PropTypes.string # Defaults to english
     T: PropTypes.func.isRequired  # Localizer to use
     formCtx: PropTypes.object.isRequired    # Form context to use
+
+    prevData: PropTypes.object # Previous data
+    showPrevAnswers: PropTypes.bool
+    highlightChanges: PropTypes.bool
+    hideUnchangedAnswers: PropTypes.bool
+    showChangedLink: PropTypes.bool
+    onChangedLinkClick: PropTypes.func
 
   # Check if form design or data are different
   isLoadNeeded: (newProps, oldProps) ->
@@ -205,7 +212,7 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
           imageManager: @props.formCtx.imageManager
 
   # Special render on multiple rows
-  renderMatrixAnswer: (q, answer) ->
+  renderMatrixAnswer: (q, answer, prevAnswer) ->
     if not answer
       return null
     if answer.alternate
@@ -231,6 +238,21 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
               itemTd,
               H.td null,
                 H.span className: "label label-danger", "Invalid Choice"
+
+          if @props.showPrevAnswers and prevAnswer
+            choiceId = prevAnswer.value[item.id]
+            if choiceId?
+              choice = _.findWhere(q.choices, { id: choiceId })
+              if choice?
+                contents.push H.tr null,
+                  itemTd,
+                  H.td null,
+                    formUtils.localizeString(choice.label, @props.locale)
+              else
+                contents.push H.tr null,
+                  itemTd,
+                  H.td null,
+                    H.span className: "label label-danger", "Invalid Choice"
       return contents
     else
       return null
@@ -253,22 +275,63 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
     if @props.hideEmptyAnswers and not answer?.value? and not answer?.alternate
       return null
 
-    matrixAnswer = @renderMatrixAnswer(q, answer)
+    prevAnswer = null
+    trProps = 
+      key: dataId
+
+    if @props.showPrevAnswers and @props.prevData
+      if dataIds.length == 1
+        prevAnswer = @props.prevData[dataId]
+      else
+        prevRosterData = @props.prevData[dataIds[0]]
+        if prevRosterData.value?
+          prevRosterData = prevRosterData.value
+          prevAnswer = prevRosterData[dataIds[1]][dataIds[2]]
+        else
+          prevAnswer = prevRosterData[dataIds[1]].data[dataIds[2]]
+
+    matrixAnswer = @renderMatrixAnswer(q, answer, prevAnswer)
+
+    if prevAnswer
+      if not _.isEqual(prevAnswer.value, answer.value) 
+        if @props.highlightChanges
+          trProps['style'] = { background: '#ffd'}
+      else 
+        if @props.hideUnchangedAnswers
+          return matrixAnswer
 
     return [
-      H.tr key: dataId,
+      H.tr trProps,
         H.td key: "name", style: { width: "50%" },
           formUtils.localizeString(q.text, @props.locale)
         H.td key: "value",
-          if not matrixAnswer?
-            @renderAnswer(q, answer)
-          if answer and answer.timestamp
-            H.div null,
-              @props.T('Answered')
-              ": "
-              moment(answer.timestamp).format('llll')
-          if answer and answer.location
-            @renderLocation(answer.location)
+          H.div null,
+            if not matrixAnswer?
+              @renderAnswer(q, answer)
+            if answer and answer.timestamp
+              
+                @props.T('Answered')
+                ": "
+                moment(answer.timestamp).format('llll')
+            if answer and answer.location
+              @renderLocation(answer.location)
+            
+            if prevAnswer? and not _.isEqual(prevAnswer.value, answer.value) and @props.showChangedLink
+              # "asdasdasd"
+              H.a style: {float: 'right', display: 'inline-block', cursor: 'pointer'}, onClick: @props.onChangedLinkClick, key: 'view_change',
+                R ui.Icon, id: 'glyphicon-pencil', " bidsdas"
+
+        if @props.showPrevAnswers and @props.prevData
+          H.td key: "prevValue",
+            if not prevMatrixAnswer?
+              @renderAnswer(q, prevAnswer)
+            if prevAnswer and prevAnswer.timestamp
+              H.div null,
+                @props.T('Answered')
+                ": "
+                moment(prevAnswer.timestamp).format('llll')
+            if prevAnswer and prevAnswer.location
+              @renderLocation(prevAnswer.location)
       matrixAnswer
     ]
 
@@ -288,6 +351,7 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
     if not visibilityStructure[dataId]
       return
 
+    colspan = if (@props.showPrevAnswers and @props.prevData) then 3 else 2
     # Sections and Groups behave the same
     if item._type == "Section" or item._type == "Group"
       contents = _.map item.contents, (item) =>
@@ -302,7 +366,7 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
 
       return [
         H.tr key: item._id,
-          H.td colSpan: 2, style: { fontWeight: "bold" },
+          H.td colSpan: colspan, style: { fontWeight: "bold" },
             formUtils.localizeString(item.name, @props.locale)
         contents
       ]
@@ -336,10 +400,10 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
       # Get the questions of the other rosters referencing this one
       items = _.clone(item.contents)
       @collectItemsReferencingRoster(items, @props.formDesign.contents, item._id)
-
+      
       return [
         H.tr key: item._id,
-          H.td colSpan: 2, style: { fontWeight: "bold" },
+          H.td colSpan: colspan, style: { fontWeight: "bold" },
             formUtils.localizeString(item.name, @props.locale)
 
         if data?
@@ -359,7 +423,7 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
               [
                 # Display the index of the answer
                 H.tr null,
-                  H.td colSpan: 2, style: { fontWeight: "bold" },
+                  H.td colSpan: colspan, style: { fontWeight: "bold" },
                     "#{index+1}."
                 # And the answer for each question
                 contents
@@ -371,13 +435,13 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
       if answer?.value?
         rows = []
         rows.push H.tr key: item._id,
-          H.td colSpan: 2, style: { fontWeight: "bold" },
+          H.td colSpan: colspan, style: { fontWeight: "bold" },
             formUtils.localizeString(item.name, @props.locale)
         for rowItem in item.items
           itemValue = answer.value[rowItem.id]
           if itemValue
             rows.push H.tr null,
-              H.td colSpan: 2, style: { fontStyle: 'italic' },
+              H.td colSpan: colspan, style: { fontStyle: 'italic' },
                 formUtils.localizeString(rowItem.label, @props.locale)
             for column in item.columns
               if itemValue[column._id]
