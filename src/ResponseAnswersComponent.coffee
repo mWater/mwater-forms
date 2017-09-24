@@ -279,16 +279,17 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
     trProps = 
       key: dataId
 
-    if @props.showPrevAnswers and @props.prevData
+    if @props.showPrevAnswers? and @props.prevData
       if dataIds.length == 1
-        prevAnswer = @props.prevData[dataId]
+        prevAnswer = @props.prevData.data[dataId]
       else
-        prevRosterData = @props.prevData[dataIds[0]]
-        if prevRosterData.value?
-          prevRosterData = prevRosterData.value
-          prevAnswer = prevRosterData[dataIds[1]][dataIds[2]]
-        else
-          prevAnswer = prevRosterData[dataIds[1]].data[dataIds[2]]
+        prevRosterData = @props.prevData.data[dataIds[0]]
+        if prevRosterData?
+          if prevRosterData.value?
+            prevRosterData = prevRosterData.value
+            prevAnswer = prevRosterData[dataIds[1]][dataIds[2]]
+          else
+            prevAnswer = prevRosterData[dataIds[1]].data[dataIds[2]]
 
     matrixAnswer = @renderMatrixAnswer(q, answer, prevAnswer)
 
@@ -317,7 +318,6 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
               @renderLocation(answer.location)
             
             if prevAnswer? and not _.isEqual(prevAnswer.value, answer.value) and @props.showChangedLink
-              # "asdasdasd"
               H.a style: {float: 'right', display: 'inline-block', cursor: 'pointer'}, onClick: @props.onChangedLinkClick, key: 'view_change',
                 R ui.Icon, id: 'glyphicon-pencil', " bidsdas"
 

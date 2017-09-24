@@ -2,10 +2,13 @@ PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 H = React.DOM
+R = React.createElement
 
 moment = require 'moment'
 ezlocalize = require 'ez-localize'
 ResponseAnswersComponent = require './ResponseAnswersComponent'
+ResponseArchivesComponent = require './ResponseArchivesComponent'
+ModalPopupComponent = require('react-library/lib/ModalPopupComponent')
 
 # Static view of a response
 module.exports = class ResponseDisplayComponent extends React.Component
@@ -16,6 +19,7 @@ module.exports = class ResponseDisplayComponent extends React.Component
     formCtx: PropTypes.object.isRequired
     apiUrl: PropTypes.string
     locale: PropTypes.string # Defaults to english
+    login: PropTypes.object  # Current login (contains user, username, groups)
 
   @childContextTypes: _.extend({}, require('./formContextTypes'), {
     T: PropTypes.func.isRequired
@@ -26,14 +30,32 @@ module.exports = class ResponseDisplayComponent extends React.Component
     super(props)
 
     @state = {
-      eventsUsernames: null,
+      eventsUsernames: null
       loadingUsernames: false
       showCompleteHistory: false
       T: @createLocalizer(@props.form.design, @props.formCtx.locale)
+      history: null
+      loadingHistory: false
+      showArchive: false
     }
 
   componentWillMount: ->
     @loadEventUsernames(@props.response.events)
+    
+  componentDidMount: ->
+    @loadHistory(@props)
+
+  loadHistory: (props) ->
+    url = props.apiUrl+'archives/responses/'+props.response._id+'?client='+props.login.client
+    @setState(loadingHistory: true)
+    $.ajax({ dataType: "json", url: url })
+      .done (rows) =>
+        index = _.findLastIndex(rows, (rev) ->
+          rev.status in ['pending', 'final'] 
+        )
+        @setState(loadingHistory: false, history: rows.slice(0, index + 1))
+      .fail (xhr) =>
+        @setState(loadingHistory: false, history: null)
 
   # Load user names related to events
   loadEventUsernames: (events) ->
@@ -54,6 +76,9 @@ module.exports = class ResponseDisplayComponent extends React.Component
   componentWillReceiveProps: (nextProps) ->
     if @props.form.design != nextProps.form.design or @props.locale != nextProps.locale
       @setState(T: @createLocalizer(nextProps.form.design, nextProps.locale))
+
+    if not _.isEqual(@props.response.response, nextProps.response.response)
+      @loadHistory(nextProps)
 
     if not _.isEqual(@props.response.events, nextProps.response.events)
       @loadEventUsernames(nextProps.response.events)
@@ -154,6 +179,26 @@ module.exports = class ResponseDisplayComponent extends React.Component
     H.div key: "status", 
       @state.T('Status'), ": ", H.b(null, status)
 
+  renderArchives: () =>
+    if not @state.history || not @state.showArchive
+      return null
+    
+    R ModalPopupComponent,
+      header: "Change history"
+      size: "large"
+      showCloseX: true
+      onClose: (() => @setState(showArchive: false)),
+        R ResponseArchivesComponent, {
+          formDesign: @props.form.design
+          response: @props.response
+          schema: @props.schema
+          locale: @props.locale
+          T: @props.T
+          formCtx: @props.formCtx
+          history: @state.history
+          eventsUsernames: @state.eventsUsernames
+        }
+
   # Header which includes basics
   renderHeader: ->
     H.div style: { paddingBottom: 10 },
@@ -169,6 +214,7 @@ module.exports = class ResponseDisplayComponent extends React.Component
           @state.T('IP Address'), ": ", H.b(null, @props.response.ipAddress)
       @renderStatus()
       @renderHistory()
+      @renderArchives()
 
   render: ->
     H.div null,
@@ -180,4 +226,9 @@ module.exports = class ResponseDisplayComponent extends React.Component
         locale: @props.locale
         T: @props.T
         formCtx: @props.formCtx
+        prevData: if @state.history then _.last(@state.history) else null
+        showPrevAnswers: @state.history?
+        showChangedLink: @state.history?
+        onChangedLinkClick: () => 
+          @setState(showArchive: true)
       })
