@@ -515,6 +515,19 @@
     {
       "_base": "en",
       "en": "Confidential answers may not be edited."
+    },
+    {
+      "_base": "en",
+      "en": "Show Changes"
+    },
+    {
+      "_base": "en",
+      "en": "Show Complete Edit History",
+      "_unused": true
+    },
+    {
+      "_base": "en",
+      "en": "Show Complete History of Changes"
     }
   ]
 }

@@ -175,6 +175,7 @@ module.exports = class ResponseViewEditComponent extends React.Component
             schema: @props.schema
             apiUrl: @props.apiUrl
             locale: @state.locale
+            login: @props.login
             T: T)
 
     return H.div null,

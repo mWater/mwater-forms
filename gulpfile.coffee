@@ -105,6 +105,8 @@ gulp.task 'compile', gulp.series('coffee', 'copy', 'localize')
 
 gulp.task 'default', gulp.series('compile')
 
+gulp.task "prepare_storybook", gulp.series("libs_js", "libs_css", "copy_fonts", "copy_assets", "index_css")
+
 gulp.task 'watch', gulp.series(["libs_js", "libs_css", "copy_fonts", "copy_assets", "index_css", ->
   webpackConfig = require './webpack.config.js'
 

@@ -9,7 +9,9 @@
   "repository": "git@github.com:mWater/mwater-forms.git",
   "scripts": {
     "test": "testem ci",
-    "prepublish": "gulp"
+    "prepublish": "gulp",
+    "storybook": "gulp prepare_storybook && start-storybook -s . -p 6009",
+    "build-storybook": "build-storybook"
   },
   "browserify": {
     "transform": [
@@ -44,6 +46,10 @@
     "uuid": "^3.0.1"
   },
   "devDependencies": {
+    "@storybook/addon-actions": "^3.2.6",
+    "@storybook/addon-knobs": "^3.2.8",
+    "@storybook/addon-links": "^3.2.6",
+    "@storybook/react": "^3.2.8",
     "browser-sync": "^2.11.1",
     "browserify": "^13.0.0",
     "canonical-json": "0.0.4",

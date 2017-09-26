@@ -21,7 +21,7 @@ module.exports = class ImageDisplayComponent extends React.Component
 
   update: (props) ->
     # Get URL of thumbnail
-    @props.imageManager.getImageThumbnailUrl props.image.id, (url) =>
+    props.imageManager.getImageThumbnailUrl props.image.id, (url) =>
       @setState(url: url, error: false)
     , => @setState(error: true)
 
