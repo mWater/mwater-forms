@@ -318,7 +318,7 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
             if answer and answer.location
               @renderLocation(answer.location)
             
-            if prevAnswer? and not _.isEqual(prevAnswer.value, answer.value) and @props.showChangedLink
+            if prevAnswer? and not _.isEqual(prevAnswer.value, answer?.value) and @props.showChangedLink
               H.a style: { float: 'right', display: 'inline-block', cursor: 'pointer', fontSize: 9 }, onClick: @props.onChangedLinkClick, key: 'view_change',
                 R ui.Icon, id: "glyphicon-pencil"
                 " " 
@@ -326,7 +326,7 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
 
         if @props.showPrevAnswers and @props.prevData
           H.td key: "prevValue",
-            if prevAnswer? and not _.isEqual(prevAnswer.value, answer.value) and @props.onCompleteHistoryLinkClick
+            if prevAnswer? and not _.isEqual(prevAnswer.value, answer?.value) and @props.onCompleteHistoryLinkClick
               H.a style: { float: 'right', display: 'inline-block', cursor: 'pointer', fontSize: 9 }, onClick: @props.onCompleteHistoryLinkClick, key: 'view_history',
                 T("Show Changes")
 
