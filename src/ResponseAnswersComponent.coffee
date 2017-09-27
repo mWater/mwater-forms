@@ -294,8 +294,8 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
 
     matrixAnswer = @renderMatrixAnswer(q, answer, prevAnswer)
 
-    if prevAnswer
-      if not _.isEqual(prevAnswer.value, answer.value) 
+    if prevAnswer 
+      if not _.isEqual(prevAnswer.value, answer?.value) 
         if @props.highlightChanges
           trProps['style'] = { background: '#ffd'}
       else 
