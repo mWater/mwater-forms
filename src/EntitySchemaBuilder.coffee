@@ -129,6 +129,26 @@ module.exports = class EntitySchemaBuilder
         type: "datetime"
       })
 
+      contents.push({
+        id: "_modified_by"
+        name: { en: "Last modified by user" }
+        desc: { en: "User that modified this #{formUtils.localizeString(entityType.name)} last" }
+        type: "join"
+        join: {
+          type: "n-1"
+          toTable: "users"
+          fromColumn: "_modified_by"
+          toColumn: "_id"
+        }
+      })
+
+      contents.push({
+        id: "_modified_on"
+        name: { en: "Date last modified" }
+        desc: { en: "Date that this #{formUtils.localizeString(entityType.name)} was last modified" }
+        type: "datetime"
+      })
+
       # Add datasets
       contents.push({
         id: "!datasets"
