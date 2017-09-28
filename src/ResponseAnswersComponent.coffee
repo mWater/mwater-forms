@@ -288,19 +288,22 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
         if prevRosterData?
           if prevRosterData.value?
             prevRosterData = prevRosterData.value
-            prevAnswer = prevRosterData[dataIds[1]][dataIds[2]]
+            prevAnswer = prevRosterData[dataIds[1]]?[dataIds[2]]
           else
-            prevAnswer = prevRosterData[dataIds[1]].data[dataIds[2]]
+            prevAnswer = prevRosterData[dataIds[1]]?.data[dataIds[2]]
 
     matrixAnswer = @renderMatrixAnswer(q, answer, prevAnswer)
 
-    if prevAnswer 
-      if not _.isEqual(prevAnswer.value, answer?.value) 
-        if @props.highlightChanges
-          trProps['style'] = { background: '#ffd'}
-      else 
-        if @props.hideUnchangedAnswers
-          return matrixAnswer
+    # If both answer and previous answer are falsy
+    if not prevAnswer and not answer?.value? and @props.hideUnchangedAnswers
+      return null
+
+    if not _.isEqual(prevAnswer?.value, answer?.value)
+      if @props.highlightChanges
+        trProps['style'] = { background: '#ffd'}
+    else 
+      if @props.hideUnchangedAnswers
+        return null
 
     return [
       H.tr trProps,
@@ -394,7 +397,7 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
         return H.tr null,
           H.td style: { fontWeight: "bold" },
             formUtils.localizeString(item.name, @props.locale)
-          H.td null,
+          H.td colSpan: colspan-1,
             H.span style: {fontStyle: 'italic'},
               @props.T("Data is stored in {0}", formUtils.localizeString(referencedRoster.name, @props.locale))
 
