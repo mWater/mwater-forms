@@ -37,6 +37,7 @@ module.exports = class ResponseDisplayComponent extends React.Component
       history: null
       loadingHistory: false
       showArchive: false
+      showPrevAnswers: false
     }
 
   componentWillMount: ->
@@ -159,9 +160,10 @@ module.exports = class ResponseDisplayComponent extends React.Component
 
     if events.length > 1
       if @state.showCompleteHistory
-        contents.push(H.a(style: { cursor: "pointer" }, onClick: @handleHideHistory, @state.T("Hide History")))
+        contents.push(H.div(null, H.a(style: { cursor: "pointer" }, onClick: @handleHideHistory, @state.T("Hide History"))))
+        contents.push(H.div(null, H.a(style: { cursor: "pointer" }, onClick: (=> @setState(showArchive: true)), @state.T("Show Complete History of Changes"))))
       else
-        contents.push(H.a(style: { cursor: "pointer" }, onClick: @handleShowHistory, @state.T("Show History")))
+        contents.push(H.div(null, H.a(style: { cursor: "pointer" }, onClick: @handleShowHistory, @state.T("Show History"))))
 
     return H.div key: "history", contents
 
@@ -179,8 +181,8 @@ module.exports = class ResponseDisplayComponent extends React.Component
     H.div key: "status", 
       @state.T('Status'), ": ", H.b(null, status)
 
-  renderArchives: () =>
-    if not @state.history || not @state.showArchive
+  renderArchives: ->
+    if not @state.history or not @state.showArchive
       return null
     
     R ModalPopupComponent,
@@ -188,7 +190,7 @@ module.exports = class ResponseDisplayComponent extends React.Component
       size: "large"
       showCloseX: true
       onClose: (() => @setState(showArchive: false)),
-        R ResponseArchivesComponent, {
+        R ResponseArchivesComponent,
           formDesign: @props.form.design
           response: @props.response
           schema: @props.schema
@@ -197,7 +199,6 @@ module.exports = class ResponseDisplayComponent extends React.Component
           formCtx: @props.formCtx
           history: @state.history
           eventsUsernames: @state.eventsUsernames
-        }
 
   # Header which includes basics
   renderHeader: ->
@@ -215,7 +216,6 @@ module.exports = class ResponseDisplayComponent extends React.Component
       @renderStatus()
       @renderHistory()
       @renderArchives()
-
   render: ->
     H.div null,
       @renderHeader()
@@ -227,8 +227,11 @@ module.exports = class ResponseDisplayComponent extends React.Component
         T: @props.T
         formCtx: @props.formCtx
         prevData: if @state.history then _.last(@state.history) else null
-        showPrevAnswers: @state.history?
+        showPrevAnswers: @state.history? and @state.showPrevAnswers
+        highlightChanges: @state.showPrevAnswers
         showChangedLink: @state.history?
-        onChangedLinkClick: () => 
+        onChangedLinkClick: => 
+          @setState(showPrevAnswers: not @state.showPrevAnswers)
+        onCompleteHistoryLinkClick: =>
           @setState(showArchive: true)
       })

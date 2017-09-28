@@ -38,6 +38,7 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
     hideUnchangedAnswers: PropTypes.bool
     showChangedLink: PropTypes.bool
     onChangedLinkClick: PropTypes.func
+    onCompleteHistoryLinkClick: PropTypes.func
 
   # Check if form design or data are different
   isLoadNeeded: (newProps, oldProps) ->
@@ -279,7 +280,7 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
     trProps = 
       key: dataId
 
-    if @props.showPrevAnswers? and @props.prevData
+    if @props.prevData
       if dataIds.length == 1
         prevAnswer = @props.prevData.data[dataId]
       else
@@ -293,8 +294,8 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
 
     matrixAnswer = @renderMatrixAnswer(q, answer, prevAnswer)
 
-    if prevAnswer
-      if not _.isEqual(prevAnswer.value, answer.value) 
+    if prevAnswer 
+      if not _.isEqual(prevAnswer.value, answer?.value) 
         if @props.highlightChanges
           trProps['style'] = { background: '#ffd'}
       else 
@@ -317,12 +318,18 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
             if answer and answer.location
               @renderLocation(answer.location)
             
-            if prevAnswer? and not _.isEqual(prevAnswer.value, answer.value) and @props.showChangedLink
-              H.a style: {float: 'right', display: 'inline-block', cursor: 'pointer'}, onClick: @props.onChangedLinkClick, key: 'view_change',
-                R ui.Icon, id: 'glyphicon-pencil', " bidsdas"
+            if prevAnswer? and not _.isEqual(prevAnswer.value, answer?.value) and @props.showChangedLink
+              H.a style: { float: 'right', display: 'inline-block', cursor: 'pointer', fontSize: 9 }, onClick: @props.onChangedLinkClick, key: 'view_change',
+                R ui.Icon, id: "glyphicon-pencil"
+                " " 
+                T("Edited")
 
         if @props.showPrevAnswers and @props.prevData
           H.td key: "prevValue",
+            if prevAnswer? and not _.isEqual(prevAnswer.value, answer?.value) and @props.onCompleteHistoryLinkClick
+              H.a style: { float: 'right', display: 'inline-block', cursor: 'pointer', fontSize: 9 }, onClick: @props.onCompleteHistoryLinkClick, key: 'view_history',
+                T("Show Changes")
+
             if not prevMatrixAnswer?
               @renderAnswer(q, prevAnswer)
             if prevAnswer and prevAnswer.timestamp
@@ -459,6 +466,12 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
       return H.div null, "Loading..."
 
     H.table className: "table table-bordered table-condensed", style: { marginBottom: 0 },
+      H.thead null,
+        H.tr null,
+          H.th null, "Question"
+          H.th null, "Answer"
+          if @props.showPrevAnswers
+            H.th null, "Original Answer"
       H.tbody null, 
         _.map @props.formDesign.contents, (item) =>
           @renderItem(item, @state.visibilityStructure, item._id)
