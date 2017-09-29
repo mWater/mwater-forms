@@ -43,9 +43,12 @@ module.exports = class ResponseArchivesComponent extends React.Component
 
 
   render: ->
+    if @props.history.length == 0
+      return H.div null, 
+        H.i null, "No changes made since submission"
     H.div null,
       _.map(@props.history, (record, index) => 
-        if(index == 0)
+        if index == 0
           @renderRecord(@props.response, record)
         else
           @renderRecord(@props.history[index - 1], record)

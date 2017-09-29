@@ -465,6 +465,10 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
       return @renderQuestion(item, dataId)
 
   render: ->
+    if @state.error
+      return H.div className: "alert alert-danger", 
+        @state.error.message
+
     if not @state.visibilityStructure
       return H.div null, "Loading..."
 

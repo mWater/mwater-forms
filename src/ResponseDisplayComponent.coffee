@@ -50,11 +50,19 @@ module.exports = class ResponseDisplayComponent extends React.Component
     url = props.apiUrl+'archives/responses/'+props.response._id+'?client='+props.login.client
     @setState(loadingHistory: true)
     $.ajax({ dataType: "json", url: url })
-      .done (rows) =>
-        index = _.findLastIndex(rows, (rev) ->
-          rev.status in ['pending', 'final'] 
-        )
-        @setState(loadingHistory: false, history: rows.slice(0, index + 1))
+      .done (history) =>
+        # Get only ones since first submission
+        index = _.findIndex(history, (rev) -> rev.status in ['pending', 'final'])
+        history = history.slice(0, index + 1)
+
+        # Remove history where there was no change to data
+        compactHistory = []
+        for entry, i in history
+          prevEntry = if i == 0 then @props.response else history[i - 1]
+          if not _.isEqual(entry.data, prevEntry.data)
+            compactHistory.push(entry)
+
+        @setState(loadingHistory: false, history: compactHistory)
       .fail (xhr) =>
         @setState(loadingHistory: false, history: null)
 
