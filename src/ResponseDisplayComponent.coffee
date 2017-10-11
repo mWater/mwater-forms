@@ -47,7 +47,7 @@ module.exports = class ResponseDisplayComponent extends React.Component
     @loadHistory(@props)
 
   loadHistory: (props) ->
-    url = props.apiUrl+'archives/responses/'+props.response._id+'?client='+props.login.client
+    url = props.apiUrl + 'archives/responses/' + props.response._id + '?client=' + (props.login?.client or "")
     @setState(loadingHistory: true)
     $.ajax({ dataType: "json", url: url })
       .done (history) =>
