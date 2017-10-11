@@ -265,7 +265,7 @@ module.exports = {
             ],
             "_type": "NumberQuestion",
             "decimal": true,
-            "required": false,
+            "required": true,
             "alternates": {
               "na": true,
               "dontknow": true

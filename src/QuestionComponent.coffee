@@ -126,7 +126,8 @@ module.exports = class QuestionComponent extends React.Component
       if answerInvalid and scrollToFirstInvalid
         @refs.prompt.scrollIntoView()
 
-      return answerInvalid
+      if answerInvalid
+        return answerInvalid
 
     validationError = new AnswerValidator().validate(@props.question, @getAnswer())
 
