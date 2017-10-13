@@ -203,7 +203,7 @@ module.exports = class ResponseDisplayComponent extends React.Component
           response: @props.response
           schema: @props.schema
           locale: @props.locale
-          T: @props.T
+          T: @state.T
           formCtx: @props.formCtx
           history: @state.history
           eventsUsernames: @state.eventsUsernames
