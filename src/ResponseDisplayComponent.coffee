@@ -232,7 +232,7 @@ module.exports = class ResponseDisplayComponent extends React.Component
         data: @props.response.data
         schema: @props.schema
         locale: @props.locale
-        T: @props.T
+        T: @state.T
         formCtx: @props.formCtx
         prevData: if @state.history then _.last(@state.history) else null
         showPrevAnswers: @state.history? and @state.showPrevAnswers
