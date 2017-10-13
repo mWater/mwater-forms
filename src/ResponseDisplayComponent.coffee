@@ -20,6 +20,7 @@ module.exports = class ResponseDisplayComponent extends React.Component
     apiUrl: PropTypes.string
     locale: PropTypes.string # Defaults to english
     login: PropTypes.object  # Current login (contains user, username, groups)
+    forceCompleteHistory: PropTypes.bool  # True to display complete history always
 
   @childContextTypes: _.extend({}, require('./formContextTypes'), {
     T: PropTypes.func.isRequired
@@ -32,7 +33,7 @@ module.exports = class ResponseDisplayComponent extends React.Component
     @state = {
       eventsUsernames: null
       loadingUsernames: false
-      showCompleteHistory: false
+      showCompleteHistory: @props.forceCompleteHistory or false
       T: @createLocalizer(@props.form.design, @props.formCtx.locale)
       history: null
       loadingHistory: false
@@ -166,7 +167,7 @@ module.exports = class ResponseDisplayComponent extends React.Component
     if lastEvent
       contents.push(@renderEvent(lastEvent))
 
-    if events.length > 1
+    if events.length > 1 and not @props.forceCompleteHistory
       if @state.showCompleteHistory
         contents.push(H.div(null, H.a(style: { cursor: "pointer" }, onClick: @handleHideHistory, @state.T("Hide History"))))
         contents.push(H.div(null, H.a(style: { cursor: "pointer" }, onClick: (=> @setState(showArchive: true)), @state.T("Show Complete History of Changes"))))
