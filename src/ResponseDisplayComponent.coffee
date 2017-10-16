@@ -153,7 +153,7 @@ module.exports = class ResponseDisplayComponent extends React.Component
   renderHistory: ->
     if @state.loadingUsernames
       return H.div key: "history",
-        H.label(null, @props.T("Loading History..."))
+        H.label(null, @state.T("Loading History..."))
 
     contents = []
 
