@@ -54,7 +54,6 @@ module.exports = class RotationAwareImageComponent extends AsyncLoadComponent
       containerStyle.height = @props.height or 160
     else
       imageStyle.maxWidth = "100%"
-      containerStyle.height = "100%"
 
     if @state.url 
       return H.span 
