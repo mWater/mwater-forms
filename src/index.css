@@ -147,7 +147,7 @@ select {
   transition: opacity 300ms ease-in;
 }
 
-.rotated-image-container{
+.rotated-image-container.rotated-thumbnail{
   display: inline-block;
   overflow: hidden;
 }
