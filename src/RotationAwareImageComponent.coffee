@@ -44,8 +44,6 @@ module.exports = class RotationAwareImageComponent extends AsyncLoadComponent
       "rotated-thumbnail": @props.thumbnail
     })
 
-    console.log containerClasses
-
     if @props.thumbnail
       if @props.image.rotation == 90 or @props.image.rotation == 270
         imageStyle.maxHeight = @props.width or 160
