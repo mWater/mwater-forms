@@ -52,6 +52,22 @@ module.exports = class FormSchemaBuilder
 
     # Add submitted on
     metadata.push({ id: "submittedOn", type: "datetime", name: { en: "Submitted On" } })
+
+    # Add approvalLevel. Only has value if pending
+    jsonql = {
+      type: "case"
+      cases: [{
+        when: { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "{alias}", column: "status" }, { type: "literal", value: "pending" }] }
+        then: { type: "op", op: "jsonb_array_length", exprs: [{ type: "field", tableAlias: "{alias}", column: "approvals" }] }
+      }]
+    }
+
+    metadata.push({ id: "approvalLevel", type: "enum", name: { en: "Approval Level" }, jsonql: jsonql, enumValues:[
+      { id: 0, name: { en: "Pending Level 1" } }
+      { id: 1, name: { en: "Pending Level 2" } }
+      { id: 2, name: { en: "Pending Level 3" } }
+      { id: 3, name: { en: "Pending Level 4" } }
+    ]})
     
     # Add IpAddress
     metadata.push({ id: "ipAddress", type: "text", name: { en: "IP Address" } })
