@@ -58,15 +58,15 @@ module.exports = class FormSchemaBuilder
       type: "case"
       cases: [{
         when: { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "{alias}", column: "status" }, { type: "literal", value: "pending" }] }
-        then: { type: "op", op: "jsonb_array_length", exprs: [{ type: "field", tableAlias: "{alias}", column: "approvals" }] }
+        then: { type: "op", op: "::text", exprs: [{ type: "op", op: "jsonb_array_length", exprs: [{ type: "field", tableAlias: "{alias}", column: "approvals" }] }] }
       }]
     }
 
     metadata.push({ id: "approvalLevel", type: "enum", name: { en: "Approval Level" }, jsonql: jsonql, enumValues:[
-      { id: 0, name: { en: "Pending Level 1" } }
-      { id: 1, name: { en: "Pending Level 2" } }
-      { id: 2, name: { en: "Pending Level 3" } }
-      { id: 3, name: { en: "Pending Level 4" } }
+      { id: "0", name: { en: "Pending Level 1" } }
+      { id: "1", name: { en: "Pending Level 2" } }
+      { id: "2", name: { en: "Pending Level 3" } }
+      { id: "3", name: { en: "Pending Level 4" } }
     ]})
     
     # Add IpAddress
