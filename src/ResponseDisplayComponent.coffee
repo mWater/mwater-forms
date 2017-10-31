@@ -216,9 +216,9 @@ module.exports = class ResponseDisplayComponent extends React.Component
         @state.T('User'), ": ", H.b(null, @props.response.username or "Anonymous")
       H.div key: "code", 
         @state.T('Response Id'), ": ", H.b(null, @props.response.code)
-      if @props.response and @props.response.modified
-        H.div key: "date", 
-          @state.T('Date'), ": ", H.b(null, moment(@props.response.modified.on).format('lll'))
+      if @props.response and @props.response.submittedOn
+        H.div key: "submittedOn", 
+          @state.T('Submitted'), ": ", H.b(null, moment(@props.response.submittedOn).format('lll'))
       if @props.response.ipAddress
         H.div key: "ipAddress", 
           @state.T('IP Address'), ": ", H.b(null, @props.response.ipAddress)
