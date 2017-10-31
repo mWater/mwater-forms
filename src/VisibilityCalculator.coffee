@@ -115,10 +115,12 @@ module.exports = class VisibilityCalculator
     else if question.conditions? and question.conditions.length > 0
       conditions = conditionUtils.compileConditions(question.conditions, @formDesign)
       isVisible = conditions(data)
-    else if question.randomAskProbability? and data[question._id]?.randomAsked == false
-      isVisible = false
     else
       isVisible = true
+
+    # Apply randomAsk
+    if question.randomAskProbability? and data[question._id]?.randomAsked == false
+      isVisible = false
 
     # Apply conditionExpr
     if question.conditionExpr
