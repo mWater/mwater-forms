@@ -120,6 +120,7 @@ module.exports = class ResponseRow
               if entity
                 callback(null, new EntityRow({ entityType: entityType, entity: entity, schema: @schema, getEntityById: @getEntityById }))
               else
+                console.log "Warning: Site #{code} not found in ResponseRow"
                 callback(null, null)
                 # Note: Error was making some responses impossible to edit or view
                 # callback(new Error("Site #{code} not found"))
@@ -135,6 +136,7 @@ module.exports = class ResponseRow
               if entity
                 callback(null, new EntityRow({ entityType: entityType, entity: entity, schema: @schema, getEntityById: @getEntityById }))
               else
+                console.log "Warning: Entity #{value} not found in ResponseRow"
                 callback(null, null)
                 # Note: Error was making some responses impossible to edit or view
                 # callback(new Error("Entity #{value} not found"))
