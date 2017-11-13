@@ -416,6 +416,7 @@ module.exports = class QuestionComponent extends React.Component
           value: answer.value
           onValueChange: @handleValueChange
           siteTypes: @props.question.siteTypes
+          T: @context.T
         }
 
       when "BarcodeQuestion"
