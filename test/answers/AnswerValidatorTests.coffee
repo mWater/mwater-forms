@@ -287,3 +287,23 @@ describe 'AnswerValidator', ->
       # Setting an invalid choice value
       answer = {value: {'itemAId': 'choiceId', 'itemBId': 'anotherChoiceId'}}
       assert.equal 'Invalid choice', @answerValidator.validateLikertQuestion(question, answer)
+
+
+  describe "validateSiteQuestion", ->
+    it "does not allow sites with code null", ->
+      answer = {"value": {"code": null}}
+      question = {
+        _type: "SiteQuestion"
+        required: true
+      }
+
+      assert.equal true, @answerValidator.validate(question, answer)
+    
+    it "allows a valid site code", ->
+      answer = {"value": {"code": "4287759"}}
+      question = {
+        _type: "SiteQuestion"
+        required: true
+      }
+
+      assert.equal null, @answerValidator.validate(question, answer)

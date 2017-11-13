@@ -63,7 +63,7 @@ module.exports = class AnswerValidator
   # Valid if code is valid (checksum)
   validateSiteQuestion: (question, answer) ->
     if not answer?.value?.code
-      return null
+      return true
 
     if siteCodes.isValid(answer.value.code)
       return null
