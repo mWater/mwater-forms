@@ -54,6 +54,9 @@ module.exports = class SiteAnswerComponent extends React.Component
       @context.getEntityById(entityType, entityId, (entity) =>
         if not entity
           throw new Error("Unable to lookup entity #{entityType}:#{entityId}")
+        if not entity.code
+          alert(@props.T("Unable to select that site as it does not have an mWater ID. Please synchronize first with the server."))
+          return
         @props.onValueChange(code: entity.code)
       )
     }

@@ -529,6 +529,10 @@
     {
       "_base": "en",
       "en": "Show Complete History of Changes"
+    },
+    {
+      "_base": "en",
+      "en": "Unable to select that site as it does not have an mWater ID. Please synchronize first with the server."
     }
   ]
 }
