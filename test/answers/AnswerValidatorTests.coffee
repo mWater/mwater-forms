@@ -290,6 +290,15 @@ describe 'AnswerValidator', ->
 
 
   describe "validateSiteQuestion", ->
+    it "Does not require a site code if question not required", ->
+      answer = {}
+      question = {
+        _type: "SiteQuestion"
+        required: false
+      }
+
+      assert.equal null, @answerValidator.validate(question, answer)
+
     it "does not allow sites with code null", ->
       answer = {"value": {"code": null}}
       question = {
