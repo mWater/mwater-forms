@@ -298,7 +298,7 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
     if not prevAnswer and not answer?.value? and @props.hideUnchangedAnswers
       return null
 
-    if not _.isEqual(prevAnswer?.value, answer?.value)
+    if not _.isEqual(prevAnswer?.value, answer?.value) or not _.isEqual(prevAnswer?.specify, answer?.specify)
       if @props.highlightChanges
         trProps['style'] = { background: '#ffd'}
     else 
