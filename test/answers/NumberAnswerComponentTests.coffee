@@ -62,12 +62,12 @@ describe 'NumberAnswerComponent', ->
     comp = @render({
       decimal: false
       onChange: (value) ->
-        assert.equal value, null
-        done()
+        assert.fail()
     })
     input = comp.findInput()
     TestComponent.changeValue(input, "123.4")
     ReactTestUtils.Simulate.blur(input)
+    done()
 
   it "validates decimal number", ->
     comp = @render({

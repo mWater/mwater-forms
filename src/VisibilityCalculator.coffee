@@ -46,7 +46,7 @@ module.exports = class VisibilityCalculator
         visibilityStructure[prefix + item._id] = isVisible
 
       async.each item.contents, (subitem, cb) =>
-        @processItem(subitem, isVisible == false, data, responseRow, visibilityStructure, prefix, cb)
+        @processItem(subitem, isVisible == false, data, responseRow, visibilityStructure, prefix, -> _.defer(cb))
       , callback
 
 
@@ -104,7 +104,7 @@ module.exports = class VisibilityCalculator
         async.each question.items, (item, cb) =>
           async.each question.columns, (column, cb2) =>
             newPrefix = "#{question._id}.#{item.id}."
-            @processItem(column, isVisible == false, data, responseRow, visibilityStructure, newPrefix, cb2)
+            @processItem(column, isVisible == false, data, responseRow, visibilityStructure, newPrefix, -> _.defer(cb2))
           , cb
         , callback
       else
