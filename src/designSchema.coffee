@@ -31,7 +31,7 @@ module.exports = {
     # Schema 18 adds calculations
     # Schema 19 adds randomAskProbability
     # Schema 20 adds confidential data mode
-    _schema: { enum: [1, 2, 3, 4, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19] }
+    _schema: { enum: [1, 2, 3, 4, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20] }
 
     # Name of the form
     name: { $ref: "#/definitions/localizedString" }
