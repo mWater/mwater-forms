@@ -62,7 +62,7 @@ module.exports = class ResponseDataValidator
                 return { 
                   questionId: completedId
                   error: true
-                  message: formUtils.localizeString(item.text) + " (#{index + 1}) " + formUtils.localizeString(column.text) + " is required"
+                  message: formUtils.localizeString(item.text) + " (#{rowIndex + 1}) " + formUtils.localizeString(column.text) + " is required"
                 }
 
               if column.validations and column.validations.length > 0
@@ -71,7 +71,7 @@ module.exports = class ResponseDataValidator
                   return { 
                     questionId: completedId
                     error: validationError
-                    message: formUtils.localizeString(item.text) + " (#{index + 1})" + formUtils.localizeString(column.text) + " #{validationError}"
+                    message: formUtils.localizeString(item.text) + " (#{rowIndex + 1})" + formUtils.localizeString(column.text) + " #{validationError}"
                   }
                   return [completedId, validationError]
         else
