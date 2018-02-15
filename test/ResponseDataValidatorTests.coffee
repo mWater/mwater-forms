@@ -331,7 +331,7 @@ describe "ResponseDataValidator", ->
 
     it "too long", (done) ->
       # Item1 should be complaining (answoer to a is too long)
-      data = {matrix01: {item1: {a: {value: 'data too long'}}}}
+      data = { matrix01: {value: {item1: {a: {value: 'data too long'}}}}}
       validator = new ResponseDataValidator()
       visibilityCalculator = new VisibilityCalculator(@design)
       visibilityCalculator.createVisibilityStructure(data, @responseRow, (error, visibilityStructure) =>
@@ -343,7 +343,7 @@ describe "ResponseDataValidator", ->
 
     it "required 1", (done) ->
       # Item1 should be complaining (missing required field)
-      data = { }
+      data = { value: { }}
       validator = new ResponseDataValidator()
       visibilityCalculator = new VisibilityCalculator(@design)
       visibilityCalculator.createVisibilityStructure(data, @responseRow, (error, visibilityStructure) =>
@@ -355,11 +355,12 @@ describe "ResponseDataValidator", ->
 
     it "required 2", (done) ->
       # Now Item2 should be complaining (missing required field)
-      data = { matrix01: {item1: {a: {value: 'data'}}}}
+      data = { matrix01: { value: {item1: {a: {value: 'data'}}}}}
       validator = new ResponseDataValidator()
       visibilityCalculator = new VisibilityCalculator(@design)
       visibilityCalculator.createVisibilityStructure(data, @responseRow, (error, visibilityStructure) =>
         result = validator.validate(@design, visibilityStructure, data)
+        debugger
         assert.equal result.questionId, 'matrix01.item2.a'
         assert.equal result.error, true
         done()
@@ -369,9 +370,11 @@ describe "ResponseDataValidator", ->
       # Now there shouldn't be any error
       data = {
         matrix01: {
-          item1: {a: {value: 'data'}}
-          item2: {a: {value: 'data'}}
-          item3: {a: {value: 'data'}}
+          value: {
+            item1: {a: {value: 'data'}}
+            item2: {a: {value: 'data'}}
+            item3: {a: {value: 'data'}}
+          }
         }
       }
       validator = new ResponseDataValidator()

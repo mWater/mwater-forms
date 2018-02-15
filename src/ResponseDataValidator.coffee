@@ -56,7 +56,7 @@ module.exports = class ResponseDataValidator
               key = "#{row.id}.#{column._id}"
               completedId = item._id + '.' + key
 
-              cellData = answer[row.id]?[column._id]
+              cellData = answer.value?[row.id]?[column._id]
 
               if column.required and not cellData?.value? or cellData?.value == ''
                 return { 
