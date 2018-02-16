@@ -85,7 +85,16 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
       return null
 
     switch formUtils.getAnswerType(q)
-      when "text", "number"
+      when "text"
+        # Format as url if url
+        if answer.value and answer.value.match(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)/)
+          # Open in system window if in cordova
+          target = if window.cordova? then "_system" else "_blank"
+          return H.a href: answer.value, target: target, 
+            answer.value
+
+        return answer.value
+      when "number"
         return "" + answer.value
       when "choice"
         choice = _.findWhere(q.choices, { id: answer.value })
