@@ -175,3 +175,13 @@ select {
   -webkit-transform: rotate(270deg) translateX(-100%);
   -ms-transform: rotate(270deg) translateX(-100%);
 }
+
+th .table-sort-controls {
+  visibility: hidden;
+  color: #AAA;
+  cursor: pointer;
+}
+
+th:hover .table-sort-controls {
+  visibility: visible;
+}

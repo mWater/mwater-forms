@@ -99,6 +99,11 @@ module.exports = class RosterMatrixComponent extends React.Component
 
     @handleEntryDataChange(entryIndex, data)
 
+  handleSort: (column, order) =>
+    answer = @getAnswer()
+    answer = _.sortByOrder(answer, [((item) => item.data[column._id]?.value)], [order])
+    @handleAnswerChange(answer)
+
   renderName: ->
     H.h3 key: "prompt", ref: "prompt",
       formUtils.localizeString(@props.rosterMatrix.name, @context.locale)
@@ -110,6 +115,12 @@ module.exports = class RosterMatrixComponent extends React.Component
       # Required star
       if column.required
         H.span className: "required", "*"
+
+      # Allow sorting
+      if column._type in ["TextColumnQuestion", "NumberColumnQuestion", "DateColumnQuestion"]
+        H.div style: { float: "right" },
+          H.span className: "table-sort-controls glyphicon glyphicon-triangle-top", style: { cursor: "pointer" }, onClick: @handleSort.bind(null, column, "asc")
+          H.span className: "table-sort-controls glyphicon glyphicon-triangle-bottom", style: { cursor: "pointer" }, onClick: @handleSort.bind(null, column, "desc")
 
   renderHeader: ->
     H.thead null,
