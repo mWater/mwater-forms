@@ -106,14 +106,26 @@ module.exports = class FormComponent extends React.Component
     randomAskedCalculator = new RandomAskedCalculator(@props.design)
     responseCleaner = new ResponseCleaner()
 
-    # Clean response data
+    # Immediately update data, as another answer might be clicked on (e.g. blur from a number input and clicking on a radio answer)
+    @props.onDataChange(data)
+
+    # Clean response data, remembering which data object is being cleaned
+    this.cleanInProgress = data
+
     responseCleaner.cleanData @props.design, visibilityCalculator, defaultValueApplier, randomAskedCalculator, data, @createResponseRow, @state.visibilityStructure, (error, results) =>
       if error
         alert(T("Error saving data") + ": #{error.message}")
         return
 
+      # Ignore if from a previous clean
+      if data != this.cleanInProgress 
+        console.log("Ignoring stale handleDataChange data")
+        return
+
       @setState(visibilityStructure: results.visibilityStructure)
-      @props.onDataChange(results.data)
+      # Ignore if unchanged
+      if not _.isEqual(data, results.data)
+        @props.onDataChange(results.data)
 
   handleNext: () =>
     @refs.submit.focus()
