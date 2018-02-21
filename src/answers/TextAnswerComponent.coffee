@@ -47,7 +47,7 @@ module.exports = class TextAnswerComponent extends React.Component
         value: @state.text or ""
         rows: "5"
         readOnly: @props.readOnly
-        onKeyUp: @handleBlur
+        onBlur: @handleBlur
         onChange: (ev) => @setState(text: ev.target.value)
       }
     else
@@ -59,6 +59,6 @@ module.exports = class TextAnswerComponent extends React.Component
         value: @state.text or ""
         readOnly: @props.readOnly
         onKeyDown: @handleKeyDown
-        onKeyUp: @handleBlur
+        onBlur: @handleBlur
         onChange: (ev) => @setState(text: ev.target.value)
       }
