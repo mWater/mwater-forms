@@ -114,9 +114,14 @@ module.exports = class FormSchemaBuilder
   # Adds to section with id "!related_forms" with name "Related Forms"
   addReverseJoins: (schema, form, reverseJoins) ->
     for reverseJoin in reverseJoins
-      # Prefix form name, since it was not available when join was created
       column = _.clone(reverseJoin.column)
-      column.name = appendStr(appendStr(form.design.name, ": "), column.name)
+
+      # Determine if is the only join to a table, in which case use the form name to be less confusing
+      if _.where(reverseJoins, { table: reverseJoin.table }).length == 1
+        column.name = form.design.name
+      else  
+        # Prefix form name, since it was not available when join was created
+        column.name = appendStr(appendStr(form.design.name, ": "), column.name)
 
       # Add to entities table if it exists
       if schema.getTable(reverseJoin.table)

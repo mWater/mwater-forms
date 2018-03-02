@@ -67,7 +67,7 @@ describe "FormSchemaBuilder addForm", ->
     # Check that join to form is present
     column = schema.getColumn("entities.water_point", "responses:formid:data:site1:value")
     assert column, "Column should exist"
-    assert.equal column.name.en, "Form: Site1"
+    assert.equal column.name.en, "Form" # "Form: Site1" Use only form name since one link only
     assert.equal column.type, "join"
     assert.equal column.join.type, "1-n"
     assert.equal column.join.toTable, "responses:formid"
@@ -129,7 +129,7 @@ describe "FormSchemaBuilder addForm", ->
     # Check that join to form is present
     column = schema.getColumn("entities.water_point", "responses:formid:data:entity1:value")
     assert column, "Column should exist"
-    assert.equal column.name.en, "Form: Entity1"
+    assert.equal column.name.en, "Form" # "Form: Entity1" Uses only form name since only one join
     assert.equal column.type, "join"
     assert.equal column.join.type, "1-n"
     assert.equal column.join.toTable, "responses:formid"
