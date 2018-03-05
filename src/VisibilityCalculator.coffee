@@ -1,3 +1,4 @@
+_ = require 'lodash'
 formUtils = require './formUtils'
 async = require 'async'
 conditionUtils = require './conditionUtils'
