@@ -1289,7 +1289,7 @@ describe "FormSchemaBuilder addForm", ->
 
   describe "indicator calculations", ->
     before ->
-      # Indicator table with num1 and num2
+      # Indicator table with num1 and num2 and a calculated num3
       indicatorWithTwoFields = {
         _id: "ind1"
         design: {
@@ -1305,6 +1305,20 @@ describe "FormSchemaBuilder addForm", ->
                 id: "num2",
                 name: { en: "Number2" }
                 type: "number"
+              }
+              {
+                id: "num3",
+                name: { en: "Number3" }
+                type: "number"
+                expr: {
+                  type: "op"
+                  op: "+"
+                  table: "indicator_values:ind1"
+                  exprs: [
+                    { type: "field", table: "indicator_values:ind1", column: "num1" }
+                    { type: "field", table: "indicator_values:ind1", column: "num2" }
+                  ]
+                }
               }
             ]
           }
@@ -1450,6 +1464,60 @@ describe "FormSchemaBuilder addForm", ->
                 ]
               }
             }
+          ]
+        }
+      })
+
+    it "adds expr indicator fields as mutated columns", ->
+      # Create form with number question and indicator calculation
+      form = {
+        _id: "formid"
+        design: {
+          _type: "Form"
+          name: { en: "Form" }
+          contents: [
+            {
+              _id: "questionid"
+              _type: "NumberQuestion"
+              text: { _base: "en", en: "Question" } 
+              decimal: true
+              conditions: []
+            }              
+          ]
+        }
+        indicatorCalculations: [
+          {
+            _id: "ic1"
+            indicator: "ind1"
+            expressions: {
+              num1: {
+                type: "op"
+                op: "+"
+                table: "responses:formid"
+                exprs: [
+                  { type: "field", table: "responses:formid", column: "data:questionid:value" }
+                  { type: "literal", valueType: "number", value: 5 }
+                ]
+              }
+              num2: { type: "literal", valueType: "number", value: 4 }
+            }
+          }
+        ]
+      }
+      schema = new FormSchemaBuilder().addForm(@schema, form, null, true, @indicators)
+
+      # Check that indicator calculation added with condition
+      compare(schema.getColumn("responses:formid", "indicator_calculation:ic1:num3"), {
+        id: "indicator_calculation:ic1:num3"
+        type: "number"
+        name: { en: "Number3" }
+        expr: {
+          type: "op"
+          op: "+"
+          table: "responses:formid"
+          exprs: [
+            { type: "field", table: "responses:formid", column: "indicator_calculation:ic1:num1" }
+            { type: "field", table: "responses:formid", column: "indicator_calculation:ic1:num2" }
           ]
         }
       })

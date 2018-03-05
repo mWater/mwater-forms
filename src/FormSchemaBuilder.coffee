@@ -277,7 +277,7 @@ module.exports = class FormSchemaBuilder
 
       # Add to indicators section
       indicatorSectionContents = indicatorsSection.contents.slice()
-      indicatorCalculationSection = @createIndicatorCalculationSection(indicatorCalculation, schema, indicators, isMaster)
+      indicatorCalculationSection = @createIndicatorCalculationSection(indicatorCalculation, schema, indicators, isMaster, form)
       if indicatorCalculationSection
         indicatorSectionContents.push(indicatorCalculationSection)
 
@@ -292,7 +292,7 @@ module.exports = class FormSchemaBuilder
 
   # Create a subsection of Indicators for an indicator calculation.
   # isMaster uses master_response as row to compute from
-  createIndicatorCalculationSection: (indicatorCalculation, schema, indicators, isMaster) ->
+  createIndicatorCalculationSection: (indicatorCalculation, schema, indicators, isMaster, form) ->
     # Find indicator
     indicator = _.findWhere(indicators, _id: indicatorCalculation.indicator)
 
@@ -307,13 +307,12 @@ module.exports = class FormSchemaBuilder
     contents = []
     for properties in _.values(indicator.design.properties)
       for property in properties
-        # If has expression already, skip it as we can't evaluate it easily at the form level
-        # To do so, we'd need to replace the references to this indicator with the indicator calculations
-        # and it would be quite messy
+        # If has expression already, we need to replace the references to this indicator with the indicator calculations
         if property.expr
-          continue
+          expression = formizeIndicatorPropertyExpr(property.expr, form, indicatorCalculation, indicator)
+        else
+          expression = indicatorCalculation.expressions[property.id]
 
-        expression = indicatorCalculation.expressions[property.id]
         condition = indicatorCalculation.condition
 
         # If master, hack expression to be from master_responses, not responses
@@ -1704,3 +1703,29 @@ mapTree = (tree, func) ->
     output.contents = _.compact(_.map(tree.contents, (item) -> func(item)))
 
   return output
+
+# Convert an expression that is the expr of an indicator property into an expression
+# that instead references the indicator calculation columns. This is to allow indicator
+# properties that are calculations (have an expr) from the form
+formizeIndicatorPropertyExpr = (expr, form, indicatorCalculation, indicator) ->
+  if not expr
+    return expr
+
+  if not _.isObject(expr)
+    return expr
+
+  # If it is a field, change table and column
+  if expr.type == "field" and expr.table == "indicator_values:#{indicator._id}"
+    return { type: "field", table: "responses:#{form._id}", column: "indicator_calculation:#{indicatorCalculation._id}:#{expr.column}" }
+
+  # If it has a table, change that
+  if expr.table == "indicator_values:#{indicator._id}"
+    expr = _.extend({}, expr, table: "responses:#{form._id}")
+
+  # Otherwise replace recursively
+  return _.mapValues(expr, (value, key) ->
+    if _.isArray(value)
+      return _.map(value, (v) -> formizeIndicatorPropertyExpr(v, form, indicatorCalculation, indicator))
+    else
+      return formizeIndicatorPropertyExpr(value, form, indicatorCalculation, indicator)
+  )
