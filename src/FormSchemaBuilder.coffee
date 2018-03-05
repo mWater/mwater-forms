@@ -592,7 +592,7 @@ module.exports = class FormSchemaBuilder
           addColumn(column)
 
         when "choices"
-          # Null if empty for simplicity
+          # Null if empty or null for simplicity
           column = {
             id: "#{dataColumn}:#{item._id}:value"
             type: "enumset"
@@ -605,13 +605,20 @@ module.exports = class FormSchemaBuilder
               exprs: [
                 {
                   type: "op"
-                  op: "#>"
+                  op: "nullif"
                   exprs: [
-                    { type: "field", tableAlias: "{alias}", column: dataColumn }
-                    "{#{item._id},value}"
+                    {
+                      type: "op"
+                      op: "#>"
+                      exprs: [
+                        { type: "field", tableAlias: "{alias}", column: dataColumn }
+                        "{#{item._id},value}"
+                      ]
+                    }
+                    { type: "op", op: "::jsonb", exprs: ["[]"] }
                   ]
-                }
-                { type: "op", op: "::jsonb", exprs: ["[]"] }
+                },
+                "null"
               ]
             }
           }

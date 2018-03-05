@@ -448,11 +448,14 @@ describe "FormSchemaBuilder addForm", ->
         { 
           id: "data:questionid:value"
           type: "enumset"
-          # nullif(data#>'{questionid,value}', '[]'::jsonb)
+          # nullif(nullif(data#>'{questionid,value}', '[]'::jsonb), 'null')
           jsonql: { type: "op", op: "nullif", exprs: [
-            { type: "op", op: "#>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }
-            { type: "op", op: "::jsonb", exprs: ["[]"] }
-          ] }
+            { type: "op", op: "nullif", exprs: [
+              { type: "op", op: "#>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }
+              { type: "op", op: "::jsonb", exprs: ["[]"] }
+            ] }
+            "null"
+          ]}
         }
       ])
 
