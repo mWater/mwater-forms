@@ -1662,6 +1662,7 @@ module.exports = class FormSchemaBuilder
         name: calculation.name
         desc: calculation.desc
         expr: calculation.expr
+        jsonql: if not calculation.expr then { type: "literal", value: null }  # Force null if no expression so it doesn't appear to be a normal column
       })
 
       # Update in original
