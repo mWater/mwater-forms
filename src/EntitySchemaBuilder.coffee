@@ -149,6 +149,13 @@ module.exports = class EntitySchemaBuilder
         type: "datetime"
       })
 
+      contents.push({
+        id: "_merged_entities"
+        name: { en: "Previous mWater IDs"}
+        desc: { en: "IDs of other #{formUtils.localizeString(entityType.name)} that were merged into this" }
+        type: 'text[]'
+      })
+
       # Add datasets
       contents.push({
         id: "!datasets"
