@@ -1,19 +1,12 @@
 gulp = require 'gulp'
 gutil = require 'gulp-util'
 coffee = require 'gulp-coffee' 
-glob = require 'glob'
 extractor = require('ez-localize/extractor')
-source = require 'vinyl-source-stream'
-browserify = require 'browserify'
 coffeeify = require 'coffeeify'
 hbsfy = require 'hbsfy'
 rework = require 'gulp-rework'
 reworkNpm = require 'rework-npm'
 concat = require 'gulp-concat'
-browserSync = require 'browser-sync'
-reload = browserSync.reload
-watchify = require 'watchify'
-envify = require('envify/custom')
 webpack = require 'webpack'
 WebpackDevServer = require 'webpack-dev-server'
 path = require 'path'
@@ -33,36 +26,6 @@ gulp.task 'localize', (cb) ->
   options = { extensions: ['.js', '.coffee'], transform: [coffeeify, hbsfy] }
   extractor.updateLocalizationFile "src/index.coffee", "localizations.json", options, ->
     cb()
-
-# Compile tests
-gulp.task 'prepareTests', ->
-  files = glob.sync("./test/**/*Tests.coffee");
-  bundler = browserify({ entries: files, extensions: [".js", ".coffee"] })
-  stream = bundler.bundle()
-    .on('error', gutil.log)
-    .on('error', -> throw "Failed")
-    .pipe(source('browserified.js'))
-    .pipe(gulp.dest('./test/'))
-  return stream
-
-makeBrowserifyBundle = ->
-  shim(browserify("./demo.coffee",
-    extensions: [".coffee"]
-    basedir: "./src/"
-  ))
-
-bundleDemoJs = (bundle) ->
-  # Use production node for performance testing
-  # console.log "Using production version of React"
-  # bundle = bundle.transform(envify({ NODE_ENV: 'production' }), { global: true })
-
-  bundle.bundle()
-    .on("error", gutil.log)
-    .pipe(source("demo.js"))
-    .pipe(gulp.dest("./dist/js/"))
-
-gulp.task "browserify", ->
-  bundleDemoJs(makeBrowserifyBundle())
 
 gulp.task "libs_css", ->
   return gulp.src([
@@ -91,15 +54,6 @@ gulp.task "index_css", ->
 gulp.task 'copy_assets', ->
   return gulp.src("assets/**/*")
     .pipe(gulp.dest('dist/'))
-
-gulp.task "demo", gulp.parallel([
-  "browserify"
-  "libs_js"
-  "libs_css"
-  "copy_fonts"
-  "copy_assets"
-  "index_css"
-])
 
 gulp.task 'compile', gulp.series('coffee', 'copy', 'localize')
 
@@ -145,15 +99,3 @@ gulp.task "test", gulp.series([
       # Server listening
       gutil.log("[webpack-dev-server]", "http://localhost:8081/mocha.html")
 ])
-
-# Shim non-browserify friendly libraries to allow them to be 'require'd
-shim = (instance) ->
-  shims = {
-    jquery: '../shims/jquery-shim'
-  }
-
-  # Add shims
-  for name, path of shims
-    instance.require(path, {expose: name})
-
-  return instance

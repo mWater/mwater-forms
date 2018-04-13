@@ -8,16 +8,9 @@
   },
   "repository": "git@github.com:mWater/mwater-forms.git",
   "scripts": {
-    "test": "testem ci",
-    "prepublish": "gulp",
+    "test": "gulp test",
     "storybook": "gulp prepare_storybook && start-storybook -s . -p 6009",
     "build-storybook": "build-storybook"
-  },
-  "browserify": {
-    "transform": [
-      "coffeeify",
-      "hbsfy"
-    ]
   },
   "style": "./src/index.css",
   "author": "Clayton Grassick",
@@ -50,13 +43,10 @@
     "@storybook/addon-knobs": "^3.2.8",
     "@storybook/addon-links": "^3.2.6",
     "@storybook/react": "^3.2.8",
-    "browser-sync": "^2.11.1",
-    "browserify": "^13.0.0",
     "canonical-json": "0.0.4",
     "chai": "^2.0.0",
     "coffee-loader": "^0.7.3",
     "coffee-script": "^1.7.1",
-    "envify": "^3.4.0",
     "glob": "^4.3.5",
     "gulp": "git://github.com/gulpjs/gulp.git#4.0",
     "gulp-coffee": "^2.3.1",
@@ -65,17 +55,11 @@
     "gulp-util": "^3.0.3",
     "handlebars-loader": "^1.4.0",
     "jjv": "^1.0.0",
-    "karma": "^0.13.14",
-    "karma-browserify": "^4.4.0",
-    "karma-chrome-launcher": "^0.2.1",
-    "karma-mocha": "^0.2.0",
     "mocha": "^2.3.3",
     "mocha-loader": "^1.1.1",
     "react-addons-test-utils": "^15.0.1",
     "rework-npm": "^1.0.0",
     "sinon": "^2.1.0",
-    "vinyl-source-stream": "^1.0.0",
-    "watchify": "^3.7.0",
     "webpack": "^2.3.1",
     "webpack-dev-server": "^2.4.2"
   }
