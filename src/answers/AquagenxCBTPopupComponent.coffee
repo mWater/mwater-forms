@@ -1,6 +1,7 @@
 PropTypes = require('prop-types')
 React = require 'react'
 H = React.DOM
+$ = require 'jquery'
 
 aquagenxCBTSVGString = require './AquagenxCBTSVG'
 

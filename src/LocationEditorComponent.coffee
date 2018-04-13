@@ -2,6 +2,7 @@ PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
 H = React.DOM
+$ = require 'jquery'
 
 # TODO: Make a React LoactionView
 LocationView = require './legacy/LocationView'

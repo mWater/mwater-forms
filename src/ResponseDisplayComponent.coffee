@@ -3,6 +3,7 @@ _ = require 'lodash'
 React = require 'react'
 H = React.DOM
 R = React.createElement
+$ = require 'jquery'
 
 moment = require 'moment'
 ezlocalize = require 'ez-localize'

@@ -3,6 +3,7 @@ React = require 'react'
 R = React.createElement
 H = React.DOM
 moment = require 'moment'
+$ = require 'jquery'
 
 # This only works in browser. Load datetime picker
 if process.browser
