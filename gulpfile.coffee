@@ -29,22 +29,22 @@ gulp.task 'localize', (cb) ->
 
 gulp.task "libs_css", ->
   return gulp.src([
-    "./bower_components/bootstrap/dist/css/bootstrap.css"
-    "./bower_components/bootstrap/dist/css/bootstrap-theme.css"
+    "./node_modules/bootstrap/dist/css/bootstrap.css"
+    "./node_modules/bootstrap/dist/css/bootstrap-theme.css"
   ]).pipe(concat("libs.css"))
     .pipe(gulp.dest("./dist/css/"))
 
 gulp.task "libs_js", ->
   return gulp.src([
     "./bower_components/jquery/dist/jquery.js"
-    "./bower_components/bootstrap/dist/js/bootstrap.js"
+    "./node_modules/bootstrap/dist/js/bootstrap.js"
     "./bower_components/lodash/lodash.js"
     './bower_components/backbone/backbone.js'
   ]).pipe(concat("libs.js"))
     .pipe(gulp.dest("./dist/js/"))
 
 gulp.task "copy_fonts", ->
-  return gulp.src(["./bower_components/bootstrap/dist/fonts/*"]).pipe(gulp.dest("./dist/fonts/"))
+  return gulp.src(["./node_modules/bootstrap/dist/fonts/*"]).pipe(gulp.dest("./dist/fonts/"))
 
 gulp.task "index_css", ->
  return gulp.src("./src/index.css")
