@@ -18,6 +18,17 @@ describe 'AnswerValidator', ->
         result = @answerValidator.validate(question, answer)
         assert.equal null, result
 
+      it "returns null for required but disabled questions' value that are null or empty", ->
+        answer = {value: null}
+        question = {format: 'url', disabled: true, required: true}
+
+        result = @answerValidator.validate(question, answer)
+        assert.equal null, result
+
+        answer = {value: ''}
+        result = @answerValidator.validate(question, answer)
+        assert.equal null, result
+
       it "returns an error for required value that are null or empty", ->
         answer = {value: null}
         question = {format: 'url', required: true}

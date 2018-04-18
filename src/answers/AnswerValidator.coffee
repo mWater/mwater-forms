@@ -13,6 +13,9 @@ module.exports = class AnswerValidator
     if answer.alternate?
       return null
 
+    if question.disabled?
+      return null
+
     # Check required and answered
     if question.required
       if not answer.value? or answer.value == ''
