@@ -317,6 +317,18 @@ exports.duplicateItem = (item, idMap) ->
     dup.contents = _.map dup.contents, (item) =>
       exports.duplicateItem(item, idMap)
 
+  if dup.calculations
+    calculations = _.map dup.calculations, (item) =>
+      exports.duplicateItem(item, idMap)
+
+    calculations = JSON.stringify(calculations)
+    # Replace each part of idMap
+    for key, value of idMap
+      calculations = calculations.replace(new RegExp(_.escapeRegExp(key), "g"), value)
+
+    calculations = JSON.parse(calculations)
+    dup.calculations = calculations
+
   return dup
 
 # Finds all localized strings in an object

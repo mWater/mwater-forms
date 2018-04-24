@@ -23,7 +23,7 @@ describe "FormUtils", ->
 
       it "correctly handles sections as item", ->
         priors = formUtils.priorQuestions(sectionedForm, sectionedForm.contents[1])
-        assert.deepEqual _.pluck(priors, "_id"), ['0001', '0002', '0003', '0004']
+        assert.deepEqual _.pluck(priors, "_id"), ['0001', '0002', '0003', '0004', 'N0005']
 
       it 'includes group contents', ->
         form = {
@@ -184,6 +184,38 @@ describe "FormUtils", ->
     it "removes conditions which reference non-present questions", ->
       @duplicate = formUtils.duplicateItem(sectionedForm.contents[1])
       assert.equal @duplicate.contents[0].conditions.length, 0
+
+    describe "duplicates form calculations", ->
+      before ->
+        sectionedForm['calculations'] = [
+          {
+            _id: "calc1",
+            name: { en: "Calculation 1", _base: "en" },
+            expr: {
+              type: "op",
+              op: "/",
+              table: "responses:f1",
+              exprs: [
+                {
+                  column: "data:N0005:value",
+                  table: "responses:f1",
+                  type: "field"
+                },
+                {
+                    value: 10,
+                    type: "literal"
+                }
+              ],
+            }
+          }
+        ]
+        @duplicate = formUtils.duplicateItem(sectionedForm)
+      
+      it "regenerates calculation IDs", ->
+        assert.notEqual @duplicate.calculations[0]._id, sectionedForm.calculations[0]._id
+
+      it "calculation column references new IDs", ->
+        assert.equal @duplicate.calculations[0].expr.exprs[0].column.split(":")[1], @duplicate.contents[0].contents[4]._id
 
     describe "duplicate form", ->
       before ->

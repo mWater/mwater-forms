@@ -39,6 +39,13 @@ questions1 = [
     hint: {}
     conditions: []
   }
+  {
+    _id: "N0005"
+    _type: "NuberQuestion"
+    text: { _base: "en", en: "Any comments?" } 
+    hint: {}
+    conditions: []
+  }
 ]
 
 section1 = {

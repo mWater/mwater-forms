@@ -360,7 +360,7 @@ describe "ResponseDataValidator", ->
       visibilityCalculator = new VisibilityCalculator(@design)
       visibilityCalculator.createVisibilityStructure(data, @responseRow, (error, visibilityStructure) =>
         result = validator.validate(@design, visibilityStructure, data)
-        debugger
+        # debugger
         assert.equal result.questionId, 'matrix01.item2.a'
         assert.equal result.error, true
         done()
