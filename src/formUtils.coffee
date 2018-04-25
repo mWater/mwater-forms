@@ -286,6 +286,8 @@ exports.duplicateItem = (item, idMap) ->
       # Map non-mapped ones
       if not idMap[question._id]
         idMap[question._id] = exports.createUid()
+  else if item._id
+    idMap[item._id] = exports.createUid()
 
   dup = _.cloneDeep(item)
 

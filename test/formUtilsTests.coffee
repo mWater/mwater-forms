@@ -208,11 +208,34 @@ describe "FormUtils", ->
               ],
             }
           }
+          {
+            _id: "calc2",
+            name: { en: "Calculation 2", _base: "en" },
+            expr: {
+              type: "op",
+              op: "/",
+              table: "responses:f1",
+              exprs: [
+                {
+                  column: "calculation:calc1",
+                  table: "responses:f1",
+                  type: "field"
+                },
+                {
+                    value: 10,
+                    type: "literal"
+                }
+              ],
+            }
+          }
         ]
         @duplicate = formUtils.duplicateItem(sectionedForm)
       
       it "regenerates calculation IDs", ->
         assert.notEqual @duplicate.calculations[0]._id, sectionedForm.calculations[0]._id
+      
+      it "properly updates calculations references within calculations", ->
+        assert.equal @duplicate.calculations[1].expr.exprs[0].column.split(":")[1], @duplicate.calculations[0]._id
 
       it "calculation column references new IDs", ->
         assert.equal @duplicate.calculations[0].expr.exprs[0].column.split(":")[1], @duplicate.contents[0].contents[4]._id
