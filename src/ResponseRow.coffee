@@ -31,6 +31,7 @@ module.exports = class ResponseRow
     @rosterEntryIndex = options.rosterEntryIndex
     @getEntityById = options.getEntityById
     @getEntityByCode = options.getEntityByCode
+    @deployment = options.deployment
 
   # Gets the response row for a roster entry
   getRosterResponseRow: (rosterId, rosterEntryIndex) ->
@@ -53,6 +54,9 @@ module.exports = class ResponseRow
     # Go into roster
     if @rosterId
       data = @responseData[@rosterId][@rosterEntryIndex].data
+
+    if columnId == "deployment"
+      return callback(null, @deployment)
 
     # Handle "response" of roster
     if columnId == "response" and @rosterId

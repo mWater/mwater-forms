@@ -25,6 +25,7 @@ module.exports = class FormComponent extends React.Component
 
     schema: PropTypes.object.isRequired  # Schema to use, including form
 
+    deployment: PropTypes.string.isRequired  # The current deployment
     locale: PropTypes.string          # e.g. "fr"
     
     onSubmit: PropTypes.func                # Called when submit is pressed
@@ -97,7 +98,8 @@ module.exports = class FormComponent extends React.Component
       formDesign: @props.design
       schema: @props.schema
       getEntityById: @props.formCtx.getEntityById
-      getEntityByCode: @props.formCtx.getEntityByCode
+      getEntityByCode: @props.formCtx.getEntityByCodes
+      deployment: @props.deployment
     })
 
   handleDataChange: (data) =>
