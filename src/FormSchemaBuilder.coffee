@@ -174,11 +174,11 @@ module.exports = class FormSchemaBuilder
               name: { en: "Index" }
             }
           ]
+          name = appendStr(appendStr(form.design.name, ": "), item.name)
         else
           # Use existing contents
           contents = schema.getTable("responses:#{form._id}:roster:#{item.rosterId}").contents.slice()
-
-        
+          name = schema.getTable("responses:#{form._id}:roster:#{item.rosterId}").name
 
         # Add contents
         for rosterItem in item.contents
@@ -186,7 +186,7 @@ module.exports = class FormSchemaBuilder
           
         schema = schema.addTable({
           id: "responses:#{form._id}:roster:#{item.rosterId or item._id}"
-          name: appendStr(appendStr(form.design.name, ": "), item.name)
+          name: name
           primaryKey: "_id"
           ordering: "index"
           contents: contents
