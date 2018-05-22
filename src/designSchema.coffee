@@ -404,6 +404,9 @@ module.exports = {
         # Condition expression (mwater-expression) for visiblity of the group
         conditionExpr: { type: "object" }
 
+        # True if the roster group is disabled (will never be shown in live form)
+        disabled: { type: "boolean" }
+
         # Allow user to add items
         allowAdd: { type: "boolean" }
 
@@ -443,6 +446,9 @@ module.exports = {
 
         # Condition expression (mwater-expression) for visiblity of the matrix
         conditionExpr: { type: "object" }
+
+        # True if the roster matrix is disabled (will never be shown in live form)
+        disabled: { type: "boolean" }
 
         # Allow user to add items
         allowAdd: { type: "boolean" }
@@ -533,6 +539,9 @@ module.exports = {
 
         # Condition expression (mwater-expression) for visiblity of the group
         conditionExpr: { type: "object" }
+
+        # True if the group is disabled (will never be shown in live form)
+        disabled: { type: "boolean" }
 
         # Contains a list of items
         contents: {
