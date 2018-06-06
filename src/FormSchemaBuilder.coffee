@@ -87,6 +87,7 @@ module.exports = class FormSchemaBuilder
       primaryKey: "_id"
       contents: contents
       ordering: "submittedOn"
+      label: "code"
     })
 
     # Add reverse joins from entity and site questions
