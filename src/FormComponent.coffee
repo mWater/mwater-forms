@@ -56,6 +56,9 @@ module.exports = class FormComponent extends React.Component
       T: @createLocalizer(@props.design, @props.locale)
     }
 
+    # Save which data visibility structure applies to
+    @currentData = null
+
   getChildContext: -> 
     _.extend({}, @props.formCtx, {
       T: @state.T
@@ -66,6 +69,11 @@ module.exports = class FormComponent extends React.Component
   componentWillReceiveProps: (nextProps) ->
     if @props.design != nextProps.design or @props.locale != nextProps.locale
       @setState(T: @createLocalizer(nextProps.design, nextProps.locale))
+
+  componentDidUpdate: (prevProps) ->
+    # When data change is external, process it to set visibility, etc.
+    if prevProps.data != @props.data and not _.isEqual(prevProps.data, @currentData)
+      @handleDataChange(@props.data)
 
   # This will clean the data that has been passed at creation
   # It will also initialize the visibilityStructure
@@ -109,6 +117,7 @@ module.exports = class FormComponent extends React.Component
     responseCleaner = new ResponseCleaner()
 
     # Immediately update data, as another answer might be clicked on (e.g. blur from a number input and clicking on a radio answer)
+    @currentData = data
     @props.onDataChange(data)
 
     # Clean response data, remembering which data object is being cleaned
@@ -127,6 +136,7 @@ module.exports = class FormComponent extends React.Component
       @setState(visibilityStructure: results.visibilityStructure)
       # Ignore if unchanged
       if not _.isEqual(data, results.data)
+        @currentData = results.data
         @props.onDataChange(results.data)
 
   handleNext: () =>
