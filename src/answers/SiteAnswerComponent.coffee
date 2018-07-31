@@ -20,7 +20,7 @@ module.exports = class SiteAnswerComponent extends React.Component
     siteTypes: PropTypes.array
 
   constructor: (props) ->
-    super
+    super(props)
     
     @state = {text: props.value?.code or ""}
 

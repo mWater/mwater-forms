@@ -14,8 +14,8 @@ module.exports = class AdminRegionSelectComponent extends AsyncLoadComponent
     onChange: PropTypes.func.isRequired  # Called with new id
     T: PropTypes.func.isRequired  # Localizer to use
 
-  componentWillMount: ->
-    super
+  componentWillMount: (props) ->
+    super(props)
 
     # Get countries initially
     @props.getSubAdminRegions(null, 0, (error, level0s) =>

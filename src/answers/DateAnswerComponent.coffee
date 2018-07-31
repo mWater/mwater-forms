@@ -21,7 +21,7 @@ module.exports = class DateAnswerComponent extends React.Component
     format: "YYYY-MM-DD"
 
   constructor: (props) ->
-    super
+    super(props)
     @updateState(props)
 
   componentWillReceiveProps: (nextProps) =>

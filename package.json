@@ -8,9 +8,14 @@
   },
   "repository": "git@github.com:mWater/mwater-forms.git",
   "scripts": {
-    "test": "gulp test",
+    "test": "mocha -r coffeescript/register -r handlebars -r jsdom-global/register --recursive \"test/**/*Tests.coffee\"",
     "storybook": "gulp prepare_storybook && start-storybook -s . -p 6009",
     "build-storybook": "build-storybook"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm test"
+    }
   },
   "style": "./src/index.css",
   "author": "Clayton Grassick",
@@ -46,8 +51,8 @@
     "canonical-json": "0.0.4",
     "chai": "^2.0.0",
     "coffee-loader": "^0.7.3",
-    "coffeescript": "^1.7.1",
     "coffeeify": "^1.2.0",
+    "coffeescript": "^1.7.1",
     "glob": "^4.3.5",
     "gulp": "git://github.com/gulpjs/gulp.git#4.0",
     "gulp-coffee": "^2.3.1",
@@ -55,7 +60,10 @@
     "gulp-rework": "^1.1.0",
     "gulp-util": "^3.0.3",
     "handlebars-loader": "^1.4.0",
+    "husky": "^1.0.0-rc.13",
     "jjv": "^1.0.0",
+    "jsdom": "11.12.0",
+    "jsdom-global": "3.0.2",
     "mocha": "^2.3.3",
     "mocha-loader": "^1.1.1",
     "react-addons-test-utils": "^15.0.1",

@@ -17,9 +17,6 @@ module.exports = class LocationAnswerComponent extends React.Component
     value: PropTypes.object
     onValueChange: PropTypes.func.isRequired
 
-  constructor: (props) ->
-    super
-
   focus: () ->
     # Nothing to focus
     null

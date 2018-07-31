@@ -19,8 +19,8 @@ module.exports = class AdminRegionAnswerComponent extends React.Component
     value: PropTypes.string     # id of admin region
     onChange: PropTypes.func.isRequired  # Called with new id
 
-  constructor: ->
-    super
+  constructor: (props) ->
+    super(props)
     @state = {
       waiting: false # True when waiting for gps
       error: null

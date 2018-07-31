@@ -29,7 +29,7 @@ module.exports = class AquagenxCBTAnswerComponent extends React.Component
     value: {image: null, cbt: null}
 
   constructor: (props) ->
-    super
+    super(props)
 
     @state = { imageModal: null, aquagenxModal: null }
 

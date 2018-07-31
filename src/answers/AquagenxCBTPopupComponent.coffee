@@ -62,7 +62,7 @@ module.exports = class AquagenxCBTPopupComponent extends React.Component
     onClose: PropTypes.func.isRequired
 
   constructor: (props) ->
-    super
+    super(props)
 
     value = _.clone(props.value) or {}
     if not value.cbt?

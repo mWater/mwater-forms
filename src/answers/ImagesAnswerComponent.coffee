@@ -17,8 +17,8 @@ module.exports = class ImagesAnswerComponent extends React.Component
     onImagelistChange: PropTypes.func      # Called when image list changed
     consentPrompt: PropTypes.string    # Question to prompt for consent
 
-  constructor: ->
-    super
+  constructor: (props) ->
+    super(props)
 
     @state = { modalImageId: null } # Image id of modal. null if not open
 

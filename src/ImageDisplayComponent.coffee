@@ -12,8 +12,8 @@ module.exports = class ImageDisplayComponent extends React.Component
     imageManager: PropTypes.object.isRequired
     T: PropTypes.func.isRequired
 
-  constructor: ->
-    super
+  constructor: (props) ->
+    super(props)
     @state = { error: false, url: null, popup: false }
 
   componentDidMount: -> @update(@props)

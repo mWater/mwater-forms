@@ -61,8 +61,8 @@ module.exports = class QuestionComponent extends React.Component
     onNext: PropTypes.func
     schema: PropTypes.object.isRequired  # Schema to use, including form
 
-  constructor: ->
-    super
+  constructor: (props) ->
+    super(props)
 
     @state = {
       helpVisible: false    # True to display help

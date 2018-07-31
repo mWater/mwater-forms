@@ -24,8 +24,8 @@ module.exports = class RosterMatrixComponent extends React.Component
     isVisible: PropTypes.func.isRequired # (id) tells if an item is visible or not
     schema: PropTypes.object.isRequired  # Schema to use, including form
 
-  constructor: ->
-    super
+  constructor: (props) ->
+    super(props)
 
     @state = {
       validationErrors: {}  # Map of "<rowindex>_<columnid>" to validation error

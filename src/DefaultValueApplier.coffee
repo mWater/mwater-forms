@@ -1,3 +1,4 @@
+_ = require 'lodash'
 formUtils = require './formUtils'
 
 # The DefaultValueApplier applies a value stored in the stickyStorage as a default answer to a question.

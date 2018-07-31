@@ -21,7 +21,7 @@ module.exports = class UnitsAnswerComponent extends React.Component
     onNextOrComments: PropTypes.func
 
   constructor: (props) ->
-    super
+    super(props)
     @state = {quantity: @getSelectedQuantity(props.answer), selectedUnits: @getSelectedUnit(props.answer)}
 
   componentWillReceiveProps: (nextProps) ->

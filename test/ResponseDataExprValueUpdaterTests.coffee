@@ -1,3 +1,4 @@
+_ = require 'lodash'
 assert = require('chai').assert
 ResponseDataExprValueUpdater = require '../src/ResponseDataExprValueUpdater'
 Schema = require('mwater-expressions').Schema

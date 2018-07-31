@@ -1,3 +1,4 @@
+_ = require 'lodash'
 PropTypes = require('prop-types')
 React = require 'react'
 H = React.DOM
@@ -36,8 +37,8 @@ module.exports = class MatrixAnswerComponent extends React.Component
     responseRow: PropTypes.object    # ResponseRow object (for roster entry if in roster)
     schema: PropTypes.object.isRequired  # Schema to use, including form
 
-  constructor: ->
-    super
+  constructor: (props) ->
+    super(props)
 
     @state = {
       validationErrors: {}  # Map of "<item.id>_<column.id>" to validation error

@@ -21,8 +21,8 @@ module.exports = class TextExprsComponent extends React.Component
     locale: PropTypes.string        # locale (e.g. "en") to use
     markdown: PropTypes.bool        # True to render as markdown text
 
-  constructor: ->
-    super
+  constructor: (props) ->
+    super(props)
 
     @state = { 
       exprValueStrs: []    # Expression values strings to insert

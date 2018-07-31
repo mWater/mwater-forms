@@ -33,7 +33,7 @@ module.exports = class TimerComponent extends React.Component
     timer: PropTypes.object.isRequired # Design of instructions. See schema
 
   constructor: (props) ->
-    super
+    super(props)
     ticks = toTicks(props.value)
     @state =
       elapsedTicks: ticks # Tick count

@@ -1,3 +1,4 @@
+_ = require 'lodash'
 assert = require('chai').assert
 
 TestComponent = require('react-library/lib/TestComponent')

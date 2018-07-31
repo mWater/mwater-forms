@@ -29,7 +29,7 @@ module.exports = class StopwatchAnswerComponent extends React.Component
     T: PropTypes.func.isRequired  # Localizer to use
 
   constructor: (props) ->
-    super
+    super(props)
     ticks = toTicks(props.value)
     @state =
       elapsedTicks: ticks # Tick count

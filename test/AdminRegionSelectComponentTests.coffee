@@ -62,7 +62,7 @@ describe 'AdminRegionSelectComponent', ->
     @render(value: null, getSubAdminRegions: (->))
     _.defer () =>
       divs = ReactTestUtils.scryRenderedDOMComponentsWithTag(@comp, "div")
-      assert.match divs[0].innerText, /loading/i
+      assert.match divs[0].textContent, /loading/i
       done()
 
   it "displays country when getSubAdminRegions not called back with value", (done) ->
@@ -79,7 +79,7 @@ describe 'AdminRegionSelectComponent', ->
     @render(value: "canada", getAdminRegionPath: (->))
     _.defer () =>
       divs = ReactTestUtils.scryRenderedDOMComponentsWithTag(@comp, "div")
-      assert.match divs[0].innerText, /loading/i
+      assert.match divs[0].textContent, /loading/i
       done()
 
   it "shows second dropdown with second level when country selected", (done) ->
