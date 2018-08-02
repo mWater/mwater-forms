@@ -90,11 +90,11 @@ module.exports = class FormSchemaBuilder
       label: "code"
     })
 
+    # Add any roster tables
+    schema = @addRosterTables(schema, form, conditionsExprCompiler, reverseJoins)
+
     # Add reverse joins from entity and site questions
     schema = @addReverseJoins(schema, form, reverseJoins)
-
-    # Add any roster tables
-    schema = @addRosterTables(schema, form, conditionsExprCompiler)
 
     if isAdmin
       schema = @addConfidentialData(schema, form, conditionsExprCompiler)
@@ -151,7 +151,7 @@ module.exports = class FormSchemaBuilder
 
     return schema
 
-  addRosterTables: (schema, form, conditionsExprCompiler) ->
+  addRosterTables: (schema, form, conditionsExprCompiler, reverseJoins) ->
     # For each item
     for item in formUtils.allItems(form.design)
       if item._type in ["RosterGroup", "RosterMatrix"]
@@ -183,7 +183,7 @@ module.exports = class FormSchemaBuilder
 
         # Add contents
         for rosterItem in item.contents
-          @addFormItem(rosterItem, contents, "responses:#{form._id}:roster:#{item.rosterId or item._id}", conditionsExprCompiler)
+          @addFormItem(rosterItem, contents, "responses:#{form._id}:roster:#{item.rosterId or item._id}", conditionsExprCompiler, null, reverseJoins)
           
         schema = schema.addTable({
           id: "responses:#{form._id}:roster:#{item.rosterId or item._id}"
@@ -1044,6 +1044,52 @@ module.exports = class FormSchemaBuilder
                     exprs: [
                       { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "question" }, item._id] }
                       { type: "op", op: "is null", exprs: [{ type: "field", tableAlias: "response_entities", column: "roster" }] }
+                      { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "entityType" }, entityType] }
+                      { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "property" }, "code"] }
+                      { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "value" }, { type: "field", tableAlias: "{from}", column: "code" }] }
+                    ]
+                  }
+                }
+              ]
+            }
+
+            reverseJoin = {
+              table: "entities.#{entityType}"
+              column: {
+                id: "#{tableId}:data:#{item._id}:value"
+                # Form name is not available here. Prefix later.
+                name: item.text
+                type: "join"
+                join: {
+                  type: "1-n"
+                  toTable: tableId
+                  jsonql: jsonql
+                }
+              }
+            }
+            reverseJoins.push(reverseJoin)
+
+          # Add reverse join if from responses roster table
+          if tableId.match(/^responses:[^:]+:roster:[^:]+$/)
+            formId = tableId.split(":")[1]
+            rosterId = tableId.split(":")[3]
+
+            # Use {to}._id in (select roster from response_entities where question = 'site1' and "entityType" = 'water_point' and property = 'code' and value = {from}."code"))
+            # for indexed speed
+            jsonql = {
+              type: "op"
+              op: "in"
+              exprs: [
+                { type: "field", tableAlias: "{to}", column: "_id" }
+                {
+                  type: "scalar"
+                  expr: { type: "field", tableAlias: "response_entities", column: "roster" }
+                  from: { type: "table", table: "response_entities", alias: "response_entities" }
+                  where: {
+                    type: "op"
+                    op: "and"
+                    exprs: [
+                      { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "question" }, item._id] }
                       { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "entityType" }, entityType] }
                       { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "property" }, "code"] }
                       { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "value" }, { type: "field", tableAlias: "{from}", column: "code" }] }

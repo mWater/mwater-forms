@@ -96,6 +96,77 @@ describe "FormSchemaBuilder addForm", ->
       ]
     }
 
+  it "adds form join to entity for site question in roster", ->
+    # Add water point table
+    schema = new Schema()
+    schema = schema.addTable({
+      id: "entities.water_point"
+      name: { en: "Water Points" }
+      contents: [
+        { id: "name", name: { en: "Name" }, type: "text" }
+      ]
+    })
+
+    # Add form with one site question
+    form = {
+      _id: "formid"
+      design: {
+        _type: "Form"
+        name: { en: "Form" }
+        contents: [{
+          _id: "roster1"
+          _type: "RosterGroup"
+          name: { en: "Roster1" }
+          contents: [
+            { 
+              _id: "site1"
+              _type: "SiteQuestion" 
+              text: { en: "Site1" }
+              siteTypes: ["Water point"]
+            } 
+          ]
+        }]
+      }
+    }
+
+    schema = new FormSchemaBuilder().addForm(schema, form)
+
+    # Check that section exists
+    section = _.findWhere(schema.getTable("entities.water_point").contents, { id: "!related_forms" })
+    assert section
+    assert.equal section.contents.length, 1
+
+    # Check that join to form is present
+    column = schema.getColumn("entities.water_point", "responses:formid:roster:roster1:data:site1:value")
+    assert column, "Column should exist"
+    assert.equal column.name.en, "Form" # "Form: Site1" Use only form name since one link only
+    assert.equal column.type, "join"
+    assert.equal column.join.type, "1-n"
+    assert.equal column.join.toTable, "responses:formid:roster:roster1"
+    # Use {to}._id in (select roster from response_entities where question = 'site1' and "entityType" = 'water_point' and property = 'code' and value = {from}."code"))
+    compare column.join.jsonql, {
+      type: "op"
+      op: "in"
+      exprs: [
+        { type: "field", tableAlias: "{to}", column: "_id" }
+        {
+          type: "scalar"
+          expr: { type: "field", tableAlias: "response_entities", column: "roster" }
+          from: { type: "table", table: "response_entities", alias: "response_entities" }
+          where: {
+            type: "op"
+            op: "and"
+            exprs: [
+              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "question" }, "site1"] }
+              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "entityType" }, "water_point"] }
+              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "property" }, "code"] }
+              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "value" }, { type: "field", tableAlias: "{from}", column: "code" }] }
+            ]
+          }
+        }
+      ]
+    }
+
   it "adds form join to entity for entity question", ->
     # Add water point table
     schema = new Schema()

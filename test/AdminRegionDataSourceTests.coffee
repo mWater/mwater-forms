@@ -4,9 +4,10 @@ assert = require('chai').assert
 AdminRegionDataSource = require '../src/AdminRegionDataSource'
 
 describe 'AdminRegionDataSource', ->
+  @timeout(10000)
+  
   before ->
     @dataSource = new AdminRegionDataSource("https://api.mwater.co/v3/")
-
   it "gets countries and then one in particular", (done) ->
     @dataSource.getSubAdminRegions null, 0, (error, items) =>
       assert not error, "getSubAdminRegions:" + error?.message
