@@ -648,4 +648,98 @@ describe "ResponseDataExprValueUpdater", ->
       )
     )
 
+  describe "CBT tests", ->
+      beforeEach ->
+        formDesign = {
+          _type: "Form"
+          contents: [
+            {
+              _id: "q1234"
+              _type: "AquagenxCBTQuestion"
+              text: { en: "Q1234" }
+            }
+          ]
+        }
 
+        @updater = new ResponseDataExprValueUpdater(formDesign, null, null)
+
+      it "updates mpn individually", (done) ->
+        # mpn
+        expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:cbt:mpn" }
+
+        @updater.updateData({}, expr, 4, (error, data) =>
+          assert not error
+          compare data, { q1234: { value: { cbt: {mpn: 4} } } }
+          done()
+        )
+
+      it "updates mpn existing data", (done) ->
+        # mpn
+        expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:cbt:mpn" }
+
+        @updater.updateData({ q1234: { value: { cbt: {mpn: 4, confidence: 80, healthRisk: 'Unsafe'} } } }, expr, 6, (error, data) =>
+          assert not error
+          compare data, { q1234: { value: { cbt: {mpn: 6, confidence: 80, healthRisk: 'Unsafe'} } } }
+          done()
+        )
+
+      it "updates confidence individually", (done) ->
+        # confidence
+        expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:cbt:confidence" }
+
+        @updater.updateData({}, expr, 4, (error, data) =>
+          assert not error
+          compare data, { q1234: { value: { cbt: {confidence: 4} } } }
+          done()
+        )
+
+      it "updates confidence existing data", (done) ->
+        # confidence
+        expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:cbt:confidence" }
+
+        @updater.updateData({ q1234: { value: { cbt: {mpn: 4, confidence: 80, healthRisk: 'Unsafe'} } } }, expr, 96, (error, data) =>
+          assert not error
+          compare data, { q1234: { value: { cbt: {mpn: 4, confidence: 96, healthRisk: 'Unsafe'} } } }
+          done()
+        )
+
+
+      it "updates healthRisk individually", (done) ->
+        # healthRisk
+        expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:cbt:healthRisk" }
+
+        @updater.updateData({}, expr, 4, (error, data) =>
+          assert not error
+          compare data, { q1234: { value: { cbt: {healthRisk: 4} } } }
+          done()
+        )
+
+      it "updates healthRisk existing data", (done) ->
+        # healthRisk
+        expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:cbt:healthRisk" }
+
+        @updater.updateData({ q1234: { value: { cbt: {mpn: 4, confidence: 80, healthRisk: 'Unsafe'} } } }, expr, 'High Risk/Probably Unsafe', (error, data) =>
+          assert not error
+          compare data, { q1234: { value: { cbt: {mpn: 4, confidence: 80, healthRisk: 'High Risk/Probably Unsafe'} } } }
+          done()
+        )
+
+      it "updates image individually", (done) ->
+        # mpn
+        expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:image" }
+
+        @updater.updateData({}, expr, 'https://api.mwater.co/v3/images/abc', (error, data) =>
+          assert not error
+          compare data, { q1234: { value: { image: 'https://api.mwater.co/v3/images/abc' } } }
+          done()
+        )
+
+      it "updates image existing data", (done) ->
+        # mpn
+        expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:image" }
+
+        @updater.updateData({ q1234: { value: { image: 'https://api.mwater.co/v3/images/abc' } } }, expr, 'https://api.mwater.co/v3/images/xyz', (error, data) =>
+          assert not error
+          compare data, { q1234: { value: { image: 'https://api.mwater.co/v3/images/xyz' } } }
+          done()
+        )

@@ -110,6 +110,26 @@ module.exports = class ResponseDataExprValueUpdater
       @updateLocationAccuracy(data, expr, value, callback)
       return
 
+    # Handle CBT mpn
+    if expr.type == "field" and expr.column.match(/^data:[^:]+:value:cbt:mpn$/)
+      @updateCBTMPN(data, expr, value, callback)
+      return
+    
+    # Handle CBT confidence
+    if expr.type == "field" and expr.column.match(/^data:[^:]+:value:cbt:confidence$/)
+      @updateCBTConfidence(data, expr, value, callback)
+      return
+    
+    # Handle CBT healthRisk
+    if expr.type == "field" and expr.column.match(/^data:[^:]+:value:cbt:healthRisk$/)
+      @updateCBTHealthRisk(data, expr, value, callback)
+      return
+    
+    # Handle CBT image
+    if expr.type == "field" and expr.column.match(/^data:[^:]+:value:image$/)
+      @updateCBTImage(data, expr, value, callback)
+      return
+    
     # Handle Likert (items_choices) and Matrix
     if expr.type == "field" and expr.column.match(/^data:[^:]+:value:.+$/)
       question = @formItems[expr.column.match(/^data:([^:]+):value:.+$/)[1]]
@@ -223,6 +243,41 @@ module.exports = class ResponseDataExprValueUpdater
 
     answer = data[question._id] or {}
     return callback(null, @setValue(data, question, _.extend({}, answer.value or {}, units: value)))
+
+  updateCBTMPN: (data, expr, value, callback) ->
+    question = @formItems[expr.column.match(/^data:([^:]+):value:cbt:mpn$/)[1]]
+    if not question
+      return callback(new Error("Question #{expr.column} not found"))
+
+    answer = data[question._id] or {}
+    cbt = _.extend({}, answer.value?.cbt or {}, mpn: value)
+    return callback(null, @setValue(data, question, _.extend({}, answer.value or {}, cbt: cbt)))
+
+  updateCBTConfidence: (data, expr, value, callback) ->
+    question = @formItems[expr.column.match(/^data:([^:]+):value:cbt:confidence$/)[1]]
+    if not question
+      return callback(new Error("Question #{expr.column} not found"))
+
+    answer = data[question._id] or {}
+    cbt = _.extend({}, answer.value?.cbt or {}, confidence: value)
+    return callback(null, @setValue(data, question, _.extend({}, answer.value or {}, cbt: cbt)))
+  
+  updateCBTHealthRisk: (data, expr, value, callback) ->
+    question = @formItems[expr.column.match(/^data:([^:]+):value:cbt:healthRisk$/)[1]]
+    if not question
+      return callback(new Error("Question #{expr.column} not found"))
+
+    answer = data[question._id] or {}
+    cbt = _.extend({}, answer.value?.cbt or {}, healthRisk: value)
+    return callback(null, @setValue(data, question, _.extend({}, answer.value or {}, cbt: cbt)))
+  
+  updateCBTImage: (data, expr, value, callback) ->
+    question = @formItems[expr.column.match(/^data:([^:]+):value:image$/)[1]]
+    if not question
+      return callback(new Error("Question #{expr.column} not found"))
+
+    answer = data[question._id] or {}
+    return callback(null, @setValue(data, question, _.extend({}, answer.value or {}, image: value)))
 
   updateEnumsetContains: (data, expr, value, callback) ->
     question = @formItems[expr.exprs[0].column.match(/^data:([^:]+):value$/)[1]]
