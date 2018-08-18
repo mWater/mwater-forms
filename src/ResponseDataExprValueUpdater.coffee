@@ -110,22 +110,13 @@ module.exports = class ResponseDataExprValueUpdater
       @updateLocationAccuracy(data, expr, value, callback)
       return
 
-    # Handle CBT mpn
-    if expr.type == "field" and expr.column.match(/^data:[^:]+:value:cbt:mpn$/)
-      @updateCBTMPN(data, expr, value, callback)
+    # Handle CBT fields
+    if expr.type == "field" and matches = expr.column.match(/^data:[^:]+:value:cbt:(mpn|c1|c2|c3|c4|c5|confidence|healthRisk)$/)
+      @updateCBTField(data, expr, value, matches[1], callback)
       return
-    
-    # Handle CBT confidence
-    if expr.type == "field" and expr.column.match(/^data:[^:]+:value:cbt:confidence$/)
-      @updateCBTConfidence(data, expr, value, callback)
-      return
-    
-    # Handle CBT healthRisk
-    if expr.type == "field" and expr.column.match(/^data:[^:]+:value:cbt:healthRisk$/)
-      @updateCBTHealthRisk(data, expr, value, callback)
-      return
-    
-    # Handle CBT image
+
+    # Handle CBT image 
+    # TODO: This does not just match an AquagenX question but any thing that has image property besides value!
     if expr.type == "field" and expr.column.match(/^data:[^:]+:value:image$/)
       @updateCBTImage(data, expr, value, callback)
       return
@@ -244,31 +235,16 @@ module.exports = class ResponseDataExprValueUpdater
     answer = data[question._id] or {}
     return callback(null, @setValue(data, question, _.extend({}, answer.value or {}, units: value)))
 
-  updateCBTMPN: (data, expr, value, callback) ->
-    question = @formItems[expr.column.match(/^data:([^:]+):value:cbt:mpn$/)[1]]
+  updateCBTField: (data, expr, value, cbtField, callback) ->
+    pattern = new RegExp("^data:([^:]+):value:cbt:#{cbtField}$")
+    question = @formItems[expr.column.match(pattern)[1]]
     if not question
       return callback(new Error("Question #{expr.column} not found"))
 
     answer = data[question._id] or {}
-    cbt = _.extend({}, answer.value?.cbt or {}, mpn: value)
-    return callback(null, @setValue(data, question, _.extend({}, answer.value or {}, cbt: cbt)))
-
-  updateCBTConfidence: (data, expr, value, callback) ->
-    question = @formItems[expr.column.match(/^data:([^:]+):value:cbt:confidence$/)[1]]
-    if not question
-      return callback(new Error("Question #{expr.column} not found"))
-
-    answer = data[question._id] or {}
-    cbt = _.extend({}, answer.value?.cbt or {}, confidence: value)
-    return callback(null, @setValue(data, question, _.extend({}, answer.value or {}, cbt: cbt)))
-  
-  updateCBTHealthRisk: (data, expr, value, callback) ->
-    question = @formItems[expr.column.match(/^data:([^:]+):value:cbt:healthRisk$/)[1]]
-    if not question
-      return callback(new Error("Question #{expr.column} not found"))
-
-    answer = data[question._id] or {}
-    cbt = _.extend({}, answer.value?.cbt or {}, healthRisk: value)
+    updates = {}
+    updates[cbtField] = value
+    cbt = _.extend({}, answer.value?.cbt or {}, updates)
     return callback(null, @setValue(data, question, _.extend({}, answer.value or {}, cbt: cbt)))
   
   updateCBTImage: (data, expr, value, callback) ->

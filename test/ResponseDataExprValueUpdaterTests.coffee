@@ -649,97 +649,106 @@ describe "ResponseDataExprValueUpdater", ->
     )
 
   describe "CBT tests", ->
-      beforeEach ->
-        formDesign = {
-          _type: "Form"
-          contents: [
-            {
-              _id: "q1234"
-              _type: "AquagenxCBTQuestion"
-              text: { en: "Q1234" }
-            }
-          ]
-        }
+    beforeEach ->
+      formDesign = {
+        _type: "Form"
+        contents: [
+          {
+            _id: "q1234"
+            _type: "AquagenxCBTQuestion"
+            text: { en: "Q1234" }
+          }
+        ]
+      }
 
-        @updater = new ResponseDataExprValueUpdater(formDesign, null, null)
+      @updater = new ResponseDataExprValueUpdater(formDesign, null, null)
 
-      it "updates mpn individually", (done) ->
-        # mpn
-        expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:cbt:mpn" }
+      @testIndividualCBTField = (field, value, done) =>
+        expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:cbt:#{field}" }
 
-        @updater.updateData({}, expr, 4, (error, data) =>
+        @updater.updateData({}, expr, value, (error, data) =>
           assert not error
-          compare data, { q1234: { value: { cbt: {mpn: 4} } } }
+          cbt = {}
+          cbt[field] = value
+          compare data, { q1234: { value: { cbt: cbt } } }
           done()
         )
 
-      it "updates mpn existing data", (done) ->
-        # mpn
-        expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:cbt:mpn" }
+      @testExistingCBTField = (field, value, done) =>
+        expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:cbt:#{field}" }
 
-        @updater.updateData({ q1234: { value: { cbt: {mpn: 4, confidence: 80, healthRisk: 'Unsafe'} } } }, expr, 6, (error, data) =>
+        @updater.updateData({ q1234: { value: { cbt: {mpn: 4, confidence: 80, healthRisk: 'Unsafe'} } } }, expr, value, (error, data) =>
           assert not error
-          compare data, { q1234: { value: { cbt: {mpn: 6, confidence: 80, healthRisk: 'Unsafe'} } } }
+          expected = { q1234: { value: { cbt: {mpn: 4, confidence: 80, healthRisk: 'Unsafe'} } } }
+          expected['q1234']['value']['cbt'][field] = value
+          compare data, expected
           done()
         )
 
-      it "updates confidence individually", (done) ->
-        # confidence
-        expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:cbt:confidence" }
+    it "updates c1 individually", (done) ->
+      @testIndividualCBTField('c1', 4, done)
 
-        @updater.updateData({}, expr, 4, (error, data) =>
-          assert not error
-          compare data, { q1234: { value: { cbt: {confidence: 4} } } }
-          done()
-        )
+    it "updates existing c1", (done) ->
+      @testIndividualCBTField('c1', 4, done)
 
-      it "updates confidence existing data", (done) ->
-        # confidence
-        expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:cbt:confidence" }
+    it "updates c2 individually", (done) ->
+      @testIndividualCBTField('c2', 4, done)
+      
+    it "updates existing c2", (done) ->
+      @testIndividualCBTField('c2', 4, done)
 
-        @updater.updateData({ q1234: { value: { cbt: {mpn: 4, confidence: 80, healthRisk: 'Unsafe'} } } }, expr, 96, (error, data) =>
-          assert not error
-          compare data, { q1234: { value: { cbt: {mpn: 4, confidence: 96, healthRisk: 'Unsafe'} } } }
-          done()
-        )
+    it "updates c3 individually", (done) ->
+      @testIndividualCBTField('c3', 4, done)
+      
+    it "updates existing c3", (done) ->
+      @testIndividualCBTField('c3', 4, done)
 
+    it "updates c4 individually", (done) ->
+      @testIndividualCBTField('c4', 4, done)
+      
+    it "updates existing c4", (done) ->
+      @testIndividualCBTField('c4', 4, done)
 
-      it "updates healthRisk individually", (done) ->
-        # healthRisk
-        expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:cbt:healthRisk" }
+    it "updates c5 individually", (done) ->
+      @testIndividualCBTField('c5', 4, done)
+      
+    it "updates existing c5", (done) ->
+      @testIndividualCBTField('c5', 4, done)
 
-        @updater.updateData({}, expr, 4, (error, data) =>
-          assert not error
-          compare data, { q1234: { value: { cbt: {healthRisk: 4} } } }
-          done()
-        )
+    it "updates mpn individually", (done) ->
+      @testIndividualCBTField('mpn', 4, done)
 
-      it "updates healthRisk existing data", (done) ->
-        # healthRisk
-        expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:cbt:healthRisk" }
+    it "updates mpn existing data", (done) ->
+      @testExistingCBTField('mpn', 6, done)
 
-        @updater.updateData({ q1234: { value: { cbt: {mpn: 4, confidence: 80, healthRisk: 'Unsafe'} } } }, expr, 'High Risk/Probably Unsafe', (error, data) =>
-          assert not error
-          compare data, { q1234: { value: { cbt: {mpn: 4, confidence: 80, healthRisk: 'High Risk/Probably Unsafe'} } } }
-          done()
-        )
+    it "updates confidence individually", (done) ->
+      @testIndividualCBTField('confidence', 4, done)
 
-      it "updates image individually", (done) ->
-        # mpn
-        expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:image" }
+    it "updates confidence existing data", (done) ->
+      @testExistingCBTField('confidence', 96, done)
 
-        @updater.updateData({}, expr, 'https://api.mwater.co/v3/images/abc', (error, data) =>
-          assert not error
-          compare data, { q1234: { value: { image: 'https://api.mwater.co/v3/images/abc' } } }
-          done()
-        )
+    it "updates healthRisk individually", (done) ->
+      @testIndividualCBTField('healthRisk', 4, done)
 
-      it "updates image existing data", (done) ->
-        # mpn
-        expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:image" }
+    it "updates healthRisk existing data", (done) ->
+      @testExistingCBTField('healthRisk', 'High Risk/Probably Unsafe', done)
+      
+    it "updates image individually", (done) ->
+      # mpn
+      expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:image" }
 
-        @updater.updateData({ q1234: { value: { image: 'https://api.mwater.co/v3/images/abc' } } }, expr, 'https://api.mwater.co/v3/images/xyz', (error, data) =>
-          assert not error
-          compare data, { q1234: { value: { image: 'https://api.mwater.co/v3/images/xyz' } } }
-          done()
-        )
+      @updater.updateData({}, expr, 'https://api.mwater.co/v3/images/abc', (error, data) =>
+        assert not error
+        compare data, { q1234: { value: { image: 'https://api.mwater.co/v3/images/abc' } } }
+        done()
+      )
+
+    it "updates image existing data", (done) ->
+      # mpn
+      expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:image" }
+
+      @updater.updateData({ q1234: { value: { image: 'https://api.mwater.co/v3/images/abc' } } }, expr, 'https://api.mwater.co/v3/images/xyz', (error, data) =>
+        assert not error
+        compare data, { q1234: { value: { image: 'https://api.mwater.co/v3/images/xyz' } } }
+        done()
+      )
