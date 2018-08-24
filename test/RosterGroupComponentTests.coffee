@@ -8,7 +8,7 @@ R = React.createElement
 H = React.DOM
 
 TestComponent = require('react-library/lib/TestComponent')
-ReactTestUtils = require('react-addons-test-utils')
+ReactTestUtils = require('react-dom/test-utils')
 RosterGroupComponent = require '../src/RosterGroupComponent'
 MockTContextWrapper = require './MockTContextWrapper'
 ResponseRow = require '../src/ResponseRow'
@@ -54,7 +54,8 @@ describe "RosterGroupComponent", ->
 
     @rosterGroup.allowAdd = true
     comp = @render(rosterGroup: @rosterGroup, data: {}, onDataChange: onDataChange)
-    TestComponent.click(comp.findDOMNodeByText(/add/i))
+    buttons = ReactTestUtils.scryRenderedDOMComponentsWithTag(comp.getComponent(), "button")
+    TestComponent.click(buttons[0])
 
   it "does not show add if add is disabled", ->
     comp = @render(rosterGroup: @rosterGroup, data: {})
@@ -97,7 +98,7 @@ describe "RosterGroupComponent", ->
     @rosterGroup.allowAdd = true
     @rosterGroup.rosterId = "b"
     comp = @render(rosterGroup: @rosterGroup, data: {}, onDataChange: onDataChange)
-    TestComponent.click(comp.findDOMNodeByText(/add/i))
+    TestComponent.click(ReactTestUtils.findRenderedDOMComponentWithTag(comp.getComponent(), "button"))
 
   it "displays prompt", ->
     comp = @render(rosterGroup: @rosterGroup, data: {})

@@ -183,6 +183,10 @@ module.exports = class RosterMatrixComponent extends React.Component
       getItemId: (entry) => entry._id
       element: H.tbody(null)
 
+  renderEmptyPrompt: ->
+    H.div style: { fontStyle: "italic" }, 
+      formUtils.localizeString(@props.rosterMatrix.emptyPrompt, @context.locale) or @context.T("Click +Add to add an item")
+
   render: ->
     H.div style: { padding: 5, marginBottom: 20 },
       @renderName()
@@ -190,9 +194,9 @@ module.exports = class RosterMatrixComponent extends React.Component
         @renderHeader()
         @renderBody()
 
-      # Display message if none
-      if @getAnswer().length == 0
-        H.div(style: { paddingLeft: 20 }, H.i(null, @context.T("None")))
+      # Display message if none and can add
+      if @getAnswer().length == 0 and @props.rosterMatrix.allowAdd
+        @renderEmptyPrompt()
 
       @renderAdd() 
 

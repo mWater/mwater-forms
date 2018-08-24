@@ -413,6 +413,9 @@ module.exports = {
         # Allow user to remove items
         allowRemove: { type: "boolean" }
 
+        # Prompt below when empty (defaults to "Click +Add to add an item")
+        emptyPrompt: { $ref: "#/definitions/localizedString" } 
+
         # Title of each entry
         entryTitle: { $ref: "#/definitions/localizedString" }
 
@@ -455,6 +458,9 @@ module.exports = {
 
         # Allow user to remove items
         allowRemove: { type: "boolean" }
+
+        # Prompt below matrix when empty (defaults to "Click +Add to add an item")
+        emptyPrompt: { $ref: "#/definitions/localizedString" } 
 
         # Contains a list of columns
         contents: {

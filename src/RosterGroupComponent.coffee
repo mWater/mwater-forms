@@ -107,13 +107,17 @@ module.exports = class RosterGroupComponent extends React.Component
           H.span className: "glyphicon glyphicon-plus"
           " " + @context.T("Add")
 
+  renderEmptyPrompt: ->
+    H.div style: { fontStyle: "italic" }, 
+      formUtils.localizeString(@props.rosterGroup.emptyPrompt, @context.locale) or @context.T("Click +Add to add an item")
+
   render: ->
     H.div style: { padding: 5, marginBottom: 20 },
       @renderName()
       _.map(@getAnswer(), (entry, index) => @renderEntry(entry, index))
 
-      # Display message if none
-      if @getAnswer().length == 0
-        H.div(style: { paddingLeft: 20 }, H.i(null, @context.T("None")))
+      # Display message if none and can add
+      if @getAnswer().length == 0 and @props.rosterGroup.allowAdd
+        @renderEmptyPrompt()
 
       @renderAdd() 

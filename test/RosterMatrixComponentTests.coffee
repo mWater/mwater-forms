@@ -57,7 +57,8 @@ describe "RosterMatrixComponent", ->
 
     @rosterMatrix.allowAdd = true
     comp = @render(rosterMatrix: @rosterMatrix, data: {}, onDataChange: onDataChange)
-    TestComponent.click(comp.findDOMNodeByText(/add/i))
+    buttons = ReactTestUtils.scryRenderedDOMComponentsWithTag(comp.getComponent(), "button")
+    TestComponent.click(buttons[0])
 
   it "does not show add if add is disabled", ->
     comp = @render(rosterMatrix: @rosterMatrix, data: {})
@@ -99,7 +100,7 @@ describe "RosterMatrixComponent", ->
     @rosterMatrix.allowAdd = true
     @rosterMatrix.rosterId = "b"
     comp = @render(rosterMatrix: @rosterMatrix, data: {}, onDataChange: onDataChange)
-    TestComponent.click(comp.findDOMNodeByText(/add/i))
+    TestComponent.click(ReactTestUtils.findRenderedDOMComponentWithTag(comp.getComponent(), "button"))
 
   it "displays prompt", ->
     comp = @render(rosterMatrix: @rosterMatrix, data: {})
