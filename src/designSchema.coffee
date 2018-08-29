@@ -303,6 +303,11 @@ module.exports = {
           items: { $ref: "#/definitions/validations/common" }
         }
 
+        validationExprs: {
+          type: "array"
+          items: { $ref: "#/definitions/validationExpr"}
+        }
+
         # _id of the item that this item is a duplicate of
         _basedOn : { $ref: "#/definitions/uuid" }
 
@@ -1233,6 +1238,15 @@ module.exports = {
           additionalProperties: false
         }
       }
-    }    
+    } 
+
+    # Expression-based validation
+    validationExpr: {
+      # mwater-expression that should evaluate to true
+      expr: { type: "object" }
+
+      # Message that is shown if expr is not true
+      message: { $ref: "#/definitions/localizedString" } 
+    }
   }
 }

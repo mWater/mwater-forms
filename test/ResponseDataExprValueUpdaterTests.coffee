@@ -7,7 +7,7 @@ canonical = require 'canonical-json'
 compare = (actual, expected) ->
   assert.equal canonical(actual), canonical(expected), "\n" + canonical(actual) + "\n" + canonical(expected) + "\n"
 
-describe "ResponseDataExprValueUpdater", ->
+describe.only "ResponseDataExprValueUpdater", ->
   describe "updates simple question values", ->
     beforeEach ->
       # Test updating a single value. newValue is optional different resulting value

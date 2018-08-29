@@ -22,9 +22,12 @@ module.exports = class ItemListComponent extends React.Component
     foundInvalid = false
     for item in @props.contents
       # Only if validation is possible
-      if @refs[item._id]?.validate?(scrollToFirstInvalid and not foundInvalid)
+      validationFunction = @refs[item._id]?.validate
+      if validationFunction
+        result = await validationFunction(scrollToFirstInvalid and not foundInvalid)
         # DO NOT BREAK, it's important to call validate on each item
-        foundInvalid = true
+        if result
+          foundInvalid = true
 
     return foundInvalid
 

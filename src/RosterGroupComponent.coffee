@@ -59,7 +59,9 @@ module.exports = class RosterGroupComponent extends React.Component
     # For each entry
     foundInvalid = false
     for entry, index in @getAnswer()
-      foundInvalid = foundInvalid or @refs["itemlist_#{index}"].validate(scrollToFirstInvalid)
+      result = await @refs["itemlist_#{index}"].validate(scrollToFirstInvalid and not foundInvalid)
+      if result
+        foundInvalid = true
 
     return foundInvalid
 

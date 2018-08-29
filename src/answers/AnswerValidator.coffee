@@ -1,9 +1,16 @@
 _ = require 'lodash'
 siteCodes = require '../siteCodes'
+ExprEvaluator = require('mwater-expressions').ExprEvaluator
+ValidationCompiler = require './ValidationCompiler'
 
 # AnswerValidator gets called when a form is submitted (or on next)
 # Only the validate method is not internal
 module.exports = class AnswerValidator
+  constructor: (schema, responseRow, locale) ->
+    @schema = schema
+    @responseRow = responseRow
+    @locale = locale
+
   # It returns null if everything is fine
   # It makes sure required questions are properly answered
   # It checks answer type specific validations
@@ -43,7 +50,15 @@ module.exports = class AnswerValidator
 
     # Check custom validation
     if question.validations?
-      return @compileValidations(question.validations)(answer)
+      return new ValidationCompiler(@locale).compileValidations(question.validations)(answer)
+
+    # if question.validationExprs? and @responseRow
+    #   for { expr, message } in question.validationExprs
+    #     # Evaluate expression
+    #     exprEvaluator = new ExprEvaluator(@schema)
+    #     value = await exprEvaluator.evaluate(expr, { row: @responseRow })
+    #     if value != true
+    #       return message
 
     return null
 
@@ -146,69 +161,8 @@ module.exports = class AnswerValidator
           return true
 
         if column.validations and column.validations.length > 0
-          validationError = new AnswerValidator().compileValidations(column.validations)(data)
+          validationError = new ValidationCompiler(@locale).compileValidations(column.validations)(data)
           if validationError
             return validationError
 
     return null
-
-  compileString: (str) =>
-    # If no base or null, return null
-    if not str? or not str._base
-      return null
-
-    # Return for locale if present
-    if str[@locale || "en"]
-      return str[@locale || "en"]
-
-    # Return base if present
-    return str[str._base] || ""
-
-  compileValidationMessage: (val) =>
-    str = @compileString(val.message)
-    if str
-      return str
-    return true
-
-  compileValidation: (val) =>
-    switch val.op
-      when "lengthRange"
-        return (answer) =>
-          value = if answer? and answer.value? then answer.value else ""
-          len = value.length
-          if val.rhs.literal.min? and len < val.rhs.literal.min
-            return @compileValidationMessage(val)
-          if val.rhs.literal.max? and len > val.rhs.literal.max
-            return @compileValidationMessage(val)
-          return null
-      when "regex"
-        return (answer) =>
-          value = if answer? and answer.value? then answer.value else ""
-          if value.match(val.rhs.literal)
-            return null
-          return @compileValidationMessage(val)
-      when "range"
-        return (answer) =>
-          value = if answer? and answer.value? then answer.value else 0
-          # For units question, get quantity
-          if value.quantity?
-            value = value.quantity
-
-          if val.rhs.literal.min? and value < val.rhs.literal.min
-            return @compileValidationMessage(val)
-          if val.rhs.literal.max? and value > val.rhs.literal.max
-            return @compileValidationMessage(val)
-          return null
-      else
-        throw new Error("Unknown validation op " + val.op)
-
-  compileValidations: (vals) =>
-    compVals = _.map(vals, @compileValidation)
-    return (answer) =>
-      for compVal in compVals
-        result = compVal(answer)
-        if result
-          return result
-
-      return null
-

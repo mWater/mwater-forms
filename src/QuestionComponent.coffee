@@ -129,7 +129,7 @@ module.exports = class QuestionComponent extends React.Component
       if answerInvalid
         return answerInvalid
 
-    validationError = new AnswerValidator().validate(@props.question, @getAnswer())
+    validationError = await new AnswerValidator(@props.schema, @props.responseRow).validate(@props.question, @getAnswer())
 
     # Check for isValid function in answer component, as some answer components don't store invalid answers
     # like the number answer.

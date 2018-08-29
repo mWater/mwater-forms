@@ -121,7 +121,7 @@ exports.compileCondition = compileCondition = (cond) =>
 
 # This code has been copied from FromCompiler
 exports.compileConditions = (conds) =>
-  compConds = _.map(conds, @compileCondition)
+  compConds = _.map(conds, compileCondition)
   return (data) =>
     for compCond in compConds
       if not compCond(data)

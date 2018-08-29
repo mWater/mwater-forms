@@ -35,7 +35,8 @@ module.exports = class SectionsComponent extends React.Component
     }
 
   handleSubmit: =>
-    if not @refs.itemListComponent.validate(true)
+    result = await @refs.itemListComponent.validate(true)
+    if not result
       @props.onSubmit()
 
   hasPreviousSection: ->
@@ -70,7 +71,8 @@ module.exports = class SectionsComponent extends React.Component
     # This should never happen... simply ignore
 
   handleNextSection: =>
-    if @refs.itemListComponent.validate(true)
+    result = await @refs.itemListComponent.validate(true)
+    if result
       return
 
     # Move to next that is visible

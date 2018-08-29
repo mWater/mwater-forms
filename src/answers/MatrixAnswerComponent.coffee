@@ -7,7 +7,7 @@ R = React.createElement
 formUtils = require '../formUtils'
 MatrixColumnCellComponent = require '../MatrixColumnCellComponent'
 
-AnswerValidator = require './AnswerValidator'
+ValidationCompiler = require './ValidationCompiler'
 
 # Matrix with columns and items
 module.exports = class MatrixAnswerComponent extends React.Component
@@ -73,7 +73,7 @@ module.exports = class MatrixAnswerComponent extends React.Component
           continue
 
         if column.validations and column.validations.length > 0
-          validationError = new AnswerValidator().compileValidations(column.validations)(data)
+          validationError = new ValidationCompiler(@context.locale).compileValidations(column.validations)(data)
           if validationError
             foundInvalid = true
             validationErrors[key] = validationError
