@@ -27,7 +27,7 @@ module.exports = class SectionsComponent extends React.Component
     onSaveLater: PropTypes.func             # Optional save for later
     onDiscard: PropTypes.func               # Called when discard is pressed
 
-  constructor: ->
+  constructor: (props) ->
     super(props)
 
     @state = {
