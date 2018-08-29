@@ -59,6 +59,8 @@ module.exports = class AnswerValidator
         return @validateSiteQuestion(question, answer)
       when "LikertQuestion"
         return @validateLikertQuestion(question, answer)
+      when "MatrixQuestion"
+        return @validateMatrixQuestion(question, answer)
       else
         return null
 
@@ -126,6 +128,27 @@ module.exports = class AnswerValidator
   validateNumberQuestion: (question, answer) ->
     if not answer.value? or answer.value == ''
       return null
+
+    return null
+
+  validateMatrixQuestion: (question, answer) ->
+    validationErrors = {}
+
+    # For each entry
+    for item, rowIndex in question.items
+      # For each column
+      for column, columnIndex in question.columns
+        key = "#{item.id}_#{column._id}"
+
+        data = answer.value?[item.id]?[column._id]
+
+        if column.required and (not data?.value? or data?.value == '')
+          return true
+
+        if column.validations and column.validations.length > 0
+          validationError = new AnswerValidator().compileValidations(column.validations)(data)
+          if validationError
+            return validationError
 
     return null
 

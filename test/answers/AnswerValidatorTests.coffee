@@ -327,3 +327,66 @@ describe 'AnswerValidator', ->
       }
 
       assert.equal null, @answerValidator.validate(question, answer)
+
+  describe "validateMatrixQuestion", ->
+    it "passes if ok", ->
+      question = {
+        _type: "MatrixQuestion"
+        items: [{id: 'itemAId'}]
+        columns: [{ _id: "c1", _type: "TextColumnQuestion", required: true }]
+      }
+
+      answer = {
+        value: {
+          "itemAId": {
+            "c1": { value: "xyz" }
+          }
+        }
+      }
+
+      assert.equal @answerValidator.validate(question, answer), null
+
+    it "validates required text question column", ->
+      question = {
+        _type: "MatrixQuestion"
+        items: [{id: 'itemAId'}]
+        columns: [{ _id: "c1", _type: "TextColumnQuestion", required: true }]
+      }
+
+      answer = {
+        value: {
+          "itemAId": {
+            "c1": { value: "" }
+          }
+        }
+      }
+
+      assert.equal @answerValidator.validate(question, answer), true
+
+    it "validates text question column", ->
+      question = {
+        _type: "MatrixQuestion"
+        items: [{id: 'itemAId'}]
+        columns: [{ 
+          _id: "c1"
+          _type: "TextColumnQuestion"
+          validations: [
+            {
+              op: "lengthRange"
+              rhs: { literal: { max: 6 } }
+              message: { _base: "en", en: "message" }
+            }
+          ]
+        }]
+      }
+
+      answer = {
+        value: {
+          "itemAId": {
+            "c1": { value: "toolong" }
+          }
+        }
+      }
+
+      assert.equal @answerValidator.validate(question, answer), "message"
+   
