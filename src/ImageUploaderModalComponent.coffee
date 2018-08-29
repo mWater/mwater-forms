@@ -17,7 +17,7 @@ module.exports = class ImageUploaderModalComponent extends React.Component
     T: PropTypes.func.isRequired        # Localizer to use
 
   constructor: (props) ->
-    super
+    super(props)
 
     @state = { 
       id: null              # id of image uploaded

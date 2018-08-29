@@ -28,7 +28,7 @@ module.exports = class SectionsComponent extends React.Component
     onDiscard: PropTypes.func               # Called when discard is pressed
 
   constructor: ->
-    super
+    super(props)
 
     @state = {
       sectionNum: 0

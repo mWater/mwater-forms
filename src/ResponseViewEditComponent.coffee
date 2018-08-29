@@ -26,7 +26,7 @@ module.exports = class ResponseViewEditComponent extends React.Component
     locale: PropTypes.string # The locale to display the response in
 
   constructor: (props) ->
-    super
+    super(props)
     @state = {
       editMode: false  # True if in edit mode
       unsavedData: null  # Present if unsaved changes have been made

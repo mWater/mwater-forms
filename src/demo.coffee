@@ -89,8 +89,8 @@ formCtx = {
 
 
 class DemoComponent extends React.Component
-  constructor: ->
-    super
+  constructor: (props) ->
+    super(props)
 
     data = { site01: { value: { code: "10007"}}}
 
