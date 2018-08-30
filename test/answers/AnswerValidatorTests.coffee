@@ -80,6 +80,15 @@ describe 'AnswerValidator', ->
         result = await @answerValidator.validate(question, answer)
         assert.equal result, "message"
 
+      it "blank message is true advanced validations", ->
+        question = { advancedValidations: [
+          { expr: { type: "literal", valueType: "boolean", value: false }, message: { en: "" } }
+        ]}
+
+        answer = { value: 'value' }
+        result = await @answerValidator.validate(question, answer)
+        assert.equal result, true
+
 
   describe 'validateTextQuestion', ->
     describe 'url', ->

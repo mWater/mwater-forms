@@ -61,7 +61,7 @@ module.exports = class AnswerValidator
         exprEvaluator = new ExprEvaluator(@schema)
         value = await exprEvaluator.evaluate(expr, { row: @responseRow })
         if value != true
-          return formUtils.localizeString(message, @locale)
+          return formUtils.localizeString(message, @locale) or true
 
     return null
 
