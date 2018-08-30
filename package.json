@@ -22,6 +22,7 @@
   "license": "LGPL-3.0",
   "dependencies": {
     "async": "^1.2.0",
+    "babel-runtime": "^6.26.0",
     "backbone": "~1.1.2",
     "classnames": "^2.2.5",
     "eonasdan-bootstrap-datetimepicker": "^4.15.35",
@@ -48,13 +49,13 @@
     "@storybook/addon-links": "^3.2.6",
     "@storybook/react": "^3.2.8",
     "babel-core": "^6.26.3",
-    "babel-preset-env": "^1.7.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
     "bootstrap": "^3.3.7",
     "canonical-json": "0.0.4",
     "chai": "^2.0.0",
-    "coffee-loader": "^0.7.3",
+    "coffee-loader": "^0.9.0",
     "coffeeify": "^1.2.0",
-    "coffeescript": "^1.7.1",
+    "coffeescript": "^2.3.1",
     "glob": "^4.3.5",
     "gulp": "git://github.com/gulpjs/gulp.git#4.0",
     "gulp-coffee": "^3.0.2",
@@ -71,7 +72,7 @@
     "react-addons-test-utils": "^15.0.1",
     "rework-npm": "^1.0.0",
     "sinon": "^2.1.0",
-    "webpack": "^2.3.1",
-    "webpack-dev-server": "^2.4.2"
+    "webpack": "^4.17.1",
+    "webpack-dev-server": "^3.1.7"
   }
 }
