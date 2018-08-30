@@ -35,7 +35,7 @@ module.exports = class SectionsComponent extends React.Component
     }
 
   handleSubmit: =>
-    result = await @refs.itemListComponent.validate(true)
+    result = await @itemListComponent.validate(true)
     if not result
       @props.onSubmit()
 
@@ -66,12 +66,12 @@ module.exports = class SectionsComponent extends React.Component
       @setState(sectionNum: previousVisibleIndex)
 
       # Scroll to top of section
-      @refs.sections.scrollIntoView()
+      @sections.scrollIntoView()
 
     # This should never happen... simply ignore
 
   handleNextSection: =>
-    result = await @refs.itemListComponent.validate(true)
+    result = await @itemListComponent.validate(true)
     if result
       return
 
@@ -81,7 +81,7 @@ module.exports = class SectionsComponent extends React.Component
       @setState(sectionNum: nextVisibleIndex)
 
       # Scroll to top of section
-      @refs.sections.scrollIntoView()
+      @sections.scrollIntoView()
       
     # This should never happen... simply ignore
 
@@ -89,7 +89,7 @@ module.exports = class SectionsComponent extends React.Component
     @setState(sectionNum: index)
 
   handleItemListNext: () =>
-    @refs.nextOrSubmit.focus()
+    @nextOrSubmit.focus()
 
   renderBreadcrumbs: ->
     breadcrumbs = []
@@ -121,7 +121,7 @@ module.exports = class SectionsComponent extends React.Component
       H.h3 null, formUtils.localizeString(section.name, @context.locale)
 
       R ItemListComponent, 
-        ref: 'itemListComponent'
+        ref: ((c) => @itemListComponent = c)
         contents: section.contents
         data: @props.data
         onDataChange: @props.onDataChange
@@ -143,11 +143,11 @@ module.exports = class SectionsComponent extends React.Component
 
       # Can go forward or submit
       if @hasNextSection()
-        H.button key: "next", type: "button", ref: 'nextOrSubmit', className: "btn btn-primary", onClick: @handleNextSection,
+        H.button key: "next", type: "button", ref: ((c) => @nextOrSubmit = c), className: "btn btn-primary", onClick: @handleNextSection,
           @context.T("Next") + " " 
           H.span className: "glyphicon glyphicon-forward"
       else if @props.onSubmit
-        H.button key: "submit", type: "button", ref: 'nextOrSubmit', className: "btn btn-primary", onClick: @handleSubmit,
+        H.button key: "submit", type: "button", ref: ((c) => @nextOrSubmit = c), className: "btn btn-primary", onClick: @handleSubmit,
           @context.T("Submit")
 
       "\u00A0"
@@ -165,7 +165,7 @@ module.exports = class SectionsComponent extends React.Component
           " " + @context.T("Discard")
 
   render: ->
-    H.div ref: "sections",
+    H.div ref: ((c) => @sections = c),
       @renderBreadcrumbs()
       H.div className: "sections",
         @renderSection()

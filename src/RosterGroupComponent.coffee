@@ -59,7 +59,7 @@ module.exports = class RosterGroupComponent extends React.Component
     # For each entry
     foundInvalid = false
     for entry, index in @getAnswer()
-      result = await @refs["itemlist_#{index}"].validate(scrollToFirstInvalid and not foundInvalid)
+      result = await @["itemlist_#{index}"].validate(scrollToFirstInvalid and not foundInvalid)
       if result
         foundInvalid = true
 
@@ -94,7 +94,7 @@ module.exports = class RosterGroupComponent extends React.Component
             H.span className: "glyphicon glyphicon-remove"  
 
         R ItemListComponent,
-          ref: "itemlist_#{index}", 
+          ref: ((c) => @["itemlist_#{index}"] = c), 
           contents: @props.rosterGroup.contents
           data: @getAnswer()[index].data
           responseRow: @props.responseRow.getRosterResponseRow(@getAnswerId(), index)

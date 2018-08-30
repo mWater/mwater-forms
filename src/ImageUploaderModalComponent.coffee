@@ -105,7 +105,7 @@ module.exports = class ImageUploaderModalComponent extends React.Component
           H.span className: "glyphicon glyphicon-camera"
           " "
           @props.T("Select")
-          H.input type: "file", ref: "uploadFile", style: { display: "none" }, onChange: @handleFileSelected
+          H.input type: "file", style: { display: "none" }, onChange: @handleFileSelected
 
         H.div style: { display: (if not @state.xhr then "none") },
           H.p null, 

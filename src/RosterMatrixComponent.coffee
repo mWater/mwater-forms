@@ -65,7 +65,7 @@ module.exports = class RosterMatrixComponent extends React.Component
 
     # Scroll into view
     if foundInvalid and scrollToFirstInvalid
-      @refs.prompt.scrollIntoView()
+      @prompt.scrollIntoView()
 
     return foundInvalid
 
@@ -105,7 +105,7 @@ module.exports = class RosterMatrixComponent extends React.Component
     @handleAnswerChange(answer)
 
   renderName: ->
-    H.h3 key: "prompt", ref: "prompt",
+    H.h3 key: "prompt", ref: ((c) => @prompt = c),
       formUtils.localizeString(@props.rosterMatrix.name, @context.locale)
 
   renderColumnHeader: (column, index) ->
