@@ -7,6 +7,7 @@ H = React.DOM
 FormComponent = require './FormComponent'
 sampleFormDesign = require './sampleFormDesign'
 sampleForm2 = require './sampleForm2'
+sampleFormValidationExpr = require './sampleFormValidationExpr'
 #bigsampleForm2 = require './bigsampleForm2'
 ItemListComponent = require './ItemListComponent'
 ResponseDisplayComponent = require './ResponseDisplayComponent'
@@ -110,7 +111,8 @@ class DemoComponent extends React.Component
     # design = rosterFormDesign
     # design = matrixFormDesign
     # design = rosterFormDesign
-    design = sampleForm2.design
+    # design = sampleForm2.design
+    design = sampleFormValidationExpr.design
     # design = randomAskFormDesign
     schema = new FormSchemaBuilder({user: "bob"}).addForm(schema, { _id: "form1", design: design })
 

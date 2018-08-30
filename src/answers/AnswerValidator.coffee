@@ -2,6 +2,7 @@ _ = require 'lodash'
 siteCodes = require '../siteCodes'
 ExprEvaluator = require('mwater-expressions').ExprEvaluator
 ValidationCompiler = require './ValidationCompiler'
+formUtils = require '../formUtils'
 
 # AnswerValidator gets called when a form is submitted (or on next)
 # Only the validate method is not internal
@@ -50,15 +51,17 @@ module.exports = class AnswerValidator
 
     # Check custom validation
     if question.validations?
-      return new ValidationCompiler(@locale).compileValidations(question.validations)(answer)
+      result = new ValidationCompiler(@locale).compileValidations(question.validations)(answer)
+      if result
+        return result
 
-    # if question.validationExprs? and @responseRow
-    #   for { expr, message } in question.validationExprs
-    #     # Evaluate expression
-    #     exprEvaluator = new ExprEvaluator(@schema)
-    #     value = await exprEvaluator.evaluate(expr, { row: @responseRow })
-    #     if value != true
-    #       return message
+    if question.validationExprs? and @responseRow
+      for { expr, message } in question.validationExprs
+        # Evaluate expression
+        exprEvaluator = new ExprEvaluator(@schema)
+        value = await exprEvaluator.evaluate(expr, { row: @responseRow })
+        if value != true
+          return formUtils.localizeString(message, @locale)
 
     return null
 
