@@ -3,7 +3,7 @@ AnswerValidator = require '../../src/answers/AnswerValidator'
 
 describe 'AnswerValidator', ->
   before ->
-    @answerValidator = new AnswerValidator()
+    @answerValidator = new AnswerValidator({}, {})
 
   describe 'validate', ->
     describe 'TestQuestion', ->
@@ -61,6 +61,25 @@ describe 'AnswerValidator', ->
 
         result = await @answerValidator.validate(question, answer)
         assert.equal null, result, 'alternate is valid for a required question'
+
+      it "validates true advanced validations", ->
+        question = { advancedValidations: [
+          { expr: { type: "literal", valueType: "boolean", value: true }, message: { en: "message" } }
+        ]}
+
+        answer = { value: 'value' }
+        result = await @answerValidator.validate(question, answer)
+        assert.equal result, null
+
+      it "validates false advanced validations", ->
+        question = { advancedValidations: [
+          { expr: { type: "literal", valueType: "boolean", value: false }, message: { en: "message" } }
+        ]}
+
+        answer = { value: 'value' }
+        result = await @answerValidator.validate(question, answer)
+        assert.equal result, "message"
+
 
   describe 'validateTextQuestion', ->
     describe 'url', ->

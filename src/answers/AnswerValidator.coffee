@@ -55,8 +55,8 @@ module.exports = class AnswerValidator
       if result
         return result
 
-    if question.validationExprs? and @responseRow
-      for { expr, message } in question.validationExprs
+    if question.advancedValidations? and @responseRow
+      for { expr, message } in question.advancedValidations
         # Evaluate expression
         exprEvaluator = new ExprEvaluator(@schema)
         value = await exprEvaluator.evaluate(expr, { row: @responseRow })

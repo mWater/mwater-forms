@@ -16,7 +16,7 @@ gulp.task 'coffee', ->
   gulp.src('./src/**/*.coffee')
     .pipe(coffee({ bare: true, transpile: { 
       "presets": ["env"],
-      "plugins": ["@babel/plugin-transform-runtime"]
+      "plugins": ["babel-plugin-transform-runtime"]
     }}))
     .pipe(gulp.dest('./lib/'))
 
