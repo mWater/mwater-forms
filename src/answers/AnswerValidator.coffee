@@ -57,11 +57,12 @@ module.exports = class AnswerValidator
 
     if question.advancedValidations? and @responseRow
       for { expr, message } in question.advancedValidations
-        # Evaluate expression
-        exprEvaluator = new ExprEvaluator(@schema)
-        value = await exprEvaluator.evaluate(expr, { row: @responseRow })
-        if value != true
-          return formUtils.localizeString(message, @locale) or true
+        if expr
+          # Evaluate expression
+          exprEvaluator = new ExprEvaluator(@schema)
+          value = await exprEvaluator.evaluate(expr, { row: @responseRow })
+          if value != true
+            return formUtils.localizeString(message, @locale) or true
 
     return null
 
