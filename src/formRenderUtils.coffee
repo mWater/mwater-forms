@@ -21,7 +21,6 @@ exports.renderItem = (item, data, responseRow, schema, onDataChange, isVisible, 
   if formUtils.isQuestion(item)
     component = R QuestionComponent,
       key: item._id,
-      ref: item._id,
       question: item
       onAnswerChange: handleAnswerChange.bind(null, item._id)
       data: data
@@ -31,7 +30,6 @@ exports.renderItem = (item, data, responseRow, schema, onDataChange, isVisible, 
   else if item._type == "Instructions"
     return R InstructionsComponent,
       key: item._id,
-      ref: item._id,
       instructions: item
       data: data
       responseRow: responseRow
@@ -39,12 +37,10 @@ exports.renderItem = (item, data, responseRow, schema, onDataChange, isVisible, 
   else if item._type == "Timer"
     return R TimerComponent,
       key: item._id,
-      ref: item._id,
       timer: item
   else if item._type == "Group"
     return R GroupComponent,
       key: item._id,
-      ref: item._id,
       group: item
       data: data
       onDataChange: onDataChange
@@ -55,7 +51,6 @@ exports.renderItem = (item, data, responseRow, schema, onDataChange, isVisible, 
   else if item._type == "RosterGroup"
     return R RosterGroupComponent,
       key: item._id,
-      ref: item._id,
       rosterGroup: item
       data: data
       onDataChange: onDataChange
@@ -65,7 +60,6 @@ exports.renderItem = (item, data, responseRow, schema, onDataChange, isVisible, 
   else if item._type == "RosterMatrix"
     return R RosterMatrixComponent,
       key: item._id,
-      ref: item._id,
       rosterMatrix: item
       data: data
       onDataChange: onDataChange
@@ -76,7 +70,6 @@ exports.renderItem = (item, data, responseRow, schema, onDataChange, isVisible, 
     # Sections are not usually rendered like this, except when in single-page mode. In which case, render as a group
     return R GroupComponent,
       key: item._id,
-      ref: item._id,
       group: item
       data: data
       onDataChange: onDataChange

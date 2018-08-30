@@ -18,11 +18,11 @@ module.exports = class CheckAnswerComponent extends React.Component
     value: false
 
   focus: () ->
-    @refs.checkbox.focus()
+    @checkbox.focus()
 
   handleValueChange: () =>
     @props.onValueChange(!@props.value)
 
   render: ->
-    H.div className: "choice touch-checkbox #{if @props.value then "checked" else ""}", onClick: @handleValueChange, ref: 'checkbox',
+    H.div className: "choice touch-checkbox #{if @props.value then "checked" else ""}", onClick: @handleValueChange, ref: ((c) => @checkbox = c),
       @props.children

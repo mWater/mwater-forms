@@ -233,7 +233,7 @@ module.exports = class QuestionComponent extends React.Component
       @props.onNext?()
 
   renderPrompt: ->
-    promptDiv = H.div className: "prompt", ref: 'prompt',
+    promptDiv = H.div className: "prompt", 
       if @props.question.code
         H.span className: "question-code", @props.question.code + ": "
 

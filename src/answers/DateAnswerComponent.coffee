@@ -62,7 +62,7 @@ module.exports = class DateAnswerComponent extends React.Component
     @state = {detailLevel: detailLevel, isoFormat: isoFormat, placeholder: placeholder}
 
   focus: () ->
-    datetimepicker = @refs.datetimepicker
+    datetimepicker = @datetimepicker
     if datetimepicker.focus?
       datetimepicker.focus()
 
@@ -108,7 +108,7 @@ module.exports = class DateAnswerComponent extends React.Component
         value = moment(value, moment.ISO_8601)
 
     return R DateTimePickerComponent, {
-      ref: 'datetimepicker'
+      ref: (c) => @datetimepicker = c
       onChange: @handleChange
       date: value
       format: @props.format
