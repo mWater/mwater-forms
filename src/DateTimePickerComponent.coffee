@@ -42,7 +42,7 @@ module.exports = class DateTimePickerComponent extends React.Component
     @destroyNativeComponent()
 
   destroyNativeComponent: ->
-    $(datetimepicker).data("DateTimePicker").destroy()
+    $(@datetimepicker).data("DateTimePicker").destroy()
   
   createNativeComponent: (props) ->
     pickerOptions = { showClear: props.showClear, useStrict: true, focusOnShow: false }
