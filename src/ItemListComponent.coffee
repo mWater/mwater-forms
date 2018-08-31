@@ -17,13 +17,19 @@ module.exports = class ItemListComponent extends React.Component
     onNext: PropTypes.func
     isVisible: PropTypes.func.isRequired # (id) tells if an item is visible or not
     schema: PropTypes.object.isRequired  # Schema to use, including form
+
+  constructor: (props) ->
+    super(props)
+
+    # Refs of all items
+    @itemRefs = {}
     
   validate: (scrollToFirstInvalid) ->
     foundInvalid = false
     for item in @props.contents
       # Only if validation is possible
-      if @refs[item._id]?.validate
-        result = await @refs[item._id]?.validate(scrollToFirstInvalid and not foundInvalid)
+      if @itemRefs[item._id]?.validate
+        result = await @itemRefs[item._id]?.validate(scrollToFirstInvalid and not foundInvalid)
         # DO NOT BREAK, it's important to call validate on each item
         if result
           foundInvalid = true
@@ -35,11 +41,11 @@ module.exports = class ItemListComponent extends React.Component
     if index >= @props.contents.length
       @props.onNext?()
     else
-      @refs[@props.contents[index]._id]?.focus?()
+      @itemRefs[@props.contents[index]._id]?.focus?()
 
   renderItem: (item, index) =>
     if @props.isVisible(item._id) and not item.disabled
-      formRenderUtils.renderItem(item, @props.data, @props.responseRow, @props.schema, @props.onDataChange, @props.isVisible, @handleNext.bind(this, index))
+      formRenderUtils.renderItem(item, @props.data, @props.responseRow, @props.schema, @props.onDataChange, @props.isVisible, @handleNext.bind(this, index), (c) => @itemRefs[item._id] = c)
 
   render: ->
     H.div null,

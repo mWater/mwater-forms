@@ -233,12 +233,12 @@ module.exports = class QuestionComponent extends React.Component
       @props.onNext?()
 
   renderPrompt: ->
-    promptDiv = H.div className: "prompt", 
+    promptDiv = H.div className: "prompt", ref: ((c) => @prompt = c),
       if @props.question.code
         H.span className: "question-code", @props.question.code + ": "
 
       R TextExprsComponent,
-        localizedStr: @props.question.text
+        localizedStr: @props.question.text 
         exprs: @props.question.textExprs
         schema: @props.schema
         responseRow: @props.responseRow
