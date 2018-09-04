@@ -94,7 +94,8 @@ module.exports = class FormComponent extends React.Component
 
   handleSubmit: =>
     # Cannot submit if at least one item is invalid
-    if not @itemListComponent.validate(true)
+    result = await @itemListComponent.validate(true)
+    if not result
       @props.onSubmit()
 
   isVisible: (itemId) =>
