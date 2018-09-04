@@ -94,7 +94,8 @@ module.exports = class FormComponent extends React.Component
 
   handleSubmit: =>
     # Cannot submit if at least one item is invalid
-    if not @refs.itemListComponent.validate(true)
+    result = await @itemListComponent.validate(true)
+    if not result
       @props.onSubmit()
 
   isVisible: (itemId) =>
@@ -140,7 +141,7 @@ module.exports = class FormComponent extends React.Component
         @props.onDataChange(results.data)
 
   handleNext: () =>
-    @refs.submit.focus()
+    @submit.focus()
 
   render: ->
     if @props.design.contents[0] and @props.design.contents[0]._type == "Section" and not @props.singlePageMode
@@ -157,7 +158,7 @@ module.exports = class FormComponent extends React.Component
     else
       H.div null,
         R ItemListComponent,
-          ref: 'itemListComponent'
+          ref: ((c) => @itemListComponent = c)
           contents: @props.design.contents
           data: @props.data
           onDataChange: @handleDataChange
@@ -167,7 +168,7 @@ module.exports = class FormComponent extends React.Component
           onNext: @handleNext
 
         if @props.onSubmit
-          H.button type: "button", key: 'submitButton', className: "btn btn-primary", ref: 'submit', onClick: @handleSubmit,
+          H.button type: "button", key: 'submitButton', className: "btn btn-primary", ref: ((c) => @submit = c), onClick: @handleSubmit,
             if @props.submitLabel
               @props.submitLabel
             else

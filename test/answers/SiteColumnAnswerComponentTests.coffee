@@ -66,7 +66,8 @@ describe 'SiteColumnAnswerComponent', ->
         answer = {value: value}
         answerValidator = new AnswerValidator()
         question = {_type: "SiteColumnQuestion"}
-        assert.equal null, answerValidator.validate(question, answer)
+        result = await answerValidator.validate(question, answer)
+        assert.equal result, null
 
         done()
     })

@@ -64,7 +64,8 @@ describe 'SiteAnswerComponent', ->
         answer = {value: value}
         answerValidator = new AnswerValidator()
         question = {_type: "SiteQuestion"}
-        assert.equal null, answerValidator.validate(question, answer)
+        result = await answerValidator.validate(question, answer)
+        assert.equal result, null
 
         done()
     })
@@ -81,7 +82,8 @@ describe 'SiteAnswerComponent', ->
         answer = {value: value}
         answerValidator = new AnswerValidator()
         question = {_type: "SiteQuestion"}
-        assert.equal 'Invalid code', answerValidator.validate(question, answer)
+        result = await answerValidator.validate(question, answer)
+        assert.equal result, 'Invalid code'
 
         done()
     })

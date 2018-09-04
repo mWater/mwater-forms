@@ -3,7 +3,7 @@ AnswerValidator = require '../../src/answers/AnswerValidator'
 
 describe 'AnswerValidator', ->
   before ->
-    @answerValidator = new AnswerValidator()
+    @answerValidator = new AnswerValidator({}, {})
 
   describe 'validate', ->
     describe 'TestQuestion', ->
@@ -11,33 +11,33 @@ describe 'AnswerValidator', ->
         answer = {value: null}
         question = {format: 'url', required: false}
 
-        result = @answerValidator.validate(question, answer)
+        result = await @answerValidator.validate(question, answer)
         assert.equal null, result
 
         answer = {value: ''}
-        result = @answerValidator.validate(question, answer)
+        result = await @answerValidator.validate(question, answer)
         assert.equal null, result
 
       it "returns null for required but disabled questions' value that are null or empty", ->
         answer = {value: null}
         question = {format: 'url', disabled: true, required: true}
 
-        result = @answerValidator.validate(question, answer)
+        result = await @answerValidator.validate(question, answer)
         assert.equal null, result
 
         answer = {value: ''}
-        result = @answerValidator.validate(question, answer)
+        result = await @answerValidator.validate(question, answer)
         assert.equal null, result
 
       it "returns an error for required value that are null or empty", ->
         answer = {value: null}
         question = {format: 'url', required: true}
 
-        result = @answerValidator.validate(question, answer)
+        result = await @answerValidator.validate(question, answer)
         assert result
 
         answer = {value: ''}
-        result = @answerValidator.validate(question, answer)
+        result = await @answerValidator.validate(question, answer)
         assert result
 
       it "can apply a validator", ->
@@ -52,14 +52,43 @@ describe 'AnswerValidator', ->
             }
           ]
         }
-        assert.equal @answerValidator.validate(question, answer), "message"
+        result = await @answerValidator.validate(question, answer)
+        assert.equal result, "message"
 
       it "allows alternate for required", ->
         answer = {alternate: 'na'}
         question = {required: true, alternates: {na: true}}
 
-        result = @answerValidator.validate(question, answer)
+        result = await @answerValidator.validate(question, answer)
         assert.equal null, result, 'alternate is valid for a required question'
+
+      it "validates true advanced validations", ->
+        question = { advancedValidations: [
+          { expr: { type: "literal", valueType: "boolean", value: true }, message: { en: "message" } }
+        ]}
+
+        answer = { value: 'value' }
+        result = await @answerValidator.validate(question, answer)
+        assert.equal result, null
+
+      it "validates false advanced validations", ->
+        question = { advancedValidations: [
+          { expr: { type: "literal", valueType: "boolean", value: false }, message: { en: "message" } }
+        ]}
+
+        answer = { value: 'value' }
+        result = await @answerValidator.validate(question, answer)
+        assert.equal result, "message"
+
+      it "blank message is true advanced validations", ->
+        question = { advancedValidations: [
+          { expr: { type: "literal", valueType: "boolean", value: false }, message: { en: "" } }
+        ]}
+
+        answer = { value: 'value' }
+        result = await @answerValidator.validate(question, answer)
+        assert.equal result, true
+
 
   describe 'validateTextQuestion', ->
     describe 'url', ->
@@ -67,21 +96,21 @@ describe 'AnswerValidator', ->
         answer = {value: null}
         question = {format: 'url'}
 
-        result = @answerValidator.validateTextQuestion(question, answer)
+        result = await @answerValidator.validateTextQuestion(question, answer)
         assert.equal null, result
 
       it "returns null for well formed url", ->
         answer = {value: 'http://api.mwater.co'}
         question = {format: 'url'}
 
-        result = @answerValidator.validateTextQuestion(question, answer)
+        result = await @answerValidator.validateTextQuestion(question, answer)
         assert.equal null, result
 
       it "returns error on malformed url", ->
         answer = {value: 'test'}
         question = {format: 'url'}
 
-        result = @answerValidator.validateTextQuestion(question, answer)
+        result = await @answerValidator.validateTextQuestion(question, answer)
         assert result?
 
     describe 'email', ->
@@ -89,21 +118,21 @@ describe 'AnswerValidator', ->
         answer = {value: null}
         question = {format: 'email'}
 
-        result = @answerValidator.validateTextQuestion(question, answer)
+        result = await @answerValidator.validateTextQuestion(question, answer)
         assert.equal null, result
 
       it "returns null for well formed email", ->
         answer = {value: 'test@hotmail.com'}
         question = {format: 'email'}
 
-        result = @answerValidator.validateTextQuestion(question, answer)
+        result = await @answerValidator.validateTextQuestion(question, answer)
         assert.equal null, result
 
       it "returns error on malformed url", ->
         answer = {value: 'test'}
         question = {format: 'email'}
 
-        result = @answerValidator.validateTextQuestion(question, answer)
+        result = await @answerValidator.validateTextQuestion(question, answer)
         assert result?
 
     describe 'multiline', ->
@@ -111,7 +140,7 @@ describe 'AnswerValidator', ->
         answer = {value: 'patate@@$#@%!@%'}
         question = {format: 'multiline'}
 
-        result = @answerValidator.validateTextQuestion(question, answer)
+        result = await @answerValidator.validateTextQuestion(question, answer)
         assert.equal null, result
 
     describe 'singleline', ->
@@ -119,7 +148,7 @@ describe 'AnswerValidator', ->
         answer = {value: 'patate@@$#@%!@%'}
         question = {format: 'singleline'}
 
-        result = @answerValidator.validateTextQuestion(question, answer)
+        result = await @answerValidator.validateTextQuestion(question, answer)
         assert.equal null, result
 
     it "allows non-valid blank answer if not required", ->
@@ -134,7 +163,8 @@ describe 'AnswerValidator', ->
       }
       answer = {value: ''}
 
-      assert.equal null, @answerValidator.validate(question, answer), 'Should be allowed'
+      result = await @answerValidator.validate(question, answer)
+      assert.equal result, null, 'Should be allowed'
 
   describe 'validateUnitsQuestion', ->
     it "returns true for empty value if required", ->
@@ -142,17 +172,17 @@ describe 'AnswerValidator', ->
       question = {_type: "UnitsQuestion"}
 
       # Okay if not required
-      result = @answerValidator.validate(question, answer)
+      result = await @answerValidator.validate(question, answer)
       assert.equal null, result
 
       question.required = true
 
       # The unit answer is still valid in itself
-      result = @answerValidator.validateUnitsQuestion(question, answer)
+      result = await @answerValidator.validateUnitsQuestion(question, answer)
       assert.equal null, result
 
       # But not if required
-      result = @answerValidator.validate(question, answer)
+      result = await @answerValidator.validate(question, answer)
       assert.equal true, result
 
     it "enforces required on blank answer", ->
@@ -160,43 +190,54 @@ describe 'AnswerValidator', ->
       question = {_type: "UnitsQuestion"}
 
       # Okay if not required
-      assert.equal null, @answerValidator.validate(question, answer), 'Should be valid'
+      result = await @answerValidator.validate(question, answer)
+      assert.equal result, null, 'Should be valid'
 
       question.required = true
       # Not Okay if required
-      assert @answerValidator.validate(question, answer), "Shouldn't be valid"
+      result = await @answerValidator.validate(question, answer)
+      assert result, "Shouldn't be valid"
 
     it "allows 0 on required", ->
       answer = {value: {quantity: '0', units: 'a'}}
       question = {_type: "UnitsQuestion"}
       question.required = true
       # Okay if not required
-      assert.equal null, @answerValidator.validate(question, answer), 'Should be valid'
+      result = await @answerValidator.validate(question, answer)
+      assert.equal result, null, 'Should be valid'
+
       # Also Okay if required
-      assert.equal null, @answerValidator.validate(question, answer), "Should also be valid"
+      result = await @answerValidator.validate(question, answer)
+      assert.equal result, null, "Should also be valid"
 
     it "requires units to be specified if a quantity is set", ->
       answer = {value: {quantity: '0'}}
       question = {_type: "UnitsQuestion"}
 
       # Not Okay if unit is undefined
-      assert @answerValidator.validate(question, answer), "Shouldn't be valid"
+      result = await @answerValidator.validate(question, answer)
+      assert result, "Shouldn't be valid"
 
       # Not Okay if unit is null
       answer.value.units = null
-      assert @answerValidator.validate(question, answer), "Shouldn't be valid either"
+      result = await @answerValidator.validate(question, answer)
+      assert result, "Shouldn't be valid either"
 
       # Okay if quantity is undefined or nul or empty string
       answer.value.quantity = ''
-      assert.equal null, @answerValidator.validate(question, answer)
+      result = await @answerValidator.validate(question, answer)
+      assert.equal result, null
       answer.value.quantity = null
-      assert.equal null, @answerValidator.validate(question, answer)
+      result = await @answerValidator.validate(question, answer)
+      assert.equal result, null
       delete answer.value['quantity']
-      assert.equal null, @answerValidator.validate(question, answer)
+      result = await @answerValidator.validate(question, answer)
+      assert.equal result, null
 
       answer.value.quantity = 0
       answer.value.units = 'a'
-      assert.equal null, @answerValidator.validate(question, answer)
+      result = await @answerValidator.validate(question, answer)
+      assert.equal result, null
 
     it "validates range", ->
       question = {
@@ -209,7 +250,8 @@ describe 'AnswerValidator', ->
         ]
       }
       answer = {value: {quantity: 7}, unit: 'a'}
-      assert.equal @answerValidator.validate(question, answer), "message"
+      result = await @answerValidator.validate(question, answer)
+      assert.equal result, "message"
 
   describe 'validateNumberQuestion', ->
     it "enforces required", ->
@@ -217,15 +259,18 @@ describe 'AnswerValidator', ->
       question = {_type: "NumberQuestion"}
 
       # Okay if not required
-      assert.equal null, @answerValidator.validate(question, answer)
+      result = await @answerValidator.validate(question, answer)
+      assert.equal result, null
 
       question.required = true
 
       # The unit answer is still valid in itself
-      assert.equal null, @answerValidator.validateNumberQuestion(question, answer)
+      result = @answerValidator.validateNumberQuestion(question, answer)
+      assert.equal result, null
 
       # But not if required
-      assert.equal true, @answerValidator.validate(question, answer)
+      result = await @answerValidator.validate(question, answer)
+      assert.equal result, true
 
     it "enforces required on blank answer", ->
       answer = {value: ''}
@@ -233,7 +278,8 @@ describe 'AnswerValidator', ->
       question.isRequired = false
 
       # Okay if not required
-      assert.equal @answerValidator.validate(question, answer)
+      result = await @answerValidator.validate(question, answer)
+      assert.equal result, null
 
     it "allows 0 on required", ->
       answer = {value: 0}
@@ -241,7 +287,8 @@ describe 'AnswerValidator', ->
       question.isRequired = false
 
       # Okay if not required
-      assert.equal null, @answerValidator.validate(question, answer)
+      result = await @answerValidator.validate(question, answer)
+      assert.equal result, null
 
     it "validates range", ->
       question = {
@@ -255,7 +302,8 @@ describe 'AnswerValidator', ->
       }
       answer = {value: 7}
 
-      assert.equal "message", @answerValidator.validate(question, answer)
+      result = await @answerValidator.validate(question, answer)
+      assert.equal result, "message"
 
   describe 'validateLikertQuestion', ->
     it "enforces required", ->
@@ -267,23 +315,28 @@ describe 'AnswerValidator', ->
       }
 
       # Okay if not required
-      assert.equal null, @answerValidator.validate(question, answer)
+      result = await @answerValidator.validate(question, answer)
+      assert.equal result, null
 
       question.required = true
 
       # The unit answer is still valid in itself
-      assert.equal null, @answerValidator.validateLikertQuestion(question, answer)
+      result = @answerValidator.validateLikertQuestion(question, answer)
+      assert.equal result, null
 
       # But not if required
-      assert.equal true, @answerValidator.validate(question, answer)
+      result = await @answerValidator.validate(question, answer)
+      assert.equal result, true
 
       # Even if one of the items has been answered
       answer = {'itemAId': 'choiceId'}
-      assert.equal true, @answerValidator.validate(question, answer)
+      result = await @answerValidator.validate(question, answer)
+      assert.equal result, true
 
       # But it's validate if all items have been answered
       answer = {value: {'itemAId': 'choiceId', 'itemBId': 'choiceId'}}
-      assert.equal null, @answerValidator.validate(question, answer)
+      result = await @answerValidator.validate(question, answer)
+      assert.equal result, null
 
     it "enforces that all the answered items of values are available choices", ->
       answer = {value: {'itemAId': 'choiceId', 'itemBId': 'choiceId'}}
@@ -308,7 +361,8 @@ describe 'AnswerValidator', ->
         required: false
       }
 
-      assert.equal null, @answerValidator.validate(question, answer)
+      result = await @answerValidator.validate(question, answer)
+      assert.equal result, null
 
     it "does not allow sites with code null", ->
       answer = {"value": {"code": null}}
@@ -317,7 +371,8 @@ describe 'AnswerValidator', ->
         required: true
       }
 
-      assert.equal true, @answerValidator.validate(question, answer)
+      result = await @answerValidator.validate(question, answer)
+      assert.equal result, true
     
     it "allows a valid site code", ->
       answer = {"value": {"code": "4287759"}}
@@ -326,7 +381,8 @@ describe 'AnswerValidator', ->
         required: true
       }
 
-      assert.equal null, @answerValidator.validate(question, answer)
+      result = await @answerValidator.validate(question, answer)
+      assert.equal result, null
 
   describe "validateMatrixQuestion", ->
     it "passes if ok", ->
@@ -344,7 +400,8 @@ describe 'AnswerValidator', ->
         }
       }
 
-      assert.equal @answerValidator.validate(question, answer), null
+      result = await @answerValidator.validate(question, answer)
+      assert.equal result, null
 
     it "validates required text question column", ->
       question = {
@@ -361,7 +418,8 @@ describe 'AnswerValidator', ->
         }
       }
 
-      assert.equal @answerValidator.validate(question, answer), true
+      result = await @answerValidator.validate(question, answer)
+      assert.equal result, true
 
     it "validates text question column", ->
       question = {
@@ -388,5 +446,5 @@ describe 'AnswerValidator', ->
         }
       }
 
-      assert.equal @answerValidator.validate(question, answer), "message"
-   
+      result = await @answerValidator.validate(question, answer)
+      assert.equal result, "message"

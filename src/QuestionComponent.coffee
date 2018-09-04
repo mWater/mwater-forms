@@ -102,7 +102,7 @@ module.exports = class QuestionComponent extends React.Component
     return false
 
   focus: ->
-    answer = @refs.answer
+    answer = @answer
     if answer? and answer.focus?
       answer.focus()
 
@@ -120,25 +120,25 @@ module.exports = class QuestionComponent extends React.Component
       return false
 
     # If answer has custom validation, use that
-    if @refs.answer?.validate
-      answerInvalid = @refs.answer?.validate()
+    if @answer?.validate
+      answerInvalid = @answer?.validate()
 
       if answerInvalid and scrollToFirstInvalid
-        @refs.prompt.scrollIntoView()
+        @prompt.scrollIntoView()
 
       if answerInvalid
         return answerInvalid
 
-    validationError = new AnswerValidator().validate(@props.question, @getAnswer())
+    validationError = await new AnswerValidator(@props.schema, @props.responseRow).validate(@props.question, @getAnswer())
 
     # Check for isValid function in answer component, as some answer components don't store invalid answers
     # like the number answer.
-    if not validationError and @refs.answer?.isValid and not @refs.answer?.isValid()
+    if not validationError and @answer?.isValid and not @answer?.isValid()
       validationError = true
 
     if validationError?
       if scrollToFirstInvalid
-        @refs.prompt.scrollIntoView()
+        @prompt.scrollIntoView()
       @setState(validationError: validationError)
       return true
     else
@@ -222,7 +222,7 @@ module.exports = class QuestionComponent extends React.Component
   handleNextOrComments: (ev) =>
     # If it has a comment box, set the focus on it
     if @props.question.commentsField?
-      comments = @refs.comments
+      comments = @comments
       # For some reason, comments can be null here sometimes
       comments?.focus()
       comments?.select()
@@ -233,12 +233,12 @@ module.exports = class QuestionComponent extends React.Component
       @props.onNext?()
 
   renderPrompt: ->
-    promptDiv = H.div className: "prompt", ref: 'prompt',
+    promptDiv = H.div className: "prompt", ref: ((c) => @prompt = c),
       if @props.question.code
         H.span className: "question-code", @props.question.code + ": "
 
       R TextExprsComponent,
-        localizedStr: @props.question.text
+        localizedStr: @props.question.text 
         exprs: @props.question.textExprs
         schema: @props.schema
         responseRow: @props.responseRow
@@ -255,7 +255,7 @@ module.exports = class QuestionComponent extends React.Component
     # Special case!
     if @props.question._type == 'CheckQuestion'
       R CheckAnswerComponent, {
-        ref: "answer"
+        ref: ((c) => @answer = c)
         value: @getAnswer().value
         onValueChange: @handleValueChange
         label: @props.question.label
@@ -291,7 +291,7 @@ module.exports = class QuestionComponent extends React.Component
 
   renderCommentsField: ->
     if @props.question.commentsField
-      H.textarea className: "form-control question-comments", id: "comments", ref: "comments", placeholder: @context.T("Comments"), value: @getAnswer().comments, onChange: @handleCommentsChange
+      H.textarea className: "form-control question-comments", id: "comments", ref: ((c) => @comments = c), placeholder: @context.T("Comments"), value: @getAnswer().comments, onChange: @handleCommentsChange
 
   renderAnswer: ->
     answer = @getAnswer()
@@ -300,7 +300,7 @@ module.exports = class QuestionComponent extends React.Component
     switch @props.question._type
       when "TextQuestion"
         return R TextAnswerComponent, {
-          ref: "answer"
+          ref: ((c) => @answer = c)
           value: answer.value
           format: @props.question.format
           readOnly: readonly
@@ -310,7 +310,7 @@ module.exports = class QuestionComponent extends React.Component
 
       when "NumberQuestion"
         return R NumberAnswerComponent, {
-          ref: "answer"
+          ref: ((c) => @answer = c)
           value: answer.value
           onChange: if not readonly then @handleValueChange
           decimal: @props.question.decimal
@@ -319,7 +319,7 @@ module.exports = class QuestionComponent extends React.Component
 
       when "DropdownQuestion"
         return R DropdownAnswerComponent, {
-          ref: "answer"
+          ref: ((c) => @answer = c)
           choices: @props.question.choices
           answer: answer
           data: @props.data
@@ -328,7 +328,7 @@ module.exports = class QuestionComponent extends React.Component
 
       when "LikertQuestion"
         return R LikertAnswerComponent, {
-          ref: "answer"
+          ref: ((c) => @answer = c)
           items: @props.question.items
           choices: @props.question.choices
           answer: answer
@@ -338,7 +338,7 @@ module.exports = class QuestionComponent extends React.Component
 
       when "RadioQuestion"
         return R RadioAnswerComponent, {
-          ref: "answer"
+          ref: ((c) => @answer = c)
           choices: @props.question.choices
           answer: answer
           data: @props.data
@@ -347,7 +347,7 @@ module.exports = class QuestionComponent extends React.Component
 
       when "MulticheckQuestion"
         return R MulticheckAnswerComponent, {
-          ref: "answer"
+          ref: ((c) => @answer = c)
           choices: @props.question.choices
           data: @props.data
           answer: answer
@@ -356,7 +356,7 @@ module.exports = class QuestionComponent extends React.Component
 
       when "DateQuestion"
         return R DateAnswerComponent, {
-          ref: "answer"
+          ref: ((c) => @answer = c)
           value: answer.value
           onValueChange: @handleValueChange
           format: @props.question.format
@@ -366,7 +366,7 @@ module.exports = class QuestionComponent extends React.Component
 
       when "UnitsQuestion"
         return R UnitsAnswerComponent, {
-          ref: "answer"
+          ref: ((c) => @answer = c)
           answer: answer
           onValueChange: @handleValueChange
           units: @props.question.units
@@ -382,21 +382,21 @@ module.exports = class QuestionComponent extends React.Component
 
       when "LocationQuestion"
         return R LocationAnswerComponent, {
-          ref: "answer"
+          ref: ((c) => @answer = c)
           value: answer.value
           onValueChange: @handleValueChange
         }
 
       when "ImageQuestion"
         return R ImageAnswerComponent,
-          ref: "answer"
+          ref: ((c) => @answer = c)
           image: answer.value
           onImageChange: @handleValueChange
           consentPrompt: if @props.question.consentPrompt then formUtils.localizeString(@props.question.consentPrompt, @context.locale)
 
       when "ImagesQuestion"
         return R ImagesAnswerComponent, {
-          ref: "answer"
+          ref: ((c) => @answer = c)
           imagelist: answer.value
           onImagelistChange: @handleValueChange
           consentPrompt: if @props.question.consentPrompt then formUtils.localizeString(@props.question.consentPrompt, @context.locale)
@@ -404,7 +404,7 @@ module.exports = class QuestionComponent extends React.Component
 
       when "TextListQuestion"
         return R TextListAnswerComponent, {
-          ref: "answer"
+          ref: ((c) => @answer = c)
           value: answer.value
           onValueChange: @handleValueChange
           onNextOrComments: @handleNextOrComments
@@ -412,7 +412,7 @@ module.exports = class QuestionComponent extends React.Component
 
       when "SiteQuestion"
         return R SiteAnswerComponent, {
-          ref: "answer"
+          ref: ((c) => @answer = c)
           value: answer.value
           onValueChange: @handleValueChange
           siteTypes: @props.question.siteTypes
@@ -421,14 +421,14 @@ module.exports = class QuestionComponent extends React.Component
 
       when "BarcodeQuestion"
         return R BarcodeAnswerComponent, {
-          ref: "answer"
+          ref: ((c) => @answer = c)
           value: answer.value
           onValueChange: @handleValueChange
         }
 
       when "EntityQuestion"
         return R EntityAnswerComponent, {
-          ref: "answer"
+          ref: ((c) => @answer = c)
           value: answer.value
           entityType: @props.question.entityType
           onValueChange: @handleValueChange
@@ -436,14 +436,14 @@ module.exports = class QuestionComponent extends React.Component
 
       when "AdminRegionQuestion"
         return R AdminRegionAnswerComponent, {
-          ref: "answer"
+          ref: ((c) => @answer = c)
           value: answer.value
           onChange: @handleValueChange
         }
 
       when "StopwatchQuestion"
         return R StopwatchAnswerComponent, {
-          ref: "answer"
+          ref: ((c) => @answer = c)
           value: answer.value
           onValueChange: @handleValueChange
           T: @context.T
@@ -451,7 +451,7 @@ module.exports = class QuestionComponent extends React.Component
 
       when "MatrixQuestion"
         return R MatrixAnswerComponent, {
-          ref: "answer"
+          ref: ((c) => @answer = c)
           value: answer.value
           onValueChange: @handleValueChange
           alternate: answer.alternate
@@ -464,7 +464,7 @@ module.exports = class QuestionComponent extends React.Component
 
       when "AquagenxCBTQuestion"
         return R AquagenxCBTAnswerComponent, {
-          ref: "answer"
+          ref: ((c) => @answer = c)
           value: answer.value
           onValueChange: @handleValueChange
           questionId: @props.question._id

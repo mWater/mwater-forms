@@ -5,7 +5,7 @@ H = React.DOM
 R = React.createElement
 
 formUtils = require './formUtils'
-AnswerValidator = require './answers/AnswerValidator'
+ValidationCompiler = require './answers/ValidationCompiler'
 
 ReorderableListComponent = require("react-library/lib/reorderable/ReorderableListComponent")
 MatrixColumnCellComponent = require './MatrixColumnCellComponent'
@@ -55,7 +55,7 @@ module.exports = class RosterMatrixComponent extends React.Component
           validationErrors[key] = true
 
         if column.validations and column.validations.length > 0
-          validationError = new AnswerValidator().compileValidations(column.validations)(entry.data[column._id])
+          validationError = new ValidationCompiler(@context.locale).compileValidations(column.validations)(entry.data[column._id])
           if validationError
             foundInvalid = true
             validationErrors[key] = validationError
@@ -65,7 +65,7 @@ module.exports = class RosterMatrixComponent extends React.Component
 
     # Scroll into view
     if foundInvalid and scrollToFirstInvalid
-      @refs.prompt.scrollIntoView()
+      @prompt.scrollIntoView()
 
     return foundInvalid
 
@@ -105,7 +105,7 @@ module.exports = class RosterMatrixComponent extends React.Component
     @handleAnswerChange(answer)
 
   renderName: ->
-    H.h3 key: "prompt", ref: "prompt",
+    H.h3 key: "prompt", ref: ((c) => @prompt = c),
       formUtils.localizeString(@props.rosterMatrix.name, @context.locale)
 
   renderColumnHeader: (column, index) ->

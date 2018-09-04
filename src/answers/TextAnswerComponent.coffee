@@ -25,7 +25,7 @@ module.exports = class TextAnswerComponent extends React.Component
       @setState(text: if nextProps.value? then nextProps.value else "")
 
   focus: () ->
-    @refs.input.focus()
+    @input.focus()
 
   handleKeyDown: (ev) =>
     if @props.onNextOrComments?
@@ -43,7 +43,7 @@ module.exports = class TextAnswerComponent extends React.Component
       return H.textarea {
         className: "form-control"
         id: 'input'
-        ref: 'input'
+        ref: (c) => @input = c
         value: @state.text or ""
         rows: "5"
         readOnly: @props.readOnly
@@ -54,7 +54,7 @@ module.exports = class TextAnswerComponent extends React.Component
       return H.input {
         className: "form-control"
         id: 'input'
-        ref: 'input'
+        ref: (c) => @input = c
         type: "text"
         value: @state.text or ""
         readOnly: @props.readOnly

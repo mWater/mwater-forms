@@ -42,7 +42,7 @@ module.exports = class DateTimePickerComponent extends React.Component
     @destroyNativeComponent()
 
   destroyNativeComponent: ->
-    $(@refs.datetimepicker).data("DateTimePicker").destroy()
+    $(@datetimepicker).data("DateTimePicker").destroy()
   
   createNativeComponent: (props) ->
     pickerOptions = { showClear: props.showClear, useStrict: true, focusOnShow: false }
@@ -59,7 +59,7 @@ module.exports = class DateTimePickerComponent extends React.Component
 
     pickerOptions.showTodayButton = props.showTodayButton
 
-    node = @refs.datetimepicker
+    node = @datetimepicker
     picker = $(node).datetimepicker(pickerOptions)
 
     $(node).data("DateTimePicker").date(props.date or null)
@@ -79,20 +79,20 @@ module.exports = class DateTimePickerComponent extends React.Component
     if nextProps.date? and @props.date? and nextProps.date.isSame(@props.date)
       return
 
-    node = @refs.datetimepicker
+    node = @datetimepicker
     $(node).off("dp.change", @onChange)
     $(node).data("DateTimePicker").date(nextProps.date or null)
     $(node).on("dp.change", @onChange)
 
   handleInputFocus: =>
-    node = @refs.datetimepicker
+    node = @datetimepicker
     $(node).data("DateTimePicker").show()
 
   render: ->
     # Override z-index due to bootstrap oddness
     input = H.input { type: "text", className: "form-control", placeholder: @props.placeholder, onFocus: @handleInputFocus, style: { zIndex: "inherit", minWidth: "12em" } }
 
-    H.div className: 'input-group date', ref: "datetimepicker",
+    H.div className: 'input-group date', ref: ((c) => @datetimepicker = c),
       input
       H.span className: "input-group-addon", onClick: @handleCalendarClick,
         H.span className: "glyphicon glyphicon-calendar"

@@ -14,7 +14,10 @@ path = require 'path'
 # Compile coffeescript to js in lib/
 gulp.task 'coffee', ->
   gulp.src('./src/**/*.coffee')
-    .pipe(coffee({ bare: true, transpile: {presets: ['env']}}))
+    .pipe(coffee({ bare: true, transpile: { 
+      "presets": ["env"],
+      "plugins": ["babel-plugin-transform-runtime"]
+    }}))
     .pipe(gulp.dest('./lib/'))
 
 # Copy non-coffeescript files

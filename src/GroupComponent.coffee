@@ -21,7 +21,7 @@ module.exports = class GroupComponent extends React.Component
     schema: PropTypes.object.isRequired  # Schema to use, including form
 
   validate: (scrollToFirstInvalid) ->
-    return @refs.itemlist.validate(scrollToFirstInvalid)
+    return @itemlist.validate(scrollToFirstInvalid)
 
   render: ->
     # To avoid circularity
@@ -33,7 +33,7 @@ module.exports = class GroupComponent extends React.Component
 
       H.div key: "body", className: "panel-body",
         R ItemListComponent,
-          ref: "itemlist"
+          ref: ((c) => @itemlist = c)
           contents: @props.group.contents
           data: @props.data
           responseRow: @props.responseRow

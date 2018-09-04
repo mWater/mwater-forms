@@ -11,7 +11,7 @@ module.exports = class TextListAnswerComponent extends React.Component
     onNextOrComments: PropTypes.func
 
   focus: () ->
-    @refs.newLine?.focus()
+    @newLine?.focus()
 
   handleChange: (index, ev) =>
     if @props.value?
@@ -43,11 +43,11 @@ module.exports = class TextListAnswerComponent extends React.Component
           @props.onNextOrComments(ev)
       # If it equals to one less, we focus the newLine input
       if index == value.length - 1
-        nextInput = @refs["newLine"]
+        nextInput = @newLine
         nextInput.focus()
       # If not, we focus the next input
       else
-        nextInput = @refs["input#{index+1}"]
+        nextInput = @["input#{index+1}"]
         nextInput.focus()
       # It's important to prevent the default behavior when handling tabs (or else the tab is applied after the focus change)
       ev.preventDefault()
@@ -73,7 +73,7 @@ module.exports = class TextListAnswerComponent extends React.Component
             H.td null,
               H.div className: "input-group",
                 H.input {
-                  ref: "input#{index}"
+                  ref: ((c) => @["input#{index}"] = c)
                   type:"text"
                   className: "form-control box"
                   value: textLine
@@ -92,11 +92,11 @@ module.exports = class TextListAnswerComponent extends React.Component
           H.td null,
             H.div className: "input-group",
               H.input {
-                type:"text",
-                className: "form-control box",
-                onChange: @handleNewLineChange,
-                value: "",
-                ref: 'newLine',
+                type: "text"
+                className: "form-control box"
+                onChange: @handleNewLineChange
+                value: ""
+                ref: (c) => @newLine = c
                 id: 'newLine'
               }
 

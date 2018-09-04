@@ -12,7 +12,7 @@ RosterGroupComponent = require './RosterGroupComponent'
 RosterMatrixComponent = require './RosterMatrixComponent'
 
 # Render an item, given its data, visibility function, etc.
-exports.renderItem = (item, data, responseRow, schema, onDataChange, isVisible, onNext) ->
+exports.renderItem = (item, data, responseRow, schema, onDataChange, isVisible, onNext, ref) ->
   handleAnswerChange = (id, answer) =>
     change = {}
     change[id] = answer
@@ -21,7 +21,7 @@ exports.renderItem = (item, data, responseRow, schema, onDataChange, isVisible, 
   if formUtils.isQuestion(item)
     component = R QuestionComponent,
       key: item._id,
-      ref: item._id,
+      ref: ref
       question: item
       onAnswerChange: handleAnswerChange.bind(null, item._id)
       data: data
@@ -31,7 +31,7 @@ exports.renderItem = (item, data, responseRow, schema, onDataChange, isVisible, 
   else if item._type == "Instructions"
     return R InstructionsComponent,
       key: item._id,
-      ref: item._id,
+      ref: ref
       instructions: item
       data: data
       responseRow: responseRow
@@ -39,12 +39,12 @@ exports.renderItem = (item, data, responseRow, schema, onDataChange, isVisible, 
   else if item._type == "Timer"
     return R TimerComponent,
       key: item._id,
-      ref: item._id,
+      ref: ref
       timer: item
   else if item._type == "Group"
     return R GroupComponent,
       key: item._id,
-      ref: item._id,
+      ref: ref
       group: item
       data: data
       onDataChange: onDataChange
@@ -55,7 +55,7 @@ exports.renderItem = (item, data, responseRow, schema, onDataChange, isVisible, 
   else if item._type == "RosterGroup"
     return R RosterGroupComponent,
       key: item._id,
-      ref: item._id,
+      ref: ref
       rosterGroup: item
       data: data
       onDataChange: onDataChange
@@ -65,7 +65,7 @@ exports.renderItem = (item, data, responseRow, schema, onDataChange, isVisible, 
   else if item._type == "RosterMatrix"
     return R RosterMatrixComponent,
       key: item._id,
-      ref: item._id,
+      ref: ref
       rosterMatrix: item
       data: data
       onDataChange: onDataChange
@@ -76,7 +76,7 @@ exports.renderItem = (item, data, responseRow, schema, onDataChange, isVisible, 
     # Sections are not usually rendered like this, except when in single-page mode. In which case, render as a group
     return R GroupComponent,
       key: item._id,
-      ref: item._id,
+      ref: ref
       group: item
       data: data
       onDataChange: onDataChange

@@ -34,7 +34,7 @@ module.exports = class DropdownAnswerComponent extends React.Component
     data: PropTypes.object.isRequired
 
   focus: () ->
-    @refs.select?.focus()
+    @select?.focus()
 
   handleValueChange: (ev) =>
     if ev.target.value? and ev.target.value != ''
@@ -65,7 +65,7 @@ module.exports = class DropdownAnswerComponent extends React.Component
 
   render: ->
     H.div null,
-      H.select className: "form-control", style: { width: "auto" }, value: @props.answer.value, onChange: @handleValueChange, ref: 'select',
+      H.select className: "form-control", style: { width: "auto" }, value: @props.answer.value, onChange: @handleValueChange, ref: ((c) => @select = c),
         H.option key: "__none__", value: ""
         _.map @props.choices, (choice) =>
           if @areConditionsValid(choice)

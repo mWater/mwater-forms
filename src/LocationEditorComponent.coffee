@@ -31,7 +31,7 @@ module.exports = class LocationEditorComponent extends React.Component
     @locationView.on 'map', () => 
       @props.onUseMap()
 
-    $(@refs.main).append(@locationView.el)
+    $(@main).append(@locationView.el)
 
   componentWillReceiveProps: (nextProps) ->
     if not _.isEqual(nextProps.location, @props.location)
@@ -42,4 +42,4 @@ module.exports = class LocationEditorComponent extends React.Component
     @locationView.remove()
 
   render: ->
-    H.div ref: "main"
+    H.div ref: ((c) => @main = c)

@@ -30,7 +30,7 @@ module.exports = class SiteAnswerComponent extends React.Component
       @setState(text: if nextProps.value?.code then nextProps.value?.code else "")
 
   focus: () ->
-    @refs.input.focus()
+    @input.focus()
 
   handleKeyDown: (ev) =>
     if @props.onNextOrComments?
@@ -77,7 +77,7 @@ module.exports = class SiteAnswerComponent extends React.Component
           type: "tel"
           className: "form-control"
           onKeyDown: @handleKeyDown
-          ref: 'input'
+          ref: ((c) => @input = c)
           placeholder: @context.T("mWater ID of Site")
           style: { zIndex: "inherit" } # Workaround for strange bootstrap z-index
           value: @state.text

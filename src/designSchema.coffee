@@ -31,7 +31,8 @@ module.exports = {
     # Schema 18 adds calculations
     # Schema 19 adds randomAskProbability
     # Schema 20 adds confidential data mode
-    _schema: { enum: [1, 2, 3, 4, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20] }
+    # Schema 21 adds advancedValidations
+    _schema: { enum: [1, 2, 3, 4, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21] }
 
     # Name of the form
     name: { $ref: "#/definitions/localizedString" }
@@ -301,6 +302,11 @@ module.exports = {
         validations: {
           type: "array"
           items: { $ref: "#/definitions/validations/common" }
+        }
+
+        advancedValidations: {
+          type: "array"
+          items: { $ref: "#/definitions/advancedValidation"}
         }
 
         # _id of the item that this item is a duplicate of
@@ -1233,6 +1239,15 @@ module.exports = {
           additionalProperties: false
         }
       }
-    }    
+    } 
+
+    # Expression-based validation
+    advancedValidation: {
+      # mwater-expression that should evaluate to true
+      expr: { type: "object" }
+
+      # Message that is shown if expr is not true
+      message: { $ref: "#/definitions/localizedString" } 
+    }
   }
 }

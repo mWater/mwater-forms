@@ -1,4 +1,5 @@
 AnswerValidator = require './answers/AnswerValidator'
+ValidationCompiler = require './answers/ValidationCompiler'
 formUtils = require './formUtils'
 
 # ResponseDataValidator checks whether the entire data is valid for a response
@@ -12,14 +13,14 @@ module.exports = class ResponseDataValidator
   #     RosterMatrix   -> matrixId.index.columnId
   #     RosterGroup   -> rosterGroupId.index.questionId
   #     QuestionMatrix -> matrixId.itemId.columnId
-  validate: (formDesign, visibilityStructure, data) ->
-    return @validateParentItem(formDesign, visibilityStructure, data, "")
+  validate: (formDesign, visibilityStructure, data, schema, responseRow) ->
+    return @validateParentItem(formDesign, visibilityStructure, data, schema, responseRow, "")
 
   # Validates an parent row
   #   keyPrefix: the part before the row id in the visibility structure. For rosters
-  validateParentItem: (parentItem, visibilityStructure, data, keyPrefix) ->
+  validateParentItem: (parentItem, visibilityStructure, data, schema, responseRow, keyPrefix) ->
     # Create validator
-    answerValidator = new AnswerValidator()
+    answerValidator = new AnswerValidator(schema, responseRow)
 
     # For each item
     for item in parentItem.contents
@@ -28,7 +29,7 @@ module.exports = class ResponseDataValidator
         continue
 
       if item._type == "Section" or item._type == "Group"
-        result = @validateParentItem(item, visibilityStructure, data, keyPrefix)
+        result = await @validateParentItem(item, visibilityStructure, data, schema, responseRow, keyPrefix)
         if result?
           return result
 
@@ -38,7 +39,7 @@ module.exports = class ResponseDataValidator
 
         for entry, index in rosterData
           # Key prefix is itemid.indexinroster.
-          result = @validateParentItem(item, visibilityStructure, entry.data, "#{keyPrefix}#{answerId}.#{index}.")
+          result = await @validateParentItem(item, visibilityStructure, entry.data, schema, responseRow, "#{keyPrefix}#{answerId}.#{index}.")
           if result?
             return { 
               questionId: "#{item._id}.#{index}.#{result.questionId}"
@@ -66,7 +67,7 @@ module.exports = class ResponseDataValidator
                 }
 
               if column.validations and column.validations.length > 0
-                validationError = answerValidator.compileValidations(column.validations)(cellData)
+                validationError = new ValidationCompiler().compileValidations(column.validations)(cellData)
                 if validationError
                   return { 
                     questionId: completedId
@@ -75,7 +76,7 @@ module.exports = class ResponseDataValidator
                   }
                   return [completedId, validationError]
         else
-          error = answerValidator.validate(item, answer)
+          error = await answerValidator.validate(item, answer)
           if error?
             return {
               questionId: item._id
