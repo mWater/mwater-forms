@@ -210,10 +210,6 @@ module.exports = class ResponseRow
 
     return callback(null, null)
 
-  # Gets the ordering of a row if they are ordered. Otherwise, not defined or callback null
-  getOrdering: (callback) ->
-    callback(null, null)
-
 
 # Converts undefined to null
 nullify = (value) ->
