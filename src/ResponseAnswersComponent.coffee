@@ -54,7 +54,7 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
     })
 
     # Calculate visibility asynchronously
-    new VisibilityCalculator(props.formDesign).createVisibilityStructure(props.data, responseRow, (error, visibilityStructure) =>
+    new VisibilityCalculator(props.formDesign, props.schema).createVisibilityStructure(props.data, responseRow, (error, visibilityStructure) =>
       callback(error: error, visibilityStructure: visibilityStructure)
     )
 

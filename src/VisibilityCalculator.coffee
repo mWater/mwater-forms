@@ -23,8 +23,9 @@ Rosters are referenced by entry index: e.g. { "somerosterid.2.somequestionid": t
 
 ###
 module.exports = class VisibilityCalculator
-  constructor: (formDesign) ->
+  constructor: (formDesign, schema) ->
     @formDesign = formDesign
+    @schema = schema
 
   # Updates the visibilityStructure dictionary with one entry for each element
   # data is the data of the response
@@ -62,7 +63,7 @@ module.exports = class VisibilityCalculator
 
     # Apply conditionExpr
     if item.conditionExpr
-      new ExprEvaluator().evaluate item.conditionExpr, { row: responseRow }, (error, value) =>
+      new ExprEvaluator(@schema).evaluate item.conditionExpr, { row: responseRow }, (error, value) =>
         if error
           return callback(error)
 
@@ -125,7 +126,7 @@ module.exports = class VisibilityCalculator
 
     # Apply conditionExpr
     if question.conditionExpr
-      new ExprEvaluator().evaluate question.conditionExpr, { row: responseRow }, (error, value) =>
+      new ExprEvaluator(@schema).evaluate question.conditionExpr, { row: responseRow }, (error, value) =>
         if error
           return callback(error)
 
@@ -183,7 +184,7 @@ module.exports = class VisibilityCalculator
 
     # Apply conditionExpr
     if rosterGroup.conditionExpr
-      new ExprEvaluator().evaluate rosterGroup.conditionExpr, { row: responseRow }, (error, value) =>
+      new ExprEvaluator(@schema).evaluate rosterGroup.conditionExpr, { row: responseRow }, (error, value) =>
         if error
           return callback(error)
 

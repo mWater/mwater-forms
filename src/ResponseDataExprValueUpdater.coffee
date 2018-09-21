@@ -57,7 +57,7 @@ module.exports = class ResponseDataExprValueUpdater
   # Callback with (error, cleanedData)
   cleanData: (data, createResponseRow, callback) ->
     # Compute visibility
-    visibilityCalculator = new VisibilityCalculator(@formDesign)
+    visibilityCalculator = new VisibilityCalculator(@formDesign, @schema)
     randomAskedCalculator = new RandomAskedCalculator(@formDesign)
     responseCleaner = new ResponseCleaner()
     responseCleaner.cleanData @formDesign, visibilityCalculator, null, randomAskedCalculator, data, createResponseRow, null, (error, results) =>
@@ -65,7 +65,7 @@ module.exports = class ResponseDataExprValueUpdater
 
   # Validates the data. Callback null if ok, otherwise string message in second parameter. Clean first.
   validateData: (data, responseRow, callback) ->
-    visibilityCalculator = new VisibilityCalculator(@formDesign)
+    visibilityCalculator = new VisibilityCalculator(@formDesign, @schema)
     visibilityCalculator.createVisibilityStructure data, responseRow, (error, visibilityStructure) =>
       if error
         return callback(error)

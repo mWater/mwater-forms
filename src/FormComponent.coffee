@@ -112,7 +112,7 @@ module.exports = class FormComponent extends React.Component
     })
 
   handleDataChange: (data) =>
-    visibilityCalculator = new VisibilityCalculator(@props.design)
+    visibilityCalculator = new VisibilityCalculator(@props.design, @props.schema)
     defaultValueApplier = new DefaultValueApplier(@props.design, @props.formCtx.stickyStorage, @props.entity, @props.entityType)
     randomAskedCalculator = new RandomAskedCalculator(@props.design)
     responseCleaner = new ResponseCleaner()
