@@ -1,7 +1,6 @@
 PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
-H = React.DOM
 R = React.createElement
 $ = require 'jquery'
 
@@ -135,7 +134,7 @@ module.exports = class ResponseDisplayComponent extends React.Component
       when "edit"
         @state.T("Edited")
 
-    return H.div null,
+    return R 'div', null,
       eventType
       " "
       @state.T("by")
@@ -146,15 +145,15 @@ module.exports = class ResponseDisplayComponent extends React.Component
       " "
       moment(ev.on).format('lll')
       if ev.message
-        [": ", H.i(null, ev.message)]
+        [": ", R('i', null, ev.message)]
       if ev.override
-        H.span(className: "label label-warning", @state.T("Admin Override"))
+        R('span', className: "label label-warning", @state.T("Admin Override"))
 
   # History of events
   renderHistory: ->
     if @state.loadingUsernames
-      return H.div key: "history",
-        H.label(null, @state.T("Loading History..."))
+      return R 'div', key: "history",
+        R('label', null, @state.T("Loading History..."))
 
     contents = []
 
@@ -170,12 +169,12 @@ module.exports = class ResponseDisplayComponent extends React.Component
 
     if events.length > 1 and not @props.forceCompleteHistory
       if @state.showCompleteHistory
-        contents.push(H.div(null, H.a(style: { cursor: "pointer" }, onClick: @handleHideHistory, @state.T("Hide History"))))
-        contents.push(H.div(null, H.a(style: { cursor: "pointer" }, onClick: (=> @setState(showArchive: true)), @state.T("Show Complete History of Changes"))))
+        contents.push(R('div', null, R('a', style: { cursor: "pointer" }, onClick: @handleHideHistory, @state.T("Hide History"))))
+        contents.push(R('div', null, R('a', style: { cursor: "pointer" }, onClick: (=> @setState(showArchive: true)), @state.T("Show Complete History of Changes"))))
       else
-        contents.push(H.div(null, H.a(style: { cursor: "pointer" }, onClick: @handleShowHistory, @state.T("Show History"))))
+        contents.push(R('div', null, R('a', style: { cursor: "pointer" }, onClick: @handleShowHistory, @state.T("Show History"))))
 
-    return H.div key: "history", contents
+    return R 'div', key: "history", contents
 
   renderStatus: ->
     status = switch @props.response.status
@@ -188,8 +187,8 @@ module.exports = class ResponseDisplayComponent extends React.Component
       when "final"
         @state.T("Final")
 
-    H.div key: "status", 
-      @state.T('Status'), ": ", H.b(null, status)
+    R 'div', key: "status", 
+      @state.T('Status'), ": ", R('b', null, status)
 
   renderArchives: ->
     if not @state.history or not @state.showArchive
@@ -212,22 +211,22 @@ module.exports = class ResponseDisplayComponent extends React.Component
 
   # Header which includes basics
   renderHeader: ->
-    H.div style: { paddingBottom: 10 },
-      H.div key: "user", 
-        @state.T('User'), ": ", H.b(null, @props.response.username or "Anonymous")
-      H.div key: "code", 
-        @state.T('Response Id'), ": ", H.b(null, @props.response.code)
+    R 'div', style: { paddingBottom: 10 },
+      R 'div', key: "user", 
+        @state.T('User'), ": ", R('b', null, @props.response.username or "Anonymous")
+      R 'div', key: "code", 
+        @state.T('Response Id'), ": ", R('b', null, @props.response.code)
       if @props.response and @props.response.submittedOn
-        H.div key: "submittedOn", 
-          @state.T('Submitted'), ": ", H.b(null, moment(@props.response.submittedOn).format('lll'))
+        R 'div', key: "submittedOn", 
+          @state.T('Submitted'), ": ", R('b', null, moment(@props.response.submittedOn).format('lll'))
       if @props.response.ipAddress
-        H.div key: "ipAddress", 
-          @state.T('IP Address'), ": ", H.b(null, @props.response.ipAddress)
+        R 'div', key: "ipAddress", 
+          @state.T('IP Address'), ": ", R('b', null, @props.response.ipAddress)
       @renderStatus()
       @renderHistory()
       @renderArchives()
   render: ->
-    H.div null,
+    R 'div', null,
       @renderHeader()
       React.createElement(ResponseAnswersComponent, {
         formDesign: @props.form.design

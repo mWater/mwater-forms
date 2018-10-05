@@ -1,6 +1,6 @@
 PropTypes = require('prop-types')
 React = require 'react'
-H = React.DOM
+R = React.createElement
 
 ModalPopupComponent = require('react-library/lib/ModalPopupComponent')
 AsyncLoadComponent = require('react-library/lib/AsyncLoadComponent')
@@ -29,26 +29,26 @@ module.exports = class ImagePopupComponent extends AsyncLoadComponent
 
   render: ->
     if @state.loading
-      return H.div className: "alert alert-info", @props.T("Loading...")
+      return R 'div', className: "alert alert-info", @props.T("Loading...")
 
     if @state.error
-      return H.div className: "alert alert-danger", @props.T("Error")
+      return R 'div', className: "alert alert-danger", @props.T("Error")
 
     return React.createElement ModalPopupComponent, 
-      footer: H.button type: "button", className: "btn btn-default", onClick: @props.onClose, @props.T("Close")
-      H.div null,
-        H.button type: "button", className: "close", onClick: @props.onClose, "×"
+      footer: R 'button', type: "button", className: "btn btn-default", onClick: @props.onClose, @props.T("Close")
+      R 'div', null,
+        R 'button', type: "button", className: "close", onClick: @props.onClose, "×"
       
         # Add button links
-        H.div null,
+        R 'div', null,
           if @props.onSetCover
-            H.button type: "button", className: "btn btn-link", onClick: @props.onSetCover, @props.T("Set as Cover Image")
+            R 'button', type: "button", className: "btn btn-link", onClick: @props.onSetCover, @props.T("Set as Cover Image")
           " "
           if @props.onRemove
-            H.button type: "button", className: "btn btn-link", onClick: @props.onRemove, @props.T("Remove")
+            R 'button', type: "button", className: "btn btn-link", onClick: @props.onRemove, @props.T("Remove")
           " "
           if @props.onRotate
-            H.button type: "button", className: "btn btn-link", onClick: @props.onRotate, @props.T("Rotate")
+            R 'button', type: "button", className: "btn btn-link", onClick: @props.onRotate, @props.T("Rotate")
 
         # Render image
         React.createElement RotationAwareImageComponent, 

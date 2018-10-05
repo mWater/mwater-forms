@@ -1,19 +1,19 @@
 assert = require('chai').assert
 
 TestComponent = require('react-library/lib/TestComponent')
-ReactTestUtils = require('react-addons-test-utils')
+ReactTestUtils = require('react-dom/test-utils')
 
 BarcodeAnswerComponent = require '../../src/answers/BarcodeAnswerComponent'
 
 React = require 'react'
 ReactDOM = require 'react-dom'
 R = React.createElement
-H = React.DOM
+PropTypes = require('prop-types')
 
 class BarcodeContext extends React.Component
   @childContextTypes:
-    scanBarcode: React.PropTypes.func
-    T: React.PropTypes.func.isRequired
+    scanBarcode: PropTypes.func
+    T: PropTypes.func.isRequired
 
   getChildContext: ->
     ctx = {

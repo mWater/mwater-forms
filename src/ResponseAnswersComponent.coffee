@@ -1,7 +1,6 @@
 PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
-H = React.DOM
 R = React.createElement
 
 formUtils = require './formUtils'
@@ -64,8 +63,8 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
 
   renderLocation: (location) ->
     if location
-      return H.div null, 
-        H.a onClick: @handleLocationClick.bind(this, location), style: { cursor: "pointer" },
+      return R 'div', null, 
+        R 'a', onClick: @handleLocationClick.bind(this, location), style: { cursor: "pointer" },
           "#{location.latitude}\u00B0 #{location.longitude}\u00B0"
           if location.accuracy then "(+/-) #{location.accuracy} m"
 
@@ -77,9 +76,9 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
     if answer.alternate
       switch answer.alternate 
         when "na"
-          return H.em null, @props.T("Not Applicable")
+          return R 'em', null, @props.T("Not Applicable")
         when "dontknow"
-          return H.em null, @props.T("Don't Know")
+          return R 'em', null, @props.T("Don't Know")
 
     if not answer.value?
       return null
@@ -90,7 +89,7 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
         if answer.value and answer.value.match(/^((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)$/)
           # Open in system window if in cordova
           target = if window.cordova? then "_system" else "_blank"
-          return H.a href: answer.value, target: target, 
+          return R 'a', href: answer.value, target: target, 
             answer.value
 
         return answer.value
@@ -105,33 +104,33 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
           else
             specify = null
 
-          return H.div null,
+          return R 'div', null,
             label
             if specify 
               ": "  
-              H.em null, specify
+              R 'em', null, specify
         else
-          return H.span className: "label label-danger", "Invalid Choice"
+          return R 'span', className: "label label-danger", "Invalid Choice"
       when "choices"
         return _.map answer.value, (v) => 
           choice = _.findWhere(q.choices, { id: v })
           if choice
-            return H.div null, 
+            return R 'div', null, 
               formUtils.localizeString(choice.label, @props.locale)
               if answer.specify? and answer.specify[v]
                 ": "
-                H.em null, answer.specify[v]
+                R 'em', null, answer.specify[v]
           else 
-            return H.div className: "label label-danger", "Invalid Choice"
+            return R 'div', className: "label label-danger", "Invalid Choice"
   
       when "date"
         # Depends on precision
         if answer.value.length <= 7   # YYYY or YYYY-MM
-          return H.div null, answer.value
+          return R 'div', null, answer.value
         else if answer.value.length <= 10 # Date
-          return H.div null, moment(answer.value).format("LL")
+          return R 'div', null, moment(answer.value).format("LL")
         else
-          return H.div null, moment(answer.value).format("LLL")
+          return R 'div', null, moment(answer.value).format("LLL")
 
       when "units"
         if answer.value and answer.value.quantity? and answer.value.units?
@@ -142,15 +141,15 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
           unitsStr = if units then formUtils.localizeString(units.label, @props.locale) else "(Invalid)"
 
           if q.unitsPosition == "prefix" 
-            return H.div null,
-              H.em null, unitsStr
+            return R 'div', null,
+              R 'em', null, unitsStr
               " "
               valueStr
           else 
-            return H.div null,
+            return R 'div', null,
               valueStr
               " "
-              H.em null, unitsStr
+              R 'em', null, unitsStr
 
       when "boolean"
         return if answer.value then @props.T("True") else @props.T("False")
@@ -168,7 +167,7 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
 
       when "texts"
         return _.map answer.value, (txt) =>
-          H.div null, txt
+          R 'div', null, txt
 
       when "site"
         code = answer.value
@@ -210,10 +209,10 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
           if choiceId?
             choice = _.findWhere(q.choices, { id: choiceId })
             if choice?
-              return H.div null,
+              return R 'div', null,
                 formUtils.localizeString(choice.label, @props.locale)
             else
-              return H.span className: "label label-danger", "Invalid Choice"
+              return R 'span', className: "label label-danger", "Invalid Choice"
 
       when "aquagenx_cbt"
         return R AquagenxCBTDisplayComponent, 
@@ -233,36 +232,36 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
     if formUtils.getAnswerType(q) == "items_choices"
       contents = []
       for item in q.items
-        itemTd = H.td style: {textAlign: "center"},
+        itemTd = R 'td', style: {textAlign: "center"},
           formUtils.localizeString(item.label, @props.locale)
         choiceId = answer.value[item.id]
         if choiceId?
           choice = _.findWhere(q.choices, { id: choiceId })
           if choice?
-            contents.push H.tr null,
+            contents.push R 'tr', null,
               itemTd,
-              H.td null,
+              R 'td', null,
                 formUtils.localizeString(choice.label, @props.locale)
           else
-            contents.push H.tr null,
+            contents.push R 'tr', null,
               itemTd,
-              H.td null,
-                H.span className: "label label-danger", "Invalid Choice"
+              R 'td', null,
+                R 'span', className: "label label-danger", "Invalid Choice"
 
           if @props.showPrevAnswers and prevAnswer
             choiceId = prevAnswer.value[item.id]
             if choiceId?
               choice = _.findWhere(q.choices, { id: choiceId })
               if choice?
-                contents.push H.tr null,
+                contents.push R 'tr', null,
                   itemTd,
-                  H.td null,
+                  R 'td', null,
                     formUtils.localizeString(choice.label, @props.locale)
               else
-                contents.push H.tr null,
+                contents.push R 'tr', null,
                   itemTd,
-                  H.td null,
-                    H.span className: "label label-danger", "Invalid Choice"
+                  R 'td', null,
+                    R 'span', className: "label label-danger", "Invalid Choice"
       return contents
     else
       return null
@@ -315,11 +314,11 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
         return null
 
     return [
-      H.tr trProps,
-        H.td key: "name", style: { width: "50%" },
+      R 'tr', trProps,
+        R 'td', key: "name", style: { width: "50%" },
           formUtils.localizeString(q.text, @props.locale)
-        H.td key: "value",
-          H.div null,
+        R 'td', key: "value",
+          R 'div', null,
             if not matrixAnswer?
               @renderAnswer(q, answer)
             if answer and answer.timestamp
@@ -331,21 +330,21 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
               @renderLocation(answer.location)
             
             if prevAnswer? and not _.isEqual(prevAnswer.value, answer?.value) and @props.showChangedLink
-              H.a style: { float: 'right', display: 'inline-block', cursor: 'pointer', fontSize: 9 }, onClick: @props.onChangedLinkClick, key: 'view_change',
+              R 'a', style: { float: 'right', display: 'inline-block', cursor: 'pointer', fontSize: 9 }, onClick: @props.onChangedLinkClick, key: 'view_change',
                 R ui.Icon, id: "glyphicon-pencil"
                 " " 
                 T("Edited")
 
         if @props.showPrevAnswers and @props.prevData
-          H.td key: "prevValue",
+          R 'td', key: "prevValue",
             if prevAnswer? and not _.isEqual(prevAnswer.value, answer?.value) and @props.onCompleteHistoryLinkClick
-              H.a style: { float: 'right', display: 'inline-block', cursor: 'pointer', fontSize: 9 }, onClick: @props.onCompleteHistoryLinkClick, key: 'view_history',
+              R 'a', style: { float: 'right', display: 'inline-block', cursor: 'pointer', fontSize: 9 }, onClick: @props.onCompleteHistoryLinkClick, key: 'view_history',
                 T("Show Changes")
 
             if not prevMatrixAnswer?
               @renderAnswer(q, prevAnswer)
             if prevAnswer and prevAnswer.timestamp
-              H.div null,
+              R 'div', null,
                 @props.T('Answered')
                 ": "
                 moment(prevAnswer.timestamp).format('llll')
@@ -384,8 +383,8 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
         return null
 
       return [
-        H.tr key: item._id,
-          H.td colSpan: colspan, style: { fontWeight: "bold" },
+        R 'tr', key: item._id,
+          R 'td', colSpan: colspan, style: { fontWeight: "bold" },
             formUtils.localizeString(item.name, @props.locale)
         contents
       ]
@@ -403,11 +402,11 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
           return null
 
         referencedRoster = formUtils.findItem(@props.formDesign, item.rosterId)
-        return H.tr null,
-          H.td style: { fontWeight: "bold" },
+        return R 'tr', null,
+          R 'td', style: { fontWeight: "bold" },
             formUtils.localizeString(item.name, @props.locale)
-          H.td colSpan: colspan-1,
-            H.span style: {fontStyle: 'italic'},
+          R 'td', colSpan: colspan-1,
+            R 'span', style: {fontStyle: 'italic'},
               @props.T("Data is stored in {0}", formUtils.localizeString(referencedRoster.name, @props.locale))
 
       # Get the data for that roster
@@ -421,8 +420,8 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
       @collectItemsReferencingRoster(items, @props.formDesign.contents, item._id)
       
       return [
-        H.tr key: item._id,
-          H.td colSpan: colspan, style: { fontWeight: "bold" },
+        R 'tr', key: item._id,
+          R 'td', colSpan: colspan, style: { fontWeight: "bold" },
             formUtils.localizeString(item.name, @props.locale)
 
         if data?
@@ -441,8 +440,8 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
             else
               [
                 # Display the index of the answer
-                H.tr null,
-                  H.td colSpan: colspan, style: { fontWeight: "bold" },
+                R 'tr', null,
+                  R 'td', colSpan: colspan, style: { fontWeight: "bold" },
                     "#{index+1}."
                 # And the answer for each question
                 contents
@@ -453,14 +452,14 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
       answer = @props.data[dataId]
       if answer?.value?
         rows = []
-        rows.push H.tr key: item._id,
-          H.td colSpan: colspan, style: { fontWeight: "bold" },
+        rows.push R 'tr', key: item._id,
+          R 'td', colSpan: colspan, style: { fontWeight: "bold" },
             formUtils.localizeString(item.name, @props.locale)
         for rowItem in item.items
           itemValue = answer.value[rowItem.id]
           if itemValue
-            rows.push H.tr null,
-              H.td colSpan: colspan, style: { fontStyle: 'italic' },
+            rows.push R 'tr', null,
+              R 'td', colSpan: colspan, style: { fontStyle: 'italic' },
                 formUtils.localizeString(rowItem.label, @props.locale)
             for column in item.columns
               if itemValue[column._id]
@@ -475,20 +474,20 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
 
   render: ->
     if @state.error
-      return H.div className: "alert alert-danger", 
+      return R 'div', className: "alert alert-danger", 
         @state.error.message
 
     if not @state.visibilityStructure
-      return H.div null, "Loading..."
+      return R 'div', null, "Loading..."
 
-    H.table className: "table table-bordered table-condensed", style: { marginBottom: 0 },
-      H.thead null,
-        H.tr null,
-          H.th null, "Question"
-          H.th null, "Answer"
+    R 'table', className: "table table-bordered table-condensed", style: { marginBottom: 0 },
+      R 'thead', null,
+        R 'tr', null,
+          R 'th', null, "Question"
+          R 'th', null, "Answer"
           if @props.showPrevAnswers
-            H.th null, "Original Answer"
-      H.tbody null, 
+            R 'th', null, "Original Answer"
+      R 'tbody', null, 
         _.map @props.formDesign.contents, (item) =>
           @renderItem(item, @state.visibilityStructure, item._id)
 

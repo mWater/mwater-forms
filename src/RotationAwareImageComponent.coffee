@@ -1,6 +1,5 @@
 PropTypes = require('prop-types')
 React = require 'react'
-H = React.DOM
 R = React.createElement
 AsyncLoadComponent = require('react-library/lib/AsyncLoadComponent')
 classNames = require('classnames')
@@ -57,11 +56,11 @@ module.exports = class RotationAwareImageComponent extends AsyncLoadComponent
       imageStyle.maxWidth = "100%"
 
     if @state.url 
-      return H.span 
+      return R 'span', 
         ref: (c) => @parent = c
         className: containerClasses
         style: containerStyle,
-          H.img
+          R 'img',
             ref: (c) => @image = c
             src: @state.url
             style: imageStyle

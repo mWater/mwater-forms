@@ -2,7 +2,6 @@ PropTypes = require('prop-types')
 React = require 'react'
 ReactDOM = require 'react-dom'
 R = React.createElement
-H = React.DOM
 
 FormComponent = require './FormComponent'
 sampleFormDesign = require './sampleFormDesign'
@@ -116,8 +115,8 @@ class DemoComponent extends React.Component
     # design = randomAskFormDesign
     schema = new FormSchemaBuilder({user: "bob"}).addForm(schema, { _id: "form1", design: design })
 
-    H.div className: "row",
-      H.div(className: "col-md-6",
+    R 'div', className: "row",
+      R('div', className: "col-md-6",
         R FormComponent, {
           formCtx: formCtx
           # locale: PropTypes.string            # Locale. Defaults to English (en)
@@ -138,7 +137,7 @@ class DemoComponent extends React.Component
           # })
         }
       )
-      H.div(className: "col-md-6",
+      R('div', className: "col-md-6",
         R ResponseDisplayComponent, {
           form: {design: design}
           response: {

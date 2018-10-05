@@ -1,7 +1,6 @@
 PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
-H = React.DOM
 R = React.createElement
 
 formUtils = require './formUtils'
@@ -28,7 +27,7 @@ module.exports = class InstructionsComponent extends React.Component
     return false
 
   render: ->
-    H.div className: "well well-small", 
+    R 'div', className: "well well-small", 
       R TextExprsComponent,
         localizedStr: @props.instructions.text
         exprs: @props.instructions.textExprs

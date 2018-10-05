@@ -1,7 +1,7 @@
 PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
-H = React.DOM
+R = React.createElement
 $ = require 'jquery'
 
 # TODO: Make a React LoactionView
@@ -42,4 +42,4 @@ module.exports = class LocationEditorComponent extends React.Component
     @locationView.remove()
 
   render: ->
-    H.div ref: ((c) => @main = c)
+    R 'div', ref: ((c) => @main = c)

@@ -1,7 +1,6 @@
 PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
-H = React.DOM
 R = React.createElement
 
 FormComponent = require './FormComponent'
@@ -117,25 +116,25 @@ module.exports = class ResponseViewEditComponent extends React.Component
     if @props.form.design.locales.length < 2
       return null
 
-    H.select className: "form-control input-sm", style: { width: "auto", float: "right", margin: 5 }, onChange: @handleLocaleChange, value: @state.locale,
+    R 'select', className: "form-control input-sm", style: { width: "auto", float: "right", margin: 5 }, onChange: @handleLocaleChange, value: @state.locale,
       _.map @props.form.design.locales, (l) =>
-        H.option value: l.code, l.name
+        R 'option', value: l.code, l.name
 
   renderOperations: () ->
     responseModel = @createResponseModel(@props.response)
 
-    H.div className: "btn-group table-hover-controls",
+    R 'div', className: "btn-group table-hover-controls",
       if responseModel.canApprove()
-        H.button key: "approve", className: "btn btn-success btn-sm approve-response", onClick: @handleApprove,
+        R 'button', key: "approve", className: "btn btn-success btn-sm approve-response", onClick: @handleApprove,
           "Approve"
       if responseModel.canReject()
-        H.button key: "reject", className: "btn btn-warning btn-sm reject-response", onClick: @handleReject,
+        R 'button', key: "reject", className: "btn btn-warning btn-sm reject-response", onClick: @handleReject,
           "Reject"
       if responseModel.canSubmit() and @props.response.status == "rejected"
-        H.button key: "unreject", className: "btn btn-success btn-sm unreject-response", onClick: @handleUnreject,
+        R 'button', key: "unreject", className: "btn btn-success btn-sm unreject-response", onClick: @handleUnreject,
           "Unreject"
       if responseModel.canDelete()
-        H.button key: "delete", className: "btn btn-danger btn-sm delete-response", onClick: @handleDelete,
+        R 'button', key: "delete", className: "btn btn-danger btn-sm delete-response", onClick: @handleDelete,
           "Delete"
 
   render: ->
@@ -158,15 +157,15 @@ module.exports = class ResponseViewEditComponent extends React.Component
       # Determine if can edit
       responseModel = new ResponseModel(response: @props.response, form: @props.form, user: @props.login?.user, username: @props.login?.username, groups: @props.login?.groups)
 
-      actions = H.div style: { width: "auto", float: "right", margin: 5 },
+      actions = R 'div', style: { width: "auto", float: "right", margin: 5 },
         @renderOperations()
         if responseModel.canRedraft() or responseModel.canEdit()
-          H.button type: "button", className: "btn btn-sm btn-default", onClick: @handleEdit, style: {marginLeft: '10px'},
-            H.span className: "glyphicon glyphicon-edit"
+          R 'button', type: "button", className: "btn btn-sm btn-default", onClick: @handleEdit, style: {marginLeft: '10px'},
+            R 'span', className: "glyphicon glyphicon-edit"
             "Edit Response"
 
       elem = 
-        H.div null,
+        R 'div', null,
           actions
           R(ResponseDisplayComponent, 
             form: @props.form
@@ -178,6 +177,6 @@ module.exports = class ResponseViewEditComponent extends React.Component
             login: @props.login
             T: T)
 
-    return H.div null,
+    return R 'div', null,
       @renderLocales()
       elem

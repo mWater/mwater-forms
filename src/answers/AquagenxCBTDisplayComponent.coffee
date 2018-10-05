@@ -1,6 +1,6 @@
 PropTypes = require('prop-types')
 React = require 'react'
-H = React.DOM
+R = React.createElement
 
 AquagenxCBTDisplaySVGString = require './AquagenxCBTDisplaySVG'
 getHealthRiskString = require('./aquagenxCBTUtils').getHealthRiskString
@@ -25,7 +25,7 @@ module.exports = class AquagenxCBTDisplayComponent extends React.Component
     cbtValues = @props.value.cbt
     compartmentValues = [cbtValues.c1, cbtValues.c2, cbtValues.c3, cbtValues.c4, cbtValues.c5]
     compartmentColors = _.map compartmentValues, (c) -> if c then '#32a89b' else '#ebe7c2'
-    return H.style null,
+    return R 'style', null,
       "
         #{mainId} #compartment1 rect {
           fill: #{compartmentColors[0]};
@@ -49,21 +49,21 @@ module.exports = class AquagenxCBTDisplayComponent extends React.Component
     mpn = cbtValues.mpn
     if mpn == 100
       mpn = '>100'
-    return H.div null,
-      H.div null,
+    return R 'div', null,
+      R 'div', null,
         @context.T('MPN/100ml') + ': '
-        H.b(null, mpn)
-      H.div null,
+        R('b', null, mpn)
+      R 'div', null,
         @context.T('Upper 95% Confidence Interval/100ml') + ': '
-        H.b(null, cbtValues.confidence)
-      H.div null,
+        R('b', null, cbtValues.confidence)
+      R 'div', null,
         @context.T('Health Risk Category Based on MPN and Confidence Interval') + ': '
-        H.b(null, getHealthRiskString(cbtValues.healthRisk, @context.T))
+        R('b', null, getHealthRiskString(cbtValues.healthRisk, @context.T))
 
   renderPhoto: ->
     # Displays an image
     if @props.value.image and @props.imageManager
-      H.div null,
+      R 'div', null,
         React.createElement ImageDisplayComponent,
           image: @props.value.image
           imageManager: @props.imageManager
@@ -74,8 +74,8 @@ module.exports = class AquagenxCBTDisplayComponent extends React.Component
     if not @props.value?.cbt
       return null
 
-    H.div id: "cbtDisplay#{@props.questionId}",
+    R 'div', id: "cbtDisplay#{@props.questionId}",
       @renderStyle()
-      H.div dangerouslySetInnerHTML: {__html: AquagenxCBTDisplaySVGString}, onClick: @handleClick
+      R 'div', dangerouslySetInnerHTML: {__html: AquagenxCBTDisplaySVGString}, onClick: @handleClick
       @renderInfo()
       @renderPhoto()

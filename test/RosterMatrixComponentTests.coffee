@@ -5,10 +5,9 @@ assert = require('chai').assert
 React = require 'react'
 ReactDOM = require 'react-dom'
 R = React.createElement
-H = React.DOM
 
 TestComponent = require('react-library/lib/TestComponent')
-ReactTestUtils = require('react-addons-test-utils')
+ReactTestUtils = require('react-dom/test-utils')
 RosterMatrixComponent = require '../src/RosterMatrixComponent'
 MockTContextWrapper = require './MockTContextWrapper'
 ResponseRow = require '../src/ResponseRow'

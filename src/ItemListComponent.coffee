@@ -1,7 +1,6 @@
 PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
-H = React.DOM
 R = React.createElement
 
 formUtils = require './formUtils'
@@ -48,6 +47,6 @@ module.exports = class ItemListComponent extends React.Component
       formRenderUtils.renderItem(item, @props.data, @props.responseRow, @props.schema, @props.onDataChange, @props.isVisible, @handleNext.bind(this, index), (c) => @itemRefs[item._id] = c)
 
   render: ->
-    H.div null,
+    R 'div', null,
       _.map(@props.contents, @renderItem)
 

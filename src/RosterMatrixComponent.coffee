@@ -1,7 +1,6 @@
 PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
-H = React.DOM
 R = React.createElement
 
 formUtils = require './formUtils'
@@ -105,30 +104,30 @@ module.exports = class RosterMatrixComponent extends React.Component
     @handleAnswerChange(answer)
 
   renderName: ->
-    H.h3 key: "prompt", ref: ((c) => @prompt = c),
+    R 'h3', key: "prompt", ref: ((c) => @prompt = c),
       formUtils.localizeString(@props.rosterMatrix.name, @context.locale)
 
   renderColumnHeader: (column, index) ->
-    H.th key: column._id,
+    R 'th', key: column._id,
       formUtils.localizeString(column.text, @context.locale)
 
       # Required star
       if column.required
-        H.span className: "required", "*"
+        R 'span', className: "required", "*"
 
       # Allow sorting
       if column._type in ["TextColumnQuestion", "NumberColumnQuestion", "DateColumnQuestion"]
-        H.div style: { float: "right" },
-          H.span className: "table-sort-controls glyphicon glyphicon-triangle-top", style: { cursor: "pointer" }, onClick: @handleSort.bind(null, column, "asc")
-          H.span className: "table-sort-controls glyphicon glyphicon-triangle-bottom", style: { cursor: "pointer" }, onClick: @handleSort.bind(null, column, "desc")
+        R 'div', style: { float: "right" },
+          R 'span', className: "table-sort-controls glyphicon glyphicon-triangle-top", style: { cursor: "pointer" }, onClick: @handleSort.bind(null, column, "asc")
+          R 'span', className: "table-sort-controls glyphicon glyphicon-triangle-bottom", style: { cursor: "pointer" }, onClick: @handleSort.bind(null, column, "desc")
 
   renderHeader: ->
-    H.thead null,
-      H.tr null,
+    R 'thead', null,
+      R 'tr', null,
         _.map(@props.rosterMatrix.contents, (column, index) => @renderColumnHeader(column, index))
         # Extra for remove button
         if @props.rosterMatrix.allowRemove
-          H.th(null)
+          R('th', null)
 
   renderCell: (entry, entryIndex, column, columnIndex) ->
     # Get data of the entry
@@ -150,20 +149,20 @@ module.exports = class RosterMatrixComponent extends React.Component
       schema: @props.schema
 
   renderEntry: (entry, index, connectDragSource, connectDragPreview, connectDropTarget) =>
-    elem = H.tr key: index,
+    elem = R 'tr', key: index,
       _.map @props.rosterMatrix.contents, (column, columnIndex) => @renderCell(entry, index, column, columnIndex)
       if @props.rosterMatrix.allowRemove
-        H.td key: "_remove",
-          H.button type: "button", className: "btn btn-sm btn-link", onClick: @handleRemove.bind(null, index),
-            H.span className: "glyphicon glyphicon-remove"  
+        R 'td', key: "_remove",
+          R 'button', type: "button", className: "btn btn-sm btn-link", onClick: @handleRemove.bind(null, index),
+            R 'span', className: "glyphicon glyphicon-remove"  
 
     return connectDropTarget(connectDragPreview(connectDragSource(elem)))
 
   renderAdd: ->
     if @props.rosterMatrix.allowAdd
-      H.div key: "add", style: { marginTop: 10 },
-        H.button type: "button", className: "btn btn-default btn-sm", onClick: @handleAdd,
-          H.span className: "glyphicon glyphicon-plus"
+      R 'div', key: "add", style: { marginTop: 10 },
+        R 'button', type: "button", className: "btn btn-default btn-sm", onClick: @handleAdd,
+          R 'span', className: "glyphicon glyphicon-plus"
           " " + @context.T("Add")
 
   renderBody: ->
@@ -181,16 +180,16 @@ module.exports = class RosterMatrixComponent extends React.Component
       onReorder: @handleAnswerChange
       renderItem: @renderEntry
       getItemId: (entry) => entry._id
-      element: H.tbody(null)
+      element: R('tbody', null)
 
   renderEmptyPrompt: ->
-    H.div style: { fontStyle: "italic" }, 
+    R 'div', style: { fontStyle: "italic" }, 
       formUtils.localizeString(@props.rosterMatrix.emptyPrompt, @context.locale) or @context.T("Click +Add to add an item")
 
   render: ->
-    H.div style: { padding: 5, marginBottom: 20 },
+    R 'div', style: { padding: 5, marginBottom: 20 },
       @renderName()
-      H.table className: "table",
+      R 'table', className: "table",
         @renderHeader()
         @renderBody()
 

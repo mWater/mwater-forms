@@ -2,7 +2,7 @@
 # _ = require 'lodash'
 # assert = require('chai').assert
 # React = require('react')
-# ReactTestUtils = require('react-addons-test-utils')
+# ReactTestUtils = require('react-dom/test-utils')
 
 # TestComponent = require('react-library/lib/TestComponent')
 # AdminRegionSelectComponent = require '../src/AdminRegionSelectComponent'

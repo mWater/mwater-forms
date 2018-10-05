@@ -1,7 +1,6 @@
 PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
-H = React.DOM
 R = React.createElement
 
 formUtils = require './formUtils'
@@ -64,14 +63,14 @@ module.exports = class TimerComponent extends React.Component
     timeLeft = @props.timer.duration - @state.elapsedTicks
     if timeLeft < 0
       timeLeft = null # To display -- : --
-    H.div {className: 'timer'},
-      H.div className: "prompt", ref: 'prompt',
+    R 'div', {className: 'timer'},
+      R 'div', className: "prompt",
         formUtils.localizeString(@props.timer.text, @context.locale)
       if @props.timer.hint
-        H.div className: "text-muted", formUtils.localizeString(@props.timer.hint, @context.locale)
-      H.h1 {style: {fontFamily: 'monospace'}}, getDisplayValue(timeLeft)
-      H.div {className: 'btn-toolbar', role: 'toolbar'},
-        H.div {className: 'btn-group', role: 'group'},
-          H.button {className: 'btn btn-success', onClick: @handleStartClick, disabled: isRunning}, @context.T("Start")
-          H.button {className: 'btn btn-danger', onClick: @handleStopClick, disabled: !isRunning}, @context.T("Stop")
-          H.button {className: 'btn btn-default', onClick: @handleResetClick, disabled: !@state.elapsedTicks}, @context.T("Reset")
+        R 'div', className: "text-muted", formUtils.localizeString(@props.timer.hint, @context.locale)
+      R 'h1', {style: {fontFamily: 'monospace'}}, getDisplayValue(timeLeft)
+      R 'div', {className: 'btn-toolbar', role: 'toolbar'},
+        R 'div', {className: 'btn-group', role: 'group'},
+          R 'button', {className: 'btn btn-success', onClick: @handleStartClick, disabled: isRunning}, @context.T("Start")
+          R 'button', {className: 'btn btn-danger', onClick: @handleStopClick, disabled: !isRunning}, @context.T("Stop")
+          R 'button', {className: 'btn btn-default', onClick: @handleResetClick, disabled: !@state.elapsedTicks}, @context.T("Reset")

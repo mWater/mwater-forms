@@ -1,7 +1,6 @@
 _ = require 'lodash'
 PropTypes = require('prop-types')
 React = require 'react'
-H = React.DOM
 R = React.createElement
 
 formUtils = require '../formUtils'
@@ -57,34 +56,34 @@ module.exports = class LikertAnswerComponent extends React.Component
       value = @props.answer.value[item.id]
     else
       value = null
-    return H.td key: id,
+    return R 'td', key: id,
       # id is used for testing
-      H.div className: "touch-radio #{if value == choice.id then "checked" else ""}", id: id, onClick: @handleValueChange.bind(null, choice, item),
+      R 'div', className: "touch-radio #{if value == choice.id then "checked" else ""}", id: id, onClick: @handleValueChange.bind(null, choice, item),
         formUtils.localizeString(choice.label, @context.locale)
 
   # IN CASE WE DECIDE TO DISPLAY THE CHOICES AT THE TOP (INSTEAD OF REPEATING THEM)
   #renderChoiceLabel: (choice) ->
-  #  H.td key: "label#{choice.id}",
+  #  R 'td', key: "label#{choice.id}",
   #    formUtils.localizeString(choice.label, @context.locale)
 
   renderItem: (item) ->
-    return H.tr null,
-      H.td(null,
-        H.b(null, formUtils.localizeString(item.label, @context.locale))
+    return R 'tr', null,
+      R('td', null,
+        R('b', null, formUtils.localizeString(item.label, @context.locale))
         if item.hint
-          H.div null,
-            H.span className: "", style: {color: '#888'},
+          R 'div', null,
+            R 'span', className: "", style: {color: '#888'},
               formUtils.localizeString(item.hint, @context.locale)
       ),
       _.map @props.choices, (choice) => @renderChoice(item, choice)
 
   render: ->
-    H.table {className: "", style: {width: '100%'}},
+    R 'table', {className: "", style: {width: '100%'}},
       # IN CASE WE DECIDE TO DISPLAY THE CHOICES AT THE TOP (INSTEAD OF REPEATING THEM)
-      #H.thead null,
-      #  H.tr null,
-      #    H.td(),
+      #R 'thead', null,
+      #  R 'tr', null,
+      #    R('td'),
       #    _.map @props.choices, (choice) =>
       #      @renderChoiceLabel(choice)
-      H.tbody null,
+      R 'tbody', null,
         _.map @props.items, (item) => @renderItem(item)

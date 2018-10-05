@@ -1,7 +1,7 @@
 PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
-H = React.DOM
+R = React.createElement
 AsyncLoadComponent = require('react-library/lib/AsyncLoadComponent')
 
 # Loads and displays an admin region
@@ -27,12 +27,12 @@ module.exports = class AdminRegionDisplayComponent extends AsyncLoadComponent
 
   render: ->
     if @state.loading
-      return H.span className: "text-muted", @props.T("Loading...")
+      return R 'span', className: "text-muted", @props.T("Loading...")
 
     if @state.error
-      return H.span className: "text-danger", @props.T("Unable to connect to server")
+      return R 'span', className: "text-danger", @props.T("Unable to connect to server")
 
     if not @state.path or @state.path.length == 0
-      return H.span null, "None"
+      return R 'span', null, "None"
 
-    return H.span null, _.last(@state.path).full_name
+    return R 'span', null, _.last(@state.path).full_name

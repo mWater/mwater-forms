@@ -1,7 +1,6 @@
 PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
-H = React.DOM
 R = React.createElement
 
 formUtils = require './formUtils'
@@ -41,7 +40,7 @@ module.exports = class MatrixColumnCellComponent extends React.Component
     # Create element
     switch column._type
       when "TextColumn"
-        elem = H.label key: column._id, 
+        elem = R 'label', key: column._id, 
           R TextExprsComponent,
             localizedStr: column.cellText
             exprs: column.cellTextExprs
@@ -60,37 +59,37 @@ module.exports = class MatrixColumnCellComponent extends React.Component
           onValueChange: @handleValueChange
         }
       when "TextColumnQuestion"
-        elem = H.input type: "text", className: "form-control input-sm", value: value or "", onChange: (ev) => @handleValueChange(ev.target.value)
+        elem = R 'input', type: "text", className: "form-control input-sm", value: value or "", onChange: (ev) => @handleValueChange(ev.target.value)
       when "NumberColumnQuestion"
         elem = R NumberAnswerComponent, small: true, style: { maxWidth: "10em"}, decimal: column.decimal, value: value, onChange: @handleValueChange
       when "CheckColumnQuestion"
-        elem = H.div 
+        elem = R 'div', 
           className: "touch-checkbox #{if value then "checked" else ""}"
           onClick: => @handleValueChange(not value)
           style: { display: "inline-block" }, 
             "\u200B" # ZWSP
       when "DropdownColumnQuestion"
-        elem = H.select 
+        elem = R 'select', 
           className: "form-control input-sm"
           style: { width: "auto" }
           value: value
           onChange: ((ev) => @handleValueChange(if ev.target.value then ev.target.value else null)),
-            H.option key: "__none__", value: ""
+            R 'option', key: "__none__", value: ""
             _.map column.choices, (choice) =>
               if @areConditionsValid(choice)
                 text = formUtils.localizeString(choice.label, @context.locale)
-                return H.option key: choice.id, value: choice.id, text
+                return R 'option', key: choice.id, value: choice.id, text
       when "SiteColumnQuestion"
         elem = R SiteColumnAnswerComponent,
           value: value
           onValueChange: @handleValueChange
           siteType: column.siteType
       when "DateColumnQuestion"
-        elem = H.div style: {maxWidth: "18em"},
+        elem = R 'div', style: {maxWidth: "18em"},
           R DateAnswerComponent, {format: column.format, placeholder: column.placeholder, value: value, onValueChange: @handleValueChange}
 
     if @props.invalid
       className = "invalid"
 
-    return H.td className: className,
+    return R 'td', className: className,
       elem

@@ -1,6 +1,6 @@
 PropTypes = require('prop-types')
 React = require 'react'
-H = React.DOM
+R = React.createElement
 AsyncLoadComponent = require('react-library/lib/AsyncLoadComponent')
 
 # Loads and displays an entity
@@ -37,13 +37,13 @@ module.exports = class EntityDisplayComponent extends AsyncLoadComponent
 
   render: ->
     if @state.loading
-      return H.div className: "alert alert-info", @props.T("Loading...")
+      return R 'div', className: "alert alert-info", @props.T("Loading...")
 
     if not @props.entityId and not @props.entityCode
       return null
 
     if not @state.entity 
-      return H.div className: "alert alert-danger", @props.T("Either site has been deleted or you do not have permission to view it")
+      return R 'div', className: "alert alert-danger", @props.T("Either site has been deleted or you do not have permission to view it")
 
-    H.div className: (if @props.displayInWell then "well well-sm"),
+    R 'div', className: (if @props.displayInWell then "well well-sm"),
       @props.renderEntityView(@props.entityType, @state.entity)

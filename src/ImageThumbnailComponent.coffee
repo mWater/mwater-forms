@@ -1,6 +1,5 @@
 PropTypes = require('prop-types')
 React = require 'react'
-H = React.DOM
 R = React.createElement
 AsyncLoadComponent = require('react-library/lib/AsyncLoadComponent')
 
@@ -34,4 +33,4 @@ module.exports = class ImageThumbnailComponent extends AsyncLoadComponent
     else if @state.url
       url = @state.url
 
-    return H.img(src: url, style: { maxHeight: 100 }, className: "img-thumbnail", onClick: @props.onClick, onError: @handleError)
+    return R('img', src: url, style: { maxHeight: 100 }, className: "img-thumbnail", onClick: @props.onClick, onError: @handleError)

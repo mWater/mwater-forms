@@ -1,7 +1,6 @@
 PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
-H = React.DOM
 R = React.createElement
 EntityDisplayComponent = require '../EntityDisplayComponent'
 AsyncLoadComponent = require('react-library/lib/AsyncLoadComponent')
@@ -63,36 +62,36 @@ module.exports = class EntityAnswerComponent extends AsyncLoadComponent
       @forceLoad()
 
   renderEntityButtons: ->
-    H.div null,
-      H.button type: "button", className: "btn btn-link btn-sm", onClick: @handleSelectEntity,
-        H.span className: "glyphicon glyphicon-ok"
+    R 'div', null,
+      R 'button', type: "button", className: "btn btn-link btn-sm", onClick: @handleSelectEntity,
+        R 'span', className: "glyphicon glyphicon-ok"
         " "
         @context.T("Change Selection")
-      H.button type: "button", className: "btn btn-link btn-sm", onClick: @handleClearEntity,
-        H.span className: "glyphicon glyphicon-remove"
+      R 'button', type: "button", className: "btn btn-link btn-sm", onClick: @handleClearEntity,
+        R 'span', className: "glyphicon glyphicon-remove"
         " "
         @context.T("Clear Selection")
       if @context.editEntity? and @context.canEditEntity(@props.entityType, @state.entity)
-        H.button type: "button", className: "btn btn-link btn-sm", onClick: @handleEditEntity,
-          H.span className: "glyphicon glyphicon-pencil"
+        R 'button', type: "button", className: "btn btn-link btn-sm", onClick: @handleEditEntity,
+          R 'span', className: "glyphicon glyphicon-pencil"
           " "
           @context.T("Edit Selection")
 
   render: ->
     if @state.loading
-      return H.div className: "alert alert-info", @context.T("Loading...")
+      return R 'div', className: "alert alert-info", @context.T("Loading...")
 
     if not @props.value 
       # Render select button
-      return H.button type: "button", className: "btn btn-default btn-sm", onClick: @handleSelectEntity,
-        H.span className: "glyphicon glyphicon-ok"
+      return R 'button', type: "button", className: "btn btn-default btn-sm", onClick: @handleSelectEntity,
+        R 'span', className: "glyphicon glyphicon-ok"
         " "
         @context.T("Select")
 
     if not @state.entity 
-      return H.div className: "alert alert-danger", @context.T("Not found")
+      return R 'div', className: "alert alert-danger", @context.T("Not found")
 
-    return H.div null,
+    return R 'div', null,
       @renderEntityButtons()
       R EntityDisplayComponent, 
         entityType: @props.entityType

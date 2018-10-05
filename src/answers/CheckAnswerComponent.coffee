@@ -1,6 +1,5 @@
 PropTypes = require('prop-types')
 React = require 'react'
-H = React.DOM
 R = React.createElement
 
 formUtils = require '../formUtils'
@@ -24,5 +23,5 @@ module.exports = class CheckAnswerComponent extends React.Component
     @props.onValueChange(!@props.value)
 
   render: ->
-    H.div className: "choice touch-checkbox #{if @props.value then "checked" else ""}", onClick: @handleValueChange, ref: ((c) => @checkbox = c),
+    R 'div', className: "choice touch-checkbox #{if @props.value then "checked" else ""}", onClick: @handleValueChange, ref: ((c) => @checkbox = c),
       @props.children

@@ -2,7 +2,7 @@ _ = require 'lodash'
 assert = require('chai').assert
 
 TestComponent = require('react-library/lib/TestComponent')
-ReactTestUtils = require('react-addons-test-utils')
+ReactTestUtils = require('react-dom/test-utils')
 
 SiteColumnAnswerComponent = require '../../src/answers/SiteColumnAnswerComponent'
 AnswerValidator = require '../../src/answers/AnswerValidator'
@@ -10,15 +10,15 @@ AnswerValidator = require '../../src/answers/AnswerValidator'
 React = require 'react'
 ReactDOM = require 'react-dom'
 R = React.createElement
-H = React.DOM
+PropTypes = require('prop-types')
 
 class SiteContext extends React.Component
   @childContextTypes:
-    selectEntity: React.PropTypes.func
-    getEntityById: React.PropTypes.func
-    getEntityByCode: React.PropTypes.func
-    renderEntityListItemView: React.PropTypes.func
-    T: React.PropTypes.func
+    selectEntity: PropTypes.func
+    getEntityById: PropTypes.func
+    getEntityByCode: PropTypes.func
+    renderEntityListItemView: PropTypes.func
+    T: PropTypes.func
 
   getChildContext: ->
     selectEntity: (options) ->
@@ -36,7 +36,7 @@ class SiteContext extends React.Component
           code: '10007'
         })
     renderEntityListItemView: (entityType, entity) ->
-      H.div null, entity.code
+      R 'div', null, entity.code
     T: (str) -> str
 
   render: ->

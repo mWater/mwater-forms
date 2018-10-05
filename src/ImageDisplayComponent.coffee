@@ -1,6 +1,6 @@
 PropTypes = require('prop-types')
 React = require 'react'
-H = React.DOM
+R = React.createElement
 ImagePopupComponent = require './ImagePopupComponent'
 
 RotationAwareImageComponent = require './RotationAwareImageComponent'
@@ -37,7 +37,7 @@ module.exports = class ImageDisplayComponent extends React.Component
     else
       src = "img/image-loading.png"
 
-    H.span null,
+    R 'span', null,
       React.createElement(RotationAwareImageComponent, image: @props.image, imageManager: @props.imageManager, onClick: @handleImgClick, height: 100, thumbnail: true)
       if @state.popup
         React.createElement(ImagePopupComponent, {

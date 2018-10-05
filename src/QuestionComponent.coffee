@@ -1,7 +1,6 @@
 PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
-H = React.DOM
 R = React.createElement
 
 formUtils = require './formUtils'
@@ -233,9 +232,9 @@ module.exports = class QuestionComponent extends React.Component
       @props.onNext?()
 
   renderPrompt: ->
-    promptDiv = H.div className: "prompt", ref: ((c) => @prompt = c),
+    promptDiv = R 'div', className: "prompt", ref: ((c) => @prompt = c),
       if @props.question.code
-        H.span className: "question-code", @props.question.code + ": "
+        R 'span', className: "question-code", @props.question.code + ": "
 
       R TextExprsComponent,
         localizedStr: @props.question.text 
@@ -246,11 +245,11 @@ module.exports = class QuestionComponent extends React.Component
 
       # Required star
       if @props.question.required and not (@context.disableConfidentialFields and @props.question.confidential)
-        H.span className: "required", "*"
+        R 'span', className: "required", "*"
 
       if @props.question.help
-        H.button type: "button", id: 'helpbtn', className: "btn btn-link btn-sm", onClick: @handleToggleHelp,
-          H.span className: "glyphicon glyphicon-question-sign"
+        R 'button', type: "button", id: 'helpbtn', className: "btn btn-link btn-sm", onClick: @handleToggleHelp,
+          R 'span', className: "glyphicon glyphicon-question-sign"
 
     # Special case!
     if @props.question._type == 'CheckQuestion'
@@ -264,34 +263,34 @@ module.exports = class QuestionComponent extends React.Component
       return promptDiv
 
   renderHint: ->
-    H.div null,
+    R 'div', null,
       if @props.question.hint
-        H.div className: "text-muted", formUtils.localizeString(@props.question.hint, @context.locale)
+        R 'div', className: "text-muted", formUtils.localizeString(@props.question.hint, @context.locale)
       if @context.disableConfidentialFields and @props.question.confidential
-        H.div className: "text-muted", @context.T("Confidential answers may not be edited.")
+        R 'div', className: "text-muted", @context.T("Confidential answers may not be edited.")
 
   renderHelp: ->
     if @state.helpVisible and @props.question.help
-      H.div className: "help well well-sm", dangerouslySetInnerHTML: { __html: markdown.toHTML(formUtils.localizeString(@props.question.help, @context.locale)) }
+      R 'div', className: "help well well-sm", dangerouslySetInnerHTML: { __html: markdown.toHTML(formUtils.localizeString(@props.question.help, @context.locale)) }
 
   renderValidationError: ->
     if @state.validationError? and typeof(@state.validationError) == "string"
-      H.div className: "validation-message text-danger",
+      R 'div', className: "validation-message text-danger",
         @state.validationError
 
   renderAlternates: ->
     if @props.question.alternates and (@props.question.alternates.na or @props.question.alternates.dontknow)
-      H.div null,
+      R 'div', null,
         if @props.question.alternates.dontknow
-          H.div id: 'dn', className: "touch-checkbox alternate #{if @getAnswer().alternate == 'dontknow' then 'checked'}", onClick: @handleAlternate.bind(null, 'dontknow'),
+          R 'div', id: 'dn', className: "touch-checkbox alternate #{if @getAnswer().alternate == 'dontknow' then 'checked'}", onClick: @handleAlternate.bind(null, 'dontknow'),
             @context.T("Don't Know")
         if @props.question.alternates.na
-          H.div id: 'na', className: "touch-checkbox alternate #{if @getAnswer().alternate == 'na' then 'checked'}", onClick: @handleAlternate.bind(null, 'na'),
+          R 'div', id: 'na', className: "touch-checkbox alternate #{if @getAnswer().alternate == 'na' then 'checked'}", onClick: @handleAlternate.bind(null, 'na'),
             @context.T("Not Applicable")
 
   renderCommentsField: ->
     if @props.question.commentsField
-      H.textarea className: "form-control question-comments", id: "comments", ref: ((c) => @comments = c), placeholder: @context.T("Comments"), value: @getAnswer().comments, onChange: @handleCommentsChange
+      R 'textarea', className: "form-control question-comments", id: "comments", ref: ((c) => @comments = c), placeholder: @context.T("Comments"), value: @getAnswer().comments, onChange: @handleCommentsChange
 
   renderAnswer: ->
     answer = @getAnswer()
@@ -480,12 +479,12 @@ module.exports = class QuestionComponent extends React.Component
     if @state.validationError?
       className += " invalid"
 
-    H.div className: className,
+    R 'div', className: className,
       @renderPrompt()
       @renderHint()
       @renderHelp()
 
-      H.div className: "answer",
+      R 'div', className: "answer",
         @renderAnswer()
 
       @renderAlternates()
