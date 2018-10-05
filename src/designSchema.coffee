@@ -31,7 +31,7 @@ module.exports = {
     # Schema 18 adds calculations
     # Schema 19 adds randomAskProbability
     # Schema 20 adds confidential data mode
-    # Schema 21 adds advancedValidations
+    # Schema 21 adds advancedValidations and roster hints
     _schema: { enum: [1, 2, 3, 4, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21] }
 
     # Name of the form
@@ -404,6 +404,9 @@ module.exports = {
         # Name of roster group (displayed above list)
         name: { $ref: "#/definitions/localizedString" } 
 
+        # Hint of roster group (displayed below list)
+        hint: { $ref: "#/definitions/localizedString" } 
+
         # Conditions for visibility of the group
         conditions: { $ref: "#/definitions/conditions" }
 
@@ -449,6 +452,9 @@ module.exports = {
 
         # Name of roster group (displayed above matrix)
         name: { $ref: "#/definitions/localizedString" } 
+
+        # Hint of roster matrix (displayed below list)
+        hint: { $ref: "#/definitions/localizedString" } 
 
         # Conditions for visibility of the matrix
         conditions: { $ref: "#/definitions/conditions" }
