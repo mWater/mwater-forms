@@ -82,6 +82,7 @@ describe "EntitySchemaBuilder addEntities", ->
         toTable: "entities.water_point"
         fromColumn: "_id"
         toColumn: "community"
+        inverse: "community"
       }
     })
 
@@ -113,6 +114,7 @@ describe "EntitySchemaBuilder addEntities", ->
         toTable: "entities.water_point"
         fromColumn: "_id"
         toColumn: "community"
+        inverse: "community"
       }
     })
 

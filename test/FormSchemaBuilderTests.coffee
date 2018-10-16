@@ -71,20 +71,21 @@ describe "FormSchemaBuilder addForm", ->
     assert.equal column.type, "join"
     assert.equal column.join.type, "1-n"
     assert.equal column.join.toTable, "responses:formid"
-    # Use {to}._id in (select response from response_entities where question = 'site1' and "entityType" = 'water_point' and property = 'code' and value = {from}."code"))
+    assert.equal column.join.inverse, "data:site1:value"
+    # Use exists (select null from response_entities where response = {to}._id and question = 'site1' and "entityType" = 'water_point' and property = 'code' and value = {from}."code"))
     compare column.join.jsonql, {
       type: "op"
-      op: "in"
+      op: "exists"
       exprs: [
-        { type: "field", tableAlias: "{to}", column: "_id" }
         {
           type: "scalar"
-          expr: { type: "field", tableAlias: "response_entities", column: "response" }
+          expr: null
           from: { type: "table", table: "response_entities", alias: "response_entities" }
           where: {
             type: "op"
             op: "and"
             exprs: [
+              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "response" }, { type: "field", tableAlias: "{to}", column: "_id" }] }
               { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "question" }, "site1"] }
               { type: "op", op: "is null", exprs: [{ type: "field", tableAlias: "response_entities", column: "roster" }] }
               { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "entityType" }, "water_point"] }
@@ -143,20 +144,20 @@ describe "FormSchemaBuilder addForm", ->
     assert.equal column.type, "join"
     assert.equal column.join.type, "1-n"
     assert.equal column.join.toTable, "responses:formid:roster:roster1"
-    # Use {to}._id in (select roster from response_entities where question = 'site1' and "entityType" = 'water_point' and property = 'code' and value = {from}."code"))
+    # Use exists (select null from response_entities where roster = {to}._id and question = 'site1' and "entityType" = 'water_point' and property = 'code' and value = {from}."code"))
     compare column.join.jsonql, {
       type: "op"
-      op: "in"
+      op: "exists"
       exprs: [
-        { type: "field", tableAlias: "{to}", column: "_id" }
         {
           type: "scalar"
-          expr: { type: "field", tableAlias: "response_entities", column: "roster" }
+          expr: null
           from: { type: "table", table: "response_entities", alias: "response_entities" }
           where: {
             type: "op"
             op: "and"
             exprs: [
+              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "roster" }, { type: "field", tableAlias: "{to}", column: "_id" }] }
               { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "question" }, "site1"] }
               { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "entityType" }, "water_point"] }
               { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "property" }, "code"] }
@@ -204,20 +205,20 @@ describe "FormSchemaBuilder addForm", ->
     assert.equal column.type, "join"
     assert.equal column.join.type, "1-n"
     assert.equal column.join.toTable, "responses:formid"
-    # Use {to}._id in (select response from response_entities where question = 'site1' and "entityType" = 'water_point' and property = '_id' and value = {from}."_id"))
+    # Use exists (select null from response_entities where response = {to}._id and question = 'site1' and "entityType" = 'water_point' and property = '_id' and value = {from}."_id"))
     compare column.join.jsonql, {
       type: "op"
-      op: "in"
+      op: "exists"
       exprs: [
-        { type: "field", tableAlias: "{to}", column: "_id" }
         {
           type: "scalar"
-          expr: { type: "field", tableAlias: "response_entities", column: "response" }
+          expr: null
           from: { type: "table", table: "response_entities", alias: "response_entities" }
           where: {
             type: "op"
             op: "and"
             exprs: [
+              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "response" }, { type: "field", tableAlias: "{to}", column: "_id" }] }
               { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "question" }, "entity1"] }
               { type: "op", op: "is null", exprs: [{ type: "field", tableAlias: "response_entities", column: "roster" }] }
               { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "entityType" }, "water_point"] }

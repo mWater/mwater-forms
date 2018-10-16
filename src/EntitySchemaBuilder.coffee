@@ -34,6 +34,7 @@ module.exports = class EntitySchemaBuilder
               join: {
                 type: "1-n"
                 toTable: "entities.#{entityType.code}"
+                inverse: prop.id
                 fromColumn: "_id"
                 toColumn: prop.id
               }
