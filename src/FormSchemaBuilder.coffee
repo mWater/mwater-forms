@@ -1027,21 +1027,21 @@ module.exports = class FormSchemaBuilder
           if tableId.match(/^responses:[^:]+$/)
             formId = tableId.split(":")[1]
 
-            # Use {to}._id in (select response from response_entities where question = 'site1' and "entityType" = 'water_point' and property = 'code' and value = {from}."code"))
+            # Use exists (select response from response_entities where response = {to}._id and question = 'site1' and "entityType" = 'water_point' and property = 'code' and value = {from}."code")
             # for indexed speed
             jsonql = {
               type: "op"
-              op: "in"
+              op: "exists"
               exprs: [
-                { type: "field", tableAlias: "{to}", column: "_id" }
                 {
                   type: "scalar"
-                  expr: { type: "field", tableAlias: "response_entities", column: "response" }
+                  expr: null
                   from: { type: "table", table: "response_entities", alias: "response_entities" }
                   where: {
                     type: "op"
                     op: "and"
                     exprs: [
+                      { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "response" }, { type: "field", tableAlias: "{to}", column: "_id" }] }
                       { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "question" }, item._id] }
                       { type: "op", op: "is null", exprs: [{ type: "field", tableAlias: "response_entities", column: "roster" }] }
                       { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "entityType" }, entityType] }
@@ -1063,6 +1063,7 @@ module.exports = class FormSchemaBuilder
                 join: {
                   type: "1-n"
                   toTable: tableId
+                  inverse: column.id
                   jsonql: jsonql
                 }
               }
@@ -1074,21 +1075,21 @@ module.exports = class FormSchemaBuilder
             formId = tableId.split(":")[1]
             rosterId = tableId.split(":")[3]
 
-            # Use {to}._id in (select roster from response_entities where question = 'site1' and "entityType" = 'water_point' and property = 'code' and value = {from}."code"))
+            # Use exists (select null from response_entities where roster = {to}._id and question = 'site1' and "entityType" = 'water_point' and property = 'code' and value = {from}."code")
             # for indexed speed
             jsonql = {
               type: "op"
-              op: "in"
+              op: "exists"
               exprs: [
-                { type: "field", tableAlias: "{to}", column: "_id" }
                 {
                   type: "scalar"
-                  expr: { type: "field", tableAlias: "response_entities", column: "roster" }
+                  expr: null 
                   from: { type: "table", table: "response_entities", alias: "response_entities" }
                   where: {
                     type: "op"
                     op: "and"
                     exprs: [
+                      { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "roster" }, { type: "field", tableAlias: "{to}", column: "_id" }]}
                       { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "question" }, item._id] }
                       { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "entityType" }, entityType] }
                       { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "property" }, "code"] }
@@ -1109,6 +1110,7 @@ module.exports = class FormSchemaBuilder
                 join: {
                   type: "1-n"
                   toTable: tableId
+                  inverse: column.id
                   jsonql: jsonql
                 }
               }
@@ -1145,21 +1147,21 @@ module.exports = class FormSchemaBuilder
             if tableId.match(/^responses:[^:]+$/)
               formId = tableId.split(":")[1]
 
-              # Use {to}._id in (select response from response_entities where question = 'site1' and "entityType" = 'water_point' and property = '_id' and value = {from}."_id"))
+              # Use exists (select null from response_entities where response = {to}._id and question = 'site1' and "entityType" = 'water_point' and property = '_id' and value = {from}."_id"))
               # for indexed speed
               jsonql = {
                 type: "op"
-                op: "in"
+                op: "exists"
                 exprs: [
-                  { type: "field", tableAlias: "{to}", column: "_id" }
                   {
                     type: "scalar"
-                    expr: { type: "field", tableAlias: "response_entities", column: "response" }
+                    expr: null
                     from: { type: "table", table: "response_entities", alias: "response_entities" }
                     where: {
                       type: "op"
                       op: "and"
                       exprs: [
+                        { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "response" }, { type: "field", tableAlias: "{to}", column: "_id" }] }
                         { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "question" }, item._id] }
                         { type: "op", op: "is null", exprs: [{ type: "field", tableAlias: "response_entities", column: "roster" }] }
                         { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "entityType" }, item.entityType] }
@@ -1180,6 +1182,7 @@ module.exports = class FormSchemaBuilder
                   type: "join"
                   join: {
                     type: "1-n"
+                    inverse: column.id
                     toTable: tableId
                     jsonql: jsonql
                   }
