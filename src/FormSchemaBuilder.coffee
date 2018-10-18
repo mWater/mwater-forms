@@ -91,7 +91,7 @@ module.exports = class FormSchemaBuilder
     })
 
     # Add any roster tables
-    schema = @addRosterTables(schema, form, conditionsExprCompiler, reverseJoins)
+    schema = @addRosterTables(schema, form, conditionsExprCompiler, reverseJoins, "responses:#{form._id}")
 
     # Add reverse joins from entity and site questions
     schema = @addReverseJoins(schema, form, reverseJoins)
@@ -151,7 +151,8 @@ module.exports = class FormSchemaBuilder
 
     return schema
 
-  addRosterTables: (schema, form, conditionsExprCompiler, reverseJoins) ->
+  # tableId is form table, not roster table
+  addRosterTables: (schema, form, conditionsExprCompiler, reverseJoins, tableId) ->
     # For each item
     for item in formUtils.allItems(form.design)
       if item._type in ["RosterGroup", "RosterMatrix"]
@@ -164,7 +165,7 @@ module.exports = class FormSchemaBuilder
               name: { en: "Response" }
               join: {
                 type: "n-1"
-                toTable: "responses:#{form._id}"
+                toTable: tableId
                 fromColumn: "response"
                 toColumn: "_id"
               }
@@ -178,15 +179,15 @@ module.exports = class FormSchemaBuilder
           name = appendStr(appendStr(form.design.name, ": "), item.name)
         else
           # Use existing contents
-          contents = schema.getTable("responses:#{form._id}:roster:#{item.rosterId}").contents.slice()
-          name = schema.getTable("responses:#{form._id}:roster:#{item.rosterId}").name
+          contents = schema.getTable("#{tableId}:roster:#{item.rosterId}").contents.slice()
+          name = schema.getTable("#{tableId}:roster:#{item.rosterId}").name
 
         # Add contents
         for rosterItem in item.contents
-          @addFormItem(rosterItem, contents, "responses:#{form._id}:roster:#{item.rosterId or item._id}", conditionsExprCompiler, null, reverseJoins)
+          @addFormItem(rosterItem, contents, "#{tableId}:roster:#{item.rosterId or item._id}", conditionsExprCompiler, null, reverseJoins)
           
         schema = schema.addTable({
-          id: "responses:#{form._id}:roster:#{item.rosterId or item._id}"
+          id: "#{tableId}:roster:#{item.rosterId or item._id}"
           name: name
           primaryKey: "_id"
           ordering: "index"
