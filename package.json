@@ -69,6 +69,8 @@
     "jsdom-global": "3.0.2",
     "mocha": "^2.3.3",
     "mocha-loader": "^1.1.1",
+    "react-dnd": "^5.0.0",
+    "react-dnd-html5-backend": "^5.0.1",
     "rework-npm": "^1.0.0",
     "sinon": "^2.1.0",
     "webpack": "^4.17.1",

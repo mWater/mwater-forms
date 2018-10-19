@@ -12,14 +12,20 @@ RosterMatrixComponent = require '../src/RosterMatrixComponent'
 MockTContextWrapper = require './MockTContextWrapper'
 ResponseRow = require '../src/ResponseRow'
 HTML5Backend = require('react-dnd-html5-backend').default
-DragDropContextProvider = require("react-dnd").DragDropContextProvider
+DragDropContext = require("react-dnd").DragDropContext
+
+class Wrapper extends React.Component
+  render: ->
+    return @props.children
+
+Wrapper = DragDropContext(HTML5Backend)(Wrapper)
 
 describe "RosterMatrixComponent", ->
   beforeEach ->
     @toDestroy = []
 
     @render = (options) =>
-      elem = R(DragDropContextProvider, backend: HTML5Backend,
+      elem = R(Wrapper, null
         R(RosterMatrixComponent, _.defaults(options, { 
           isVisible: (-> true)
           onDataChange: ->

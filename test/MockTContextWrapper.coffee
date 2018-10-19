@@ -8,4 +8,4 @@ module.exports = class MockTContextWrapper extends React.Component
 
   getChildContext: -> { T: (str) -> str }
 
-  render: -> React.cloneElement(React.Children.only(@props.children), ref: "main")
+  render: -> @props.children

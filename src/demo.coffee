@@ -13,7 +13,9 @@ ResponseDisplayComponent = require './ResponseDisplayComponent'
 Schema = require('mwater-expressions').Schema
 FormSchemaBuilder = require './FormSchemaBuilder'
 ImageUploaderModalComponent = require './ImageUploaderModalComponent'
-
+HTML5Backend = require('react-dnd-html5-backend').default
+DragDropContextProvider = require("react-dnd").DragDropContextProvider
+DragDropContext = require("react-dnd").DragDropContext
 
 # Setup mock localizer
 global.T = (str) ->
@@ -110,8 +112,8 @@ class DemoComponent extends React.Component
     # design = rosterFormDesign
     # design = matrixFormDesign
     # design = rosterFormDesign
-    # design = sampleForm2.design
-    design = sampleFormAdvancedValidations.design
+    design = sampleForm2.design
+    # design = sampleFormAdvancedValidations.design
     # design = randomAskFormDesign
     schema = new FormSchemaBuilder({user: "bob"}).addForm(schema, { _id: "form1", design: design })
 
@@ -147,6 +149,8 @@ class DemoComponent extends React.Component
           T: T
         }
       )
+
+DemoComponent = DragDropContext(HTML5Backend)(DemoComponent)
 
 # class ImageUploaderTestComponent extends React.Component
 #   render: ->
