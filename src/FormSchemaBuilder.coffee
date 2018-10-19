@@ -91,7 +91,7 @@ module.exports = class FormSchemaBuilder
     })
 
     # Add any roster tables
-    schema = @addRosterTables(schema, form, conditionsExprCompiler, reverseJoins, "responses:#{form._id}")
+    schema = @addRosterTables(schema, form.design, conditionsExprCompiler, reverseJoins, "responses:#{form._id}")
 
     # Add reverse joins from entity and site questions
     schema = @addReverseJoins(schema, form, reverseJoins)
@@ -152,9 +152,9 @@ module.exports = class FormSchemaBuilder
     return schema
 
   # tableId is form table, not roster table
-  addRosterTables: (schema, form, conditionsExprCompiler, reverseJoins, tableId) ->
+  addRosterTables: (schema, design, conditionsExprCompiler, reverseJoins, tableId) ->
     # For each item
-    for item in formUtils.allItems(form.design)
+    for item in formUtils.allItems(design)
       if item._type in ["RosterGroup", "RosterMatrix"]
         # If new, create table with single join back to responses
         if not item.rosterId
@@ -176,7 +176,7 @@ module.exports = class FormSchemaBuilder
               name: { en: "Index" }
             }
           ]
-          name = appendStr(appendStr(form.design.name, ": "), item.name)
+          name = appendStr(appendStr(schema.getTable(tableId).name, ": "), item.name)
         else
           # Use existing contents
           contents = schema.getTable("#{tableId}:roster:#{item.rosterId}").contents.slice()
