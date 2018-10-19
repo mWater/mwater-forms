@@ -11,20 +11,23 @@ ReactTestUtils = require('react-dom/test-utils')
 RosterMatrixComponent = require '../src/RosterMatrixComponent'
 MockTContextWrapper = require './MockTContextWrapper'
 ResponseRow = require '../src/ResponseRow'
+HTML5Backend = require('react-dnd-html5-backend').default
+DragDropContextProvider = require("react-dnd").DragDropContextProvider
 
 describe "RosterMatrixComponent", ->
   beforeEach ->
     @toDestroy = []
 
     @render = (options) =>
-      elem = R(RosterMatrixComponent, _.defaults(options, { 
-        isVisible: (-> true)
-        onDataChange: ->
-        responseRow: new ResponseRow({
-          responseData: options.data
-          formDesign: { contents: [@rosterGroup] }
-          })
-      }))
+      elem = R(DragDropContextProvider, backend: HTML5Backend,
+        R(RosterMatrixComponent, _.defaults(options, { 
+          isVisible: (-> true)
+          onDataChange: ->
+          responseRow: new ResponseRow({
+            responseData: options.data
+            formDesign: { contents: [@rosterGroup] }
+            })
+        })))
       comp = new TestComponent(R(MockTContextWrapper, null, elem))
       @toDestroy.push(comp)
       return comp
@@ -149,16 +152,19 @@ describe "RosterMatrixComponent", ->
     inputs[0].value = "y"
     ReactTestUtils.Simulate.change(inputs[0], { target: { value: "y" }})
 
-  it "requires required columns", ->
+  it "requires required columns fail", ->
     @rosterMatrix.contents[0].required = true
 
     comp = @render(rosterMatrix: @rosterMatrix, data: { a: [{ _id: "1", data: {}}] })
-    assert.isTrue comp.getComponent().refs.main.validate(false), "Should fail validation"
+    assert.isTrue ReactTestUtils.findRenderedComponentWithType(comp.getComponent(), RosterMatrixComponent).validate(false), "Should fail validation"
+
+  it "requires required columns pass", ->
+    @rosterMatrix.contents[0].required = true
 
     comp = @render(rosterMatrix: @rosterMatrix, data: { a: [{ _id: "1", data: { text: { value: "x" }}}] })
-    assert.isFalse comp.getComponent().refs.main.validate(false), "Should pass validation"
+    assert.isFalse ReactTestUtils.findRenderedComponentWithType(comp.getComponent(), RosterMatrixComponent).validate(false), "Should pass validation"
 
-  it "validates columns", ->
+  it "validates columns fail", ->
     @rosterMatrix.contents[0].validations = [
       {
         op: "lengthRange"
@@ -168,7 +174,16 @@ describe "RosterMatrixComponent", ->
     ]
 
     comp = @render(rosterMatrix: @rosterMatrix, data: { a: [{ _id: "1", data: { text: { value: "x" }}}] })
-    assert.isTrue comp.getComponent().refs.main.validate(false), "Should fail validation"
+    assert.isTrue ReactTestUtils.findRenderedComponentWithType(comp.getComponent(), RosterMatrixComponent).validate(false), "Should fail validation"
+
+  it "validates columns pass", ->
+    @rosterMatrix.contents[0].validations = [
+      {
+        op: "lengthRange"
+        rhs: { literal: { min: 4, max: 6 } }
+        message: { en: "message" }
+      }
+    ]
 
     comp = @render(rosterMatrix: @rosterMatrix, data: { a: [{ _id: "1", data: { text: { value: "12345" }}}] })
-    assert.isFalse comp.getComponent().refs.main.validate(false), "Should pass validation"
+    assert.isFalse ReactTestUtils.findRenderedComponentWithType(comp.getComponent(), RosterMatrixComponent).validate(false), "Should pass validation"
