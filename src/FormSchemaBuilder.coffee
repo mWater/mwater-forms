@@ -489,7 +489,7 @@ module.exports = class FormSchemaBuilder
         # Create section contents
         sectionContents = []
         if conditionsExprCompiler 
-          sectionConditionExpr = ExprUtils.andExprs(existingConditionExpr, conditionsExprCompiler.compileConditions(item.conditions, tableId))
+          sectionConditionExpr = ExprUtils.andExprs(tableId, existingConditionExpr, conditionsExprCompiler.compileConditions(item.conditions, tableId))
         else
           sectionConditionExpr = existingConditionExpr
           
@@ -1659,7 +1659,7 @@ module.exports = class FormSchemaBuilder
       # Add visible if has conditions and not randomly asked
       if not item.randomAskProbability? and (conditionsExprCompiler and ((item.conditions and item.conditions.length > 0) or existingConditionExpr))
         # Guard against null
-        conditionExpr = ExprUtils.andExprs(existingConditionExpr, conditionsExprCompiler.compileConditions(item.conditions, tableId))
+        conditionExpr = ExprUtils.andExprs(tableId, existingConditionExpr, conditionsExprCompiler.compileConditions(item.conditions, tableId))
         if conditionExpr
           conditionExpr = {
             type: "op"
