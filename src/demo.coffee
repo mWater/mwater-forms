@@ -14,7 +14,6 @@ Schema = require('mwater-expressions').Schema
 FormSchemaBuilder = require './FormSchemaBuilder'
 ImageUploaderModalComponent = require './ImageUploaderModalComponent'
 HTML5Backend = require('react-dnd-html5-backend').default
-DragDropContextProvider = require("react-dnd").DragDropContextProvider
 DragDropContext = require("react-dnd").DragDropContext
 
 # Setup mock localizer
