@@ -57,7 +57,7 @@
     "coffeeify": "^1.2.0",
     "coffeescript": "^2.3.1",
     "glob": "^4.3.5",
-    "gulp": "git://github.com/gulpjs/gulp.git#4.0",
+    "gulp": "^4.0.0",
     "gulp-coffee": "^3.0.2",
     "gulp-concat": "^2.6.0",
     "gulp-rework": "^1.1.0",
