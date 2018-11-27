@@ -162,7 +162,7 @@ module.exports = class RosterMatrixComponent extends React.Component
   renderAdd: ->
     if @props.rosterMatrix.allowAdd
       H.div key: "add", style: { marginTop: 10 },
-        H.button type: "button", className: "btn btn-default btn-sm", onClick: @handleAdd,
+        H.button type: "button", className: "btn btn-primary btn-sm", onClick: @handleAdd,
           H.span className: "glyphicon glyphicon-plus"
           " " + @context.T("Add")
 
