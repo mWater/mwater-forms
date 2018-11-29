@@ -12,9 +12,8 @@ healthRiskEnum = require('./answers/aquagenxCBTUtils').healthRiskEnum
 
 # Adds a form to a mwater-expressions schema
 module.exports = class FormSchemaBuilder
-  # Pass clone forms if a master form
   # indicators is at least all indicators referenced in indicator calculations. Can be empty and indicator calculations will be omitted
-  addForm: (schema, form, cloneForms, isAdmin = true, indicators) ->
+  addForm: (schema, form, cloneFormsDeprecated, isAdmin = true, indicators) ->
     contents = []
     
     metadata = []
@@ -103,9 +102,6 @@ module.exports = class FormSchemaBuilder
     schema = @addCalculations(schema, form)
 
     schema = @addIndicatorCalculations(schema, form, indicators, false)
-
-    if form.isMaster
-      schema = @addMasterForm(schema, form, cloneForms, indicators)
 
     # Create table
     return schema
@@ -196,71 +192,15 @@ module.exports = class FormSchemaBuilder
 
     return schema
 
-  # Adds a table which references master form data from master_responses table
-  addMasterForm: (schema, form, cloneForms, indicators) ->
-    contents = []
-
-    # Add user
-    contents.push({ id: "user", type: "text", name: { en: "Enumerator" } })
-
-    # Add submitted on
-    contents.push({ id: "submittedOn", type: "datetime", name: { en: "Submitted On" } })
-
-    # Add deployment enum values
-    deploymentValues = _.map(form.deployments, (dep) -> { id: dep._id, name: { en: dep.name } })
-
-    # Add all deployments from clones
-    if cloneForms
-      for cloneForm in cloneForms
-        deploymentValues = deploymentValues.concat(
-          _.map(cloneForm.deployments, (dep) -> { id: dep._id, name: appendStr(cloneForm.design.name, " - " + dep.name) })
-          )
-
-    contents.push({ id: "deployment", type: "enum", name: { en: "Deployment" }, enumValues: deploymentValues })
-
-    # Add questions of form
-    @addFormItem(form.design, contents, "responses:#{form._id}")
-
-    # Transform to reference master_responses flattened structure where all is stored as keys of data field
-    contents = mapTree(contents, (item) =>
-      switch item.type
-        when "text", "date", "datetime", "enum"
-          return update(item, jsonql: { $set: { type: "op", op: "->>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, item.id ]} })
-        when "number" 
-          return update(item, jsonql: { $set: { type: "op", op: "convert_to_decimal", exprs: [ { type: "op", op: "->>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, item.id ]} ] }})
-        when "boolean" 
-          return update(item, jsonql: { $set: { type: "op", op: "::boolean", exprs: [ { type: "op", op: "->>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, item.id ]} ] }})
-        when "geometry"
-          return update(item, jsonql: { $set: { type: "op", op: "::geometry", exprs: [ { type: "op", op: "->>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, item.id ]} ] }})
-        when "join"
-          return update(item, join: { 
-            fromColumn: { $set: { type: "op", op: "->>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, item.id ] } }
-            toColumn: { $set: "_id" }
-          })
-
-        else
-          # Direct access to underlying JSON type
-          return update(item, jsonql: { $set: { type: "op", op: "->", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, item.id ]}})
-    )
-
-    schema = schema.addTable({
-      id: "master_responses:#{form._id}"
-      name: appendStr(form.design.name, " (Master)")
-      primaryKey: "response"
-      contents: contents
-    })
-
-    schema = @addIndicatorCalculations(schema, form, indicators, true)
-
   # Create a section in schema called Indicators with one subsection for each indicator calculated
-  addIndicatorCalculations: (schema, form, indicators, isMaster) ->
+  addIndicatorCalculations: (schema, form, indicators) ->
     # If not calculations, don't add indicators section
     if not form.indicatorCalculations or form.indicatorCalculations.length == 0
       return schema
 
     # Process indicator calculations 
     for indicatorCalculation in form.indicatorCalculations
-      tableId = if isMaster then "master_responses:#{form._id}" else "responses:#{form._id}"
+      tableId = "responses:#{form._id}"
 
       if indicatorCalculation.roster
         tableId += ":roster:#{indicatorCalculation.roster}"
@@ -279,7 +219,7 @@ module.exports = class FormSchemaBuilder
 
       # Add to indicators section
       indicatorSectionContents = indicatorsSection.contents.slice()
-      indicatorCalculationSection = @createIndicatorCalculationSection(indicatorCalculation, schema, indicators, isMaster, form)
+      indicatorCalculationSection = @createIndicatorCalculationSection(indicatorCalculation, schema, indicators, form)
       if indicatorCalculationSection
         indicatorSectionContents.push(indicatorCalculationSection)
 
@@ -293,8 +233,7 @@ module.exports = class FormSchemaBuilder
     return schema
 
   # Create a subsection of Indicators for an indicator calculation.
-  # isMaster uses master_response as row to compute from
-  createIndicatorCalculationSection: (indicatorCalculation, schema, indicators, isMaster, form) ->
+  createIndicatorCalculationSection: (indicatorCalculation, schema, indicators, form) ->
     # Find indicator
     indicator = _.findWhere(indicators, _id: indicatorCalculation.indicator)
 
@@ -316,14 +255,6 @@ module.exports = class FormSchemaBuilder
           expression = indicatorCalculation.expressions[property.id]
 
         condition = indicatorCalculation.condition
-
-        # If master, hack expression to be from master_responses, not responses
-        if isMaster and expression
-          expression = JSON.parse(JSON.stringify(expression).replace(/table":"responses:/g, "table\":\"master_responses:"))
-
-        # If master, hack condition to be from master_responses, not responses
-        if isMaster and condition
-          condition = JSON.parse(JSON.stringify(condition).replace(/table":"responses:/g, "table\":\"master_responses:"))
 
         # Create column from property
         column = _.extend({}, property, id: "indicator_calculation:#{indicatorCalculation._id}:#{property.id}")

@@ -1873,8 +1873,6 @@ describe "FormSchemaBuilder addForm", ->
       assert schema.getColumn("responses:formid:roster:roster1", "data:q1:value"), "original should be there"
       assert schema.getColumn("responses:formid:roster:roster1", "data:q2:value"), "new should be there"
 
-    it "works with master forms"
-
   
   describe "Roster Matrix", ->
     it "adds columns", ->
@@ -1913,8 +1911,6 @@ describe "FormSchemaBuilder addForm", ->
           ""
         ]
       })
-
-    it "works with master forms"
 
   describe ":randomAsked columns", ->
     it "adds column if random asked", ->
