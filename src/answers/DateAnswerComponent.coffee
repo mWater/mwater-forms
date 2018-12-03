@@ -58,7 +58,11 @@ module.exports = class DateAnswerComponent extends React.Component
       else
         placeholder = '...'
 
-    @setState({detailLevel: detailLevel, isoFormat: isoFormat, placeholder: placeholder})
+    if @state
+      @setState({detailLevel: detailLevel, isoFormat: isoFormat, placeholder: placeholder})
+    else 
+      # This is a weird lifecycle quirk of it being called on the constructor
+      @state = {detailLevel: detailLevel, isoFormat: isoFormat, placeholder: placeholder}
 
   focus: () ->
     datetimepicker = @datetimepicker
