@@ -1,7 +1,7 @@
 PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
-H = React.DOM
+R = React.createElement
 
 AdminRegionSelectComponent = require '../AdminRegionSelectComponent'
 
@@ -79,31 +79,31 @@ module.exports = class AdminRegionAnswerComponent extends React.Component
     @props.onChange(id)
 
   renderEntityButtons: ->
-    H.div null,
+    R 'div', null,
       if not @state.waiting
-        H.button type: "button", className: "btn btn-link btn-sm", onClick: @handleUseGPS, disabled: not @context.locationFinder?,
-          H.span className: "glyphicon glyphicon-screenshot"
+        R 'button', type: "button", className: "btn btn-link btn-sm", onClick: @handleUseGPS, disabled: not @context.locationFinder?,
+          R 'span', className: "glyphicon glyphicon-screenshot"
           " "
           @context.T("Set Using GPS")
       else
-        H.button type: "button", className: "btn btn-link btn-sm", onClick: @handleCancelUseGPS, disabled: not @context.locationFinder?,
-          H.span className: "glyphicon glyphicon-remove"
+        R 'button', type: "button", className: "btn btn-link btn-sm", onClick: @handleCancelUseGPS, disabled: not @context.locationFinder?,
+          R 'span', className: "glyphicon glyphicon-remove"
           " "
           @context.T("Cancel GPS")
 
-      H.button type: "button", className: "btn btn-link btn-sm", onClick: @handleUseMap, disabled: not @context.displayMap?,
-        H.span className: "glyphicon glyphicon-map-marker"
+      R 'button', type: "button", className: "btn btn-link btn-sm", onClick: @handleUseMap, disabled: not @context.displayMap?,
+        R 'span', className: "glyphicon glyphicon-map-marker"
         " "
         @context.T("Set Using Map")
 
   render: ->
-    return H.div null,
+    return R 'div', null,
       @renderEntityButtons()
       if @state.waiting
-        H.div className: "text-info", @context.T("Waiting for GPS...")
+        R 'div', className: "text-info", @context.T("Waiting for GPS...")
 
       if @state.error
-        H.div className: "text-danger", @state.error
+        R 'div', className: "text-danger", @state.error
       React.createElement(AdminRegionSelectComponent, {
         getAdminRegionPath: @context.getAdminRegionPath
         getSubAdminRegions: @context.getSubAdminRegions

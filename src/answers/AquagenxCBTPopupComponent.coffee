@@ -1,6 +1,6 @@
 PropTypes = require('prop-types')
 React = require 'react'
-H = React.DOM
+R = React.createElement
 $ = require 'jquery'
 
 aquagenxCBTSVGString = require './AquagenxCBTSVG'
@@ -114,7 +114,7 @@ module.exports = class AquagenxCBTPopupComponent extends React.Component
     compartmentValues = [cbtValues.c1, cbtValues.c2, cbtValues.c3, cbtValues.c4, cbtValues.c5]
     compartmentColors = _.map compartmentValues, (c) -> if c then '#32a89b' else '#ebe7c2'
     hoverColors = _.map compartmentValues, (c) -> if c then '#62c5bb' else '#fcf8d6'
-    return H.style null,
+    return R 'style', null,
       "
         #{mainId} #compartment1 rect {
           fill: #{compartmentColors[0]};
@@ -154,24 +154,24 @@ module.exports = class AquagenxCBTPopupComponent extends React.Component
     mpn = cbtValues.mpn
     if mpn == 100
       mpn = '>100'
-    return H.div null,
-      H.div null,
+    return R 'div', null,
+      R 'div', null,
         @context.T('MPN/100ml') + ': '
-        H.b(null, mpn)
-      H.div null,
+        R('b', null, mpn)
+      R 'div', null,
         @context.T('Upper 95% Confidence Interval/100ml') + ': '
-        H.b(null, cbtValues.confidence)
-      H.div null,
+        R('b', null, cbtValues.confidence)
+      R 'div', null,
         @context.T('Health Risk Category Based on MPN and Confidence Interval') + ': '
-        H.b(null, getHealthRiskString(cbtValues.healthRisk, @context.T))
+        R('b', null, getHealthRiskString(cbtValues.healthRisk, @context.T))
 
   render: ->
     return React.createElement ModalPopupComponent,
-      footer: H.div id: 'footer',
-        H.button className: 'btn btn-primary', id: 'save', onClick: @handleSaveClick, @context.T('Save')
-        H.button type: "button", className: "btn btn-default", id: 'close', onClick: @props.onClose, @context.T('Cancel')
+      footer: R 'div', id: 'footer',
+        R 'button', className: 'btn btn-primary', id: 'save', onClick: @handleSaveClick, @context.T('Save')
+        R 'button', type: "button", className: "btn btn-default", id: 'close', onClick: @props.onClose, @context.T('Cancel')
       header: @context.T('Click on the compartments to change color')
-      H.div {ref: ((c) => @main = c), id: "cbtPopup#{@props.questionId}"},
+      R 'div', {ref: ((c) => @main = c), id: "cbtPopup#{@props.questionId}"},
         @renderStyle()
-        H.div dangerouslySetInnerHTML: {__html: aquagenxCBTSVGString}
+        R 'div', dangerouslySetInnerHTML: {__html: aquagenxCBTSVGString}
         @renderInfo()

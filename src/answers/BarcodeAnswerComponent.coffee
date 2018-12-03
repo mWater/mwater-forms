@@ -1,6 +1,5 @@
 PropTypes = require('prop-types')
 React = require 'react'
-H = React.DOM
 R = React.createElement
 
 formUtils = require '../formUtils'
@@ -36,22 +35,22 @@ module.exports = class BarcodeAnswerComponent extends React.Component
     supported = @context.scanBarcode?
 
     if @props.value
-      return H.div null,
-        H.pre null,
-          H.p null,
+      return R 'div', null,
+        R 'pre', null,
+          R 'p', null,
             @props.value
-        H.div null,
-          H.button {className: "btn btn-default", onClick: @handleClearClick, type: "button"},
-            H.span {className: "glyphicon glyphicon-remove"},
+        R 'div', null,
+          R 'button', {className: "btn btn-default", onClick: @handleClearClick, type: "button"},
+            R 'span', {className: "glyphicon glyphicon-remove"},
             @context.T("Clear")
     else
       if supported
-        H.div(null,
-          H.button({className: "btn btn-default", onClick: @handleScanClick, type: "button"},
-            H.span({className: "glyphicon glyphicon-qrcode"})
+        R('div', null,
+          R('button', {className: "btn btn-default", onClick: @handleScanClick, type: "button"},
+            R('span', {className: "glyphicon glyphicon-qrcode"})
             @context.T("Scan")
           )
         )
       else
-        return H.div className: "text-warning",
+        return R 'div', className: "text-warning",
           @context.T("Barcode scanning not supported on this platform")

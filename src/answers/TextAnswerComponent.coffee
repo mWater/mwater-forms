@@ -1,6 +1,5 @@
 PropTypes = require('prop-types')
 React = require 'react'
-H = React.DOM
 R = React.createElement
 
 module.exports = class TextAnswerComponent extends React.Component
@@ -40,7 +39,7 @@ module.exports = class TextAnswerComponent extends React.Component
 
   render: ->
     if @props.format == "multiline"
-      return H.textarea {
+      return R 'textarea', {
         className: "form-control"
         id: 'input'
         ref: (c) => @input = c
@@ -51,7 +50,7 @@ module.exports = class TextAnswerComponent extends React.Component
         onChange: (ev) => @setState(text: ev.target.value)
       }
     else
-      return H.input {
+      return R 'input', {
         className: "form-control"
         id: 'input'
         ref: (c) => @input = c

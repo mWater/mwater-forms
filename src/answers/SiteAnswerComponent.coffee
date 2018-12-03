@@ -1,6 +1,5 @@
 PropTypes = require('prop-types')
 React = require 'react'
-H = React.DOM
 R = React.createElement
 
 formUtils = require '../formUtils'
@@ -71,9 +70,9 @@ module.exports = class SiteAnswerComponent extends React.Component
       @props.onValueChange(null)
 
   render: ->
-    H.div null,
-      H.div className:"input-group",
-        H.input 
+    R 'div', null,
+      R 'div', className:"input-group",
+        R 'input', 
           type: "tel"
           className: "form-control"
           onKeyDown: @handleKeyDown
@@ -83,11 +82,11 @@ module.exports = class SiteAnswerComponent extends React.Component
           value: @state.text
           onBlur: @handleBlur
           onChange: @handleChange
-        H.span className: "input-group-btn",
-          H.button className: "btn btn-default", disabled: not @context.selectEntity?, type: "button", onClick: @handleSelectClick, style: { zIndex: "inherit" },
+        R 'span', className: "input-group-btn",
+          R 'button', className: "btn btn-default", disabled: not @context.selectEntity?, type: "button", onClick: @handleSelectClick, style: { zIndex: "inherit" },
             @context.T("Select")
           
-      H.br()
+      R('br')
       R EntityDisplayComponent, 
         displayInWell: true
         entityType: @getEntityType()

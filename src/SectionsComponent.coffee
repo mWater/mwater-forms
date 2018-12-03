@@ -1,7 +1,6 @@
 PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
-H = React.DOM
 R = React.createElement
 
 ItemListComponent = require './ItemListComponent'
@@ -97,28 +96,28 @@ module.exports = class SectionsComponent extends React.Component
     while index < @state.sectionNum
       section = @props.contents[index]
       visible = @props.isVisible(section._id)
-      breadcrumbs.push H.li {key: index},
-        H.b null,
+      breadcrumbs.push R 'li', {key: index},
+        R 'b', null,
           if visible
-            H.a {className: "section-crumb", disabled: not visible, onClick: @handleBreadcrumbClick.bind(this, index)},
+            R 'a', {className: "section-crumb", disabled: not visible, onClick: @handleBreadcrumbClick.bind(this, index)},
               "#{index + 1}."
           else
             "#{index + 1}."
       index++
 
     currentSectionName = formUtils.localizeString(@props.contents[@state.sectionNum].name, @context.locale)
-    breadcrumbs.push H.li {key: @state.sectionNum},
-      H.b null,
+    breadcrumbs.push R 'li', {key: @state.sectionNum},
+      R 'b', null,
         "#{@state.sectionNum + 1}. #{currentSectionName}"
 
-    return H.ul className: "breadcrumb",
+    return R 'ul', className: "breadcrumb",
       breadcrumbs
 
   renderSection: ->
     section = @props.contents[@state.sectionNum]
 
-    H.div key: section._id,
-      H.h3 null, formUtils.localizeString(section.name, @context.locale)
+    R 'div', key: section._id,
+      R 'h3', null, formUtils.localizeString(section.name, @context.locale)
 
       R ItemListComponent, 
         ref: ((c) => @itemListComponent = c)
@@ -131,42 +130,42 @@ module.exports = class SectionsComponent extends React.Component
         schema: @props.schema
 
   renderButtons: ->
-    H.div className: "form-controls",
+    R 'div', className: "form-controls",
       # If can go back
       if @hasPreviousSection()
         [
-          H.button key: "back", type: "button", className: "btn btn-default", onClick: @handleBackSection,
-            H.span className: "glyphicon glyphicon-backward"
+          R 'button', key: "back", type: "button", className: "btn btn-default", onClick: @handleBackSection,
+            R 'span', className: "glyphicon glyphicon-backward"
             " " + @context.T("Back")
           "\u00A0"
         ]
 
       # Can go forward or submit
       if @hasNextSection()
-        H.button key: "next", type: "button", ref: ((c) => @nextOrSubmit = c), className: "btn btn-primary", onClick: @handleNextSection,
+        R 'button', key: "next", type: "button", ref: ((c) => @nextOrSubmit = c), className: "btn btn-primary", onClick: @handleNextSection,
           @context.T("Next") + " " 
-          H.span className: "glyphicon glyphicon-forward"
+          R 'span', className: "glyphicon glyphicon-forward"
       else if @props.onSubmit
-        H.button key: "submit", type: "button", ref: ((c) => @nextOrSubmit = c), className: "btn btn-primary", onClick: @handleSubmit,
+        R 'button', key: "submit", type: "button", ref: ((c) => @nextOrSubmit = c), className: "btn btn-primary", onClick: @handleSubmit,
           @context.T("Submit")
 
       "\u00A0"
 
       if @props.onSaveLater
         [
-          H.button key: "saveLater", type: "button", className: "btn btn-default", onClick: @props.onSaveLater,
+          R 'button', key: "saveLater", type: "button", className: "btn btn-default", onClick: @props.onSaveLater,
             @context.T("Save for Later")
           "\u00A0"
         ]
 
       if @props.onDiscard
-        H.button key: "discard", type:"button", className: "btn btn-default", onClick: @props.onDiscard,
-          H.span className: "glyphicon glyphicon-trash"
+        R 'button', key: "discard", type:"button", className: "btn btn-default", onClick: @props.onDiscard,
+          R 'span', className: "glyphicon glyphicon-trash"
           " " + @context.T("Discard")
 
   render: ->
-    H.div ref: ((c) => @sections = c),
+    R 'div', ref: ((c) => @sections = c),
       @renderBreadcrumbs()
-      H.div className: "sections",
+      R 'div', className: "sections",
         @renderSection()
       @renderButtons()

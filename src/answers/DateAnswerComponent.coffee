@@ -1,6 +1,5 @@
 PropTypes = require('prop-types')
 React = require 'react'
-H = React.DOM
 R = React.createElement
 
 formUtils = require '../formUtils'
@@ -59,7 +58,7 @@ module.exports = class DateAnswerComponent extends React.Component
       else
         placeholder = '...'
 
-    @state = {detailLevel: detailLevel, isoFormat: isoFormat, placeholder: placeholder}
+    @setState({detailLevel: detailLevel, isoFormat: isoFormat, placeholder: placeholder})
 
   focus: () ->
     datetimepicker = @datetimepicker

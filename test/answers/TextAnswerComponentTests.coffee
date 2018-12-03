@@ -1,12 +1,11 @@
 assert = require('chai').assert
 
 TestComponent = require('react-library/lib/TestComponent')
-ReactTestUtils = require('react-addons-test-utils')
+ReactTestUtils = require('react-dom/test-utils')
 
 React = require 'react'
 ReactDOM = require 'react-dom'
 R = React.createElement
-H = React.DOM
 
 TextAnswerComponent = require '../../src/answers/TextAnswerComponent'
 

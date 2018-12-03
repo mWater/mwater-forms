@@ -1,6 +1,5 @@
 PropTypes = require('prop-types')
 React = require 'react'
-H = React.DOM
 R = React.createElement
 
 now = () -> new Date().getTime()
@@ -63,10 +62,10 @@ module.exports = class StopwatchAnswerComponent extends React.Component
 
   render: ->
     isRunning = @state.timerId?
-    H.div {},
-      H.h1 {style: {fontFamily: 'monospace'}}, getDisplayValue(@state.elapsedTicks)
-      H.div {className: 'btn-toolbar', role: 'toolbar'},
-        H.div {className: 'btn-group', role: 'group'},
-          H.button {className: 'btn btn-success', onClick: @handleStartClick, disabled: isRunning}, @props.T("Start")
-          H.button {className: 'btn btn-danger', onClick: @handleStopClick, disabled: !isRunning}, @props.T("Stop")
-          H.button {className: 'btn btn-default', onClick: @handleResetClick, disabled: !@state.elapsedTicks}, @props.T("Reset")
+    R 'div', {},
+      R 'h1', {style: {fontFamily: 'monospace'}}, getDisplayValue(@state.elapsedTicks)
+      R 'div', {className: 'btn-toolbar', role: 'toolbar'},
+        R 'div', {className: 'btn-group', role: 'group'},
+          R 'button', {className: 'btn btn-success', onClick: @handleStartClick, disabled: isRunning}, @props.T("Start")
+          R 'button', {className: 'btn btn-danger', onClick: @handleStopClick, disabled: !isRunning}, @props.T("Stop")
+          R 'button', {className: 'btn btn-default', onClick: @handleResetClick, disabled: !@state.elapsedTicks}, @props.T("Reset")

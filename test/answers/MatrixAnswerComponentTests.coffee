@@ -2,14 +2,13 @@ _ = require 'lodash'
 assert = require('chai').assert
 
 TestComponent = require('react-library/lib/TestComponent')
-ReactTestUtils = require('react-addons-test-utils')
+ReactTestUtils = require('react-dom/test-utils')
 
 MatrixAnswerComponent = require '../../src/answers/MatrixAnswerComponent'
 
 React = require 'react'
 ReactDOM = require 'react-dom'
 R = React.createElement
-H = React.DOM
 
 describe 'MatrixAnswerComponent', ->
   before ->

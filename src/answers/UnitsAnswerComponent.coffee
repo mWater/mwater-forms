@@ -1,6 +1,5 @@
 PropTypes = require('prop-types')
 React = require 'react'
-H = React.DOM
 R = React.createElement
 
 formUtils = require '../formUtils'
@@ -76,7 +75,7 @@ module.exports = class UnitsAnswerComponent extends React.Component
     return null
 
   createNumberInput: ->
-    return H.td null,
+    return R 'td', null,
       R ui.NumberInput,
         ref: (c) => @quantity = c
         decimal: @props.decimal
@@ -86,13 +85,13 @@ module.exports = class UnitsAnswerComponent extends React.Component
         onEnter: if @props.prefix then @props.onNextOrComments else @handleInternalNext
 
   render: ->
-    H.table null,
-      H.tbody null,
-        H.tr null,
+    R 'table', null,
+      R 'tbody', null,
+        R 'tr', null,
           if not @props.prefix
             @createNumberInput()
-          H.td null,
-            H.select {
+          R 'td', null,
+            R 'select', {
               id: "units"
               ref: (c) => @units = c
               className: "form-control"
@@ -101,10 +100,10 @@ module.exports = class UnitsAnswerComponent extends React.Component
               value: if @state.selectedUnits == null then '' else @state.selectedUnits
             },
               if not @props.defaultUnits
-                H.option value: "",
+                R 'option', value: "",
                   "Select units"
               for unit in @props.units
-                H.option key: unit.id, value:unit.id,
+                R 'option', key: unit.id, value:unit.id,
                   formUtils.localizeString(unit.label, @context.locale)
           if @props.prefix
             @createNumberInput()

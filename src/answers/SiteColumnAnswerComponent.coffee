@@ -1,6 +1,5 @@
 PropTypes = require('prop-types')
 React = require 'react'
-H = React.DOM
 R = React.createElement
 
 EntityDisplayComponent = require '../EntityDisplayComponent'
@@ -33,9 +32,9 @@ module.exports = class SiteColumnAnswerComponent extends React.Component
 
   render: ->
     if @props.value?.code
-      return H.div null,
-        H.button className: "btn btn-link btn-sm pull-right", onClick: @handleClearClick,
-          H.span className: "glyphicon glyphicon-remove"
+      return R 'div', null,
+        R 'button', className: "btn btn-link btn-sm pull-right", onClick: @handleClearClick,
+          R 'span', className: "glyphicon glyphicon-remove"
 
         R EntityDisplayComponent, 
           entityType: @props.siteType
@@ -44,5 +43,5 @@ module.exports = class SiteColumnAnswerComponent extends React.Component
           renderEntityView: @context.renderEntityListItemView
           T: @context.T
     else
-      return H.button className: "btn btn-link", onClick: @handleSelectClick,
+      return R 'button', className: "btn btn-link", onClick: @handleSelectClick,
         @context.T("Select...")

@@ -1,7 +1,6 @@
 _ = require 'lodash'
 PropTypes = require('prop-types')
 React = require 'react'
-H = React.DOM
 R = React.createElement
 
 formUtils = require '../formUtils'
@@ -102,19 +101,19 @@ module.exports = class MatrixAnswerComponent extends React.Component
     @props.onValueChange(matrixValue)
 
   renderColumnHeader: (column, index) ->
-    H.th key: "header:#{column._id}",
+    R 'th', key: "header:#{column._id}",
       formUtils.localizeString(column.text, @context.locale)
 
       # Required star
       if column.required
-        H.span className: "required", "*"
+        R 'span', className: "required", "*"
 
   # Render the header row
   renderHeader: ->
-    H.thead null,
-      H.tr null,
+    R 'thead', null,
+      R 'tr', null,
         # First item
-        H.th(null)
+        R('th', null)
         _.map(@props.columns, (column, index) => @renderColumnHeader(column, index))
 
   renderCell: (item, itemIndex, column, columnIndex) ->
@@ -142,13 +141,13 @@ module.exports = class MatrixAnswerComponent extends React.Component
       schema: @props.schema
 
   renderItem: (item, index) ->
-    H.tr key: index,
-      H.td key: "_item", 
-        H.label null, formUtils.localizeString(item.label, @context.locale)
+    R 'tr', key: index,
+      R 'td', key: "_item", 
+        R 'label', null, formUtils.localizeString(item.label, @context.locale)
         if item.hint
           [
-            H.br()
-            H.div className: "text-muted", formUtils.localizeString(item.hint, @context.locale)
+            R('br')
+            R 'div', className: "text-muted", formUtils.localizeString(item.hint, @context.locale)
           ]
       _.map @props.columns, (column, columnIndex) => @renderCell(item, index, column, columnIndex)
 
@@ -156,7 +155,7 @@ module.exports = class MatrixAnswerComponent extends React.Component
     # Create table
     # borderCollapse is set to separate (overriding bootstrap table value), so that we can properly see the validation
     # error borders (or else the top one of the first row is missing since it's being collapsed with the th border)
-    H.table className: "table", style: {borderCollapse: 'separate'},
+    R 'table', className: "table", style: {borderCollapse: 'separate'},
       @renderHeader()
-      H.tbody null,
+      R 'tbody', null,
         _.map(@props.items, (item, index) => @renderItem(item, index))

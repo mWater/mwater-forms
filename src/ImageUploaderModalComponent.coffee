@@ -1,7 +1,6 @@
 PropTypes = require('prop-types')
 # Modal that allows upload of an image to the server
 React = require 'react'
-H = React.DOM
 R = React.createElement
 
 formUtils = require './formUtils'
@@ -99,22 +98,22 @@ module.exports = class ImageUploaderModalComponent extends React.Component
     xhr.send fd
 
   renderContents: ->
-    H.div null,
-      H.form encType: "multipart/form-data", method: "post",
-        H.label className: "btn btn-default btn-lg", style: { display: (if @state.xhr then "none") },
-          H.span className: "glyphicon glyphicon-camera"
+    R 'div', null,
+      R 'form', encType: "multipart/form-data", method: "post",
+        R 'label', className: "btn btn-default btn-lg", style: { display: (if @state.xhr then "none") },
+          R 'span', className: "glyphicon glyphicon-camera"
           " "
           @props.T("Select")
-          H.input type: "file", style: { display: "none" }, onChange: @handleFileSelected
+          R 'input', type: "file", style: { display: "none" }, onChange: @handleFileSelected
 
-        H.div style: { display: (if not @state.xhr then "none") },
-          H.p null, 
-            H.em null, @props.T("Uploading Image...")
-          H.div className: "progress progress-striped active",
-            H.div className: "progress-bar", style: { width: "#{@state.percentComplete}%" }
+        R 'div', style: { display: (if not @state.xhr then "none") },
+          R 'p', null, 
+            R 'em', null, @props.T("Uploading Image...")
+          R 'div', className: "progress progress-striped active",
+            R 'div', className: "progress-bar", style: { width: "#{@state.percentComplete}%" }
 
       if @state.xhr
-        H.button type: "button", className: "btn btn-default", onClick: @handleCancel,
+        R 'button', type: "button", className: "btn btn-default", onClick: @handleCancel,
           @props.T("Cancel")
 
   render: ->

@@ -1,7 +1,6 @@
 _ = require 'lodash'
 PropTypes = require('prop-types')
 React = require 'react'
-H = React.DOM
 R = React.createElement
 
 formUtils = require '../formUtils'
@@ -56,7 +55,7 @@ module.exports = class DropdownAnswerComponent extends React.Component
     else
       value = ''
     if choice and choice.specify
-      H.input className: "form-control specify-input", type: "text", value: value, onChange: @handleSpecifyChange.bind(null, choice.id)
+      R 'input', className: "form-control specify-input", type: "text", value: value, onChange: @handleSpecifyChange.bind(null, choice.id)
 
   areConditionsValid: (choice) ->
     if not choice.conditions?
@@ -64,14 +63,14 @@ module.exports = class DropdownAnswerComponent extends React.Component
     return conditionUtils.compileConditions(choice.conditions)(@props.data)
 
   render: ->
-    H.div null,
-      H.select className: "form-control", style: { width: "auto" }, value: @props.answer.value, onChange: @handleValueChange, ref: ((c) => @select = c),
-        H.option key: "__none__", value: ""
+    R 'div', null,
+      R 'select', className: "form-control", style: { width: "auto" }, value: @props.answer.value, onChange: @handleValueChange, ref: ((c) => @select = c),
+        R 'option', key: "__none__", value: ""
         _.map @props.choices, (choice) =>
           if @areConditionsValid(choice)
             text = formUtils.localizeString(choice.label, @context.locale)
             if choice.hint
               text += " (" + formUtils.localizeString(choice.hint, @context.locale) + ")"
-            return H.option key: choice.id, value: choice.id, text
+            return R 'option', key: choice.id, value: choice.id, text
 
       @renderSpecify()

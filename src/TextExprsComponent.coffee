@@ -1,7 +1,6 @@
 PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
-H = React.DOM
 R = React.createElement
 
 async = require 'async'
@@ -71,6 +70,6 @@ module.exports = class TextExprsComponent extends React.Component
       # Make sure links are external
       html = html.replace(/<a href=/g, '<a target="_blank" href=')
 
-      return H.div dangerouslySetInnerHTML: { __html: html }
+      return R 'div', dangerouslySetInnerHTML: { __html: html }
     else
-      return H.span(null, str)
+      return R('span', null, str)

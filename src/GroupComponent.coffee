@@ -1,7 +1,6 @@
 PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
-H = React.DOM
 R = React.createElement
 
 formUtils = require './formUtils'
@@ -27,11 +26,11 @@ module.exports = class GroupComponent extends React.Component
     # To avoid circularity
     ItemListComponent = require './ItemListComponent'
       
-    H.div className: "panel panel-default",
-      H.div key: "header", className: "panel-heading",
+    R 'div', className: "panel panel-default",
+      R 'div', key: "header", className: "panel-heading",
         formUtils.localizeString(@props.group.name, @context.locale)
 
-      H.div key: "body", className: "panel-body",
+      R 'div', key: "body", className: "panel-body",
         R ItemListComponent,
           ref: ((c) => @itemlist = c)
           contents: @props.group.contents

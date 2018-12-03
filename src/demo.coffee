@@ -2,7 +2,6 @@ PropTypes = require('prop-types')
 React = require 'react'
 ReactDOM = require 'react-dom'
 R = React.createElement
-H = React.DOM
 
 FormComponent = require './FormComponent'
 sampleFormDesign = require './sampleFormDesign'
@@ -14,7 +13,8 @@ ResponseDisplayComponent = require './ResponseDisplayComponent'
 Schema = require('mwater-expressions').Schema
 FormSchemaBuilder = require './FormSchemaBuilder'
 ImageUploaderModalComponent = require './ImageUploaderModalComponent'
-
+HTML5Backend = require('react-dnd-html5-backend').default
+DragDropContext = require("react-dnd").DragDropContext
 
 # Setup mock localizer
 global.T = (str) ->
@@ -111,13 +111,13 @@ class DemoComponent extends React.Component
     # design = rosterFormDesign
     # design = matrixFormDesign
     # design = rosterFormDesign
-    # design = sampleForm2.design
-    design = sampleFormAdvancedValidations.design
+    design = sampleForm2.design
+    # design = sampleFormAdvancedValidations.design
     # design = randomAskFormDesign
     schema = new FormSchemaBuilder({user: "bob"}).addForm(schema, { _id: "form1", design: design })
 
-    H.div className: "row",
-      H.div(className: "col-md-6",
+    R 'div', className: "row",
+      R('div', className: "col-md-6",
         R FormComponent, {
           formCtx: formCtx
           # locale: PropTypes.string            # Locale. Defaults to English (en)
@@ -138,7 +138,7 @@ class DemoComponent extends React.Component
           # })
         }
       )
-      H.div(className: "col-md-6",
+      R('div', className: "col-md-6",
         R ResponseDisplayComponent, {
           form: {design: design}
           response: {
@@ -148,6 +148,8 @@ class DemoComponent extends React.Component
           T: T
         }
       )
+
+DemoComponent = DragDropContext(HTML5Backend)(DemoComponent)
 
 # class ImageUploaderTestComponent extends React.Component
 #   render: ->

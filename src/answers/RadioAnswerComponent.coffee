@@ -1,7 +1,6 @@
 _ = require 'lodash'
 PropTypes = require('prop-types')
 React = require 'react'
-H = React.DOM
 R = React.createElement
 
 formUtils = require '../formUtils'
@@ -53,7 +52,7 @@ module.exports = class RadioAnswerComponent extends React.Component
       value = @props.answer.specify[choice.id]
     else
       value = ''
-    H.input className: "form-control specify-input", type: "text", value: value, onChange: @handleSpecifyChange.bind(null, choice.id)
+    R 'input', className: "form-control specify-input", type: "text", value: value, onChange: @handleSpecifyChange.bind(null, choice.id)
 
   areConditionsValid: (choice) ->
     if not choice.conditions?
@@ -62,17 +61,17 @@ module.exports = class RadioAnswerComponent extends React.Component
 
   renderChoice: (choice) ->
     if @areConditionsValid(choice)
-      H.div key: choice.id,
+      R 'div', key: choice.id,
         # id is used for testing
-        H.div className: "touch-radio #{if @props.answer.value == choice.id then "checked" else ""}", id: choice.id, onClick: @handleValueChange.bind(null, choice),
+        R 'div', className: "touch-radio #{if @props.answer.value == choice.id then "checked" else ""}", id: choice.id, onClick: @handleValueChange.bind(null, choice),
           formUtils.localizeString(choice.label, @context.locale)
           if choice.hint
-            H.span className: "radio-choice-hint",
+            R 'span', className: "radio-choice-hint",
               " " + formUtils.localizeString(choice.hint, @context.locale)
 
         if choice.specify and @props.answer.value == choice.id
           @renderSpecify(choice)
 
   render: ->
-    H.div className: "touch-radio-group",
+    R 'div', className: "touch-radio-group",
       _.map @props.choices, (choice) => @renderChoice(choice)

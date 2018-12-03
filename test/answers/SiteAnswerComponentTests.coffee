@@ -1,7 +1,7 @@
 assert = require('chai').assert
 
 TestComponent = require('react-library/lib/TestComponent')
-ReactTestUtils = require('react-addons-test-utils')
+ReactTestUtils = require('react-dom/test-utils')
 
 SiteAnswerComponent = require '../../src/answers/SiteAnswerComponent'
 AnswerValidator = require '../../src/answers/AnswerValidator'
@@ -9,18 +9,18 @@ AnswerValidator = require '../../src/answers/AnswerValidator'
 React = require 'react'
 ReactDOM = require 'react-dom'
 R = React.createElement
-H = React.DOM
+PropTypes = require('prop-types')
 
 # TODO: Fix 4 failing test
 
 class SiteContext extends React.Component
   @childContextTypes:
-    selectEntity: React.PropTypes.func
-    getEntityById: React.PropTypes.func
-    getEntityByCode: React.PropTypes.func
-    renderEntitySummaryView: React.PropTypes.func
-    onNextOrComments: React.PropTypes.func
-    T: React.PropTypes.func
+    selectEntity: PropTypes.func
+    getEntityById: PropTypes.func
+    getEntityByCode: PropTypes.func
+    renderEntitySummaryView: PropTypes.func
+    onNextOrComments: PropTypes.func
+    T: PropTypes.func
 
   getChildContext: ->
     selectEntity: () ->

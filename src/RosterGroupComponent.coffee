@@ -1,7 +1,6 @@
 PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
-H = React.DOM
 R = React.createElement
 
 formUtils = require './formUtils'
@@ -69,7 +68,7 @@ module.exports = class RosterGroupComponent extends React.Component
     return @props.isVisible("#{@getAnswerId()}.#{index}.#{id}")
 
   renderName: ->
-    H.h4 key: "prompt",
+    R 'h4', key: "prompt",
       formUtils.localizeString(@props.rosterGroup.name, @context.locale)
 
   renderEntryTitle: (entry, index) ->
@@ -84,14 +83,14 @@ module.exports = class RosterGroupComponent extends React.Component
     # To avoid circularity
     ItemListComponent = require './ItemListComponent'
 
-    H.div key: index, className: "panel panel-default", 
-      H.div key: "header", className: "panel-heading", style: { fontWeight: "bold" },
+    R 'div', key: index, className: "panel panel-default", 
+      R 'div', key: "header", className: "panel-heading", style: { fontWeight: "bold" },
         "#{index + 1}. "
         @renderEntryTitle(entry, index)
-      H.div key: "body", className: "panel-body",
+      R 'div', key: "body", className: "panel-body",
         if @props.rosterGroup.allowRemove
-          H.button type: "button", style: { float: "right" }, className: "btn btn-sm btn-link", onClick: @handleRemove.bind(null, index),
-            H.span className: "glyphicon glyphicon-remove"  
+          R 'button', type: "button", style: { float: "right" }, className: "btn btn-sm btn-link", onClick: @handleRemove.bind(null, index),
+            R 'span', className: "glyphicon glyphicon-remove"  
 
         R ItemListComponent,
           ref: ((c) => @["itemlist_#{index}"] = c), 
@@ -104,17 +103,17 @@ module.exports = class RosterGroupComponent extends React.Component
 
   renderAdd: ->
     if @props.rosterGroup.allowAdd
-      H.div key: "add",
-        H.button type: "button", className: "btn btn-default btn-sm", onClick: @handleAdd,
-          H.span className: "glyphicon glyphicon-plus"
+      R 'div', key: "add",
+        R 'button', type: "button", className: "btn btn-default btn-sm", onClick: @handleAdd,
+          R 'span', className: "glyphicon glyphicon-plus"
           " " + @context.T("Add")
 
   renderEmptyPrompt: ->
-    H.div style: { fontStyle: "italic" }, 
+    R 'div', style: { fontStyle: "italic" }, 
       formUtils.localizeString(@props.rosterGroup.emptyPrompt, @context.locale) or @context.T("Click +Add to add an item")
 
   render: ->
-    H.div style: { padding: 5, marginBottom: 20 },
+    R 'div', style: { padding: 5, marginBottom: 20 },
       @renderName()
       _.map(@getAnswer(), (entry, index) => @renderEntry(entry, index))
 

@@ -1,7 +1,6 @@
 PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
-H = React.DOM
 R = React.createElement
 
 SectionsComponent = require './SectionsComponent'
@@ -156,7 +155,7 @@ module.exports = class FormComponent extends React.Component
         onDiscard: @props.onDiscard
         isVisible: @isVisible
     else
-      H.div null,
+      R 'div', null,
         R ItemListComponent,
           ref: ((c) => @itemListComponent = c)
           contents: @props.design.contents
@@ -168,7 +167,7 @@ module.exports = class FormComponent extends React.Component
           onNext: @handleNext
 
         if @props.onSubmit
-          H.button type: "button", key: 'submitButton', className: "btn btn-primary", ref: ((c) => @submit = c), onClick: @handleSubmit,
+          R 'button', type: "button", key: 'submitButton', className: "btn btn-primary", ref: ((c) => @submit = c), onClick: @handleSubmit,
             if @props.submitLabel
               @props.submitLabel
             else
@@ -178,7 +177,7 @@ module.exports = class FormComponent extends React.Component
 
         if @props.onSaveLater
           [
-            H.button type: "button", key: 'saveLaterButton', className: "btn btn-default", onClick: @props.onSaveLater,
+            R 'button', type: "button", key: 'saveLaterButton', className: "btn btn-default", onClick: @props.onSaveLater,
               if @props.saveLaterLabel
                 @props.saveLaterLabel
               else
@@ -187,11 +186,11 @@ module.exports = class FormComponent extends React.Component
           ]
 
         if @props.onDiscard
-          H.button type:"button", key: 'discardButton', className: "btn btn-default", onClick: @props.onDiscard,
+          R 'button', type:"button", key: 'discardButton', className: "btn btn-default", onClick: @props.onDiscard,
             if @props.discardLabel
               @props.discardLabel
             else
               [
-                H.span className: "glyphicon glyphicon-trash"
+                R 'span', className: "glyphicon glyphicon-trash"
                 " " + @state.T("Discard")
               ]

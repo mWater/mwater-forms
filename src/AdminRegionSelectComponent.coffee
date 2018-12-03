@@ -1,7 +1,6 @@
 PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
-H = React.DOM
 R = React.createElement
 AsyncLoadComponent = require('react-library/lib/AsyncLoadComponent')
 
@@ -72,26 +71,26 @@ module.exports = class AdminRegionSelectComponent extends AsyncLoadComponent
     if not @state.path[level] and (not @state["level#{level}s"] or @state["level#{level}s"].length == 0)
       return null
 
-    H.tr key: level,
-      H.td style: { paddingLeft: 10, paddingRight: 10 }, className: "text-muted",
+    R 'tr', key: level,
+      R 'td', style: { paddingLeft: 10, paddingRight: 10 }, className: "text-muted",
         if @state.path[level]
           @state.path[level].type
-      H.td null,
-        H.select key: "level#{level}", className: "form-control", value: (if @state.path[level] then @state.path[level].id else ""), onChange: @handleChange.bind(null, level),
-          H.option key: "none", value: "", 
+      R 'td', null,
+        R 'select', key: "level#{level}", className: "form-control", value: (if @state.path[level] then @state.path[level].id else ""), onChange: @handleChange.bind(null, level),
+          R 'option', key: "none", value: "", 
             if @state.path[level] then @props.T("None") else @props.T("Select...")
 
           if @state["level#{level}s"]
-            _.map(@state["level#{level}s"], (subRegion) => H.option(key: subRegion.id, value: subRegion.id, subRegion.name))
+            _.map(@state["level#{level}s"], (subRegion) => R('option', key: subRegion.id, value: subRegion.id, subRegion.name))
           else if @state.path[level] # No options yet, just use value
-            H.option(key: @state.path[level].id, value: @state.path[level].id, @state.path[level].name)
+            R('option', key: @state.path[level].id, value: @state.path[level].id, @state.path[level].name)
 
   render: ->
     if @state.loading or (not @state.path and @props.value) or (not @props.value and not @state.level0s)
-      return H.div null, @props.T("Loading...") 
+      return R 'div', null, @props.T("Loading...") 
 
-    H.table style: { opacity: (if @state.busy then 0.5) },
-      H.tbody null, 
+    R 'table', style: { opacity: (if @state.busy then 0.5) },
+      R 'tbody', null, 
         _.map(_.range(0, @state.path.length + 1), (level) => @renderLevel(level))
 
     # if @state.loading
@@ -103,5 +102,5 @@ module.exports = class AdminRegionSelectComponent extends AsyncLoadComponent
     # else if @state.url
     #   url = @state.url
 
-    # return H.img(src: url, style: { maxHeight: 100 }, className: "img-thumbnail", onClick: @props.onClick, onError: @handleError)
+    # return R('img', src: url, style: { maxHeight: 100 }, className: "img-thumbnail", onClick: @props.onClick, onError: @handleError)
 

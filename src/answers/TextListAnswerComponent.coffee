@@ -1,7 +1,6 @@
 _ = require 'lodash'
 PropTypes = require('prop-types')
 React = require 'react'
-H = React.DOM
 R = React.createElement
 
 module.exports = class TextListAnswerComponent extends React.Component
@@ -63,16 +62,16 @@ module.exports = class TextListAnswerComponent extends React.Component
   render: ->
     value = @props.value or []
 
-    H.table style: {width: "100%"},
-      H.tbody null,
+    R 'table', style: {width: "100%"},
+      R 'tbody', null,
         for textLine, index in value
-          H.tr key: index,
-            H.td null,
-              H.b null,
+          R 'tr', key: index,
+            R 'td', null,
+              R 'b', null,
                 "#{index + 1}.\u00a0"
-            H.td null,
-              H.div className: "input-group",
-                H.input {
+            R 'td', null,
+              R 'div', className: "input-group",
+                R 'input', {
                   ref: ((c) => @["input#{index}"] = c)
                   type:"text"
                   className: "form-control box"
@@ -84,14 +83,14 @@ module.exports = class TextListAnswerComponent extends React.Component
                     # Necessary or else the cursor is set before the first character after a new line is created
                     ev.target.setSelectionRange(textLine.length, textLine.length)
                 }
-                H.span className: "input-group-btn",
-                  H.button className: "btn btn-link remove", "data-index": index, type:"button", onClick: @handleRemoveClick.bind(null, index),
-                    H.span className: "glyphicon glyphicon-remove"
-        H.tr null,
-          H.td null
-          H.td null,
-            H.div className: "input-group",
-              H.input {
+                R 'span', className: "input-group-btn",
+                  R 'button', className: "btn btn-link remove", "data-index": index, type:"button", onClick: @handleRemoveClick.bind(null, index),
+                    R 'span', className: "glyphicon glyphicon-remove"
+        R 'tr', null,
+          R 'td', null
+          R 'td', null,
+            R 'div', className: "input-group",
+              R 'input', {
                 type: "text"
                 className: "form-control box"
                 onChange: @handleNewLineChange
@@ -100,4 +99,4 @@ module.exports = class TextListAnswerComponent extends React.Component
                 id: 'newLine'
               }
 
-              H.span className: "input-group-btn", style: {paddingRight: '39px'}
+              R 'span', className: "input-group-btn", style: {paddingRight: '39px'}

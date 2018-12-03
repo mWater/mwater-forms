@@ -1,7 +1,6 @@
 PropTypes = require('prop-types')
 _ = require 'lodash'
 React = require 'react'
-H = React.DOM
 R = React.createElement
 ResponseAnswersComponent = require './ResponseAnswersComponent'
 moment = require 'moment'
@@ -20,14 +19,14 @@ module.exports = class ResponseArchivesComponent extends React.Component
     eventsUsernames: PropTypes.object.isRequired # The usernames
 
   renderRecord: (record, previousRecord) =>
-    H.div key: record._rev , style: {marginTop: 10},
-      H.p key: 'summary',
+    R 'div', key: record._rev , style: {marginTop: 10},
+      R 'p', key: 'summary',
         "Changes made by "
-        H.b null, if record.modified.by then @props.eventsUsernames[record.modified.by]?.username else "Anonymous"
+        R 'b', null, if record.modified.by then @props.eventsUsernames[record.modified.by]?.username else "Anonymous"
         " on "
         moment(record.modified.on).format('lll')
 
-      H.div key: 'detail',
+      R 'div', key: 'detail',
         R ResponseAnswersComponent,
           formDesign: @props.formDesign
           data: record.data
@@ -44,9 +43,9 @@ module.exports = class ResponseArchivesComponent extends React.Component
 
   render: ->
     if @props.history.length == 0
-      return H.div null, 
-        H.i null, "No changes made since submission"
-    H.div null,
+      return R 'div', null, 
+        R 'i', null, "No changes made since submission"
+    R 'div', null,
       _.map(@props.history, (record, index) => 
         if index == 0
           @renderRecord(@props.response, record)

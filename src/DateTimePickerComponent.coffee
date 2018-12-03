@@ -1,7 +1,6 @@
 PropTypes = require('prop-types')
 React = require 'react'
 R = React.createElement
-H = React.DOM
 moment = require 'moment'
 $ = require 'jquery'
 
@@ -90,9 +89,9 @@ module.exports = class DateTimePickerComponent extends React.Component
 
   render: ->
     # Override z-index due to bootstrap oddness
-    input = H.input { type: "text", className: "form-control", placeholder: @props.placeholder, onFocus: @handleInputFocus, style: { zIndex: "inherit", minWidth: "12em" } }
+    input = R 'input', { type: "text", className: "form-control", placeholder: @props.placeholder, onFocus: @handleInputFocus, style: { zIndex: "inherit", minWidth: "12em" } }
 
-    H.div className: 'input-group date', ref: ((c) => @datetimepicker = c),
+    R 'div', className: 'input-group date', ref: ((c) => @datetimepicker = c),
       input
-      H.span className: "input-group-addon", onClick: @handleCalendarClick,
-        H.span className: "glyphicon glyphicon-calendar"
+      R 'span', className: "input-group-addon", onClick: @handleCalendarClick,
+        R 'span', className: "glyphicon glyphicon-calendar"

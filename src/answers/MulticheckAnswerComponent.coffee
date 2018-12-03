@@ -1,7 +1,6 @@
 _ = require 'lodash'
 PropTypes = require('prop-types')
 React = require 'react'
-H = React.DOM
 R = React.createElement
 
 formUtils = require '../formUtils'
@@ -67,7 +66,7 @@ module.exports = class MulticheckAnswerComponent extends React.Component
       value = @props.answer.specify[choice.id]
     else
       value = ''
-    H.input className: "form-control specify-input", type: "text", value: value, onChange: @handleSpecifyChange.bind(null, choice.id)
+    R 'input', className: "form-control specify-input", type: "text", value: value, onChange: @handleSpecifyChange.bind(null, choice.id)
 
   renderChoice: (choice) ->
     if not @areConditionsValid(choice)
@@ -75,17 +74,17 @@ module.exports = class MulticheckAnswerComponent extends React.Component
       
     selected = _.isArray(@props.answer.value) and choice.id in @props.answer.value
 
-    H.div key: choice.id,
+    R 'div', key: choice.id,
       # id is used for testing
-      H.div className: "choice touch-checkbox #{if selected then "checked" else ""}", id: choice.id, onClick: @handleValueChange.bind(null, choice),
+      R 'div', className: "choice touch-checkbox #{if selected then "checked" else ""}", id: choice.id, onClick: @handleValueChange.bind(null, choice),
         formUtils.localizeString(choice.label, @context.locale)
         if choice.hint
-          H.span className: "checkbox-choice-hint",
+          R 'span', className: "checkbox-choice-hint",
             formUtils.localizeString(choice.hint, @context.locale)
 
       if choice.specify and selected
         @renderSpecify(choice)
 
   render: ->
-    H.div null,
+    R 'div', null,
       _.map @props.choices, (choice) => @renderChoice(choice)
