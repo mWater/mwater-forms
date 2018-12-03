@@ -160,10 +160,10 @@ module.exports = {
       }
     }
 
-    # True if master form
+    # True if master form (DEPRECATED)
     isMaster: { type: "boolean" } 
 
-    # If clone form, then _id of master form
+    # If clone form, then _id of master form (DEPRECATED)
     masterForm: { type: "string" }
     
     roles: rolesSchema
