@@ -37,7 +37,7 @@
     "prop-types": "^15.5.10",
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
-    "react-library": "github:mwater/react-library#react16",
+    "react-library": "github:mwater/react-library",
     "topo-sort": "^1.0.0",
     "underscore": "^1.7.0",
     "update-object": "^1.0.0",
