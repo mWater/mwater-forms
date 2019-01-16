@@ -294,8 +294,8 @@ module.exports = class QuestionComponent extends React.Component
 
   renderAnswer: ->
     answer = @getAnswer()
-    readonly = @context.disableConfidentialFields and @props.question.confidential 
-
+    readonly = (@context.disableConfidentialFields and @props.question.confidential) or answer?.confidential?
+    
     switch @props.question._type
       when "TextQuestion"
         return R TextAnswerComponent, {
@@ -474,6 +474,7 @@ module.exports = class QuestionComponent extends React.Component
     return null
 
   render: ->
+    answer = @getAnswer()
     # Create classname to include invalid if invalid
     className = "question"
     if @state.validationError?
@@ -487,6 +488,12 @@ module.exports = class QuestionComponent extends React.Component
       R 'div', className: "answer",
         @renderAnswer()
 
-      @renderAlternates()
-      @renderValidationError()
+      if answer.confidential?
+        R 'span', className: 'help-block', T("Confidential answers may not be edited.")
+      
+      if not answer.confidential?
+        [
+          @renderAlternates()
+          @renderValidationError()
+        ]
       @renderCommentsField()

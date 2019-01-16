@@ -537,6 +537,14 @@
     {
       "_base": "en",
       "en": "Click +Add to add an item"
+    },
+    {
+      "_base": "en",
+      "en": "This field is confidential and cannot be edited."
+    },
+    {
+      "_base": "en",
+      "en": "Redacted"
     }
   ]
 }

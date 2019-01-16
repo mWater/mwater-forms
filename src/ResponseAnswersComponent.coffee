@@ -80,9 +80,12 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
         when "dontknow"
           return R 'em', null, @props.T("Don't Know")
 
+    if answer.confidential?
+      return R 'em', null, T("Redacted")
+    
     if not answer.value?
       return null
-
+    
     switch formUtils.getAnswerType(q)
       when "text"
         # Format as url if url

@@ -93,7 +93,8 @@ class DemoComponent extends React.Component
   constructor: (props) ->
     super(props)
 
-    data = { site01: { value: { code: "10007"}}}
+    # data = { site01: { value: { code: "10007"}, confidential: true}}
+    data = { d0dcfce3a697453ba16cc8baa8e384e: { value: null, confidential: true}}
 
     @state = {data: data}
 
