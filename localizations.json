@@ -540,7 +540,8 @@
     },
     {
       "_base": "en",
-      "en": "This field is confidential and cannot be edited."
+      "en": "This field is confidential and cannot be edited.",
+      "_unused": true
     },
     {
       "_base": "en",
