@@ -1,0 +1,23 @@
+dedup Locationfinder, LocationView
+
+DONE add displayImage to context
+
+DONE add selectSite to context
+
+remove checkbox mobile behaviour
+
+remove css related to forms and mobile
+
+change to touch-checkbox and touch-radio and touch-radio-group
+
+check that buttons in groups are spaced
+
+radio buttons no longer have events attached automatically
+
+checkboxes no longer have events attached automatically
+
+DONE GeoJSON removed!
+
+LocationView uses { latitude, longitude, accuracy, etc. }
+
+DONE Remove scrollintoview plugin from app

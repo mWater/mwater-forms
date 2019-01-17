@@ -1,5 +1,5 @@
 _ = require 'lodash'
-formUtils = require '../src/formUtils'
+formUtils = require './formUtils'
 ExprUtils = require('mwater-expressions').ExprUtils
 ExprCompiler = require('mwater-expressions').ExprCompiler
 update = require 'update-object'
