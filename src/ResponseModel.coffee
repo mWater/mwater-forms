@@ -199,7 +199,7 @@ module.exports = class ResponseModel
     if not deployment
       admins = _.pluck(_.where(@form.roles, { role: "admin"}), "id")
       if @response.user
-        admins.push(["user:" + @response.user])
+        admins.push("user:" + @response.user)
 
       @response.roles = _.map admins, (s) -> { id: s, role: "admin" }
       return

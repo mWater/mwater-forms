@@ -773,3 +773,16 @@ describe "ResponseModel", ->
 
       # Check that entities was not filled out
       assert.deepEqual @response.entities, []
+
+  describe "deleted deployments", ->
+    it "does not crash on non existing deployment", ->
+      @response = { }
+      @form = _.cloneDeep(sampleForm)
+
+      @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep1en1"])
+      @model.draft()
+
+      @form.deployments = []
+      @model.fixRoles()
+
+      assert.deepEqual @response.roles, [{ id: "user:formadmin", role: "admin" }, { id: "user:user", role: "admin" }]
