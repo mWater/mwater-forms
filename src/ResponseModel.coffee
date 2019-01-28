@@ -197,7 +197,12 @@ module.exports = class ResponseModel
     # Determine deployment
     deployment = _.findWhere(@form.deployments, { _id: @response.deployment })
     if not deployment
-      throw new Error("Deployment #{@response.deployment} not found for form #{@form._id}")
+      admins = _.pluck(_.where(@form.roles, { role: "admin"}), "id")
+      if @response.user
+        admins.push(["user:" + @response.user])
+
+      @response.roles = _.map admins, (s) -> { id: s, role: "admin" }
+      return
 
     # If deleted, no viewers
     if @form.state == "deleted"
