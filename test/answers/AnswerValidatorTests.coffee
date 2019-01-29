@@ -62,6 +62,18 @@ describe 'AnswerValidator', ->
         result = await @answerValidator.validate(question, answer)
         assert.equal null, result, 'alternate is valid for a required question'
 
+      it "requires specify field to be entered if question is required", ->
+        answer = {value: 'c3', specify: null}
+        question = {_type: '', choices: [{id: 'c1'}, {id: 'c2'}, {id: 'c3', specify: true}], required: true}
+
+        result = await @answerValidator.validate(question, answer)
+        assert.equal true, result, 'Required specify question requires specify entered'
+
+        answer = {value: 'c3', specify: {c4: 'coz bla bla'}}
+
+        result = await @answerValidator.validate(question, answer)
+        assert.equal null, result, 'Validates if specify text is set on required question'
+
       it "validates true advanced validations", ->
         question = { advancedValidations: [
           { expr: { type: "literal", valueType: "boolean", value: true }, message: { en: "message" } }

@@ -28,6 +28,13 @@ module.exports = class AnswerValidator
     if question.required
       if not answer.value? or answer.value == ''
         return true
+
+      # Handle specify
+      if question.choices
+        choiceOption = _.find(question.choices, {specify: true})
+        if choiceOption and (answer.value == choiceOption.id) and not answer.specify
+          return true
+
       # Handling empty string for Units values
       if answer.value? and answer.value.quantity? and answer.value.quantity == ''
         return true
