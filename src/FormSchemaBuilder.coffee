@@ -893,6 +893,44 @@ module.exports = class FormSchemaBuilder
 
             addColumn(column)
 
+            # TOO SLOW TO BE USEFUL
+            # # Add reverse join if directly from responses table
+            # if tableId.match(/^responses:[^:]+$/)
+            #   jsonql = {
+            #     type: "op"
+            #     op: "and"
+            #     exprs: [
+            #       { type: "op", op: "&&", exprs: [
+            #         # Flip from/to for reverse
+            #         JSON.parse(JSON.stringify(webmercatorLocation).replace(/\{from\}/g, "{to}"))
+            #         { type: "field", tableAlias: "{from}", column: "shape" }
+            #       ]}
+            #       { type: "op", op: "ST_Intersects", exprs: [
+            #         # Flip from/to for reverse
+            #         JSON.parse(JSON.stringify(webmercatorLocation).replace(/\{from\}/g, "{to}"))
+            #         { type: "field", tableAlias: "{from}", column: "shape" }
+            #       ]}
+            #     ]
+            #   }
+
+            #   formId = tableId.split(":")[1]
+            #   reverseJoin = {
+            #     table: "admin_regions"
+            #     column: {
+            #       id: "!#{tableId}:data:#{item._id}:value"
+            #       # Form name is not available here. Prefix later.
+            #       name: item.text
+            #       type: "join"
+            #       join: {
+            #         type: "1-n"
+            #         toTable: tableId
+            #         inverse: column.id
+            #         jsonql: jsonql
+            #       }
+            #     }
+            #   }
+            #   reverseJoins.push(reverseJoin)
+
           column = {
             id: "#{dataColumn}:#{item._id}:value:accuracy"
             type: "number"

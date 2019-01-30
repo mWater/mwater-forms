@@ -17,29 +17,71 @@ module.exports = class EntitySchemaBuilder
         if propFilter and not propFilter(prop)
           return null
 
-        if prop.type == "id" and prop.idTable.match(/^entities\./)
-          entityCode = prop.idTable.split(".")[1]
+        if prop.type == "id" 
+          if prop.idTable.match(/^entities\./)
+            entityCode = prop.idTable.split(".")[1]
 
-          # Check that exists
-          if not _.findWhere(entityTypes, code: entityCode)
-            return
+            # Check that exists
+            if not _.findWhere(entityTypes, code: entityCode)
+              return
 
-          reverseJoins.push({
-            table: prop.idTable
-            column: {
-              id: "!entities.#{entityType.code}.#{prop.id}"
-              name: entityType.name
-              deprecated: prop.deprecated or entityType.deprecated
-              type: "join"
-              join: {
-                type: "1-n"
-                toTable: "entities.#{entityType.code}"
-                inverse: prop.id
-                fromColumn: "_id"
-                toColumn: prop.id
+            reverseJoins.push({
+              table: prop.idTable
+              column: {
+                id: "!entities.#{entityType.code}.#{prop.id}"
+                name: entityType.name
+                deprecated: prop.deprecated or entityType.deprecated
+                type: "join"
+                join: {
+                  type: "1-n"
+                  toTable: "entities.#{entityType.code}"
+                  inverse: prop.id
+                  fromColumn: "_id"
+                  toColumn: prop.id
+                }
               }
-            }
-          })
+            })
+
+          if prop.idTable == "admin_regions" or prop.idTable.match(/^regions\./)
+            # Check that table exists
+            refTable = schema.getTable(prop.idTable)
+            if not refTable or not refTable.ancestryTable
+              return
+
+            # Create reverse join that takes into account that regions are hierarchical
+            reverseJoins.push({
+              table: prop.idTable
+              column: {
+                id: "!entities.#{entityType.code}.#{prop.id}"
+                name: entityType.name
+                deprecated: prop.deprecated or entityType.deprecated
+                type: "join"
+                join: {
+                  type: "1-n",
+                  toTable: "entities.#{entityType.code}"
+                  inverse: prop.id
+                  jsonql: {
+                    type: "op"
+                    op: "exists"
+                    exprs: [
+                      {
+                        type: "scalar"
+                        expr: null
+                        from: { type: "table", table: refTable.ancestryTable, alias: "subwithin" }
+                        where: {
+                          type: "op"
+                          op: "and"
+                          exprs: [
+                            { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "subwithin", column: "ancestor" }, { type: "field", tableAlias: "{from}", column: refTable.primaryKey}] }
+                            { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "subwithin", column: "descendant" }, { type: "field", tableAlias: "{to}", column: prop.id}] }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            })
 
     # For each entity type
     for entityType in entityTypes
@@ -209,11 +251,6 @@ module.exports = class EntitySchemaBuilder
 
       tableId = "entities.#{entityType.code}"
 
-      # Add reverse join columns
-      for rj in reverseJoins
-        if rj.table == tableId
-          contents.push(rj.column)  
-
       table = { 
         id: tableId
         name: entityType.name
@@ -229,6 +266,23 @@ module.exports = class EntitySchemaBuilder
         table.ordering = "date"
 
       # Create table
+      schema = schema.addTable(table)
+
+    # Add reverse joins, putting them in "!related_entities" section
+    for rjTable, rjs of _.groupBy(reverseJoins, "table")
+      table = schema.getTable(rjTable)
+      table.contents = table.contents.slice()
+      linksSection = _.findWhere(table.contents, { id: "!related_entities", type: "section" })
+      if not linksSection
+        linksSection = { 
+          id: "!related_entities", 
+          type: "section", 
+          name: { _base: "en", en: "Related Entities" }, 
+          contents: [] 
+        }
+        table.contents.push(linksSection)
+
+      linksSection.contents = linksSection.contents.concat(_.pluck(rjs, "column"))
       schema = schema.addTable(table)
 
     return schema
