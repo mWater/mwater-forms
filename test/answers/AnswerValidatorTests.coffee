@@ -62,17 +62,32 @@ describe 'AnswerValidator', ->
         result = await @answerValidator.validate(question, answer)
         assert.equal null, result, 'alternate is valid for a required question'
 
-      it "requires specify field to be entered if question is required", ->
+      it "requires specify field to be entered if question is required (RadioQuestion)", ->
         answer = {value: 'c3', specify: null}
-        question = {_type: '', choices: [{id: 'c1'}, {id: 'c2'}, {id: 'c3', specify: true}], required: true}
+        question = {_type: 'RadioQuestion', choices: [{id: 'c1'}, {id: 'c2'}, {id: 'c3', specify: true}], required: true}
 
         result = await @answerValidator.validate(question, answer)
         assert.equal true, result, 'Required specify question requires specify entered'
 
-        answer = {value: 'c3', specify: {c4: 'coz bla bla'}}
+        answer = {value: 'c3', specify: {c3: 'coz bla bla'}}
 
         result = await @answerValidator.validate(question, answer)
         assert.equal null, result, 'Validates if specify text is set on required question'
+
+      it "requires specify field to be entered if question is required (MulticheckQuestion)", ->
+        answer = {value: ['c3', 'c4', 'c5'], specify: null}
+        question = {_type: 'MulticheckQuestion', choices: [{id: 'c1'}, {id: 'c2'}, {id: 'c3', specify: true}, {id: 'c4', specify: true}, {id: 'c5', specify: true}], required: true}
+
+        result = await @answerValidator.validate(question, answer)
+        assert.equal true, result, 'Required specify question requires specify entered'
+
+        answer = {value: ['c3', 'c4', 'c5'], specify: {c3: 'bla 1'}}
+        result = await @answerValidator.validate(question, answer)
+        assert.equal true, result, 'all specifys in multi check question should be provided'
+
+        answer = {value: ['c3', 'c4', 'c5'], specify: {c3: 'bla 1', c4: 'bla 1', c5: 'bla 4'}}
+        result = await @answerValidator.validate(question, answer)
+        assert.equal null, result, 'Validates if all specifys in required multi check question are provided'
 
       it "validates true advanced validations", ->
         question = { advancedValidations: [

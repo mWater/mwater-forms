@@ -31,9 +31,20 @@ module.exports = class AnswerValidator
 
       # Handle specify
       if question.choices
-        choiceOption = _.find(question.choices, {specify: true})
-        if choiceOption and (answer.value == choiceOption.id) and not answer.specify
-          return true
+        # MulticheckQuestion
+        if _.isArray answer.value
+          specifyChoices = question.choices.filter((c) -> c.specify).map((c) -> c.id)
+          selectedSpecifyChoicecs = _.intersection(specifyChoices, answer.value)
+
+          if selectedSpecifyChoicecs.length > 0
+            for selectedChoice in selectedSpecifyChoicecs
+              if not answer.specify?[selectedChoice]
+                return true
+        else
+          # RadioQuestion
+          choiceOption = _.find(question.choices, {specify: true})
+          if choiceOption and (answer.value == choiceOption.id) and not answer.specify
+            return true
 
       # Handling empty string for Units values
       if answer.value? and answer.value.quantity? and answer.value.quantity == ''
