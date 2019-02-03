@@ -1,4 +1,4 @@
-_  = require 'lodash'
+_ = require 'lodash'
 
 # Because of extend limitations in JSON schema, this allows us to include
 # all basic properties but still use additionalProperties: false
