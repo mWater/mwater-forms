@@ -26,8 +26,7 @@ gulp.task 'copy', ->
     .pipe(gulp.dest('./lib/'))
 
 gulp.task 'localize', (cb) ->
-  options = { extensions: ['.js', '.coffee'], transform: [coffeeify, hbsfy] }
-  extractor.updateLocalizationFile "src/index.coffee", "localizations.json", options, ->
+  extractor.updateLocalizationFile ["src"], "localizations.json", {}, ->
     cb()
 
 gulp.task "libs_css", ->
