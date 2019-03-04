@@ -56,7 +56,7 @@
     "canonical-json": "0.0.4",
     "chai": "^2.0.0",
     "coffee-loader": "^0.9.0",
-    "coffeescript": "^2.3.1",
+    "coffeescript": "^2.3.2",
     "glob": "^4.3.5",
     "handlebars-loader": "^1.4.0",
     "husky": "^1.0.0-rc.13",

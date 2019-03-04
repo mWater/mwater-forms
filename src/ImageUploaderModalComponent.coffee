@@ -26,12 +26,13 @@ module.exports = class ImageUploaderModalComponent extends React.Component
     }
 
   # Static function to show modal easily
-  @show: (apiUrl, client, T, success) =>
+  @show: (apiUrl, client, T, success, forceCamera) =>
     ModalPopupComponent.show (onClose) =>
       R ImageUploaderModalComponent,
         apiUrl: apiUrl
         client: client
         T: T
+        forceCamera: forceCamera
         onCancel: onClose
         onSuccess: (id) =>
           onClose()
