@@ -14,6 +14,7 @@ module.exports = class ImageUploaderModalComponent extends React.Component
     onCancel: PropTypes.func.isRequired
     onSuccess: PropTypes.func.isRequired # Called with id of image
     T: PropTypes.func.isRequired        # Localizer to use
+    forceCamera: PropTypes.bool         # True to force use of camera
 
   constructor: (props) ->
     super(props)
@@ -104,7 +105,7 @@ module.exports = class ImageUploaderModalComponent extends React.Component
           R 'span', className: "glyphicon glyphicon-camera"
           " "
           @props.T("Select")
-          R 'input', type: "file", style: { display: "none" }, onChange: @handleFileSelected
+          R 'input', type: "file", style: { display: "none" }, accept: "image/*", capture: (if @props.forceCamera then "camera"), onChange: @handleFileSelected
 
         R 'div', style: { display: (if not @state.xhr then "none") },
           R 'p', null, 
