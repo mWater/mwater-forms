@@ -29,7 +29,7 @@ module.exports = class EntitySchemaBuilder
               table: prop.idTable
               column: {
                 id: "!entities.#{entityType.code}.#{prop.id}"
-                name: entityType.name
+                name: pluralize(entityType.name)
                 deprecated: prop.deprecated or entityType.deprecated
                 type: "join"
                 join: {
@@ -322,3 +322,22 @@ traverseTree = (tree, func) ->
     func(item)
     if item.contents
       traverseTree(item.contents, func)
+
+
+# Make a plural form (in English)
+pluralize = (lstr) ->
+  str = lstr.en
+  if not str
+    return lstr
+
+  # Water doesn't pluralize
+  if str.match(/ater$/)
+    pstr = str
+  else if str.match(/s$/)
+    pstr = str + "es"
+  else if str.match(/y$/)
+    pstr = str.substr(0, str.length - 1) + "ies"
+  else
+    pstr = str + "s"
+  
+  return _.extend({}, lstr, en: pstr)

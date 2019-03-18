@@ -76,7 +76,7 @@ describe "EntitySchemaBuilder addEntities", ->
     compare(schema.getColumn("entities.community", "!entities.water_point.community"), {
       id: "!entities.water_point.community"
       type: "join"
-      name: { en: "Water point"}
+      name: { en: "Water points"}
       join: {
         type: "1-n"
         toTable: "entities.water_point"
@@ -108,7 +108,7 @@ describe "EntitySchemaBuilder addEntities", ->
     compare(schema.getColumn("entities.community", "!entities.water_point.community"), {
       id: "!entities.water_point.community"
       type: "join"
-      name: { en: "Water point"}
+      name: { en: "Water points"}
       join: {
         type: "1-n"
         toTable: "entities.water_point"
