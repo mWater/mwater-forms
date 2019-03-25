@@ -199,6 +199,14 @@ module.exports = class EntitySchemaBuilder
         type: 'text[]'
       })
 
+      # This gets overridden in the schema map
+      contents.push({
+        id: "_pending_verifications"
+        name: { en: "Pending Verifications"}
+        desc: { en: "True if there are verifications pending for this site that have not been verified" }
+        type: 'boolean'
+      })
+
       # Add datasets
       contents.push({
         id: "!datasets"
