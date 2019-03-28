@@ -23,6 +23,7 @@ module.exports = class ResponseViewEditComponent extends React.Component
 
     schema: PropTypes.object.isRequired # Schema, including the form
     locale: PropTypes.string # The locale to display the response in
+    T: PropTypes.object.isRequired # Localizer to use
 
   constructor: (props) ->
     super(props)
@@ -175,7 +176,7 @@ module.exports = class ResponseViewEditComponent extends React.Component
             apiUrl: @props.apiUrl
             locale: @state.locale
             login: @props.login
-            T: T)
+            T: @props.T)
 
     return R 'div', null,
       @renderLocales()
