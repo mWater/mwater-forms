@@ -8,7 +8,8 @@ $ = require 'jquery'
 # This only works in browser. Load datetime picker
 if process.browser
   require('eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js')
-
+  require('eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css')
+  
 module.exports = class DateTimePickerComponent extends React.Component
   @propTypes:
     # date format

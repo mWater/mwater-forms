@@ -3,6 +3,8 @@ React = require 'react'
 ReactDOM = require 'react-dom'
 R = React.createElement
 
+require('./index')
+
 FormComponent = require './FormComponent'
 sampleFormDesign = require './sampleFormDesign'
 sampleForm2 = require './sampleForm2'
