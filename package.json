@@ -6,7 +6,7 @@
   "directories": {
     "test": "test"
   },
-  "repository": "git@github.com:mWater/mwater-forms.git",
+  "repository": "github:mWater/mwater-forms",
   "scripts": {
     "test": "node_modules/build-library/test-cli",
     "test-browser": "node_modules/build-library/test-browser",
@@ -36,11 +36,11 @@
     "lodash": "^3.2.0",
     "markdown": "~0.5.0",
     "moment": "^2.8.3",
-    "mwater-expressions": "git+ssh://git@github.com/mWater/mwater-expressions.git",
+    "mwater-expressions": "github:mWater/mwater-expressions",
     "prop-types": "^15.5.10",
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
-    "react-library": "github:mwater/react-library",
+    "react-library": "github:mWater/react-library",
     "topo-sort": "^1.0.0",
     "underscore": "^1.7.0",
     "update-object": "^1.0.0",
