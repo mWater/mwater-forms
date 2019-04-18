@@ -185,7 +185,10 @@ module.exports = class ResponseDataExprValueUpdater
 
         val = _.extend({}, data[question._id]?.value or {}, { latitude: value.coordinates[1], longitude: value.coordinates[0] })
         return callback(null, @setValue(data, question, val))
-
+      when "site"
+        # Pretend it was a scalar update, as there is already code for that
+        entityType = formUtils.getSiteEntityType(question)
+        @updateScalar(data, { type: "scalar", joins: [expr.column], expr: { type: "id", table: "entities.#{entityType}" }}, value, callback)
       else
         return callback(new Error("Answer type #{answerType} not supported")) 
 
@@ -446,6 +449,3 @@ module.exports = class ResponseDataExprValueUpdater
       else
         throw new Error("Unsupported type #{question._type}")
     )
-
-
-

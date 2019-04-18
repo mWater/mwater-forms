@@ -324,6 +324,52 @@ describe "ResponseDataExprValueUpdater", ->
           done()
         )
 
+      it "searches with direct _id", (done) ->
+        # Mock data source
+        dataSource = {
+          performQuery: (query, callback) =>
+            # Should query for communities, getting the code and searching by name
+            compare query, {
+              type: "query"
+              selects: [
+                { type: "select", expr: { type: "field", tableAlias: "main", column: "code" }, alias: "value" }
+              ]
+              from: { type: "table", table: "entities.community", alias: "main" }
+              where: {
+                type: "op", op: "=", exprs: [{ type: "field", tableAlias: "main", column: "_id" }, "1234"]
+              }
+              limit: 2
+            }
+            callback(null, [{ value: "code1" }])
+        }
+
+        # Create schema with communities
+        schema = new Schema()
+        schema = schema.addTable({
+          id: "entities.community"
+          name: { en: "Communities" }
+          primaryKey: "_id"
+          contents: [
+            { id: "code", type: "text", name: { en: "Code" } }
+            { id: "name", type: "text", name: { en: "Name" } }
+          ]
+        })
+
+        # Create updater
+        updater = new ResponseDataExprValueUpdater(@formDesign, schema, dataSource)
+
+        # Update by name
+        expr = { type: "field", table: "responses:form123", column: "data:q1234:value" }
+
+        assert.isTrue updater.canUpdate(expr), "Should be able to update"
+
+        updater.updateData({}, expr, "1234", (error, data) =>
+          assert not error
+
+          compare data.q1234.value, { code: "code1" }
+          done()
+        )
+
     describe "EntityQuestion", ->
       beforeEach ->
         # Create form

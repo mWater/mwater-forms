@@ -381,14 +381,7 @@ exports.findEntityQuestion = (formDesign, entityType) ->
       return q
 
     if q._type == "SiteQuestion" 
-      # Get site type (use only first one)
-      if q.siteTypes and q.siteTypes[0]
-        siteType = q.siteTypes[0]
-      else
-        siteType = "Water point"
-
-      # Convert to entity type
-      questionEntityType = siteType.toLowerCase().replace(new RegExp(' ', 'g'), "_")
+      questionEntityType = exports.getSiteEntityType(q)
       if questionEntityType == entityType
         return q
     return
@@ -410,7 +403,7 @@ exports.extractEntityReferences = (formDesign, responseData) ->
     switch exports.getAnswerType(question)
       when "site"
         code = responseData[question._id]?.value?.code
-        entityType = if question.siteTypes then _.first(question.siteTypes).toLowerCase().replace(new RegExp(' ', 'g'), "_") else "water_point"
+        entityType = exports.getSiteEntityType(question)
         if code
           results.push({ question: question._id, entityType: entityType, property: "code", value: code })
       when "entity"
@@ -424,7 +417,7 @@ exports.extractEntityReferences = (formDesign, responseData) ->
         when "site"
           for rosterEntry in (responseData[rosterId] or [])
             code = rosterEntry.data[question._id]?.value?.code
-            entityType = if question.siteTypes then _.first(question.siteTypes).toLowerCase().replace(new RegExp(' ', 'g'), "_") else "water_point"
+            entityType = exports.getSiteEntityType(question)
             if code
               results.push({ question: question._id, roster: rosterEntry._id, entityType: entityType, property: "code", value: code })
         when "entity"
@@ -434,3 +427,8 @@ exports.extractEntityReferences = (formDesign, responseData) ->
               results.push({ question: question._id, roster: rosterEntry._id, entityType: question.entityType, property: "_id", value: value })
 
   return results
+
+# Gets the entity type (e.g. "water_point") for a site question
+exports.getSiteEntityType = (question) ->
+  entityType = if question.siteTypes and question.siteTypes[0] then _.first(question.siteTypes).toLowerCase().replace(new RegExp(' ', 'g'), "_") else "water_point"
+  return entityType
