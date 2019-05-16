@@ -290,6 +290,8 @@ exports.duplicateItem = (item, idMap) ->
     idMap[item._id] = exports.createUid()
 
   dup = _.cloneDeep(item)
+  delete dup.confidential
+  delete dup.confidentialRadius
 
   # Set up id
   if dup._id
