@@ -34,7 +34,7 @@ export interface FormDesign {
 
   /** Contents of the form 
    * Organized by a list of sections (that contain items), or a list of items with no sections */
-  contents: Section[] | Item[]
+  contents: Section[] | BasicItem[]
 
   /** List of locales */
   locales: Locale[]
@@ -44,7 +44,6 @@ export interface FormDesign {
 
   /** Calculated values */
   calculation: Calculation[]
-
 }
 
 export interface Calculation {
@@ -85,7 +84,7 @@ export interface Section {
   name: LocalizedString
 
   /** Contains a list of items */
-  contents: Item[]
+  contents: BasicItem[]
 
   /** Conditions for visibility of the section */
   conditions?: Conditions
@@ -97,8 +96,11 @@ export interface Section {
   _basedOn?: string
 }
 
-/** Item such as a question or instruction that make up the basic building block of a form */
-export type Item = Question | Instructions | RosterGroup | RosterMatrix | Group
+/** All item types including sections and roster matrix columns */
+export type Item = BasicItem | MatrixColumn | Section
+
+/** Item such as a question or instruction that make up the basic building block of a form. Does not include roster matrix column or section */
+export type BasicItem = Question | Instructions | RosterGroup | RosterMatrix | Group
 
 /** Question of various types which records an answer in the response */
 export interface QuestionBase {
@@ -267,7 +269,7 @@ export interface RosterGroup {
   entryTitleExprs?: Expr[]
 
   /** Contains a list of items */
-  contents: Item[]
+  contents: BasicItem[]
 }
 
 /** Matrix of columns and rows. Each column is of a specific type. */
@@ -370,7 +372,7 @@ interface Group {
   disabled?: boolean
 
   /** Contains a list of items */
-  contents: Item[]
+  contents: BasicItem[]
 }
 
 /**  Conditions on an item or section that determine if it is visible. All must be true to be visible */
