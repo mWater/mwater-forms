@@ -216,9 +216,12 @@ export interface RosterEntry {
   _id: string
 
   /** Answers indexed by item id */
-  data: {
-    [itemId: string]: Answer
-  }
+  data: RosterEntryData
+}
+
+/** Answers for a single roster entry */
+export interface RosterEntryData {
+  [itemId: string]: Answer
 }
 
 /** Stores the confidential data */
@@ -245,9 +248,13 @@ export interface ConfidentialRosterEntry {
   /** Id of roster entry */
   _id: string
 
-  data: {
-    [itemId: string]: ConfidentialAnswer
-  }
+  data: ConfidentialRosterEntryData
+}
+
+/** Confidential data for a single roster entry */
+export interface ConfidentialRosterEntryData
+{
+  [itemId: string]: ConfidentialAnswer
 }
 
 /** All values of answers possible */
