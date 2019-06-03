@@ -188,7 +188,7 @@ type Question = TextQuestion | NumberQuestion | DropdownQuestion | RadioQuestion
 
 /** Instructional text item */
 export interface Instructions {
-  id: string
+  _id: string
   _type: "Instructions"
 
   /** Markdown text on a per-language basis */
@@ -209,7 +209,7 @@ export interface Instructions {
 
 /** Timer item */
 export interface Timer {
-  id: string
+  _id: string
   _type: "Timer"
   
   /** Markdown text on a per-language basis */
@@ -230,7 +230,7 @@ export interface Timer {
 
 /** Group of questions which are repeated */
 export interface RosterGroup {
-  id: string
+  _id: string
   _type: "RosterGroup"
 
   /** _id under which roster is stored. Can reference another roster or self (in which case is null) */
@@ -272,8 +272,7 @@ export interface RosterGroup {
 
 /** Matrix of columns and rows. Each column is of a specific type. */
 export interface RosterMatrix {
-  id: string
-
+  _id: string
   _type: "RosterMatrix"
 
   /** _id under which roster is stored. Can reference another roster or self (in which case is null) */
@@ -309,7 +308,7 @@ export interface RosterMatrix {
 
 /** Columns of a matrix question or roster matrix */
 export interface MatrixColumn {
-  id: string
+  _id: string
 
   _type: "TextColumnQuestion" | "NumberColumnQuestion" | "CheckColumnQuestion" | "DropdownColumnQuestion" | "UnitsColumnQuestion" | "TextColumn" | "SiteColumnQuestion" | "DateColumnQuestion"
 
