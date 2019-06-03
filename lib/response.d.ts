@@ -177,7 +177,7 @@ export interface ResponseData {
 /** Answer to a question */
 export interface Answer {
   /** Value of the answer */
-  value?: AnswerValue
+  value?: AnswerValue | null
 
   /** Alternate value if chosen. "value" will be null */
   alternate?: "na" | "dontknow" | null
@@ -232,7 +232,7 @@ export interface ConfidentialData {
 /** One confidential answer */
 export interface ConfidentialAnswer {
   /** Value of the answer */
-  value?: AnswerValue
+  value?: AnswerValue | null
 
   /** Alternate value if chosen. "value" will be null */
   alternate?: "na" | "dontknow" | null
