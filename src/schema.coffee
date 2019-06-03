@@ -1,3 +1,8 @@
+###
+DEPRECATED!! Use the typescript definition files!
+
+###
+
 # A deployment is a grouping of people who can answer a form and an optional approval chain and viewers.
 deployments = { 
   type: "array" 

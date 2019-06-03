@@ -1,3 +1,7 @@
+###
+DEPRECATED!! Use the typescript definition files!
+###
+
 _ = require 'lodash'
 
 # Because of extend limitations in JSON schema, this allows us to include

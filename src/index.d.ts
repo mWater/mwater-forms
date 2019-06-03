@@ -786,31 +786,12 @@
 //   function renderItem(item: any, data: any, responseRow: any, schema: any, onDataChange: any, isVisible: any, onNext: any, ref: any): any;
 // }
 
-export type FormDesign = any
-export type FormItem = any
-export type FormQuestion = any
+export { default as formUtils } from './formUtils'
 
-export namespace formUtils {
-  // function allItems(rootItem: any): any;
-  // function changeQuestionType(question: any, newType: any): any;
-  // function createBase32TimeCode(date: any): any;
-  // function createShortUid(): any;
-  // function createUid(): any;
-  // function duplicateItem(item: any, idMap: any): any;
-  // function extractEntityReferences(formDesign: any, responseData: any): any;
-  // function extractLocalizedStrings(obj: any): any;
-  // function findEntityQuestion(formDesign: any, entityType: any): any;
-  // function findItem(formDesign: any, itemId: any): any;
-  // function getAnswerType(q: any): any;
-  // function getRosterIds(formDesign: any): any;
-  // function hasLocalizations(obj: any, locale: any): any;
-  // function isQuestion(item: any): any;
-  // function isSectioned(form: any): any;
-  // function localizeString(str: any, locale: any): any;
-  // function prepareQuestion(q: any): any;
-  function priorQuestions(formDesign: FormDesign, refItem?: FormItem, rosterId?: string | null): FormQuestion[];
-  // function updateLocalizations(formDesign: any): any;
-}
+export * from './form'
+export * from './formDesign'
+export * from './response'
+
 // export function instantiateView(viewStr: any, options: any): any;
 // export const minSchemaVersion: number;
 // export const schema: {

@@ -1,3 +1,5 @@
+# DEPRECATED!! Use the typescript definition files!
+
 # Answer Formats
 
 ## Responses:

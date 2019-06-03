@@ -1,4 +1,4 @@
-# Form JSON
+# Form JSON DEPRECATED!! Use the typescript definition files!
 
 This documents the JSON used to describe forms, including questions, sections, conditions, validations etc.
 
