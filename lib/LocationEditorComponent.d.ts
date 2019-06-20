@@ -3,8 +3,8 @@ import LocationFinder from './LocationFinder';
 
 export interface Location {
   accuracy: number
-  altitude: number | null
-  altitudeAccuracy: number | null
+  altitude?: number
+  altitudeAccuracy?: number
   latitude: number
   longitude: number
 }
