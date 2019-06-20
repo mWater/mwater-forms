@@ -794,7 +794,7 @@ export * from './form'
 export * from './formDesign'
 export * from './response'
 
-export { default as LocationEditorComponent } from './LocationEditorComponent'
+export { default as LocationEditorComponent, Location } from './LocationEditorComponent'
 export { default as LocationFinder } from './LocationFinder'
 
 // export function instantiateView(viewStr: any, options: any): any;
