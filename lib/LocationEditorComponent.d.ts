@@ -2,11 +2,11 @@ import React from 'react'
 import LocationFinder from './LocationFinder';
 
 export interface Location {
-  accuracy: number
-  altitude?: number
-  altitudeAccuracy?: number
   latitude: number
   longitude: number
+  accuracy?: number
+  altitude?: number
+  altitudeAccuracy?: number
 }
 
 /** Component that allows setting of location */
