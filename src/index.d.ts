@@ -1,3 +1,5 @@
+import LocationEditorComponent from './LocationEditorComponent';
+
 // export class AdminRegionDataSource {
 //   constructor(apiUrl: any);
 //   getAdminRegionPath(id: any, callback: any): any;
@@ -791,6 +793,9 @@ export { default as formUtils } from './formUtils'
 export * from './form'
 export * from './formDesign'
 export * from './response'
+
+export { default as LocationEditorComponent } from './LocationEditorComponent'
+export { default as LocationFinder } from './LocationFinder'
 
 // export function instantiateView(viewStr: any, options: any): any;
 // export const minSchemaVersion: number;

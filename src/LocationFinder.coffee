@@ -4,10 +4,10 @@ _ = require 'lodash'
 # Improved location finder. Triggers found event with HTML5 position object (containing coords, etc).
 # Pass storage as option (implementing localStorage API) to get caching of position
 class LocationFinder
-  constructor: (options = {}) ->
+  constructor: (options) ->
     _.extend @, Backbone.Events
 
-    @storage = options.storage
+    @storage = (options || {}).storage
 
     # Keep count of watches
     @watchCount = 0
