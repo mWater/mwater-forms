@@ -285,11 +285,16 @@ export interface UnitsAnswerValue {
 }
 
 export interface LocationAnswerValue {
-  accuracy?: number 
-  altitude?: number 
-  altitudeAccuracy?: number
-  longitude: number
   latitude: number
+  longitude: number
+  /** Elevation, taking into account mastHeight and depth if present */
+  altitude?: number 
+  accuracy?: number 
+  altitudeAccuracy?: number
+  /** Height of mast of GPS device (altitude is GPS altitude - mast height - depth) */
+  mastHeight?: number
+  /** Depth of pipe or other object (altitude is GPS altitude - mast height - depth) */
+  depth?: number
 }
 
 export interface ImageAnswerValue {
