@@ -1,5 +1,5 @@
 _ = require 'lodash'
-Backbone = require 'backbone'
+EventEmitter = require('events')
 LocationFinder = require './LocationFinder'
 utils = require './utils'
 
@@ -11,10 +11,16 @@ goodDelay = 5000
 module.exports = class CurrentPositionFinder
   constructor: (options={}) ->
     # Add events
-    _.extend @, Backbone.Events 
+    @eventEmitter = new EventEmitter()
+
+    # "error" messages are handled specially and will crash if not handled!
+    @eventEmitter.on('error', =>)
 
     @locationFinder = options.locationFinder or new LocationFinder()
     @_reset()
+
+  on: (event, callback) =>
+    @eventEmitter.on(event, callback)
 
   _reset: ->
     @running = false
@@ -32,8 +38,8 @@ module.exports = class CurrentPositionFinder
     @_reset()
 
     @running = true
-    @listenTo @locationFinder, "found", @locationFinderFound
-    @listenTo @locationFinder, "error", @locationFinderError
+    @locationFinder.on("found", @locationFinderFound)
+    @locationFinder.on("error", @locationFinderError)
     @locationFinder.startWatch()
 
     # Update status
@@ -47,7 +53,8 @@ module.exports = class CurrentPositionFinder
 
     @running = false
     @locationFinder.stopWatch()
-    @stopListening()
+    @locationFinder.off("found", @locationFinderFound)
+    @locationFinder.off("error", @locationFinderError)
 
   locationFinderFound: (pos) =>
     # Calculate strength of new position
@@ -71,19 +78,19 @@ module.exports = class CurrentPositionFinder
     # Set position if excellent
     if @strength == "excellent"
       @stop()
-      @trigger 'found', @pos
+      @eventEmitter.emit('found', @pos)
 
   locationFinderError: (err) =>
     @stop()
     @error = err
-    @trigger 'error', err
+    @eventEmitter.emit('error', err)
 
   updateStatus: ->
     @strength = utils.calculateGPSStrength(@pos)
     @useable = (@initialDelayComplete and @strength in ["fair", "poor"]) or @strength == "good"
     
     # Trigger status
-    @trigger 'status', { strength: @strength, pos: @pos, useable: @useable }
+    @eventEmitter.emit('status', { strength: @strength, pos: @pos, useable: @useable })
 
   afterInitialDelay: =>
     # Set useable if strength is not none
@@ -94,4 +101,4 @@ module.exports = class CurrentPositionFinder
   afterGoodDelay: =>
     if @running
       @stop()
-      @trigger 'found', @pos
+      @eventEmitter.emit('found', @pos)
