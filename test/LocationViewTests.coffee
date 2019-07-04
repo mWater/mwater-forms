@@ -5,7 +5,7 @@ Backbone.$ = $
 assert = require('chai').assert
 LocationView = require '../src/legacy/LocationView'
 UIDriver = require './helpers/UIDriver'
-CurrentPositionFinder = require '../src/legacy/CurrentPositionFinder'
+CurrentPositionFinder = require '../src/CurrentPositionFinder'
 
 class MockLocationFinder
   constructor:  ->

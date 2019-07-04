@@ -8,7 +8,7 @@ markdown = require("markdown").markdown
 TextExprsComponent = require './TextExprsComponent'
 
 LocationFinder = require './LocationFinder'
-CurrentPositionFinder = require './legacy/CurrentPositionFinder'
+CurrentPositionFinder = require './CurrentPositionFinder'
 
 AnswerValidator = require './answers/AnswerValidator'
 
