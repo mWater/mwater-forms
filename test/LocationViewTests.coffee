@@ -5,7 +5,6 @@ Backbone.$ = $
 assert = require('chai').assert
 LocationView = require '../src/legacy/LocationView'
 UIDriver = require './helpers/UIDriver'
-CurrentPositionFinder = require '../src/CurrentPositionFinder'
 
 class MockLocationFinder
   constructor:  ->
@@ -17,9 +16,8 @@ class MockLocationFinder
   stopWatch: ->
     @watching = false
 
-class MockCurrentPositionFinder extends CurrentPositionFinder
+class MockCurrentPositionFinder 
   constructor:  ->
-    super()
     _.extend @, Backbone.Events
 
   start: ->
