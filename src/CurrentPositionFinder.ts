@@ -3,8 +3,8 @@ import EventEmitter from 'events'
 import LocationFinder from './LocationFinder'
 import { calculateGPSStrength, PositionStrength } from './utils'
 
-const initialDelay = 10000
-const goodDelay = 5000
+const initialDelay = 10
+const goodDelay = 5
 
 /** Status of the position finding */
 export interface PositionStatus {
@@ -19,6 +19,12 @@ export interface PositionStatus {
 
   /** True whether position is useable (great, or enough time passed) */
   useable: boolean
+
+  /** Amount of initial delay left in seconds */
+  initialDelayLeft: number
+
+  /** Amount of delay before a good position is used */
+  goodDelayLeft: number | null
 }
 
 /** Uses an algorithm to accurately find current position (coords + timestamp). Fires status events and found event. 
@@ -27,10 +33,19 @@ export default class CurrentPositionFinder {
   eventEmitter: EventEmitter
   locationFinder: LocationFinder
   running: boolean
-  initialDelayComplete: boolean
-  goodDelayRunning: boolean
+  /** Number of seconds remaining in initial delay */
+  initialDelayLeft: number
+  /** Interval handle to stop timer */
+  initialDelayInterval: number | null
+
+  /** Number of seconds left in good delay (time waiting before using a "good" signal) */
+  goodDelayLeft: number | null
+
+  /** Interval handle to stop timer */
+  goodDelayInterval: number | null
+
   strength: PositionStrength
-  useable: boolean
+
   pos: Position | null
   error: string | null
 
@@ -63,7 +78,13 @@ export default class CurrentPositionFinder {
     // Update status
     this.updateStatus()
 
-    setTimeout(this.afterInitialDelay, initialDelay)
+    // Start initial delay countdown
+    this.initialDelayInterval = window.setInterval(() => {
+      if (this.initialDelayLeft) {
+        this.initialDelayLeft -= 1
+        this.updateStatus()
+      }
+    }, 1000)
   }
 
   /** Stop looking for position */
@@ -76,6 +97,15 @@ export default class CurrentPositionFinder {
     this.locationFinder.stopWatch()
     this.locationFinder.off("found", this.locationFinderFound)
     this.locationFinder.off("error", this.locationFinderError)
+
+    if (this.initialDelayInterval) {
+      window.clearInterval(this.initialDelayInterval)
+    }
+    if (this.goodDelayInterval) {
+      window.clearInterval(this.goodDelayInterval)
+    }
+
+    this.initialDelayInterval = null
   }
 
   /** Listen for errors in getting position */
@@ -97,14 +127,12 @@ export default class CurrentPositionFinder {
 
   _reset() {
     this.running = false
-    this.initialDelayComplete = false
-    this.goodDelayRunning = false
+    this.initialDelayLeft = initialDelay
+    this.goodDelayLeft = null
 
     this.strength = 'none'
     this.pos = null
-    this.useable = false
   }
-
 
   locationFinderFound = (pos: Position) => {
     // Calculate strength of new position
@@ -124,8 +152,24 @@ export default class CurrentPositionFinder {
     this.updateStatus()
 
     // Start good delay if needed
-    if (!this.goodDelayRunning && (this.strength === "good")) {
-      setTimeout(this.afterGoodDelay, goodDelay)
+    if (!this.goodDelayInterval && (this.strength === "good")) {
+      this.goodDelayLeft = goodDelay
+
+      // Start good delay countdown
+      this.goodDelayInterval = window.setInterval(() => {
+        if (this.goodDelayLeft == null) {
+          return
+        }
+
+        this.goodDelayLeft -= 1
+        this.updateStatus()
+        if (this.goodDelayLeft <= 0) {
+          if (this.running) {
+            this.stop()
+            this.eventEmitter.emit('found', this.pos)
+          }
+        }
+      }, 1000)
     }
 
     // Set position if excellent
@@ -143,24 +187,16 @@ export default class CurrentPositionFinder {
 
   updateStatus() {
     this.strength = calculateGPSStrength(this.pos)
-    this.useable = (this.initialDelayComplete && ["fair", "poor"].includes(this.strength)) || (this.strength === "good")
+    const useable = (this.initialDelayLeft <= 0 && ["fair", "poor"].includes(this.strength)) || (this.strength === "good")
     
     // Trigger status
-    return this.eventEmitter.emit('status', { strength: this.strength, pos: this.pos, useable: this.useable, accuracy: (this.pos != null ? this.pos.coords.accuracy : undefined) })
-  }
-
-  afterInitialDelay = () => {
-    // Set useable if strength is not none
-    this.initialDelayComplete = true
-    if (this.running) { 
-      this.updateStatus()
-    }
-  }
-
-  afterGoodDelay = () => {
-    if (this.running) {
-      this.stop()
-      this.eventEmitter.emit('found', this.pos)
-    }
+    this.eventEmitter.emit('status', { 
+      strength: this.strength, 
+      pos: this.pos, 
+      useable: useable, 
+      accuracy: (this.pos != null ? this.pos.coords.accuracy : undefined),
+      initialDelayLeft: this.initialDelayLeft,
+      goodDelayLeft: this.goodDelayLeft
+    })
   }
 }

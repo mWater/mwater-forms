@@ -17,7 +17,8 @@ FormSchemaBuilder = require './FormSchemaBuilder'
 ImageUploaderModalComponent = require './ImageUploaderModalComponent'
 HTML5Backend = require('react-dnd-html5-backend').default
 DragDropContext = require("react-dnd").DragDropContext
-NewLocationEditorComponent = require('./NewLocationEditorComponent').default
+LocationEditorComponent = require('./LocationEditorComponent').default
+LocationFinder = require './LocationFinder'
 
 # Setup mock localizer
 global.T = (str) ->
@@ -91,7 +92,7 @@ formCtx = {
       callback(null)
 }
 
-class DemoNewLocationEditorComponent extends React.Component 
+class DemoLocationEditorComponent extends React.Component 
   constructor: (props) ->
     super(props)
 
@@ -102,7 +103,8 @@ class DemoNewLocationEditorComponent extends React.Component
     @setState(location: location)
 
   render: ->
-    R NewLocationEditorComponent, 
+    R LocationEditorComponent, 
+      locationFinder: new LocationFinder()
       location: @state.location
       onLocationChange: (location) => @setState(location: location)
       onUseMap: () => @setState(location: { latitude: 46, longitude: -73, altitude: 240, accuracy: 12, altitudeAccuracy: 30, depth: 3 })
@@ -182,7 +184,7 @@ DemoComponent = DragDropContext(HTML5Backend)(DemoComponent)
 
 $ ->
   # ReactDOM.render(R(DemoComponent), document.getElementById("main"))
-  ReactDOM.render(R(DemoNewLocationEditorComponent), document.getElementById("main"))
+  ReactDOM.render(R(DemoLocationEditorComponent), document.getElementById("main"))
   # ImageUploaderModalComponent.show("http://localhost:1234/v3/", null, window.T, (id) -> alert(id))
   # ReactDOM.render(R(ImageUploaderTestComponent), document.getElementById("main"))
 

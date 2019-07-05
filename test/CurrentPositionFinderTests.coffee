@@ -88,7 +88,7 @@ describe "CurrentPositionFinder", ->
 
     # Bad position
     pos3 = createPos(goodAcc + 2)
-    @locationFinder.fire(pos2)
+    @locationFinder.fire(pos3)
 
     @clock.tick(goodDelay/3 + 10)
     

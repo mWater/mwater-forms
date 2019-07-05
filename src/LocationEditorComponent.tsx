@@ -47,7 +47,11 @@ interface State {
   /** Latest status of current position finder (only when settingUsingGPS) */
   positionStatus: PositionStatus | null
 
+  /** True if displaying success message */
   displayingSuccess: boolean
+
+  /** True if displaying error message */
+  displayingError: boolean
 
   /** Mast height that is persisted in local storage */
   mastHeight: number | null
@@ -75,14 +79,18 @@ function setLocalStorageNumber(key: string, value: number | null) {
 /** Component that allows setting of location. Allows either setting from GPS, map or manually entering coordinates
  * Stores mast height and depth in local storage and allows it to be updated. 
  */
-export default class NewLocationEditorComponent extends React.Component<Props, State> {
+export default class LocationEditorComponent extends React.Component<Props, State> {
   currentPositionFinder: CurrentPositionFinder
+  /** True when component unmounted */
+  unmounted?: boolean
 
   constructor(props: Props) {
     super(props)
 
     this.currentPositionFinder = new CurrentPositionFinder({ locationFinder: props.locationFinder })
     this.currentPositionFinder.on("status", this.handlePositionStatus)
+    this.currentPositionFinder.on("found", this.handlePositionFound)
+    this.currentPositionFinder.on("error", this.handlePositionError)
 
     this.state = {
       displayingAdvanced: false,
@@ -92,17 +100,22 @@ export default class NewLocationEditorComponent extends React.Component<Props, S
       manualAlt: null,
       settingUsingGPS: false,
       positionStatus: null,
-      displayingSuccess: false,
       mastHeight: getLocalStorageNumber("LocationEditorComponent.mastHeight"), 
-      depth: getLocalStorageNumber("LocationEditorComponent.depth")
+      depth: getLocalStorageNumber("LocationEditorComponent.depth"),
+      displayingSuccess: false,
+      displayingError: false
     }
   }
 
   componentWillUnmount() {
     this.currentPositionFinder.stop()
+    this.unmounted = true
   }
 
-  handleClear = () => { this.props.onLocationChange(null) }
+  handleClear = () => { 
+    this.props.onLocationChange(null) 
+    this.setState({ displayingError: false, displayingSuccess: false })
+  }
   handleOpenAdvanced = () => { this.setState({ displayingAdvanced: true }) }
   handleCloseAdvanced = () => { this.setState({ displayingAdvanced: false, enteringManual: false }) }
   handleEnterManually = () => { this.setState({ enteringManual: true, manualLat: null, manualLng: null, manualAlt: null }) }
@@ -135,6 +148,8 @@ export default class NewLocationEditorComponent extends React.Component<Props, S
   }
 
   handleSetUsingGPS = () => {
+    this.setState({ displayingError: false, displayingSuccess: false })
+    
     // Start position finder
     this.currentPositionFinder.start()
   }
@@ -145,6 +160,12 @@ export default class NewLocationEditorComponent extends React.Component<Props, S
   }
 
   handleUseAnyway = () => {
+    if (this.state.positionStatus!.strength == "poor") {
+      if (!confirm(this.props.T("Use location with very low accuracy (±{0}m)?", this.state.positionStatus!.accuracy!.toFixed(0)))) {
+        return
+      }
+    }
+    
     this.handlePositionFound(this.state.positionStatus!.pos!)
   }
 
@@ -172,11 +193,29 @@ export default class NewLocationEditorComponent extends React.Component<Props, S
       depth: altitude != null ? this.state.depth || undefined : undefined
     })
 
-    this.setState({ settingUsingGPS: false, positionStatus: null })
+    this.setState({ settingUsingGPS: false, positionStatus: null, displayingSuccess: true, displayingError: false })
+
+    // Hide notification in 5 seconds
+    setTimeout(() => {
+      if (!this.unmounted) {
+        this.setState({ displayingSuccess: false })
+      }
+    }, 5000)
   }
 
   handlePositionStatus = (positionStatus: PositionStatus) => {
     this.setState({ positionStatus: positionStatus })
+  }
+
+  handlePositionError = () => {
+    this.setState({ settingUsingGPS: false, positionStatus: null, displayingSuccess: false, displayingError: true })
+
+    // Hide notification in 5 seconds
+    setTimeout(() => {
+      if (!this.unmounted) {
+        this.setState({ displayingError: false })
+      }
+    }, 5000)
   }
 
   renderLocation() {
@@ -316,20 +355,43 @@ export default class NewLocationEditorComponent extends React.Component<Props, S
         msg = this.props.T('Weak GPS signal (±{0}m)...', this.state.positionStatus.accuracy!.toFixed(0))
         break
       case "good":
-        msg = this.props.T('Setting location...')
+        msg = this.props.T('Setting location in {0}s...', this.state.positionStatus.goodDelayLeft)
         break
     }
 
     return (
       <div id="location_setter" className="alert alert-warning">
         <div><i className="fa fa-spinner fa-spin"/>&nbsp;<b>{msg}</b> &nbsp;
-          { this.state.positionStatus.useable && this.state.positionStatus.strength != "good" ?
-          <button id="use_anyway" type="button" className="btn btn-sm btn-default" style={{ marginLeft: 5 }} onClick={this.handleUseAnyway}>{this.props.T("Use Anyway")}</button>
+          { this.state.positionStatus.strength != "none" && this.state.positionStatus.strength != "good" ?
+          <button 
+            type="button" 
+            className="btn btn-sm btn-default" 
+            style={{ marginLeft: 5 }} 
+            disabled={!this.state.positionStatus.useable}
+            onClick={this.handleUseAnyway}>
+              {this.props.T("Use Anyway")}
+              { this.state.positionStatus.initialDelayLeft ? ` (${this.state.positionStatus.initialDelayLeft}s)` : null }
+            </button>
           : null }
-          <button id="cancel_set" type="button" className="btn btn-sm btn-default" style={{ marginLeft: 5 }} onClick={this.handleCancelGPS}>{this.props.T("Cancel")}</button>
+          <button type="button" className="btn btn-sm btn-default" style={{ marginLeft: 5 }} onClick={this.handleCancelGPS}>{this.props.T("Cancel")}</button>
         </div>
       </div>
     )
+  }
+
+  renderMessages() {
+    if (this.state.displayingSuccess) {
+      return <div className="alert alert-success">
+        {this.props.T("Location Set Successfully")}
+      </div>
+    }
+
+    if (this.state.displayingError) {
+      return <div className="alert alert-danger">
+        {this.props.T("Cannot set location")}
+      </div>
+    }
+    return 
   }
 
   /** Render left pane with the buttons */
@@ -377,6 +439,7 @@ export default class NewLocationEditorComponent extends React.Component<Props, S
           </tbody>
         </table>  
         {this.renderSetByGPS()}
+        {this.renderMessages()}
       </div>  
     )
   }
