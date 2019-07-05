@@ -25,31 +25,38 @@
     },
     {
       "_base": "en",
-      "en": "GPS not available"
+      "en": "GPS not available",
+      "_unused": true
     },
     {
       "_base": "en",
-      "en": "Unspecified location"
+      "en": "Unspecified location",
+      "_unused": true
     },
     {
       "_base": "en",
-      "en": "Setting location..."
+      "en": "Setting location...",
+      "_unused": true
     },
     {
       "_base": "en",
-      "en": "Latitude"
+      "en": "Latitude",
+      "_unused": true
     },
     {
       "_base": "en",
-      "en": "Longitude"
+      "en": "Longitude",
+      "_unused": true
     },
     {
       "_base": "en",
-      "en": "Location Set Successfully"
+      "en": "Location Set Successfully",
+      "_unused": true
     },
     {
       "_base": "en",
-      "en": "Use Anyway"
+      "en": "Use Anyway",
+      "_unused": true
     },
     {
       "_base": "en",
@@ -139,11 +146,13 @@
     },
     {
       "_base": "en",
-      "en": "Cannot set location"
+      "en": "Cannot set location",
+      "_unused": true
     },
     {
       "_base": "en",
-      "en": "Use location with very low accuracy (±{0}m)?"
+      "en": "Use location with very low accuracy (±{0}m)?",
+      "_unused": true
     },
     {
       "_base": "en",
@@ -151,11 +160,13 @@
     },
     {
       "_base": "en",
-      "en": "Current Location"
+      "en": "Current Location",
+      "_unused": true
     },
     {
       "_base": "en",
-      "en": "Use Map"
+      "en": "Use Map",
+      "_unused": true
     },
     {
       "_base": "en",
@@ -163,11 +174,13 @@
     },
     {
       "_base": "en",
-      "en": "Very weak GPS signal (±{0}m)..."
+      "en": "Very weak GPS signal (±{0}m)...",
+      "_unused": true
     },
     {
       "_base": "en",
-      "en": "Weak GPS signal (±{0}m)..."
+      "en": "Weak GPS signal (±{0}m)...",
+      "_unused": true
     },
     {
       "_base": "en",
