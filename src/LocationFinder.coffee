@@ -18,6 +18,9 @@ class LocationFinder
   on: (event, callback) =>
     @eventEmitter.on(event, callback)
 
+  off: (event, callback) =>
+    @eventEmitter.removeListener(event, callback)
+
   cacheLocation: (pos) ->
     if @storage?
       @storage.set('LocationFinder.lastPosition', JSON.stringify(pos))

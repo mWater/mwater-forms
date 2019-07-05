@@ -22,6 +22,9 @@ module.exports = class CurrentPositionFinder
   on: (event, callback) =>
     @eventEmitter.on(event, callback)
 
+  off: (event, callback) =>
+    @eventEmitter.removeListener(event, callback)
+
   _reset: ->
     @running = false
     @initialDelayComplete = false
@@ -90,7 +93,7 @@ module.exports = class CurrentPositionFinder
     @useable = (@initialDelayComplete and @strength in ["fair", "poor"]) or @strength == "good"
     
     # Trigger status
-    @eventEmitter.emit('status', { strength: @strength, pos: @pos, useable: @useable })
+    @eventEmitter.emit('status', { strength: @strength, pos: @pos, useable: @useable, accuracy: @pos?.coords.accuracy })
 
   afterInitialDelay: =>
     # Set useable if strength is not none

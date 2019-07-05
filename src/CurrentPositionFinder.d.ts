@@ -29,10 +29,13 @@ export default class CurrentPositionFinder {
 /** Status of the position finding */
 export interface PositionStatus {
   /** Best position found */
-  pos: Position
+  pos: Position | null
 
   /** Strength of GPS for position (based on accuracy) */
   strength: PositionStrength
+
+  /** Accuracy in meters */
+  accuracy: number | null
 
   /** True whether position is useable (great, or enough time passed) */
   useable: boolean
