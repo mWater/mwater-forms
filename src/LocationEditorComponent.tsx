@@ -463,7 +463,7 @@ ENTER COORDINATES MANUALLY: Click on this option to manually type in the GPS coo
   render() {
     return (
       <div style={{ margin: 10 }}>
-        <table>
+        <table style={{ width: "100%" }}>
           <tbody>
             <tr>
               <td style={{ width: 250, verticalAlign: "top"  }}>
