@@ -238,22 +238,22 @@ export default class LocationEditorComponent extends React.Component<Props, Stat
     return (
       <div style={{ fontStyle: "italic", marginLeft: 20 }}>
         <div>
-          <span className="text-muted">{this.props.T("Latitude")}:</span> {this.props.location.latitude}
+          <span className="text-muted">{this.props.T("Latitude")}:</span> {this.props.location.latitude.toFixed(6)}
         </div>
         <div>
-          <span className="text-muted">{this.props.T("Longitude")}:</span> {this.props.location.longitude}
+          <span className="text-muted">{this.props.T("Longitude")}:</span> {this.props.location.longitude.toFixed(6)}
         </div>
         { this.props.location.altitude != null ? 
           <div>
-            <span className="text-muted">{this.props.T("Altitude")}:</span> {this.props.location.altitude} m
+            <span className="text-muted">{this.props.T("Altitude")}:</span> {this.props.location.altitude.toFixed(1)} m
           </div> : null }
         { this.props.location.accuracy != null ? 
           <div>
-            <span className="text-muted">{this.props.T("Accuracy")}:</span> +/- {this.props.location.accuracy} m
+            <span className="text-muted">{this.props.T("Accuracy")}:</span> +/- {this.props.location.accuracy.toFixed(1)} m
           </div> : null }
         { this.props.location.altitudeAccuracy != null ? 
           <div>
-            <span className="text-muted">{this.props.T("Altitude Accuracy")}:</span> +/- {this.props.location.altitudeAccuracy} m
+            <span className="text-muted">{this.props.T("Altitude Accuracy")}:</span> +/- {this.props.location.altitudeAccuracy.toFixed(1)} m
           </div> : null }
         { this.props.location.mastHeight != null ? 
           <div>

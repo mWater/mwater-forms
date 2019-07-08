@@ -1,5 +1,3 @@
-import LocationEditorComponent from './LocationEditorComponent';
-
 // export class AdminRegionDataSource {
 //   constructor(apiUrl: any);
 //   getAdminRegionPath(id: any, callback: any): any;
