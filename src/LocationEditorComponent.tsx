@@ -2,6 +2,7 @@ import CurrentPositionFinder, { PositionStatus } from "./CurrentPositionFinder";
 import React from "react";
 import LocationFinder from "./LocationFinder";
 import { NumberInput } from 'react-library/lib/bootstrap'
+import PopupHelpComponent from 'react-library/lib/PopupHelpComponent'
 
 export interface Location {
   latitude: number
@@ -149,7 +150,7 @@ export default class LocationEditorComponent extends React.Component<Props, Stat
 
   handleSetUsingGPS = () => {
     this.setState({ displayingError: false, displayingSuccess: false })
-    
+
     // Start position finder
     this.currentPositionFinder.start()
   }
@@ -417,6 +418,42 @@ export default class LocationEditorComponent extends React.Component<Props, Stat
   renderRightPane() {
     return (
       <div>
+        <div style={{float: "right"}}>
+          <PopupHelpComponent>
+            <div style={{ whiteSpace: "pre-line"}}>
+              {this.props.T(`SETTING LOCATIONS:
+
+There are three ways to set a location:
+
+CURRENT LOCATION:  Use the onboard GPS to obtain your current position. If the accuracy is poor, the app will try to repeatedly get a better GPS position for up to 10 seconds. After this time period, you can press "Use Anyway" to accept the current accuracy.
+
+USE MAP: Open a map interface that can be used to visually set the location. The red marker in the middle of the map is where the position will be set. Drag and zoom the map around it until the marker is in the right location. Note that this feature does not work offline. Accuracy for coordinates set using the map is set to 0. 
+
+ENTER COORDINATES (Advanced): Allows the latitude and longitude to be typed in using the keyboard. Note that all coordinates must be in decimal degrees using the WGS84 datum. Click on "Advanced GPS Settings..." to use this method.
+
+HOW TO IMPROVE GPS ACCURACY:
+
+-On ANDROID: Make sure that your  location settings are set to High Accuracy Mode. Some phones default to "battery saving" or "low accuracy", which forces the device to use cell phone tower and wifi signals to determine positions, rather than GPS satellites, which are much more accurate.
+
+-Set locations outdoors with a clear view of the sky. Trees, buildings, and steep mountaints or valleys can reduce GPS accuracy.
+
+-Rain and clouds do not affect GPS accuracy, but they can reduce the mobile network signal. 
+
+-GPS still works when the phone is offline or has a weak mobile network signal. Some phones use network signals to speed up GPS location setting, but given enough time, the onboard GPS will still be able to acquire an accurate position.
+
+ADVANCED LOCATION SETTINGS:
+
+Access these settings by clicking on "Advanced location settings..."
+
+MAST HEIGHT: The distance, in meters, between the GPS receiver and the ground. This setting is typically used only when an external high-precision GPS reciever is connected to the phone via bluetooth.
+
+DEPTH: The distance that the feature you are mapping is below the surface of the ground. This is typically used when mapping pipes and other buried infrastructure. 
+
+ENTER COORDINATES MANUALLY: Click on this option to manually type in the GPS coordinates. Note that all coordinates must be in decimal degrees using the WGS84 datum. Accuracy for manually set coordinates is blank and cannot be changed. 
+`)}
+            </div>
+          </PopupHelpComponent>
+        </div>
         {this.renderLocation()}
         {this.renderAdvanced()}
       </div>
