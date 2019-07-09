@@ -56,7 +56,7 @@ module.exports = class DefaultValueApplier
 
     if @entityType? and @entity? and (question._type == 'SiteQuestion' or question._type == 'EntityQuestion')
       if question._type == 'SiteQuestion'
-        siteType = (if question.siteTypes then question.siteTypes[0]) or "Water point"
+        siteType = (if question.siteTypes then question.siteTypes[0]) or "water_point"
         entityType = siteType.toLowerCase().replace(new RegExp(' ', 'g'), "_")
       else
         entityType = question.entityType

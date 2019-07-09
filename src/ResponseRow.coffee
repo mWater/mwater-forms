@@ -115,7 +115,7 @@ module.exports = class ResponseRow
 
         if answerType == "site"
           # Create site entity row
-          siteType = (if question.siteTypes then question.siteTypes[0]) or "Water point" 
+          siteType = (if question.siteTypes then question.siteTypes[0]) or "water_point" 
           entityType = siteType.toLowerCase().replace(new RegExp(' ', 'g'), "_")
 
           code = value.code

@@ -654,8 +654,10 @@ interface TextListQuestion extends QuestionBase {
 interface SiteQuestion extends QuestionBase {
   _type: "SiteQuestion"
 
-  /** Optional list of site types to include. e.g. "Water point", "Community". Should only be one in array.
-   * If none, defaults to "Water point" */
+  /** Optional list of site types to include. e.g. "water_point", "community"
+   * LEGACY: Used to contain "Water point", "Community". As a result, always use .toLowerCase().replace(new RegExp(' ', 'g'), "_")
+   * Should only be one in array.
+   * If none, defaults to "water_point" */
   siteTypes?: [string]
 
   /** No validation available */

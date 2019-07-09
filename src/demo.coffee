@@ -185,7 +185,7 @@ rosterFormDesign = {
         "_base": "en",
         "en": "Site?"
       },
-      siteTypes: ['Water point']
+      siteTypes: ['water_point']
     },    
     {
       _id: "text01"
@@ -197,7 +197,7 @@ rosterFormDesign = {
       textExprs: [
         { type: "scalar", table: "responses:form123", joins: ["data:site01:value"], expr: { type: "field", table: "entities.water_point", column: "code" }}
       ]
-      siteTypes: ['Water point'],
+      siteTypes: ['water_point'],
       conditionExpr: {
         type: "op"
         table: "responses:form123"
