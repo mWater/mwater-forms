@@ -179,7 +179,7 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
           code = code.code
 
         # Convert to new entity type
-        siteType = (if q.siteTypes then q.siteTypes[0]) or "Water point" 
+        siteType = (if q.siteTypes then q.siteTypes[0]) or "water_point" 
         entityType = siteType.toLowerCase().replace(new RegExp(' ', 'g'), "_")
 
         return R(EntityDisplayComponent, {

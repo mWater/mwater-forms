@@ -40,8 +40,8 @@ module.exports = class SiteAnswerComponent extends React.Component
         ev.preventDefault()
 
   getEntityType: () ->
-    # Convert to new entity type
-    siteType = (if @props.siteTypes then @props.siteTypes[0]) or "Water point"
+    # Convert to new entity type (legacy sometimes had capital letter and spaces)
+    siteType = (if @props.siteTypes then @props.siteTypes[0]) or "water_point"
     entityType = siteType.toLowerCase().replace(new RegExp(' ', 'g'), "_")
     return entityType
 

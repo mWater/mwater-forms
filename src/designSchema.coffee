@@ -1072,8 +1072,8 @@ module.exports = {
       properties: extendQuestionProperties({
         _type: { enum: ["SiteQuestion"] }
 
-        # Optional list of site types to include. e.g. "Water point", "Community". Should only be one in array.
-        # If none, defaults to "Water point"
+        # Optional list of site types to include. e.g. "Water point", "Community". Should only be one in array. NOTE: NOW SHOULD BE "water_point", not "Water point"
+        # If none, defaults to "water_point"
         siteTypes : {
           type: "array"
           items: { type: "string" }
