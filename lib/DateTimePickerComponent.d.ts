@@ -12,7 +12,7 @@ export default class DateTimePickerComponent extends React.Component<{
   showTodayButton?: boolean
 
   /** Show the clear button */
-  showClear: boolean
+  showClear?: boolean
 
   /** callback on date change (argument: moment date) */
   onChange: (date: Moment) => void
