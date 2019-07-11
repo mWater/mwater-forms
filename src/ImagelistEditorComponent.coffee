@@ -11,6 +11,7 @@ module.exports = class ImagelistEditorComponent extends React.Component
     imagelist: PropTypes.array             # e.g. [{ id: someid, caption: caption }]
     onImagelistChange: PropTypes.func       # Called when image list changed
     T: PropTypes.func.isRequired        # Localizer to use
+    consentPrompt: PropTypes.string    # Question to prompt for consent
 
   @childContextTypes:
     imageManager: PropTypes.object.isRequired
@@ -28,3 +29,4 @@ module.exports = class ImagelistEditorComponent extends React.Component
     R ImagesAnswerComponent, 
       imagelist: @props.imagelist
       onImagelistChange: @props.onImagelistChange
+      consentPrompt: @props.consentPrompt
