@@ -300,6 +300,9 @@ export interface LocationAnswerValue {
 export interface ImageAnswerValue {
   /** Id of image (unique) */
   id: string
+
+  /** Optional caption */
+  caption?: string
 }
 
 export type ImagesAnswerValue = ImageAnswerValue[]
