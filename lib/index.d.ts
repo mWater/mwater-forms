@@ -8,6 +8,7 @@ export { default as LocationEditorComponent, Location } from './LocationEditorCo
 export { default as LocationFinder } from './LocationFinder'
 export { ImageAcquirer } from './formContext'
 export { ImageManager } from './formContext'
+export { default as ImageUploaderModalComponent } from './ImageUploaderModalComponent'
 export { default as ImageEditorComponent } from './ImageEditorComponent'
 export { default as ImagelistEditorComponent } from './ImagelistEditorComponent'
 export { default as DateTimePickerComponent } from './DateTimePickerComponent'
