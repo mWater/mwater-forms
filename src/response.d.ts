@@ -295,6 +295,8 @@ export interface LocationAnswerValue {
   mastHeight?: number
   /** Depth of pipe or other object (altitude is GPS altitude - mast height - depth) */
   depth?: number
+  /** Method used to set the location */
+  method?: "gps" | "map" | "manual"
 }
 
 export interface ImageAnswerValue {

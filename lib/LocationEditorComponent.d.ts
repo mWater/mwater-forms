@@ -12,6 +12,8 @@ export interface Location {
     mastHeight?: number;
     /** Depth of pipe or other object (altitude is GPS altitude - mast height - depth) */
     depth?: number;
+    /** Method used to set the location */
+    method?: "gps" | "map" | "manual";
 }
 interface Props {
     location?: Location;

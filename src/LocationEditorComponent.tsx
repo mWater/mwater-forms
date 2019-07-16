@@ -15,6 +15,8 @@ export interface Location {
   mastHeight?: number
   /** Depth of pipe or other object (altitude is GPS altitude - mast height - depth) */
   depth?: number
+  /** Method used to set the location */
+  method?: "gps" | "map" | "manual"
 }
 
 interface Props {
@@ -130,7 +132,8 @@ export default class LocationEditorComponent extends React.Component<Props, Stat
       longitude: this.state.manualLng!,
       altitude: this.state.manualAlt || undefined,
       accuracy: 0,
-      altitudeAccuracy: this.state.manualAlt ? 0 : undefined
+      altitudeAccuracy: this.state.manualAlt ? 0 : undefined,
+      method: "manual"
     })
 
     this.setState({ enteringManual: false })
@@ -190,8 +193,9 @@ export default class LocationEditorComponent extends React.Component<Props, Stat
       altitude: altitude,
       accuracy: pos.coords.accuracy,
       altitudeAccuracy: pos.coords.altitudeAccuracy || undefined,
-      mastHeight: altitude != null ? this.state.mastHeight || undefined : undefined ,
-      depth: altitude != null ? this.state.depth || undefined : undefined
+      mastHeight: altitude != null ? this.state.mastHeight || undefined : undefined,
+      depth: altitude != null ? this.state.depth || undefined : undefined,
+      method: "gps"
     })
 
     this.setState({ settingUsingGPS: false, positionStatus: null, displayingSuccess: true, displayingError: false })
