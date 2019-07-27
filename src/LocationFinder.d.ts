@@ -7,9 +7,16 @@ export default class LocationFinder {
 
   on(ev: "found", callback: (position: Position) => void): void
   on(ev: "error", callback: (error: any) => void): void
+  off(ev: "found", callback: (position: Position) => void): void
+  off(ev: "error", callback: (error: any) => void): void
 
   pause(): void
   resume(): void
+
+  /** Start watching current location */
+  startWatch(): void
+  /** Stop watching current location */
+  stopWatch(): void
 }
 
 interface Storage {

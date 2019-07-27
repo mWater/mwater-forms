@@ -1,5 +1,5 @@
-import { Moment } from 'moment'
-import React from 'react';
+import { Moment } from "moment"
+import React from "react"
 
 export default class DateTimePickerComponent extends React.Component<{
   /** date format */
@@ -12,7 +12,7 @@ export default class DateTimePickerComponent extends React.Component<{
   showTodayButton?: boolean
 
   /** Show the clear button */
-  showClear?: boolean
+  showClear: boolean
 
   /** callback on date change (argument: moment date) */
   onChange: (date: Moment) => void

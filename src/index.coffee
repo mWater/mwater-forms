@@ -14,7 +14,7 @@ exports.formRenderUtils = require './formRenderUtils'
 exports.ECPlates = require './ECPlates'
 exports.utils = require './utils'
 exports.LocationFinder = require './LocationFinder'
-exports.LocationEditorComponent = require './LocationEditorComponent'
+exports.LocationEditorComponent = require('./LocationEditorComponent').default
 
 exports.AdminRegionDataSource = require './AdminRegionDataSource'
 exports.AdminRegionSelectComponent = require './AdminRegionSelectComponent'

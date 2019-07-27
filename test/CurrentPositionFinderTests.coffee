@@ -3,7 +3,7 @@ assert = require('chai').assert
 Backbone = require 'backbone'
 sinon = require 'sinon'
 
-CurrentPositionFinder = require '../src/legacy/CurrentPositionFinder'
+CurrentPositionFinder = require('../src/CurrentPositionFinder').default
 
 initialDelay = 10000
 goodDelay = 5000
@@ -88,7 +88,7 @@ describe "CurrentPositionFinder", ->
 
     # Bad position
     pos3 = createPos(goodAcc + 2)
-    @locationFinder.fire(pos2)
+    @locationFinder.fire(pos3)
 
     @clock.tick(goodDelay/3 + 10)
     

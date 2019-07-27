@@ -2,9 +2,8 @@ PropTypes = require('prop-types')
 React = require 'react'
 R = React.createElement
 
-LocationEditorComponent = require '../LocationEditorComponent'
-
-# Functional??
+LocationEditorComponent = require('../LocationEditorComponent').default
+LocationFinder = require '../LocationFinder'
 
 module.exports = class LocationAnswerComponent extends React.Component
   @contextTypes:
@@ -42,5 +41,5 @@ module.exports = class LocationAnswerComponent extends React.Component
       location: @props.value
       onLocationChange: @props.onValueChange
       onUseMap: @handleUseMap
-      locationFinder: @context.locationFinder
+      locationFinder: @context.locationFinder or new LocationFinder()
       T: @context.T

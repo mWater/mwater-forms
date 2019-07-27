@@ -1,16 +1,25 @@
-Backbone = require 'backbone'
+EventEmiiter = require('events')
 _ = require 'lodash'
 
 # Improved location finder. Triggers found event with HTML5 position object (containing coords, etc).
 # Pass storage as option (implementing localStorage API) to get caching of position
 class LocationFinder
   constructor: (options) ->
-    _.extend @, Backbone.Events
+    @eventEmitter = new EventEmiiter()
+
+    # "error" messages are handled specially and will crash if not handled!
+    @eventEmitter.on('error', =>)
 
     @storage = (options || {}).storage
 
     # Keep count of watches
     @watchCount = 0
+
+  on: (event, callback) =>
+    @eventEmitter.on(event, callback)
+
+  off: (event, callback) =>
+    @eventEmitter.removeListener(event, callback)
 
   cacheLocation: (pos) ->
     if @storage?
@@ -86,7 +95,7 @@ class LocationFinder
     # If no geolocation, trigger error
     if not navigator.geolocation
       console.error "No geolocation available"
-      @trigger 'error'
+      @eventEmitter.emit('error')
       return
 
     highAccuracyFired = false
@@ -97,7 +106,7 @@ class LocationFinder
       if not highAccuracyFired
         lowAccuracyFired = true
         @cacheLocation(pos)
-        @trigger 'found', pos
+        @eventEmitter.emit('found', pos)
 
     lowAccuracyError = (err) =>
       # Low accuracy errors are not enough to trigger final error
@@ -106,7 +115,7 @@ class LocationFinder
     highAccuracy = (pos) =>
       highAccuracyFired = true
       @cacheLocation(pos)
-      @trigger 'found', pos
+      @eventEmitter.emit('found', pos)
 
     highAccuracyError = (err) =>
       console.error "High accuracy watch location error: #{err.message}"
@@ -115,7 +124,7 @@ class LocationFinder
       @stopWatch()
 
       # Send error message
-      @trigger 'error'
+      @eventEmitter.emit('error')
 
     # Fire initial low-accuracy one
     navigator.geolocation.getCurrentPosition(lowAccuracy, lowAccuracyError, {
@@ -146,7 +155,7 @@ class LocationFinder
       cachedLocation = @getCachedLocation()
       if cachedLocation and not lowAccuracyFired and not highAccuracyFired
         cachedFired = true
-        @trigger 'found', cachedLocation
+        @eventEmitter.emit('found', cachedLocation)
     , 500
 
   stopWatch: ->
@@ -177,7 +186,7 @@ class LocationFinder
   resume: =>
     highAccuracy = (pos) =>
       @cacheLocation(pos)
-      @trigger 'found', pos
+      @eventEmitter.emit('found', pos)
 
     highAccuracyError = (err) =>
       console.error "High accuracy watch location error: #{err.message}"
@@ -186,7 +195,7 @@ class LocationFinder
       @stopWatch()
 
       # Send error message
-      @trigger 'error'
+      @eventEmitter.emit('error')
 
     if not @locationWatchId?
       @locationWatchId = navigator.geolocation.watchPosition(highAccuracy, highAccuracyError, {
