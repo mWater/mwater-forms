@@ -75,16 +75,16 @@ export default class LocationEditorComponent extends React.Component<Props, Stat
     handlePositionFound: (pos: Position) => void;
     handlePositionStatus: (positionStatus: PositionStatus) => void;
     handlePositionError: () => void;
-    renderLocation(): any;
-    renderEnterManually(): any;
-    renderMastAndDepth(): any;
-    renderAdvanced(): any;
+    renderLocation(): JSX.Element;
+    renderEnterManually(): JSX.Element;
+    renderMastAndDepth(): JSX.Element | null;
+    renderAdvanced(): JSX.Element | null;
     /** Render the set by GPS display */
-    renderSetByGPS(): any;
-    renderMessages(): any;
+    renderSetByGPS(): JSX.Element | null;
+    renderMessages(): JSX.Element | undefined;
     /** Render left pane with the buttons */
-    renderLeftPane(): any;
-    renderRightPane(): any;
-    render(): any;
+    renderLeftPane(): JSX.Element;
+    renderRightPane(): JSX.Element;
+    render(): JSX.Element;
 }
 export {};
