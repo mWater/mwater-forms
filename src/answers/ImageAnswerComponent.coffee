@@ -44,19 +44,23 @@ module.exports = class ImageAnswerComponent extends React.Component
   renderModal: ->
     if not @state.modalOpen
       return null
-      
+
+    onRemove = if @props.onImageChange then () =>
+      @setState(modalOpen: false)
+      @props.onImageChange(null)
+
+    onRotate = if @props.onImageChange then () =>
+      image = _.extend({}, @props.image, rotation: ((@props.image.rotation or 0) + 90) % 360)
+      @props.onImageChange(image)
+
     return React.createElement ImagePopupComponent, 
       imageManager: @context.imageManager
       image: @props.image
       T: @context.T
-      onRemove: => 
-        @setState(modalOpen: false)
-        @props.onImageChange(null)
+      onRemove: onRemove
+      onRotate: onRotate
       onClose: =>
         @setState(modalOpen: false)
-      onRotate: =>
-        image = _.extend({}, @props.image, rotation: ((@props.image.rotation or 0) + 90) % 360)
-        @props.onImageChange(image)
 
   render: ->
     R 'div', null,
