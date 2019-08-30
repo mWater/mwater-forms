@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import EventEmitter from 'events';
 import LocationFinder from './LocationFinder';
 import { PositionStrength } from './utils';
@@ -52,6 +51,6 @@ export default class CurrentPositionFinder {
     off(event: "status", callback: (status: PositionStatus) => void): void;
     _reset(): void;
     locationFinderFound: (pos: Position) => void;
-    locationFinderError: (err: string) => boolean;
+    locationFinderError: (err: string) => any;
     updateStatus(): void;
 }

@@ -1,5 +1,5 @@
-import { Moment } from 'moment'
-import React from 'react';
+import { Moment } from "moment"
+import React from "react"
 
 export default class DateTimePickerComponent extends React.Component<{
   /** date format */
