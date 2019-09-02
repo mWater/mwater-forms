@@ -159,4 +159,22 @@ describe "EntitySchemaBuilder addEntities", ->
     assert schema.getColumn("entities.water_point", "_created_by")
     assert schema.getColumn("entities.water_point", "_created_on")
 
-  it "adds datasets"
+  it "adds measurement prop properly", ->
+    entityTypes = [
+      {
+        code: "water_point"
+        name: { en: "Water point"}
+        properties: [
+          {
+            id: 'diameter'
+            type: 'measurement'
+            name: {_base :'en', en: 'Pipe diameter'}
+            units: [{id: "mm", name: {en:"Millimeters"}}, {id: "in", name: {en:"Inch"}}]
+          }
+        ]
+      }
+    ]
+    schema = new EntitySchemaBuilder().addEntities(new Schema(), entityTypes)
+
+    assert schema.getColumn("entities.water_point", "diameter_magnitude"), "_magnitude column does not exist"
+    assert schema.getColumn("entities.water_point", "diameter_unit"), "_unit column does not exist"
