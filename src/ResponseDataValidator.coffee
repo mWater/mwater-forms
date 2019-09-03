@@ -59,7 +59,7 @@ module.exports = class ResponseDataValidator
 
               cellData = answer.value?[row.id]?[column._id]
 
-              if column.required and not cellData?.value? or cellData?.value == ''
+              if column.required and (not cellData?.value? or cellData?.value == '')
                 return { 
                   questionId: completedId
                   error: true
