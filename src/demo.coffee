@@ -92,6 +92,8 @@ formCtx = {
       callback(null)
 }
 
+groupDesign = {"_id":"761114a3940e4063951387155e112486","_rev":13,"deployments":[{"_id":"2c5943376fa148eca8640f43878e98b8","name":"Depl1","active":true,"admins":[],"public":false,"viewers":[],"enumerators":["user:14de12d6532c4aca8c959856055966f8"],"approvalStages":[]}],"state":"active","design":{"name":{"en":"Question Group","_base":"en"},"_type":"Form","_schema":21,"locales":[{"code":"en","name":"English"}],"contents":[{"_id":"837e7861ee754b65989278ece222c443","name":{"en":"Untitled Section","_base":"en"},"_type":"Section","contents":[{"_id":"65fb7d592b3c465ca4b1359a982818c0","name":{"en":"ddfg","_base":"en"},"_type":"RosterGroup","allowAdd":true,"contents":[{"_id":"368e4c91c15a4853b62d3d9f9d1fde13","name":{"en":"Personal","_base":"en"},"_type":"Group","contents":[{"_id":"4204f6bbb41747908bcb31bd514bff44","text":{"en":"Name?","_base":"en"},"_type":"TextQuestion","format":"singleline","required":false,"textExprs":[],"conditions":[],"validations":[]},{"_id":"f639c8309f1440f1b5f65bd71d777343","text":{"en":"Age?","_base":"en"},"_type":"NumberQuestion","decimal":false,"required":false,"textExprs":[],"conditions":[],"validations":[]}],"conditions":[]}],"conditions":[],"entryTitle":{"en":"","_base":"en"},"allowRemove":true,"entryTitleExprs":[]}],"conditions":[]}]},"roles":[{"id":"user:broncha","role":"admin"},{"id":"user:mike","role":"admin"},{"id":"user:14de12d6532c4aca8c959856055966f8","role":"view"}],"created":{"on":"2019-09-16T10:28:20.195Z","by":"broncha"},"modified":{"on":"2019-09-16T10:31:05.027Z","by":"broncha"},"_viewable":true,"_editable":true,"_deployable":true,"_deployed_to_me":false}
+response = {"_id":"b35def73cc67423283fde8aaddd8d7a1","_rev":3,"code":"bronchatest-7UXVSC","form":"761114a3940e4063951387155e112486","formRev":13,"deployment":"2c5943376fa148eca8640f43878e98b8","approvals":[],"user":"14de12d6532c4aca8c959856055966f8","status":"final","data":{"65fb7d592b3c465ca4b1359a982818c0":[{"_id":"65ab66de59ca4037997083e4a16d0a78","data":{"4204f6bbb41747908bcb31bd514bff44":{"value":"Bbdhd","alternate":null},"f639c8309f1440f1b5f65bd71d777343":{"value":39,"alternate":null}}},{"_id":"5dc76fee9bcf40aea71df5826c4aecfa","data":{"4204f6bbb41747908bcb31bd514bff44":{"value":"Dyshsjs","alternate":null},"f639c8309f1440f1b5f65bd71d777343":{"value":85,"alternate":null}}},{"_id":"71fb47426c4c4c9895d9caac8a940520","data":{"4204f6bbb41747908bcb31bd514bff44":{"value":"Gafqgkd","alternate":null},"f639c8309f1440f1b5f65bd71d777343":{"value":52,"alternate":null}}}]},"startedOn":"2019-09-16T10:32:14.484Z","submittedOn":"2019-09-16T10:32:33.768Z","entities":[],"events":[{"by":"14de12d6532c4aca8c959856055966f8","on":"2019-09-16T10:32:14.486Z","type":"draft"},{"by":"14de12d6532c4aca8c959856055966f8","on":"2019-09-16T10:32:33.768Z","type":"submit"}],"roles":[{"id":"user:broncha","role":"admin"},{"id":"user:mike","role":"admin"},{"id":"user:14de12d6532c4aca8c959856055966f8","role":"view"}],"created":{"on":"2019-09-16T10:32:18.721Z","by":"14de12d6532c4aca8c959856055966f8"},"modified":{"on":"2019-09-16T10:32:52.914Z","by":"14de12d6532c4aca8c959856055966f8"},"username":"bronchatest","ipAddress":"27.34.109.198"}
 class DemoLocationEditorComponent extends React.Component 
   constructor: (props) ->
     super(props)
@@ -115,7 +117,8 @@ class DemoComponent extends React.Component
     super(props)
 
     # data = { site01: { value: { code: "10007"}, confidential: true}}
-    data = { d0dcfce3a697453ba16cc8baa8e384e: { value: null, confidential: true}}
+    # data = { d0dcfce3a697453ba16cc8baa8e384e: { value: null, confidential: true}}
+    data = response
 
     @state = {data: data}
 
@@ -133,39 +136,38 @@ class DemoComponent extends React.Component
     # design = rosterFormDesign
     # design = matrixFormDesign
     # design = rosterFormDesign
-    design = sampleForm2.design
+    design = groupDesign
     # design = sampleFormAdvancedValidations.design
     # design = randomAskFormDesign
-    schema = new FormSchemaBuilder({user: "bob"}).addForm(schema, { _id: "form1", design: design })
+    schema = new FormSchemaBuilder({user: "bob"}).addForm(schema, design)
 
     R 'div', className: "row",
-      R('div', className: "col-md-6",
-        R FormComponent, {
-          formCtx: formCtx
-          # locale: PropTypes.string            # Locale. Defaults to English (en)
-          design: design
-          data: @state.data
-          schema: schema
-          onDataChange: @handleDataChange
-          onSubmit: => alert("Submit")
-          onSaveLater: => alert("SaveLater")
-          onDiscard:  => alert("Discard")
-          # submitLabel: PropTypes.string           # Label for submit button
-          # discardLabel: PropTypes.string           # Label for discard button
-          # entity: PropTypes.object            # Form-level entity to load
-          # entityType: PropTypes.string        # Type of form-level entity to load      getAdminRegionPath: getAdminRegionPath
-          #   getSubAdminRegions: getSubAdminRegions
-          #   onChange: onChange
-          #   value: value
-          # })
-        }
-      )
+      # R('div', className: "col-md-6",
+      #   R FormComponent, {
+      #     formCtx: formCtx
+      #     # locale: PropTypes.string            # Locale. Defaults to English (en)
+      #     design: design
+      #     data: @state.data
+      #     schema: schema
+      #     onDataChange: @handleDataChange
+      #     onSubmit: => alert("Submit")
+      #     onSaveLater: => alert("SaveLater")
+      #     onDiscard:  => alert("Discard")
+      #     # submitLabel: PropTypes.string           # Label for submit button
+      #     # discardLabel: PropTypes.string           # Label for discard button
+      #     # entity: PropTypes.object            # Form-level entity to load
+      #     # entityType: PropTypes.string        # Type of form-level entity to load      getAdminRegionPath: getAdminRegionPath
+      #     #   getSubAdminRegions: getSubAdminRegions
+      #     #   onChange: onChange
+      #     #   value: value
+      #     # })
+      #   }
+      # )
+      console.log design
       R('div', className: "col-md-6",
         R ResponseDisplayComponent, {
-          form: {design: design}
-          response: {
-            data: @state.data
-          }
+          form: design
+          response: @state.data
           formCtx: formCtx
           T: T
         }

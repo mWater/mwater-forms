@@ -376,7 +376,13 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
     # Sections and Groups behave the same
     if item._type == "Section" or item._type == "Group"
       contents = _.map item.contents, (item) =>
-        @renderItem(item, visibilityStructure, item._id)
+        id = item._id
+        if dataId  # The group is inside a roster
+          parts = dataId.split(".")
+          parts.pop()
+          parts.push(item._id)
+          id = parts.join(".")
+        @renderItem(item, visibilityStructure, id)
 
       # Remove nulls
       contents = _.compact(contents)
@@ -397,7 +403,6 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
     # The rosters referencing another one will display a simple text to say so
     if item._type == "RosterMatrix" or item._type == "RosterGroup"
       items = []
-
       # Simply display a text referencing the other roster if a reference
       if item.rosterId?
         # Unless hiding empty, in which case blank
@@ -421,7 +426,7 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
       # Get the questions of the other rosters referencing this one
       items = _.clone(item.contents)
       @collectItemsReferencingRoster(items, @props.formDesign.contents, item._id)
-      
+
       return [
         R 'tr', key: item._id,
           R 'td', colSpan: colspan, style: { fontWeight: "bold" },
