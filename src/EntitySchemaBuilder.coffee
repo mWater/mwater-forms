@@ -189,6 +189,14 @@ module.exports = class EntitySchemaBuilder
         type: "datetime"
       })
 
+      # Add _roles but as hidden
+      contents.push({
+        id: "_roles",
+        name: { en: "Roles" },
+        type: "json",
+        deprecated: true
+      })
+
       contents.push({
         id: "_merged_entities"
         name: { en: "Previous mWater IDs"}
