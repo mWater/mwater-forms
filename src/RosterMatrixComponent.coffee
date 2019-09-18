@@ -104,7 +104,7 @@ module.exports = class RosterMatrixComponent extends React.Component
     @handleAnswerChange(answer)
 
   renderName: ->
-    R 'h3', key: "prompt", ref: ((c) => @prompt = c),
+    R 'h4', key: "prompt", ref: ((c) => @prompt = c),
       formUtils.localizeString(@props.rosterMatrix.name, @context.locale)
 
   renderColumnHeader: (column, index) ->
