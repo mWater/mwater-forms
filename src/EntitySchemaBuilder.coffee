@@ -215,7 +215,7 @@ module.exports = class EntitySchemaBuilder
       # Add datasets
       contents.push({
         id: "!datasets"
-        name: "Datasets"
+        name: { en: "Datasets" }
         desc: { en: "Datasets that this #{formUtils.localizeString(entityType.name)} is a part of" }
         type: "join"
         join: {
