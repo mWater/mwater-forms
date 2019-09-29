@@ -39,6 +39,14 @@ module.exports = class MatrixColumnCellComponent extends React.Component
 
     # Create element
     switch column._type
+      when "Calculation"
+        elem = R 'label', key: column._id, 
+          R TextExprsComponent,
+            localizedStr: { _base : "en", en: "{0}"} # This does not need to be translated, so en as base should be fine
+            exprs: [column.expr]
+            schema: @props.schema
+            responseRow: @props.responseRow
+            locale: @context.locale
       when "TextColumn"
         elem = R 'label', key: column._id, 
           R TextExprsComponent,
