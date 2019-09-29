@@ -10,6 +10,7 @@ ui = require 'react-library/lib/bootstrap'
 AsyncLoadComponent = require('react-library/lib/AsyncLoadComponent')
 VisibilityCalculator = require './VisibilityCalculator'
 ResponseRow = require './ResponseRow'
+TextExprsComponent = require './TextExprsComponent'
 
 ImageDisplayComponent = require './ImageDisplayComponent'
 EntityDisplayComponent = require './EntityDisplayComponent'
@@ -68,22 +69,23 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
           "#{location.latitude}\u00B0 #{location.longitude}\u00B0"
           if location.accuracy then "(+/-) #{location.accuracy} m"
 
-  renderAnswer: (q, answer) ->
-    if not answer
+  renderAnswer: (q, answer, dataId) ->
+    answerType = formUtils.getAnswerType(q)
+    if not answer and answerType not in ["expr"]
       return null
 
     # Handle alternates
-    if answer.alternate
+    if answer?.alternate
       switch answer.alternate 
         when "na"
           return R 'em', null, @props.T("Not Applicable")
         when "dontknow"
           return R 'em', null, @props.T("Don't Know")
 
-    if answer.confidential?
+    if answer?.confidential?
       return R 'em', null, T("Redacted")
     
-    if not answer.value?
+    if not answer?.value? and answerType not in ["expr"]
       return null
     
     switch formUtils.getAnswerType(q)
@@ -222,7 +224,28 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
           value: answer.value
           questionId: q._id
           imageManager: @props.formCtx.imageManager
+      when "expr"
+        rosterId = null
+        rosterEntryIndex = undefined
+        if dataId?
+          dataIds = dataId.split('.')
+          rosterId = dataIds[0]
+          rosterEntryIndex = dataIds[1]
 
+        return R TextExprsComponent,
+          localizedStr: if q._type == "TextColumn" then q.cellText else {_base: "en", en: "{0}"}
+          exprs: if q._type == "TextColumn" then q.cellTextExprs else [q.expr]
+          schema: @props.schema
+          responseRow: new ResponseRow({
+            responseData: @props.data
+            schema: @props.schema
+            formDesign: @props.formDesign
+            rosterId: rosterId
+            rosterEntryIndex: rosterEntryIndex
+            getEntityById: @props.formCtx.getEntityById
+            getEntityByCode: @props.formCtx.getEntityByCode
+          })
+          locale: @props.locale
   # Special render on multiple rows
   renderMatrixAnswer: (q, answer, prevAnswer) ->
     if not answer
@@ -323,7 +346,7 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
         R 'td', key: "value",
           R 'div', null,
             if not matrixAnswer?
-              @renderAnswer(q, answer)
+              @renderAnswer(q, answer, dataId)
             if answer and answer.timestamp
               
                 @props.T('Answered')
