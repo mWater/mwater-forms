@@ -37,7 +37,7 @@ exports.createBase32TimeCode = (date) ->
   return code
 
 exports.isQuestion = (item) ->
-  return item._type? and item._type.match(/Question$/)
+  return item._type? and (item._type.match(/Question$/) or item._type in ["TextColumn", "Calculation"] )
 
 exports.localizeString = (str, locale) ->
   # If null, return empty string
@@ -268,6 +268,8 @@ exports.getAnswerType = (q) ->
       return "items_choices"
     when "AquagenxCBTQuestion"
       return "aquagenx_cbt"
+    when "TextColumn", "Calculation"
+      return "expr"
     else throw new Error("Unknown question type #{q._type}")
 
 # Check if a form is all sections
