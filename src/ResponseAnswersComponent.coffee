@@ -70,22 +70,21 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
           if location.accuracy then "(+/-) #{location.accuracy} m"
 
   renderAnswer: (q, answer, dataId) ->
-    answerType = formUtils.getAnswerType(q)
-    if not answer and answerType not in ["expr"]
+    if not answer
       return null
 
     # Handle alternates
-    if answer?.alternate
+    if answer.alternate
       switch answer.alternate 
         when "na"
           return R 'em', null, @props.T("Not Applicable")
         when "dontknow"
           return R 'em', null, @props.T("Don't Know")
 
-    if answer?.confidential?
+    if answer.confidential?
       return R 'em', null, T("Redacted")
     
-    if not answer?.value? and answerType not in ["expr"]
+    if not answer.value?
       return null
     
     switch formUtils.getAnswerType(q)
@@ -224,28 +223,7 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
           value: answer.value
           questionId: q._id
           imageManager: @props.formCtx.imageManager
-      when "expr"
-        rosterId = null
-        rosterEntryIndex = undefined
-        if dataId?
-          dataIds = dataId.split('.')
-          rosterId = dataIds[0]
-          rosterEntryIndex = dataIds[1]
 
-        return R TextExprsComponent,
-          localizedStr: if q._type == "TextColumn" then q.cellText else {_base: "en", en: "{0}"}
-          exprs: if q._type == "TextColumn" then q.cellTextExprs else [q.expr]
-          schema: @props.schema
-          responseRow: new ResponseRow({
-            responseData: @props.data
-            schema: @props.schema
-            formDesign: @props.formDesign
-            rosterId: rosterId
-            rosterEntryIndex: rosterEntryIndex
-            getEntityById: @props.formCtx.getEntityById
-            getEntityByCode: @props.formCtx.getEntityByCode
-          })
-          locale: @props.locale
   # Special render on multiple rows
   renderMatrixAnswer: (q, answer, prevAnswer) ->
     if not answer
@@ -502,6 +480,45 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
 
     if formUtils.isQuestion(item)
       return @renderQuestion(item, dataId)
+    
+    if formUtils.isExpression(item)
+      return @renderExpression(item, dataId)
+
+  renderExpression: (q, dataId) -> 
+    return [
+      R 'tr', key: dataId,
+        R 'td', key: "name", style: { width: "50%" },
+          formUtils.localizeString(q.text, @props.locale)
+        R 'td', key: "value",
+          R 'div', null,
+            @renderExpressionAnswer(q, dataId)
+
+        if @props.showPrevAnswers and @props.prevData
+          R 'td', key: "prevValue", null 
+    ]
+  
+  renderExpressionAnswer: (q, dataId) ->
+    rosterId = null
+    rosterEntryIndex = undefined
+    if dataId?
+      dataIds = dataId.split('.')
+      rosterId = dataIds[0]
+      rosterEntryIndex = dataIds[1]
+
+    return R TextExprsComponent,
+      localizedStr: if q._type == "TextColumn" then q.cellText else {_base: "en", en: "{0}"}
+      exprs: if q._type == "TextColumn" then q.cellTextExprs else [q.expr]
+      schema: @props.schema
+      responseRow: new ResponseRow({
+        responseData: @props.data
+        schema: @props.schema
+        formDesign: @props.formDesign
+        rosterId: rosterId
+        rosterEntryIndex: rosterEntryIndex
+        getEntityById: @props.formCtx.getEntityById
+        getEntityByCode: @props.formCtx.getEntityByCode
+      })
+      locale: @props.locale
 
   render: ->
     if @state.error
