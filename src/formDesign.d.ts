@@ -1,26 +1,26 @@
-import { LocalizedString, Expr } from "mwater-expressions";
+import { LocalizedString, Expr } from "mwater-expressions"
 
 /** This is the design of a form which is stored in the "design" field of forms in mWater */
 export interface FormDesign {
   /** Specifies that this is the root Form element */
   _type: "Form"
 
-  /* Version of the schema of this form design 
-  * Schema 2 just added siteTypes to SiteQuestion and exportId to questions and consentPrompt to image questions
-  * Schema 3 added moment formats for date questions. Label for checkbox is deprecated and no longer used.
-  * Schema 4 added isoneof and isntoneof conditions
-  * Schema 10 adds entity questions and linking
-  * Schema 11 deprecates form-level entity settings and adds hidden entity questions
-  * Schema 12 adds admin regions
-  * Schema 13 adds rosters and textExprs
-  * Schema 14 adds matrix and likert and units columns and text columns
-  * Schema 15 adds site columns
-  * Schema 16 adds AquagenxCBTQuestion type
-  * Schema 17 adds conditionExpr
-  * Schema 18 adds calculations
-  * Schema 19 adds randomAskProbability
-  * Schema 20 adds confidential data mode
-  * Schema 21 adds advancedValidations and roster hints */
+  /* Version of the schema of this form design
+   * Schema 2 just added siteTypes to SiteQuestion and exportId to questions and consentPrompt to image questions
+   * Schema 3 added moment formats for date questions. Label for checkbox is deprecated and no longer used.
+   * Schema 4 added isoneof and isntoneof conditions
+   * Schema 10 adds entity questions and linking
+   * Schema 11 deprecates form-level entity settings and adds hidden entity questions
+   * Schema 12 adds admin regions
+   * Schema 13 adds rosters and textExprs
+   * Schema 14 adds matrix and likert and units columns and text columns
+   * Schema 15 adds site columns
+   * Schema 16 adds AquagenxCBTQuestion type
+   * Schema 17 adds conditionExpr
+   * Schema 18 adds calculations
+   * Schema 19 adds randomAskProbability
+   * Schema 20 adds confidential data mode
+   * Schema 21 adds advancedValidations and roster hints */
   _schema: 1 | 2 | 3 | 4 | 5 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21
 
   /** Name of the form */
@@ -32,7 +32,7 @@ export interface FormDesign {
   /** When set to true, users will be able to add questions with confidential answers */
   confidentialMode?: boolean
 
-  /** Contents of the form 
+  /** Contents of the form
    * Organized by a list of sections (that contain items), or a list of items with no sections */
   contents: Section[] | BasicItem[]
 
@@ -57,7 +57,7 @@ export interface Calculation {
   desc?: LocalizedString
 
   /** Id of roster if from a roster */
-  roster?: string 
+  roster?: string
 
   /** Expression (mwater-expression) for the value of the calculation of type number */
   expr: Expr
@@ -74,10 +74,10 @@ export interface Locale {
   custom?: boolean
 }
 
-/**  A section of a form has a name and a series of items (questions, etc.) that validate as a group. Forms are 
+/**  A section of a form has a name and a series of items (questions, etc.) that validate as a group. Forms are
  * either made only of sections or not at all. */
 export interface Section {
-  _id: string  
+  _id: string
   _type: "Section"
 
   /** Name of the section */
@@ -109,8 +109,8 @@ export interface QuestionBase {
   /** All question types end in "Question" */
   _type: string
 
-  /** Question code which is displayed before the question in the survey 
-    * and is used for export column header */
+  /** Question code which is displayed before the question in the survey
+   * and is used for export column header */
   code: string
 
   /** Text (prompt of the question) */
@@ -165,7 +165,7 @@ export interface QuestionBase {
   alternates: {
     /** True to display Not Applicable option */
     na?: boolean
-    
+
     /** True to display Don't Know option */
     dontknow: boolean
   }
@@ -178,15 +178,32 @@ export interface QuestionBase {
 
   /** _id of the item that this item is a duplicate of */
   _basedOn?: string
-  
+
   /** If present, only ask with this probability, hide otherwise. 0-1 */
   randomAskProbability?: number
 }
 
-type Question = TextQuestion | NumberQuestion | DropdownQuestion | RadioQuestion | MulticheckQuestion 
-    | DateQuestion | UnitsQuestion | CheckQuestion | LocationQuestion | ImageQuestion | ImagesQuestion
-    | TextListQuestion | SiteQuestion | BarcodeQuestion | EntityQuestion | AdminRegionQuestion | StopwatchQuestion
-    | MatrixQuestion | LikertQuestion | AquagenxCBTQuestion
+type Question =
+  | TextQuestion
+  | NumberQuestion
+  | DropdownQuestion
+  | RadioQuestion
+  | MulticheckQuestion
+  | DateQuestion
+  | UnitsQuestion
+  | CheckQuestion
+  | LocationQuestion
+  | ImageQuestion
+  | ImagesQuestion
+  | TextListQuestion
+  | SiteQuestion
+  | BarcodeQuestion
+  | EntityQuestion
+  | AdminRegionQuestion
+  | StopwatchQuestion
+  | MatrixQuestion
+  | LikertQuestion
+  | AquagenxCBTQuestion
 
 /** Instructional text item */
 export interface Instructions {
@@ -213,7 +230,7 @@ export interface Instructions {
 export interface Timer {
   _id: string
   _type: "Timer"
-  
+
   /** Markdown text on a per-language basis */
   text: LocalizedString
 
@@ -312,13 +329,25 @@ export interface RosterMatrix {
 export interface MatrixColumn {
   _id: string
 
-  _type: "TextColumnQuestion" | "NumberColumnQuestion" | "CheckColumnQuestion" | "DropdownColumnQuestion" | "UnitsColumnQuestion" | "TextColumn" | "SiteColumnQuestion" | "DateColumnQuestion"
+  _type:
+    | "TextColumnQuestion"
+    | "NumberColumnQuestion"
+    | "CheckColumnQuestion"
+    | "DropdownColumnQuestion"
+    | "UnitsColumnQuestion"
+    | "TextColumn"
+    | "SiteColumnQuestion"
+    | "DateColumnQuestion"
+    | "Calculation"
 
   /** Header of roster column */
   text: LocalizedString
 
   /** Code, unique within the question that should be used for exporting */
   code?: string
+
+  /** ExportID, user defined ID within the question that should be used for exporting */
+  exportId?: string
 
   /** True if the column is required to be answered */
   required?: boolean
@@ -382,44 +411,46 @@ type Condition = UnaryCondition | TextCondition | NumberCondition | ChoiceCondit
 
 interface BaseCondition {
   /** Left-hand side of the condition inequality */
-  lhs: { 
+  lhs: {
     /** Question whose answer to use as left-hand side of the condition inequality */
-    question: string 
+    question: string
   }
 }
 
 /** Unary type conditions */
 interface UnaryCondition extends BaseCondition {
-  op: "present" |  /** If question was answered */
-    "!present" | /** If question was not answered */
-    "true" |  /** If answer is true */
-    "false"  /** If answer is false */
+  op:
+    | "present" /** If question was answered */
+    | "!present" /** If question was not answered */
+    | "true" /** If answer is true */
+    | "false" /** If answer is false */
 }
 
 /** Conditions with text as right-hand side */
 interface TextCondition extends BaseCondition {
-  op: "contains" |  /** If answer contains text in RHS */
-    "!contains"     /** If answer does not contain text in RHS */
+  op: "contains" /** If answer contains text in RHS */ | "!contains" /** If answer does not contain text in RHS */
 
   rhs: { literal: string }
 }
 
 /** Conditions with number as right-hand side */
 interface NumberCondition extends BaseCondition {
-  op: "=" |   /** If answer equals a value */
-      "!=" |  /** If answer does not equal a value */
-      ">" |   /** If answer is greater than */
-      "<"     /** If answer is less than */
+  op:
+    | "=" /** If answer equals a value */
+    | "!=" /** If answer does not equal a value */
+    | ">" /** If answer is greater than */
+    | "<" /** If answer is less than */
 
   rhs: { literal: number }
 }
 
 /** Conditions with choice as right-hand side */
 interface ChoiceCondition extends BaseCondition {
-  op: "is"        | /** If answer is a certain choice */
-      "isnt"      | /** If answer is not a choice */
-      "includes"  | /** If answer is includes a choice (multi-check) */
-      "!includes"   /** If answer doesn't include a choice (multi-check) */
+  op:
+    | "is" /** If answer is a certain choice */
+    | "isnt" /** If answer is not a choice */
+    | "includes" /** If answer is includes a choice (multi-check) */
+    | "!includes" /** If answer doesn't include a choice (multi-check) */
 
   /** Id of the choice */
   rhs: { literal: string }
@@ -427,8 +458,7 @@ interface ChoiceCondition extends BaseCondition {
 
 /** Conditions with choices as right-hand side */
 interface ChoicesCondition extends BaseCondition {
-  op: "isoneof"        | /** If answer is in a list of choices */
-      "isntoneof"        /** If answer isn't in a list of choice */
+  op: "isoneof" /** If answer is in a list of choices */ | "isntoneof" /** If answer isn't in a list of choice */
 
   /** Ids of the choices */
   rhs: { literal: string[] }
@@ -436,8 +466,7 @@ interface ChoicesCondition extends BaseCondition {
 
 /** Conditions with date as right-hand side */
 interface DateCondition extends BaseCondition {
-  op: "before"      | /** If answer is before a date */
-      "after"         /** If answer is after a date */
+  op: "before" /** If answer is before a date */ | "after" /** If answer is after a date */
 
   /** Ids of the choices */
   rhs: { literal: string }
@@ -446,7 +475,7 @@ interface DateCondition extends BaseCondition {
 type Validation = LengthRangeValidation | RangeValidation | RegexValidation
 
 /** Validations are a condition that the answer must pass
- * The type is specific to the question type, but have a 
+ * The type is specific to the question type, but have a
  * common structure */
 interface BaseValidation {
   /** Message to be displayed when the validation fails */
@@ -494,10 +523,11 @@ interface RegexValidation extends BaseValidation {
 interface TextQuestion extends QuestionBase {
   _type: "TextQuestion"
 
-  format: "singleline" /** single line of text */
-        | "multiline" /** paragraph of text */
-        | "email" /** valid email address */
-        | "url" /** valid URL */
+  format:
+    | "singleline" /** single line of text */
+    | "multiline" /** paragraph of text */
+    | "email" /** valid email address */
+    | "url" /** valid URL */
 
   validations: (LengthRangeValidation | RegexValidation)[]
 }
@@ -622,7 +652,7 @@ interface LocationQuestion extends QuestionBase {
 interface ImageQuestion extends QuestionBase {
   _type: "ImageQuestion"
 
-  /** Optional yes/no question asked before an image is registered 
+  /** Optional yes/no question asked before an image is registered
    * As in "Does the subject consent to the photo?" */
   consentPrompt?: LocalizedString
 
@@ -634,7 +664,7 @@ interface ImageQuestion extends QuestionBase {
 interface ImagesQuestion extends QuestionBase {
   _type: "ImagesQuestion"
 
-  /** Optional yes/no question asked before an image is registered 
+  /** Optional yes/no question asked before an image is registered
    * As in "Does the subject consent to the photo?" */
   consentPrompt?: LocalizedString
 
@@ -677,11 +707,11 @@ interface EntityQuestion extends QuestionBase {
   _type: "EntityQuestion"
 
   /** Entity type that can be selected. e.g water_point */
-  entityType: string 
+  entityType: string
 
   /** Filter for the entities that can be chosen. MongoDb-style */
   entityFilter?: object
-        
+
   /** Text of select button */
   selectText?: LocalizedString
 
@@ -691,28 +721,28 @@ interface EntityQuestion extends QuestionBase {
   /** No validation available */
   validations: []
 
-//         # Properties that should be displayed when an entity is chosen DEPRECATED
-//         displayProperties: { 
-//           type: "array"
-//           items: { $ref: "#/definitions/propertyId" }
-//         }
-//         # Properties that should be used to select the entity DEPRECATED
-//         selectProperties: {
-//           type: "array"
-//           items: { $ref: "#/definitions/propertyId" }
-//         }
-//         # Geometry property (optional) that should be displayed on a map for choosing an entity. DEPRECATED
-//         mapProperty: { $ref: "#/definitions/propertyId" } 
-//         # Property links that connect questions to properties
-//         # DEPRECATED
-//         propertyLinks: { 
-//           type: "array",
-//           items: { $ref: "#/definitions/propertyLink" }
-//         }
-//         # True if hidden always DEPRECATED
-//         hidden: { type: "boolean" }
-//         # True to create an entity if one is not selected DEPRECATED
-//         createEntity: { type: "boolean" }
+  //         # Properties that should be displayed when an entity is chosen DEPRECATED
+  //         displayProperties: {
+  //           type: "array"
+  //           items: { $ref: "#/definitions/propertyId" }
+  //         }
+  //         # Properties that should be used to select the entity DEPRECATED
+  //         selectProperties: {
+  //           type: "array"
+  //           items: { $ref: "#/definitions/propertyId" }
+  //         }
+  //         # Geometry property (optional) that should be displayed on a map for choosing an entity. DEPRECATED
+  //         mapProperty: { $ref: "#/definitions/propertyId" }
+  //         # Property links that connect questions to properties
+  //         # DEPRECATED
+  //         propertyLinks: {
+  //           type: "array",
+  //           items: { $ref: "#/definitions/propertyLink" }
+  //         }
+  //         # True if hidden always DEPRECATED
+  //         hidden: { type: "boolean" }
+  //         # True to create an entity if one is not selected DEPRECATED
+  //         createEntity: { type: "boolean" }
 }
 
 /** Admin region selection (DEPRECATED!) */
@@ -733,13 +763,13 @@ interface MatrixQuestion extends QuestionBase {
   /** Items, each representing a row */
   items: Choices
 
-  /** Contains a list of columns */         
+  /** Contains a list of columns */
+
   columns: MatrixColumn[]
 
   /** No validation available */
   validations: []
 }
-
 
 /** Compartment bag test */
 interface AquagenxCBTQuestion extends QuestionBase {
