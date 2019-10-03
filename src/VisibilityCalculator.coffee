@@ -80,7 +80,7 @@ module.exports = class VisibilityCalculator
   processItem: (item, forceToInvisible, data, responseRow, visibilityStructure, prefix, callback) ->
     if formUtils.isQuestion(item)
       @processQuestion(item, forceToInvisible, data, responseRow, visibilityStructure, prefix, callback)
-    else if item._type == 'TextColumn'
+    else if item._type in ['TextColumn', 'Calculation']
       @processQuestion(item, forceToInvisible, data, responseRow, visibilityStructure, prefix, callback)
     else if item._type == "Instructions"
       # Behaves like a question

@@ -37,7 +37,10 @@ exports.createBase32TimeCode = (date) ->
   return code
 
 exports.isQuestion = (item) ->
-  return item._type? and (item._type.match(/Question$/) or item._type in ["TextColumn", "Calculation"] )
+  return item._type? and item._type.match(/Question$/)
+
+exports.isExpression = (item) ->
+  return item._type? and (item._type in ["TextColumn", "Calculation"])
 
 exports.localizeString = (str, locale) ->
   # If null, return empty string
