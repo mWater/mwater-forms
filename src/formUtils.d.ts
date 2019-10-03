@@ -1,6 +1,5 @@
-import { Item, FormDesign, Question } from "./formDesign";
-import { LocalizedString } from "mwater-expressions";
-
+import { Item, FormDesign, Question } from "./formDesign"
+import { LocalizedString } from "mwater-expressions"
 
 // function allItems(rootItem: any): any;
 // function changeQuestionType(question: any, newType: any): any;
@@ -19,6 +18,9 @@ import { LocalizedString } from "mwater-expressions";
 /** Determine if item is a question */
 export function isQuestion(item: Item): boolean
 
+/** Determine if item is an expression */
+export function isExpression(item: Item): boolean
+
 // function isSectioned(form: any): any;
 
 /** Localize a localized string */
@@ -26,7 +28,6 @@ export function localizeString(str?: LocalizedString | null, locale?: string): s
 
 // function prepareQuestion(q: any): any;
 
-export function priorQuestions(formDesign: FormDesign, refItem?: Item, rosterId?: string | null): Question[];
+export function priorQuestions(formDesign: FormDesign, refItem?: Item, rosterId?: string | null): Question[]
 
 // function updateLocalizations(formDesign: any): any;
-

@@ -69,7 +69,7 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
           "#{location.latitude}\u00B0 #{location.longitude}\u00B0"
           if location.accuracy then "(+/-) #{location.accuracy} m"
 
-  renderAnswer: (q, answer, dataId) ->
+  renderAnswer: (q, answer) ->
     if not answer
       return null
 
