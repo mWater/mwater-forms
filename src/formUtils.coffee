@@ -387,6 +387,22 @@ exports.findEntityQuestion = (formDesign, entityType) ->
       if questionEntityType == entityType
         return q
     return
+  
+  if not question
+    for rosterId in exports.getRosterIds(formDesign)
+      question = _.find exports.priorQuestions(formDesign, null, rosterId), (q) -> 
+        if q._type == "EntityQuestion" and q.entityType == entityType
+          return q
+
+        if q._type == "SiteColumnQuestion" and q.siteType == entityType
+          return q
+
+        if q._type == "SiteQuestion" 
+          questionEntityType = exports.getSiteEntityType(q)
+          if questionEntityType == entityType
+            return q
+        return
+    
   return question
 
 # Finds all references to entities in a response. Returns array of: 

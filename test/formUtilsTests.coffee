@@ -312,6 +312,14 @@ describe "FormUtils", ->
 
       assert.deepEqual strs, [{ _base: "en", en: "hello" }, { _base: "es", en: "hello2" }]
 
+  describe "findEntityQuestion", ->
+    it "can find entity questions from inside rosters", ->
+      formDesign = {"name":{"en":"Roster matrix site survey","_base":"en"},"_type":"Form","_schema":21,"locales":[{"code":"en","name":"English"}],"contents":[{"_id":"52a494e3623a43f4ab17d777512f9ab4","name":{"en":"Untitled Section","_base":"en"},"_type":"Section","contents":[{"_id":"fde9c0d3a1834845884dcf3add4e3142","name":{"en":"site details","_base":"en"},"_type":"RosterMatrix","allowAdd":true,"contents":[{"_id":"8f2f5a526296469b8ea6daec6bfdce70","text":{"en":"What site","_base":"en"},"_type":"SiteColumnQuestion","required":false,"siteType":"water_point","validations":[]},{"_id":"15287c8b0c03427fa36052e432dcd10f","text":{"en":"How long?","_base":"en"},"_type":"NumberColumnQuestion","decimal":true,"required":false,"validations":[]}],"conditions":[],"allowRemove":true}],"conditions":[]}]}
+      # formDesign = JSON.parse(formDesign)
+      siteQuestion = formUtils.findEntityQuestion(formDesign, "water_point")
+      assert.isDefined siteQuestion
+
+
   describe "extractEntityReferences", ->
     it "extracts entity questions", ->
       formDesign = {
