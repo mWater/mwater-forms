@@ -385,30 +385,35 @@ exports.hasLocalizations = (obj, locale) ->
 exports.findEntityQuestion = (formDesign, entityType) ->
   question = _.find exports.priorQuestions(formDesign), (q) -> 
     if q._type == "EntityQuestion" and q.entityType == entityType
-      return q
+      return true
 
     if q._type == "SiteQuestion" 
       questionEntityType = exports.getSiteEntityType(q)
       if questionEntityType == entityType
-        return q
-    return
+        return true
+    return false
+
+  if question
+    return question
   
-  if not question
-    for rosterId in exports.getRosterIds(formDesign)
-      question = _.find exports.priorQuestions(formDesign, null, rosterId), (q) -> 
-        if q._type == "EntityQuestion" and q.entityType == entityType
-          return q
+  for rosterId in exports.getRosterIds(formDesign)
+    question = _.find exports.priorQuestions(formDesign, null, rosterId), (q) -> 
+      if q._type == "EntityQuestion" and q.entityType == entityType
+        return true
 
-        if q._type == "SiteColumnQuestion" and q.siteType == entityType
-          return q
+      if q._type == "SiteColumnQuestion" and q.siteType == entityType
+        return true
 
-        if q._type == "SiteQuestion" 
-          questionEntityType = exports.getSiteEntityType(q)
-          if questionEntityType == entityType
-            return q
-        return
+      if q._type == "SiteQuestion" 
+        questionEntityType = exports.getSiteEntityType(q)
+        if questionEntityType == entityType
+          return true
+      return false
     
-  return question
+    if question
+      return question
+    
+  return null
 
 # Finds all references to entities in a response. Returns array of: 
 # {
