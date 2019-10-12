@@ -322,7 +322,7 @@ mapTree = (tree, func) ->
   return _.compact(_.map(tree, (item) ->
     newItem = func(item)
     if newItem and item.contents
-      newItem.contents = mapTree(item.contents, func)
+      newItem = _.extend({}, newItem, { contents: mapTree(item.contents, func) })
     return newItem
   ))
 
