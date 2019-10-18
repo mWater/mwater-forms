@@ -74,5 +74,5 @@ module.exports = class TextExprsComponent extends React.Component
 
       return R 'div', dangerouslySetInnerHTML: { __html: html }
     else
-      str = if @props.format then d3Format.format(@props.format)(str) else str
+      str = if (@props.format and !_.isNaN(Number(str))) then d3Format.format(@props.format)(str) else str
       return R('span', null, str)

@@ -146,37 +146,37 @@ class DemoComponent extends React.Component
     schema = new FormSchemaBuilder({user: "bob"}).addForm(schema, design)
 
     R 'div', className: "row",
-      # R('div', className: "col-md-6",
-      #   R FormComponent, {
-      #     formCtx: formCtx
-      #     # locale: PropTypes.string            # Locale. Defaults to English (en)
-      #     design: design
-      #     data: @state.data
-      #     schema: schema
-      #     onDataChange: @handleDataChange
-      #     onSubmit: => alert("Submit")
-      #     onSaveLater: => alert("SaveLater")
-      #     onDiscard:  => alert("Discard")
-      #     # submitLabel: PropTypes.string           # Label for submit button
-      #     # discardLabel: PropTypes.string           # Label for discard button
-      #     # entity: PropTypes.object            # Form-level entity to load
-      #     # entityType: PropTypes.string        # Type of form-level entity to load      getAdminRegionPath: getAdminRegionPath
-      #     #   getSubAdminRegions: getSubAdminRegions
-      #     #   onChange: onChange
-      #     #   value: value
-      #     # })
-      #   }
-      # )
-      console.log design
       R('div', className: "col-md-6",
-        R ResponseDisplayComponent, {
-          form: design
-          schema: schema
-          response: @state.data
+        R FormComponent, {
           formCtx: formCtx
-          T: T
+          # locale: PropTypes.string            # Locale. Defaults to English (en)
+          design: design.design
+          data: @state.data
+          schema: schema
+          onDataChange: @handleDataChange
+          onSubmit: => alert("Submit")
+          onSaveLater: => alert("SaveLater")
+          onDiscard:  => alert("Discard")
+          # submitLabel: PropTypes.string           # Label for submit button
+          # discardLabel: PropTypes.string           # Label for discard button
+          # entity: PropTypes.object            # Form-level entity to load
+          # entityType: PropTypes.string        # Type of form-level entity to load      getAdminRegionPath: getAdminRegionPath
+          #   getSubAdminRegions: getSubAdminRegions
+          #   onChange: onChange
+          #   value: value
+          # })
         }
       )
+      # console.log design
+      # R('div', className: "col-md-6",
+      #   R ResponseDisplayComponent, {
+      #     form: design
+      #     schema: schema
+      #     response: @state.data
+      #     formCtx: formCtx
+      #     T: T
+      #   }
+      # )
 
 DemoComponent = DragDropContext(HTML5Backend)(DemoComponent)
 

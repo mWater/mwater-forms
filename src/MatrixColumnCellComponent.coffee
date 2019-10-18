@@ -44,6 +44,7 @@ module.exports = class MatrixColumnCellComponent extends React.Component
           R TextExprsComponent,
             localizedStr: { _base : "en", en: "{0}"} # This does not need to be translated, so en as base should be fine
             exprs: [column.expr]
+            format: column.format
             schema: @props.schema
             responseRow: @props.responseRow
             locale: @context.locale
