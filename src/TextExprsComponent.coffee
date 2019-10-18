@@ -7,6 +7,7 @@ async = require 'async'
 formUtils = require './formUtils'
 ExprEvaluator = require('mwater-expressions').ExprEvaluator
 ExprUtils = require('mwater-expressions').ExprUtils
+d3Format = require "d3-format"
 
 markdown = require("markdown").markdown
 
@@ -19,6 +20,7 @@ module.exports = class TextExprsComponent extends React.Component
     responseRow: PropTypes.object.isRequired # response row to use
     locale: PropTypes.string        # locale (e.g. "en") to use
     markdown: PropTypes.bool        # True to render as markdown text
+    format: PropTypes.string        # Format to be used by d3 formatter
 
   constructor: (props) ->
     super(props)
@@ -72,4 +74,5 @@ module.exports = class TextExprsComponent extends React.Component
 
       return R 'div', dangerouslySetInnerHTML: { __html: html }
     else
+      str = if @props.format then d3Format.format(@props.format)(str) else str
       return R('span', null, str)

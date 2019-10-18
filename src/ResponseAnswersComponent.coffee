@@ -509,6 +509,7 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
       localizedStr: if q._type == "TextColumn" then q.cellText else {_base: "en", en: "{0}"}
       exprs: if q._type == "TextColumn" then q.cellTextExprs else [q.expr]
       schema: @props.schema
+      format: q.format
       responseRow: new ResponseRow({
         responseData: @props.data
         schema: @props.schema
