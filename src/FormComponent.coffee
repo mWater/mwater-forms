@@ -41,6 +41,8 @@ module.exports = class FormComponent extends React.Component
     singlePageMode: PropTypes.bool      # True to render as a single page, not divided into sections
     disableConfidentialFields: PropTypes.bool # True to disable the confidential fields, used during editing responses with confidential data
 
+    forceAllVisible: PropTypes.bool     # Force all questions to be visible
+
   @childContextTypes: _.extend({}, require('./formContextTypes'), {
     T: PropTypes.func.isRequired
     locale: PropTypes.string          # e.g. "fr"
@@ -98,7 +100,7 @@ module.exports = class FormComponent extends React.Component
       @props.onSubmit()
 
   isVisible: (itemId) =>
-    return @state.visibilityStructure[itemId]
+    return @props.forceAllVisible or @state.visibilityStructure[itemId]
 
   createResponseRow: (data) =>
     return new ResponseRow({
