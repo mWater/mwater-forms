@@ -182,8 +182,12 @@ exports.rhsType = (lhsQuestion, op) ->
 # In the case of choice, returns choices for rhs (returns base localization)
 # Return includes id and text for each one, suitable for a select2 control
 exports.rhsChoices = (lhsQuestion, op) ->
-  choices = _.map lhsQuestion.choices, (choice) ->
-    { id: choice.id, text: choice.label[choice.label._base || "en"]}
+  # Doesn't apply to LikertQuestions/MatrixQuestions since simple conditions don't apply to them
+  if lhsQuestion._type not in ["LikertQuestion", "MatrixQuestion"]
+    choices = _.map lhsQuestion.choices, (choice) ->
+      { id: choice.id, text: choice.label[choice.label._base || "en"]}
+  else
+    choices = []
 
   # Add alternates
   if lhsQuestion.alternates and lhsQuestion.alternates.dontknow
