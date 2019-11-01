@@ -1083,6 +1083,7 @@ describe "FormSchemaBuilder addForm", ->
               { id: "ft", label: { _base:"en", en: "Ft"}}
             ]}
             { _id: "col6", _type: "SiteColumnQuestion", text: { _base: "en", en: "Col 6" }, siteType: "water_point" }
+            { _id: "col7", _type: "DateColumnQuestion", text: { _base: "en", en: "Col 7" }, format: "YYYY-MM-DD" }
           ]
         }, [
           # TextColumnQuestion
@@ -1176,6 +1177,30 @@ describe "FormSchemaBuilder addForm", ->
                 exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,item1,col6,value,code}"] 
               }
               toColumn: "code"
+            }
+          }
+          # DateColumnQuestion
+          { 
+            id: "data:questionid:value:item1:col7:value" 
+            type: "date"
+            name: { _base: "en", en: "Question: Item 1 - Col 7"}
+            # substr(rpad(data#>>'{questionid,value,item1,col4,value}',10, '-01-01'), 1, 10)
+            jsonql: {
+              type: "op"
+              op: "substr"
+              exprs: [
+                {
+                  type: "op"
+                  op: "rpad"
+                  exprs: [
+                    { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,item1,col7,value}"] }
+                    10
+                    "-01-01"
+                  ]
+                }
+                1
+                10
+              ]
             }
           }
         ])

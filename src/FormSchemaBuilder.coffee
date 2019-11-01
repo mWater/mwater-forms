@@ -1408,6 +1408,60 @@ module.exports = class FormSchemaBuilder
                   }
                })
 
+              if itemColumn._type == "DateColumnQuestion"
+                # If date-time
+                if itemColumn.format.match /ss|LLL|lll|m|h|H/
+                  # Fill in month and year and remove timestamp
+                  column = {
+                    id: "#{dataColumn}:#{item._id}:value:#{itemItem.id}:#{itemColumn._id}:value"
+                    type: "datetime"
+                    name: appendStr(appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "), itemColumn.text)
+                    code: code
+                    jsonql: {
+                      type: "op"
+                      op: "#>>"
+                      exprs: [
+                        { type: "field", tableAlias: "{alias}", column: dataColumn }
+                        "{#{item._id},value,#{itemItem.id},#{itemColumn._id},value}"
+                      ]
+                    }
+                  }
+                  section.contents.push(column)
+                else
+                  # Fill in month and year and remove timestamp
+                  column = {
+                    id: "#{dataColumn}:#{item._id}:value:#{itemItem.id}:#{itemColumn._id}:value"
+                    type: "date"
+                    name: appendStr(appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "), itemColumn.text)
+                    code: code
+                    # substr(rpad(data#>>'{questionid,value}',10, '-01-01'), 1, 10)
+                    jsonql: {
+                      type: "op"
+                      op: "substr"
+                      exprs: [
+                        {
+                          type: "op"
+                          op: "rpad"
+                          exprs:[
+                            {
+                              type: "op"
+                              op: "#>>"
+                              exprs: [
+                                { type: "field", tableAlias: "{alias}", column: dataColumn }
+                                "{#{item._id},value,#{itemItem.id},#{itemColumn._id},value}"
+                              ]
+                            }
+                            10
+                            '-01-01'
+                          ]
+                        }
+                        1
+                        10
+                      ]
+                    }
+                  }
+                  section.contents.push(column)
+
               # SiteColumnQuestion
               if itemColumn._type == "SiteColumnQuestion"
                 section.contents.push({
