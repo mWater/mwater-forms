@@ -8,19 +8,17 @@ exports.createUid = -> uuid().replace(/-/g, "")
 # Create short unique id, with ~42 bits randomness to keep unique amoung a few choices
 exports.createShortUid = ->
   chrs = "abcdefghjklmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ123456789"
-  loop 
-    id = ""
-    for i in [1..7]
-      id = id + chrs[_.random(0, chrs.length - 1)]
+  id = ""
+  for i in [1..7]
+    id = id + chrs[_.random(0, chrs.length - 1)]
   return id
 
 # Create medium unique id, with ~58 bits randomness to keep unique amoung a 1,000,000 choices
 exports.createMediumUid = ->
   chrs = "abcdefghjklmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ123456789"
-  loop 
-    id = ""
-    for i in [1..10]
-      id = id + chrs[_.random(0, chrs.length - 1)]
+  id = ""
+  for i in [1..10]
+    id = id + chrs[_.random(0, chrs.length - 1)]
   return id
 
 # Create a base32 time code to write on forms
