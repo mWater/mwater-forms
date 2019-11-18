@@ -17,7 +17,7 @@ EntityDisplayComponent = require './EntityDisplayComponent'
 AdminRegionDisplayComponent = require './AdminRegionDisplayComponent'
 
 AquagenxCBTDisplayComponent = require './answers/AquagenxCBTDisplayComponent'
-
+CascadingListDisplayComponent = require("./answers/CascadingListDisplayComponent").CascadingListDisplayComponent
 
 # Displays the answers of a response in a table
 module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
@@ -223,6 +223,13 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
           value: answer.value
           questionId: q._id
           imageManager: @props.formCtx.imageManager
+
+      when "cascading_list"
+        return R CascadingListDisplayComponent,
+          question: q
+          value: answer.value
+          locale: @props.lcoale
+
 
   # Special render on multiple rows
   renderMatrixAnswer: (q, answer, prevAnswer) ->

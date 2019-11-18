@@ -167,8 +167,6 @@ export class CascadingListAnswerComponent extends React.Component<Props, State> 
         {this.props.T("Reset")}
       </button>
       { dropdowns }
-      {JSON.stringify(this.props.value)}
-      {JSON.stringify(this.state.editing)}
     </div>
   }
 }

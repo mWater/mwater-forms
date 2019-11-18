@@ -127,7 +127,7 @@ cascadingListFormDesign = {
       { 
         _type: "CascadingListQuestion"
         _id: "aa331b86fb5d40ffbf6600e8357e2b0a"
-        name: {"en":"Cascade", "_base":"en"}
+        text: {"en":"Cascade", "_base":"en"}
         rows: [
           { id: "wpg", c0: "manitoba", c1: "winnipeg" }
           { id: "wloo", c0: "ontario", c1: "waterloo" }
@@ -212,15 +212,15 @@ class DemoComponent extends React.Component
         }
       )
       # console.log design
-      # R('div', className: "col-md-6",
-      #   R ResponseDisplayComponent, {
-      #     form: design
-      #     schema: schema
-      #     response: @state.data
-      #     formCtx: formCtx
-      #     T: T
-      #   }
-      # )
+      R('div', className: "col-md-6",
+        R ResponseDisplayComponent, {
+          form: design
+          schema: schema
+          response: { data: @state.data }
+          formCtx: formCtx
+          T: T
+        }
+      )
 
 DemoComponent = DragDropContext(HTML5Backend)(DemoComponent)
 
