@@ -12,7 +12,15 @@ exports.createShortUid = ->
     id = ""
     for i in [1..7]
       id = id + chrs[_.random(0, chrs.length - 1)]
-    if not _.find(@model, { id: id })? then break
+  return id
+
+# Create medium unique id, with ~58 bits randomness to keep unique amoung a 1,000,000 choices
+exports.createMediumUid = ->
+  chrs = "abcdefghjklmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ123456789"
+  loop 
+    id = ""
+    for i in [1..10]
+      id = id + chrs[_.random(0, chrs.length - 1)]
   return id
 
 # Create a base32 time code to write on forms
@@ -163,6 +171,8 @@ exports.prepareQuestion = (q) ->
       _.defaults q, { items: [], columns: [] }
     when "AquagenxCBTQuestion"
       _.defaults q, {  }
+    when "CascadingListQuestion"
+      _.defaults q, { rows: [], columns: [] }
 
   # Get known fields
   knownFields = ['_id', '_type', 'text', 'textExprs', 'conditions', 'conditionExpr', 'validations', 
@@ -209,6 +219,9 @@ exports.prepareQuestion = (q) ->
       knownFields.push "columns"
     when "LocationQuestion"
       knownFields.push "calculateAdminRegion"
+    when "CascadingListQuestion"
+      knownFields.push "rows"
+      knownFields.push "columns"
 
   # Strip unknown fields
   for key in _.keys(q)
@@ -232,7 +245,7 @@ exports.changeQuestionType = (question, newType) ->
 
   return question
 
-# Gets type of the answer: text, number, choice, choices, date, units, boolean, location, image, images, texts, site, entity, admin_region, items_choices, matrix, aquagenx_cbt
+# Gets type of the answer: text, number, choice, choices, date, units, boolean, location, image, images, texts, site, entity, admin_region, items_choices, matrix, aquagenx_cbt, cascading_list
 exports.getAnswerType = (q) ->
   switch q._type
     when "TextQuestion", "TextColumnQuestion"
@@ -271,6 +284,8 @@ exports.getAnswerType = (q) ->
       return "items_choices"
     when "AquagenxCBTQuestion"
       return "aquagenx_cbt"
+    when "CascadingListQuestion"
+      return "cascading_list"
     when "TextColumn", "Calculation"
       return "expr"
     else throw new Error("Unknown question type #{q._type}")

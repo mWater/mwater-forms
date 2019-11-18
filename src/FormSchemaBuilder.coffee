@@ -788,6 +788,33 @@ module.exports = class FormSchemaBuilder
 
           addColumn(section)
 
+        when "cascading_list"
+          # Create section
+          section = {
+            type: "section"
+            name: item.text
+            contents: []
+          }
+
+          # For each column
+          for column in item.columns
+            section.contents.push({
+              id: "#{dataColumn}:#{item._id}:value:#{column.id}"
+              type: "enum"
+              name: column.name
+              enumValues: column.enumValues
+              jsonql: {
+                type: "op"
+                op: "#>>"
+                exprs: [
+                  { type: "field", tableAlias: "{alias}", column: dataColumn }
+                  "{#{item._id},value,#{column.id}}"
+                ]
+              }
+            })
+
+          addColumn(section)
+
         when "location"
           column = {
             id: "#{dataColumn}:#{item._id}:value"

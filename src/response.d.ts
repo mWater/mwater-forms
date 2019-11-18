@@ -261,7 +261,7 @@ export interface ConfidentialRosterEntryData
 export type AnswerValue = TextAnswerValue | NumberAnswerValue | ChoiceAnswerValue | ChoicesAnswerValue 
       | BooleanAnswerValue | DateAnswerValue | UnitsAnswerValue | LocationAnswerValue | ImageAnswerValue | ImagesAnswerValue
       | TextsAnswerValue | SiteAnswerValue | EntityAnswerValue | ItemsChoicesAnswerValue | MatrixAnswerValue | AdminRegionAnswerValue 
-      | AquagenxCBTAnswerValue
+      | AquagenxCBTAnswerValue | CascadingListAnswerValue
 
 export type TextAnswerValue = string
 
@@ -358,4 +358,12 @@ export interface AquagenxCBTAnswerValue {
 
   /** Image of bag */
   image: ImageAnswerValue
+}
+
+export interface CascadingListAnswerValue {
+  /** ID of the row */
+  id: string
+
+  /** Rest of column values */
+  [columnId: string]: string
 }

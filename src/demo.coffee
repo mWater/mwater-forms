@@ -116,13 +116,56 @@ class DemoLocationEditorComponent extends React.Component
       onUseMap: () => @setState(location: { latitude: 46, longitude: -73, altitude: 240, accuracy: 12, altitudeAccuracy: 30, depth: 3 })
       T: global.T
 
+cascadingListFormDesign = { 
+  _id:"7072b6924b6e491b903770cac4a82ae9",
+  design: {
+    name: { en: "Cascading Form", _base: "en"}
+    _type: "Form"
+    _schema: 21
+    locales: [{"code":"en","name":"English"}]
+    contents:[
+      { 
+        _type: "CascadingListQuestion"
+        _id: "aa331b86fb5d40ffbf6600e8357e2b0a"
+        name: {"en":"Cascade", "_base":"en"}
+        rows: [
+          { id: "wpg", c0: "manitoba", c1: "winnipeg" }
+          { id: "wloo", c0: "ontario", c1: "waterloo" }
+          { id: "tor", c0: "ontario", c1: "toronto" }
+        ]
+        columns: [
+          {
+            id: "c0",
+            name: { en: "Province" },
+            type: "enum"
+            enumValues: [
+              { id: "manitoba", name: { en: "Manitoba" }}
+              { id: "ontario", name: { en: "Ontario" }}
+            ]
+          }
+          {
+            id: "c1",
+            name: { en: "City" },
+            type: "enum"
+            enumValues: [
+              { id: "winnipeg", name: { en: "Winnipeg" }}
+              { id: "toronto", name: { en: "Toronto" }}
+              { id: "waterloo", name: { en: "Waterloo" }}
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+
 class DemoComponent extends React.Component
   constructor: (props) ->
     super(props)
 
     # data = { site01: { value: { code: "10007"}, confidential: true}}
     # data = { d0dcfce3a697453ba16cc8baa8e384e: { value: null, confidential: true}}
-    data = exprResponse
+    data = {} #exprResponse
 
     @state = {data: data}
 
@@ -140,7 +183,8 @@ class DemoComponent extends React.Component
     # design = rosterFormDesign
     # design = matrixFormDesign
     # design = rosterFormDesign
-    design = exprFormDesign
+    # design = exprFormDesign
+    design = cascadingListFormDesign
     # design = sampleFormAdvancedValidations.design
     # design = randomAskFormDesign
     schema = new FormSchemaBuilder({user: "bob"}).addForm(schema, design)

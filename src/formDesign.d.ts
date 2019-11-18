@@ -1,4 +1,4 @@
-import { LocalizedString, Expr } from "mwater-expressions"
+import { LocalizedString, Expr, EnumValue } from "mwater-expressions"
 
 /** This is the design of a form which is stored in the "design" field of forms in mWater */
 export interface FormDesign {
@@ -20,8 +20,9 @@ export interface FormDesign {
    * Schema 18 adds calculations
    * Schema 19 adds randomAskProbability
    * Schema 20 adds confidential data mode
-   * Schema 21 adds advancedValidations and roster hints */
-  _schema: 1 | 2 | 3 | 4 | 5 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21
+   * Schema 21 adds advancedValidations and roster hints 
+   * Schema 22 adds cascading lists */
+  _schema: 1 | 2 | 3 | 4 | 5 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22
 
   /** Name of the form */
   name: LocalizedString
@@ -204,6 +205,7 @@ type Question =
   | MatrixQuestion
   | LikertQuestion
   | AquagenxCBTQuestion
+  | CascadingListQuestion
 
 /** Instructional text item */
 export interface Instructions {
@@ -774,6 +776,43 @@ interface MatrixQuestion extends QuestionBase {
 /** Compartment bag test */
 interface AquagenxCBTQuestion extends QuestionBase {
   _type: "AquagenxCBTQuestion"
+
+  /** No validation available */
+  validations: []
+}
+
+/** Single row of list that the cascading question chooses from */
+interface CascadingListRow {
+  /** ID of the row */
+  id: string
+
+  /** Rest of column values */
+  [columnId: string]: string
+}
+
+/** Column of a cascading question's data */
+interface CascadingListColumn {
+  /** Unique id of the column. "c0", "c1", etc */
+  id: string
+
+  /** For now, all columns are enum */
+  type: "enum"
+
+  /** Name of the column */
+  name: LocalizedString
+
+  /** Values that column can have */
+  enumValues: EnumValue[]
+}
+
+interface CascadingListQuestion extends QuestionBase {
+  _type: "CascadingListQuestion"
+
+  /** Rows in the list to choose from */
+  rows: CascadingListRow[]
+
+  /** Columns in the table that are displayed also as dropdowns to choose the row */
+  columns: CascadingListColumn[]
 
   /** No validation available */
   validations: []

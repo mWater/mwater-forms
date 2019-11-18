@@ -4,6 +4,13 @@ import { LocalizedString } from "mwater-expressions"
 // function allItems(rootItem: any): any;
 // function changeQuestionType(question: any, newType: any): any;
 // function createBase32TimeCode(date: any): any;
+
+/** Create short unique id, with ~42 bits randomness to keep unique amoung a few choices */
+export function createShortUid(): string
+
+/** Create medium unique id, with ~58 bits randomness to keep unique amoung a 1,000,000 choices */
+export function createMediumUid(): string
+
 // function createShortUid(): any;
 // function createUid(): any;
 // function duplicateItem(item: any, idMap: any): any;

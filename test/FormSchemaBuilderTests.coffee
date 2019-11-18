@@ -705,6 +705,58 @@ describe "FormSchemaBuilder addForm", ->
         }
       ])
 
+    it "Cascading list", ->
+      columns = [
+        {
+          id: "c0",
+          name: { en: "Province" },
+          type: "enum"
+          enumValues: [
+            { id: "manitoba", name: { en: "Manitoba" }}
+            { id: "ontario", name: { en: "Ontario" }}
+          ]
+        }
+        {
+          id: "c1",
+          name: { en: "City" },
+          type: "enum"
+          enumValues: [
+            { id: "winnipeg", name: { en: "Winnipeg" }}
+            { id: "toronto", name: { en: "Toronto" }}
+            { id: "waterloo", name: { en: "Waterloo" }}
+          ]
+        }
+      ]
+
+      @testQuestion({
+        _type: "CascadingListQuestion"
+        columns: columns
+        rows: []
+      }, [
+        {
+          id: "data:questionid:value:c0"
+          type: "enum"
+          name: columns[0].name
+          enumValues: columns[0].enumValues
+          jsonql: {
+            type: "op"
+            op: "#>>"
+            exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,c0}"]
+          }
+        }
+        {
+          id: "data:questionid:value:c1"
+          type: "enum"
+          name: columns[1].name
+          enumValues: columns[1].enumValues
+          jsonql: {
+            type: "op"
+            op: "#>>"
+            exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,c1}"]
+          }
+        }
+      ])
+
     it "units integer with multiple", ->
       @testQuestion({ 
         _type: "UnitsQuestion",  

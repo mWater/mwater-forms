@@ -32,7 +32,7 @@ StopwatchAnswerComponent = require './answers/StopwatchAnswerComponent'
 TextAnswerComponent = require './answers/TextAnswerComponent'
 TextListAnswerComponent = require './answers/TextListAnswerComponent'
 UnitsAnswerComponent = require './answers/UnitsAnswerComponent'
-
+CascadingListAnswerComponent = require('./answers/CascadingListAnswerComponent').CascadingListAnswerComponent
 
 # Question component that displays a question of any type.
 # Displays question text and hint
@@ -467,6 +467,17 @@ module.exports = class QuestionComponent extends React.Component
           value: answer.value
           onValueChange: @handleValueChange
           questionId: @props.question._id
+        }
+
+      when "CascadingListQuestion"
+        return R CascadingListAnswerComponent, {
+          ref: ((c) => @answer = c)
+          value: answer.value
+          onValueChange: @handleValueChange
+          columns: @props.question.columns
+          rows: @props.question.rows
+          T: @context.T
+          locale: @context.locale
         }
 
       else
