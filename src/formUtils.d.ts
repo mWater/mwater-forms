@@ -11,8 +11,9 @@ export function createShortUid(): string
 /** Create medium unique id, with ~58 bits randomness to keep unique amoung a 1,000,000 choices */
 export function createMediumUid(): string
 
-// function createShortUid(): any;
-// function createUid(): any;
+/** Create ~ 128-bit uid without dashes */
+export function createUid(): string;
+
 // function duplicateItem(item: any, idMap: any): any;
 // function extractEntityReferences(formDesign: any, responseData: any): any;
 // function extractLocalizedStrings(obj: any): any;

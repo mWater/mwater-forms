@@ -141,7 +141,7 @@ export class CascadingListAnswerComponent extends React.Component<Props, State> 
     }
 
     return <div style={{ paddingBottom: 15 }}>
-      <label>{localizeString(this.props.columns[index].name, this.props.locale)}</label>
+      <label className="text-muted">{localizeString(this.props.columns[index].name, this.props.locale)}</label>
       <Select 
         value={this.state.columnValues[index]}
         options={options}
