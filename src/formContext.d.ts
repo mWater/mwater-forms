@@ -2,7 +2,7 @@ import LocationFinder from "./LocationFinder";
 import { ReactNode } from "react";
 
 /** Form Questions have a context object which they use. */
-export default interface FormContext {
+export interface FormContext {
   /** Used by ImageQuestion and ImagesQuestion */
   imageManager: ImageManager
 

@@ -1,5 +1,5 @@
 import { Form } from "./form";
-import FormContext from "./formContext";
+import { FormContext } from "./formContext";
 import { Response } from "./response";
 import { Schema } from "mwater-expressions";
 import { LocalizeString } from 'ez-localize'
