@@ -126,6 +126,7 @@ module.exports = class QuestionComponent extends React.Component
         @prompt.scrollIntoView()
 
       if answerInvalid
+        @setState(validationError: answerInvalid)
         return answerInvalid
 
     validationError = await new AnswerValidator(@props.schema, @props.responseRow).validate(@props.question, @getAnswer())

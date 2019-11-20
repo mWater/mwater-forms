@@ -43,6 +43,12 @@ export class CascadingListAnswerComponent extends React.Component<Props, State> 
     }
   }
 
+  /** Validate the component */
+  validate(): string | boolean | null {
+    debugger
+    return this.state.editing ? this.props.T("Incomplete selection") : null
+  }
+
   /** Handle change to a dropdown */
   handleChange = (index: number, value: string | null) => {
     // If first one reset, then reset entire control

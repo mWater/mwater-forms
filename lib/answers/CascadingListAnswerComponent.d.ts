@@ -23,6 +23,8 @@ interface State {
 }
 export declare class CascadingListAnswerComponent extends React.Component<Props, State> {
     constructor(props: Props);
+    /** Validate the component */
+    validate(): string | boolean | null;
     /** Handle change to a dropdown */
     handleChange: (index: number, value: string | null) => void;
     /** Reset control */
