@@ -4,16 +4,18 @@ export * from "./form"
 export * from "./formDesign"
 export * from "./response"
 
+export * from "./formContext"
+
 export {
   default as LocationEditorComponent,
   Location
 } from "./LocationEditorComponent"
 export { default as LocationFinder } from "./LocationFinder"
-export { ImageAcquirer } from "./formContext"
-export { ImageManager } from "./formContext"
 export { default as ImageEditorComponent } from "./ImageEditorComponent"
 export { default as ImagelistEditorComponent } from "./ImagelistEditorComponent"
 export { default as DateTimePickerComponent } from "./DateTimePickerComponent"
+export { default as ResponseViewEditComponent } from './ResponseViewEditComponent'
+export { default as ImageUploaderModalComponent } from './ImageUploaderModalComponent'
 
 // export class AdminRegionDataSource {
 //   constructor(apiUrl: any);
