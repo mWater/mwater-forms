@@ -1,6 +1,6 @@
 assert = require('chai').assert
 VisibilityCalculator = require '../src/VisibilityCalculator'
-ResponseRow = require '../src/ResponseRow'
+ResponseRow = require('../src/ResponseRow').default
 
 describe 'VisibilityCalculator', ->
   beforeEach ->
@@ -188,6 +188,7 @@ describe 'VisibilityCalculator', ->
           assert.deepEqual {testId: true}, visibilityStructure
           done()
         )
+        return
 
       it 'evaluates conditionExpr false', (done) ->
         data = {}
@@ -197,6 +198,7 @@ describe 'VisibilityCalculator', ->
           assert.deepEqual {testId: false}, visibilityStructure
           done()
         )
+        return
 
       it 'evaluates conditionExpr null as false', (done) ->
         data = {}
@@ -206,6 +208,7 @@ describe 'VisibilityCalculator', ->
           assert.deepEqual {testId: false}, visibilityStructure
           done()
         )
+        return
 
       it 'sets visibility to true if conditions is true', (done) ->
         data = {checkboxQuestionId: {value: true}}

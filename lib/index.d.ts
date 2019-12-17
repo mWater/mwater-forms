@@ -659,21 +659,6 @@ export { default as ImageUploaderModalComponent } from './ImageUploaderModalComp
 //   submit(): any;
 //   updateEntities(): any;
 // }
-// export class ResponseRow {
-//   constructor(options: any);
-//   options: any;
-//   formDesign: any;
-//   schema: any;
-//   responseData: any;
-//   rosterId: any;
-//   rosterEntryIndex: any;
-//   getEntityById: any;
-//   getEntityByCode: any;
-//   deployment: any;
-//   getField(columnId: any, callback: any): any;
-//   getPrimaryKey(callback: any): any;
-//   getRosterResponseRow(rosterId: any, rosterEntryIndex: any): any;
-// }
 // export class ResponseViewEditComponent {
 //   constructor(props: any);
 //   createResponseModel(response: any): any;

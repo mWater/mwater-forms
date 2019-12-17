@@ -11,8 +11,7 @@ describe "ResponseDataValidator", ->
   before ->
     # Fake row response that returns array for every field, to simulate getting roster rows
     @responseRow = {
-      getField: (columnId, callback) ->
-        callback(null, [null, null, null, null, null])
+      getField: (columnId) -> Promise.resolve([null, null, null, null, null])
     }
 
   describe "without sections", ->

@@ -1,6 +1,6 @@
 _ = require 'lodash'
 siteCodes = require '../siteCodes'
-ExprEvaluator = require('mwater-expressions').ExprEvaluator
+PromiseExprEvaluator = require('mwater-expressions').PromiseExprEvaluator
 ValidationCompiler = require './ValidationCompiler'
 formUtils = require '../formUtils'
 
@@ -77,7 +77,7 @@ module.exports = class AnswerValidator
       for { expr, message } in question.advancedValidations
         if expr
           # Evaluate expression
-          exprEvaluator = new ExprEvaluator(@schema)
+          exprEvaluator = new PromiseExprEvaluator({ schema: @schema })
           value = await exprEvaluator.evaluate(expr, { row: @responseRow })
           if value != true
             return formUtils.localizeString(message, @locale) or true

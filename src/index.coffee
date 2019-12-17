@@ -32,7 +32,7 @@ exports.EntitySchemaBuilder = require './EntitySchemaBuilder'
 exports.AssignmentModel = require './AssignmentModel'
 
 exports.ResponseDataExprValueUpdater = require './ResponseDataExprValueUpdater'
-exports.ResponseRow = require './ResponseRow'
+exports.ResponseRow = require('./ResponseRow').default
 exports.RotationAwareImageComponent = require './RotationAwareImageComponent'
 
 exports.ImageUploaderModalComponent = require './ImageUploaderModalComponent'

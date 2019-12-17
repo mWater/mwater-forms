@@ -10,7 +10,7 @@ TestComponent = require('react-library/lib/TestComponent')
 ReactTestUtils = require('react-dom/test-utils')
 RosterGroupComponent = require '../src/RosterGroupComponent'
 MockTContextWrapper = require './MockTContextWrapper'
-ResponseRow = require '../src/ResponseRow'
+ResponseRow = require('../src/ResponseRow').default
 
 describe "RosterGroupComponent", ->
   beforeEach ->

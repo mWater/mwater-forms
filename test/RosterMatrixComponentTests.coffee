@@ -10,7 +10,7 @@ TestComponent = require('react-library/lib/TestComponent')
 ReactTestUtils = require('react-dom/test-utils')
 RosterMatrixComponent = require '../src/RosterMatrixComponent'
 MockTContextWrapper = require './MockTContextWrapper'
-ResponseRow = require '../src/ResponseRow'
+ResponseRow = require('../src/ResponseRow').default
 HTML5Backend = require('react-dnd-html5-backend').default
 DragDropContext = require("react-dnd").DragDropContext
 

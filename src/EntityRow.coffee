@@ -2,7 +2,7 @@ _ = require 'lodash'
 
 ###
 
-Implements the type of row object required by mwater-expressions' ExprEvaluator. Allows expressions to be evaluated
+Implements the type of row object required by mwater-expressions' PromiseExprEvaluator. Allows expressions to be evaluated
 on an entity
 
 ###
@@ -22,12 +22,12 @@ module.exports = class EntityRow
     @getEntityById = options.getEntityById
 
   # Gets primary key of row. callback is called with (error, value)
-  getPrimaryKey: (callback) ->
-    callback(null, @entity._id)
+  getPrimaryKey: () ->
+    return Promise.resolve(@entity._id)
 
-  # Gets the value of a column. callback is called with (error, value)    
+  # Gets the value of a column, returning a promise
   # For joins, getField will get array of rows for 1-n and n-n joins and a row for n-1 and 1-1 joins
-  getField: (columnId, callback) ->
+  getField: (columnId) ->
     # Get column (gracefully handle if no schema)
     if @schema
       column = @schema.getColumn("entities.#{@entityType}", columnId)
@@ -35,33 +35,34 @@ module.exports = class EntityRow
     # Get value
     value = @entity[columnId]
 
-
     # Handle case of column not found by just returning value
     if not column
-      return callback(null, value)
+      return value
 
     if not value?
-      return callback(null, null)
+      return null
 
     if column.type == "join"
       # Do not support n-n, 1-n joins
       if column.join.type in ['1-n', 'n-n']
-        return callback(null, null)
+        return null
 
       # Can handle joins to another entity
       if column.join.toTable.match(/^entities\./)
         # Get the entity
         entityType = column.join.toTable.substr(9)
-        @getEntityById(entityType, value, (entity) =>
-          callback(null, new EntityRow({
+        entity = await new Promise((resolve, reject) => 
+          @getEntityById(entityType, value, (entity) => resolve(entity))
+        )
+        if (entity) 
+          return new EntityRow({
             entityType: entityType
             entity: entity
             schema: @schema
             getEntityById: @getEntityById
-          }))
-        )
-        return
+          })
+        return null
 
     # Simple value
-    callback(null, value)
+    return value
 

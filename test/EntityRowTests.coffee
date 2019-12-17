@@ -25,19 +25,17 @@ describe "EntityRow", ->
       ]
     })
 
-  it "gets plain values", (done) ->
+  it "gets plain values", ->
     row = new EntityRow({
       entityType: "a"
       entity: { x: "abc" }
       schema: @schema
     })
 
-    row.getField("x", (error, value) =>
-      assert.equal value, "abc"
-      done()
-      )
+    value = await row.getField("x")
+    assert.equal value, "abc"
 
-  it "gets joins", (done) ->
+  it "gets joins", ->
     row = new EntityRow({
       entityType: "a"
       entity: { y: "someid" }
@@ -48,10 +46,7 @@ describe "EntityRow", ->
         callback({ x: "abc" })
     })
 
-    row.getField("y", (error, value) =>
-      value.getField("x", (error, value) =>
-        assert.equal value, "abc"
-        done()
-      )
-    )
+    value = await row.getField("y")
+    value = await value.getField("x")
+    assert.equal value, "abc"
 

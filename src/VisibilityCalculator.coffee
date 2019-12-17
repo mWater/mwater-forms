@@ -2,7 +2,7 @@ _ = require 'lodash'
 formUtils = require './formUtils'
 async = require 'async'
 conditionUtils = require './conditionUtils'
-ExprEvaluator = require('mwater-expressions').ExprEvaluator
+PromiseExprEvaluator = require('mwater-expressions').PromiseExprEvaluator
 
 ###
 
@@ -63,15 +63,13 @@ module.exports = class VisibilityCalculator
 
     # Apply conditionExpr
     if item.conditionExpr
-      new ExprEvaluator(@schema).evaluate item.conditionExpr, { row: responseRow }, (error, value) =>
-        if error
-          return callback(error)
-
+      new PromiseExprEvaluator({ schema: @schema }).evaluate(item.conditionExpr, { row: responseRow }).then((value) =>
         # Null or false is not visible
         if not value 
           isVisible = false
 
         applyResult(isVisible)
+      ).catch((error) => callback(error))
     else
       applyResult(isVisible)
 
@@ -126,15 +124,13 @@ module.exports = class VisibilityCalculator
 
     # Apply conditionExpr
     if question.conditionExpr
-      new ExprEvaluator(@schema).evaluate question.conditionExpr, { row: responseRow }, (error, value) =>
-        if error
-          return callback(error)
-
+      new PromiseExprEvaluator({ schema: @schema }).evaluate(question.conditionExpr, { row: responseRow }).then((value) =>
         # Null or false is not visible
         if not value 
           isVisible = false
 
         applyResult(isVisible)
+      ).catch((error) => callback(error))
     else
       applyResult(isVisible)
 
@@ -158,10 +154,7 @@ module.exports = class VisibilityCalculator
 
       if subData?
         # Get subrows
-        responseRow.getField "data:#{dataId}", (error, rosterRows) =>
-          if error
-            return callback(error)
-
+        responseRow.getField("data:#{dataId}").then((rosterRows) =>
           # For each entry of roster
           async.forEachOf subData, (entry, index, cb) =>
             async.each rosterGroup.contents, (item, cb2) =>
@@ -171,6 +164,7 @@ module.exports = class VisibilityCalculator
               @processItem(item, isVisible == false, entry.data, rosterRows[index], visibilityStructure, newPrefix, cb2)
             , cb
           , callback
+        ).catch(callback)
       else
         callback(null)
 
@@ -184,14 +178,12 @@ module.exports = class VisibilityCalculator
 
     # Apply conditionExpr
     if rosterGroup.conditionExpr
-      new ExprEvaluator(@schema).evaluate rosterGroup.conditionExpr, { row: responseRow }, (error, value) =>
-        if error
-          return callback(error)
-
+      new PromiseExprEvaluator({ schema: @schema }).evaluate(rosterGroup.conditionExpr, { row: responseRow }).then((value) =>
         # Null or false is not visible
         if not value 
           isVisible = false
 
         applyResult(isVisible)
+      ).catch((error) => callback(error))
     else
       applyResult(isVisible)

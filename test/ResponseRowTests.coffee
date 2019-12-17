@@ -1,7 +1,7 @@
 _ = require 'lodash'
 assert = require("chai").assert
 
-ResponseRow = require '../src/ResponseRow'
+ResponseRow = require('../src/ResponseRow').default
 
 describe "ResponseRow", ->
   before ->
@@ -26,10 +26,11 @@ describe "ResponseRow", ->
 
     @testField = (data, column, expected, done) =>
       row = new ResponseRow({ formDesign: @formDesign, responseData: data })
-      row.getField(column, (error, value) =>
+      row.getField(column).then((value) =>
         assert.deepEqual value, expected
         done()
-      )
+      ).catch(done)
+      return
 
   describe "values", ->
     it "gets text value", (done) ->
@@ -59,7 +60,7 @@ describe "ResponseRow", ->
     it "gets units", (done) ->
       @testField({ qunits: { value: { quantity: 4, units: "abc" } }}, "data:qunits:value:units", "abc", done)
 
-    it "gets site", (done) ->
+    it "gets site", ->
       row = new ResponseRow({ 
         formDesign: @formDesign
         responseData: { qsite: { value: { code: "10007" } } }
@@ -69,15 +70,14 @@ describe "ResponseRow", ->
           callback({ _id: "c1", name: "abc" })
       })
 
-      row.getField "data:qsite:value", (error, siteRow) =>
-        siteRow.getField "name", (error, value) =>
-          assert.equal value, "abc"
+      siteRow = await row.getField("data:qsite:value")
+      value = await siteRow.getField("name")
+      assert.equal value, "abc"
           
-          siteRow.getPrimaryKey (error, value) =>
-            assert.equal value, "c1"
-            done()
+      value = await siteRow.getPrimaryKey()
+      assert.equal value, "c1"
 
-    it "gets entity", (done) ->
+    it "gets entity", ->
       row = new ResponseRow({ 
         formDesign: @formDesign
         responseData: { qentity: { value: "12345" } }
@@ -87,13 +87,12 @@ describe "ResponseRow", ->
           callback({ _id: "c1", name: "abc" })
       })
 
-      row.getField "data:qentity:value", (error, siteRow) =>
-        siteRow.getField "name", (error, value) =>
-          assert.equal value, "abc"
+      siteRow = await row.getField("data:qentity:value")
+      value = await siteRow.getField("name")
+      assert.equal value, "abc"
           
-          siteRow.getPrimaryKey (error, value) =>
-            assert.equal value, "c1"
-            done()
+      value = await siteRow.getPrimaryKey()
+      assert.equal value, "c1"
 
     it "gets matrix" # Are just nesting
     it "gets item_choices" # Are just nesting
@@ -154,10 +153,11 @@ describe "ResponseRow", ->
       rosterId: "qroster"
       rosterEntryIndex: 0
     })
-    row.getField("data:qrtext:value", (error, value) =>
+    row.getField("data:qrtext:value").then((value) =>
       assert.equal value, "abc"
       done()
-    )
+    ).catch(done)
+    return
 
   it "gets response from roster", (done) ->
     row = new ResponseRow({ 
@@ -167,11 +167,12 @@ describe "ResponseRow", ->
       rosterEntryIndex: 0
     })
 
-    row.getField("response", (error, value) =>
+    row.getField("response").then((value) =>
       assert.equal value.rosterId, null
       assert value.getField
       done()
-    )
+    ).catch(done)
+    return
 
   it "gets index from roster", (done) ->
     row = new ResponseRow({ 
@@ -181,10 +182,11 @@ describe "ResponseRow", ->
       rosterEntryIndex: 0
     })
     
-    row.getField("index", (error, value) =>
+    row.getField("index").then((value) =>
       assert.equal value, 0
       done()
-    )
+    ).catch(done)
+    return
 
   it "gets roster as array of rows", (done) ->
     row = new ResponseRow({ 
@@ -192,11 +194,12 @@ describe "ResponseRow", ->
       responseData: { qroster: [{ _id: "r1", data: { qrtext: { value: "abc" } } }, { _id: "r2", data: { qrtext: { value: "def" } } }] }
     })
     
-    row.getField("data:qroster", (error, rows) =>
-      rows[1].getField("data:qrtext:value", (error, value) =>
+    row.getField("data:qroster").then((rows) =>
+      rows[1].getField("data:qrtext:value").then((value) =>
         assert.equal value, "def"
         done()
-      )
-    )
+      ).catch(done)
+    ).catch(done)
+    return
 
   it "gets asked"

@@ -1,9 +1,12 @@
-import { Item, FormDesign, Question } from "./formDesign"
+import { Item, FormDesign, Question, QuestionBase } from "./formDesign"
 import { LocalizedString } from "mwater-expressions"
 
 // function allItems(rootItem: any): any;
 // function changeQuestionType(question: any, newType: any): any;
 // function createBase32TimeCode(date: any): any;
+
+export type AnswerType = "text" | "number" | "choice" | "choices" | "date" | "units" | "boolean" | "location" | "image" | "images" 
+  | "texts" | "site" | "entity" | "admin_region" | "items_choices" | "matrix" | "aquagenx_cbt" | "cascading_list"
 
 /** Create short unique id, with ~42 bits randomness to keep unique amoung a few choices */
 export function createShortUid(): string
@@ -18,8 +21,10 @@ export function createUid(): string;
 // function extractEntityReferences(formDesign: any, responseData: any): any;
 // function extractLocalizedStrings(obj: any): any;
 // function findEntityQuestion(formDesign: any, entityType: any): any;
-// function findItem(formDesign: any, itemId: any): any;
-// function getAnswerType(q: any): any;
+
+export function findItem(formDesign: FormDesign, itemId: string): Item | undefined
+
+export function getAnswerType(q: QuestionBase): AnswerType
 // function getRosterIds(formDesign: any): any;
 // function hasLocalizations(obj: any, locale: any): any;
 

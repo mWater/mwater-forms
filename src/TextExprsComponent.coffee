@@ -5,7 +5,7 @@ R = React.createElement
 
 async = require 'async'
 formUtils = require './formUtils'
-ExprEvaluator = require('mwater-expressions').ExprEvaluator
+PromiseExprEvaluator = require('mwater-expressions').PromiseExprEvaluator
 ExprUtils = require('mwater-expressions').ExprUtils
 d3Format = require "d3-format"
 
@@ -43,12 +43,10 @@ module.exports = class TextExprsComponent extends React.Component
 
     # Evaluate each expression
     async.map @props.exprs, (expr, cb) =>
-      new ExprEvaluator(@props.schema).evaluate expr, { row: @props.responseRow }, (error, value) =>      
-        if error
-          return cb(null, "<error>")
-
+      new PromiseExprEvaluator({ schema: @props.schema }).evaluate(expr, { row: @props.responseRow }).then((value) => 
         # stringify value
         cb(null, new ExprUtils(@props.schema).stringifyExprLiteral(expr, value, @props.locale))
+      ).catch(() => cb(null, "<error>"))
     , (error, valueStrs) =>
       # Only update state if changed
       if not _.isEqual(valueStrs, @state.exprValueStrs)
