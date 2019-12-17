@@ -8,7 +8,7 @@ ItemListComponent = require './ItemListComponent'
 ezlocalize = require 'ez-localize'
 
 ResponseCleaner = require './ResponseCleaner'
-ResponseRow = require './ResponseRow'
+ResponseRow = require('./ResponseRow').default
 DefaultValueApplier = require './DefaultValueApplier'
 VisibilityCalculator = require './VisibilityCalculator'
 RandomAskedCalculator = require './RandomAskedCalculator'

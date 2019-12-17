@@ -9,7 +9,7 @@ ezlocalize = require 'ez-localize'
 ui = require 'react-library/lib/bootstrap'
 AsyncLoadComponent = require('react-library/lib/AsyncLoadComponent')
 VisibilityCalculator = require './VisibilityCalculator'
-ResponseRow = require './ResponseRow'
+ResponseRow = require('./ResponseRow').default
 TextExprsComponent = require './TextExprsComponent'
 
 ImageDisplayComponent = require './ImageDisplayComponent'
