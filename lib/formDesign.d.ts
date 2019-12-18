@@ -115,7 +115,7 @@ export interface QuestionBase {
 
   /** Question code which is displayed before the question in the survey
    * and is used for export column header */
-  code: string
+  code?: string
 
   /** Text (prompt of the question) */
   text: LocalizedString
@@ -166,7 +166,7 @@ export interface QuestionBase {
   confidentialRadius?: number
 
   /** Alternative answers that are non-answers to the specific question such as "Don't Know" or "Not Applicable" */
-  alternates: {
+  alternates?: {
     /** True to display Not Applicable option */
     na?: boolean
 
