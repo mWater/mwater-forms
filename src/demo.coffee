@@ -19,6 +19,7 @@ HTML5Backend = require('react-dnd-html5-backend').default
 DragDropContext = require("react-dnd").DragDropContext
 LocationEditorComponent = require('./LocationEditorComponent').default
 LocationFinder = require './LocationFinder'
+CustomTablesetSchemaBuilder = require('./CustomTablesetSchemaBuilder').CustomTablesetSchemaBuilder
 
 # Setup mock localizer
 global.T = (str) ->
@@ -90,6 +91,11 @@ formCtx = {
       callback({ _id: "1234", code: "10007", name: "Test" })
     else
       callback(null)
+
+  getCustomTableRows: (tableId) => if tableId == "custom.ts.cities" then Promise.resolve(cascadingRefRows)
+
+  getCustomTableRow: (tableId, rowId) => if tableId == "custom.ts.cities" then Promise.resolve(_.findWhere(cascadingRefRows, _id: rowId))
+  
 }
 
 groupDesign = {"_id":"761114a3940e4063951387155e112486","_rev":13,"deployments":[{"_id":"2c5943376fa148eca8640f43878e98b8","name":"Depl1","active":true,"admins":[],"public":false,"viewers":[],"enumerators":["user:14de12d6532c4aca8c959856055966f8"],"approvalStages":[]}],"state":"active","design":{"name":{"en":"Question Group","_base":"en"},"_type":"Form","_schema":21,"locales":[{"code":"en","name":"English"}],"contents":[{"_id":"837e7861ee754b65989278ece222c443","name":{"en":"Untitled Section","_base":"en"},"_type":"Section","contents":[{"_id":"65fb7d592b3c465ca4b1359a982818c0","name":{"en":"ddfg","_base":"en"},"_type":"RosterGroup","allowAdd":true,"contents":[{"_id":"368e4c91c15a4853b62d3d9f9d1fde13","name":{"en":"Personal","_base":"en"},"_type":"Group","contents":[{"_id":"4204f6bbb41747908bcb31bd514bff44","text":{"en":"Name?","_base":"en"},"_type":"TextQuestion","format":"singleline","required":false,"textExprs":[],"conditions":[],"validations":[]},{"_id":"f639c8309f1440f1b5f65bd71d777343","text":{"en":"Age?","_base":"en"},"_type":"NumberQuestion","decimal":false,"required":false,"textExprs":[],"conditions":[],"validations":[]}],"conditions":[]}],"conditions":[],"entryTitle":{"en":"","_base":"en"},"allowRemove":true,"entryTitleExprs":[]}],"conditions":[]}]},"roles":[{"id":"user:broncha","role":"admin"},{"id":"user:mike","role":"admin"},{"id":"user:14de12d6532c4aca8c959856055966f8","role":"view"}],"created":{"on":"2019-09-16T10:28:20.195Z","by":"broncha"},"modified":{"on":"2019-09-16T10:31:05.027Z","by":"broncha"},"_viewable":true,"_editable":true,"_deployable":true,"_deployed_to_me":false}
@@ -119,7 +125,7 @@ class DemoLocationEditorComponent extends React.Component
 cascadingListFormDesign = { 
   _id:"7072b6924b6e491b903770cac4a82ae9",
   design: {
-    name: { en: "Cascading Form", _base: "en"}
+    name: { en: "Cascading List Form", _base: "en"}
     _type: "Form"
     _schema: 21
     locales: [{"code":"en","name":"English"}]
@@ -159,6 +165,75 @@ cascadingListFormDesign = {
   }
 }
 
+cascadingRefFormDesign = { 
+  _id:"7072b6924b6e491b903770cac4a82aec",
+  design: {
+    name: { en: "Cascading Ref Form", _base: "en"}
+    _type: "Form"
+    _schema: 21
+    locales: [{"code":"en","name":"English"}]
+    contents:[
+      { 
+        _type: "CascadingRefQuestion"
+        _id: "aa331b86fb5d40ffbf6600e8357e2b0a"
+        text: {"en":"Cascade", "_base":"en"}
+        tableId: "custom.ts.cities"
+        selectors: [
+          {
+            columnId: "c0",
+            name: { en: "Province" },
+          }
+          {
+            columnId: "c1",
+            name: { en: "City" },
+          }
+        ]
+      }
+    ]
+  }
+}
+
+cascadingRefRows = [
+  { id: "wpg", c0: "manitoba", c1: "winnipeg" }
+  { id: "wloo", c0: "ontario", c1: "waterloo" }
+  { id: "tor", c0: "ontario", c1: "toronto" }
+]
+
+cascadingRefCustomTableset = {
+  _id: "1234"
+  code: "ts"
+  design: {
+    tables: [
+      {
+        id: "cities",
+        name: { _base: "en", en: "Cities" }
+        properties: [
+          {
+            id: "c0",
+            name: { en: "Province" },
+            type: "enum"
+            enumValues: [
+              { id: "manitoba", name: { en: "Manitoba" }}
+              { id: "ontario", name: { en: "Ontario" }}
+            ]
+          }
+          {
+            id: "c1",
+            name: { en: "City" },
+            type: "enum"
+            enumValues: [
+              { id: "winnipeg", name: { en: "Winnipeg" }}
+              { id: "toronto", name: { en: "Toronto" }}
+              { id: "waterloo", name: { en: "Waterloo" }}
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+
+
 class DemoComponent extends React.Component
   constructor: (props) ->
     super(props)
@@ -188,6 +263,7 @@ class DemoComponent extends React.Component
     # design = sampleFormAdvancedValidations.design
     # design = randomAskFormDesign
     schema = new FormSchemaBuilder({user: "bob"}).addForm(schema, design)
+    schema = new CustomTablesetSchemaBuilder().addTableset(schema, cascadingRefCustomTableset)
 
     R 'div', className: "row",
       R('div', className: "col-md-6",

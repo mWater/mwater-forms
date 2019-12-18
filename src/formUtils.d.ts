@@ -6,7 +6,7 @@ import { LocalizedString } from "mwater-expressions"
 // function createBase32TimeCode(date: any): any;
 
 export type AnswerType = "text" | "number" | "choice" | "choices" | "date" | "units" | "boolean" | "location" | "image" | "images" 
-  | "texts" | "site" | "entity" | "admin_region" | "items_choices" | "matrix" | "aquagenx_cbt" | "cascading_list"
+  | "texts" | "site" | "entity" | "admin_region" | "items_choices" | "matrix" | "aquagenx_cbt" | "cascading_list" | "cascading_ref"
 
 /** Create short unique id, with ~42 bits randomness to keep unique amoung a few choices */
 export function createShortUid(): string

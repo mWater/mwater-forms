@@ -33,6 +33,7 @@ TextAnswerComponent = require './answers/TextAnswerComponent'
 TextListAnswerComponent = require './answers/TextListAnswerComponent'
 UnitsAnswerComponent = require './answers/UnitsAnswerComponent'
 CascadingListAnswerComponent = require('./answers/CascadingListAnswerComponent').CascadingListAnswerComponent
+CascadingRefAnswerComponent = require('./answers/CascadingRefAnswerComponent').CascadingRefAnswerComponent
 
 # Question component that displays a question of any type.
 # Displays question text and hint
@@ -50,6 +51,7 @@ module.exports = class QuestionComponent extends React.Component
     locationFinder: PropTypes.object
     T: PropTypes.func.isRequired  # Localizer to use
     disableConfidentialFields: PropTypes.bool
+    getCustomTableRows: PropTypes.func.isRequired
 
   @propTypes:
     question: PropTypes.object.isRequired # Design of question. See schema
@@ -477,6 +479,18 @@ module.exports = class QuestionComponent extends React.Component
           onValueChange: @handleValueChange
           columns: @props.question.columns
           rows: @props.question.rows
+          T: @context.T
+          locale: @context.locale
+        }
+
+      when "CascadingRefQuestion"
+        return R CascadingRefAnswerComponent, {
+          ref: ((c) => @answer = c)
+          question: @props.question
+          value: answer.value
+          onValueChange: @handleValueChange
+          schema: @props.schema
+          getCustomTableRows: @context.getCustomTableRows
           T: @context.T
           locale: @context.locale
         }

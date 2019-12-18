@@ -171,6 +171,8 @@ exports.prepareQuestion = (q) ->
       _.defaults q, {  }
     when "CascadingListQuestion"
       _.defaults q, { rows: [], columns: [] }
+    when "CascadingRefQuestion"
+      _.defaults q, { selectors: [] }
 
   # Get known fields
   knownFields = ['_id', '_type', 'text', 'textExprs', 'conditions', 'conditionExpr', 'validations', 
@@ -243,7 +245,7 @@ exports.changeQuestionType = (question, newType) ->
 
   return question
 
-# Gets type of the answer: text, number, choice, choices, date, units, boolean, location, image, images, texts, site, entity, admin_region, items_choices, matrix, aquagenx_cbt, cascading_list
+# Gets type of the answer: text, number, choice, choices, date, units, boolean, location, image, images, texts, site, entity, admin_region, items_choices, matrix, aquagenx_cbt, cascading_list, cascading_ref
 exports.getAnswerType = (q) ->
   switch q._type
     when "TextQuestion", "TextColumnQuestion"
@@ -284,6 +286,8 @@ exports.getAnswerType = (q) ->
       return "aquagenx_cbt"
     when "CascadingListQuestion"
       return "cascading_list"
+    when "CascadingRefQuestion"
+      return "cascading_ref"
     when "TextColumn", "Calculation"
       return "expr"
     else throw new Error("Unknown question type #{q._type}")

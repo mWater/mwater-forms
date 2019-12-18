@@ -25,4 +25,7 @@ module.exports = {
 
   imageManager: PropTypes.object.isRequired
   imageAcquirer: PropTypes.object
+
+  getCustomTableRows: PropTypes.object.isRequired
+  getCustomTableRow: PropTypes.object.isRequired
 }

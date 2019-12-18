@@ -1,5 +1,6 @@
 import LocationFinder from "./LocationFinder";
 import { ReactNode } from "react";
+import { Row } from "mwater-expressions";
 
 /** Form Questions have a context object which they use. */
 export interface FormContext {
@@ -54,6 +55,36 @@ export interface FormContext {
    */
   getEntityByCode?: (entityType: string, entityCode: string, callback: (entity: any) => void) => void
 
+  /** Edit an entity
+   * callback: is called when update is complete
+   */
+  editEntity?: (entityType: string, entityId: string, callback: () => void) => void
+
+  /** Renders an entity as a React element for summary (small box) */
+  renderEntitySummaryView?: (entityType: string, entity: any) => ReactNode
+
+  /** Renders an entity as a React element for list (compact) */
+  renderEntityListItemView?: (entityType: string, entity: any) => ReactNode
+
+  /** True if current user can edit the entity specified. Required if editEntity present */
+  canEditEntity?: (entityType: string, entity: any) => boolean
+
+  /** Get all rows of a custom table 
+   * @param tableId table id e.g. custom.abc.xyz
+  */
+  getCustomTableRows: (tableId: string) => Promise<Row[]>
+
+  /** Get a specific row of a custom table */
+  getCustomTableRow: (tableId: string, rowId: string) => Promise<Row | null>
+
+  /** DEPRECATED */
+  //getUniqueCode()
+  //returns a unique mWater code (e.g. 10007) if one is available
+
+  /** DEPRECATED */
+  // getProperties(type)
+  // Gets all properties for an entity type (e.g. "water_point"). Note: synchronous call!
+
   /** DEPRECATED */
   // getProperty(id)
   // Gets a property by _id. Note: synchronous call!
@@ -65,29 +96,6 @@ export interface FormContext {
   /** DEPRECATED */
   // formEntity --- deprecated!!
   // Entity set at form level. Entire entity object
-
-  /** Edit an entity
-   * callback: is called when update is complete
-   */
-  editEntity?: (entityType: string, entityId: string, callback: () => void) => void
-
-  /** DEPRECATED */
-  //getUniqueCode()
-  //returns a unique mWater code (e.g. 10007) if one is available
-
-  /** DEPRECATED */
-  // getProperties(type)
-  // Gets all properties for an entity type (e.g. "water_point"). Note: synchronous call!
-
-
-  /** Renders an entity as a React element for summary (small box) */
-  renderEntitySummaryView?: (entityType: string, entity: any) => ReactNode
-
-  /** Renders an entity as a React element for list (compact) */
-  renderEntityListItemView?: (entityType: string, entity: any) => ReactNode
-
-  /** True if current user can edit the entity specified. Required if editEntity present */
-  canEditEntity?: (entityType: string, entity: any) => boolean
 
   /** DEPRECATED. Only used by a few legacy forms */
   //getAdminRegionPath(id, callback)

@@ -815,6 +815,29 @@ module.exports = class FormSchemaBuilder
 
           addColumn(section)
 
+        when "cascading_ref"
+          column = {
+            id: "#{dataColumn}:#{item._id}:value"
+            type: "join"
+            name: item.text
+            code: code
+            join: {
+              type: "n-1"
+              toTable: item.tableId
+              fromColumn: {
+                type: "op"
+                op: "#>>"
+                exprs: [
+                  { type: "field", tableAlias: "{alias}", column: dataColumn }
+                  "{#{item._id},value}"
+                ]
+              }
+              toColumn: "_id"
+            }
+          }
+
+          addColumn(column)
+
         when "location"
           column = {
             id: "#{dataColumn}:#{item._id}:value"

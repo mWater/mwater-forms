@@ -25,7 +25,7 @@ export interface FormDesign {
    * Note: schema versions cause all clients to need a re-release even if not 
    * using the new question types. It is too catastrophic for a simple new question type. 
    * So leaving mwater-form-designer at 21, even though it's generating 22. */
-  _schema: 1 | 2 | 3 | 4 | 5 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 
+  _schema: 1 | 2 | 3 | 4 | 5 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22
 
   /** Name of the form */
   name: LocalizedString
@@ -209,6 +209,7 @@ type Question =
   | LikertQuestion
   | AquagenxCBTQuestion
   | CascadingListQuestion
+  | CascadingRefQuestion
 
 /** Instructional text item */
 export interface Instructions {
@@ -816,6 +817,32 @@ interface CascadingListQuestion extends QuestionBase {
 
   /** Columns in the table that are displayed also as dropdowns to choose the row */
   columns: CascadingListColumn[]
+
+  /** No validation available */
+  validations: []
+}
+
+/** Single dropdown selector */
+interface CascadingRefSelector {
+  /** Column that is referenced */
+  columnId: string
+
+  /** Name of the selector */
+  name: LocalizedString
+
+  /** Localized hint which is displayed with selector */
+  hint?: LocalizedString
+}
+
+/** Question that references a custom table */
+interface CascadingRefQuestion extends QuestionBase {
+  _type: "CascadingRefQuestion"
+
+  /** Table that question references (e.g. "custom.abc.x") */
+  tableId: string
+
+  /** Selectors that reference columns in the table that are displayed as dropdowns to choose the row */
+  selectors: CascadingRefSelector[]
 
   /** No validation available */
   validations: []

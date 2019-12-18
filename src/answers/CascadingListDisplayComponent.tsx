@@ -3,6 +3,7 @@ import { CascadingListQuestion } from "../formDesign";
 import React, { ReactNode } from "react";
 import { localizeString } from "../formUtils";
 
+/** Displays a cascading list question answer */
 export const CascadingListDisplayComponent = (props: {
   question: CascadingListQuestion
   value: CascadingListAnswerValue
