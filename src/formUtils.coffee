@@ -480,3 +480,10 @@ exports.extractEntityReferences = (formDesign, responseData) ->
 exports.getSiteEntityType = (question) ->
   entityType = if question.siteTypes and question.siteTypes[0] then _.first(question.siteTypes).toLowerCase().replace(new RegExp(' ', 'g'), "_") else "water_point"
   return entityType
+
+# Get list of custom table ids referenced by a form (cascading ref questions)
+exports.getCustomTablesReferenced = (formDesign) ->
+  items = exports.allItems(formDesign)
+
+  crqs = _.filter(items, (item) => item._type == "CascadingRefQuestion")
+  tableIds = _.uniq(_.pluck(crqs, "tableId"))

@@ -430,3 +430,31 @@ describe "FormUtils", ->
           value: "10014"
         }
       ]
+
+  it "gets custom table refs", ->
+    tableIds = formUtils.getCustomTablesReferenced({
+      name: { en: "Cascading Ref Form", _base: "en"}
+      _type: "Form"
+      _schema: 21
+      locales: [{"code":"en","name":"English"}]
+      contents:[
+        { 
+          _type: "CascadingRefQuestion"
+          _id: "aa331b86fb5d40ffbf6600e8357e2b0a"
+          text: {"en":"Cascade", "_base":"en"}
+          tableId: "custom.ts.cities"
+          dropdowns: [
+            {
+              columnId: "c0",
+              name: { en: "Province" },
+            }
+            {
+              columnId: "c1",
+              name: { en: "City" },
+            }
+          ]
+        }
+      ]
+    })
+
+    assert.deepEqual(tableIds, ["custom.ts.cities"])

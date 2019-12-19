@@ -44,3 +44,6 @@ export function localizeString(str?: LocalizedString | null, locale?: string): s
 export function priorQuestions(formDesign: FormDesign, refItem?: Item, rosterId?: string | null): Question[]
 
 // function updateLocalizations(formDesign: any): any;
+
+/** Get list of custom table ids referenced by a form (cascading ref questions) */
+export function getCustomTablesReferenced(formDesign: FormDesign): string[]
