@@ -9,4 +9,4 @@ export declare const CascadingRefDisplayComponent: (props: {
     schema: Schema;
     /** Get a specific row of a custom table */
     getCustomTableRow: (tableId: string, rowId: string) => Promise<Row | null>;
-}) => JSX.Element;
+}) => JSX.Element | null;

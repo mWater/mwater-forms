@@ -17,17 +17,21 @@ export const CascadingRefDisplayComponent = (props: {
 }) => {
   const [row, setRow] = useState<Row | null>()
   const [notFound, setNotFound] = useState(false)
+  const [loading, setLoading] = useState(false)
   
   useEffect(() => {
     // Load row
     if (props.value) {
+      setLoading(true)
       props.getCustomTableRow(props.question.tableId, props.value).then(r => {
         if (r) {
           setRow(r)
           setNotFound(false)
+          setLoading(false)
         }
         else {
           setNotFound(true)
+          setLoading(false)
         }
       }).catch(err => { throw err })
     }
@@ -36,6 +40,18 @@ export const CascadingRefDisplayComponent = (props: {
       setNotFound(false)
     }
   }, [props.value])
+
+  if (loading) {
+    return <div><i className="fa fa-spinner fa-spin"/></div>
+  }
+
+  if (notFound) {
+    return <div className="text-danger">???</div>
+  }
+
+  if (!row) {
+    return null
+  }
 
   const parts: ReactNode[] = []
 
@@ -50,7 +66,7 @@ export const CascadingRefDisplayComponent = (props: {
 
     // Find enum value
     if (column.type == "enum" && column.enumValues) {
-      const enumValue = column.enumValues.find(ev => ev.id == props.value[column.id])
+      const enumValue = column.enumValues.find(ev => ev.id == row[column.id])
       
       parts.push(<div>
         <span className="text-muted">{localizeString(column.name, props.locale)}:&nbsp;</span>
