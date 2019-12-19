@@ -222,6 +222,9 @@ exports.prepareQuestion = (q) ->
     when "CascadingListQuestion"
       knownFields.push "rows"
       knownFields.push "columns"
+    when "CascadingRefQuestion"
+      knownFields.push "tableId"
+      knownFields.push "selectors"
 
   # Strip unknown fields
   for key in _.keys(q)
