@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import React, { ReactNode } from "react";
 import { CascadingRefAnswerValue } from "../response";
-import { CascadingRefQuestion, CascadingRefSelector } from "../formDesign";
+import { CascadingRefQuestion, CascadingRefDropdown } from "../formDesign";
 import { Select } from "react-library/lib/bootstrap";
 import { localizeString } from "../formUtils";
 import { Row, Schema } from 'mwater-expressions';

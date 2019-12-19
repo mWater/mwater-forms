@@ -823,7 +823,7 @@ interface CascadingListQuestion extends QuestionBase {
 }
 
 /** Single dropdown dropdown */
-interface CascadingRefSelector {
+interface CascadingRefDropdown {
   /** Column that is referenced */
   columnId: string
 
@@ -841,8 +841,8 @@ interface CascadingRefQuestion extends QuestionBase {
   /** Table that question references (e.g. "custom.abc.x") */
   tableId: string
 
-  /** Selectors that reference columns in the table that are displayed as dropdowns to choose the row */
-  dropdowns: CascadingRefSelector[]
+  /** Dropdowns that reference columns in the table that are displayed as dropdowns to choose the row */
+  dropdowns: CascadingRefDropdown[]
 
   /** No validation available */
   validations: []
