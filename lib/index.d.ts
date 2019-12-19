@@ -16,6 +16,7 @@ export { default as ImagelistEditorComponent } from "./ImagelistEditorComponent"
 export { default as DateTimePickerComponent } from "./DateTimePickerComponent"
 export { default as ResponseViewEditComponent } from './ResponseViewEditComponent'
 export { default as ImageUploaderModalComponent } from './ImageUploaderModalComponent'
+export { CustomTablesetSchemaBuilder } from './CustomTablesetSchemaBuilder'
 
 // export class AdminRegionDataSource {
 //   constructor(apiUrl: any);

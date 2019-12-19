@@ -30,6 +30,7 @@ exports.formContextTypes = require './formContextTypes'
 exports.FormSchemaBuilder = require './FormSchemaBuilder'
 exports.EntitySchemaBuilder = require './EntitySchemaBuilder'
 exports.AssignmentModel = require './AssignmentModel'
+exports.CustomTablesetSchemaBuilder = require('./CustomTablesetSchemaBuilder').CustomTablesetSchemaBuilder
 
 exports.ResponseDataExprValueUpdater = require './ResponseDataExprValueUpdater'
 exports.ResponseRow = require('./ResponseRow').default
