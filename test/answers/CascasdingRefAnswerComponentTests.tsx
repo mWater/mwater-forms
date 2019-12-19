@@ -61,7 +61,7 @@ describe("CascadingRefAnswer", () => {
     text: { _base: "en", en: "Question" },
     conditions: [],
     validations: [],
-    selectors: [
+    dropdowns: [
       {
         columnId: "c0",
         name: { _base: "en", en: "Province" },

@@ -178,7 +178,7 @@ cascadingRefFormDesign = {
         _id: "aa331b86fb5d40ffbf6600e8357e2b0a"
         text: {"en":"Cascade", "_base":"en"}
         tableId: "custom.ts.cities"
-        selectors: [
+        dropdowns: [
           {
             columnId: "c0",
             name: { en: "Province" },

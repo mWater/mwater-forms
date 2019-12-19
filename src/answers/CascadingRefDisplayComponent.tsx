@@ -40,8 +40,8 @@ export const CascadingRefDisplayComponent = (props: {
   const parts: ReactNode[] = []
 
   // Look up each column enum value or text
-  for (const selector of props.question.selectors) {
-    const column = props.schema.getColumn(props.question.tableId, selector.columnId)
+  for (const dropdown of props.question.dropdowns) {
+    const column = props.schema.getColumn(props.question.tableId, dropdown.columnId)
     if (!column) {
       // Not localized because should not happen      
       parts.push(<div className="alert alert-danger">Missing column</div>)

@@ -22,8 +22,8 @@ interface Props {
 interface State {
     /** Rows of the table */
     rows?: Row[];
-    /** Values of selectors as they are selected */
-    selectorValues?: (string | null)[];
+    /** Values of dropdowns as they are selected */
+    dropdownValues?: (string | null)[];
     /** True if editing the value. Ignores changes to the value and prevents saving */
     editing: boolean;
 }
@@ -37,7 +37,7 @@ export declare class CascadingRefAnswerComponent extends React.Component<Props, 
     /** Reset control */
     handleReset: () => void;
     /** Find values of a particular dropdown filtering by all previous selections */
-    findValues(index: number, selectorValues: Array<string | null>): string[];
+    findValues(index: number, dropdownValues: Array<string | null>): string[];
     renderDropdown(index: number): JSX.Element;
     render(): JSX.Element;
 }

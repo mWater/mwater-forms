@@ -34,8 +34,8 @@ interface State {
   /** Rows of the table */
   rows?: Row[]
 
-  /** Values of selectors as they are selected */
-  selectorValues?: (string | null)[]
+  /** Values of dropdowns as they are selected */
+  dropdownValues?: (string | null)[]
 
   /** True if editing the value. Ignores changes to the value and prevents saving */
   editing: boolean
@@ -61,9 +61,9 @@ export class CascadingRefAnswerComponent extends React.Component<Props, State> {
         row = rows.find(row => row._id == this.props.value)
       }
 
-      // Get selector values
-      const selectorValues = this.props.question.selectors.map(sel => row ? row[sel.columnId] : null)
-      this.setState({ selectorValues, rows })
+      // Get dropdown values
+      const dropdownValues = this.props.question.dropdowns.map(sel => row ? row[sel.columnId] : null)
+      this.setState({ dropdownValues, rows })
     }).catch(err => { throw err })
   }
 
@@ -74,7 +74,7 @@ export class CascadingRefAnswerComponent extends React.Component<Props, State> {
 
   /** Handle change to a dropdown */
   handleChange = (index: number, value: string | null) => {
-    const selectors = this.props.question.selectors
+    const dropdowns = this.props.question.dropdowns
 
     // If first one reset, then reset entire control
     if (index === 0 && !value) {
@@ -82,21 +82,21 @@ export class CascadingRefAnswerComponent extends React.Component<Props, State> {
       return
     }
 
-    const selectorValues = this.state.selectorValues!.slice()
-    selectorValues[index] = value
+    const dropdownValues = this.state.dropdownValues!.slice()
+    dropdownValues[index] = value
 
     // For each afterwards, set to null
     let pos = index + 1
-    for (; pos < selectors.length ; pos ++) {
-      selectorValues[pos] = null
+    for (; pos < dropdowns.length ; pos ++) {
+      dropdownValues[pos] = null
     }
     
     // For each afterwards, set if has single value, or otherwise set to null
     pos = index + 1
-    for (; pos < selectors.length ; pos ++) {
-      const values = this.findValues(pos, selectorValues)
+    for (; pos < dropdowns.length ; pos ++) {
+      const values = this.findValues(pos, dropdownValues)
       if (values.length == 1) {
-        selectorValues[pos] = values[0]
+        dropdownValues[pos] = values[0]
       }
       else {
         break
@@ -104,50 +104,50 @@ export class CascadingRefAnswerComponent extends React.Component<Props, State> {
     }
 
     // Set rest to null
-    for (; pos < this.props.question.selectors.length ; pos ++) {
-      selectorValues[pos] = null
+    for (; pos < this.props.question.dropdowns.length ; pos ++) {
+      dropdownValues[pos] = null
     }
 
     // If all set, change value
-    if (selectorValues[selectors.length - 1]) {
+    if (dropdownValues[dropdowns.length - 1]) {
       // Find row
       for (const row of this.state.rows!) {
         let exclude = false
-        for (let pos = 0 ; pos < selectors.length ; pos++) {
-          if (row[selectors[pos].columnId] !== selectorValues[pos]) {
+        for (let pos = 0 ; pos < dropdowns.length ; pos++) {
+          if (row[dropdowns[pos].columnId] !== dropdownValues[pos]) {
             exclude = true
           }
         }
         if (!exclude) {
           // No longer editing
-          this.setState({ selectorValues: selectorValues, editing: false })
+          this.setState({ dropdownValues: dropdownValues, editing: false })
           this.props.onValueChange(row._id)
           return
         }
       }
     }
 
-    this.setState({ selectorValues: selectorValues, editing: true })
+    this.setState({ dropdownValues: dropdownValues, editing: true })
   }
 
   /** Reset control */
   handleReset = () => {
-    this.setState({ selectorValues: this.props.question.selectors.map(c => null), editing: false })
+    this.setState({ dropdownValues: this.props.question.dropdowns.map(c => null), editing: false })
     this.props.onValueChange()
   }
 
   /** Find values of a particular dropdown filtering by all previous selections */
-  findValues(index: number, selectorValues: Array<string | null>) {
+  findValues(index: number, dropdownValues: Array<string | null>) {
     let values: string[] = []
     for (const row of this.state.rows!) {
       let exclude = false
       for (let prev = 0 ; prev < index ; prev++) {
-        if (row[this.props.question.selectors[prev].columnId] !== selectorValues[prev]) {
+        if (row[this.props.question.dropdowns[prev].columnId] !== dropdownValues[prev]) {
           exclude = true
         }
       }
       if (!exclude) {
-        values.push(row[this.props.question.selectors[index].columnId])
+        values.push(row[this.props.question.dropdowns[index].columnId])
       }
     }
 
@@ -158,15 +158,15 @@ export class CascadingRefAnswerComponent extends React.Component<Props, State> {
   }
 
   renderDropdown(index: number) {
-    const selector = this.props.question.selectors[index]
+    const dropdown = this.props.question.dropdowns[index]
 
     // Determine available options
     const options: { label: string, value: string }[] = []
 
     // Find all possible values, filtering by all previous selections
-    const values = this.findValues(index, this.state.selectorValues!)
+    const values = this.findValues(index, this.state.dropdownValues!)
 
-    const column = this.props.schema.getColumn(this.props.question.tableId, selector.columnId)
+    const column = this.props.schema.getColumn(this.props.question.tableId, dropdown.columnId)
     if (!column) {
       // Not localized because should not happen
       return <div className="alert alert-danger">Missing column</div>
@@ -189,30 +189,30 @@ export class CascadingRefAnswerComponent extends React.Component<Props, State> {
     }
 
     return <div style={{ paddingBottom: 15 }} key={index}>
-      <label className="text-muted">{localizeString(selector.name, this.props.locale)}</label>
+      <label className="text-muted">{localizeString(dropdown.name, this.props.locale)}</label>
       <Select 
-        value={this.state.selectorValues![index]}
+        value={this.state.dropdownValues![index]}
         options={options}
         nullLabel={this.props.T("Select...")}
         onChange={this.handleChange.bind(null, index)}
       />
-      { selector.hint ?
-        <div className="text-muted">{localizeString(selector.hint, this.props.locale)}</div>
+      { dropdown.hint ?
+        <div className="text-muted">{localizeString(dropdown.hint, this.props.locale)}</div>
       : null }
     </div>
   }
 
   render() {
-    if (!this.state.rows || !this.state.selectorValues) {
+    if (!this.state.rows || !this.state.dropdownValues) {
       return <div><i className="fa fa-spinner fa-spin"/></div>
     }
 
     const dropdowns: ReactNode[] = []
 
-    for (let i = 0; i < this.props.question.selectors.length ; i++) {
+    for (let i = 0; i < this.props.question.dropdowns.length ; i++) {
       dropdowns.push(this.renderDropdown(i))
       // Skip rest if not selected
-      if (!this.state.selectorValues[i]) {
+      if (!this.state.dropdownValues[i]) {
         break
       }
     }

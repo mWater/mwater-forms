@@ -822,15 +822,15 @@ interface CascadingListQuestion extends QuestionBase {
   validations: []
 }
 
-/** Single dropdown selector */
+/** Single dropdown dropdown */
 interface CascadingRefSelector {
   /** Column that is referenced */
   columnId: string
 
-  /** Name of the selector */
+  /** Name of the dropdown */
   name: LocalizedString
 
-  /** Localized hint which is displayed with selector */
+  /** Localized hint which is displayed with dropdown */
   hint?: LocalizedString
 }
 
@@ -842,7 +842,7 @@ interface CascadingRefQuestion extends QuestionBase {
   tableId: string
 
   /** Selectors that reference columns in the table that are displayed as dropdowns to choose the row */
-  selectors: CascadingRefSelector[]
+  dropdowns: CascadingRefSelector[]
 
   /** No validation available */
   validations: []

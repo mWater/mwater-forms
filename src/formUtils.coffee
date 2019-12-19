@@ -172,7 +172,7 @@ exports.prepareQuestion = (q) ->
     when "CascadingListQuestion"
       _.defaults q, { rows: [], columns: [] }
     when "CascadingRefQuestion"
-      _.defaults q, { selectors: [] }
+      _.defaults q, { dropdowns: [] }
 
   # Get known fields
   knownFields = ['_id', '_type', 'text', 'textExprs', 'conditions', 'conditionExpr', 'validations', 
@@ -224,7 +224,7 @@ exports.prepareQuestion = (q) ->
       knownFields.push "columns"
     when "CascadingRefQuestion"
       knownFields.push "tableId"
-      knownFields.push "selectors"
+      knownFields.push "dropdowns"
 
   # Strip unknown fields
   for key in _.keys(q)
