@@ -12,5 +12,5 @@ export function renderItem(
   onDataChange: () => any,
   isVisible: () => boolean,
   onNext: () => any,
-  ref: RefObject<HTMLElement>
+  ref?: (c: any) => void
 ): ReactElement
