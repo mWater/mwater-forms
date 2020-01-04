@@ -101,7 +101,7 @@ module.exports = class EntitySchemaBuilder
         if prop.uniqueCode
           labelColumn = prop.id
 
-        prop = _.pick(prop, "id", "name", "code", "desc", "type", "idTable", "enumValues", "deprecated", "expr")
+        prop = _.pick(prop, "id", "name", "code", "desc", "type", "idTable", "enumValues", "deprecated", "expr", "units")
 
         # Convert id to join
         if prop.type == "id"
@@ -113,6 +113,30 @@ module.exports = class EntitySchemaBuilder
             toColumn: schema.getTable(prop.idTable)?.primaryKey or "_id"
           }
           delete prop.idTable
+
+        # Measurement type
+        if prop.type == "measurement"
+          return {
+            type: "section"
+            id: prop.id
+            name: prop.name
+            desc: prop.desc
+            contents: [
+              {
+                id: "#{prop.id}_magnitude"
+                name: { en: "Magnitude" }
+                desc: { en: "Magnitude of #{formUtils.localizeString(prop.name)}"}
+                type: "number"
+              }
+              {
+                id: "#{prop.id}_unit"
+                name: { en: "Unit" }
+                desc: { en: "Unit of #{formUtils.localizeString(prop.name)}"}
+                type: "enum"
+                enumValues: prop.units
+              }
+            ]
+          }
 
         # Pad date fields
         if prop.type == "date"
@@ -132,7 +156,7 @@ module.exports = class EntitySchemaBuilder
           }
 
         return prop
-        )
+      )
 
 
       # Add extra columns
