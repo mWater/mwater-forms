@@ -21,6 +21,7 @@ describe "ResponseRow", ->
           { _id: "qrtext", _type: "TextQuestion" }
         ]}
         { _id: "qconditional", _type: "TextQuestion", conditions: [{ lhs: { question: "qtext" }, op: "present" }] }
+        { _id: "qcascadingref", _type: "CascadingRefQuestion", tableId: "custom.ts0.t0" }
       ]
     }
 
@@ -92,6 +93,23 @@ describe "ResponseRow", ->
       assert.equal value, "abc"
           
       value = await siteRow.getPrimaryKey()
+      assert.equal value, "c1"
+
+    it "gets custom row", ->
+      row = new ResponseRow({ 
+        formDesign: @formDesign
+        responseData: { qcascadingref: { value: "12345" } }
+        getCustomTableRow: (tableId, id) =>
+          assert.equal tableId, "custom.ts0.t0"
+          assert.equal id, "12345"
+          return Promise.resolve({ _id: "c1", name: "abc" })
+      })
+
+      customRow = await row.getField("data:qcascadingref:value")
+      value = await customRow.getField("name")
+      assert.equal value, "abc"
+          
+      value = await customRow.getPrimaryKey()
       assert.equal value, "c1"
 
     it "gets matrix" # Are just nesting

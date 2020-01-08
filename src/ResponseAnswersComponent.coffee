@@ -52,6 +52,7 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
       formDesign: props.formDesign
       getEntityById: props.formCtx.getEntityById
       getEntityByCode: props.formCtx.getEntityByCode
+      getCustomTableRow: props.formCtx.getCustomTableRow
     })
 
     # Calculate visibility asynchronously

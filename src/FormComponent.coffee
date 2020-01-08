@@ -109,6 +109,7 @@ module.exports = class FormComponent extends React.Component
       schema: @props.schema
       getEntityById: @props.formCtx.getEntityById
       getEntityByCode: @props.formCtx.getEntityByCode
+      getCustomTableRow: @props.formCtx.getCustomTableRow
       deployment: @props.deployment
     })
 

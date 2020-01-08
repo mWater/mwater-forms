@@ -1,4 +1,4 @@
-import { PromiseExprEvaluatorRow, Schema } from 'mwater-expressions';
+import { PromiseExprEvaluatorRow, Schema, Row } from 'mwater-expressions';
 import { ResponseData } from './response';
 import { FormDesign } from './formDesign';
 export default class ResponseRow implements PromiseExprEvaluatorRow {
@@ -20,6 +20,8 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
      * called with an entity e.g. { _id: some id, a: "abc", b: 123 } or callback null if entity not found
       */
     getEntityByCode: (entityType: string, entityCode: string, callback: (entity: any) => void) => void;
+    /** Get a specific row of a custom table */
+    getCustomTableRow: (tableId: string, rowId: string) => Promise<Row | null>;
     /** Deployment _id of the response */
     deployment: string;
     constructor(options: {
@@ -41,6 +43,8 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
          * called with an entity e.g. { _id: some id, a: "abc", b: 123 } or callback null if entity not found
           */
         getEntityByCode: (entityType: string, entityCode: string, callback: (entity: any) => void) => void;
+        /** Get a specific row of a custom table */
+        getCustomTableRow: (tableId: string, rowId: string) => Promise<Row | null>;
         /** Deployment _id of the response */
         deployment: string;
     });

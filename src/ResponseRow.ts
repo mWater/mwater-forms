@@ -2,9 +2,10 @@ import _  from 'lodash'
 import formUtils from './formUtils'
 import VisibilityCalculator, { VisibilityStructure } from './VisibilityCalculator'
 import EntityRow from './EntityRow'
-import { PromiseExprEvaluatorRow, Schema } from 'mwater-expressions'
+import { PromiseExprEvaluatorRow, Schema, Row } from 'mwater-expressions'
 import { ResponseData, RosterData, Answer, SiteAnswerValue, LocationAnswerValue } from './response'
-import { FormDesign, QuestionBase, DateQuestion, SiteQuestion, EntityQuestion } from './formDesign'
+import { FormDesign, QuestionBase, DateQuestion, SiteQuestion, EntityQuestion, CascadingRefQuestion } from './formDesign'
+import { CustomRow } from './CustomRow'
 
 /*
   Implements the type of row object required by mwater-expressions' PromiseExprEvaluator. Allows expressions to be evaluated
@@ -35,6 +36,9 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
    * called with an entity e.g. { _id: some id, a: "abc", b: 123 } or callback null if entity not found 
     */
   getEntityByCode: (entityType: string, entityCode: string, callback: (entity: any) => void) => void
+
+  /** Get a specific row of a custom table */
+  getCustomTableRow: (tableId: string, rowId: string) => Promise<Row | null>
 
   /** Deployment _id of the response */
   deployment: string
@@ -76,6 +80,9 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
       */
     getEntityByCode: (entityType: string, entityCode: string, callback: (entity: any) => void) => void
 
+    /** Get a specific row of a custom table */
+    getCustomTableRow: (tableId: string, rowId: string) => Promise<Row | null>
+
     /** Deployment _id of the response */
     deployment: string
   }) {
@@ -86,6 +93,7 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
     this.rosterEntryIndex = options.rosterEntryIndex
     this.getEntityById = options.getEntityById
     this.getEntityByCode = options.getEntityByCode
+    this.getCustomTableRow = options.getCustomTableRow
     this.deployment = options.deployment
   }
 
@@ -97,6 +105,7 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
       responseData: this.responseData,
       getEntityById: this.getEntityById,
       getEntityByCode: this.getEntityByCode,
+      getCustomTableRow: this.getCustomTableRow,
       deployment: this.deployment,
       rosterId: rosterId,
       rosterEntryIndex: rosterEntryIndex
@@ -115,7 +124,7 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
 
   // Gets the value of a column
   async getField(columnId: string) {
-    var answerType, code, entityType, i, len, part, ref, ref1, ref10, ref11, ref12, ref13, ref14, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, siteType, value, visibilityCalculator
+    var code, entityType, i, len, part, ref, ref1, ref10, ref11, ref12, ref13, ref14, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, siteType, value, visibilityCalculator
     
     let data = this.responseData
     
@@ -136,6 +145,7 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
         responseData: this.responseData,
         getEntityById: this.getEntityById,
         getEntityByCode: this.getEntityByCode,
+        getCustomTableRow: this.getCustomTableRow,
         deployment: this.deployment
       })
     }
@@ -191,7 +201,7 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
           return null
         }
 
-        answerType = formUtils.getAnswerType(question as QuestionBase)
+        const answerType = formUtils.getAnswerType(question as QuestionBase)
         // Pad to YYYY-MM-DD
         if (answerType === "date") {
           if ((value as string).length === 4) {
@@ -253,6 +263,23 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
                 entity: entity,
                 schema: this.schema,
                 getEntityById: this.getEntityById
+              })
+            }
+          }
+          return null
+        }
+
+        if (answerType == "cascading_ref") {
+          // Create custom row
+          if (value) {
+            const tableId = (question as CascadingRefQuestion).tableId
+            const customRow = await this.getCustomTableRow(tableId, value as string)
+            if (customRow) {
+              return new CustomRow({
+                tableId: (question as CascadingRefQuestion).tableId,
+                getEntityById: this.getEntityById,
+                row: customRow,
+                schema: this.schema
               })
             }
           }
