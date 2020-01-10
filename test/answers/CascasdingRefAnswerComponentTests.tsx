@@ -20,6 +20,7 @@ describe("CascadingRefAnswer", () => {
     _id: "1234",
     code: "ts",
     design: {
+      name: { _base: "en", en: "TS" },
       tables: [
         {
           id: "cities",

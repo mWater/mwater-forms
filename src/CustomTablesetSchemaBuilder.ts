@@ -1,5 +1,5 @@
 import _ from "lodash"
-import { Schema, Section, Column, Table } from "mwater-expressions"
+import { Schema, Section, Column, Table, LocalizedString } from "mwater-expressions"
 
 // Custom tableset is defined in mwater-common
 
@@ -94,13 +94,12 @@ export class CustomTablesetSchemaBuilder {
         },
         type: "datetime"
       })
-    
 
       const tableId = `custom.${tableset.code}.${table.id}`
 
       const schemaTable: Table = {
         id: tableId,
-        name: table.name,
+        name: concatLocalizedStrings(tableset.design.name, " > ", table.name),
         desc: table.desc,
         primaryKey: "_id",
         label: table.labelColumn,
@@ -130,4 +129,19 @@ const mapTree = (tree: any, func: any) => {
     }
     return newItem
   }))
+}
+
+/** Concatinate two localized string with a joiner in-between */
+function concatLocalizedStrings(a: LocalizedString, joiner: string, b: LocalizedString): LocalizedString {
+  let c: LocalizedString = {
+    _base: a._base
+  }
+
+  // Add each language
+  for (const lang of _.union(_.keys(a), _.keys(b))) {
+    if (lang != "_base") {
+      c[lang] = (a[lang] || a[a._base]) + joiner + (b[lang] || b[b._base])
+    }
+  }
+  return c
 }
