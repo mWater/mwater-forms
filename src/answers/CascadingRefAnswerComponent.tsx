@@ -64,7 +64,10 @@ export class CascadingRefAnswerComponent extends React.Component<Props, State> {
       // Get dropdown values
       const dropdownValues = this.props.question.dropdowns.map(sel => row ? row[sel.columnId] : null)
       this.setState({ dropdownValues, rows })
-    }).catch(err => { throw err })
+    }).catch(err => { 
+      this.setState({ rows: [] })
+      throw err 
+    })
   }
 
   /** Validate the component */
@@ -223,6 +226,11 @@ export class CascadingRefAnswerComponent extends React.Component<Props, State> {
     }
 
     return <div>
+      { this.state.rows.length == 0 ?
+        <div className="alert alert-warning">
+          {this.props.T("No data found for question. Please ensure that you are connected to internet for the first use of this form.")}
+        </div>
+       : null }
       <button type="button" className="btn btn-link btn-xs" style={{float:"right"}} onClick={this.handleReset}>
         {this.props.T("Reset")}
       </button>
