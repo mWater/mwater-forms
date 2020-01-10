@@ -280,20 +280,20 @@ export default class LocationEditorComponent extends React.Component<Props, Stat
 
     return (
       <div style={{ marginTop: 20, marginLeft: 10 }}>
-        <div style={{ marginBottom: 5 }}>
+        <div style={{ marginBottom: 5 }} data-test-id="latitude">
           {this.props.T("Latitude")}:
           <NumberInput decimal={true} style={{ display: "inline-block", marginLeft: 10, width: 200 }} value={this.state.manualLat} onChange={this.handleManualLatChange} />
         </div>
-        <div style={{ marginBottom: 5 }}>
+        <div style={{ marginBottom: 5 }} data-test-id="longitude">
           {this.props.T("Longitude")}:
           <NumberInput decimal={true} style={{ display: "inline-block", marginLeft: 10, width: 200 }} value={this.state.manualLng} onChange={this.handleManualLngChange} />
         </div>
-        <div style={{ marginBottom: 5 }}>
+        <div style={{ marginBottom: 5 }} data-test-id="altitude">
           {this.props.T("Altitude (m)")}:
           <NumberInput decimal={true} style={{ display: "inline-block", marginLeft: 10, width: 200 }} value={this.state.manualAlt} onChange={this.handleManualAltChange} />
         </div>
         <div style={{ marginBottom: 5 }}>
-          <button className="btn btn-primary" onClick={this.handleSaveManual} disabled={this.state.manualLat == null || this.state.manualLng == null}>{this.props.T("Save")}</button>
+          <button className="btn btn-primary" onClick={this.handleSaveManual} disabled={this.state.manualLat == null || this.state.manualLng == null} data-test-id="save">{this.props.T("Save")}</button>
           &nbsp;
           <button className="btn btn-default" onClick={this.handleCancelManual}>{this.props.T("Cancel")}</button>
         </div>
