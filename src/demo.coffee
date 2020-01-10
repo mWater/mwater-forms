@@ -92,7 +92,12 @@ formCtx = {
     else
       callback(null)
 
-  getCustomTableRows: (tableId) => if tableId == "custom.ts.cities" then Promise.resolve(cascadingRefRows)
+  getCustomTableRows: (tableId) => 
+    if tableId == "custom.ts.cities" 
+      return new Promise((resolve, reject) => 
+        setTimeout((() => resolve(cascadingRefRows)), 2000)
+      )
+    return null
 
   getCustomTableRow: (tableId, rowId) => if tableId == "custom.ts.cities" then Promise.resolve(_.findWhere(cascadingRefRows, _id: rowId))
   
@@ -259,7 +264,7 @@ class DemoComponent extends React.Component
     # design = matrixFormDesign
     # design = rosterFormDesign
     # design = exprFormDesign
-    design = cascadingListFormDesign
+    design = cascadingRefFormDesign
     # design = sampleFormAdvancedValidations.design
     # design = randomAskFormDesign
     schema = new FormSchemaBuilder({user: "bob"}).addForm(schema, design)

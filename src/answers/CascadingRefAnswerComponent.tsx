@@ -204,7 +204,12 @@ export class CascadingRefAnswerComponent extends React.Component<Props, State> {
 
   render() {
     if (!this.state.rows || !this.state.dropdownValues) {
-      return <div><i className="fa fa-spinner fa-spin"/></div>
+      return <div>
+        <div><i>{this.props.T("Loading question data. This may take several minutes...")}</i></div>
+        <div className="progress">
+          <div className="progress-bar progress-bar-striped active" style={{ width: "100%" }}/>
+        </div>        
+      </div>
     }
 
     const dropdowns: ReactNode[] = []
