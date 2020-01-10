@@ -1,8 +1,7 @@
 PropTypes = require('prop-types')
 React = require 'react'
 
-# Context types for forms
-# TODO unify wiht docs/Forms Context.md here
+# Context types for forms. See formContext.d.ts for details
 module.exports = {
   selectEntity: PropTypes.func
   editEntity: PropTypes.func
@@ -26,6 +25,6 @@ module.exports = {
   imageManager: PropTypes.object.isRequired
   imageAcquirer: PropTypes.object
 
-  getCustomTableRows: PropTypes.object.isRequired
-  getCustomTableRow: PropTypes.object.isRequired
+  getCustomTableRows: PropTypes.func.isRequired
+  getCustomTableRow: PropTypes.func.isRequired
 }
