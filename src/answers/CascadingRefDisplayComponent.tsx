@@ -69,14 +69,14 @@ export const CascadingRefDisplayComponent = (props: {
       const enumValue = column.enumValues.find(ev => ev.id == row[column.id])
       
       parts.push(<div>
-        <span className="text-muted">{localizeString(column.name, props.locale)}:&nbsp;</span>
+        <span className="text-muted">{localizeString(dropdown.name, props.locale)}:&nbsp;</span>
         { enumValue ? localizeString(enumValue.name, props.locale) : "???" }
       </div>)
     }
     else {
       parts.push(<div>
-        <span className="text-muted">{localizeString(column.name, props.locale)}:&nbsp;</span>
-        {props.value[column.id]}
+        <span className="text-muted">{localizeString(dropdown.name, props.locale)}:&nbsp;</span>
+        {row[column.id]}
       </div>)
     }
   }
