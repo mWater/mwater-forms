@@ -169,6 +169,12 @@ export class CascadingRefAnswerComponent extends React.Component<Props, State> {
     // Find all possible values, filtering by all previous selections
     const values = this.findValues(index, this.state.dropdownValues!)
 
+    const table = this.props.schema.getTable(this.props.question.tableId)
+    if (!table) {
+      // Means that doesn't have access to table
+      return <div className="alert alert-danger">{ this.props.T("Unable to access data. Please check permissions and internet connection.") }</div>
+    }
+
     const column = this.props.schema.getColumn(this.props.question.tableId, dropdown.columnId)
     if (!column) {
       // Not localized because should not happen

@@ -621,6 +621,10 @@
     {
       "_base": "en",
       "en": "No data found for question. Please ensure that you are connected to internet for the first use of this form."
+    },
+    {
+      "_base": "en",
+      "en": "Unable to access data. Please check permissions and internet connection."
     }
   ]
 }
