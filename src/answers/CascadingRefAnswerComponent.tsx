@@ -169,12 +169,6 @@ export class CascadingRefAnswerComponent extends React.Component<Props, State> {
     // Find all possible values, filtering by all previous selections
     const values = this.findValues(index, this.state.dropdownValues!)
 
-    const table = this.props.schema.getTable(this.props.question.tableId)
-    if (!table) {
-      // Means that doesn't have access to table
-      return <div className="alert alert-danger">{ this.props.T("Unable to access data. Please check permissions and internet connection.") }</div>
-    }
-
     const column = this.props.schema.getColumn(this.props.question.tableId, dropdown.columnId)
     if (!column) {
       // Not localized because should not happen
@@ -231,12 +225,23 @@ export class CascadingRefAnswerComponent extends React.Component<Props, State> {
       }
     }
 
+    // If can't access table, fatal error
+    const table = this.props.schema.getTable(this.props.question.tableId)
+    if (!table) {
+      // Means that doesn't have access to table
+      return <div className="alert alert-danger">
+        { this.props.T("No data found for question. Please ensure that you are connected to internet for the first use of this form.") }
+      </div>
+    }
+
+    // If no data, probably internet issue or not set up
+    if (this.state.rows.length == 0) {
+      return <div className="alert alert-warning">
+        { this.props.T("No data found for question. Please ensure that you are connected to internet for the first use of this form.") }
+      </div>
+    }
+
     return <div>
-      { this.state.rows.length == 0 ?
-        <div className="alert alert-warning">
-          {this.props.T("No data found for question. Please ensure that you are connected to internet for the first use of this form.")}
-        </div>
-       : null }
       <button type="button" className="btn btn-link btn-xs" style={{float:"right"}} onClick={this.handleReset}>
         {this.props.T("Reset")}
       </button>
