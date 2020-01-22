@@ -626,6 +626,10 @@
       "_base": "en",
       "en": "Unable to access data. Please check permissions and internet connection.",
       "_unused": true
+    },
+    {
+      "_base": "en",
+      "en": "Cannot access data for this question. Please contact your administrator."
     }
   ]
 }

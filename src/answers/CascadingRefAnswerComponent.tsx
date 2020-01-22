@@ -230,7 +230,7 @@ export class CascadingRefAnswerComponent extends React.Component<Props, State> {
     if (!table) {
       // Means that doesn't have access to table
       return <div className="alert alert-danger">
-        { this.props.T("No data found for question. Please ensure that you are connected to internet for the first use of this form.") }
+        { this.props.T("Cannot access data for this question. Please contact your administrator.") }
       </div>
     }
 
