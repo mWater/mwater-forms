@@ -49,8 +49,11 @@ module.exports = class SiteAnswerComponent extends React.Component
     entityType = @getEntityType()
 
     @context.selectEntity { entityType: entityType, callback: (entityId) =>
+      console.log("Issue584:#{new Date().toISOString()}: after selectEntity #{entityType} #{entityId}")
+
       # Get entity
       @context.getEntityById(entityType, entityId, (entity) =>
+        console.log("Issue584:#{new Date().toISOString()}: after getEntityById #{entityType} #{entityId} #{JSON.stringify(entity)}")
         if not entity
           throw new Error("Unable to lookup entity #{entityType}:#{entityId}")
         if not entity.code
