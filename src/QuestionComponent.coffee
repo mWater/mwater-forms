@@ -506,7 +506,7 @@ module.exports = class QuestionComponent extends React.Component
     if @state.validationError?
       className += " invalid"
 
-    R 'div', className: className,
+    R 'div', className: className, "data-qn-id": @props.question._id,
       @renderPrompt()
       @renderHint()
       @renderHelp()

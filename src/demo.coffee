@@ -264,11 +264,11 @@ class DemoComponent extends React.Component
     # design = matrixFormDesign
     # design = rosterFormDesign
     # design = exprFormDesign
-    design = cascadingRefFormDesign
-    # design = sampleFormAdvancedValidations.design
+    # design = cascadingRefFormDesign
+    design = sampleFormAdvancedValidations
     # design = randomAskFormDesign
     schema = new FormSchemaBuilder({user: "bob"}).addForm(schema, design)
-    schema = new CustomTablesetSchemaBuilder().addTableset(schema, cascadingRefCustomTableset)
+    # schema = new CustomTablesetSchemaBuilder().addTableset(schema, cascadingRefCustomTableset)
 
     R 'div', className: "row",
       R('div', className: "col-md-6",
