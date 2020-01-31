@@ -231,6 +231,7 @@ module.exports = class ResponseDisplayComponent extends React.Component
       React.createElement(ResponseAnswersComponent, {
         formDesign: @props.form.design
         data: @props.response.data
+        deployment: @props.response.deployment
         schema: @props.schema
         locale: @props.locale
         T: @state.T

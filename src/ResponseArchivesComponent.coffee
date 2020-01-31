@@ -39,6 +39,7 @@ module.exports = class ResponseArchivesComponent extends React.Component
           showChangedLink: false
           highlightChanges: true
           hideUnchangedAnswers: true
+          deployment: record.deployment
 
 
   render: ->

@@ -26,6 +26,7 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
     formDesign: PropTypes.object.isRequired
     data: PropTypes.object.isRequired
     schema: PropTypes.object.isRequired  # Schema of the 
+    deployment: PropTypes.string # Deployment id of the response
 
     hideEmptyAnswers: PropTypes.bool # True to hide empty answers
 
@@ -53,6 +54,7 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
       getEntityById: props.formCtx.getEntityById
       getEntityByCode: props.formCtx.getEntityByCode
       getCustomTableRow: props.formCtx.getCustomTableRow
+      deployment: props.deployment
     })
 
     # Calculate visibility asynchronously
