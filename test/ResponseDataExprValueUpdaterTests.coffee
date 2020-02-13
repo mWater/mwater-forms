@@ -798,3 +798,39 @@ describe "ResponseDataExprValueUpdater", ->
         compare data, { q1234: { value: { image: 'https://api.mwater.co/v3/images/xyz' } } }
         done()
       )
+
+  describe "handles cascading list question", ->
+    beforeEach ->
+
+      formDesign = {
+        _type: "Form"
+        contents: [
+          {"_id":"q1234","rows":[{"c0":"2ayqhjNBZX","c1":"uydFCX1vUF","id":"93afddb8823047b98195c729ba70dc9f"},{"c0":"p2xQ94JFfe","c1":"jAUfpz3tQu","id":"a936f4a85b8f4bb08f6681732fadab24"},{"c0":"FH75Bd8sGs","c1":"9Hfz7rQtX1","id":"a847771205894fc1bb0584a567ef275e"},{"c0":"2ayqhjNBZX","c1":"rxq8WyVxaP","id":"92120789a93e4b40aaf61acbf3b94c44"}],"text":{"en":"Food","_base":"en"},"_type":"CascadingListQuestion","columns":[{"id":"c0","name":{"en":"Type","_base":"en"},"type":"enum","enumValues":[{"id":"B5AGJ1Gy8r","name":{"en":"Ve","_base":"en"}},{"id":"2ayqhjNBZX","name":{"en":"Vegitable","_base":"en"}},{"id":"p2xQ94JFfe","name":{"en":"Fruit","_base":"en"}},{"id":"FH75Bd8sGs","name":{"en":"Meat","_base":"en"}}]},{"id":"c1","name":{"en":"Item","_base":"en"},"type":"enum","enumValues":[{"id":"B65b32j5zP","name":{"en":"Lettu","_base":"en"}},{"id":"jAUfpz3tQu","name":{"en":"Banana","_base":"en"}},{"id":"9Hfz7rQtX1","name":{"en":"Beef","_base":"en"}},{"id":"rxq8WyVxaP","name":{"en":"Carrot","_base":"en"}},{"id":"uydFCX1vUF","name":{"en":"Lettuce","_base":"en"}}]}],"required":false,"textExprs":[],"conditions":[],"validations":[]}
+        ]
+      }
+
+      @updater = new ResponseDataExprValueUpdater(formDesign, null, null)
+
+    it "handles cascading field", (done) ->
+      expr = {"type":"field","table":"responses:form1234","column":"data:q1234:value:c0"}
+      @updater.updateData({ }, expr, "FH75Bd8sGs", (error, data) =>
+        assert not error
+        compare data, { q1234: { value: { c0: "FH75Bd8sGs" } } }
+        done()
+      )
+    
+    it "updates cascading answer", (done) ->
+      expr1 = {"type":"field","table":"responses:form1234","column":"data:q1234:value:c0"}
+      expr2 = {"type":"field","table":"responses:form1234","column":"data:q1234:value:c1"}
+
+      @updater.updateData({ }, expr1, "FH75Bd8sGs", (error, data) =>
+        assert not error
+        compare data, { q1234: { value: { c0: "FH75Bd8sGs" } } }
+
+        @updater.updateData(data, expr2, "jAUfpz3tQu", (error, data) =>
+          assert not error
+          compare data, { q1234: { value: { c0: "FH75Bd8sGs", c1: "jAUfpz3tQu" } } }
+          done()
+        )
+        
+      )

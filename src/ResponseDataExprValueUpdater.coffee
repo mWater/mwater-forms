@@ -136,6 +136,10 @@ module.exports = class ResponseDataExprValueUpdater
       if answerType == "matrix"
         @updateMatrix(data, expr, value, callback)
         return
+      
+      if answerType == "cascading_list"
+        @updateCascadingList(data, expr, value, callback)
+        return
 
     # Handle contains for enumset with one value
     if expr.type == "op" and expr.op == "contains" and expr.exprs[0].type == "field" and expr.exprs[0].column.match(/^data:.+:value$/) and expr.exprs[1].value?.length == 1
@@ -164,6 +168,23 @@ module.exports = class ResponseDataExprValueUpdater
 
     callback(new Error("Cannot update expr #{JSON.stringify(expr)}"))
 
+  # Updates a value of a cascading list question
+  updateCascadingList: (data, expr, value, callback) ->
+    [field, questionId, column] = expr.column.match(/^data:([^:]+):value:(c\d)$/)
+    
+    question = @formItems[questionId]
+    
+    if not question
+      return callback(new Error("Question #{expr.column} not found"))
+
+    if not _.find(question.columns, {id: column})
+      return callback(new Error("Column #{column} in question #{expr.column} not found"))
+    
+    _value = data[questionId]?.value || {}
+    _value[column] = value
+    
+    return callback(null, @setValue(data, question, _value))
+          
   # Updates a value of a question, e.g. data:somequestion:value
   updateValue: (data, expr, value, callback) ->
     question = @formItems[expr.column.match(/^data:([^:]+):value$/)[1]]
