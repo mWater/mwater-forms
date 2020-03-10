@@ -350,6 +350,10 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
                 moment(answer.timestamp).format('llll')
             if answer and answer.location
               @renderLocation(answer.location)
+
+            if answer and answer.comments
+              R 'div', className: "text-muted",
+                answer.comments
             
             if prevAnswer? and not _.isEqual(prevAnswer.value, answer?.value) and @props.showChangedLink
               R 'a', style: { float: 'right', display: 'inline-block', cursor: 'pointer', fontSize: 9 }, onClick: @props.onChangedLinkClick, key: 'view_change',
