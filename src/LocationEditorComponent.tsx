@@ -127,6 +127,16 @@ export default class LocationEditorComponent extends React.Component<Props, Stat
   handleManualAltChange = (value: number | null) => { this.setState({ manualAlt: value })}
   
   handleSaveManual = () => { 
+    if (this.state.manualLat! >= 85 || this.state.manualLat! <= -85)  {
+      alert(this.props.T("Latitude out of range"))
+      return
+    }
+
+    if (this.state.manualLng! >= 180 || this.state.manualLng! <= -180)  {
+      alert(this.props.T("Longitude out of range"))
+      return
+    }
+
     this.props.onLocationChange({
       latitude: this.state.manualLat!,
       longitude: this.state.manualLng!,

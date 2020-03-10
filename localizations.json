@@ -630,6 +630,14 @@
     {
       "_base": "en",
       "en": "Cannot access data for this question. Please contact your administrator."
+    },
+    {
+      "_base": "en",
+      "en": "Latitude out of range"
+    },
+    {
+      "_base": "en",
+      "en": "Longitude out of range"
     }
   ]
 }
