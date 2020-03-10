@@ -150,7 +150,7 @@ module.exports = class ResponseViewEditComponent extends React.Component
         onDataChange: @handleDataChange
         singlePageMode: true
         disableConfidentialFields: @props.response.status not in ["draft", "rejected"]
-
+        deployment: @props.response.deployment
         onSubmit: @handleSubmit
         onSaveLater: @handleSaveLater
         onDiscard: @handleDiscard)
