@@ -1466,7 +1466,7 @@ module.exports = class FormSchemaBuilder
                     id: "#{dataColumn}:#{item._id}:value:#{itemItem.id}:#{itemColumn._id}:value"
                     type: "datetime"
                     name: appendStr(appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "), itemColumn.text)
-                    code: code
+                    code: cellCode
                     jsonql: {
                       type: "op"
                       op: "#>>"
@@ -1483,7 +1483,7 @@ module.exports = class FormSchemaBuilder
                     id: "#{dataColumn}:#{item._id}:value:#{itemItem.id}:#{itemColumn._id}:value"
                     type: "date"
                     name: appendStr(appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "), itemColumn.text)
-                    code: code
+                    code: cellCode
                     # substr(rpad(data#>>'{questionid,value}',10, '-01-01'), 1, 10)
                     jsonql: {
                       type: "op"
