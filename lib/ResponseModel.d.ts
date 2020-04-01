@@ -1,4 +1,5 @@
 import { Form, Deployment } from "./form"
+import { Response } from './response'
 
 /** Model of a response object that allows manipulation and asking of questions */
 export default class ResponseModel {
