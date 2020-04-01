@@ -10,8 +10,11 @@ export default class ResponseModel {
     /** form object. Required */
     form: Form
 
-    /** current username. Required */
+    /** current user. Required */
     user: string
+
+    /** current username. Required */
+    username: string
 
     /** group names of user */
     groups?: string[]
