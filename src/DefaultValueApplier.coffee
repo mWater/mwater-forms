@@ -25,40 +25,61 @@ module.exports = class DefaultValueApplier
       # If it wasn't visible and it now is
       if nowVisible and not previousVisibilityStructure[key]
         values = key.split('.')
-        if values.length == 1
-          questionId = values[0]
-        else if values.length == 3 # Roster
-          questionId = values[2]
-        else
-          continue
 
+        # Simple question
         if values.length == 1
-          dataEntry = data[questionId]
-        else
+          type = "simple"
+          question = formUtils.findItem(@formDesign, values[0])
+          dataEntry = data[values[0]]
+        else if values.length == 3 and values[1].match(/^\d+$/) # Roster
+          type = "roster"
+          question = formUtils.findItem(@formDesign, values[2])
+
           # Get roster
           dataEntry = data[values[0]]
-          if not dataEntry
-            continue
-          
-          # Get data for item
+
+          # Get data for roster entry
           dataEntry = dataEntry[parseInt(values[1])]
           if not dataEntry
             continue
 
-          dataEntry = data[questionId]
+          # Get data for specific question
+          dataEntry = data[values[2]]
+        else if values.length == 3
+          type = "matrix"
+          debugger
+          # Matrix question, so question is column
+          question = formUtils.findItem(@formDesign, values[0])
+          if not question
+            continue
+
+          question = _.findWhere(question.columns, _id: values[2])
+          dataEntry = data[values[0]]?[values[1]]?[values[2]]
+        else 
+          continue
+
+        # If question not found
+        if not question?
+          return null
 
         # The data for that question needs to be undefined or null
         # Alternate for that question needs to be undefined or null
         if not dataEntry? or (not dataEntry.value? and not dataEntry.alternate?)
-          defaultValue = @getHighestPriorityDefaultValue(questionId)
+          defaultValue = @getHighestPriorityDefaultValue(question)
           # Makes sure that a defaultValue has been found
           if defaultValue? and defaultValue != ''
             # Create the dataEntry if not present
             if not dataEntry?
-              if values.length == 1
-                newData[questionId] = dataEntry = {}
-              else 
-                newData[values[0]][parseInt(values[1])].data[questionId] = dataEntry = {}
+              if type == "simple"
+                newData[values[0]] = dataEntry = {}
+              else if type == "roster"
+                newData[values[0]][parseInt(values[1])].data[values[2]] = dataEntry = {}
+              else if type == "matrix"
+                # Ensure that question exists
+                newData[values[0]] = newData[values[0]] or {}
+                newData[values[0]][values[1]] = newData[values[0]][values[1]] or {}
+                newData[values[0]][values[1]][values[2]] = dataEntry = {}
+
             dataEntry.value = defaultValue
 
     return newData
@@ -68,12 +89,7 @@ module.exports = class DefaultValueApplier
   # - entityType/entity
   # - sticky with a stored sticky value
   # - defaultValue
-  getHighestPriorityDefaultValue: (questionId) ->
-    question = formUtils.findItem(@formDesign, questionId)
-
-    if not question?
-      return null
-
+  getHighestPriorityDefaultValue: (question) ->
     if @entityType? and @entity? and (question._type == 'SiteQuestion' or question._type == 'EntityQuestion')
       if question._type == 'SiteQuestion'
         siteType = (if question.siteTypes then question.siteTypes[0]) or "water_point"
@@ -91,7 +107,7 @@ module.exports = class DefaultValueApplier
     # Tries to use a sticky value if possible, if not it tries to use the defaultValue field
     if question.sticky
       # Uses stickyStorage.get(questionId) to find any sticky value
-      return @stickyStorage.get(questionId)
+      return @stickyStorage.get(question._id)
 
     # Handle defaultNow
     if (question._type == "DateQuestion" or question._type == "DateColumnQuestion") and question.defaultNow

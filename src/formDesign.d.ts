@@ -376,6 +376,9 @@ export interface MatrixColumn {
   /** Site type (e.g. "water_point"). Required for SiteColumnQuestion */
   siteType?: string
 
+  /** True to default to current date/time for DateColumnQuestions */
+  defaultNow?: boolean
+
   /** moment.js format of the displayed date (is always stored in ISO 8601) */
   format?: string
 

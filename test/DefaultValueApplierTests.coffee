@@ -274,6 +274,7 @@ describe 'DefaultValueApplier', ->
     previousVisibilityStructure = {}
     newVisibilityStructure = {'roster1.0.testId': true}
 
+    @defaultValueApplier = new DefaultValueApplier(@design, @stickyStorage)
     newData = @defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure)
 
     expectedData = {
@@ -283,6 +284,42 @@ describe 'DefaultValueApplier', ->
           testId: {value: 'data'}
         }
       }]
+      somethingElse: 'random data'
+    }
+
+    assert data != newData
+    assert.deepEqual expectedData, newData
+
+  it "sets a sticky value for a matrix question that just became visible", ->
+    @design = {contents: [
+      {
+        _type: 'MatrixQuestion'
+        _id: 'matrix1'
+        items: [
+          { _id: "item1" }
+        ]
+        columns: [
+          { _id: "testId", _type: "TextColumnQuestion", text: { en: "Name" }, sticky: true },
+        ]
+      }
+    ]}
+
+    data = {
+      somethingElse: 'random data'
+    }
+
+    previousVisibilityStructure = {}
+    newVisibilityStructure = {'matrix1.item1.testId': true}
+
+    @defaultValueApplier = new DefaultValueApplier(@design, @stickyStorage)
+    newData = @defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure)
+
+    expectedData = {
+      matrix1: {
+        item1: {
+          testId: {value: 'data'}
+        }
+      }
       somethingElse: 'random data'
     }
 
