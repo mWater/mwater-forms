@@ -27,10 +27,26 @@ module.exports = class DefaultValueApplier
         values = key.split('.')
         if values.length == 1
           questionId = values[0]
-        else
+        else if values.length == 3 # Roster
           questionId = values[2]
+        else
+          continue
 
-        dataEntry = data[questionId]
+        if values.length == 1
+          dataEntry = data[questionId]
+        else
+          # Get roster
+          dataEntry = data[values[0]]
+          if not dataEntry
+            continue
+          
+          # Get data for item
+          dataEntry = dataEntry[parseInt(values[1])]
+          if not dataEntry
+            continue
+
+          dataEntry = data[questionId]
+
         # The data for that question needs to be undefined or null
         # Alternate for that question needs to be undefined or null
         if not dataEntry? or (not dataEntry.value? and not dataEntry.alternate?)
@@ -39,7 +55,10 @@ module.exports = class DefaultValueApplier
           if defaultValue? and defaultValue != ''
             # Create the dataEntry if not present
             if not dataEntry?
-              newData[questionId] = dataEntry = {}
+              if values.length == 1
+                newData[questionId] = dataEntry = {}
+              else 
+                newData[values[0]][parseInt(values[1])].data[questionId] = dataEntry = {}
             dataEntry.value = defaultValue
 
     return newData

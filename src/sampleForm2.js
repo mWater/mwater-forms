@@ -895,7 +895,8 @@ module.exports = {
                     ]
                   }
                 ]
-              }
+              },
+              { _id: "e", _type: "DateColumnQuestion", text: { en: "Date" }, format: "ll", defaultNow: true },
             ]
           },
           {

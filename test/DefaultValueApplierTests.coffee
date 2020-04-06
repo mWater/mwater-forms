@@ -251,3 +251,40 @@ describe 'DefaultValueApplier', ->
 
     assert data != newData
     assert.deepEqual expectedData, newData
+
+  it "sets a sticky value for a roster question that just became visible", ->
+    @design = {contents: [
+      {
+        _type: 'RosterMatrix'
+        _id: 'roster1'
+        contents: [
+          { _id: "testId", _type: "TextColumnQuestion", text: { en: "Name" }, sticky: true },
+        ]
+      }
+    ]}
+
+    data = {
+      somethingElse: 'random data'
+      roster1: [{
+        _id: "abc"
+        data: {}
+      }]
+    }
+
+    previousVisibilityStructure = {}
+    newVisibilityStructure = {'roster1.0.testId': true}
+
+    newData = @defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure)
+
+    expectedData = {
+      roster1: [{
+        _id: "abc"
+        data: {
+          testId: {value: 'data'}
+        }
+      }]
+      somethingElse: 'random data'
+    }
+
+    assert data != newData
+    assert.deepEqual expectedData, newData

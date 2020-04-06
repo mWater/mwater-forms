@@ -266,6 +266,7 @@ class DemoComponent extends React.Component
     # design = exprFormDesign
     # design = cascadingRefFormDesign
     design = sampleFormAdvancedValidations
+    # design = require('./sampleFormRM')
     # design = randomAskFormDesign
     schema = new FormSchemaBuilder({user: "bob"}).addForm(schema, design)
     # schema = new CustomTablesetSchemaBuilder().addTableset(schema, cascadingRefCustomTableset)
