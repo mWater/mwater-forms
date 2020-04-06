@@ -179,8 +179,11 @@ exports.prepareQuestion = (q) ->
     'required', 'code', 'hint', 'help', 'alternates', 'commentsField', 'recordLocation', 'recordTimestamp', 'sticky', 'exportId', 'disabled']
 
   switch q._type
-    when "TextQuestion", "DateQuestion" #, "DateTimeQuestion"
+    when "TextQuestion"
       knownFields.push "format"
+    when "DateQuestion", "DateColumnQuestion"
+      knownFields.push "format"
+      knownFields.push "defaultNow"
     when "NumberQuestion", "NumberColumnQuestion"
       knownFields.push "decimal"
     when "DropdownQuestion", "RadioQuestion", "MulticheckQuestion", "DropdownColumnQuestion"
@@ -259,7 +262,7 @@ exports.getAnswerType = (q) ->
       return "choice"
     when "MulticheckQuestion"
       return "choices"
-    when "DateQuestion", "DateColumnQuestion" # , "DateTimeQuestion"??
+    when "DateQuestion", "DateColumnQuestion"
       return "date"
     when "UnitsQuestion", "UnitsColumnQuestion"
       return "units"

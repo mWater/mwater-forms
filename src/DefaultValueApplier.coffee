@@ -1,4 +1,5 @@
 _ = require 'lodash'
+moment = require 'moment'
 formUtils = require './formUtils'
 
 # The DefaultValueApplier applies a value stored in the stickyStorage as a default answer to a question.
@@ -72,5 +73,13 @@ module.exports = class DefaultValueApplier
     if question.sticky
       # Uses stickyStorage.get(questionId) to find any sticky value
       return @stickyStorage.get(questionId)
+
+    # Handle defaultNow
+    if (question._type == "DateQuestion" or question._type == "DateColumnQuestion") and question.defaultNow
+      # If datetime
+      if question.format.match /ss|LLL|lll|m|h|H/
+        return new Date().toISOString()
+      else
+        return moment().format("YYYY-MM-DD")
 
     return question.defaultValue

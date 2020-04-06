@@ -1461,7 +1461,7 @@ module.exports = class FormSchemaBuilder
               if itemColumn._type == "DateColumnQuestion"
                 # If date-time
                 if itemColumn.format.match /ss|LLL|lll|m|h|H/
-                  # Fill in month and year and remove timestamp
+                  # Take as it is
                   column = {
                     id: "#{dataColumn}:#{item._id}:value:#{itemItem.id}:#{itemColumn._id}:value"
                     type: "datetime"

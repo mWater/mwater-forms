@@ -1,4 +1,5 @@
 assert = require('chai').assert
+moment = require 'moment'
 DefaultValueApplier = require '../src/DefaultValueApplier'
 
 describe 'DefaultValueApplier', ->
@@ -223,3 +224,30 @@ describe 'DefaultValueApplier', ->
     newData = @defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure)
 
     assert.deepEqual data, newData
+
+  it "sets now for a date question that just became visible", ->
+    @design = {contents: [
+      {
+        _type: 'DateQuestion'
+        _id: 'dateQuestionId'
+        format: 'll'
+        defaultNow: true
+      }
+    ]}
+
+    @defaultValueApplier = new DefaultValueApplier(@design, @stickyStorage)
+
+    data = {somethingElse: 'random data'}
+
+    previousVisibilityStructure = {}
+    newVisibilityStructure = {'dateQuestionId': true}
+
+    newData = @defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure)
+
+    expectedData = {
+      dateQuestionId: {value: moment().format("YYYY-MM-DD")}
+      somethingElse: 'random data'
+    }
+
+    assert data != newData
+    assert.deepEqual expectedData, newData

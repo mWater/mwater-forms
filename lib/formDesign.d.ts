@@ -609,6 +609,9 @@ interface DateQuestion extends QuestionBase {
   /** moment.js format of the displayed date (is always stored in ISO 8601) */
   format: string
 
+  /** True to default to current date/time */
+  defaultNow?: boolean
+
   /** No validation available */
   validations: []
 }

@@ -23,6 +23,24 @@ module.exports = {
         "_type": "Section",
         "contents": [
           {
+            "_id": "e0dcfce3a697453ba16cc8baa8e384e7",
+            "text": {
+              "en": "DateTime",
+              "_base": "en"
+            },
+            "_type": "DateQuestion",
+            "format": "lll",
+            "required": false,
+            "sticky": false,
+            "commentsField": false,
+            "defaultNow": true,
+            "alternates": {
+            },
+            "conditions": [],
+            "validations": [
+            ]
+          },
+          {
             "_id": "d0dcfce3a697453ba16cc8baa8e384e7",
             "text": {
               "en": "Password",
