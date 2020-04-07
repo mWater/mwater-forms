@@ -47,7 +47,6 @@ module.exports = class DefaultValueApplier
           dataEntry = data[values[2]]
         else if values.length == 3
           type = "matrix"
-          debugger
           # Matrix question, so question is column
           question = formUtils.findItem(@formDesign, values[0])
           if not question
