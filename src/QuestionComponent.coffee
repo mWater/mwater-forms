@@ -344,6 +344,7 @@ module.exports = class QuestionComponent extends React.Component
           choices: @props.question.choices
           answer: answer
           data: @props.data
+          displayMode: @props.question.displayMode
           onAnswerChange: @handleAnswerChange
         }
 

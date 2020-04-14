@@ -576,6 +576,9 @@ interface RadioQuestion extends QuestionBase {
   /** Choices of the radio buttons */
   choices: Choices
 
+  /** Display mode (defaults to "vertical" which is a vertical radio buttons. Toggle is a series of buttons) */
+  displayMode?: "vertical" | "toggle"
+
   /** No validation available */
   validations: []
 }

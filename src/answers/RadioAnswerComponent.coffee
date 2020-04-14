@@ -59,7 +59,17 @@ module.exports = class RadioAnswerComponent extends React.Component
       return true
     return conditionUtils.compileConditions(choice.conditions)(@props.data)
 
-  renderChoice: (choice) ->
+  # Render general specify input box (without choice specified)
+  renderGeneralSpecify: ->
+    choice = _.findWhere(@props.choices, { id: @props.answer.value })
+    if choice and choice.specify and @props.answer.specify?
+      value = @props.answer.specify[choice.id]
+    else
+      value = ''
+    if choice and choice.specify
+      R 'input', className: "form-control specify-input", type: "text", value: value, onChange: @handleSpecifyChange.bind(null, choice.id)
+
+  renderVerticalChoice: (choice) ->
     if @areConditionsValid(choice)
       R 'div', key: choice.id,
         # id is used for testing
@@ -72,6 +82,32 @@ module.exports = class RadioAnswerComponent extends React.Component
         if choice.specify and @props.answer.value == choice.id
           @renderSpecify(choice)
 
-  render: ->
+  renderAsVertical: ->
     R 'div', className: "touch-radio-group",
-      _.map @props.choices, (choice) => @renderChoice(choice)
+      _.map @props.choices, (choice) => @renderVerticalChoice(choice)
+
+  # Render as toggle
+  renderAsToggle: -> 
+    return R 'div', null,
+      R 'div', className: 'btn-group', key: "toggle",
+        _.map @props.choices, (choice) =>
+          if @areConditionsValid(choice)
+            text = formUtils.localizeString(choice.label, @context.locale)
+            if choice.hint
+              text += " (" + formUtils.localizeString(choice.hint, @context.locale) + ")"
+            R 'button',
+              key: choice.id
+              type: "button" 
+              onClick: () => @props.onAnswerChange({ value: (if choice.id == @props.answer.value then null else choice.id), specify: null })
+              className: (if @props.answer.value == choice.id then "btn btn-primary active" else "btn btn-default"),
+                text
+        
+      @renderGeneralSpecify()
+
+  render: ->
+    if (@props.displayMode or "vertical") == "vertical"
+      return @renderAsVertical()
+    else if @props.displayMode == "toggle"
+      return @renderAsToggle()
+    return null
+    

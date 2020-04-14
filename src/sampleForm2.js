@@ -672,7 +672,8 @@ module.exports = {
                 "label": {
                   "en": "Suck",
                   "_base": "en"
-                }
+                },
+                specify: true,
               },
               {
                 "id": "MERLzae",
@@ -706,6 +707,59 @@ module.exports = {
               }
             ],
             "_basedOn": "f7d85b74156a4f0c933df332c0247eae",
+            "required": true,
+            "conditions": [],
+            "validations": []
+          },
+          {
+            "_id": "e69da26172364735afe078bfe0a29c68",
+            "text": {
+              "en": "Does MongoLabs...",
+              "_base": "en"
+            },
+            "_type": "RadioQuestion",
+            "choices": [
+              {
+                "id": "Tz3JhVg",
+                "label": {
+                  "en": "Suck",
+                  "_base": "en"
+                },
+                specify: true,
+              },
+              {
+                "id": "MERLzae",
+                "label": {
+                  "en": "Rule",
+                  "_base": "en"
+                },
+                conditions: [
+                  {
+                    "op": "true",
+                    "lhs": {
+                      "question": "ef40dba8338d4ebdbbc5808e78969e95"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "ahBjM8W",
+                "label": {
+                  "en": "neither rule nor suck",
+                  "_base": "en"
+                },
+                conditions: [
+                  {
+                    "op": "false",
+                    "lhs": {
+                      "question": "ef40dba8338d4ebdbbc5808e78969e95"
+                    }
+                  }
+                ]
+              }
+            ],
+            "_basedOn": "f7d85b74156a4f0c933df332c0247eae",
+            "displayMode": "toggle",
             "required": true,
             "conditions": [],
             "validations": []
