@@ -100,6 +100,9 @@ formCtx = {
     return null
 
   getCustomTableRow: (tableId, rowId) => if tableId == "custom.ts.cities" then Promise.resolve(_.findWhere(cascadingRefRows, _id: rowId))
+
+  displayMap: (location, onSet) => 
+    alert("Map")
   
 }
 

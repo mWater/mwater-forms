@@ -386,6 +386,7 @@ module.exports = class QuestionComponent extends React.Component
       when "LocationQuestion"
         return R LocationAnswerComponent, {
           ref: ((c) => @answer = c)
+          disableSetByMap: @props.question.disableSetByMap
           value: answer.value
           onValueChange: @handleValueChange
         }

@@ -659,6 +659,9 @@ interface LocationQuestion extends QuestionBase {
   /** True if should calculate the admin region (done on the fly, server-side for now) */
   calculateAdminRegion?: boolean
 
+  /** True to disable using map to set location */
+  disableSetByMap?: boolean
+
   /** No validation available */
   validations: []
 }

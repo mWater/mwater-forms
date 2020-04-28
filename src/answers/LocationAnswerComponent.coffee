@@ -14,6 +14,7 @@ module.exports = class LocationAnswerComponent extends React.Component
   @propTypes:
     value: PropTypes.object
     onValueChange: PropTypes.func.isRequired
+    disableSetByMap: PropTypes.bool
 
   focus: () ->
     # Nothing to focus
@@ -33,6 +34,10 @@ module.exports = class LocationAnswerComponent extends React.Component
           newLoc.latitude = 85
         if newLoc.latitude < -85
           newLoc.latitude = -85
+
+        # Record that done via map
+        newLoc.method = "map"
+
         @props.onValueChange(newLoc)
       )
 
@@ -40,6 +45,6 @@ module.exports = class LocationAnswerComponent extends React.Component
     return R LocationEditorComponent,
       location: @props.value
       onLocationChange: @props.onValueChange
-      onUseMap: @handleUseMap
+      onUseMap: if not @props.disableSetByMap and @context.displayMap? then @handleUseMap
       locationFinder: @context.locationFinder or new LocationFinder()
       T: @context.T
