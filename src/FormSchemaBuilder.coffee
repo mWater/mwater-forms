@@ -876,6 +876,21 @@ module.exports = class FormSchemaBuilder
           
           addColumn(column)
 
+          column = {
+            id: "#{dataColumn}:#{item._id}:value:method"
+            type: "enum"
+            name: appendStr(item.text, " (method)")
+            code: if code then code + " (method)"
+            enumValues: [
+              { id: "gps", name: { _base: "en", en: "GPS" } }
+              { id: "map", name: { _base: "en", en: "Map" } }
+              { id: "manual", name: { _base: "en", en: "Manual" } }
+            ]
+            jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, "{#{item._id},value,mode}"] }
+          }
+
+          addColumn(column)          
+
           # Add admin region
           if item.calculateAdminRegion
             # ST_Transform(ST_SetSRID(ST_MakePoint(data#>>'{questionid,value,longitude}'::decimal, data#>>'{questionid,value,latitude}'::decimal),4326), 3857)
