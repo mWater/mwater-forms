@@ -886,7 +886,7 @@ module.exports = class FormSchemaBuilder
               { id: "map", name: { _base: "en", en: "Map" } }
               { id: "manual", name: { _base: "en", en: "Manual" } }
             ]
-            jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, "{#{item._id},value,mode}"] }
+            jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, "{#{item._id},value,method}"] }
           }
 
           addColumn(column)          
