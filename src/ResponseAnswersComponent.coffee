@@ -71,7 +71,8 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
       return R 'div', null, 
         R 'a', onClick: @handleLocationClick.bind(this, location), style: { cursor: "pointer" },
           "#{location.latitude}\u00B0 #{location.longitude}\u00B0"
-          if location.accuracy then "(+/-) #{location.accuracy} m"
+          if location.accuracy? then "(+/-) #{location.accuracy.toFixed(3)} m"
+          if location.method then " (#{location.method})"
 
   renderAnswer: (q, answer) ->
     if not answer
