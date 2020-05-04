@@ -1006,6 +1006,14 @@ module.exports = {
         conditions: []
       }
     ],
-    "draftNameRequired": true
+    "draftNameRequired": true,
+    "calculations": [
+      {
+        "_id": "calc1",
+        "name": { "_base": "en", "en": "Calc1" },
+        "desc": { "_base": "en", "en": "Desc1" },
+        "expr": { "type": "literal", "valueType": "number", "value": 123 }
+      }
+    ]
   }
 }

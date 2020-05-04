@@ -47,7 +47,7 @@ export interface FormDesign {
   localizedStrings?: LocalizedString[]
 
   /** Calculated values */
-  calculation: Calculation[]
+  calculations: Calculation[]
 }
 
 export interface Calculation {

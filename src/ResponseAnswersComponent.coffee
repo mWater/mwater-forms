@@ -19,6 +19,7 @@ AdminRegionDisplayComponent = require './AdminRegionDisplayComponent'
 AquagenxCBTDisplayComponent = require './answers/AquagenxCBTDisplayComponent'
 CascadingListDisplayComponent = require("./answers/CascadingListDisplayComponent").CascadingListDisplayComponent
 CascadingRefDisplayComponent = require("./answers/CascadingRefDisplayComponent").CascadingRefDisplayComponent
+CalculationsDisplayComponent = require('./CalculationsDisplayComponent').CalculationsDisplayComponent
 
 # Displays the answers of a response in a table
 module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
@@ -59,7 +60,7 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
 
     # Calculate visibility asynchronously
     new VisibilityCalculator(props.formDesign, props.schema).createVisibilityStructure(props.data, responseRow, (error, visibilityStructure) =>
-      callback(error: error, visibilityStructure: visibilityStructure)
+      callback(error: error, visibilityStructure: visibilityStructure, responseRow: responseRow)
     )
 
   handleLocationClick: (location) ->
@@ -552,14 +553,23 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
     if not @state.visibilityStructure
       return R 'div', null, "Loading..."
 
-    R 'table', className: "table table-bordered table-condensed", style: { marginBottom: 0 },
-      R 'thead', null,
-        R 'tr', null,
-          R 'th', null, "Question"
-          R 'th', null, "Answer"
-          if @props.showPrevAnswers
-            R 'th', null, "Original Answer"
-      R 'tbody', null, 
-        _.map @props.formDesign.contents, (item) =>
-          @renderItem(item, @state.visibilityStructure, item._id)
+    R 'div', null, 
+      R 'table', className: "table table-bordered table-condensed", style: { marginBottom: 0 },
+        R 'thead', null,
+          R 'tr', null,
+            R 'th', null, "Question"
+            R 'th', null, "Answer"
+            if @props.showPrevAnswers
+              R 'th', null, "Original Answer"
+        R 'tbody', null, 
+          _.map @props.formDesign.contents, (item) =>
+            @renderItem(item, @state.visibilityStructure, item._id)
+      if @props.formDesign.calculations and @props.formDesign.calculations.length > 0 and @state.responseRow
+        R 'div', key: "calculations",
+          R 'h4', null, @props.T("Calculations")
+          R CalculationsDisplayComponent, 
+            formDesign: @props.formDesign
+            schema: @props.schema
+            responseRow: @state.responseRow
+            locale: @props.locale
 
