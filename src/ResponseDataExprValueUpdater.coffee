@@ -106,9 +106,22 @@ module.exports = class ResponseDataExprValueUpdater
       @updateLocationAltitude(data, expr, value, callback)
       return
 
-    # Handle location altitude
+    # Handle location accuracy
     if expr.type == "field" and expr.column.match(/^data:[^:]+:value:accuracy$/)
       @updateLocationAccuracy(data, expr, value, callback)
+      return
+
+    # Handle location method
+    if expr.type == "field" and expr.column.match(/^data:[^:]+:value:method$/)
+      @updateLocationMethod(data, expr, value, callback)
+      return
+
+      @updateLocationAccuracy(data, expr, value, callback)
+      return
+
+    # Handle location method
+    if expr.type == "field" and expr.column.match(/^data:[^:]+:value:method$/)
+      @updateLocationMethod(data, expr, value, callback)
       return
 
     # Handle CBT fields
@@ -227,6 +240,14 @@ module.exports = class ResponseDataExprValueUpdater
       throw new Error("Unsupported op #{expr.op}")
 
     return callback(null, @setValue(data, question, val))
+
+  updateLocationMethod: (data, expr, value, callback) ->
+    question = @formItems[expr.column.match(/^data:([^:]+):value:method$/)[1]]
+    if not question
+      return callback(new Error("Question #{expr.column} not found"))
+
+    answer = data[question._id] or {}
+    return callback(null, @setValue(data, question, _.extend({}, answer.value or {}, method: value)))
 
   updateLocationAccuracy: (data, expr, value, callback) ->
     question = @formItems[expr.column.match(/^data:([^:]+):value:accuracy$/)[1]]

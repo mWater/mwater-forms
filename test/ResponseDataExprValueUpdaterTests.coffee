@@ -563,6 +563,15 @@ describe "ResponseDataExprValueUpdater", ->
         done()
       )
 
+    it "updates method", (done) ->
+      expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:method" }
+
+      @updater.updateData({ q1234: { value: { latitude: 2, longitude: 3, altitude: 4 }}}, expr, "gps", (error, data) =>
+        assert not error
+        compare data, { q1234: { value: { latitude: 2, longitude: 3, altitude: 4, method: "gps" }}}
+        done()
+      )
+
   it "updates na/don't know", (done) ->
     formDesign = {
       _type: "Form"
