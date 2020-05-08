@@ -116,14 +116,6 @@ module.exports = class ResponseDataExprValueUpdater
       @updateLocationMethod(data, expr, value, callback)
       return
 
-      @updateLocationAccuracy(data, expr, value, callback)
-      return
-
-    # Handle location method
-    if expr.type == "field" and expr.column.match(/^data:[^:]+:value:method$/)
-      @updateLocationMethod(data, expr, value, callback)
-      return
-
     # Handle CBT fields
     if expr.type == "field" and matches = expr.column.match(/^data:[^:]+:value:cbt:(mpn|c1|c2|c3|c4|c5|confidence|healthRisk)$/)
       @updateCBTField(data, expr, value, matches[1], callback)
