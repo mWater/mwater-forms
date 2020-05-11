@@ -387,6 +387,7 @@ module.exports = class QuestionComponent extends React.Component
         return R LocationAnswerComponent, {
           ref: ((c) => @answer = c)
           disableSetByMap: @props.question.disableSetByMap
+          disableManualLatLng: @props.question.disableManualLatLng
           value: answer.value
           onValueChange: @handleValueChange
         }

@@ -24,6 +24,8 @@ interface Props {
     onUseMap?: () => void;
     /** Localizer to use */
     T: (str: string, ...args: any[]) => string;
+    /** True to disable manual lat/lng coordinates */
+    disableManualLatLng?: boolean;
 }
 interface State {
     /** True if displaying advanced controls */

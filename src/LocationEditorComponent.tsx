@@ -28,6 +28,8 @@ interface Props {
   onUseMap?: () => void
   /** Localizer to use */
   T: (str: string, ...args: any[]) => string
+  /** True to disable manual lat/lng coordinates */
+  disableManualLatLng?: boolean
 }
 
 interface State {
@@ -282,7 +284,7 @@ export default class LocationEditorComponent extends React.Component<Props, Stat
   }
 
   renderEnterManually() {
-    if (!this.state.enteringManual) {
+    if (!this.state.enteringManual && !this.props.disableManualLatLng) {
       return <div>
         <button className="btn btn-sm btn-link" onClick={this.handleEnterManually}>{this.props.T("Enter Coordinates Manually...")}</button>
       </div>

@@ -662,6 +662,9 @@ interface LocationQuestion extends QuestionBase {
   /** True to disable using map to set location */
   disableSetByMap?: boolean
 
+  /** True to disable using manual lat/lng coordinates to set location */
+  disableManualLatLng?: boolean
+
   /** No validation available */
   validations: []
 }

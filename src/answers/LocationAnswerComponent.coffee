@@ -15,6 +15,7 @@ module.exports = class LocationAnswerComponent extends React.Component
     value: PropTypes.object
     onValueChange: PropTypes.func.isRequired
     disableSetByMap: PropTypes.bool
+    disableManualLatLng: PropTypes.bool
 
   focus: () ->
     # Nothing to focus
@@ -46,5 +47,6 @@ module.exports = class LocationAnswerComponent extends React.Component
       location: @props.value
       onLocationChange: @props.onValueChange
       onUseMap: if not @props.disableSetByMap and @context.displayMap? then @handleUseMap
+      disableManualLatLng: @props.disableManualLatLng
       locationFinder: @context.locationFinder or new LocationFinder()
       T: @context.T
