@@ -225,6 +225,8 @@ exports.prepareQuestion = (q) ->
       knownFields.push "columns"
     when "LocationQuestion"
       knownFields.push "calculateAdminRegion"
+      knownFields.push "disableSetByMap"
+      knownFields.push "disableManualLatLng"
     when "CascadingListQuestion"
       knownFields.push "rows"
       knownFields.push "columns"
