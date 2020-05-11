@@ -78,7 +78,7 @@ export default class LocationEditorComponent extends React.Component<Props, Stat
     handlePositionStatus: (positionStatus: PositionStatus) => void;
     handlePositionError: () => void;
     renderLocation(): JSX.Element;
-    renderEnterManually(): JSX.Element;
+    renderEnterManually(): JSX.Element | null;
     renderMastAndDepth(): JSX.Element | null;
     renderAdvanced(): JSX.Element | null;
     /** Render the set by GPS display */

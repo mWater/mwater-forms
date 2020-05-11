@@ -284,7 +284,11 @@ export default class LocationEditorComponent extends React.Component<Props, Stat
   }
 
   renderEnterManually() {
-    if (!this.state.enteringManual && !this.props.disableManualLatLng) {
+    if (this.props.disableManualLatLng) {
+      return null
+    }
+
+    if (!this.state.enteringManual) {
       return <div>
         <button className="btn btn-sm btn-link" onClick={this.handleEnterManually}>{this.props.T("Enter Coordinates Manually...")}</button>
       </div>
