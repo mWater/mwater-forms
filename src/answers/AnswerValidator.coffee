@@ -18,10 +18,10 @@ module.exports = class AnswerValidator
   # It checks custom validations
   validate: (question, answer) ->
     # If it has an alternate value, it cannot be invalid
-    if answer.alternate?
+    if answer.alternate
       return null
 
-    if question.disabled?
+    if question.disabled
       return null
 
     # Check required and answered
