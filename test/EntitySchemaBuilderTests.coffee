@@ -160,3 +160,61 @@ describe "EntitySchemaBuilder addEntities", ->
     assert schema.getColumn("entities.water_point", "_created_on")
 
   it "adds datasets"
+
+  it "adds custom regions", ->
+    entityTypes = [
+      {
+        code: "water_point"
+        name: { en: "Water point"}
+        properties: [
+          { id: "admin_region", type: "id", idTable: "admin_regions", name: { en: "Admin Region" }, roles: [{ id: "all", role: "admin" }] }
+        ]
+      }
+    ]
+
+    regionTypes = [
+      {
+        code: "catchment"
+        link_name: { _base: "en", en: "Catchment Region" }
+      }
+    ]
+    schema = new EntitySchemaBuilder().addEntities(new Schema(), entityTypes, null, regionTypes)
+
+    compare(schema.getColumn("entities.water_point", "admin_region"), {
+      id: "admin_region"
+      type: "join"
+      name: { en: "Admin Region"}
+      join: {
+        type: "n-1"
+        toTable: "admin_regions"
+        fromColumn: "admin_region"
+        toColumn: "_id"
+      }
+    })
+
+    # It should make a n-1 join to the region, looking it up in the 
+    compare(schema.getColumn("entities.water_point", "catchment_region"), {
+      id: "catchment_region"
+      type: "join"
+      name: { _base: "en", en: "Catchment Region" }
+      join: {
+        type: "n-1"
+        toTable: "regions.catchment"
+        toColumn: "_id"
+        fromColumn: { 
+          type: "scalar"
+          expr: { type: "field", tableAlias: "entity_regions", column: "region_id" }
+          from: { type: "table", table: "entity_regions", alias: "entity_regions" }
+          where: {
+            type: "op"
+            op: "and"
+            exprs: [
+              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "entity_regions", column: "entity_type"}, { type: "literal", value: "water_point" }]}
+              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "entity_regions", column: "entity_type"}, { type: "field", tableAlias: "{alias}", column: "_id" }]}
+              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "entity_regions", column: "region_type"}, { type: "literal", value: "catchment" }]}
+            ]
+          }
+        }
+      }
+    })
+

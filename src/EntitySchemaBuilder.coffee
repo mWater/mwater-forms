@@ -6,8 +6,9 @@ module.exports = class EntitySchemaBuilder
   # Pass in:
   #   entityTypes: list of entity types objects
   #   propFilter: optional filter function that takes a property and returns true to include, false to exclude
+  #   regionTypes: optional region types to add to schema
   # Returns updated schema
-  addEntities: (schema, entityTypes, propFilter) ->
+  addEntities: (schema, entityTypes, propFilter, regionTypes) ->
     # Keep list of reverse join columns (one to many) to add later. table and column
     reverseJoins = []
 
@@ -133,6 +134,47 @@ module.exports = class EntitySchemaBuilder
 
         return prop
         )
+
+      # Add custom regions right after admin_region if exists
+      contents = mapTree(contents, (item) ->
+        if item.id != "admin_region" or not regionTypes or regionTypes.length == 0
+          return item
+
+        section = { 
+          type: "section"
+          name: { _base: "en", en: "Custom Regions" },
+          contents: []
+        }
+
+        for regionType in regionTypes
+          section.contents.push({
+            id: "#{regionType.code}_region"
+            type: "join"
+            name: regionType.link_name
+            desc: regionType.desc
+            join: {
+              type: "n-1"
+              toTable: "regions.#{regionType.code}"
+              fromColumn: {
+                type: "scalar"
+                expr: { type: "field", tableAlias: "entity_regions", column: "region_id" }
+                from: { type: "table", table: "entity_regions", alias: "entity_regions" }
+                where: {
+                  type: "op"
+                  op: "and"
+                  exprs: [
+                    { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "entity_regions", column: "entity_type"}, { type: "literal", value: entityType.code }]}
+                    { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "entity_regions", column: "entity_type"}, { type: "field", tableAlias: "{alias}", column: "_id" }]}
+                    { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "entity_regions", column: "region_type"}, { type: "literal", value: regionType.code }]}
+                  ]
+                }
+              }
+              toColumn: "_id"
+            }
+          })
+
+        return [item, section]
+      )
 
 
       # Add extra columns
@@ -319,12 +361,12 @@ mapTree = (tree, func) ->
   if not tree
     return tree
 
-  return _.compact(_.map(tree, (item) ->
+  return _.compact(_.flatten(_.map(tree, (item) ->
     newItem = func(item)
     if newItem and item.contents
       newItem = _.extend({}, newItem, { contents: mapTree(item.contents, func) })
     return newItem
-  ))
+  )))
 
 # Traverse a tree, calling func for each item
 traverseTree = (tree, func) ->
