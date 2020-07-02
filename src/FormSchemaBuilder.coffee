@@ -68,6 +68,52 @@ module.exports = class FormSchemaBuilder
       { id: "3", name: { en: "Pending Level 4" } }
     ]})
     
+    # Add number of rejections
+    jsonql = {
+      type: "scalar"
+      expr: { type: "op", op: "count", exprs: [] }
+      from: { 
+        type: "subexpr", 
+        expr: { type: "op", op: "jsonb_array_elements", exprs: [{ type: "field", tableAlias: "{alias}", column: "events" }] }, 
+        alias: "events_subexpr" 
+      },
+      where: {
+        type: "op",
+        op: "=",
+        exprs: [
+          { type: "op", op: "->>", exprs: [{ type: "field", tableAlias: "events_subexpr" }, "type"]}
+          "reject"
+        ]
+      }
+    }
+    metadata.push({ id: "numRejections", type: "number", name: { _base: "en", en: "Number of Rejections" }, jsonql: jsonql })
+
+    # Add number of edits
+    jsonql = {
+      type: "scalar"
+      expr: { type: "op", op: "count", exprs: [] }
+      from: { 
+        type: "subexpr", 
+        expr: { type: "op", op: "jsonb_array_elements", exprs: [{ type: "field", tableAlias: "{alias}", column: "events" }] }, 
+        alias: "events_subexpr" 
+      },
+      where: {
+        type: "op",
+        op: "=",
+        exprs: [
+          { type: "op", op: "->>", exprs: [{ type: "field", tableAlias: "events_subexpr" }, "type"]}
+          "edit"
+        ]
+      }
+    }
+    metadata.push({ 
+      id: "numEdits", 
+      type: "number", 
+      name: { _base: "en", en: "Number of Edits" }, 
+      desc: { _base: "en", en: "Number of times survey was edited outside of normal submissions"}, 
+      jsonql: jsonql 
+    })
+
     # Add IpAddress
     metadata.push({ id: "ipAddress", type: "text", name: { en: "IP Address" } })
 
