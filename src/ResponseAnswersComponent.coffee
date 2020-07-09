@@ -245,7 +245,7 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
           getCustomTableRow: @props.formCtx.getCustomTableRow
 
   # Special render on multiple rows
-  renderMatrixAnswer: (q, answer, prevAnswer) ->
+  renderLikertAnswer: (q, answer, prevAnswer) ->
     if not answer
       return null
     if answer.alternate
@@ -324,7 +324,7 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
           else
             prevAnswer = prevRosterData[dataIds[1]]?.data[dataIds[2]]
 
-    matrixAnswer = @renderMatrixAnswer(q, answer, prevAnswer)
+    likertAnswer = @renderLikertAnswer(q, answer, prevAnswer)
 
     # If both answer and previous answer are falsy
     if not prevAnswer and not answer?.value? and @props.hideUnchangedAnswers
@@ -343,7 +343,7 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
           formUtils.localizeString(q.text, @props.locale)
         R 'td', key: "value",
           R 'div', null,
-            if not matrixAnswer?
+            if not likertAnswer?
               @renderAnswer(q, answer, dataId)
             if answer and answer.timestamp
               
@@ -378,7 +378,7 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
                 moment(prevAnswer.timestamp).format('llll')
             if prevAnswer and prevAnswer.location
               @renderLocation(prevAnswer.location)
-      matrixAnswer
+      likertAnswer
     ]
 
   # Add all the items with the proper rosterId to items array
