@@ -43,8 +43,8 @@ describe("CustomRow", () => {
       }
     })
 
-    const innerRow = await row.getField("y")
-    const value = await innerRow.getField("x")
+    const innerRow = await row.followJoin("y")
+    const value = await innerRow!.getField("x")
     assert.equal(value, "xyz")
   })
 

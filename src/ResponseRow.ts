@@ -124,7 +124,7 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
 
   // Gets the value of a column
   async getField(columnId: string) {
-    var code, entityType, i, len, part, ref, ref1, ref10, ref11, ref12, ref13, ref14, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, siteType, value, visibilityCalculator
+    var siteType, value
     
     let data = this.responseData
     
@@ -139,15 +139,8 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
 
     // Handle "response" of roster
     if (columnId === "response" && this.rosterId) {
-      return new ResponseRow({
-        formDesign: this.formDesign,
-        schema: this.schema,
-        responseData: this.responseData,
-        getEntityById: this.getEntityById,
-        getEntityByCode: this.getEntityByCode,
-        getCustomTableRow: this.getCustomTableRow,
-        deployment: this.deployment
-      })
+      // Primary key not available
+      return null
     }
 
     // Handle "index" of roster
@@ -162,8 +155,8 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
       // Roster
       if (parts.length === 2) {
         if (_.isArray(this.responseData[parts[1]])) {
-          return _.map(this.responseData[parts[1]] as RosterData, (entry, index) => 
-            this.getRosterResponseRow(parts[1], index))
+          // Extract _id s
+          return _.map(this.responseData[parts[1]] as RosterData, (entry, index) => entry._id)
         }
       }
 
@@ -222,7 +215,7 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
           const entityType = siteType.toLowerCase().replace(new RegExp(' ', 'g'), "_")
           const code = (value as SiteAnswerValue).code
           if (code) {
-            const entity = await new Promise((resolve, reject) => {
+            const entity: any = await new Promise((resolve) => {
               this.getEntityByCode(entityType, code, _.once((entity) => {
                 if (entity) {
                   return resolve(entity)
@@ -233,57 +226,18 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
               }))
             })
             if (entity) {
-              return new EntityRow({
-                entityType: entityType,
-                entity: entity,
-                schema: this.schema,
-                getEntityById: this.getEntityById
-              })              
+              return entity._id
             }
           }
           return null
         }
 
         if (answerType === "entity") {
-          // Create site entity row
-          if (value) {
-            const entity = await new Promise((resolve, reject) => {
-              this.getEntityById((question as EntityQuestion).entityType, value as string, _.once((entity) => {
-                if (entity) {
-                  resolve(entity)
-                } else {
-                  console.log(`Warning: Entity ${value} not found in ResponseRow`)
-                  resolve(null)
-                }
-              }))
-            })
-            if (entity) {
-              return new EntityRow({
-                entityType: (question as EntityQuestion).entityType,
-                entity: entity,
-                schema: this.schema,
-                getEntityById: this.getEntityById
-              })
-            }
-          }
-          return null
+          return value
         }
 
         if (answerType == "cascading_ref") {
-          // Create custom row
-          if (value) {
-            const tableId = (question as CascadingRefQuestion).tableId
-            const customRow = await this.getCustomTableRow(tableId, value as string)
-            if (customRow) {
-              return new CustomRow({
-                tableId: (question as CascadingRefQuestion).tableId,
-                getEntityById: this.getEntityById,
-                row: customRow,
-                schema: this.schema
-              })
-            }
-          }
-          return null
+          return value
         }
 
         // Location
@@ -362,6 +316,131 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
           return nullify(location.altitude)
         }
         return null
+      }
+    }
+    return null
+  }
+
+  /** Follows a join to get row or rows */
+  async followJoin(columnId: string) {
+    var siteType, value    
+    let data = this.responseData
+    
+    // Go into roster
+    if (this.rosterId) {
+      data = this.responseData[this.rosterId][this.rosterEntryIndex!].data
+    }
+
+    // Handle "response" of roster
+    if (columnId === "response" && this.rosterId) {
+      return new ResponseRow({
+        formDesign: this.formDesign,
+        schema: this.schema,
+        responseData: this.responseData,
+        getEntityById: this.getEntityById,
+        getEntityByCode: this.getEntityByCode,
+        getCustomTableRow: this.getCustomTableRow,
+        deployment: this.deployment
+      })
+    }
+
+    // Handle data
+    if (columnId.match(/^data:/)) {
+      const parts = columnId.split(":")
+    
+      // Roster
+      if (parts.length === 2) {
+        if (_.isArray(this.responseData[parts[1]])) {
+          return _.map(this.responseData[parts[1]] as RosterData, (entry, index) => 
+            this.getRosterResponseRow(parts[1], index))
+        }
+      }
+
+      // Simple values
+      if (parts.length === 3 && parts[2] === "value") {
+        let value = data[parts[1]] ? (data[parts[1]] as Answer).value : null
+
+        if (value == null) {
+          return null
+        }
+
+        // Get type of answer
+        const question = formUtils.findItem(this.formDesign, parts[1])
+        if (!question) {
+          return null
+        }
+
+        const answerType = formUtils.getAnswerType(question as QuestionBase)
+
+        if (answerType === "site") {
+          // Create site entity row
+          siteType = ((question as SiteQuestion).siteTypes ? (question as SiteQuestion).siteTypes![0] : null) || "water_point"
+          const entityType = siteType.toLowerCase().replace(new RegExp(' ', 'g'), "_")
+          const code = (value as SiteAnswerValue).code
+          if (code) {
+            const entity = await new Promise((resolve) => {
+              this.getEntityByCode(entityType, code, _.once((entity) => {
+                if (entity) {
+                  return resolve(entity)
+                } else {
+                  console.log(`Warning: Site ${code} not found in ResponseRow`)
+                  return resolve(null)
+                }
+              }))
+            })
+            if (entity) {
+              return new EntityRow({
+                entityType: entityType,
+                entity: entity,
+                schema: this.schema,
+                getEntityById: this.getEntityById
+              })              
+            }
+          }
+          return null
+        }
+
+        if (answerType === "entity") {
+          // Create site entity row
+          if (value) {
+            const entity = await new Promise((resolve) => {
+              this.getEntityById((question as EntityQuestion).entityType, value as string, _.once((entity) => {
+                if (entity) {
+                  resolve(entity)
+                } else {
+                  console.log(`Warning: Entity ${value} not found in ResponseRow`)
+                  resolve(null)
+                }
+              }))
+            })
+            if (entity) {
+              return new EntityRow({
+                entityType: (question as EntityQuestion).entityType,
+                entity: entity,
+                schema: this.schema,
+                getEntityById: this.getEntityById
+              })
+            }
+          }
+          return null
+        }
+
+        if (answerType == "cascading_ref") {
+          // Create custom row
+          if (value) {
+            const tableId = (question as CascadingRefQuestion).tableId
+            const customRow = await this.getCustomTableRow(tableId, value as string)
+            if (customRow) {
+              return new CustomRow({
+                tableId: (question as CascadingRefQuestion).tableId,
+                getEntityById: this.getEntityById,
+                row: customRow,
+                schema: this.schema
+              })
+            }
+          }
+          return null
+        }
       }
     }
     return null

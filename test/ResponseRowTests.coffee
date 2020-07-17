@@ -71,7 +71,11 @@ describe "ResponseRow", ->
           callback({ _id: "c1", name: "abc" })
       })
 
-      siteRow = await row.getField("data:qsite:value")
+      siteId = await row.getField("data:qsite:value")
+      assert.equal siteId, "c1"
+
+      siteRow = await row.followJoin("data:qsite:value")
+
       value = await siteRow.getField("name")
       assert.equal value, "abc"
           
@@ -85,15 +89,18 @@ describe "ResponseRow", ->
         getEntityById: (entityType, entityId, callback) =>
           assert.equal entityType, "community"
           assert.equal entityId, "12345"
-          callback({ _id: "c1", name: "abc" })
+          callback({ _id: "12345", name: "abc" })
       })
 
-      siteRow = await row.getField("data:qentity:value")
+      siteId = await row.getField("data:qentity:value")
+      assert.equal siteId, "12345"
+
+      siteRow = await row.followJoin("data:qentity:value")
       value = await siteRow.getField("name")
       assert.equal value, "abc"
           
       value = await siteRow.getPrimaryKey()
-      assert.equal value, "c1"
+      assert.equal value, "12345"
 
     it "gets custom row", ->
       row = new ResponseRow({ 
@@ -105,7 +112,10 @@ describe "ResponseRow", ->
           return Promise.resolve({ _id: "c1", name: "abc" })
       })
 
-      customRow = await row.getField("data:qcascadingref:value")
+      customId = await row.getField("data:qcascadingref:value")
+      assert.equal customId, "12345"
+
+      customRow = await row.followJoin("data:qcascadingref:value")
       value = await customRow.getField("name")
       assert.equal value, "abc"
           
@@ -164,20 +174,19 @@ describe "ResponseRow", ->
   it "gets visibility true", (done) ->
     @testField({ qtext: { value: "abc" }}, "data:qconditional:visible", true, done)
 
-  it "gets roster contents", (done) ->
+  it "gets roster contents", () ->
     row = new ResponseRow({ 
       formDesign: @formDesign
       responseData: { qroster: [{ _id: "r1", data: { qrtext: { value: "abc" } } }] }
       rosterId: "qroster"
       rosterEntryIndex: 0
     })
-    row.getField("data:qrtext:value").then((value) =>
-      assert.equal value, "abc"
-      done()
-    ).catch(done)
+
+    value = await row.getField("data:qrtext:value")
+    assert.equal value, "abc"
     return
 
-  it "gets response from roster", (done) ->
+  it "gets response from roster", () ->
     row = new ResponseRow({ 
       formDesign: @formDesign
       responseData: { qroster: [{ _id: "r1", data: { qrtext: { value: "abc" } } }] }
@@ -185,11 +194,9 @@ describe "ResponseRow", ->
       rosterEntryIndex: 0
     })
 
-    row.getField("response").then((value) =>
-      assert.equal value.rosterId, null
-      assert value.getField
-      done()
-    ).catch(done)
+    value = await row.followJoin("response")
+    assert.equal value.rosterId, null
+    assert value.getField
     return
 
   it "gets index from roster", (done) ->
@@ -206,18 +213,18 @@ describe "ResponseRow", ->
     ).catch(done)
     return
 
-  it "gets roster as array of rows", (done) ->
+  it "gets roster as array of rows", () ->
     row = new ResponseRow({ 
       formDesign: @formDesign
       responseData: { qroster: [{ _id: "r1", data: { qrtext: { value: "abc" } } }, { _id: "r2", data: { qrtext: { value: "def" } } }] }
     })
-    
-    row.getField("data:qroster").then((rows) =>
-      rows[1].getField("data:qrtext:value").then((value) =>
-        assert.equal value, "def"
-        done()
-      ).catch(done)
-    ).catch(done)
+
+    rowIds = await row.getField("data:qroster")
+    assert.deepEqual(rowIds, ["r1", "r2"])
+
+    rows = await row.followJoin("data:qroster")
+    value = await rows[1].getField("data:qrtext:value")
+    assert.equal value, "def"
     return
 
   it "gets asked"

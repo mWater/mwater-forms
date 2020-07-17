@@ -80,7 +80,52 @@ export class CustomRow implements PromiseExprEvaluatorRow {
       return null
     }
 
-    if (column.type == "join") {
+    return value
+  }
+
+  async followJoin(columnId: string) {
+    // Get column (gracefully handle if no schema)
+    if (!this.schema) {
+      return null
+    }
+
+    // Get column
+    const column = this.schema.getColumn(this.tableId, columnId)
+
+    // Handle case of column not found by just returning null
+    if (!column) {
+      return null
+    }
+    
+    // Get value
+    const value = this.row[columnId]
+
+    if (column.type == "id") {
+      // If to entity, follow
+      if (column.idTable!.match(/^entities./)) {
+        // Get the entity
+        const entityType = column.idTable!.substr(9)
+
+        const entity = await new Promise((resolve, reject) => 
+          this.getEntityById(entityType, value, (entity) => resolve(entity))
+        )
+        if (entity) {
+          return new EntityRow({
+            entityType: entityType,
+            entity: entity,
+            schema: this.schema,
+            getEntityById: this.getEntityById
+          })
+        }
+        return null
+      }
+      else {
+        throw new Error("Following non-entity joins not supported")
+      }
+    }
+
+    // This is legacy code, as newer will leave as type "id"
+    if (column.type == "join" && column.join!.type == 'n-1') {
       // If to entity, follow
       if (column.join!.toTable.match(/^entities./)) {
         // Get the entity
@@ -103,8 +148,7 @@ export class CustomRow implements PromiseExprEvaluatorRow {
         throw new Error("Following non-entity joins not supported")
       }
     }
-    else {
-      return value
-    }
+
+    throw new Error(`Cannot follow join on type ${column.type}`)
   }
 }

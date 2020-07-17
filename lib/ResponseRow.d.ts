@@ -1,6 +1,8 @@
+import EntityRow from './EntityRow';
 import { PromiseExprEvaluatorRow, Schema, Row } from 'mwater-expressions';
 import { ResponseData } from './response';
 import { FormDesign } from './formDesign';
+import { CustomRow } from './CustomRow';
 export default class ResponseRow implements PromiseExprEvaluatorRow {
     /** data of entire response */
     responseData: ResponseData;
@@ -51,4 +53,6 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
     getRosterResponseRow(rosterId: string, rosterEntryIndex: number): ResponseRow;
     getPrimaryKey(): any;
     getField(columnId: string): Promise<any>;
+    /** Follows a join to get row or rows */
+    followJoin(columnId: string): Promise<EntityRow | CustomRow | ResponseRow | ResponseRow[] | null>;
 }

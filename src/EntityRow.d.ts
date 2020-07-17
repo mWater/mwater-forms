@@ -18,8 +18,7 @@ export default class EntityRow implements PromiseExprEvaluatorRow {
 
   getPrimaryKey(): Promise<any>
 
-  /** Gets the value of a column, returning a promise
-   * For joins, getField will get array of rows for 1-n and n-n joins and a row for n-1 and 1-1 joins
-   */
   getField(columnId: string): Promise<any>
+
+  followJoin(columnId: string): Promise<null | PromiseExprEvaluatorRow | PromiseExprEvaluatorRow[]>
 }

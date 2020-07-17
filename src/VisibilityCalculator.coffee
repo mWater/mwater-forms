@@ -154,7 +154,7 @@ module.exports = class VisibilityCalculator
 
       if subData?
         # Get subrows
-        responseRow.getField("data:#{dataId}").then((rosterRows) =>
+        responseRow.followJoin("data:#{dataId}").then((rosterRows) =>
           # For each entry of roster
           async.forEachOf subData, (entry, index, cb) =>
             async.each rosterGroup.contents, (item, cb2) =>

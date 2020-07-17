@@ -35,7 +35,7 @@ describe "EntityRow", ->
     value = await row.getField("x")
     assert.equal value, "abc"
 
-  it "gets joins", ->
+  it "gets plain values of join", ->
     row = new EntityRow({
       entityType: "a"
       entity: { y: "someid" }
@@ -47,6 +47,20 @@ describe "EntityRow", ->
     })
 
     value = await row.getField("y")
+    assert.equal value, "someid"
+
+  it "gets joins", ->
+    row = new EntityRow({
+      entityType: "a"
+      entity: { y: "someid" }
+      schema: @schema
+      getEntityById: (entityType, entityId, callback) =>
+        assert.equal entityType, "b"
+        assert.equal entityId, "someid"
+        callback({ x: "abc" })
+    })
+
+    value = await row.followJoin("y")
     value = await value.getField("x")
     assert.equal value, "abc"
 

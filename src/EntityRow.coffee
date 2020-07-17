@@ -26,7 +26,6 @@ module.exports = class EntityRow
     return Promise.resolve(@entity._id)
 
   # Gets the value of a column, returning a promise
-  # For joins, getField will get array of rows for 1-n and n-n joins and a row for n-1 and 1-1 joins
   getField: (columnId) ->
     # Get column (gracefully handle if no schema)
     if @schema
@@ -37,11 +36,43 @@ module.exports = class EntityRow
 
     # Handle case of column not found by just returning value
     if not column
-      return value
+      return Promise.resolve(value)
 
     if not value?
+      return Promise.resolve(null)
+
+    # Simple value
+    return Promise.resolve(value)
+
+  followJoin: (columnId) ->
+    # Get column (gracefully handle if no schema)
+    if @schema
+      column = @schema.getColumn("entities.#{@entityType}", columnId)
+
+    if not column
       return null
 
+    # Get value
+    value = @entity[columnId]
+
+    if column.type == "id"
+      # Can handle joins to another entity
+      if column.idTable.match(/^entities\./)
+        # Get the entity
+        entityType = column.idTable.substr(9)
+        entity = await new Promise((resolve, reject) => 
+          @getEntityById(entityType, value, (entity) => resolve(entity))
+        )
+        if (entity) 
+          return new EntityRow({
+            entityType: entityType
+            entity: entity
+            schema: @schema
+            getEntityById: @getEntityById
+          })
+        return null
+
+    # This is legacy code, as newer will leave as type "id"
     if column.type == "join"
       # Do not support n-n, 1-n joins
       if column.join.type in ['1-n', 'n-n']
@@ -62,7 +93,3 @@ module.exports = class EntityRow
             getEntityById: @getEntityById
           })
         return null
-
-    # Simple value
-    return value
-

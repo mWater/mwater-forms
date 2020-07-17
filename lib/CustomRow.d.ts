@@ -1,3 +1,4 @@
+import EntityRow from './EntityRow';
 import { PromiseExprEvaluatorRow, Schema, Row } from 'mwater-expressions';
 export declare class CustomRow implements PromiseExprEvaluatorRow {
     /** Custom table id (e.g. custom.xyz.abc) */
@@ -24,4 +25,5 @@ export declare class CustomRow implements PromiseExprEvaluatorRow {
     });
     getPrimaryKey(): any;
     getField(columnId: string): Promise<any>;
+    followJoin(columnId: string): Promise<EntityRow | null>;
 }
