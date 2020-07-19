@@ -119,7 +119,7 @@ describe "EntitySchemaBuilder addEntities", ->
     })
 
 
-  it "converts ids to joins", ->
+  it "does not convert ids to joins", ->
     entityTypes = [
       {
         code: "water_point"
@@ -133,16 +133,10 @@ describe "EntitySchemaBuilder addEntities", ->
 
     compare(schema.getColumn("entities.water_point", "community"), {
       id: "community"
-      type: "join"
+      type: "id"
       name: { en: "Community"}
-      join: {
-        type: "n-1"
-        toTable: "entities.community"
-        fromColumn: "community"
-        toColumn: "_id"
-      }
+      idTable: "entities.community"
     })
-
 
   it "adds _managed_by, _created_by, _created_on", ->
     entityTypes = [
@@ -182,14 +176,9 @@ describe "EntitySchemaBuilder addEntities", ->
 
     compare(schema.getColumn("entities.water_point", "admin_region"), {
       id: "admin_region"
-      type: "join"
+      type: "id"
       name: { en: "Admin Region"}
-      join: {
-        type: "n-1"
-        toTable: "admin_regions"
-        fromColumn: "admin_region"
-        toColumn: "_id"
-      }
+      idTable: "admin_regions"
     })
 
     # It should make a n-1 join to the region, looking it up in the 

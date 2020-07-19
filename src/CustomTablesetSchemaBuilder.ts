@@ -15,19 +15,6 @@ export class CustomTablesetSchemaBuilder {
 
         const column: Column = _.pick(prop, "id", "name", "code", "desc", "type", "idTable", "enumValues", "deprecated", "expr", "join")
 
-        // Convert id to join
-        if (column.type === "id") {
-          column.type = "join"
-          column.join = {
-            type: "n-1",
-            toTable: prop.idTable!,
-            fromColumn: prop.id,
-            // HACK for primary keys of tables not loaded yet
-            toColumn: schema.getTable(column.idTable!) ? schema.getTable(column.idTable!)!.primaryKey : "_id"
-          }
-          delete column.idTable
-        }
-
         return column
       })
 
@@ -41,13 +28,8 @@ export class CustomTablesetSchemaBuilder {
           _base: "en",
           en: `User that added this to the database`
         },
-        type: "join",
-        join: {
-          type: "n-1",
-          toTable: "users",
-          fromColumn: "_created_by",
-          toColumn: "_id"
-        }
+        type: "id",
+        idTable: "users"
       })
 
       contents.push({
@@ -73,13 +55,8 @@ export class CustomTablesetSchemaBuilder {
           _base: "en",
           en: `User that modified this last`
         },
-        type: "join",
-        join: {
-          type: "n-1",
-          toTable: "users",
-          fromColumn: "_modified_by",
-          toColumn: "_id"
-        }
+        type: "id",
+        idTable: "users"
       })
 
       contents.push({

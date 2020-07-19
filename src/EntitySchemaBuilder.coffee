@@ -104,17 +104,6 @@ module.exports = class EntitySchemaBuilder
 
         prop = _.pick(prop, "id", "name", "code", "desc", "type", "idTable", "enumValues", "deprecated", "expr")
 
-        # Convert id to join
-        if prop.type == "id"
-          prop.type = "join"
-          prop.join = {
-            type: "n-1"
-            toTable: prop.idTable
-            fromColumn: prop.id
-            toColumn: schema.getTable(prop.idTable)?.primaryKey or "_id"
-          }
-          delete prop.idTable
-
         # Pad date fields
         if prop.type == "date"
           # rpad(field ,10, '-01-01')
@@ -182,26 +171,16 @@ module.exports = class EntitySchemaBuilder
         id: "_managed_by"
         name: { en: "Managed By" }
         desc: { en: "User or group that manages the data for this #{formUtils.localizeString(entityType.name)}"}
-        type: "join"
-        join: {
-          type: "n-1"
-          toTable: "subjects"
-          fromColumn: "_managed_by"
-          toColumn: "id"
-        }
+        type: "id"
+        idTable: "subjects"
       })
 
       contents.push({
         id: "_created_by"
         name: { en: "Added by user" }
         desc: { en: "User that added this #{formUtils.localizeString(entityType.name)} to the database" }
-        type: "join"
-        join: {
-          type: "n-1"
-          toTable: "users"
-          fromColumn: "_created_by"
-          toColumn: "_id"
-        }
+        type: "id"
+        idTable: "users"
       })
 
       contents.push({
@@ -215,13 +194,8 @@ module.exports = class EntitySchemaBuilder
         id: "_modified_by"
         name: { en: "Last modified by user" }
         desc: { en: "User that modified this #{formUtils.localizeString(entityType.name)} last" }
-        type: "join"
-        join: {
-          type: "n-1"
-          toTable: "users"
-          fromColumn: "_modified_by"
-          toColumn: "_id"
-        }
+        type: "id"
+        idTable: "users"
       })
 
       contents.push({
