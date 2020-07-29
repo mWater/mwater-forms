@@ -1113,6 +1113,45 @@ describe "FormSchemaBuilder addForm", ->
       ])
 
     describe "matrix", ->
+      it "sets export id correctly", ->
+        @testQuestion({ 
+          _type: "MatrixQuestion"
+          exportId: 'Q'
+          items: [
+            { id: "item1", label: { _base:"en", en: "Item 1" }, exportId: 'TEST' }
+          ]
+          columns: [
+            { _id: "col1", _type: "TextColumnQuestion", text: { _base: "en", en: "Col 1" }, exportId: 'A' }
+            { _id: "col2", _type: "NumberColumnQuestion", text: { _base: "en", en: "Col 2" }, decimal: true, exportId: 'B' }
+          ]
+        }, [
+          { 
+            id: "data:questionid:value:item1:col1:value" 
+            type: "text"
+            name: { _base: "en", en: "Question: Item 1 - Col 1"}
+            code: 'Q - TEST - A'
+            # nullif(data#>>'{questionid,value,item1,col1,value}','')
+            jsonql: { type: "op", op: "nullif", exprs: [
+              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,item1,col1,value}"] }
+              ""
+            ]}
+          }
+          # NumberColumnQuestion
+          { 
+            id: "data:questionid:value:item1:col2:value" 
+            type: "number"
+            name: { _base: "en", en: "Question: Item 1 - Col 2"}
+            # data#>>'{questionid,value,item1,col1,value}::boolean
+            code: 'Q - TEST - B'
+            jsonql: {
+              type: "op"
+              op: "convert_to_decimal"
+              exprs: [            
+                { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,item1,col2,value}"] }
+              ]
+            }
+          }
+        ])
       it "adds columns", ->
         # Matrix has a database column for each column/item combination, sectioned by item
         # Each value is stored as follows: data:QUESTIONID:value:ITEMID:COLUMNID:value, corresponding to the actual path to get data

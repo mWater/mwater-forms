@@ -1396,7 +1396,9 @@ module.exports = class FormSchemaBuilder
 
             # For each column
             for itemColumn in item.columns
-              cellCode = if code and itemItem.code and itemColumn.code then code + " - " + itemItem.code + " - " + itemColumn.code
+              itemCode = itemItem.exportId or itemItem.code
+              columnCode = itemColumn.exportId or itemColumn.code
+              cellCode = if code and itemCode and columnCode then code + " - " + itemCode + " - " + columnCode
 
               # TextColumnQuestion
               if itemColumn._type == "TextColumnQuestion"
