@@ -482,6 +482,7 @@ module.exports = class QuestionComponent extends React.Component
           onValueChange: @handleValueChange
           columns: @props.question.columns
           rows: @props.question.rows
+          sortOptions: @props.question.sortOptions
           T: @context.T
           locale: @context.locale
         }

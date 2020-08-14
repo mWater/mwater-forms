@@ -833,6 +833,9 @@ interface CascadingListQuestion extends QuestionBase {
   /** Columns in the table that are displayed also as dropdowns to choose the row */
   columns: CascadingListColumn[]
 
+  /** True to sort items alphabetically */
+  sortOptions?: boolean
+
   /** No validation available */
   validations: []
 }

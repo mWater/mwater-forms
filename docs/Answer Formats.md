@@ -1,4 +1,4 @@
-# DEPRECATED!! Use the typescript definition files!
+# DEPRECATED!! Use the typescript definition files in response.d.ts
 
 # Answer Formats
 

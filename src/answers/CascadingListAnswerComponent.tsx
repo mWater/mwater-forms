@@ -18,6 +18,9 @@ interface Props {
   value?: CascadingListAnswerValue
   onValueChange: (value?: CascadingListAnswerValue) => void
 
+  /** True to sort options alphabetically */
+  sortOptions?: boolean
+
   /** Localizer to use */
   T: LocalizeString
 
@@ -133,7 +136,7 @@ export class CascadingListAnswerComponent extends React.Component<Props, State> 
 
   renderDropdown(index: number) {
     // Determine available options
-    const options: { label: string, value: string }[] = []
+    let options: { label: string, value: string }[] = []
 
     // Find all possible values, filtering by all previous selections
     const values = this.findValues(index, this.state.columnValues)
@@ -143,6 +146,11 @@ export class CascadingListAnswerComponent extends React.Component<Props, State> 
       if (values.includes(enumValue.id)) {
         options.push({ value: enumValue.id, label: localizeString(enumValue.name, this.props.locale) })
       }
+    }
+
+    // Sort options if set
+    if (this.props.sortOptions) {
+      options = _.sortBy(options, opt => opt.label)
     }
 
     return <div style={{ paddingBottom: 15 }} key={index}>

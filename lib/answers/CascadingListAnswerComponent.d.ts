@@ -10,6 +10,8 @@ interface Props {
     columns: CascadingListColumn[];
     value?: CascadingListAnswerValue;
     onValueChange: (value?: CascadingListAnswerValue) => void;
+    /** True to sort options alphabetically */
+    sortOptions?: boolean;
     /** Localizer to use */
     T: LocalizeString;
     /** Locale to use */
