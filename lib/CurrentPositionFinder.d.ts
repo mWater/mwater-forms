@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import EventEmitter from 'events';
+import { EventEmitter } from 'events';
 import LocationFinder from './LocationFinder';
 import { PositionStrength } from './utils';
 /** Status of the position finding */

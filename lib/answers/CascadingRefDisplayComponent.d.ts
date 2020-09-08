@@ -1,10 +1,11 @@
 /// <reference types="react" />
+import { CascadingRefAnswerValue } from "../response";
 import { CascadingRefQuestion } from "../formDesign";
 import { Row, Schema } from "mwater-expressions";
 /** Displays a cascading list question answer */
 export declare const CascadingRefDisplayComponent: (props: {
     question: CascadingRefQuestion;
-    value: string;
+    value: CascadingRefAnswerValue;
     locale: string;
     schema: Schema;
     /** Get a specific row of a custom table */

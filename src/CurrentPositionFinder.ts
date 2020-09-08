@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import EventEmitter from 'events'
+import { EventEmitter } from 'events'
 import LocationFinder from './LocationFinder'
 import { calculateGPSStrength, PositionStrength } from './utils'
 
