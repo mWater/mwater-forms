@@ -44,6 +44,37 @@ describe 'ResponseCleaner', ->
         assert.deepEqual results.data, { q1: { value: "sometext" }, q2: { value: "defaulttext" } }
         assert.deepEqual results.visibilityStructure, { q1: true, q2: true, q3: false }
         done()
+      
+    it "does not delete disabled questions data", (done) ->
+      q1 = { _id: "q1", _type: "TextQuestion", conditions: [], disabled: true }
+
+      design = {
+        _type: "Form"
+        contents: [q1]
+      }
+
+      # Fake defaultValueApplier
+      defaultValueApplier = {
+        setStickyData: (newData, oldVisibilityStructure, newVisibilityStructure) ->
+          return newData
+      }
+
+      # Fake random asked calculator
+      randomAskedCalculator = {
+        calculateRandomAsked: (data, visibilityStructure) -> return data
+      }
+
+      visibilityCalculator = new VisibilityCalculator(design)
+      responseCleaner = new ResponseCleaner()
+
+      data = { q1: { value: "sometext" } }
+      oldVisibilityStructure = { q1: false }
+
+      responseCleaner.cleanData design, visibilityCalculator, defaultValueApplier, randomAskedCalculator, data, (->), oldVisibilityStructure, (error, results) =>
+        assert not error
+        assert.deepEqual results.data, { q1: { value: "sometext" } }
+        done()
+
 
   describe "cleanDataBasedOnVisibility", ->
     describe 'Simple cases', ->

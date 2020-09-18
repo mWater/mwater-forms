@@ -110,7 +110,7 @@ module.exports = class ResponseModel
 
     deployment = _.findWhere(@form.deployments, { _id: @response.deployment })
     if not deployment
-      throw new Error("No matching deployments for #{@form._id} user #{@username}")
+      return false
 
     # Get list of admins at both deployment and form level 
     admins = _.union(_.pluck(_.where(@form.roles, { role: "admin"}), "id"), deployment.admins)
@@ -262,7 +262,7 @@ module.exports = class ResponseModel
   canApprove: ->
     deployment = _.findWhere(@form.deployments, { _id: @response.deployment })
     if not deployment
-      throw new Error("No matching deployments for #{@form._id} user #{@username}")
+      return false
 
     if @response.status != "pending"
       return false
@@ -280,7 +280,7 @@ module.exports = class ResponseModel
   amApprover: ->
     deployment = _.findWhere(@form.deployments, { _id: @response.deployment })
     if not deployment
-      throw new Error("No matching deployments for #{@form._id} user #{@username}")
+      return false
 
     if @response.status != "pending"
       return false
@@ -298,7 +298,7 @@ module.exports = class ResponseModel
   canDelete: ->
     deployment = _.findWhere(@form.deployments, { _id: @response.deployment })
     if not deployment
-      throw new Error("No matching deployments for #{@form._id} user #{@username}")
+      return false
 
     # Get list of admins at both deployment and form level 
     admins = _.union(_.pluck(_.where(@form.roles, { role: "admin"}), "id"), deployment.admins)
@@ -326,7 +326,7 @@ module.exports = class ResponseModel
   canEdit: ->
     deployment = _.findWhere(@form.deployments, { _id: @response.deployment })
     if not deployment
-      throw new Error("No matching deployments for #{@form._id} user #{@username}")
+      return false
 
     # Get list of admins at both deployment and form level 
     admins = _.union(_.pluck(_.where(@form.roles, { role: "admin"}), "id"), deployment.admins)
@@ -354,7 +354,7 @@ module.exports = class ResponseModel
 
     deployment = _.findWhere(@form.deployments, { _id: @response.deployment })
     if not deployment
-      throw new Error("No matching deployments for #{@form._id} user #{@username}")
+      return false
 
     subjects = ["user:" + @user, "all"]
     subjects = subjects.concat(_.map @groups, (g) -> "group:" + g)
@@ -372,7 +372,7 @@ module.exports = class ResponseModel
 
     deployment = _.findWhere(@form.deployments, { _id: @response.deployment })
     if not deployment
-      throw new Error("No matching deployments for #{@form._id} user #{@username}")
+      return false
 
     if @response.status == "draft" or @response.status == "rejected"
       return false
