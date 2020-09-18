@@ -298,7 +298,8 @@ module.exports = class ResponseModel
   canDelete: ->
     deployment = _.findWhere(@form.deployments, { _id: @response.deployment })
     if not deployment
-      return false
+      # Only delete if admin
+      return _.intersection(_.pluck(_.where(@form.roles, { role: "admin"}), "id"), subjects).length > 0
 
     # Get list of admins at both deployment and form level 
     admins = _.union(_.pluck(_.where(@form.roles, { role: "admin"}), "id"), deployment.admins)
