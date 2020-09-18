@@ -296,6 +296,9 @@ module.exports = class ResponseModel
 
   # Determine if can delete response
   canDelete: ->
+    subjects = ["user:" + @user, "all"]
+    subjects = subjects.concat(_.map @groups, (g) -> "group:" + g)
+
     deployment = _.findWhere(@form.deployments, { _id: @response.deployment })
     if not deployment
       # Only delete if admin
@@ -317,9 +320,6 @@ module.exports = class ResponseModel
     # Add enumerator if final and enumeratorAdminFinal
     if @response.status == "final" and @response.user and deployment.enumeratorAdminFinal
       admins = _.union(admins, ["user:#{@response.user}"])      
-
-    subjects = ["user:" + @user, "all"]
-    subjects = subjects.concat(_.map @groups, (g) -> "group:" + g)
 
     return _.intersection(admins, subjects).length > 0
 
