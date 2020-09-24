@@ -19,6 +19,7 @@ export { default as ResponseViewEditComponent } from "./ResponseViewEditComponen
 export { default as ImageUploaderModalComponent } from "./ImageUploaderModalComponent"
 export { CustomTablesetSchemaBuilder } from './CustomTablesetSchemaBuilder'
 export { default as RotationAwareImageComponent } from './RotationAwareImageComponent'
+export { default as FormSchemaBuilder } from './FormSchemaBuilder'
 
 // export class AdminRegionDataSource {
 //   constructor(apiUrl: any);
