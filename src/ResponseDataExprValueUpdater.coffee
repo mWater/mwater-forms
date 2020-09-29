@@ -182,13 +182,31 @@ module.exports = class ResponseDataExprValueUpdater
     if not question
       return callback(new Error("Question #{expr.column} not found"))
 
-    if not _.find(question.columns, {id: column})
+    # Find column
+    colObj = _.find(question.columns, { id: column })
+    if not colObj
       return callback(new Error("Column #{column} in question #{expr.column} not found"))
+
+    # Check that value is valid
+    if not _.find(colObj.enumValues, { id: value })
+      return callback(new Error("Column #{column} value #{value} in question #{expr.column} not found"))
+
+    # Get answer value and set new value
+    answerValue = _.cloneDeep(data[questionId]?.value || {})
+    answerValue[column] = value
+
+    # Clear id, as it will change with the update
+    delete answerValue.id
+
+    # Check that row possibly exists
+    rows = question.rows.slice()
+    for key, value of answerValue
+      rows = _.filter(rows, (r) => r[key] == value)
+
+    if rows.length == 0
+      return callback(new Error("Row referenced in question #{expr.column} not found"))
     
-    _value = data[questionId]?.value || {}
-    _value[column] = value
-    
-    return callback(null, @setValue(data, question, _value))
+    return callback(null, @setValue(data, question, answerValue))
           
   # Updates a value of a question, e.g. data:somequestion:value
   updateValue: (data, expr, value, callback) ->

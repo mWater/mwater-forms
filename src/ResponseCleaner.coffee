@@ -41,6 +41,7 @@ module.exports = class ResponseCleaner
         # Clean data
         newData = @cleanDataBasedOnVisibility(newData, newVisibilityStructure)
         newData = @cleanDataBasedOnChoiceConditions(newData, newVisibilityStructure, design)
+        newData = @cleanDataCascadingLists(newData, newVisibilityStructure, design)
 
         # Default values
         if defaultValueApplier
@@ -163,3 +164,65 @@ module.exports = class ResponseCleaner
                     deleteAnswer()
 
     return newData
+
+  # Cascading lists might reference rows that don't exists, 
+  # or the c0, c1, etc. values might be out of date
+  # or the id might be missing (if updated using ResponseDataExprValueUpdater)
+  cleanDataCascadingLists: (data, visibilityStructure, design) ->
+    newData = _.cloneDeep(data)
+
+    for key, visible of visibilityStructure
+      if visible
+        values = key.split('.')
+        answerValue = null
+
+        # FIRST: Setup what is needed for the cleaning the data (different for rosters)
+        # Simple case
+        if values.length == 1
+          questionId = key
+          relevantData = newData
+          answerValue = newData[questionId]?.value
+          # A simple delete
+            
+        # Check if value is an array, which indicates roster
+        else if _.isArray(newData[values[0]])
+          # The id of the roster containing the data
+          rosterGroupId = values[0]
+          # The index of the answer
+          index = parseInt(values[1])
+          # The id of the answered question
+          questionId = values[2]
+          if newData[rosterGroupId]? and newData[rosterGroupId][index]?
+            # Delete the entry
+            relevantData = newData[rosterGroupId][index].data
+            answerValue = relevantData?[questionId]?.value
+
+        # SECOND: look for conditional choices and delete their answer if the conditions are false
+        if answerValue?
+          # Get the question
+          question = formUtils.findItem(design, questionId)
+          # If cascading list
+          if question._type == 'CascadingListQuestion'
+            # If id, find row
+            if answerValue.id
+              row = _.find(question.rows, { id: answerValue.id })
+              if not row
+                delete relevantData[question._id].value
+              else 
+                # Update answer if wrong
+                if not !_.isEqual(answerValue, row)
+                  relevantData[question._id].value = row
+            else # Look up by column values as id is not present
+              rows = question.rows.slice()
+              for key, value of answerValue
+                rows = _.filter(rows, (r) => r[key] == value)
+
+              # Should be one row
+              if rows.length == 1
+                relevantData[question._id].value = rows[0]
+              else
+                delete relevantData[question._id].value
+
+    return newData
+
+
