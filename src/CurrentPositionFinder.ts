@@ -148,11 +148,8 @@ export default class CurrentPositionFinder {
       this.pos = pos
     }
 
-    // Update status
-    this.updateStatus()
-
     // Start good delay if needed
-    if (!this.goodDelayInterval && (this.strength === "good")) {
+    if (!this.goodDelayInterval && (calculateGPSStrength(this.pos) === "good")) {
       this.goodDelayLeft = goodDelay
 
       // Start good delay countdown
@@ -171,6 +168,9 @@ export default class CurrentPositionFinder {
         }
       }, 1000)
     }
+ 
+    // Update status
+    this.updateStatus()
 
     // Set position if excellent
     if (this.strength === "excellent") {
