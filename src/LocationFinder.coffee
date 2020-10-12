@@ -118,19 +118,14 @@ class LocationFinder
       @eventEmitter.emit('found', pos)
 
     highAccuracyError = (err) =>
+      # High accuracy error is not final (https://w3c.github.io/geolocation-api/#position_options_interface)
       console.error "High accuracy watch location error: #{err.message}"
-
-      # No longer watching since there was an error
-      @stopWatch()
-
-      # Send error message
-      @eventEmitter.emit('error')
 
     # Fire initial low-accuracy one
     navigator.geolocation.getCurrentPosition(lowAccuracy, lowAccuracyError, {
-        maximumAge : 30*1000,
-        timeout : 30000,
-        enableHighAccuracy : false
+      maximumAge: 30*1000,
+      timeout: 30000,
+      enableHighAccuracy: false
     })
 
     # Increment watch count
@@ -141,7 +136,8 @@ class LocationFinder
       return
 
     @locationWatchId = navigator.geolocation.watchPosition(highAccuracy, highAccuracyError, {
-      enableHighAccuracy : true
+      enableHighAccuracy : true,
+      maximumAge: 0
     })  
 
     # Listen for pause events to stop watching
