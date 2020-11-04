@@ -156,7 +156,8 @@ module.exports = class EntitySchemaBuilder
                     { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "entity_regions", column: "entity_id"}, { type: "field", tableAlias: "{alias}", column: "_id" }]}
                     { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "entity_regions", column: "region_type"}, { type: "literal", value: regionType.code }]}
                   ]
-                }
+                },
+                limit: 1
               }
               toColumn: "_id"
             }

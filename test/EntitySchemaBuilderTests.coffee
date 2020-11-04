@@ -203,6 +203,7 @@ describe "EntitySchemaBuilder addEntities", ->
               { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "entity_regions", column: "region_type"}, { type: "literal", value: "catchment" }]}
             ]
           }
+          limit: 1
         }
       }
     })
