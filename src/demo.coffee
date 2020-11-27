@@ -12,6 +12,7 @@ sampleFormAdvancedValidations = require './sampleFormAdvancedValidations'
 #bigsampleForm2 = require './bigsampleForm2'
 ItemListComponent = require './ItemListComponent'
 ResponseDisplayComponent = require './ResponseDisplayComponent'
+ResponseViewEditComponent = require './ResponseViewEditComponent'
 Schema = require('mwater-expressions').Schema
 FormSchemaBuilder = require './FormSchemaBuilder'
 ImageUploaderModalComponent = require './ImageUploaderModalComponent'
@@ -299,12 +300,20 @@ class DemoComponent extends React.Component
       )
       # console.log design
       R('div', className: "col-md-6",
-        R ResponseDisplayComponent, {
+        R ResponseViewEditComponent, {
+          apiUrl: "https://portal.mwater.co/"
           form: design
           schema: schema
-          response: { data: @state.data }
+          response: { data: @state.data, _id: "abc" }
           formCtx: formCtx
           T: T
+          login: {
+            client: "2a8c5e2e959a53a9609dc5330aa4c4a9"
+            user: "broncha"
+            username: "broncha"
+          }
+          onUpdateResponse: console.log
+          onDeleteResponse: console.log
         }
       )
 

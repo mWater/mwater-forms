@@ -6,6 +6,7 @@ R = React.createElement
 FormComponent = require './FormComponent'
 ResponseModel = require './ResponseModel'
 ResponseDisplayComponent = require './ResponseDisplayComponent'
+ui = require 'react-library/lib/bootstrap'
 
 # Displays a view of a response that can be edited, rejected, etc. 
 # When editing, shows in single-page mode.
@@ -139,6 +140,8 @@ module.exports = class ResponseViewEditComponent extends React.Component
           "Delete"
 
   render: ->
+    printUrl = if @props.login? then "#{@props.apiUrl}responses/#{@props.response._id}/print?client=#{@props.login.client}&locale=#{@state.locale}" else null
+    
     # If editing
     if @state.editMode
       elem = R(FormComponent, 
@@ -179,5 +182,10 @@ module.exports = class ResponseViewEditComponent extends React.Component
             T: @props.T)
 
     return R 'div', null,
+      if printUrl != null
+        R 'div', style: {textAlign: 'right'},
+          R 'a', className: 'btn btn-xs btn-link', target: "_blank", href: printUrl, 
+            R ui.Icon, id: "fa-external-link"
+            " Export as PDF"
       @renderLocales()
       elem
