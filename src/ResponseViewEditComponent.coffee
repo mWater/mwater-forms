@@ -168,12 +168,6 @@ module.exports = class ResponseViewEditComponent extends React.Component
             R 'span', className: "glyphicon glyphicon-edit"
             "Edit Response"
 
-        if printUrl != null
-          R 'div', null,
-            R 'a', className: 'btn btn-xs btn-link', target: "_blank", href: printUrl, 
-              R ui.Icon, id: "fa-external-link"
-              " Export as PDF"
-
       elem = 
         R 'div', null,
           actions
@@ -188,5 +182,10 @@ module.exports = class ResponseViewEditComponent extends React.Component
             T: @props.T)
 
     return R 'div', null,
+      if printUrl != null
+        R 'div', style: {textAlign: 'right'},
+          R 'a', className: 'btn btn-xs btn-link', target: "_blank", href: printUrl, 
+            R ui.Icon, id: "fa-external-link"
+            " Export as PDF"
       @renderLocales()
       elem
