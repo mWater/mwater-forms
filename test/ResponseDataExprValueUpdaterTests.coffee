@@ -370,6 +370,40 @@ describe "ResponseDataExprValueUpdater", ->
           done()
         )
 
+      it "shortcuts if has code", (done) ->
+        # Mock data source
+        dataSource = {
+          performQuery: (query, callback) =>
+            callback(new Error("Should not query"))
+        }
+
+        # Create schema with communities
+        schema = new Schema()
+        schema = schema.addTable({
+          id: "entities.community"
+          name: { en: "Communities" }
+          primaryKey: "_id"
+          contents: [
+            { id: "code", type: "text", name: { en: "Code" } }
+            { id: "name", type: "text", name: { en: "Name" } }
+          ]
+        })
+
+        # Create updater
+        updater = new ResponseDataExprValueUpdater(@formDesign, schema, dataSource)
+
+        # Update by name
+        expr = { type: "scalar", table: "responses:form123", joins: ["data:q1234:value"], expr: { type: "field", table: "entities.community", column: "code" }}
+
+        assert.isTrue updater.canUpdate(expr), "Should be able to update"
+
+        updater.updateData({}, expr, "10007", (error, data) =>
+          assert not error
+
+          compare data.q1234.value, { code: "10007" }
+          done()
+        )
+
     describe "EntityQuestion", ->
       beforeEach ->
         # Create form

@@ -452,6 +452,10 @@ module.exports = class ResponseDataExprValueUpdater
     if not value?
       return callback(null, @setValue(data, question, null))
 
+    # Shortcut for site question where we have code already
+    if question._type == "SiteQuestion" and expr.expr.column == "code"
+      return callback(null, @setValue(data, question, { code: value }))
+      
     # Create query to get _id or code, depending on question type
     exprCompiler = new ExprCompiler(@schema)
     if question._type == "SiteQuestion"
