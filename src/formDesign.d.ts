@@ -393,7 +393,7 @@ export interface MatrixColumn {
 
 /** Group of questions which can have conditions as a whole */
 interface Group {
-  id: string
+  _id: string
 
   _type: "Group"
 

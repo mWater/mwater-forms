@@ -361,11 +361,14 @@ export interface AquagenxCBTAnswerValue {
 }
 
 export interface CascadingListAnswerValue {
-  /** ID of the row */
-  id: string
+  /** ID of the row. Can be undefined temporarily
+   * to force the response cleaner to re-calculate the id
+   * based on the column values.
+   */
+  id?: string
 
   /** Rest of column values */
-  [columnId: string]: string
+  [columnId: string]: string | undefined
 }
 
 /** _id of the row */

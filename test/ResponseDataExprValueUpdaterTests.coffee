@@ -1,6 +1,6 @@
 _ = require 'lodash'
 assert = require('chai').assert
-ResponseDataExprValueUpdater = require '../src/ResponseDataExprValueUpdater'
+ResponseDataExprValueUpdater = require('../src/ResponseDataExprValueUpdater').default
 Schema = require('mwater-expressions').Schema
 canonical = require 'canonical-json'
 

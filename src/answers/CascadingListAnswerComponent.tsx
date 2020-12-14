@@ -41,7 +41,7 @@ export class CascadingListAnswerComponent extends React.Component<Props, State> 
     super(props)
 
     this.state = {
-      columnValues: props.columns.map(c => props.value ? props.value[c.id] : null),
+      columnValues: props.columns.map(c => props.value ? props.value[c.id] || null : null),
       editing: false
     }
   }

@@ -24,6 +24,10 @@ export function createUid(): string;
 
 export function findItem(formDesign: FormDesign, itemId: string): Item | undefined
 
+export function allItems(formDesign: FormDesign): Item[]
+
+export function getSiteEntityType(question: Question): string
+
 export function getAnswerType(q: QuestionBase): AnswerType
 // function getRosterIds(formDesign: any): any;
 // function hasLocalizations(obj: any, locale: any): any;

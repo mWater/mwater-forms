@@ -2,6 +2,11 @@ import LocationFinder from "./LocationFinder";
 import { ReactNode } from "react";
 import { Row } from "mwater-expressions";
 
+export interface StickyStorage {
+  get(keyname: string): any
+  set(keyname: string, value: any): void
+}
+
 /** Form Questions have a context object which they use. */
 export interface FormContext {
   /** Used by ImageQuestion and ImagesQuestion */
@@ -23,10 +28,7 @@ export interface FormContext {
    * get(keyname) : gets object stored under keyname. null/undefined if none
    * set(keyname, value) : saves object as keyname
    */
-  stickyStorage?: {
-    get(keyname: string): any
-    set(keyname: string, value: any): void
-  }
+  stickyStorage?: StickyStorage
 
   /** Scans a barcode. Calls options.success with string if successful */
   scanBarcode?: (value: string) => void

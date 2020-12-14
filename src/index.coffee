@@ -32,7 +32,7 @@ exports.EntitySchemaBuilder = require './EntitySchemaBuilder'
 exports.AssignmentModel = require './AssignmentModel'
 exports.CustomTablesetSchemaBuilder = require('./CustomTablesetSchemaBuilder').CustomTablesetSchemaBuilder
 
-exports.ResponseDataExprValueUpdater = require './ResponseDataExprValueUpdater'
+exports.ResponseDataExprValueUpdater = require('./ResponseDataExprValueUpdater').default
 exports.ResponseRow = require('./ResponseRow').default
 exports.RotationAwareImageComponent = require './RotationAwareImageComponent'
 
