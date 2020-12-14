@@ -20,6 +20,7 @@ export { default as ImageUploaderModalComponent } from "./ImageUploaderModalComp
 export { CustomTablesetSchemaBuilder } from './CustomTablesetSchemaBuilder'
 export { default as RotationAwareImageComponent } from './RotationAwareImageComponent'
 export { default as FormSchemaBuilder } from './FormSchemaBuilder'
+export { default as ResponseDataExprValueUpdater } from './ResponseDataExprValueUpdater'
 
 // export class AdminRegionDataSource {
 //   constructor(apiUrl: any);
