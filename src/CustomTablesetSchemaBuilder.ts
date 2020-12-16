@@ -107,7 +107,7 @@ export class CustomTablesetSchemaBuilder {
                 toColumn: column.id
               }
             }
-            schema.addTable(produce(otherTable, draft => {
+            schema = schema.addTable(produce(otherTable, draft => {
               draft.contents.push(reverseColumn)
             }))
           }
