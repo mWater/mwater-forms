@@ -370,7 +370,7 @@ describe "FormSchemaBuilder addForm", ->
       schema = new FormSchemaBuilder().addForm(new Schema(), form, null, false)
       
       assert.isUndefined _.find(schema.getTable('responses:abc123').contents, {id: 'confidentialdata'})
-      assert.isUndefined schema.getColumn("responses:abc123", "confidentialData:a1:value")
+      assert.isNull schema.getColumn("responses:abc123", "confidentialData:a1:value")
 
   describe "Answer types", ->
     before ->

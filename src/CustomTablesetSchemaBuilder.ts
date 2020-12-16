@@ -1,5 +1,6 @@
+import produce from "immer"
 import _ from "lodash"
-import { Schema, Section, Column, Table, LocalizedString } from "mwater-expressions"
+import { Schema, Section, Column, Table, LocalizedString, flattenContents } from "mwater-expressions"
 
 // Custom tableset is defined in mwater-common
 
@@ -87,6 +88,31 @@ export class CustomTablesetSchemaBuilder {
 
       // Create table
       schema = schema.addTable(schemaTable)
+
+      // Add reverse joins to entities
+      for (const column of flattenContents(contents)) {
+        if (column.type == "id" && column.idTable!.match(/^entities\./)) {
+          const otherTable = schema.getTable(column.idTable!)
+          if (otherTable) {
+            const reverseColumn: Column = {
+              id: `!${tableId}:${column.id}`,
+              name: concatLocalizedStrings(schemaTable.name, ": ", column.name),
+              deprecated: column.deprecated || table.deprecated,
+              type: "join",
+              join: {
+                type: "1-n",
+                toTable: tableId,
+                inverse: column.id,
+                fromColumn: "_id",
+                toColumn: column.id
+              }
+            }
+            schema.addTable(produce(otherTable, draft => {
+              draft.contents.push(reverseColumn)
+            }))
+          }
+        }
+      }
     }
 
     return schema
