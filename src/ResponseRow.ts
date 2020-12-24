@@ -43,6 +43,9 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
   /** Deployment _id of the response */
   deployment: string
 
+  /** Optional submitted on */
+  submittedOn?: string
+
   // Create a response row from a response data object.
   // Options:
   //  responseData: data of entire response
@@ -85,6 +88,9 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
 
     /** Deployment _id of the response */
     deployment: string
+
+    /** Optional submitted on */
+    submittedOn?: string
   }) {
     this.formDesign = options.formDesign
     this.schema = options.schema
@@ -95,6 +101,7 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
     this.getEntityByCode = options.getEntityByCode
     this.getCustomTableRow = options.getCustomTableRow
     this.deployment = options.deployment
+    this.submittedOn = options.submittedOn
   }
 
   // Gets the response row for a roster entry
@@ -135,6 +142,10 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
 
     if (columnId === "deployment") {
       return this.deployment
+    }
+
+    if (columnId == "submittedOn") {
+      return this.submittedOn
     }
 
     // Handle "response" of roster

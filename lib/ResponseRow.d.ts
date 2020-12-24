@@ -26,6 +26,8 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
     getCustomTableRow: (tableId: string, rowId: string) => Promise<Row | null>;
     /** Deployment _id of the response */
     deployment: string;
+    /** Optional submitted on */
+    submittedOn?: string;
     constructor(options: {
         /** data of entire response */
         responseData: ResponseData;
@@ -49,6 +51,8 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
         getCustomTableRow: (tableId: string, rowId: string) => Promise<Row | null>;
         /** Deployment _id of the response */
         deployment: string;
+        /** Optional submitted on */
+        submittedOn?: string;
     });
     getRosterResponseRow(rosterId: string, rosterEntryIndex: number): ResponseRow;
     getPrimaryKey(): any;
