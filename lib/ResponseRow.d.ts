@@ -28,6 +28,8 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
     deployment: string;
     /** Optional submitted on */
     submittedOn?: string;
+    /** Optional code */
+    code?: string;
     constructor(options: {
         /** data of entire response */
         responseData: ResponseData;
@@ -53,6 +55,8 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
         deployment: string;
         /** Optional submitted on */
         submittedOn?: string;
+        /** Optional code */
+        code?: string;
     });
     getRosterResponseRow(rosterId: string, rosterEntryIndex: number): ResponseRow;
     getPrimaryKey(): any;
