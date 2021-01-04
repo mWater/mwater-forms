@@ -17,10 +17,9 @@ module.exports = class ResponseModel
 
   # Setup draft. deploymentId is optional _id of deployment to use for cases where ambiguous
   draft: (deploymentId) ->
-    if @response._id
-      throw new Error("Response already has _id")
-
-    @response._id = formUtils.createUid()
+    if not @response._id
+      @response._id = formUtils.createUid()
+      
     @response.form = @form._id
     @response.user = @user
     @response.username = @username
