@@ -4,7 +4,7 @@ export interface Response {
   _id: string
 
   /** Revision of response */
-  _rev: number
+  _rev?: number
 
   /** String code of the response. Unique-ish and short enough for human use */
   code?: string
@@ -85,7 +85,7 @@ export interface Response {
   //   }          
   // }
     
-  created: {
+  created?: {
     /** ISO8601 datetime */
     on: string
   
