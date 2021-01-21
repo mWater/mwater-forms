@@ -9,7 +9,7 @@ PromiseExprEvaluator = require('mwater-expressions').PromiseExprEvaluator
 ExprUtils = require('mwater-expressions').ExprUtils
 d3Format = require "d3-format"
 
-markdown = require("markdown").markdown
+Markdown = require("markdown-it")
 
 # Displays a text string with optional expressions embedded in it that are computed
 module.exports = class TextExprsComponent extends React.Component
@@ -65,7 +65,7 @@ module.exports = class TextExprsComponent extends React.Component
     )
 
     if @props.markdown
-      html = if str then markdown.toHTML(str) else ""
+      html = if str then new Markdown().render(str) else ""
       
       # Make sure links are external
       html = html.replace(/<a href=/g, '<a target="_blank" href=')

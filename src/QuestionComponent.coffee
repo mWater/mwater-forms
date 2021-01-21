@@ -4,7 +4,7 @@ React = require 'react'
 R = React.createElement
 
 formUtils = require './formUtils'
-markdown = require("markdown").markdown
+Markdown = require("markdown-it")
 TextExprsComponent = require './TextExprsComponent'
 
 LocationFinder = require './LocationFinder'
@@ -274,7 +274,7 @@ module.exports = class QuestionComponent extends React.Component
 
   renderHelp: ->
     if @state.helpVisible and @props.question.help
-      R 'div', className: "help well well-sm", dangerouslySetInnerHTML: { __html: markdown.toHTML(formUtils.localizeString(@props.question.help, @context.locale)) }
+      R 'div', className: "help well well-sm", dangerouslySetInnerHTML: { __html: new Markdown().render(formUtils.localizeString(@props.question.help, @context.locale)) }
 
   renderValidationError: ->
     if @state.validationError? and typeof(@state.validationError) == "string"
