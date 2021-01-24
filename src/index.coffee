@@ -1,7 +1,7 @@
 $ = require 'jquery'
 _ = require 'lodash'
-if process.browser
-  require('./index.css')
+
+require('./index.css')
 
 exports.ImageEditorComponent = require './ImageEditorComponent'
 exports.ImagelistEditorComponent = require './ImagelistEditorComponent'
