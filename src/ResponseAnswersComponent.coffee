@@ -43,6 +43,8 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
     onChangedLinkClick: PropTypes.func
     onCompleteHistoryLinkClick: PropTypes.func
 
+    hideCalculations: PropsTypes.bool # allows to hide the calculation section, used in assignments
+
   # Check if form design or data are different
   isLoadNeeded: (newProps, oldProps) ->
     return not _.isEqual(newProps.formDesign, oldProps.formDesign) or not _.isEqual(newProps.data, oldProps.data) 
@@ -564,7 +566,7 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
         R 'tbody', null, 
           _.map @props.formDesign.contents, (item) =>
             @renderItem(item, @state.visibilityStructure, item._id)
-      if @props.formDesign.calculations and @props.formDesign.calculations.length > 0 and @state.responseRow
+      if @props.formDesign.calculations and @props.formDesign.calculations.length > 0 and @state.responseRow and not @props.hideCalculations
         R 'div', key: "calculations",
           R 'h4', null, @props.T("Calculations")
           R CalculationsDisplayComponent, 
