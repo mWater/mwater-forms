@@ -26,7 +26,7 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
   @propTypes:
     formDesign: PropTypes.object.isRequired
     data: PropTypes.object.isRequired
-    schema: PropTypes.object.isRequired  # Schema of the 
+    schema: PropTypes.object.isRequired  # Schema of the
     deployment: PropTypes.string # Deployment id of the response
 
     hideEmptyAnswers: PropTypes.bool # True to hide empty answers
@@ -43,11 +43,11 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
     onChangedLinkClick: PropTypes.func
     onCompleteHistoryLinkClick: PropTypes.func
 
-    hideCalculations: PropsTypes.bool # allows to hide the calculation section, used in assignments
+    hideCalculations: PropTypes.bool # allows to hide the calculation section, used in assignments
 
   # Check if form design or data are different
   isLoadNeeded: (newProps, oldProps) ->
-    return not _.isEqual(newProps.formDesign, oldProps.formDesign) or not _.isEqual(newProps.data, oldProps.data) 
+    return not _.isEqual(newProps.formDesign, oldProps.formDesign) or not _.isEqual(newProps.data, oldProps.data)
 
   # Call callback with state changes
   load: (props, prevProps, callback) ->
@@ -71,7 +71,7 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
 
   renderLocation: (location) ->
     if location
-      return R 'div', null, 
+      return R 'div', null,
         R 'a', onClick: @handleLocationClick.bind(this, location), style: { cursor: "pointer" },
           "#{location.latitude}\u00B0 #{location.longitude}\u00B0"
           if location.accuracy? then "(+/-) #{location.accuracy.toFixed(3)} m"
@@ -83,7 +83,7 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
 
     # Handle alternates
     if answer.alternate
-      switch answer.alternate 
+      switch answer.alternate
         when "na"
           return R 'em', null, @props.T("Not Applicable")
         when "dontknow"
@@ -91,17 +91,17 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
 
     if answer.confidential?
       return R 'em', null, T("Redacted")
-    
+
     if not answer.value?
       return null
-    
+
     switch formUtils.getAnswerType(q)
       when "text"
         # Format as url if url
         if answer.value and answer.value.match(/^((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:,&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:,&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&,;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)$/)
           # Open in system window if in cordova
           target = if window.cordova? then "_system" else "_blank"
-          return R 'a', href: answer.value, target: target, 
+          return R 'a', href: answer.value, target: target,
             answer.value
 
         return answer.value
@@ -118,23 +118,23 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
 
           return R 'div', null,
             label
-            if specify 
-              ": "  
+            if specify
+              ": "
               R 'em', null, specify
         else
           return R 'span', className: "label label-danger", "Invalid Choice"
       when "choices"
-        return _.map answer.value, (v) => 
+        return _.map answer.value, (v) =>
           choice = _.findWhere(q.choices, { id: v })
           if choice
-            return R 'div', null, 
+            return R 'div', null,
               formUtils.localizeString(choice.label, @props.locale)
               if answer.specify? and answer.specify[v]
                 ": "
                 R 'em', null, answer.specify[v]
-          else 
+          else
             return R 'div', className: "label label-danger", "Invalid Choice"
-  
+
       when "date"
         # Depends on precision
         if answer.value.length <= 7   # YYYY or YYYY-MM
@@ -152,12 +152,12 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
           valueStr = "" + answer.value.quantity
           unitsStr = if units then formUtils.localizeString(units.label, @props.locale) else "(Invalid)"
 
-          if q.unitsPosition == "prefix" 
+          if q.unitsPosition == "prefix"
             return R 'div', null,
               R 'em', null, unitsStr
               " "
               valueStr
-          else 
+          else
             return R 'div', null,
               valueStr
               " "
@@ -188,7 +188,7 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
           code = code.code
 
         # Convert to new entity type
-        siteType = (if q.siteTypes then q.siteTypes[0]) or "water_point" 
+        siteType = (if q.siteTypes then q.siteTypes[0]) or "water_point"
         entityType = siteType.toLowerCase().replace(new RegExp(' ', 'g'), "_")
 
         return R(EntityDisplayComponent, {
@@ -227,7 +227,7 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
               return R 'span', className: "label label-danger", "Invalid Choice"
 
       when "aquagenx_cbt"
-        return R AquagenxCBTDisplayComponent, 
+        return R AquagenxCBTDisplayComponent,
           value: answer.value
           questionId: q._id
           imageManager: @props.formCtx.imageManager
@@ -311,7 +311,7 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
       return null
 
     prevAnswer = null
-    trProps = 
+    trProps =
       key: dataId
 
     if @props.prevData
@@ -335,7 +335,7 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
     if not _.isEqual(prevAnswer?.value, answer?.value) or not _.isEqual(prevAnswer?.specify, answer?.specify)
       if @props.highlightChanges
         trProps['style'] = { background: '#ffd'}
-    else 
+    else
       if @props.hideUnchangedAnswers
         return null
 
@@ -348,7 +348,7 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
             if not likertAnswer?
               @renderAnswer(q, answer, dataId)
             if answer and answer.timestamp
-              
+
                 @props.T('Answered')
                 ": "
                 moment(answer.timestamp).format('llll')
@@ -358,11 +358,11 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
             if answer and answer.comments
               R 'div', className: "text-muted",
                 answer.comments
-            
+
             if prevAnswer? and not _.isEqual(prevAnswer.value, answer?.value) and @props.showChangedLink
               R 'a', style: { float: 'right', display: 'inline-block', cursor: 'pointer', fontSize: 9 }, onClick: @props.onChangedLinkClick, key: 'view_change',
                 R ui.Icon, id: "glyphicon-pencil"
-                " " 
+                " "
                 T("Edited")
 
         if @props.showPrevAnswers and @props.prevData
@@ -506,11 +506,11 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
 
     if formUtils.isQuestion(item)
       return @renderQuestion(item, dataId)
-    
+
     if formUtils.isExpression(item)
       return @renderExpression(item, dataId)
 
-  renderExpression: (q, dataId) -> 
+  renderExpression: (q, dataId) ->
     return [
       R 'tr', key: dataId,
         R 'td', key: "name", style: { width: "50%" },
@@ -520,9 +520,9 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
             @renderExpressionAnswer(q, dataId)
 
         if @props.showPrevAnswers and @props.prevData
-          R 'td', key: "prevValue", null 
+          R 'td', key: "prevValue", null
     ]
-  
+
   renderExpressionAnswer: (q, dataId) ->
     rosterId = null
     rosterEntryIndex = undefined
@@ -549,13 +549,13 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
 
   render: ->
     if @state.error
-      return R 'div', className: "alert alert-danger", 
+      return R 'div', className: "alert alert-danger",
         @state.error.message
 
     if not @state.visibilityStructure
       return R 'div', null, "Loading..."
 
-    R 'div', null, 
+    R 'div', null,
       R 'table', className: "table table-bordered table-condensed", style: { marginBottom: 0 },
         R 'thead', null,
           R 'tr', null,
@@ -563,13 +563,13 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
             R 'th', null, "Answer"
             if @props.showPrevAnswers
               R 'th', null, "Original Answer"
-        R 'tbody', null, 
+        R 'tbody', null,
           _.map @props.formDesign.contents, (item) =>
             @renderItem(item, @state.visibilityStructure, item._id)
       if @props.formDesign.calculations and @props.formDesign.calculations.length > 0 and @state.responseRow and not @props.hideCalculations
         R 'div', key: "calculations",
           R 'h4', null, @props.T("Calculations")
-          R CalculationsDisplayComponent, 
+          R CalculationsDisplayComponent,
             formDesign: @props.formDesign
             schema: @props.schema
             responseRow: @state.responseRow
