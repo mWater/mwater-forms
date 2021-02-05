@@ -895,9 +895,10 @@ describe "ResponseDataExprValueUpdater", ->
       expr = {"type":"field","table":"responses:form1234","column":"data:q1234:value:c0"}
       @updater.updateData({ }, expr, "123", (error, data) =>
         assert error
+        assert.equal 'Column "Type" value 123 in question "Food" not found', error.message
         done()
       )
-
+    
     it "updates cascading answer", (done) ->
       expr1 = {"type":"field","table":"responses:form1234","column":"data:q1234:value:c0"}
       expr2 = {"type":"field","table":"responses:form1234","column":"data:q1234:value:c1"}
@@ -930,6 +931,7 @@ describe "ResponseDataExprValueUpdater", ->
           # This row combination doesn't exist, so it should fail here
           # If we waited for the cleaning, it would just remove bad data rather than flag it
           assert error
+          assert.equal 'Row referenced in question "Food" not found', error.message
 
           compare data, { q1234: { value: { c0: "FH75Bd8sGs" } } }
 

@@ -247,7 +247,7 @@ export default class ResponseDataExprValueUpdater {
 
     // Check that value is valid
     if (!_.find(colObj.enumValues, { id: value })) {
-      return callback(new Error(`Column ${column} value ${value} in question ${expr.column} not found`));
+      return callback(new Error(`Column "${colObj.name[colObj.name._base]}" value ${value} in question "${question.text[question.text._base]}" not found`));
     }
 
     // Get answer value and set new value
@@ -260,12 +260,11 @@ export default class ResponseDataExprValueUpdater {
     // Check that row possibly exists
     let rows = question.rows.slice();
     for (var key in answerValue) {
-      value = answerValue[key];
-      rows = _.filter(rows, r => r[key] === value);
+      rows = _.filter(rows, r => r[key] === answerValue[key]);
     }
 
     if (rows.length === 0) {
-      return callback(new Error(`Row referenced in question ${expr.column} not found`));
+      return callback(new Error(`Row referenced in question "${question.text[question.text._base]}" not found`));
     }
     
     return callback(null, this.setValue(data, question, answerValue));
