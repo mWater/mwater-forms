@@ -890,32 +890,39 @@ module.exports = class FormSchemaBuilder
             type: "geometry"
             name: item.text
             code: code
-            # ST_SetSRID(ST_MakePoint(data#>>'{questionid,value,longitude}'::decimal, data#>>'{questionid,value,latitude}'::decimal),4326)
+            # ST_Transform(ST_SetSRID(ST_MakePoint(data#>>'{questionid,value,longitude}'::decimal, data#>>'{questionid,value,latitude}'::decimal),4326), 3857)
             jsonql: {
               type: "op"
-              op: "ST_SetSRID"
+              op: "ST_Transform"
               exprs: [
                 {
                   type: "op"
-                  op: "ST_MakePoint"
+                  op: "ST_SetSRID"
                   exprs: [
                     {
                       type: "op"
-                      op: "::decimal"
+                      op: "ST_MakePoint"
                       exprs: [
-                        { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, "{#{item._id},value,longitude}"] }
+                        {
+                          type: "op"
+                          op: "::decimal"
+                          exprs: [
+                            { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, "{#{item._id},value,longitude}"] }
+                          ]
+                        }
+                        {
+                          type: "op"
+                          op: "::decimal"
+                          exprs: [
+                            { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, "{#{item._id},value,latitude}"] }
+                          ]
+                        }
                       ]
                     }
-                    {
-                      type: "op"
-                      op: "::decimal"
-                      exprs: [
-                        { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, "{#{item._id},value,latitude}"] }
-                      ]
-                    }
+                    4326
                   ]
                 }
-                4326
+                3857
               ]
             }
           }
@@ -1655,32 +1662,39 @@ module.exports = class FormSchemaBuilder
           type: "geometry"
           name: appendStr(item.text, " (Location Answered)")
           code: if code then code + " (Location Answered)"
-          # ST_SetSRID(ST_MakePoint(data#>>'{questionid,value,longitude}'::decimal, data#>>'{questionid,value,latitude}'::decimal),4326)
+          # ST_Transform(ST_SetSRID(ST_MakePoint(data#>>'{questionid,value,longitude}'::decimal, data#>>'{questionid,value,latitude}'::decimal),4326), 3857)
           jsonql: {
             type: "op"
-            op: "ST_SetSRID"
+            op: "ST_Transform"
             exprs: [
               {
                 type: "op"
-                op: "ST_MakePoint"
+                op: "ST_SetSRID"
                 exprs: [
                   {
                     type: "op"
-                    op: "::decimal"
+                    op: "ST_MakePoint"
                     exprs: [
-                      { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{#{item._id},location,longitude}"] }
+                      {
+                        type: "op"
+                        op: "::decimal"
+                        exprs: [
+                          { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{#{item._id},location,longitude}"] }
+                        ]
+                      }
+                      {
+                        type: "op"
+                        op: "::decimal"
+                        exprs: [
+                          { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{#{item._id},location,latitude}"] }
+                        ]
+                      }
                     ]
                   }
-                  {
-                    type: "op"
-                    op: "::decimal"
-                    exprs: [
-                      { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{#{item._id},location,latitude}"] }
-                    ]
-                  }
+                  4326
                 ]
               }
-              4326
+              3857
             ]
           }
         }
