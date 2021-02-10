@@ -78,7 +78,6 @@ module.exports = class TextListAnswerComponent extends React.Component
                   value: textLine
                   onChange: @handleChange.bind(null, index)
                   onKeyDown: @handleKeydown.bind(null, index)
-                  autoFocus: index == value.length - 1
                   onFocus: (ev) ->
                     # Necessary or else the cursor is set before the first character after a new line is created
                     ev.target.setSelectionRange(textLine.length, textLine.length)
