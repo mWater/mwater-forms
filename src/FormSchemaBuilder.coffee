@@ -331,7 +331,7 @@ module.exports = class FormSchemaBuilder
             when "text", "date", "datetime"
               column.jsonql = { type: "op", op: "::text", exprs: [{ type: "literal", value: null }] }
             when "boolean"
-              column.jsonql = { type: "op", op: "::text", exprs: [{ type: "boolean", value: null }] }
+              column.jsonql = { type: "op", op: "::boolean", exprs: [{ type: "literal", value: null }] }
             when "number"
               column.jsonql = { type: "op", op: "::numeric", exprs: [{ type: "literal", value: null }] }
             when "geometry"
