@@ -1752,7 +1752,7 @@ describe "FormSchemaBuilder addForm", ->
       schema = new FormSchemaBuilder().addForm(@schema, form, null, true, @indicators)
 
       # Check that indicator calculation not added
-      assert.deepEqual schema.getColumn("responses:formid", "indicator_calculation:ic1:num1").jsonql, { type: "literal", value: null }
+      assert.deepEqual schema.getColumn("responses:formid", "indicator_calculation:ic1:num1").jsonql, { type: "op", op: "::numeric", exprs: [{ type: "literal", value: null }] }
 
     it "adds indicators of indicators", ->
       # Create form with number question and indicator calculation

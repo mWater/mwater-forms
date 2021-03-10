@@ -326,7 +326,32 @@ module.exports = class FormSchemaBuilder
 
         # If no expression, jsonql null should be explicit so it doesn't just think there is no jsonql specified
         if not expression
-          column.jsonql = { type: "literal", value: null }
+          # Determine type
+          switch column.type
+            when "text", "date", "datetime"
+              column.jsonql = { type: "op", op: "::text", exprs: [{ type: "literal", value: null }] }
+            when "boolean"
+              column.jsonql = { type: "op", op: "::text", exprs: [{ type: "boolean", value: null }] }
+            when "number"
+              column.jsonql = { type: "op", op: "::numeric", exprs: [{ type: "literal", value: null }] }
+            when "geometry"
+              column.jsonql = { type: "op", op: "ST_SetSRID", exprs: [{ type: "op", op: "::geometry", exprs: [{ type: "literal", value: null }] }, 3857] }
+            when "image", "imagelist", "json", "text[]", "enumset"
+              column.jsonql = { type: "op", op: "::jsonb", exprs: [{ type: "literal", value: null }] }
+            when "id"
+              # admin_region has integer pk
+              if column.idTable == "admin_regions" or column.idTable.startsWith("regions.")
+                column.jsonql = { type: "op", op: "::integer", exprs: [{ type: "literal", value: null }] }
+              else
+                column.jsonql = { type: "op", op: "::text", exprs: [{ type: "literal", value: null }] }
+            when "id[]"
+              # admin_region has integer pk
+              if column.idTable == "admin_regions" or column.idTable.startsWith("regions.")
+                column.jsonql = { type: "op", op: "::integer[]", exprs: [{ type: "literal", value: null }] }
+              else
+                column.jsonql = { type: "op", op: "::text[]", exprs: [{ type: "literal", value: null }] }
+            else
+              column.jsonql = { type: "literal", value: null }
         else
           # Add condition if present
           if condition
