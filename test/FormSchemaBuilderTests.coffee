@@ -7,7 +7,7 @@ formUtils = require '../src/formUtils'
 confidentialDataForm = require './confidentialDataForm'
 
 compare = (actual, expected) ->
-  assert.equal canonical(actual), canonical(expected), "\n" + canonical(actual) + "\n" + canonical(expected) + "\n"
+  assert.equal canonical(actual), canonical(expected), "\nGOT:" + canonical(actual) + "\nEXP:" + canonical(expected) + "\n"
 
 describe "FormSchemaBuilder addForm", ->
   it "adds form as table", ->
@@ -847,36 +847,43 @@ describe "FormSchemaBuilder addForm", ->
           id: "data:questionid:value" 
           type: "geometry"
           name: { _base: "en", en: "Question" }
-          # ST_Transform(ST_SetSRID(ST_MakePoint(data#>>'{questionid,value,longitude}'::decimal, data#>>'{questionid,value,latitude}'::decimal),4326),3857)
+          # ST_Transform(ST_Intersection(ST_SetSRID(ST_MakePoint(data#>>'{questionid,value,longitude}'::decimal, data#>>'{questionid,value,latitude}'::decimal),4326), ST_MakeEnvelope(-180, -85, 180, 85, 4326)), 3857)
           jsonql: {
             type: "op"
             op: "ST_Transform"
             exprs: [
               {
                 type: "op"
-                op: "ST_SetSRID"
+                op: "ST_Intersection"
                 exprs: [
                   {
                     type: "op"
-                    op: "ST_MakePoint"
+                    op: "ST_SetSRID"
                     exprs: [
                       {
                         type: "op"
-                        op: "::decimal"
+                        op: "ST_MakePoint"
                         exprs: [
-                          { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,longitude}"] }
+                          {
+                            type: "op"
+                            op: "::decimal"
+                            exprs: [
+                              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,longitude}"] }
+                            ]
+                          }
+                          {
+                            type: "op"
+                            op: "::decimal"
+                            exprs: [
+                              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,latitude}"] }
+                            ]
+                          }
                         ]
                       }
-                      {
-                        type: "op"
-                        op: "::decimal"
-                        exprs: [
-                          { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,latitude}"] }
-                        ]
-                      }
+                      4326
                     ]
                   }
-                  4326
+                  { type: "op", op: "ST_MakeEnvelope", exprs: [-180, -85, 180, 85, 4326] }
                 ]
               }
               3857
@@ -897,36 +904,43 @@ describe "FormSchemaBuilder addForm", ->
                 # Make sure leaf node
                 { type: "field", tableAlias: "{to}", column: "leaf" }
                 { type: "op", op: "&&", exprs: [
-                  # ST_Transform(ST_SetSRID(ST_MakePoint(data#>>'{questionid,value,longitude}'::decimal, data#>>'{questionid,value,latitude}'::decimal),4326), 3857)
+                  # ST_Transform(ST_Intersection(ST_SetSRID(ST_MakePoint(data#>>'{questionid,value,longitude}'::decimal, data#>>'{questionid,value,latitude}'::decimal),4326), ST_MakeEnvelope(-180, -85, 180, 85, 4326) ), 3857)
                   {
                     type: "op"
                     op: "ST_Transform"
                     exprs: [
                       {
-                        type: "op"
-                        op: "ST_SetSRID"
+                        type: "op",
+                        op: "ST_Intersection"
                         exprs: [
                           {
                             type: "op"
-                            op: "ST_MakePoint"
+                            op: "ST_SetSRID"
                             exprs: [
                               {
                                 type: "op"
-                                op: "::decimal"
+                                op: "ST_MakePoint"
                                 exprs: [
-                                  { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{from}", column: "data" }, "{questionid,value,longitude}"] }
+                                  {
+                                    type: "op"
+                                    op: "::decimal"
+                                    exprs: [
+                                      { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{from}", column: "data" }, "{questionid,value,longitude}"] }
+                                    ]
+                                  }
+                                  {
+                                    type: "op"
+                                    op: "::decimal"
+                                    exprs: [
+                                      { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{from}", column: "data" }, "{questionid,value,latitude}"] }
+                                    ]
+                                  }
                                 ]
                               }
-                              {
-                                type: "op"
-                                op: "::decimal"
-                                exprs: [
-                                  { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{from}", column: "data" }, "{questionid,value,latitude}"] }
-                                ]
-                              }
-                            ]
+                              4326
+                            ] 
                           }
-                          4326
+                          { type: "op", op: "ST_MakeEnvelope", exprs: [-180, -85, 180, 85, 4326] }
                         ]
                       }
                       3857
@@ -941,30 +955,37 @@ describe "FormSchemaBuilder addForm", ->
                     op: "ST_Transform"
                     exprs: [
                       {
-                        type: "op"
-                        op: "ST_SetSRID"
+                        type: "op",
+                        op: "ST_Intersection"
                         exprs: [
                           {
                             type: "op"
-                            op: "ST_MakePoint"
+                            op: "ST_SetSRID"
                             exprs: [
                               {
                                 type: "op"
-                                op: "::decimal"
+                                op: "ST_MakePoint"
                                 exprs: [
-                                  { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{from}", column: "data" }, "{questionid,value,longitude}"] }
+                                  {
+                                    type: "op"
+                                    op: "::decimal"
+                                    exprs: [
+                                      { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{from}", column: "data" }, "{questionid,value,longitude}"] }
+                                    ]
+                                  }
+                                  {
+                                    type: "op"
+                                    op: "::decimal"
+                                    exprs: [
+                                      { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{from}", column: "data" }, "{questionid,value,latitude}"] }
+                                    ]
+                                  }
                                 ]
                               }
-                              {
-                                type: "op"
-                                op: "::decimal"
-                                exprs: [
-                                  { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{from}", column: "data" }, "{questionid,value,latitude}"] }
-                                ]
-                              }
+                              4326
                             ]
                           }
-                          4326
+                          { type: "op", op: "ST_MakeEnvelope", exprs: [-180, -85, 180, 85, 4326] }
                         ]
                       }
                       3857
@@ -1309,36 +1330,43 @@ describe "FormSchemaBuilder addForm", ->
           id: "data:questionid:location" 
           type: "geometry"
           name: { _base: "en", en: "Question (Location Answered)" }
-          # ST_Transform(ST_SetSRID(ST_MakePoint(data#>>'{questionid,location,longitude}'::decimal, data#>>'{questionid,location,latitude}'::decimal),4326), 3857)
+          # ST_Transform(ST_Intersection(ST_SetSRID(ST_MakePoint(data#>>'{questionid,location,longitude}'::decimal, data#>>'{questionid,location,latitude}'::decimal),4326), ST_MakeEnvelope(-180, -85, 180, 85, 4326)), 3857)
           jsonql: {
             type: "op"
             op: "ST_Transform"
             exprs: [
               {
-                type: "op"
-                op: "ST_SetSRID"
+                type: "op",
+                op: "ST_Intersection"
                 exprs: [
                   {
                     type: "op"
-                    op: "ST_MakePoint"
+                    op: "ST_SetSRID"
                     exprs: [
                       {
                         type: "op"
-                        op: "::decimal"
+                        op: "ST_MakePoint"
                         exprs: [
-                          { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,location,longitude}"] }
+                          {
+                            type: "op"
+                            op: "::decimal"
+                            exprs: [
+                              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,location,longitude}"] }
+                            ]
+                          }
+                          {
+                            type: "op"
+                            op: "::decimal"
+                            exprs: [
+                              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,location,latitude}"] }
+                            ]
+                          }
                         ]
                       }
-                      {
-                        type: "op"
-                        op: "::decimal"
-                        exprs: [
-                          { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,location,latitude}"] }
-                        ]
-                      }
+                      4326
                     ]
                   }
-                  4326
+                  { type: "op", op: "ST_MakeEnvelope", exprs: [-180, -85, 180, 85, 4326] }
                 ]
               }
               3857
