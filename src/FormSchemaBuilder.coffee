@@ -915,41 +915,7 @@ module.exports = class FormSchemaBuilder
             type: "geometry"
             name: item.text
             code: code
-            # ST_Transform(ST_SetSRID(ST_MakePoint(data#>>'{questionid,value,longitude}'::decimal, data#>>'{questionid,value,latitude}'::decimal),4326), 3857)
-            jsonql: {
-              type: "op"
-              op: "ST_Transform"
-              exprs: [
-                {
-                  type: "op"
-                  op: "ST_SetSRID"
-                  exprs: [
-                    {
-                      type: "op"
-                      op: "ST_MakePoint"
-                      exprs: [
-                        {
-                          type: "op"
-                          op: "::decimal"
-                          exprs: [
-                            { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, "{#{item._id},value,longitude}"] }
-                          ]
-                        }
-                        {
-                          type: "op"
-                          op: "::decimal"
-                          exprs: [
-                            { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, "{#{item._id},value,latitude}"] }
-                          ]
-                        }
-                      ]
-                    }
-                    4326
-                  ]
-                }
-                3857
-              ]
-            }
+            jsonql: createWebmercatorGeometry(dataColumn, "{#{item._id},value,latitude}", "{#{item._id},value,longitude}", "{alias}")
           }
           
           addColumn(column)
@@ -972,40 +938,7 @@ module.exports = class FormSchemaBuilder
           # Add admin region
           if item.calculateAdminRegion
             # ST_Transform(ST_SetSRID(ST_MakePoint(data#>>'{questionid,value,longitude}'::decimal, data#>>'{questionid,value,latitude}'::decimal),4326), 3857)
-            webmercatorLocation = {
-              type: "op"
-              op: "ST_Transform"
-              exprs: [
-                {
-                  type: "op"
-                  op: "ST_SetSRID"
-                  exprs: [
-                    {
-                      type: "op"
-                      op: "ST_MakePoint"
-                      exprs: [
-                        {
-                          type: "op"
-                          op: "::decimal"
-                          exprs: [
-                            { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{from}", column: dataColumn }, "{#{item._id},value,longitude}"] }
-                          ]
-                        }
-                        {
-                          type: "op"
-                          op: "::decimal"
-                          exprs: [
-                            { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{from}", column: dataColumn }, "{#{item._id},value,latitude}"] }
-                          ]
-                        }
-                      ]
-                    }
-                    4326
-                  ]
-                }
-                3857
-              ]
-            }
+            webmercatorLocation = createWebmercatorGeometry(dataColumn, "{#{item._id},value,latitude}", "{#{item._id},value,longitude}", "{from}")
 
             column = {
               id: "#{dataColumn}:#{item._id}:value:admin_region"
@@ -1659,11 +1592,11 @@ module.exports = class FormSchemaBuilder
       # Add comments
       if item.commentsField
         column = {
-          id: "data:#{item._id}:comments"
+          id: "#{dataColumn}:#{item._id}:comments"
           type: "text"
           name: appendStr(item.text, " (Comments)")
           code: if code then code + " (Comments)"
-          jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{#{item._id},comments}"] }
+          jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, "{#{item._id},comments}"] }
         }
 
         addColumn(column)
@@ -1671,11 +1604,11 @@ module.exports = class FormSchemaBuilder
       # Add timestamp
       if item.recordTimestamp
         column = {
-          id: "data:#{item._id}:timestamp"
+          id: "#{dataColumn}:#{item._id}:timestamp"
           type: "datetime"
           name: appendStr(item.text, " (Time Answered)")
           code: if code then code + " (Time Answered)"
-          jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{#{item._id},timestamp}"] }
+          jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, "{#{item._id},timestamp}"] }
         }
 
         addColumn(column)
@@ -1683,51 +1616,17 @@ module.exports = class FormSchemaBuilder
       # Add GPS stamp
       if item.recordLocation
         column = {
-          id: "data:#{item._id}:location"
+          id: "#{dataColumn}:#{item._id}:location"
           type: "geometry"
           name: appendStr(item.text, " (Location Answered)")
           code: if code then code + " (Location Answered)"
-          # ST_Transform(ST_SetSRID(ST_MakePoint(data#>>'{questionid,value,longitude}'::decimal, data#>>'{questionid,value,latitude}'::decimal),4326), 3857)
-          jsonql: {
-            type: "op"
-            op: "ST_Transform"
-            exprs: [
-              {
-                type: "op"
-                op: "ST_SetSRID"
-                exprs: [
-                  {
-                    type: "op"
-                    op: "ST_MakePoint"
-                    exprs: [
-                      {
-                        type: "op"
-                        op: "::decimal"
-                        exprs: [
-                          { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{#{item._id},location,longitude}"] }
-                        ]
-                      }
-                      {
-                        type: "op"
-                        op: "::decimal"
-                        exprs: [
-                          { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{#{item._id},location,latitude}"] }
-                        ]
-                      }
-                    ]
-                  }
-                  4326
-                ]
-              }
-              3857
-            ]
-          }
+          jsonql: createWebmercatorGeometry("data", "{#{item._id},location,latitude}", "{#{item._id},location,longitude}", "{alias}")
         }
 
         addColumn(column)
 
         column = {
-          id: "data:#{item._id}:location:accuracy"
+          id: "#{dataColumn}:#{item._id}:location:accuracy"
           type: "number"
           name: appendStr(item.text, " (Location Answered - accuracy)")
           code: if code then code + " (Location Answered - accuracy)"
@@ -1736,7 +1635,7 @@ module.exports = class FormSchemaBuilder
             type: "op"
             op: "::decimal"
             exprs: [
-              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{#{item._id},location,accuracy}"] }
+              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, "{#{item._id},location,accuracy}"] }
             ]
           }
         }
@@ -1744,7 +1643,7 @@ module.exports = class FormSchemaBuilder
         addColumn(column)
 
         column = {
-          id: "data:#{item._id}:location:altitude"
+          id: "#{dataColumn}:#{item._id}:location:altitude"
           type: "number"
           name: appendStr(item.text, " (Location Answered - altitude)")
           code: if code then code + " (Location Answered - altitude)"
@@ -1753,7 +1652,7 @@ module.exports = class FormSchemaBuilder
             type: "op"
             op: "::decimal"
             exprs: [
-              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{#{item._id},location,altitude}"] }
+              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, "{#{item._id},location,altitude}"] }
             ]
           }
         }
@@ -1763,7 +1662,7 @@ module.exports = class FormSchemaBuilder
       # Add n/a
       if item.alternates and item.alternates.na
         column = {
-          id: "data:#{item._id}:na"
+          id: "#{dataColumn}:#{item._id}:na"
           type: "boolean"
           name: appendStr(item.text, " (Not Applicable)")
           code: if code then code + " (Not Applicable)"
@@ -1776,7 +1675,7 @@ module.exports = class FormSchemaBuilder
                 type: "op"
                 op: "="
                 exprs: [
-                  { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{#{item._id},alternate}"] }
+                  { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, "{#{item._id},alternate}"] }
                   "na"
                 ]
               }
@@ -1789,7 +1688,7 @@ module.exports = class FormSchemaBuilder
 
       if item.alternates and item.alternates.dontknow
         column = {
-          id: "data:#{item._id}:dontknow"
+          id: "#{dataColumn}:#{item._id}:dontknow"
           type: "boolean"
           name: appendStr(item.text, " (Don't Know)")
           code: if code then code + " (Don't Know)"
@@ -1802,7 +1701,7 @@ module.exports = class FormSchemaBuilder
                 type: "op"
                 op: "="
                 exprs: [
-                  { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{#{item._id},alternate}"] }
+                  { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, "{#{item._id},alternate}"] }
                   "dontknow"
                 ]
               }
@@ -1816,7 +1715,7 @@ module.exports = class FormSchemaBuilder
       # Add randomAsked if randomAsked
       if item.randomAskProbability? 
         column = {
-          id: "data:#{item._id}:randomAsked"
+          id: "#{dataColumn}:#{item._id}:randomAsked"
           type: "boolean"
           name: appendStr(item.text, " (Randomly Asked)")
           code: if code then code + " (Randomly Asked)"
@@ -1824,7 +1723,7 @@ module.exports = class FormSchemaBuilder
             type: "op"
             op: "::boolean"
             exprs: [
-              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{#{item._id},randomAsked}"] }
+              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, "{#{item._id},randomAsked}"] }
             ]
           }
         }
@@ -1847,7 +1746,7 @@ module.exports = class FormSchemaBuilder
           }
 
           column = {
-            id: "data:#{item._id}:visible"
+            id: "#{dataColumn}:#{item._id}:visible"
             type: "boolean"
             name: appendStr(item.text, " (Asked)")
             code: if code then code + " (Asked)"
@@ -1956,3 +1855,42 @@ formizeIndicatorPropertyExpr = (expr, form, indicatorCalculation, indicator) ->
     else
       return formizeIndicatorPropertyExpr(value, form, indicatorCalculation, indicator)
   )
+
+# Create a webmercator geometry from a lat/lng
+createWebmercatorGeometry = (dataColumn, latPath, lngPath, tableAlias) ->
+  # e.g. ST_Transform(ST_SetSRID(ST_MakePoint(data#>>'{questionid,value,longitude}'::decimal, data#>>'{questionid,value,latitude}'::decimal),4326), 3857)
+  return {
+    type: "op"
+    op: "ST_Transform"
+    exprs: [
+      {
+        type: "op"
+        op: "ST_SetSRID"
+        exprs: [
+          {
+            type: "op"
+            op: "ST_MakePoint"
+            exprs: [
+              {
+                type: "op"
+                op: "::decimal"
+                exprs: [
+                  { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: tableAlias, column: dataColumn }, lngPath] }
+                ]
+              }
+              {
+                type: "op"
+                op: "::decimal"
+                exprs: [
+                  { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: tableAlias, column: dataColumn }, latPath] }
+                ]
+              }
+            ]
+          }
+          4326
+        ]
+      }
+      3857
+    ]
+  }
+
