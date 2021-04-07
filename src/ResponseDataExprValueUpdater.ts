@@ -112,7 +112,7 @@ export default class ResponseDataExprValueUpdater {
   updateData(data: ResponseData, expr: Expr, value: any, callback: (error: any, responseData?: ResponseData) => void) {
     let matches;
     if (!expr || !this.canUpdate(expr)) {
-      callback(new Error("Cannot update expression"));
+      callback(new Error(`Cannot update expression: ${JSON.stringify(expr)}`));
       return;
     }
 
