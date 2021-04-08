@@ -39,7 +39,7 @@ module.exports = class ResponseDataValidator
 
         for entry, index in rosterData
           # Key prefix is itemid.indexinroster.
-          result = await @validateParentItem(item, visibilityStructure, entry.data, schema, responseRow, "#{keyPrefix}#{answerId}.#{index}.")
+          result = await @validateParentItem(item, visibilityStructure, entry.data, schema, responseRow.getRosterResponseRow(entry._id, index), "#{keyPrefix}#{answerId}.#{index}.")
           if result?
             return { 
               questionId: "#{item._id}.#{index}.#{result.questionId}"

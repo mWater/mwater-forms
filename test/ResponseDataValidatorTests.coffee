@@ -1,6 +1,7 @@
 assert = require('chai').assert
 ResponseDataValidator = require '../src/ResponseDataValidator'
 VisibilityCalculator = require '../src/VisibilityCalculator'
+ResponseRow = require('../src/ResponseRow').default
 Schema = require('mwater-expressions').Schema
 canonical = require 'canonical-json'
 
@@ -252,10 +253,14 @@ describe "ResponseDataValidator", ->
     it "required", (done) ->
       # Question a should be complaining (answer to a required)
       data = {matrix01: [data: {b: {value: 33}}]}
+      @responseRow = new ResponseRow({
+        responseData: data,
+        formDesign: @design
+      })
       validator = new ResponseDataValidator()
       visibilityCalculator = new VisibilityCalculator(@design)
       visibilityCalculator.createVisibilityStructure(data, @responseRow, (error, visibilityStructure) =>
-        result = await validator.validate(@design, visibilityStructure, data)
+        result = await validator.validate(@design, visibilityStructure, data, null, @responseRow)
         assert.equal result.questionId, 'matrix01.0.a'
         assert.equal result.error, true
         done()
@@ -264,10 +269,14 @@ describe "ResponseDataValidator", ->
     it "too long", (done) ->
       # Question a2 should be complaining (answer to a is too long)
       data = {matrix01: [data: {a: {value: 'something'}, a2: {value: 'too long'}, b: {value: 33}}]}
+      @responseRow = new ResponseRow({
+        responseData: data,
+        formDesign: @design
+      })
       validator = new ResponseDataValidator()
       visibilityCalculator = new VisibilityCalculator(@design)
       visibilityCalculator.createVisibilityStructure(data, @responseRow, (error, visibilityStructure) =>
-        result = await validator.validate(@design, visibilityStructure, data)
+        result = await validator.validate(@design, visibilityStructure, data, null, @responseRow)
         assert.equal result.questionId, 'matrix02.0.a2'
         assert.equal result.error, 'String is too long'
         done()
@@ -276,10 +285,14 @@ describe "ResponseDataValidator", ->
     it "ok", (done) ->
       # Everything should be fine
       data = {matrix01: [data: {a: {value: 'something'}, a2: {value: 'court'}, b: {value: 33}}]}
+      @responseRow = new ResponseRow({
+        responseData: data,
+        formDesign: @design
+      })
       validator = new ResponseDataValidator()
       visibilityCalculator = new VisibilityCalculator(@design)
       visibilityCalculator.createVisibilityStructure(data, @responseRow, (error, visibilityStructure) =>
-        result = await validator.validate(@design, visibilityStructure, data)
+        result = await validator.validate(@design, visibilityStructure, data, null, @responseRow)
         assert.isNull result
         done()
       )
@@ -433,10 +446,14 @@ describe "ResponseDataValidator", ->
           data: {a: {value: 'trop long'}}
         }]
       }
+      @responseRow = new ResponseRow({
+        responseData: data,
+        formDesign: @design
+      })
       validator = new ResponseDataValidator()
       visibilityCalculator = new VisibilityCalculator(@design)
       visibilityCalculator.createVisibilityStructure(data, @responseRow, (error, visibilityStructure) =>
-        result = await validator.validate(@design, visibilityStructure, data)
+        result = await validator.validate(@design, visibilityStructure, data, null, @responseRow)
         assert.equal result.questionId, 'secondRosterGroupId.0.a'
         assert.equal result.error, 'String is too long'
         done()
@@ -448,10 +465,14 @@ describe "ResponseDataValidator", ->
           data: {}
         ]
       }
+      @responseRow = new ResponseRow({
+        responseData: data,
+        formDesign: @design
+      })
       validator = new ResponseDataValidator()
       visibilityCalculator = new VisibilityCalculator(@design)
       visibilityCalculator.createVisibilityStructure(data, @responseRow, (error, visibilityStructure) =>
-        result = await validator.validate(@design, visibilityStructure, data)
+        result = await validator.validate(@design, visibilityStructure, data, null, @responseRow)
         assert.equal result.questionId, 'secondRosterGroupId.0.a'
         # TODO, Should give a better error than that!
         assert.equal result.error, true
@@ -465,10 +486,14 @@ describe "ResponseDataValidator", ->
           data: {a: {value: 'court'}}
         }]
       }
+      @responseRow = new ResponseRow({
+        responseData: data,
+        formDesign: @design
+      })
       validator = new ResponseDataValidator()
       visibilityCalculator = new VisibilityCalculator(@design)
       visibilityCalculator.createVisibilityStructure(data, @responseRow, (error, visibilityStructure) =>
-        result = await validator.validate(@design, visibilityStructure, data)
+        result = await validator.validate(@design, visibilityStructure, data, null, @responseRow)
         assert.isNull result
         done()
       )
