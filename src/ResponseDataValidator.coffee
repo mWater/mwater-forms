@@ -36,10 +36,11 @@ module.exports = class ResponseDataValidator
       if item._type in ["RosterGroup", "RosterMatrix"]
         answerId = item.rosterId or item._id
         rosterData = data[answerId] or []
+        rosterResponseRows = await responseRow.followJoin(answerId)
 
         for entry, index in rosterData
           # Key prefix is itemid.indexinroster.
-          result = await @validateParentItem(item, visibilityStructure, entry.data, schema, responseRow, "#{keyPrefix}#{answerId}.#{index}.")
+          result = await @validateParentItem(item, visibilityStructure, entry.data, schema, rosterResponseRows[index], "#{keyPrefix}#{answerId}.#{index}.")
           if result?
             return { 
               questionId: "#{item._id}.#{index}.#{result.questionId}"

@@ -255,7 +255,7 @@ describe "ResponseDataValidator", ->
       validator = new ResponseDataValidator()
       visibilityCalculator = new VisibilityCalculator(@design)
       visibilityCalculator.createVisibilityStructure(data, @responseRow, (error, visibilityStructure) =>
-        result = await validator.validate(@design, visibilityStructure, data)
+        result = await validator.validate(@design, visibilityStructure, data, null, @responseRow)
         assert.equal result.questionId, 'matrix01.0.a'
         assert.equal result.error, true
         done()
@@ -267,7 +267,7 @@ describe "ResponseDataValidator", ->
       validator = new ResponseDataValidator()
       visibilityCalculator = new VisibilityCalculator(@design)
       visibilityCalculator.createVisibilityStructure(data, @responseRow, (error, visibilityStructure) =>
-        result = await validator.validate(@design, visibilityStructure, data)
+        result = await validator.validate(@design, visibilityStructure, data, null, @responseRow)
         assert.equal result.questionId, 'matrix02.0.a2'
         assert.equal result.error, 'String is too long'
         done()
@@ -279,7 +279,7 @@ describe "ResponseDataValidator", ->
       validator = new ResponseDataValidator()
       visibilityCalculator = new VisibilityCalculator(@design)
       visibilityCalculator.createVisibilityStructure(data, @responseRow, (error, visibilityStructure) =>
-        result = await validator.validate(@design, visibilityStructure, data)
+        result = await validator.validate(@design, visibilityStructure, data, null, @responseRow)
         assert.isNull result
         done()
       )
@@ -335,7 +335,7 @@ describe "ResponseDataValidator", ->
       validator = new ResponseDataValidator()
       visibilityCalculator = new VisibilityCalculator(@design)
       visibilityCalculator.createVisibilityStructure(data, @responseRow, (error, visibilityStructure) =>
-        result = await validator.validate(@design, visibilityStructure, data)
+        result = await validator.validate(@design, visibilityStructure, data, null, @responseRow)
         assert.equal result.questionId, 'matrix01.item1.a'
         assert.equal result.error, 'String is too long'
         done()
@@ -347,7 +347,7 @@ describe "ResponseDataValidator", ->
       validator = new ResponseDataValidator()
       visibilityCalculator = new VisibilityCalculator(@design)
       visibilityCalculator.createVisibilityStructure(data, @responseRow, (error, visibilityStructure) =>
-        result = await validator.validate(@design, visibilityStructure, data)
+        result = await validator.validate(@design, visibilityStructure, data, null, @responseRow)
         assert.equal result.questionId, 'matrix01.item1.a'
         assert.equal result.error, true
         done()
@@ -359,7 +359,7 @@ describe "ResponseDataValidator", ->
       validator = new ResponseDataValidator()
       visibilityCalculator = new VisibilityCalculator(@design)
       visibilityCalculator.createVisibilityStructure(data, @responseRow, (error, visibilityStructure) =>
-        result = await validator.validate(@design, visibilityStructure, data)
+        result = await validator.validate(@design, visibilityStructure, data, null, @responseRow)
         # debugger
         assert.equal result.questionId, 'matrix01.item2.a'
         assert.equal result.error, true
@@ -380,7 +380,7 @@ describe "ResponseDataValidator", ->
       validator = new ResponseDataValidator()
       visibilityCalculator = new VisibilityCalculator(@design)
       visibilityCalculator.createVisibilityStructure(data, @responseRow, (error, visibilityStructure) =>
-        result = await validator.validate(@design, visibilityStructure, data)
+        result = await validator.validate(@design, visibilityStructure, data, null, @responseRow)
         assert.isNull result
         done()
       )
@@ -436,7 +436,7 @@ describe "ResponseDataValidator", ->
       validator = new ResponseDataValidator()
       visibilityCalculator = new VisibilityCalculator(@design)
       visibilityCalculator.createVisibilityStructure(data, @responseRow, (error, visibilityStructure) =>
-        result = await validator.validate(@design, visibilityStructure, data)
+        result = await validator.validate(@design, visibilityStructure, data, null, @responseRow)
         assert.equal result.questionId, 'secondRosterGroupId.0.a'
         assert.equal result.error, 'String is too long'
         done()
@@ -451,7 +451,7 @@ describe "ResponseDataValidator", ->
       validator = new ResponseDataValidator()
       visibilityCalculator = new VisibilityCalculator(@design)
       visibilityCalculator.createVisibilityStructure(data, @responseRow, (error, visibilityStructure) =>
-        result = await validator.validate(@design, visibilityStructure, data)
+        result = await validator.validate(@design, visibilityStructure, data, null, @responseRow)
         assert.equal result.questionId, 'secondRosterGroupId.0.a'
         # TODO, Should give a better error than that!
         assert.equal result.error, true
@@ -468,7 +468,7 @@ describe "ResponseDataValidator", ->
       validator = new ResponseDataValidator()
       visibilityCalculator = new VisibilityCalculator(@design)
       visibilityCalculator.createVisibilityStructure(data, @responseRow, (error, visibilityStructure) =>
-        result = await validator.validate(@design, visibilityStructure, data)
+        result = await validator.validate(@design, visibilityStructure, data, null, @responseRow)
         assert.isNull result
         done()
       )
