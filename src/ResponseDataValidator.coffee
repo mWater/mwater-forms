@@ -36,7 +36,7 @@ module.exports = class ResponseDataValidator
       if item._type in ["RosterGroup", "RosterMatrix"]
         answerId = item.rosterId or item._id
         rosterData = data[answerId] or []
-        rosterResponseRows = await responseRow.followJoin(answerId)
+        rosterResponseRows = await responseRow.followJoin("data:#{answerId}")
 
         for entry, index in rosterData
           # Key prefix is itemid.indexinroster.
