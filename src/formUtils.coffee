@@ -495,3 +495,4 @@ exports.getCustomTablesReferenced = (formDesign) ->
 
   crqs = _.filter(items, (item) => item._type == "CascadingRefQuestion")
   tableIds = _.uniq(_.pluck(crqs, "tableId"))
+  return tableIds
