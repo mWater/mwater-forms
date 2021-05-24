@@ -489,7 +489,7 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
         rows = []
         rows.push R 'tr', key: item._id,
           R 'td', colSpan: colspan, style: { fontWeight: "bold" },
-            formUtils.localizeString(item.name, @props.locale)
+            formUtils.localizeString(item.text, @props.locale)
         for rowItem in item.items
           itemValue = answer.value[rowItem.id]
           if itemValue
