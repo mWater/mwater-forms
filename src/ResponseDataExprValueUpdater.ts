@@ -570,7 +570,7 @@ export default class ResponseDataExprValueUpdater {
     if (question._type === "SiteQuestion") {
       // Site questions store code
       selectExpr = { type: "field", tableAlias: "main", column: "code" };
-    } else if (["EntityQuestion", "AdminRegionQuestion"].includes(question._type)) {
+    } else if (["EntityQuestion", "AdminRegionQuestion", "CascadingRefQuestion"].includes(question._type)) {
       // Entity question store id
       selectExpr = { type: "field", tableAlias: "main", column: "_id" };
     } else {
