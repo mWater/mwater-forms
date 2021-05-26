@@ -3,7 +3,7 @@ import formUtils from './formUtils'
 import ResponseCleaner from './ResponseCleaner'
 import VisibilityCalculator, { VisibilityStructure } from './VisibilityCalculator'
 import RandomAskedCalculator from './RandomAskedCalculator'
-import { DataSource, Expr, ExprCompiler, FieldExpr, OpExpr, ScalarExpr, Schema } from 'mwater-expressions'
+import { DataSource, Expr, ExprCompiler, FieldExpr, OpExpr, Row, ScalarExpr, Schema } from 'mwater-expressions'
 import ResponseDataValidator, { ResponseDataValidatorError } from './ResponseDataValidator'
 import { CascadingListQuestion, FormDesign, Item, Question, QuestionBase } from './formDesign'
 import { Answer, AquagenxCBTAnswerValue, CascadingListAnswerValue, ChoicesAnswerValue, ResponseData } from './response'
@@ -129,9 +129,32 @@ export default class ResponseDataExprValueUpdater {
     })
   }
 
-  // Updates the data of a response, given an expression and its value. For example,
-  // if there is a text field in question q1234, the expression { type: "field", table: "responses:form123", column: "data:q1234:value" }
-  // refers to the text field value. Setting it will set data.q1234.value in the data.
+  /** Updates the data of a response, given multiple expressions and their values.
+   * This is the preferred way to do multiple updates instead of calling updateData repeatedly,
+   * as some expressions may depend on another. For example, if there are two scalar expressions
+   * for the same join, then the search for the underlying id value must take into account 
+   * both constraints (e.g. updating based on water point name and type)
+   */
+  async updateDataMultiple(data: ResponseData, exprValues: { expr: Expr, value: any }[]): Promise<ResponseData> {
+    // Do all updates except for scalar ones
+    for (const exprValue of exprValues.filter(ev => ev.expr!.type != "scalar")) {
+      data = await this.updateData(data, exprValue.expr, exprValue.value)
+    }
+
+    // Group scalar ones by join and perform each as a group
+    const scalarEvs = exprValues.filter(ev => ev.expr!.type == "scalar").map(ev => ({ expr: ev.expr as ScalarExpr, value: ev.value }))
+    const grouped = _.groupBy(scalarEvs, ev => ev.expr.joins[0])
+    for (const group of Object.values(grouped)) {
+      data = await this.updateScalar(data, group[0].expr.joins[0], group.map(ev => ({ expr: ev.expr.expr, value: ev.value })))
+    }
+
+    return data
+  }
+
+  /** Updates the data of a response, given an expression and its value. For example,
+   * if there is a text field in question q1234, the expression { type: "field", table: "responses:form123", column: "data:q1234:value" }
+   * refers to the text field value. Setting it will set data.q1234.value in the data.
+   */
   updateData(data: ResponseData, expr: Expr, value: any): Promise<ResponseData>;
   updateData(data: ResponseData, expr: Expr, value: any, callback: (error: any, responseData?: ResponseData) => void): void;
   updateData(data: ResponseData, expr: Expr, value: any, callback?: (error: any, responseData?: ResponseData) => void): void | Promise<ResponseData> {
@@ -261,11 +284,13 @@ export default class ResponseDataExprValueUpdater {
 
     // Can update scalar with single join, non-aggr
     if ((expr.type === "scalar") && (expr.joins.length === 1) && expr.joins[0].match(/^data:.+:value$/)) {
-      this.updateScalar(data, expr, value, callback); 
-      return;
+      this.updateScalar(data, expr.joins[0], [{ expr: expr.expr, value }])
+        .then(result => callback(null, result))
+        .catch(error => callback(error))
+      return
     }
 
-    return callback(new Error(`Cannot update expr ${JSON.stringify(expr)}`));
+    return callback(new Error(`Cannot update expr ${JSON.stringify(expr)}`))
   }
 
   // Updates a value of a cascading list question
@@ -319,7 +344,7 @@ export default class ResponseDataExprValueUpdater {
     // Get type of answer
     const answerType = formUtils.getAnswerType(question as Question);
     switch (answerType) {
-      case "text": case "number": case "choice": case "choices": case "date": case "boolean": case "image": case "images": case "texts":
+      case "text": case "number": case "choice": case "choices": case "date": case "boolean": case "image": case "images": case "texts": case "cascading_ref": 
         return callback(null, this.setValue(data, question, value));
       case "location":
         // Convert from GeoJSON to lat/lng
@@ -336,7 +361,9 @@ export default class ResponseDataExprValueUpdater {
       case "site":
         // Pretend it was a scalar update, as there is already code for that
         var entityType = formUtils.getSiteEntityType(question);
-        return this.updateScalar(data, { type: "scalar", joins: [expr.column], table: expr.table, expr: { type: "id", table: `entities.${entityType}` }}, value, callback);
+        return this.updateScalar(data, expr.column, [{ expr: { type: "id", table: `entities.${entityType}` }, value }])
+          .then(result => callback(null, result))
+          .catch(error => callback(error))
       default:
         return callback(new Error(`Answer type ${answerType} not supported`)); 
     }
@@ -587,76 +614,92 @@ export default class ResponseDataExprValueUpdater {
     return this.setAnswer(data, question, answer);
   }
 
-  updateScalar(data: ResponseData, expr: ScalarExpr, value: any, callback: (error: any, responseData?: ResponseData) => void) {
+  /** Update a scalar, which may have multiple expressions to determine the row referenced */
+  async updateScalar(data: ResponseData, join: string, exprValues: { expr: Expr, value: any }[]): Promise<ResponseData> {
     let selectExpr;
-    const question = this.formItems[expr.joins[0].match(/^data:([^:]+):value$/)![1]] as (Question | undefined)
+    
+    // Lookup question
+    const question = this.formItems[join.match(/^data:([^:]+):value$/)![1]] as (Question | undefined)
     if (!question) {
-      return callback(new Error(`Question ${expr.joins[0]} not found`));
+      throw new Error(`Question ${join} not found`)
     }
 
-    // If null, remove
-    if ((value == null)) {
-      return callback(null, this.setValue(data, question, null));
+    // If all values null, remove
+    if (exprValues.every(ev => ev.value == null)) {
+      return this.setValue(data, question, null)
     }
 
     // Shortcut for site question where we have code already
-    if ((question._type === "SiteQuestion") && ((expr.expr as FieldExpr).column === "code")) {
-      return callback(null, this.setValue(data, question, { code: value }));
+    if (question._type === "SiteQuestion" 
+      && exprValues.length == 1 
+      && exprValues[0].expr!.type == "field"
+      && ((exprValues[0].expr as FieldExpr).column === "code")) {
+      return this.setValue(data, question, { code: exprValues[0].value })
     }
       
     // Create query to get _id or code, depending on question type
-    const exprCompiler = new ExprCompiler(this.schema);
+    const exprCompiler = new ExprCompiler(this.schema)
     if (question._type === "SiteQuestion") {
       // Site questions store code
-      selectExpr = { type: "field", tableAlias: "main", column: "code" };
-    } else if (["EntityQuestion", "AdminRegionQuestion"].includes(question._type)) {
-      // Entity question store id
-      selectExpr = { type: "field", tableAlias: "main", column: "_id" };
+      selectExpr = { type: "field", tableAlias: "main", column: "code" }
+    } else if (["EntityQuestion", "AdminRegionQuestion", "CascadingRefQuestion"].includes(question._type)) {
+      // Entity question etc store _id 
+      selectExpr = { type: "field", tableAlias: "main", column: "_id" }
     } else {
-      throw new Error(`Unsupported type ${question._type}`);
+      throw new Error(`Unsupported type ${question._type}`)
     }
 
     // Query matches to the expression, limiting to 2 as we want exactly one match
+    const table = (exprValues[0].expr as FieldExpr).table
     const query = {
       type: "query",
       selects: [
         { type: "select", expr: selectExpr, alias: "value" }
       ],
-      from: { type: "table", table: (expr.expr as FieldExpr).table, alias: "main" },
+      from: { type: "table", table: table, alias: "main" },
       where: {
         type: "op",
-        op: "=",
-        exprs: [
-          exprCompiler.compileExpr({expr: expr.expr, tableAlias: "main"}),
-          value
-        ]
+        op: "and",
+        exprs: exprValues.map(ev => (
+          {
+            type: "op",
+            op: "=",
+            exprs: [
+              exprCompiler.compileExpr({ expr: ev.expr, tableAlias: "main"}),
+              ev.value
+            ]
+          }
+        ))
       },
       limit: 2
-    };
+    }
 
     // Perform query
-    return this.dataSource.performQuery(query, (error, rows) => {
+    const rows = await new Promise<Row[]>((resolve, reject) => this.dataSource.performQuery(query, (error, rows) => {
       if (error) {
-        return callback(error);
+        return reject(error)
       }
+      else {
+        resolve(rows)
+      }
+    }))
 
-      // Only one result
-      if (rows.length === 0) {
-        return callback(new Error(`Value ${value} not found`));
-      }
+    // Only one result
+    if (rows.length === 0) {
+      throw new Error(`Value ${exprValues.map(ev => ev.value + "").join(", ")} not found`)
+    }
 
-      if (rows.length > 1) {
-        return callback(new Error(`Value ${value} has multiple matches`));
-      }
+    if (rows.length > 1) {
+      throw new Error(`Value ${exprValues.map(ev => ev.value + "").join(", ")} has multiple matches`)
+    }
 
-      // Set value
-      if (question._type === "SiteQuestion") {
-        return callback(null, this.setValue(data, question, { code: rows[0].value }));
-      } else if (["EntityQuestion", "AdminRegionQuestion"].includes(question._type)) {
-        return callback(null, this.setValue(data, question, rows[0].value));
-      } else {
-        throw new Error(`Unsupported type ${question._type}`);
-      }
-    });
+    // Set value
+    if (question._type === "SiteQuestion") {
+      return this.setValue(data, question, { code: rows[0].value })
+    } else if (["EntityQuestion", "AdminRegionQuestion", "CascadingRefQuestion"].includes(question._type)) {
+      return this.setValue(data, question, rows[0].value)
+    } else {
+      throw new Error(`Unsupported type ${question._type}`)
+    }
   }
 }

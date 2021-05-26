@@ -5,7 +5,7 @@ Schema = require('mwater-expressions').Schema
 canonical = require 'canonical-json'
 
 compare = (actual, expected) ->
-  assert.equal canonical(actual), canonical(expected), "\n" + canonical(actual) + "\n" + canonical(expected) + "\n"
+  assert.equal canonical(actual), canonical(expected), "\ngot:" + canonical(actual) + "\nexp:" + canonical(expected) + "\n"
 
 describe "ResponseDataExprValueUpdater", ->
   describe "updates simple question values", ->
@@ -278,7 +278,7 @@ describe "ResponseDataExprValueUpdater", ->
           done()
         )
 
-      it "searches", (done) ->
+      it "searches", ->
         # Mock data source
         dataSource = {
           performQuery: (query, callback) =>
@@ -290,7 +290,9 @@ describe "ResponseDataExprValueUpdater", ->
               ]
               from: { type: "table", table: "entities.community", alias: "main" }
               where: {
-                type: "op", op: "=", exprs: [{ type: "field", tableAlias: "main", column: "name" }, "Name1"]
+                type: "op", op: "and", exprs: [
+                  { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "main", column: "name" }, "Name1"] }
+                ]
               }
               limit: 2
             }
@@ -317,12 +319,8 @@ describe "ResponseDataExprValueUpdater", ->
 
         assert.isTrue updater.canUpdate(expr), "Should be able to update"
 
-        updater.updateData({}, expr, "Name1", (error, data) =>
-          assert not error
-
-          compare data.q1234.value, { code: "code1" }
-          done()
-        )
+        data = await updater.updateData({}, expr, "Name1")
+        compare data.q1234.value, { code: "code1" }
 
       it "searches with direct _id", (done) ->
         # Mock data source
@@ -336,7 +334,9 @@ describe "ResponseDataExprValueUpdater", ->
               ]
               from: { type: "table", table: "entities.community", alias: "main" }
               where: {
-                type: "op", op: "=", exprs: [{ type: "field", tableAlias: "main", column: "_id" }, "1234"]
+                type: "op", op: "and", exprs: [
+                  { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "main", column: "_id" }, "1234"] }
+                ]
               }
               limit: 2
             }
@@ -441,7 +441,9 @@ describe "ResponseDataExprValueUpdater", ->
               ]
               from: { type: "table", table: "entities.community", alias: "main" }
               where: {
-                type: "op", op: "=", exprs: [{ type: "field", tableAlias: "main", column: "name" }, "Name1"]
+                type: "op", op: "and", exprs: [
+                  { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "main", column: "name" }, "Name1"] }
+                ]
               }
               limit: 2
             }
@@ -511,7 +513,9 @@ describe "ResponseDataExprValueUpdater", ->
               ]
               from: { type: "table", table: "admin_regions", alias: "main" }
               where: {
-                type: "op", op: "=", exprs: [{ type: "field", tableAlias: "main", column: "full_name" }, "Name1"]
+                type: "op", op: "and", exprs: [
+                 { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "main", column: "full_name" }, "Name1"] }
+                ]
               }
               limit: 2
             }
@@ -942,3 +946,77 @@ describe "ResponseDataExprValueUpdater", ->
           )
         )
       )
+
+  describe "handles cascading ref question", ->
+    beforeEach ->
+      @formDesign = {
+        _type: "Form",
+        contents: [
+          {
+            "_id":"q1234",
+            "text":{"en":"Food","_base":"en"},
+            "_type":"CascadingRefQuestion",
+            tableId: "custom.ts1.t1",
+            dropdowns: [],
+            "required":false,
+            "textExprs":[],
+            "conditions":[],
+            "validations":[]
+          }
+        ]
+      }
+
+    it "searches", ->
+      # Mock data source
+      dataSource = {
+        performQuery: (query, callback) =>
+          # Should query for row matching c1 and c2, returning _id
+          compare query, {
+            type: "query"
+            selects: [
+              { type: "select", expr: { type: "field", tableAlias: "main", column: "_id" }, alias: "value" }
+            ]
+            from: { type: "table", table: "custom.ts1.t1", alias: "main" }
+            where: {
+              type: "op", op: "and", exprs: [
+                { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "main", column: "c1" }, "v1"] }
+                { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "main", column: "c2" }, "v2"] }
+              ]
+            }
+            limit: 2
+          }
+          callback(null, [{ value: "12345" }])
+      }
+
+      # Create schema with communities
+      schema = new Schema()
+      schema = schema.addTable({
+        id: "custom.ts1.t1"
+        primaryKey: "_id"
+        name: { _base: "en", en: "Custom 1" }
+        contents: [
+          { id: "c1", name: { _base: "en", en: "C1"}, type: "text" }
+          { id: "c2", name: { _base: "en", en: "C2"}, type: "text" }
+        ]
+      })
+
+      expr1 = {
+        type:"scalar", 
+        table: "responses:form1234",
+        joins: ["data:q1234:value"],
+        expr: { type: "field", table: "custom.ts1.t1", column: "c1" }
+      }
+
+      expr2 = {
+        type:"scalar", 
+        table: "responses:form1234",
+        joins: ["data:q1234:value"],
+        expr: { type: "field", table: "custom.ts1.t1", column: "c2" }
+      }
+
+      updater = new ResponseDataExprValueUpdater(@formDesign, schema, dataSource)
+
+      assert.isTrue(updater.canUpdate(expr1), "Cannot update")
+
+      data = await updater.updateDataMultiple({}, [{ expr: expr1, value: "v1" }, { expr: expr2, value: "v2" }])
+      compare data, { q1234: { value: "12345" } }
