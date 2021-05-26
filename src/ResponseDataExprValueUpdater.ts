@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import formUtils from './formUtils'
 import ResponseCleaner from './ResponseCleaner'
-import VisibilityCalculator from './VisibilityCalculator'
+import VisibilityCalculator, { VisibilityStructure } from './VisibilityCalculator'
 import RandomAskedCalculator from './RandomAskedCalculator'
 import { DataSource, Expr, ExprCompiler, FieldExpr, OpExpr, ScalarExpr, Schema } from 'mwater-expressions'
 import ResponseDataValidator, { ResponseDataValidatorError } from './ResponseDataValidator'
@@ -79,37 +79,76 @@ export default class ResponseDataExprValueUpdater {
     return false;    
   }
 
-  // Cleans data. Must be called after last update is done. 
-  // createResponseRow takes one parameter (data) and returns a response row
-  // Callback with (error, cleanedData)
-  cleanData(data: ResponseData, createResponseRow: (data: ResponseData) => ResponseRow, callback: (error: any, cleanedData?: ResponseData) => void) {
+  /** Cleans data. Must be called after last update is done. 
+   * createResponseRow takes one parameter (data) and returns a response row 
+   */
+  cleanData(data: ResponseData, createResponseRow: (data: ResponseData) => ResponseRow): Promise<ResponseData>;
+  cleanData(data: ResponseData, createResponseRow: (data: ResponseData) => ResponseRow, callback: (error: any, cleanedData?: ResponseData) => void): void;
+  cleanData(data: ResponseData, createResponseRow: (data: ResponseData) => ResponseRow, callback?: (error: any, cleanedData?: ResponseData) => void): void | Promise<ResponseData> {
+    // Support older callback method
+    if (callback) {
+      this.cleanData(data, createResponseRow).then(cleanedData => { callback(null, cleanedData) }).catch(error => callback(error))
+      return
+    }
+
     // Compute visibility
     const visibilityCalculator = new VisibilityCalculator(this.formDesign, this.schema);
     const randomAskedCalculator = new RandomAskedCalculator(this.formDesign);
     const responseCleaner = new ResponseCleaner();
-    responseCleaner.cleanData(this.formDesign, visibilityCalculator, null, randomAskedCalculator, data, createResponseRow, null, (error, results) => {
-      callback(error, results != null ? results.data : undefined);
-    });
+    return new Promise((resolve, reject) => {
+      responseCleaner.cleanData(this.formDesign, visibilityCalculator, null, randomAskedCalculator, data, createResponseRow, null, (error, results) => {
+        if (error) {
+          reject(error)
+        }
+        else {
+          resolve(results!.data)
+        }
+      })
+    })
   }
 
-  // Validates the data. Callback null if ok, otherwise string message in second parameter. Clean first.
-  validateData(data: ResponseData, responseRow: ResponseRow, callback: (error: any, result?: ResponseDataValidatorError | null) => void) {
-    const visibilityCalculator = new VisibilityCalculator(this.formDesign, this.schema);
-    visibilityCalculator.createVisibilityStructure(data, responseRow, (error, visibilityStructure) => {
-      if (error) {
-        return callback(error);
-      }
+  /** Validates the data. Clean first. */
+  validateData(data: ResponseData, responseRow: ResponseRow): Promise<ResponseDataValidatorError | null>;
+  validateData(data: ResponseData, responseRow: ResponseRow, callback: (error: any, result?: ResponseDataValidatorError | null) => void): void;
+  validateData(data: ResponseData, responseRow: ResponseRow, callback?: (error: any, result?: ResponseDataValidatorError | null) => void): void | Promise<ResponseDataValidatorError | null> {
+    // Support older callback method
+    if (callback) {
+      this.validateData(data, responseRow).then(result => { callback(null, result) }).catch(error => callback(error))
+      return
+    }
 
-      new ResponseDataValidator().validate(this.formDesign, visibilityStructure, data, this.schema, responseRow)
-        .then(result => callback(null, result))
-        .catch(err => callback(err));
-    });
+    const visibilityCalculator = new VisibilityCalculator(this.formDesign, this.schema)
+    return new Promise((resolve, reject) => {
+      visibilityCalculator.createVisibilityStructure(data, responseRow, (error, visibilityStructure) => {
+        if (error) {
+          reject(error)
+          return
+        }
+        new ResponseDataValidator().validate(this.formDesign, visibilityStructure, data, this.schema, responseRow).then(resolve).catch(reject)
+      })
+    })
   }
 
   // Updates the data of a response, given an expression and its value. For example,
   // if there is a text field in question q1234, the expression { type: "field", table: "responses:form123", column: "data:q1234:value" }
   // refers to the text field value. Setting it will set data.q1234.value in the data.
-  updateData(data: ResponseData, expr: Expr, value: any, callback: (error: any, responseData?: ResponseData) => void) {
+  updateData(data: ResponseData, expr: Expr, value: any): Promise<ResponseData>;
+  updateData(data: ResponseData, expr: Expr, value: any, callback: (error: any, responseData?: ResponseData) => void): void;
+  updateData(data: ResponseData, expr: Expr, value: any, callback?: (error: any, responseData?: ResponseData) => void): void | Promise<ResponseData> {
+    // Support newer promise method
+    if (!callback) {
+      return new Promise((resolve, reject) => {
+        this.updateData(data, expr, value, (error, responseData) => {
+          if (error) {
+            reject(error)
+          }
+          else {
+            resolve(responseData!)
+          }
+        })
+      })
+    }
+
     let matches;
     if (!expr || !this.canUpdate(expr)) {
       callback(new Error(`Cannot update expression: ${JSON.stringify(expr)}`));
