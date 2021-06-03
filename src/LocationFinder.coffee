@@ -46,17 +46,17 @@ class LocationFinder
     console.log "Getting location"
 
     # Both failures are required to trigger error
-    triggerLocationError = _.after 2, =>
+    triggerLocationError = _.after 2, (err) =>
       if error
-        error()
+        error(err)
 
     lowAccuracyError = (err) =>
       console.error "Low accuracy location error: #{err.message}"
-      triggerLocationError()
+      triggerLocationError(err)
 
     highAccuracyError = (err) =>
       console.error "High accuracy location error: #{err.message}"
-      triggerLocationError()
+      triggerLocationError(err)
 
     lowAccuracyFired = false
     highAccuracyFired = false
@@ -111,6 +111,9 @@ class LocationFinder
     lowAccuracyError = (err) =>
       # Low accuracy errors are not enough to trigger final error
       console.error "Low accuracy watch location error: #{err.message}"
+      # if failed due to PERMISSION_DENIED emit error, or should we always emit error?
+      if err.code == 1
+        @eventEmitter.emit('error', err)
 
     highAccuracy = (pos) =>
       highAccuracyFired = true
@@ -120,6 +123,9 @@ class LocationFinder
     highAccuracyError = (err) =>
       # High accuracy error is not final (https://w3c.github.io/geolocation-api/#position_options_interface)
       console.error "High accuracy watch location error: #{err.message}"
+      # if failed due to PERMISSION_DENIED emit error, or should we always emit error?
+      if err.code == 1
+        @eventEmitter.emit('error', err)
 
     # Fire initial low-accuracy one
     navigator.geolocation.getCurrentPosition(lowAccuracy, lowAccuracyError, {
