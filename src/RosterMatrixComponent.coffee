@@ -166,15 +166,6 @@ module.exports = class RosterMatrixComponent extends React.Component
           " " + @context.T("Add")
 
   renderBody: ->
-    items: PropTypes.array.isRequired # items to be reordered
-    onReorder: PropTypes.func.isRequired # callback function, called when an item is dropped, gets passed the reordered item list
-    # function which renders the item, gets passed the current item and react dnd connectors
-    # signature: function(item, index, connectDragSource, connectDragPreview, connectDropTarget)
-    renderItem: PropTypes.func.isRequired
-    listId: PropTypes.string # a uniqid for the list
-    getItemId: PropTypes.func.isRequired # function which should return the identifier of the current item, gets passed the current item
-    element: PropTypes.object # the element to render this component as
-
     R ReorderableListComponent,
       items: @getAnswer()
       onReorder: @handleAnswerChange
