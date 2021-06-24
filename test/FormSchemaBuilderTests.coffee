@@ -1203,6 +1203,7 @@ describe "FormSchemaBuilder addForm", ->
             ]}
             { _id: "col6", _type: "SiteColumnQuestion", text: { _base: "en", en: "Col 6" }, siteType: "water_point" }
             { _id: "col7", _type: "DateColumnQuestion", text: { _base: "en", en: "Col 7" }, format: "YYYY-MM-DD" }
+            { _id: "col8", _type: "SiteColumnQuestion", text: { _base: "en", en: "Col 8" }, siteType: "community" }
           ]
         }, [
           # TextColumnQuestion
@@ -1320,6 +1321,23 @@ describe "FormSchemaBuilder addForm", ->
                 1
                 10
               ]
+            }
+          }
+          # SiteColumnQuestion
+          { 
+            id: "data:questionid:value:item1:col8:value" 
+            type: "join"
+            name: { _base: "en", en: "Question: Item 1 - Col 8"}
+            # data#>>'{questionid,value,item1,col6,value,code}'
+            join: {
+              type: "n-1"
+              toTable: "entities.community"
+              fromColumn: { 
+                type: "op"
+                op: "#>>"
+                exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,item1,col8,value,code}"] 
+              }
+              toColumn: "code"
             }
           }
         ])

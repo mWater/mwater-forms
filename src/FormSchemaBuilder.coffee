@@ -1052,7 +1052,13 @@ module.exports = class FormSchemaBuilder
             ]
           }
 
-          entityType = if item.siteTypes?[0] then _.first(item.siteTypes).toLowerCase().replace(new RegExp(' ', 'g'), "_") else "water_point"
+          siteType = (if item.siteTypes then item.siteTypes[0]) or "water_point"
+
+          # Site column question have siteType
+          if item._type == "SiteColumnQuestion"
+            siteType = item.siteType or "water_point"
+
+          entityType = siteType.toLowerCase().replace(new RegExp(' ', 'g'), "_")
 
           column = {
             id: "#{dataColumn}:#{item._id}:value"
