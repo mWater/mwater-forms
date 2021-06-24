@@ -189,6 +189,11 @@ module.exports = class ResponseAnswersComponent extends AsyncLoadComponent
 
         # Convert to new entity type
         siteType = (if q.siteTypes then q.siteTypes[0]) or "water_point"
+
+        # Site column question have siteType
+        if q._type == "SiteColumnQuestion"
+          siteType = q.siteType or "water_point"
+          
         entityType = siteType.toLowerCase().replace(new RegExp(' ', 'g'), "_")
 
         return R(EntityDisplayComponent, {
