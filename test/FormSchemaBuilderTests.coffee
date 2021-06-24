@@ -2064,6 +2064,7 @@ describe "FormSchemaBuilder addForm", ->
             name: { en: "Roster1" }
             contents: [
               { _id: "q1", _type: "TextColumnQuestion", text: { en: "Q1" }}
+              { _id: "q2", _type: "SiteColumnQuestion", siteType: "community", text: { en: "Q2999" }}
             ]
           }]
         }
@@ -2086,6 +2087,16 @@ describe "FormSchemaBuilder addForm", ->
           }
           ""
         ]
+      })
+      compare(schema.getColumn("responses:formid:roster:roster1", "data:q2:value").join, {
+        type: "n-1"
+        toTable: "entities.community"
+        fromColumn: { 
+          type: "op"
+          op: "#>>"
+          exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{q2,value,code}"] 
+        }
+        toColumn: "code"
       })
 
   describe ":randomAsked columns", ->
