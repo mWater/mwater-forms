@@ -1,5 +1,5 @@
 import _ from "lodash"
-import formUtils from "./formUtils"
+import * as formUtils from "./formUtils"
 import VisibilityCalculator, { VisibilityStructure } from "./VisibilityCalculator"
 import EntityRow from "./EntityRow"
 import { PromiseExprEvaluatorRow, Schema, Row } from "mwater-expressions"

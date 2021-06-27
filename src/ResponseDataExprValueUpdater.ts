@@ -1,5 +1,5 @@
 import _ from "lodash"
-import formUtils from "./formUtils"
+import * as formUtils from "./formUtils"
 import ResponseCleaner from "./ResponseCleaner"
 import VisibilityCalculator, { VisibilityStructure } from "./VisibilityCalculator"
 import RandomAskedCalculator from "./RandomAskedCalculator"

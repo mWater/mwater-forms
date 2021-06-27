@@ -1,14 +1,12 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-let VisibilityCalculator
 import _ from "lodash"
 import * as formUtils from "./formUtils"
 import async from "async"
 import * as conditionUtils from "./conditionUtils"
-import { PromiseExprEvaluator } from "mwater-expressions"
+import { PromiseExprEvaluator, PromiseExprEvaluatorRow, Schema } from "mwater-expressions"
+import { FormDesign } from "./formDesign"
+import { ResponseData } from "./response"
 
-/*
-
+/**
 Uses conditions to defines the visibility status of all the Sections, Questions, Instructions, Group, RosterGroup and RosterMatrix
 The result is kept in the visibilityStructure. It contains an entry with true or false for each element (should never be null or undefined)
 A parent (like a section or a group), will always force visible to false for all their children if they are invisible.
@@ -22,19 +20,20 @@ Non-rosters are just referenced by id: e.g. { "somequestionid": true }
 Unless it is a matrix, in which case it is referenced by "questionid.itemid.columnid"
 
 Rosters are referenced by entry index: e.g. { "somerosterid.2.somequestionid": true }
-
-
 */
-export default VisibilityCalculator = class VisibilityCalculator {
-  constructor(formDesign: any, schema: any) {
+export default class VisibilityCalculator {
+  formDesign: FormDesign
+  schema: Schema
+  
+  constructor(formDesign: FormDesign, schema: Schema) {
     this.formDesign = formDesign
     this.schema = schema
   }
 
-  // Updates the visibilityStructure dictionary with one entry for each element
-  // data is the data of the response
-  // responseRow is a ResponseRow which represents the same row
-  createVisibilityStructure(data: any, responseRow: any, callback: any) {
+  /** Updates the visibilityStructure dictionary with one entry for each element
+   * data is the data of the response
+   * responseRow is a ResponseRow which represents the same row */
+   createVisibilityStructure(data: ResponseData, responseRow: PromiseExprEvaluatorRow, callback: (error: any, visibilityStructure?: VisibilityStructure) => void): void {
     const visibilityStructure = {}
     return this.processItem(this.formDesign, false, data, responseRow, visibilityStructure, "", (error: any) => {
       if (error) {
@@ -46,7 +45,7 @@ export default VisibilityCalculator = class VisibilityCalculator {
   }
 
   // Process a form, section or a group (they both behave the same way when it comes to determining visibility)
-  processGroup(item: any, forceToInvisible: any, data: any, responseRow: any, visibilityStructure: any, prefix: any, callback: any) {
+  processGroup(item: any, forceToInvisible: any, data: any, responseRow: any, visibilityStructure: any, prefix: any, callback: any): void {
     // Once visibility is calculated, call this
     let isVisible: any
     const applyResult = (isVisible: any) => {
@@ -78,7 +77,7 @@ export default VisibilityCalculator = class VisibilityCalculator {
 
     // Apply conditionExpr
     if (item.conditionExpr) {
-      return new PromiseExprEvaluator({ schema: this.schema })
+      new PromiseExprEvaluator({ schema: this.schema })
         .evaluate(item.conditionExpr, { row: responseRow })
         .then((value) => {
           // Null or false is not visible
@@ -86,11 +85,11 @@ export default VisibilityCalculator = class VisibilityCalculator {
             isVisible = false
           }
 
-          return applyResult(isVisible)
+          applyResult(isVisible)
         })
         .catch((error) => callback(error))
     } else {
-      return applyResult(isVisible)
+      applyResult(isVisible)
     }
   }
 
@@ -269,4 +268,12 @@ export default VisibilityCalculator = class VisibilityCalculator {
       return applyResult(isVisible)
     }
   }
+}
+
+/** Non-rosters are just referenced by id: e.g. { "somequestionid": true }
+ * Unless it is a matrix, in which case it is referenced by "questionid.itemid.columnid"
+ * Rosters are referenced by entry index: e.g. { "somerosterid.2.somequestionid": true }
+ */
+export interface VisibilityStructure {
+  [key: string]: boolean
 }
