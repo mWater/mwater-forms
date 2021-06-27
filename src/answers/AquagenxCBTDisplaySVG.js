@@ -1,4 +1,4 @@
-module.exports = '''
+export default `\
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
@@ -212,6 +212,6 @@ module.exports = '''
          x="161.50391"
          y="1042.3621">4</tspan></text>
   </g>
-</svg>
-'''
+</svg>\
+`;
 

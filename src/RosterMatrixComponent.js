@@ -1,193 +1,251 @@
-PropTypes = require('prop-types')
-_ = require 'lodash'
-React = require 'react'
-R = React.createElement
+let RosterMatrixComponent;
+import PropTypes from 'prop-types';
+import _ from 'lodash';
+import React from 'react';
+const R = React.createElement;
 
-formUtils = require './formUtils'
-ValidationCompiler = require './answers/ValidationCompiler'
+import formUtils from './formUtils';
+import ValidationCompiler from './answers/ValidationCompiler';
+import ReorderableListComponent from "react-library/lib/reorderable/ReorderableListComponent";
+import MatrixColumnCellComponent from './MatrixColumnCellComponent';
 
-ReorderableListComponent = require("react-library/lib/reorderable/ReorderableListComponent")
-MatrixColumnCellComponent = require './MatrixColumnCellComponent'
-
-# Rosters are repeated information, such as asking questions about household members N times.
-# A roster matrix is a list of column-type questions with one row for each entry in the roster
-module.exports = class RosterMatrixComponent extends React.Component
-  @contextTypes:
-    locale: PropTypes.string
-    T: PropTypes.func.isRequired  # Localizer to use
-
-  @propTypes:
-    rosterMatrix: PropTypes.object.isRequired # Design of roster matrix. See schema
-    data: PropTypes.object      # Current data of response. 
-    onDataChange: PropTypes.func.isRequired   # Called when data changes
-    isVisible: PropTypes.func.isRequired # (id) tells if an item is visible or not
-    schema: PropTypes.object.isRequired  # Schema to use, including form
-
-  constructor: (props) ->
-    super(props)
-
-    @state = {
-      validationErrors: {}  # Map of "<rowindex>_<columnid>" to validation error
+// Rosters are repeated information, such as asking questions about household members N times.
+// A roster matrix is a list of column-type questions with one row for each entry in the roster
+export default RosterMatrixComponent = (function() {
+  RosterMatrixComponent = class RosterMatrixComponent extends React.Component {
+    static initClass() {
+      this.contextTypes = {
+        locale: PropTypes.string,
+        T: PropTypes.func.isRequired  // Localizer to use
+      };
+  
+      this.propTypes = {
+        rosterMatrix: PropTypes.object.isRequired, // Design of roster matrix. See schema
+        data: PropTypes.object,      // Current data of response. 
+        onDataChange: PropTypes.func.isRequired,   // Called when data changes
+        isVisible: PropTypes.func.isRequired, // (id) tells if an item is visible or not
+        schema: PropTypes.object.isRequired
+      };
+        // Schema to use, including form
     }
 
-  # Gets the id that the answer is stored under
-  getAnswerId: ->
-    # Prefer rosterId if specified, otherwise use id. 
-    return @props.rosterMatrix.rosterId or @props.rosterMatrix._id
+    constructor(props) {
+      this.handleAnswerChange = this.handleAnswerChange.bind(this);
+      this.handleEntryDataChange = this.handleEntryDataChange.bind(this);
+      this.handleAdd = this.handleAdd.bind(this);
+      this.handleRemove = this.handleRemove.bind(this);
+      this.handleCellChange = this.handleCellChange.bind(this);
+      this.handleSort = this.handleSort.bind(this);
+      this.renderEntry = this.renderEntry.bind(this);
+      super(props);
 
-  # Get the current answer value
-  getAnswer: ->
-    return @props.data[@getAnswerId()] or []
+      this.state = {
+        validationErrors: {}  // Map of "<rowindex>_<columnid>" to validation error
+      };
+    }
 
-  validate: (scrollToFirstInvalid) ->
-    validationErrors = {}
+    // Gets the id that the answer is stored under
+    getAnswerId() {
+      // Prefer rosterId if specified, otherwise use id. 
+      return this.props.rosterMatrix.rosterId || this.props.rosterMatrix._id;
+    }
 
-    # For each entry
-    foundInvalid = false
-    for entry, rowIndex in @getAnswer()
-      # For each column
-      for column, columnIndex in @props.rosterMatrix.contents
-        key = "#{rowIndex}_#{column._id}"
+    // Get the current answer value
+    getAnswer() {
+      return this.props.data[this.getAnswerId()] || [];
+    }
 
-        if column.required and (not entry.data[column._id]?.value? or entry.data[column._id]?.value == '')
-          foundInvalid = true
-          validationErrors[key] = true
+    validate(scrollToFirstInvalid) {
+      const validationErrors = {};
 
-        if column.validations and column.validations.length > 0
-          validationError = new ValidationCompiler(@context.locale).compileValidations(column.validations)(entry.data[column._id])
-          if validationError
-            foundInvalid = true
-            validationErrors[key] = validationError
+      // For each entry
+      let foundInvalid = false;
+      const iterable = this.getAnswer();
+      for (let rowIndex = 0; rowIndex < iterable.length; rowIndex++) {
+        // For each column
+        const entry = iterable[rowIndex];
+        for (let columnIndex = 0; columnIndex < this.props.rosterMatrix.contents.length; columnIndex++) {
+          const column = this.props.rosterMatrix.contents[columnIndex];
+          const key = `${rowIndex}_${column._id}`;
 
-    # Save state
-    @setState(validationErrors: validationErrors)
+          if (column.required && ((entry.data[column._id]?.value == null) || (entry.data[column._id]?.value === ''))) {
+            foundInvalid = true;
+            validationErrors[key] = true;
+          }
 
-    # Scroll into view
-    if foundInvalid and scrollToFirstInvalid
-      @prompt.scrollIntoView()
+          if (column.validations && (column.validations.length > 0)) {
+            const validationError = new ValidationCompiler(this.context.locale).compileValidations(column.validations)(entry.data[column._id]);
+            if (validationError) {
+              foundInvalid = true;
+              validationErrors[key] = validationError;
+            }
+          }
+        }
+      }
 
-    return foundInvalid
+      // Save state
+      this.setState({validationErrors});
 
-  # Propagate an answer change to the onDataChange
-  handleAnswerChange: (answer) =>
-    change = {}
-    change[@getAnswerId()] = answer
-    @props.onDataChange(_.extend({}, @props.data, change))
+      // Scroll into view
+      if (foundInvalid && scrollToFirstInvalid) {
+        this.prompt.scrollIntoView();
+      }
 
-  # Handles a change in data of a specific entry of the roster
-  handleEntryDataChange: (index, data) =>
-    answer = @getAnswer().slice()
-    answer[index] = _.extend({}, answer[index], { data: data })
-    @handleAnswerChange(answer)
+      return foundInvalid;
+    }
 
-  handleAdd: =>
-    answer = @getAnswer().slice()
-    answer.push({ _id: formUtils.createUid(), data: {} })
-    @handleAnswerChange(answer)
+    // Propagate an answer change to the onDataChange
+    handleAnswerChange(answer) {
+      const change = {};
+      change[this.getAnswerId()] = answer;
+      return this.props.onDataChange(_.extend({}, this.props.data, change));
+    }
 
-  handleRemove: (index) =>
-    answer = @getAnswer().slice()
-    answer.splice(index, 1)
-    @handleAnswerChange(answer)
+    // Handles a change in data of a specific entry of the roster
+    handleEntryDataChange(index, data) {
+      const answer = this.getAnswer().slice();
+      answer[index] = _.extend({}, answer[index], { data });
+      return this.handleAnswerChange(answer);
+    }
 
-  handleCellChange: (entryIndex, columnId, answer) =>
-    data = @getAnswer()[entryIndex].data
-    change = {}
-    change[columnId] = answer
-    data = _.extend({}, data, change)
+    handleAdd() {
+      const answer = this.getAnswer().slice();
+      answer.push({ _id: formUtils.createUid(), data: {} });
+      return this.handleAnswerChange(answer);
+    }
 
-    @handleEntryDataChange(entryIndex, data)
+    handleRemove(index) {
+      const answer = this.getAnswer().slice();
+      answer.splice(index, 1);
+      return this.handleAnswerChange(answer);
+    }
 
-  handleSort: (column, order) =>
-    answer = @getAnswer()
-    answer = _.sortByOrder(answer, [((item) => item.data[column._id]?.value)], [order])
-    @handleAnswerChange(answer)
+    handleCellChange(entryIndex, columnId, answer) {
+      let {
+        data
+      } = this.getAnswer()[entryIndex];
+      const change = {};
+      change[columnId] = answer;
+      data = _.extend({}, data, change);
 
-  renderName: ->
-    R 'h4', key: "prompt", ref: ((c) => @prompt = c),
-      formUtils.localizeString(@props.rosterMatrix.name, @context.locale)
+      return this.handleEntryDataChange(entryIndex, data);
+    }
 
-  renderColumnHeader: (column, index) ->
-    R 'th', key: column._id,
-      formUtils.localizeString(column.text, @context.locale)
+    handleSort(column, order) {
+      let answer = this.getAnswer();
+      answer = _.sortByOrder(answer, [(item => item.data[column._id]?.value)], [order]);
+      return this.handleAnswerChange(answer);
+    }
 
-      # Required star
-      if column.required
-        R 'span', className: "required", "*"
+    renderName() {
+      return R('h4', {key: "prompt", ref: (c => { return this.prompt = c; })},
+        formUtils.localizeString(this.props.rosterMatrix.name, this.context.locale));
+    }
 
-      # Allow sorting
-      if column._type in ["TextColumnQuestion", "NumberColumnQuestion", "DateColumnQuestion"]
-        R 'div', style: { float: "right" },
-          R 'span', className: "table-sort-controls glyphicon glyphicon-triangle-top", style: { cursor: "pointer" }, onClick: @handleSort.bind(null, column, "asc")
-          R 'span', className: "table-sort-controls glyphicon glyphicon-triangle-bottom", style: { cursor: "pointer" }, onClick: @handleSort.bind(null, column, "desc")
+    renderColumnHeader(column, index) {
+      return R('th', {key: column._id},
+        formUtils.localizeString(column.text, this.context.locale),
 
-  renderHeader: ->
-    R 'thead', null,
-      R 'tr', null,
-        _.map(@props.rosterMatrix.contents, (column, index) => @renderColumnHeader(column, index))
-        # Extra for remove button
-        if @props.rosterMatrix.allowRemove
-          R('th', null)
+        // Required star
+        column.required ?
+          R('span', {className: "required"}, "*") : undefined,
 
-  renderCell: (entry, entryIndex, column, columnIndex) ->
-    # Get data of the entry
-    entryData = @getAnswer()[entryIndex].data
+        // Allow sorting
+        ["TextColumnQuestion", "NumberColumnQuestion", "DateColumnQuestion"].includes(column._type) ?
+          R('div', {style: { float: "right" }},
+            R('span', {className: "table-sort-controls glyphicon glyphicon-triangle-top", style: { cursor: "pointer" }, onClick: this.handleSort.bind(null, column, "asc")}),
+            R('span', {className: "table-sort-controls glyphicon glyphicon-triangle-bottom", style: { cursor: "pointer" }, onClick: this.handleSort.bind(null, column, "desc")})) : undefined
+      );
+    }
 
-    # Determine if invalid
-    key = "#{entryIndex}_#{column._id}"
-    invalid = @state.validationErrors[key]
+    renderHeader() {
+      return R('thead', null,
+        R('tr', null,
+          _.map(this.props.rosterMatrix.contents, (column, index) => this.renderColumnHeader(column, index)),
+          // Extra for remove button
+          this.props.rosterMatrix.allowRemove ?
+            R('th', null) : undefined
+        )
+      );
+    }
 
-    # Render cell
-    return R MatrixColumnCellComponent, 
-      key: column._id
-      column: column
-      data: entryData
-      responseRow: @props.responseRow.getRosterResponseRow(@getAnswerId(), entryIndex)
-      answer: entryData?[column._id] or {}
-      onAnswerChange: @handleCellChange.bind(null, entryIndex, column._id)
-      invalid: invalid
-      schema: @props.schema
+    renderCell(entry, entryIndex, column, columnIndex) {
+      // Get data of the entry
+      const entryData = this.getAnswer()[entryIndex].data;
 
-  renderEntry: (entry, index, connectDragSource, connectDragPreview, connectDropTarget) =>
-    elem = R 'tr', key: index,
-      _.map @props.rosterMatrix.contents, (column, columnIndex) => @renderCell(entry, index, column, columnIndex)
-      if @props.rosterMatrix.allowRemove
-        R 'td', key: "_remove",
-          R 'button', type: "button", className: "btn btn-sm btn-link", onClick: @handleRemove.bind(null, index),
-            R 'span', className: "glyphicon glyphicon-remove"  
+      // Determine if invalid
+      const key = `${entryIndex}_${column._id}`;
+      const invalid = this.state.validationErrors[key];
 
-    return connectDropTarget(connectDragPreview(connectDragSource(elem)))
+      // Render cell
+      return R(MatrixColumnCellComponent, { 
+        key: column._id,
+        column,
+        data: entryData,
+        responseRow: this.props.responseRow.getRosterResponseRow(this.getAnswerId(), entryIndex),
+        answer: entryData?.[column._id] || {},
+        onAnswerChange: this.handleCellChange.bind(null, entryIndex, column._id),
+        invalid,
+        schema: this.props.schema
+      }
+      );
+    }
 
-  renderAdd: ->
-    if @props.rosterMatrix.allowAdd
-      R 'div', key: "add", style: { marginTop: 10 },
-        R 'button', type: "button", className: "btn btn-primary", onClick: @handleAdd,
-          R 'span', className: "glyphicon glyphicon-plus"
-          " " + @context.T("Add")
+    renderEntry(entry, index, connectDragSource, connectDragPreview, connectDropTarget) {
+      const elem = R('tr', {key: index},
+        _.map(this.props.rosterMatrix.contents, (column, columnIndex) => this.renderCell(entry, index, column, columnIndex)),
+        this.props.rosterMatrix.allowRemove ?
+          R('td', {key: "_remove"},
+            R('button', {type: "button", className: "btn btn-sm btn-link", onClick: this.handleRemove.bind(null, index)},
+              R('span', {className: "glyphicon glyphicon-remove"}))
+          ) : undefined
+      );  
 
-  renderBody: ->
-    R ReorderableListComponent,
-      items: @getAnswer()
-      onReorder: @handleAnswerChange
-      renderItem: @renderEntry
-      getItemId: (entry) => entry._id
-      element: R('tbody', null)
+      return connectDropTarget(connectDragPreview(connectDragSource(elem)));
+    }
 
-  renderEmptyPrompt: ->
-    R 'div', style: { fontStyle: "italic" }, 
-      formUtils.localizeString(@props.rosterMatrix.emptyPrompt, @context.locale) or @context.T("Click +Add to add an item")
+    renderAdd() {
+      if (this.props.rosterMatrix.allowAdd) {
+        return R('div', {key: "add", style: { marginTop: 10 }},
+          R('button', {type: "button", className: "btn btn-primary", onClick: this.handleAdd},
+            R('span', {className: "glyphicon glyphicon-plus"}),
+            " " + this.context.T("Add"))
+        );
+      }
+    }
 
-  render: ->
-    R 'div', style: { padding: 5, marginBottom: 20 },
-      @renderName()
-      R 'table', className: "table",
-        @renderHeader()
-        @renderBody()
+    renderBody() {
+      return R(ReorderableListComponent, {
+        items: this.getAnswer(),
+        onReorder: this.handleAnswerChange,
+        renderItem: this.renderEntry,
+        getItemId: entry => entry._id,
+        element: R('tbody', null)
+      }
+      );
+    }
 
-      # Display message if none and can add
-      if @getAnswer().length == 0 and @props.rosterMatrix.allowAdd
-        @renderEmptyPrompt()
+    renderEmptyPrompt() {
+      return R('div', {style: { fontStyle: "italic" }}, 
+        formUtils.localizeString(this.props.rosterMatrix.emptyPrompt, this.context.locale) || this.context.T("Click +Add to add an item"));
+    }
 
-      @renderAdd() 
+    render() {
+      return R('div', {style: { padding: 5, marginBottom: 20 }},
+        this.renderName(),
+        R('table', {className: "table"},
+          this.renderHeader(),
+          this.renderBody()),
+
+        // Display message if none and can add
+        (this.getAnswer().length === 0) && this.props.rosterMatrix.allowAdd ?
+          this.renderEmptyPrompt() : undefined,
+
+        this.renderAdd());
+    }
+  };
+  RosterMatrixComponent.initClass();
+  return RosterMatrixComponent; 
+})();
 
 

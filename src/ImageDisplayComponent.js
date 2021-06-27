@@ -1,50 +1,67 @@
-PropTypes = require('prop-types')
-React = require 'react'
-R = React.createElement
-ImagePopupComponent = require './ImagePopupComponent'
+let ImageDisplayComponent;
+import PropTypes from 'prop-types';
+import React from 'react';
+const R = React.createElement;
+import ImagePopupComponent from './ImagePopupComponent';
+import RotationAwareImageComponent from './RotationAwareImageComponent';
 
-RotationAwareImageComponent = require './RotationAwareImageComponent'
+// Displays an image
+export default ImageDisplayComponent = (function() {
+  ImageDisplayComponent = class ImageDisplayComponent extends React.Component {
+    static initClass() {
+      this.propTypes = {
+        image: PropTypes.object.isRequired,  // Image object to display
+        imageManager: PropTypes.object.isRequired,
+        T: PropTypes.func.isRequired
+      };
+    }
 
-# Displays an image
-module.exports = class ImageDisplayComponent extends React.Component
-  @propTypes:
-    image: PropTypes.object.isRequired  # Image object to display
-    imageManager: PropTypes.object.isRequired
-    T: PropTypes.func.isRequired
+    constructor(props) {
+      this.handleImgError = this.handleImgError.bind(this);
+      this.handleImgClick = this.handleImgClick.bind(this);
+      super(props);
+      this.state = { error: false, url: null, popup: false };
+    }
 
-  constructor: (props) ->
-    super(props)
-    @state = { error: false, url: null, popup: false }
+    componentDidMount() { return this.update(this.props); }
+    componentWillReceiveProps(newProps) { return this.update(newProps); }
 
-  componentDidMount: -> @update(@props)
-  componentWillReceiveProps: (newProps) -> @update(newProps)
+    update(props) {
+      // Get URL of thumbnail
+      return props.imageManager.getImageThumbnailUrl(props.image.id, url => {
+        return this.setState({url, error: false});
+      }
+      , () => this.setState({error: true}));
+    }
 
-  update: (props) ->
-    # Get URL of thumbnail
-    props.imageManager.getImageThumbnailUrl props.image.id, (url) =>
-      @setState(url: url, error: false)
-    , => @setState(error: true)
+    handleImgError() { return this.setState({error: true}); }
 
-  handleImgError: => @setState(error: true)
+    handleImgClick() { return this.setState({popup: true}); }
 
-  handleImgClick: => @setState(popup: true)
+    render() {
+      let src;
+      if (this.state.error) {
+        src = "img/no-image-icon.jpg";
+      } else if (this.state.url) {
+        src = this.state.url;
+      } else {
+        src = "img/image-loading.png";
+      }
 
-  render: ->
-    if @state.error
-      src = "img/no-image-icon.jpg"
-    else if @state.url
-      src = @state.url
-    else
-      src = "img/image-loading.png"
-
-    R 'span', null,
-      React.createElement(RotationAwareImageComponent, image: @props.image, imageManager: @props.imageManager, onClick: @handleImgClick, height: 100, thumbnail: true)
-      if @state.popup
-        React.createElement(ImagePopupComponent, {
-          imageManager: @props.imageManager
-          image: @props.image
-          onClose: => @setState(popup: false)
-          T: @props.T
-        })
+      return R('span', null,
+        React.createElement(RotationAwareImageComponent, {image: this.props.image, imageManager: this.props.imageManager, onClick: this.handleImgClick, height: 100, thumbnail: true}),
+        this.state.popup ?
+          React.createElement(ImagePopupComponent, {
+            imageManager: this.props.imageManager,
+            image: this.props.image,
+            onClose: () => this.setState({popup: false}),
+            T: this.props.T
+          }) : undefined
+      );
+    }
+  };
+  ImageDisplayComponent.initClass();
+  return ImageDisplayComponent;
+})();
 
 

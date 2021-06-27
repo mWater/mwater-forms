@@ -1,194 +1,219 @@
-_ = require 'underscore'
-assert = require('chai').assert
+import _ from 'underscore';
+import { assert } from 'chai';
+import React from 'react';
+import ReactDOM from 'react-dom';
+const R = React.createElement;
 
-React = require 'react'
-ReactDOM = require 'react-dom'
-R = React.createElement
+import TestComponent from 'react-library/lib/TestComponent';
+import ReactTestUtils from 'react-dom/test-utils';
+import MockTContextWrapper from '../MockTContextWrapper';
+import QuestionComponent from '../../src/QuestionComponent';
 
-TestComponent = require('react-library/lib/TestComponent')
-ReactTestUtils = require('react-dom/test-utils')
-MockTContextWrapper = require '../MockTContextWrapper'
-
-QuestionComponent = require '../../src/QuestionComponent'
-
-describe "QuestionComponent", ->
-  beforeEach ->
-    @question = {
-      _id: "q1234"
-      _type: "TextQuestion"
-      format: 'singleline'
-      text: { _base: "en", en: "English" }
-      hint: { _base: "en", en: "HINT" }
-      help: { _base: "en", en: "has *formatting*" }
+describe("QuestionComponent", function() {
+  beforeEach(function() {
+    this.question = {
+      _id: "q1234",
+      _type: "TextQuestion",
+      format: 'singleline',
+      text: { _base: "en", en: "English" },
+      hint: { _base: "en", en: "HINT" },
+      help: { _base: "en", en: "has *formatting*" },
       required: true
-    }
+    };
 
-    @toDestroy = []
+    this.toDestroy = [];
 
-    @render = (options = {}) =>
-      @options = _.extend {
-        question: @question
-        data: {}
-        onAnswerChange: () ->
-          null
-      }, options
-      elem = R(MockTContextWrapper, null, R(QuestionComponent, @options))
-      comp = new TestComponent(elem)
-      @toDestroy.push(comp)
-      return comp
+    return this.render = (options = {}) => {
+      this.options = _.extend({
+        question: this.question,
+        data: {},
+        onAnswerChange() {
+          return null;
+        }
+      }, options);
+      const elem = R(MockTContextWrapper, null, R(QuestionComponent, this.options));
+      const comp = new TestComponent(elem);
+      this.toDestroy.push(comp);
+      return comp;
+    };
+  });
 
-  afterEach ->
-    for comp in @toDestroy
-      comp.destroy()
+  afterEach(function() {
+    return this.toDestroy.map((comp) =>
+      comp.destroy());
+  });
 
-  it "displays question text", ->
-    testComponent = @render()
+  it("displays question text", function() {
+    const testComponent = this.render();
 
-    prompt = testComponent.findDOMNodeByText(/English/)
-    assert prompt?, 'Not showing question text'
+    const prompt = testComponent.findDOMNodeByText(/English/);
+    return assert((prompt != null), 'Not showing question text');
+  });
 
-  it "displays hint", ->
-    testComponent = @render()
+  it("displays hint", function() {
+    const testComponent = this.render();
 
-    hint = testComponent.findDOMNodeByText(/HINT/)
-    assert hint?, 'Not showing hint text'
+    const hint = testComponent.findDOMNodeByText(/HINT/);
+    return assert((hint != null), 'Not showing hint text');
+  });
 
-  it "displays required", ->
-    testComponent = @render()
+  it("displays required", function() {
+    const testComponent = this.render();
 
-    star = testComponent.findDOMNodeByText(/\*/)
-    assert star?, 'Not showing required star'
+    const star = testComponent.findDOMNodeByText(/\*/);
+    return assert((star != null), 'Not showing required star');
+  });
 
-  it "displays help", ->
-    testComponent = @render()
+  it("displays help", function() {
+    const testComponent = this.render();
 
-    help = testComponent.findDOMNodeByText(/formatting/)
-    assert not help?, "Help shouldn't be visible"
+    let help = testComponent.findDOMNodeByText(/formatting/);
+    assert((help == null), "Help shouldn't be visible");
 
-    button = testComponent.findComponentById('helpbtn')
-    TestComponent.click(button)
+    const button = testComponent.findComponentById('helpbtn');
+    TestComponent.click(button);
 
-    help = testComponent.findDOMNodeByText(/formatting/)
-    assert help?, 'Help should now be visible'
+    help = testComponent.findDOMNodeByText(/formatting/);
+    return assert((help != null), 'Help should now be visible');
+  });
 
-  it "display comment box", (done) ->
-    testComponent = @render()
-    comments = testComponent.findComponentById('comments')
+  it("display comment box", function(done) {
+    let testComponent = this.render();
+    let comments = testComponent.findComponentById('comments');
 
-    @question.commentsField = true
-    testComponent = @render({
-      onAnswerChange: (answer) ->
-        assert.equal answer.comments, 'some comment'
-        done()
-    })
+    this.question.commentsField = true;
+    testComponent = this.render({
+      onAnswerChange(answer) {
+        assert.equal(answer.comments, 'some comment');
+        return done();
+      }
+    });
 
-    comments = testComponent.findComponentById('comments')
-    TestComponent.changeValue(comments, 'some comment')
+    comments = testComponent.findComponentById('comments');
+    return TestComponent.changeValue(comments, 'some comment');
+  });
 
-  it "loads comment box", ->
-    @question.commentsField = true
-    testComponent = @render({
+  it("loads comment box", function() {
+    this.question.commentsField = true;
+    const testComponent = this.render({
       data: {q1234: {comments: 'some comment'}}
-    })
+    });
 
-    comment = testComponent.findDOMNodeByText(/some comment/)
+    const comment = testComponent.findDOMNodeByText(/some comment/);
 
-    assert comment, 'The comment should be displayed'
+    return assert(comment, 'The comment should be displayed');
+  });
 
-  it "records timestamp", ->
-    @question.recordTimestamp = true
-    @question.commentsField = true
-    testComponent = @render({
-      data: {q1234: {comments: 'some comment'}}
-      onAnswerChange: (answer) ->
-        after = new Date().toISOString()
-        # Some imprecision in the date stamp was causing occassional failures
-        assert answer.timestamp.substr(0,10) >= before.substr(0,10), answer.timestamp + " < " + before
-        assert answer.timestamp.substr(0,10) <= after.substr(0,10), answer.timestamp + " > " + after
-    })
+  it("records timestamp", function() {
+    this.question.recordTimestamp = true;
+    this.question.commentsField = true;
+    const testComponent = this.render({
+      data: {q1234: {comments: 'some comment'}},
+      onAnswerChange(answer) {
+        const after = new Date().toISOString();
+        // Some imprecision in the date stamp was causing occassional failures
+        assert(answer.timestamp.substr(0,10) >= before.substr(0,10), answer.timestamp + " < " + before);
+        return assert(answer.timestamp.substr(0,10) <= after.substr(0,10), answer.timestamp + " > " + after);
+      }
+    });
 
-    comments = testComponent.findDOMNodeByText(/some comment/)
+    const comments = testComponent.findDOMNodeByText(/some comment/);
 
-    before = new Date().toISOString()
-    TestComponent.changeValue(comments, 'some comment')
+    var before = new Date().toISOString();
+    return TestComponent.changeValue(comments, 'some comment');
+  });
 
 
-  it "records alternate na", (done) ->
-    @question.alternates = {na: true}
-    testComponent = @render(
-      onAnswerChange: (answer) ->
-        assert.equal answer.alternate, 'na'
-        done()
-    )
-    na = testComponent.findComponentById('na')
-    TestComponent.click(na)
+  it("records alternate na", function(done) {
+    this.question.alternates = {na: true};
+    const testComponent = this.render({
+      onAnswerChange(answer) {
+        assert.equal(answer.alternate, 'na');
+        return done();
+      }
+    });
+    const na = testComponent.findComponentById('na');
+    return TestComponent.click(na);
+  });
 
-  it "loads alternate na", ->
-    @question.alternates = {na: true}
-    testComponent = @render(
+  it("loads alternate na", function() {
+    this.question.alternates = {na: true};
+    const testComponent = this.render({
       data: {q1234: {alternate: 'na'}}
-    )
-    na = testComponent.findComponentById('na')
-    assert na.className.indexOf('checked') >= 0
+    });
+    const na = testComponent.findComponentById('na');
+    return assert(na.className.indexOf('checked') >= 0);
+  });
 
-  it "records alternate dontknow", (done) ->
-    @question.alternates = {dontknow: true, na: true}
-    testComponent = @render(
-      onAnswerChange: (answer) ->
-        assert.equal answer.alternate, 'dontknow'
-        done()
-    )
-    dn = testComponent.findComponentById('dn')
-    TestComponent.click(dn)
+  it("records alternate dontknow", function(done) {
+    this.question.alternates = {dontknow: true, na: true};
+    const testComponent = this.render({
+      onAnswerChange(answer) {
+        assert.equal(answer.alternate, 'dontknow');
+        return done();
+      }
+    });
+    const dn = testComponent.findComponentById('dn');
+    return TestComponent.click(dn);
+  });
 
-  it "erases value on alternate selected", (done) ->
-    @question.alternates = {dontknow: true, na: true}
-    testComponent = @render(
-      data: {q1234: {value: 'test'}}
-      onAnswerChange: (answer) ->
-        assert.equal answer.alternate, 'dontknow'
-        assert.equal answer.value, null
-        done()
-    )
-    dn = testComponent.findComponentById('dn')
-    TestComponent.click(dn)
+  it("erases value on alternate selected", function(done) {
+    this.question.alternates = {dontknow: true, na: true};
+    const testComponent = this.render({
+      data: {q1234: {value: 'test'}},
+      onAnswerChange(answer) {
+        assert.equal(answer.alternate, 'dontknow');
+        assert.equal(answer.value, null);
+        return done();
+      }
+    });
+    const dn = testComponent.findComponentById('dn');
+    return TestComponent.click(dn);
+  });
 
-  it "caches value on alternate selected", (done) ->
-    firstCall = true
-    @question.alternates = {dontknow: true, na: true}
-    myOptions = {
-      data: {q1234: {value: 'test'}}
-      onAnswerChange: (answer) =>
-        assert.equal answer.alternate, 'dontknow'
-        assert.equal answer.value, null
+  it("caches value on alternate selected", function(done) {
+    const firstCall = true;
+    this.question.alternates = {dontknow: true, na: true};
+    const myOptions = {
+      data: {q1234: {value: 'test'}},
+      onAnswerChange: answer => {
+        assert.equal(answer.alternate, 'dontknow');
+        assert.equal(answer.value, null);
 
-        @options.data = {q1234: answer}
-        @options.onAnswerChange = (answer) ->
-          assert.equal null, answer.alternate, "Alternate shouldn't be set anymore"
-          assert.equal answer.value, 'test', 'Should be back to test'
-          done()
+        this.options.data = {q1234: answer};
+        this.options.onAnswerChange = function(answer) {
+          assert.equal(null, answer.alternate, "Alternate shouldn't be set anymore");
+          assert.equal(answer.value, 'test', 'Should be back to test');
+          return done();
+        };
 
-        testComponent.setElement(R(MockTContextWrapper, null, R(QuestionComponent, @options)))
+        testComponent.setElement(R(MockTContextWrapper, null, R(QuestionComponent, this.options)));
 
-        callback = () ->
-          dn = testComponent.findComponentById('dn')
-          TestComponent.click(dn)
-        setTimeout(callback, 30)
-    }
+        const callback = function() {
+          const dn = testComponent.findComponentById('dn');
+          return TestComponent.click(dn);
+        };
+        return setTimeout(callback, 30);
+      }
+    };
 
-    testComponent = @render(myOptions)
-    dn = testComponent.findComponentById('dn')
-    TestComponent.click(dn)
+    var testComponent = this.render(myOptions);
+    const dn = testComponent.findComponentById('dn');
+    return TestComponent.click(dn);
+  });
 
-  it "erases alternate on value entered", (done) ->
-    @question.alternates = {dontknow: true, na: true}
-    testComponent = @render(
-      data: {q1234: {alternate: 'na'}}
-      onAnswerChange: (answer) ->
-        assert.equal answer.alternate, null
-        assert.equal answer.value, 'test'
-        done()
-    )
-    input = testComponent.findComponentById('input')
-    TestComponent.changeValue(input, 'test')
-    ReactTestUtils.Simulate.blur(input)
+  return it("erases alternate on value entered", function(done) {
+    this.question.alternates = {dontknow: true, na: true};
+    const testComponent = this.render({
+      data: {q1234: {alternate: 'na'}},
+      onAnswerChange(answer) {
+        assert.equal(answer.alternate, null);
+        assert.equal(answer.value, 'test');
+        return done();
+      }
+    });
+    const input = testComponent.findComponentById('input');
+    TestComponent.changeValue(input, 'test');
+    return ReactTestUtils.Simulate.blur(input);
+  });
+});

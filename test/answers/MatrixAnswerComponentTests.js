@@ -1,64 +1,70 @@
-_ = require 'lodash'
-assert = require('chai').assert
+import _ from 'lodash';
+import { assert } from 'chai';
+import TestComponent from 'react-library/lib/TestComponent';
+import ReactTestUtils from 'react-dom/test-utils';
+import MatrixAnswerComponent from '../../src/answers/MatrixAnswerComponent';
+import React from 'react';
+import ReactDOM from 'react-dom';
+const R = React.createElement;
 
-TestComponent = require('react-library/lib/TestComponent')
-ReactTestUtils = require('react-dom/test-utils')
+describe('MatrixAnswerComponent', function() {
+  before(function() {
+    this.toDestroy = [];
 
-MatrixAnswerComponent = require '../../src/answers/MatrixAnswerComponent'
-
-React = require 'react'
-ReactDOM = require 'react-dom'
-R = React.createElement
-
-describe 'MatrixAnswerComponent', ->
-  before ->
-    @toDestroy = []
-
-    @render = (options = {}) =>
-      options = _.extend {
+    return this.render = (options = {}) => {
+      options = _.extend({
         items: [
-          { id: "a", label: { _base: "en", en: "AA" }, hint: { _base: "en", en: "a-hint" } }
-          { id: "b", label: { _base: "en", en: "BB" } }
+          { id: "a", label: { _base: "en", en: "AA" }, hint: { _base: "en", en: "a-hint" } },
+          { id: "b", label: { _base: "en", en: "BB" } },
           { id: "c", label: { _base: "en", en: "CC" } }
-        ]
-        value: null
-        onValueChange: () ->
-          null
+        ],
+        value: null,
+        onValueChange() {
+          return null;
+        },
         columns: [
           { _id: "c1", _type: "TextColumnQuestion", name: { en: "C1" } }
-        ]
+        ],
         data: {}
-      }, options
-      elem = R(MatrixAnswerComponent, options)
-      comp = new TestComponent(elem)
-      @toDestroy.push(comp)
-      return comp
+      }, options);
+      const elem = R(MatrixAnswerComponent, options);
+      const comp = new TestComponent(elem);
+      this.toDestroy.push(comp);
+      return comp;
+    };
+  });
 
-  afterEach ->
-    for comp in @toDestroy
-      comp.destroy()
-    @toDestroy = []
+  afterEach(function() {
+    for (let comp of this.toDestroy) {
+      comp.destroy();
+    }
+    return this.toDestroy = [];});
 
-  it "displays items", ->
-    testComponent = @render()
+  it("displays items", function() {
+    const testComponent = this.render();
 
-    itemA = testComponent.findDOMNodeByText(/AA/)
-    assert itemA?, 'Not showing choice AA'
+    const itemA = testComponent.findDOMNodeByText(/AA/);
+    return assert((itemA != null), 'Not showing choice AA');
+  });
 
-  it "displays item hints", ->
-    testComponent = @render()
+  it("displays item hints", function() {
+    const testComponent = this.render();
 
-    hintA = testComponent.findDOMNodeByText(/a-hint/)
-    assert hintA?, 'Not showing hint'
+    const hintA = testComponent.findDOMNodeByText(/a-hint/);
+    return assert((hintA != null), 'Not showing hint');
+  });
 
-  it "records text change", (done) ->
-    testComponent = @render({
-      onValueChange: (value) ->
-        assert.deepEqual value, { a: { c1: { value: "x" } } }
-        done()
-    })
+  return it("records text change", function(done) {
+    const testComponent = this.render({
+      onValueChange(value) {
+        assert.deepEqual(value, { a: { c1: { value: "x" } } });
+        return done();
+      }
+    });
 
-    inputs = ReactTestUtils.scryRenderedDOMComponentsWithTag(testComponent.getComponent(), "input")
-    inputs[0].value = "x"
-    ReactTestUtils.Simulate.change(inputs[0])
+    const inputs = ReactTestUtils.scryRenderedDOMComponentsWithTag(testComponent.getComponent(), "input");
+    inputs[0].value = "x";
+    return ReactTestUtils.Simulate.change(inputs[0]);
+  });
+});
 

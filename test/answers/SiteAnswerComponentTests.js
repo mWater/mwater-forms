@@ -1,93 +1,114 @@
-assert = require('chai').assert
+import { assert } from 'chai';
+import TestComponent from 'react-library/lib/TestComponent';
+import ReactTestUtils from 'react-dom/test-utils';
+import SiteAnswerComponent from '../../src/answers/SiteAnswerComponent';
+import AnswerValidator from '../../src/answers/AnswerValidator';
+import React from 'react';
+import ReactDOM from 'react-dom';
+const R = React.createElement;
+import PropTypes from 'prop-types';
 
-TestComponent = require('react-library/lib/TestComponent')
-ReactTestUtils = require('react-dom/test-utils')
+// TODO: Fix 4 failing test
 
-SiteAnswerComponent = require '../../src/answers/SiteAnswerComponent'
-AnswerValidator = require '../../src/answers/AnswerValidator'
+class SiteContext extends React.Component {
+  static initClass() {
+    this.childContextTypes = {
+      selectEntity: PropTypes.func,
+      getEntityById: PropTypes.func,
+      getEntityByCode: PropTypes.func,
+      renderEntitySummaryView: PropTypes.func,
+      onNextOrComments: PropTypes.func,
+      T: PropTypes.func
+    };
+  }
 
-React = require 'react'
-ReactDOM = require 'react-dom'
-R = React.createElement
-PropTypes = require('prop-types')
+  getChildContext() {
+    return {
+      selectEntity() {
+        return null;
+      },
+      getEntityById() {
+        return null;
+      },
+      getEntityByCode(code) {
+        if (code === '10007') {
+          return true;
+        }
+        return null;
+      },
+      renderEntitySummaryView() {
+        return null;
+      },
+      onNextOrComments() {
+        return null;
+      },
+      T() {
+        return null;
+      }
+    };
+  }
 
-# TODO: Fix 4 failing test
+  render() {
+    return this.props.children;
+  }
+}
+SiteContext.initClass();
 
-class SiteContext extends React.Component
-  @childContextTypes:
-    selectEntity: PropTypes.func
-    getEntityById: PropTypes.func
-    getEntityByCode: PropTypes.func
-    renderEntitySummaryView: PropTypes.func
-    onNextOrComments: PropTypes.func
-    T: PropTypes.func
+describe('SiteAnswerComponent', function() {
+  beforeEach(function() {
+    this.toDestroy = [];
 
-  getChildContext: ->
-    selectEntity: () ->
-      null
-    getEntityById: () ->
-      null
-    getEntityByCode: (code) ->
-      if code == '10007'
-        return true
-      return null
-    renderEntitySummaryView: () ->
-      null
-    onNextOrComments: () ->
-      null
-    T: () ->
-      null
+    return this.render = (options = {}) => {
+      const elem = R(SiteContext, {}, R(SiteAnswerComponent, options));
+      const comp = new TestComponent(elem);
+      this.toDestroy.push(comp);
+      return comp;
+    };
+  });
 
-  render: ->
-    return @props.children
+  afterEach(function() {
+    return this.toDestroy.map((comp) =>
+      comp.destroy());
+  });
 
-describe 'SiteAnswerComponent', ->
-  beforeEach ->
-    @toDestroy = []
+  it("allows valid site codes", function(done) {
+    const testComponent = this.render({
+      async onValueChange(value) {
+        assert.equal(value.code, "10007");
 
-    @render = (options = {}) =>
-      elem = R(SiteContext, {}, R(SiteAnswerComponent, options))
-      comp = new TestComponent(elem)
-      @toDestroy.push(comp)
-      return comp
+        // Validate answer
+        const answer = {value};
+        const answerValidator = new AnswerValidator();
+        const question = {_type: "SiteQuestion"};
+        const result = await answerValidator.validate(question, answer);
+        assert.equal(result, null);
 
-  afterEach ->
-    for comp in @toDestroy
-      comp.destroy()
+        return done();
+      }
+    });
+    const input = testComponent.findInput();
+    TestComponent.changeValue(input, "10007");
+    return ReactTestUtils.Simulate.blur(input);
+  });
 
-  it "allows valid site codes", (done) ->
-    testComponent = @render({
-      onValueChange: (value) ->
-        assert.equal value.code, "10007"
+  return it("rejects invalid site codes", function(done) {
+    const testComponent = this.render({
+      async onValueChange(value) {
+        assert.equal(value.code, "10008");
 
-        # Validate answer
-        answer = {value: value}
-        answerValidator = new AnswerValidator()
-        question = {_type: "SiteQuestion"}
-        result = await answerValidator.validate(question, answer)
-        assert.equal result, null
+        // Validate answer
+        const answer = {value};
+        const answerValidator = new AnswerValidator();
+        const question = {_type: "SiteQuestion"};
+        const result = await answerValidator.validate(question, answer);
+        assert.equal(result, 'Invalid code');
 
-        done()
-    })
-    input = testComponent.findInput()
-    TestComponent.changeValue(input, "10007")
-    ReactTestUtils.Simulate.blur(input)
-
-  it "rejects invalid site codes", (done) ->
-    testComponent = @render({
-      onValueChange: (value) ->
-        assert.equal value.code, "10008"
-
-        # Validate answer
-        answer = {value: value}
-        answerValidator = new AnswerValidator()
-        question = {_type: "SiteQuestion"}
-        result = await answerValidator.validate(question, answer)
-        assert.equal result, 'Invalid code'
-
-        done()
-    })
-    input = testComponent.findInput()
-    TestComponent.changeValue(input, "10008")
-    ReactTestUtils.Simulate.blur(input)
+        return done();
+      }
+    });
+    const input = testComponent.findInput();
+    TestComponent.changeValue(input, "10008");
+    return ReactTestUtils.Simulate.blur(input);
+  });
+});
 

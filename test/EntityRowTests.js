@@ -1,66 +1,72 @@
-_ = require 'lodash'
-assert = require("chai").assert
+import _ from 'lodash';
+import { assert } from "chai";
+import EntityRow from '../src/EntityRow';
+import { Schema } from 'mwater-expressions';
 
-EntityRow = require '../src/EntityRow'
-Schema = require('mwater-expressions').Schema
-
-describe "EntityRow", ->
-  before ->
-    # Create schema with one join
-    @schema = new Schema({
+describe("EntityRow", function() {
+  before(function() {
+    // Create schema with one join
+    return this.schema = new Schema({
       tables: [
         {
-          id: "entities.a"
+          id: "entities.a",
           contents: [
-            { id: "x", type: "text" }
+            { id: "x", type: "text" },
             { id: "y", type: "join", join: { type: "n-1", toTable: "entities.b" }}
           ]
-        }
+        },
         {
-          id: "entities.b"
+          id: "entities.b",
           contents: [
             { id: "x", type: "text" }
           ]
         }
       ]
-    })
+    });
+  });
 
-  it "gets plain values", ->
-    row = new EntityRow({
-      entityType: "a"
-      entity: { x: "abc" }
-      schema: @schema
-    })
+  it("gets plain values", async function() {
+    const row = new EntityRow({
+      entityType: "a",
+      entity: { x: "abc" },
+      schema: this.schema
+    });
 
-    value = await row.getField("x")
-    assert.equal value, "abc"
+    const value = await row.getField("x");
+    return assert.equal(value, "abc");
+  });
 
-  it "gets plain values of join", ->
-    row = new EntityRow({
-      entityType: "a"
-      entity: { y: "someid" }
-      schema: @schema
-      getEntityById: (entityType, entityId, callback) =>
-        assert.equal entityType, "b"
-        assert.equal entityId, "someid"
-        callback({ x: "abc" })
-    })
+  it("gets plain values of join", async function() {
+    const row = new EntityRow({
+      entityType: "a",
+      entity: { y: "someid" },
+      schema: this.schema,
+      getEntityById: (entityType, entityId, callback) => {
+        assert.equal(entityType, "b");
+        assert.equal(entityId, "someid");
+        return callback({ x: "abc" });
+      }
+    });
 
-    value = await row.getField("y")
-    assert.equal value, "someid"
+    const value = await row.getField("y");
+    return assert.equal(value, "someid");
+  });
 
-  it "gets joins", ->
-    row = new EntityRow({
-      entityType: "a"
-      entity: { y: "someid" }
-      schema: @schema
-      getEntityById: (entityType, entityId, callback) =>
-        assert.equal entityType, "b"
-        assert.equal entityId, "someid"
-        callback({ x: "abc" })
-    })
+  return it("gets joins", async function() {
+    const row = new EntityRow({
+      entityType: "a",
+      entity: { y: "someid" },
+      schema: this.schema,
+      getEntityById: (entityType, entityId, callback) => {
+        assert.equal(entityType, "b");
+        assert.equal(entityId, "someid");
+        return callback({ x: "abc" });
+      }
+    });
 
-    value = await row.followJoin("y")
-    value = await value.getField("x")
-    assert.equal value, "abc"
+    let value = await row.followJoin("y");
+    value = await value.getField("x");
+    return assert.equal(value, "abc");
+  });
+});
 

@@ -1,1 +1,1 @@
-require './ResponseAnswersComponentStories'
+import './ResponseAnswersComponentStories';

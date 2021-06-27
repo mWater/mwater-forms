@@ -1,102 +1,139 @@
-PropTypes = require('prop-types')
-_ = require 'lodash'
-React = require 'react'
-R = React.createElement
-EntityDisplayComponent = require '../EntityDisplayComponent'
-AsyncLoadComponent = require('react-library/lib/AsyncLoadComponent')
+let EntityAnswerComponent;
+import PropTypes from 'prop-types';
+import _ from 'lodash';
+import React from 'react';
+const R = React.createElement;
+import EntityDisplayComponent from '../EntityDisplayComponent';
+import AsyncLoadComponent from 'react-library/lib/AsyncLoadComponent';
 
-# Allows user to select an entity
-# State is needed for canEditEntity which requires entire entity
-module.exports = class EntityAnswerComponent extends AsyncLoadComponent
-  @contextTypes:
-    selectEntity: PropTypes.func
-    editEntity: PropTypes.func
-    renderEntitySummaryView: PropTypes.func.isRequired
-    getEntityById: PropTypes.func.isRequired     # Gets an entity by id (entityType, entityId, callback)
-    canEditEntity: PropTypes.func
-    T: PropTypes.func.isRequired  # Localizer to use
-
-  @propTypes:
-    value: PropTypes.string
-    entityType: PropTypes.string.isRequired
-    onValueChange: PropTypes.func.isRequired
-
-  focus: () ->
-    # Nothing to focus
-    return false
-
-  # Override to determine if a load is needed. Not called on mounting
-  isLoadNeeded: (newProps, oldProps) ->
-    return newProps.entityType != oldProps.entityType or newProps.value != oldProps.value
-
-  # Call callback with state changes
-  load: (props, prevProps, callback) ->
-    if not props.value 
-      callback(entity: null)
-      return
-
-    @context.getEntityById(props.entityType, props.value, (entity) =>
-      callback(entity: entity)
-    )
-
-  # Called to select an entity using an external mechanism (calls @ctx.selectEntity)
-  handleSelectEntity: =>
-    if not @context.selectEntity
-      return alert(@context.T("Not supported on this platform"))
-
-    @context.selectEntity {
-      entityType: @props.entityType
-      callback: (value) =>
-        @props.onValueChange(value)
+// Allows user to select an entity
+// State is needed for canEditEntity which requires entire entity
+export default EntityAnswerComponent = (function() {
+  EntityAnswerComponent = class EntityAnswerComponent extends AsyncLoadComponent {
+    constructor(...args) {
+      super(...args);
+      this.handleSelectEntity = this.handleSelectEntity.bind(this);
+      this.handleClearEntity = this.handleClearEntity.bind(this);
+      this.handleEditEntity = this.handleEditEntity.bind(this);
     }
 
-  handleClearEntity: =>
-    @props.onValueChange(null)
+    static initClass() {
+      this.contextTypes = {
+        selectEntity: PropTypes.func,
+        editEntity: PropTypes.func,
+        renderEntitySummaryView: PropTypes.func.isRequired,
+        getEntityById: PropTypes.func.isRequired,     // Gets an entity by id (entityType, entityId, callback)
+        canEditEntity: PropTypes.func,
+        T: PropTypes.func.isRequired  // Localizer to use
+      };
+  
+      this.propTypes = {
+        value: PropTypes.string,
+        entityType: PropTypes.string.isRequired,
+        onValueChange: PropTypes.func.isRequired
+      };
+    }
 
-  handleEditEntity: =>
-    if not @context.editEntity
-      return alert(@context.T("Not supported on this platform"))
+    focus() {
+      // Nothing to focus
+      return false;
+    }
 
-    @context.editEntity @props.entityType, @props.value, =>
-      @props.onValueChange(@props.value)
-      @forceLoad()
+    // Override to determine if a load is needed. Not called on mounting
+    isLoadNeeded(newProps, oldProps) {
+      return (newProps.entityType !== oldProps.entityType) || (newProps.value !== oldProps.value);
+    }
 
-  renderEntityButtons: ->
-    R 'div', null,
-      R 'button', type: "button", className: "btn btn-link btn-sm", onClick: @handleSelectEntity,
-        R 'span', className: "glyphicon glyphicon-ok"
-        " "
-        @context.T("Change Selection")
-      R 'button', type: "button", className: "btn btn-link btn-sm", onClick: @handleClearEntity,
-        R 'span', className: "glyphicon glyphicon-remove"
-        " "
-        @context.T("Clear Selection")
-      if @context.editEntity? and @context.canEditEntity(@props.entityType, @state.entity)
-        R 'button', type: "button", className: "btn btn-link btn-sm", onClick: @handleEditEntity,
-          R 'span', className: "glyphicon glyphicon-pencil"
-          " "
-          @context.T("Edit Selection")
+    // Call callback with state changes
+    load(props, prevProps, callback) {
+      if (!props.value) { 
+        callback({entity: null});
+        return;
+      }
 
-  render: ->
-    if @state.loading
-      return R 'div', className: "alert alert-info", @context.T("Loading...")
+      return this.context.getEntityById(props.entityType, props.value, entity => {
+        return callback({entity});
+      });
+    }
 
-    if not @props.value 
-      # Render select button
-      return R 'button', type: "button", className: "btn btn-default btn-sm", onClick: @handleSelectEntity,
-        R 'span', className: "glyphicon glyphicon-ok"
-        " "
-        @context.T("Select")
+    // Called to select an entity using an external mechanism (calls @ctx.selectEntity)
+    handleSelectEntity() {
+      if (!this.context.selectEntity) {
+        return alert(this.context.T("Not supported on this platform"));
+      }
 
-    if not @state.entity 
-      return R 'div', className: "alert alert-danger", @context.T("Not found")
+      return this.context.selectEntity({
+        entityType: this.props.entityType,
+        callback: value => {
+          return this.props.onValueChange(value);
+        }
+      });
+    }
 
-    return R 'div', null,
-      @renderEntityButtons()
-      R EntityDisplayComponent, 
-        entityType: @props.entityType
-        displayInWell: true
-        entityId: @props.value
-        getEntityById: @context.getEntityById
-        renderEntityView: @context.renderEntitySummaryView
-        T: @context.T
+    handleClearEntity() {
+      return this.props.onValueChange(null);
+    }
+
+    handleEditEntity() {
+      if (!this.context.editEntity) {
+        return alert(this.context.T("Not supported on this platform"));
+      }
+
+      return this.context.editEntity(this.props.entityType, this.props.value, () => {
+        this.props.onValueChange(this.props.value);
+        return this.forceLoad();
+      });
+    }
+
+    renderEntityButtons() {
+      return R('div', null,
+        R('button', {type: "button", className: "btn btn-link btn-sm", onClick: this.handleSelectEntity},
+          R('span', {className: "glyphicon glyphicon-ok"}),
+          " ",
+          this.context.T("Change Selection")),
+        R('button', {type: "button", className: "btn btn-link btn-sm", onClick: this.handleClearEntity},
+          R('span', {className: "glyphicon glyphicon-remove"}),
+          " ",
+          this.context.T("Clear Selection")),
+        (this.context.editEntity != null) && this.context.canEditEntity(this.props.entityType, this.state.entity) ?
+          R('button', {type: "button", className: "btn btn-link btn-sm", onClick: this.handleEditEntity},
+            R('span', {className: "glyphicon glyphicon-pencil"}),
+            " ",
+            this.context.T("Edit Selection")) : undefined
+      );
+    }
+
+    render() {
+      if (this.state.loading) {
+        return R('div', {className: "alert alert-info"}, this.context.T("Loading..."));
+      }
+
+      if (!this.props.value) { 
+        // Render select button
+        return R('button', {type: "button", className: "btn btn-default btn-sm", onClick: this.handleSelectEntity},
+          R('span', {className: "glyphicon glyphicon-ok"}),
+          " ",
+          this.context.T("Select"));
+      }
+
+      if (!this.state.entity) { 
+        return R('div', {className: "alert alert-danger"}, this.context.T("Not found"));
+      }
+
+      return R('div', null,
+        this.renderEntityButtons(),
+        R(EntityDisplayComponent, { 
+          entityType: this.props.entityType,
+          displayInWell: true,
+          entityId: this.props.value,
+          getEntityById: this.context.getEntityById,
+          renderEntityView: this.context.renderEntitySummaryView,
+          T: this.context.T
+        }
+        )
+      );
+    }
+  };
+  EntityAnswerComponent.initClass();
+  return EntityAnswerComponent;
+})();

@@ -1,37 +1,57 @@
-$ = require 'jquery'
-assert = require("chai").assert
+import $ from 'jquery';
+import { assert } from "chai";
 
-class UIDriver
-  constructor: (el) ->
-    @el = $(el)
+class UIDriver {
+  constructor(el) {
+    this.el = $(el);
+  }
 
-  getDisabled: (str) ->
-    for item in @el.find("a,button")
-      if $(item).text().indexOf(str) != -1
-        return $(item).is(":disabled")
-    assert.fail(null, str, "Can't find: " + str)
+  getDisabled(str) {
+    for (let item of this.el.find("a,button")) {
+      if ($(item).text().indexOf(str) !== -1) {
+        return $(item).is(":disabled");
+      }
+    }
+    return assert.fail(null, str, "Can't find: " + str);
+  }
 
-  click: (str) ->
-    for item in @el.find("a,button")
-      if $(item).text().indexOf(str) != -1
-        #console.log "Clicking: " + $(item).text()
-        $(item).trigger("click")
-        return
-    assert.fail(null, str, "Can't find: " + str)
+  click(str) {
+    for (let item of this.el.find("a,button")) {
+      if ($(item).text().indexOf(str) !== -1) {
+        //console.log "Clicking: " + $(item).text()
+        $(item).trigger("click");
+        return;
+      }
+    }
+    return assert.fail(null, str, "Can't find: " + str);
+  }
   
-  fill: (str, value) ->
-    for item in @el.find("label")
-      if $(item).text().indexOf(str) != -1
-        box = @el.find("#"+$(item).attr('for'))
-        box.val(value)
+  fill(str, value) {
+    return (() => {
+      const result = [];
+      for (let item of this.el.find("label")) {
+        if ($(item).text().indexOf(str) !== -1) {
+          const box = this.el.find("#"+$(item).attr('for'));
+          result.push(box.val(value));
+        } else {
+          result.push(undefined);
+        }
+      }
+      return result;
+    })();
+  }
   
-  text: ->
-    return @el.text()
+  text() {
+    return this.el.text();
+  }
       
-  html: ->
-    return @el.html()
+  html() {
+    return this.el.html();
+  }
     
-  wait: (after) ->
-    setTimeout after, 10
+  wait(after) {
+    return setTimeout(after, 10);
+  }
+}
 
-module.exports = UIDriver
+export default UIDriver;

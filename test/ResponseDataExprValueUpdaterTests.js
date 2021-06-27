@@ -1,854 +1,935 @@
-_ = require 'lodash'
-assert = require('chai').assert
-ResponseDataExprValueUpdater = require('../src/ResponseDataExprValueUpdater').default
-Schema = require('mwater-expressions').Schema
-canonical = require 'canonical-json'
+import _ from 'lodash';
+import { assert } from 'chai';
+import { default as ResponseDataExprValueUpdater } from '../src/ResponseDataExprValueUpdater';
+import { Schema } from 'mwater-expressions';
+import canonical from 'canonical-json';
 
-compare = (actual, expected) ->
-  assert.equal canonical(actual), canonical(expected), "\ngot:" + canonical(actual) + "\nexp:" + canonical(expected) + "\n"
+const compare = (actual, expected) => assert.equal(canonical(actual), canonical(expected), "\ngot:" + canonical(actual) + "\nexp:" + canonical(expected) + "\n");
 
-describe "ResponseDataExprValueUpdater", ->
-  describe "updates simple question values", ->
-    beforeEach ->
-      # Test updating a single value. newValue is optional different resulting value
-      @testUpdate = (type, options, value, done, newValue) ->
-        # Make simple question
-        question = {
-          _id: "q1234"
-          _type: type
+describe("ResponseDataExprValueUpdater", function() {
+  describe("updates simple question values", function() {
+    beforeEach(function() {
+      // Test updating a single value. newValue is optional different resulting value
+      return this.testUpdate = function(type, options, value, done, newValue) {
+        // Make simple question
+        const question = {
+          _id: "q1234",
+          _type: type,
           text: { en: "Q1234" }
-        }
-        _.extend(question, options)
+        };
+        _.extend(question, options);
 
-        formDesign = {
-          _type: "Form"
+        const formDesign = {
+          _type: "Form",
           contents: [question]
-        }
+        };
 
-        updater = new ResponseDataExprValueUpdater(formDesign, null, null)
+        const updater = new ResponseDataExprValueUpdater(formDesign, null, null);
 
-        # Simple field
-        expr = { type: "field", table: "responses:form1234", column: "data:q1234:value" }
+        // Simple field
+        const expr = { type: "field", table: "responses:form1234", column: "data:q1234:value" };
 
-        updater.updateData({}, expr, value, (error, data) =>
-          assert not error
-          compare data, { q1234: { value: newValue or value } }
-          done()
-        )
+        return updater.updateData({}, expr, value, (error, data) => {
+          assert(!error);
+          compare(data, { q1234: { value: newValue || value } });
+          return done();
+        });
+      };
+    });
 
-    it "TextQuestion, TextColumnQuestion", (done) ->
-      @testUpdate("TextQuestion", {}, "abc", done)
+    it("TextQuestion, TextColumnQuestion", function(done) {
+      return this.testUpdate("TextQuestion", {}, "abc", done);
+    });
 
-    it "NumberQuestion, NumberColumnQuestion", (done) ->
-      @testUpdate("NumberQuestion", {}, 123, =>
-        @testUpdate("NumberColumnQuestion", {}, 123, done)
-      )
+    it("NumberQuestion, NumberColumnQuestion", function(done) {
+      return this.testUpdate("NumberQuestion", {}, 123, () => {
+        return this.testUpdate("NumberColumnQuestion", {}, 123, done);
+      });
+    });
 
-    it "DropdownQuestion, DropdownColumnQuestion, RadioQuestion", (done) ->
-      choices = [{ id: "a" }, { id: "b" }]
-      @testUpdate("NumberQuestion", { choices: choices }, "a", done)
+    it("DropdownQuestion, DropdownColumnQuestion, RadioQuestion", function(done) {
+      const choices = [{ id: "a" }, { id: "b" }];
+      return this.testUpdate("NumberQuestion", { choices }, "a", done);
+    });
 
-    it "MulticheckQuestion", (done) ->
-      choices = [{ id: "a" }, { id: "b" }]
-      @testUpdate("NumberQuestion", { choices: choices }, ["a", "b"], done)
+    it("MulticheckQuestion", function(done) {
+      const choices = [{ id: "a" }, { id: "b" }];
+      return this.testUpdate("NumberQuestion", { choices }, ["a", "b"], done);
+    });
 
-    it "DateQuestion (date and datetime)", (done) ->
-      @testUpdate("DateQuestion", { format: "YYYY-MM-DD" }, "2015-12-25", =>
-        @testUpdate("DateQuestion", { format: "lll" }, "2015-12-25T12:34:56Z", done)
-      )
+    it("DateQuestion (date and datetime)", function(done) {
+      return this.testUpdate("DateQuestion", { format: "YYYY-MM-DD" }, "2015-12-25", () => {
+        return this.testUpdate("DateQuestion", { format: "lll" }, "2015-12-25T12:34:56Z", done);
+      });
+    });
 
-    it "CheckQuestion, CheckColumnQuestion", (done) ->
-      @testUpdate("CheckQuestion", {}, true, =>
-        @testUpdate("CheckColumnQuestion", {}, true, done)
-      )
+    it("CheckQuestion, CheckColumnQuestion", function(done) {
+      return this.testUpdate("CheckQuestion", {}, true, () => {
+        return this.testUpdate("CheckColumnQuestion", {}, true, done);
+      });
+    });
 
-    it "ImageQuestion", (done) ->
-      @testUpdate("ImageQuestion", {}, { id: "1234" }, done)
+    it("ImageQuestion", function(done) {
+      return this.testUpdate("ImageQuestion", {}, { id: "1234" }, done);
+    });
 
-    it "ImagesQuestion", (done) ->
-      @testUpdate("ImagesQuestion", {}, [{ id: "1234" }, { id: "1235" }], done)
+    it("ImagesQuestion", function(done) {
+      return this.testUpdate("ImagesQuestion", {}, [{ id: "1234" }, { id: "1235" }], done);
+    });
 
-    it "TextListQuestion", (done) ->
-      @testUpdate("TextListQuestion", {}, ["a", "b"], done)
+    it("TextListQuestion", function(done) {
+      return this.testUpdate("TextListQuestion", {}, ["a", "b"], done);
+    });
 
-    it "BarcodeQuestion", (done) ->
-      @testUpdate("BarcodeQuestion", {}, "abc", done)
+    it("BarcodeQuestion", function(done) {
+      return this.testUpdate("BarcodeQuestion", {}, "abc", done);
+    });
       
-    it "LocationQuestion value", (done) ->
-      @testUpdate("LocationQuestion", {}, { type: "Point", coordinates: [2, 3] }, =>
-        @testUpdate("LocationQuestion", {}, null, done, null)
-      , { latitude: 3, longitude: 2 })
+    return it("LocationQuestion value", function(done) {
+      return this.testUpdate("LocationQuestion", {}, { type: "Point", coordinates: [2, 3] }, () => {
+        return this.testUpdate("LocationQuestion", {}, null, done, null);
+      }
+      , { latitude: 3, longitude: 2 });
+    });
+  });
 
-  describe "Complex questions", ->
-    before ->
-      # Test updating a single expression. answer is expected answer
-      @testUpdate = (questionType, options, column, value, oldAnswer, newAnswer, done) ->
-        # Make simple question
-        question = {
-          _id: "q1234"
-          _type: questionType
+  describe("Complex questions", function() {
+    before(function() {
+      // Test updating a single expression. answer is expected answer
+      return this.testUpdate = function(questionType, options, column, value, oldAnswer, newAnswer, done) {
+        // Make simple question
+        const question = {
+          _id: "q1234",
+          _type: questionType,
           text: { en: "Q1234" }
-        }
-        _.extend(question, options)
+        };
+        _.extend(question, options);
 
-        formDesign = {
-          _type: "Form"
+        const formDesign = {
+          _type: "Form",
           contents: [question]
-        }
+        };
 
-        updater = new ResponseDataExprValueUpdater(formDesign, null, null)
+        const updater = new ResponseDataExprValueUpdater(formDesign, null, null);
 
-        # Simple field
-        expr = { type: "field", table: "responses:form1234", column: column }
+        // Simple field
+        const expr = { type: "field", table: "responses:form1234", column };
 
-        updater.updateData({ q1234: oldAnswer }, expr, value, (error, data) =>
-          assert not error
-          compare data, { q1234: newAnswer }
-          done()
-        )
+        return updater.updateData({ q1234: oldAnswer }, expr, value, (error, data) => {
+          assert(!error);
+          compare(data, { q1234: newAnswer });
+          return done();
+        });
+      };
+    });
 
-    describe "LikertQuestion", ->
-      it "creates new answer", (done) ->
-        @testUpdate("LikertQuestion", { 
+    describe("LikertQuestion", function() {
+      it("creates new answer", function(done) {
+        return this.testUpdate("LikertQuestion", { 
             items: [
-              { id: "item1", label: { _base:"en", en: "Item 1" } }
+              { id: "item1", label: { _base:"en", en: "Item 1" } },
               { id: "item2", label: { _base:"en", en: "Item 2" } }
-            ]
+            ],
             choices: [
-              { id: "yes", label: { _base:"en", en: "Yes"}}
+              { id: "yes", label: { _base:"en", en: "Yes"}},
               { id: "no", label: { _base:"en", en: "No"}}
             ]
           },
           "data:q1234:value:item1",
-          "yes"
-          null
-          { value: { item1: "yes" } }
+          "yes",
+          null,
+          { value: { item1: "yes" } },
           done
-        )
+        );
+      });
 
-      it "keeps existing answer", (done) ->
-        @testUpdate("LikertQuestion", { 
+      return it("keeps existing answer", function(done) {
+        return this.testUpdate("LikertQuestion", { 
             items: [
-              { id: "item1", label: { _base:"en", en: "Item 1" } }
+              { id: "item1", label: { _base:"en", en: "Item 1" } },
               { id: "item2", label: { _base:"en", en: "Item 2" } }
-            ]
+            ],
             choices: [
-              { id: "yes", label: { _base:"en", en: "Yes"}}
+              { id: "yes", label: { _base:"en", en: "Yes"}},
               { id: "no", label: { _base:"en", en: "No"}}
             ]
           },
           "data:q1234:value:item1",
-          "yes"
-          { value: { item2: "no" } }
-          { value: { item1: "yes", item2: "no" } }
+          "yes",
+          { value: { item2: "no" } },
+          { value: { item1: "yes", item2: "no" } },
           done
-        )
+        );
+      });
+    });
 
-    describe "MatrixQuestion", ->
-      it "updates simple column", (done) ->
-        @testUpdate("MatrixQuestion", { 
+    return describe("MatrixQuestion", function() {
+      it("updates simple column", function(done) {
+        return this.testUpdate("MatrixQuestion", { 
             items: [
-              { id: "item1", label: { _base:"en", en: "Item 1" } }
+              { id: "item1", label: { _base:"en", en: "Item 1" } },
               { id: "item2", label: { _base:"en", en: "Item 2" } }
-            ]
+            ],
             columns: [
               { _id: "col1", _type: "TextColumnQuestion" }
             ]
           },
           "data:q1234:value:item1:col1:value",
-          "sometext"
-          { value: { item2: { col1: { value: "xyz" } } } }
-          { value: { item1: { col1: { value: "sometext" } }, item2: { col1: { value: "xyz" } } } }
+          "sometext",
+          { value: { item2: { col1: { value: "xyz" } } } },
+          { value: { item1: { col1: { value: "sometext" } }, item2: { col1: { value: "xyz" } } } },
           done
-        )
+        );
+      });
 
-      it "updates units magnitude column", (done) ->
-        @testUpdate("MatrixQuestion", { 
+      it("updates units magnitude column", function(done) {
+        return this.testUpdate("MatrixQuestion", { 
             items: [
-              { id: "item1", label: { _base:"en", en: "Item 1" } }
+              { id: "item1", label: { _base:"en", en: "Item 1" } },
               { id: "item2", label: { _base:"en", en: "Item 2" } }
-            ]
+            ],
             columns: [
               { _id: "col1", _type: "DropdownColumnQuestion", units: [{ id: "a" }, { id: "b" }] }
             ]
           },
           "data:q1234:value:item1:col1:value:quantity",
-          123
-          { value: { item2: { col1: { value: "xyz" } } } }
-          { value: { item1: { col1: { value: { quantity: 123 } } }, item2: { col1: { value: "xyz" } } } } 
+          123,
+          { value: { item2: { col1: { value: "xyz" } } } },
+          { value: { item1: { col1: { value: { quantity: 123 } } }, item2: { col1: { value: "xyz" } } } }, 
           done
-        )
+        );
+      });
 
-      it "updates units units column", (done) ->
-        @testUpdate("MatrixQuestion", { 
+      return it("updates units units column", function(done) {
+        return this.testUpdate("MatrixQuestion", { 
             items: [
-              { id: "item1", label: { _base:"en", en: "Item 1" } }
+              { id: "item1", label: { _base:"en", en: "Item 1" } },
               { id: "item2", label: { _base:"en", en: "Item 2" } }
-            ]
+            ],
             columns: [
               { _id: "col1", _type: "DropdownColumnQuestion", units: [{ id: "a" }, { id: "b" }] }
             ]
           },
           "data:q1234:value:item1:col1:value:units",
-          "a"
-          { value: { item2: { col1: { value: "xyz" } } } }
-          { value: { item1: { col1: { value: { units: "a" } } }, item2: { col1: { value: "xyz" } } } } 
+          "a",
+          { value: { item2: { col1: { value: "xyz" } } } },
+          { value: { item1: { col1: { value: { units: "a" } } }, item2: { col1: { value: "xyz" } } } }, 
           done
-        )
+        );
+      });
+    });
+  });
 
 
-  describe "special cases", ->
-    beforeEach ->
-      # Make simple question
-      @question = {
-        _id: "q1234"
+  describe("special cases", function() {
+    beforeEach(function() {
+      // Make simple question
+      this.question = {
+        _id: "q1234",
         text: { en: "Q1234" }
-      }
+      };
 
-      @formDesign = {
-        _type: "Form"
-        contents: [@question]
-      }
+      return this.formDesign = {
+        _type: "Form",
+        contents: [this.question]
+      };});
 
-    describe "UnitsQuestion", ->
-      it "quantity from empty", (done) ->
-        @question._type = "UnitsQuestion"
-        @question.units = [{ id: "a" }, { id: "b" }]
-        updater = new ResponseDataExprValueUpdater(@formDesign, null, null)
+    describe("UnitsQuestion", function() {
+      it("quantity from empty", function(done) {
+        this.question._type = "UnitsQuestion";
+        this.question.units = [{ id: "a" }, { id: "b" }];
+        const updater = new ResponseDataExprValueUpdater(this.formDesign, null, null);
 
-        # Quantity
-        expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:quantity" }
+        // Quantity
+        const expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:quantity" };
 
-        updater.updateData({}, expr, 4, (error, data) =>
-          assert not error
-          compare data, { q1234: { value: { quantity: 4 } } }
-          done()
-        )
+        return updater.updateData({}, expr, 4, (error, data) => {
+          assert(!error);
+          compare(data, { q1234: { value: { quantity: 4 } } });
+          return done();
+        });
+      });
 
-      it "quantity with existing data", (done) ->
-        @question._type = "UnitsQuestion"
-        @question.units = [{ id: "a" }, { id: "b" }]
-        updater = new ResponseDataExprValueUpdater(@formDesign, null, null)
+      it("quantity with existing data", function(done) {
+        this.question._type = "UnitsQuestion";
+        this.question.units = [{ id: "a" }, { id: "b" }];
+        const updater = new ResponseDataExprValueUpdater(this.formDesign, null, null);
 
-        # Quantity
-        expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:quantity" }
+        // Quantity
+        const expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:quantity" };
 
-        updater.updateData({ q1234: { value: { quantity: 3, units: "a" }} }, expr, 4, (error, data) =>
-          assert not error
-          compare data, { q1234: { value: { quantity: 4, units: "a" } } }
-          done()
-        )
+        return updater.updateData({ q1234: { value: { quantity: 3, units: "a" }} }, expr, 4, (error, data) => {
+          assert(!error);
+          compare(data, { q1234: { value: { quantity: 4, units: "a" } } });
+          return done();
+        });
+      });
 
-      it "units with existing data", (done) ->
-        @question._type = "UnitsQuestion"
-        @question.units = [{ id: "a" }, { id: "b" }]
-        updater = new ResponseDataExprValueUpdater(@formDesign, null, null)
+      return it("units with existing data", function(done) {
+        this.question._type = "UnitsQuestion";
+        this.question.units = [{ id: "a" }, { id: "b" }];
+        const updater = new ResponseDataExprValueUpdater(this.formDesign, null, null);
 
-        # Quantity
-        expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:units" }
+        // Quantity
+        const expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:units" };
 
-        updater.updateData({ q1234: { value: { quantity: 3, units: "a" }} }, expr, "b", (error, data) =>
-          assert not error
-          compare data, { q1234: { value: { quantity: 3, units: "b" } } }
-          done()
-        )
+        return updater.updateData({ q1234: { value: { quantity: 3, units: "a" }} }, expr, "b", (error, data) => {
+          assert(!error);
+          compare(data, { q1234: { value: { quantity: 3, units: "b" } } });
+          return done();
+        });
+      });
+    });
 
-    describe "SiteQuestion", ->
-      beforeEach ->
-        # Create form
-        question = {
-          _id: "q1234"
-          _type: "SiteQuestion"
-          text: { en: "Q1234" }
+    describe("SiteQuestion", function() {
+      beforeEach(function() {
+        // Create form
+        const question = {
+          _id: "q1234",
+          _type: "SiteQuestion",
+          text: { en: "Q1234" },
           siteTypes: ["Community"]
-        }
+        };
 
-        @formDesign = { _type: "Form", contents: [question] }
+        return this.formDesign = { _type: "Form", contents: [question] };});
 
-      it "nulls", (done) ->
-        # Create updater
-        updater = new ResponseDataExprValueUpdater(@formDesign, null, null)
+      it("nulls", function(done) {
+        // Create updater
+        const updater = new ResponseDataExprValueUpdater(this.formDesign, null, null);
 
-        # Update by name
-        expr = { type: "scalar", table: "responses:form123", joins: ["data:q1234:value"], expr: { type: "field", table: "entities.community", column: "name" }}
+        // Update by name
+        const expr = { type: "scalar", table: "responses:form123", joins: ["data:q1234:value"], expr: { type: "field", table: "entities.community", column: "name" }};
 
-        updater.updateData({ q1234: { value: { code: "somecode" } } }, expr, null, (error, data) =>
-          assert not error
-          assert.equal data.q1234.value, null
-          done()
-        )
+        return updater.updateData({ q1234: { value: { code: "somecode" } } }, expr, null, (error, data) => {
+          assert(!error);
+          assert.equal(data.q1234.value, null);
+          return done();
+        });
+      });
 
-      it "searches", ->
-        # Mock data source
-        dataSource = {
-          performQuery: (query, callback) =>
-            # Should query for communities, getting the code and searching by name
-            compare query, {
-              type: "query"
+      it("searches", async function() {
+        // Mock data source
+        const dataSource = {
+          performQuery: (query, callback) => {
+            // Should query for communities, getting the code and searching by name
+            compare(query, {
+              type: "query",
               selects: [
                 { type: "select", expr: { type: "field", tableAlias: "main", column: "code" }, alias: "value" }
-              ]
-              from: { type: "table", table: "entities.community", alias: "main" }
+              ],
+              from: { type: "table", table: "entities.community", alias: "main" },
               where: {
                 type: "op", op: "and", exprs: [
                   { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "main", column: "name" }, "Name1"] }
                 ]
-              }
+              },
               limit: 2
-            }
-            callback(null, [{ value: "code1" }])
-        }
+            });
+            return callback(null, [{ value: "code1" }]);
+          }
+        };
 
-        # Create schema with communities
-        schema = new Schema()
+        // Create schema with communities
+        let schema = new Schema();
         schema = schema.addTable({
-          id: "entities.community"
-          name: { en: "Communities" }
-          primaryKey: "_id"
+          id: "entities.community",
+          name: { en: "Communities" },
+          primaryKey: "_id",
           contents: [
-            { id: "code", type: "text", name: { en: "Code" } }
+            { id: "code", type: "text", name: { en: "Code" } },
             { id: "name", type: "text", name: { en: "Name" } }
           ]
-        })
+        });
 
-        # Create updater
-        updater = new ResponseDataExprValueUpdater(@formDesign, schema, dataSource)
+        // Create updater
+        const updater = new ResponseDataExprValueUpdater(this.formDesign, schema, dataSource);
 
-        # Update by name
-        expr = { type: "scalar", table: "responses:form123", joins: ["data:q1234:value"], expr: { type: "field", table: "entities.community", column: "name" }}
+        // Update by name
+        const expr = { type: "scalar", table: "responses:form123", joins: ["data:q1234:value"], expr: { type: "field", table: "entities.community", column: "name" }};
 
-        assert.isTrue updater.canUpdate(expr), "Should be able to update"
+        assert.isTrue(updater.canUpdate(expr), "Should be able to update");
 
-        data = await updater.updateData({}, expr, "Name1")
-        compare data.q1234.value, { code: "code1" }
+        const data = await updater.updateData({}, expr, "Name1");
+        return compare(data.q1234.value, { code: "code1" });
+    });
 
-      it "searches with direct _id", (done) ->
-        # Mock data source
-        dataSource = {
-          performQuery: (query, callback) =>
-            # Should query for communities, getting the code and searching by name
-            compare query, {
-              type: "query"
+      it("searches with direct _id", function(done) {
+        // Mock data source
+        const dataSource = {
+          performQuery: (query, callback) => {
+            // Should query for communities, getting the code and searching by name
+            compare(query, {
+              type: "query",
               selects: [
                 { type: "select", expr: { type: "field", tableAlias: "main", column: "code" }, alias: "value" }
-              ]
-              from: { type: "table", table: "entities.community", alias: "main" }
+              ],
+              from: { type: "table", table: "entities.community", alias: "main" },
               where: {
                 type: "op", op: "and", exprs: [
                   { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "main", column: "_id" }, "1234"] }
                 ]
-              }
+              },
               limit: 2
-            }
-            callback(null, [{ value: "code1" }])
-        }
+            });
+            return callback(null, [{ value: "code1" }]);
+          }
+        };
 
-        # Create schema with communities
-        schema = new Schema()
+        // Create schema with communities
+        let schema = new Schema();
         schema = schema.addTable({
-          id: "entities.community"
-          name: { en: "Communities" }
-          primaryKey: "_id"
+          id: "entities.community",
+          name: { en: "Communities" },
+          primaryKey: "_id",
           contents: [
-            { id: "code", type: "text", name: { en: "Code" } }
+            { id: "code", type: "text", name: { en: "Code" } },
             { id: "name", type: "text", name: { en: "Name" } }
           ]
-        })
+        });
 
-        # Create updater
-        updater = new ResponseDataExprValueUpdater(@formDesign, schema, dataSource)
+        // Create updater
+        const updater = new ResponseDataExprValueUpdater(this.formDesign, schema, dataSource);
 
-        # Update by name
-        expr = { type: "field", table: "responses:form123", column: "data:q1234:value" }
+        // Update by name
+        const expr = { type: "field", table: "responses:form123", column: "data:q1234:value" };
 
-        assert.isTrue updater.canUpdate(expr), "Should be able to update"
+        assert.isTrue(updater.canUpdate(expr), "Should be able to update");
 
-        updater.updateData({}, expr, "1234", (error, data) =>
-          assert not error
+        return updater.updateData({}, expr, "1234", (error, data) => {
+          assert(!error);
 
-          compare data.q1234.value, { code: "code1" }
-          done()
-        )
+          compare(data.q1234.value, { code: "code1" });
+          return done();
+        });
+      });
 
-      it "shortcuts if has code", (done) ->
-        # Mock data source
-        dataSource = {
-          performQuery: (query, callback) =>
-            callback(new Error("Should not query"))
-        }
+      return it("shortcuts if has code", function(done) {
+        // Mock data source
+        const dataSource = {
+          performQuery: (query, callback) => {
+            return callback(new Error("Should not query"));
+          }
+        };
 
-        # Create schema with communities
-        schema = new Schema()
+        // Create schema with communities
+        let schema = new Schema();
         schema = schema.addTable({
-          id: "entities.community"
-          name: { en: "Communities" }
-          primaryKey: "_id"
+          id: "entities.community",
+          name: { en: "Communities" },
+          primaryKey: "_id",
           contents: [
-            { id: "code", type: "text", name: { en: "Code" } }
+            { id: "code", type: "text", name: { en: "Code" } },
             { id: "name", type: "text", name: { en: "Name" } }
           ]
-        })
+        });
 
-        # Create updater
-        updater = new ResponseDataExprValueUpdater(@formDesign, schema, dataSource)
+        // Create updater
+        const updater = new ResponseDataExprValueUpdater(this.formDesign, schema, dataSource);
 
-        # Update by name
-        expr = { type: "scalar", table: "responses:form123", joins: ["data:q1234:value"], expr: { type: "field", table: "entities.community", column: "code" }}
+        // Update by name
+        const expr = { type: "scalar", table: "responses:form123", joins: ["data:q1234:value"], expr: { type: "field", table: "entities.community", column: "code" }};
 
-        assert.isTrue updater.canUpdate(expr), "Should be able to update"
+        assert.isTrue(updater.canUpdate(expr), "Should be able to update");
 
-        updater.updateData({}, expr, "10007", (error, data) =>
-          assert not error
+        return updater.updateData({}, expr, "10007", (error, data) => {
+          assert(!error);
 
-          compare data.q1234.value, { code: "10007" }
-          done()
-        )
+          compare(data.q1234.value, { code: "10007" });
+          return done();
+        });
+      });
+    });
 
-    describe "EntityQuestion", ->
-      beforeEach ->
-        # Create form
-        question = {
-          _id: "q1234"
-          _type: "EntityQuestion"
-          text: { en: "Q1234" }
+    describe("EntityQuestion", function() {
+      beforeEach(function() {
+        // Create form
+        const question = {
+          _id: "q1234",
+          _type: "EntityQuestion",
+          text: { en: "Q1234" },
           entityType: "community"
-        }
+        };
 
-        @formDesign = { _type: "Form", contents: [question] }
+        return this.formDesign = { _type: "Form", contents: [question] };});
 
-      it "nulls", (done) ->
-        # Create updater
-        updater = new ResponseDataExprValueUpdater(@formDesign, null, null)
+      it("nulls", function(done) {
+        // Create updater
+        const updater = new ResponseDataExprValueUpdater(this.formDesign, null, null);
 
-        # Update by name
-        expr = { type: "scalar", table: "responses:form123", joins: ["data:q1234:value"], expr: { type: "field", table: "entities.community", column: "name" }}
+        // Update by name
+        const expr = { type: "scalar", table: "responses:form123", joins: ["data:q1234:value"], expr: { type: "field", table: "entities.community", column: "name" }};
 
-        updater.updateData({ q1234: { value: "12345" } }, expr, null, (error, data) =>
-          assert not error
-          assert.equal data.q1234.value, null
-          done()
-        )
+        return updater.updateData({ q1234: { value: "12345" } }, expr, null, (error, data) => {
+          assert(!error);
+          assert.equal(data.q1234.value, null);
+          return done();
+        });
+      });
 
-      it "searches", (done) ->
-        # Mock data source
-        dataSource = {
-          performQuery: (query, callback) =>
-            # Should query for communities, getting the code and searching by name
-            compare query, {
-              type: "query"
+      return it("searches", function(done) {
+        // Mock data source
+        const dataSource = {
+          performQuery: (query, callback) => {
+            // Should query for communities, getting the code and searching by name
+            compare(query, {
+              type: "query",
               selects: [
                 { type: "select", expr: { type: "field", tableAlias: "main", column: "_id" }, alias: "value" }
-              ]
-              from: { type: "table", table: "entities.community", alias: "main" }
+              ],
+              from: { type: "table", table: "entities.community", alias: "main" },
               where: {
                 type: "op", op: "and", exprs: [
                   { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "main", column: "name" }, "Name1"] }
                 ]
-              }
+              },
               limit: 2
-            }
-            callback(null, [{ value: "12345" }])
-        }
+            });
+            return callback(null, [{ value: "12345" }]);
+          }
+        };
 
-        # Create schema with communities
-        schema = new Schema()
+        // Create schema with communities
+        let schema = new Schema();
         schema = schema.addTable({
-          id: "entities.community"
-          name: { en: "Communities" }
-          primaryKey: "_id"
+          id: "entities.community",
+          name: { en: "Communities" },
+          primaryKey: "_id",
           contents: [
             { id: "name", type: "text", name: { en: "Name" } }
           ]
-        })
+        });
 
-        # Create updater
-        updater = new ResponseDataExprValueUpdater(@formDesign, schema, dataSource)
+        // Create updater
+        const updater = new ResponseDataExprValueUpdater(this.formDesign, schema, dataSource);
 
-        # Update by name
-        expr = { type: "scalar", table: "responses:form123", joins: ["data:q1234:value"], expr: { type: "field", table: "entities.community", column: "name" }}
+        // Update by name
+        const expr = { type: "scalar", table: "responses:form123", joins: ["data:q1234:value"], expr: { type: "field", table: "entities.community", column: "name" }};
 
-        assert.isTrue updater.canUpdate(expr), "Should be able to update"
+        assert.isTrue(updater.canUpdate(expr), "Should be able to update");
 
-        updater.updateData({}, expr, "Name1", (error, data) =>
-          assert not error
+        return updater.updateData({}, expr, "Name1", (error, data) => {
+          assert(!error);
 
-          compare data.q1234.value, "12345"
-          done()
-        )
+          compare(data.q1234.value, "12345");
+          return done();
+        });
+      });
+    });
 
-    describe "AdminRegionQuestion", ->
-      beforeEach ->
-        # Create form
-        question = {
-          _id: "q1234"
-          _type: "AdminRegionQuestion"
-          text: { en: "Q1234" }
+    return describe("AdminRegionQuestion", function() {
+      beforeEach(function() {
+        // Create form
+        const question = {
+          _id: "q1234",
+          _type: "AdminRegionQuestion",
+          text: { en: "Q1234" },
           entityType: "community"
-        }
+        };
 
-        @formDesign = { _type: "Form", contents: [question] }
+        return this.formDesign = { _type: "Form", contents: [question] };});
 
-      it "nulls", (done) ->
-        # Create updater
-        updater = new ResponseDataExprValueUpdater(@formDesign, null, null)
+      it("nulls", function(done) {
+        // Create updater
+        const updater = new ResponseDataExprValueUpdater(this.formDesign, null, null);
 
-        # Update by name
-        expr = { type: "scalar", table: "responses:form123", joins: ["data:q1234:value"], expr: { type: "field", table: "entities.community", column: "name" }}
+        // Update by name
+        const expr = { type: "scalar", table: "responses:form123", joins: ["data:q1234:value"], expr: { type: "field", table: "entities.community", column: "name" }};
 
-        updater.updateData({ q1234: { value: "12345" } }, expr, null, (error, data) =>
-          assert not error
-          assert.equal data.q1234.value, null
-          done()
-        )
+        return updater.updateData({ q1234: { value: "12345" } }, expr, null, (error, data) => {
+          assert(!error);
+          assert.equal(data.q1234.value, null);
+          return done();
+        });
+      });
 
-      it "searches", (done) ->
-        # Mock data source
-        dataSource = {
-          performQuery: (query, callback) =>
-            # Should query for communities, getting the code and searching by name
-            compare query, {
-              type: "query"
+      return it("searches", function(done) {
+        // Mock data source
+        const dataSource = {
+          performQuery: (query, callback) => {
+            // Should query for communities, getting the code and searching by name
+            compare(query, {
+              type: "query",
               selects: [
                 { type: "select", expr: { type: "field", tableAlias: "main", column: "_id" }, alias: "value" }
-              ]
-              from: { type: "table", table: "admin_regions", alias: "main" }
+              ],
+              from: { type: "table", table: "admin_regions", alias: "main" },
               where: {
                 type: "op", op: "and", exprs: [
                  { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "main", column: "full_name" }, "Name1"] }
                 ]
-              }
+              },
               limit: 2
-            }
-            callback(null, [{ value: "12345" }])
-        }
+            });
+            return callback(null, [{ value: "12345" }]);
+          }
+        };
 
-        # Create schema with communities
-        schema = new Schema()
+        // Create schema with communities
+        let schema = new Schema();
         schema = schema.addTable({
-          id: "admin_regions"
-          primaryKey: "_id"
-          name: { _base: "en", en: "Administrative Regions" }
+          id: "admin_regions",
+          primaryKey: "_id",
+          name: { _base: "en", en: "Administrative Regions" },
           contents: [
             { id: "full_name", name: { _base: "en", en: "Name"}, type: "text" }
           ]
-        })
+        });
 
-        # Create updater
-        updater = new ResponseDataExprValueUpdater(@formDesign, schema, dataSource)
+        // Create updater
+        const updater = new ResponseDataExprValueUpdater(this.formDesign, schema, dataSource);
 
-        # Update by name
-        expr = { type: "scalar", table: "responses:form123", joins: ["data:q1234:value"], expr: { type: "field", table: "admin_regions", column: "full_name" }}
+        // Update by name
+        const expr = { type: "scalar", table: "responses:form123", joins: ["data:q1234:value"], expr: { type: "field", table: "admin_regions", column: "full_name" }};
 
-        assert.isTrue updater.canUpdate(expr), "Should be able to update"
+        assert.isTrue(updater.canUpdate(expr), "Should be able to update");
 
-        updater.updateData({}, expr, "Name1", (error, data) =>
-          assert not error
+        return updater.updateData({}, expr, "Name1", (error, data) => {
+          assert(!error);
 
-          compare data.q1234.value, "12345"
-          done()
-        )
+          compare(data.q1234.value, "12345");
+          return done();
+        });
+      });
+    });
+  });
 
-  describe "locations", ->
-    beforeEach ->
-      formDesign = {
-        _type: "Form"
+  describe("locations", function() {
+    beforeEach(function() {
+      const formDesign = {
+        _type: "Form",
         contents: [
           {
-            _id: "q1234"
-            _type: "LocationQuestion"
+            _id: "q1234",
+            _type: "LocationQuestion",
             text: { en: "Q1234" }
           }
         ]
-      }
+      };
 
-      @updater = new ResponseDataExprValueUpdater(formDesign, null, null)
+      return this.updater = new ResponseDataExprValueUpdater(formDesign, null, null);
+    });
 
-    it "updates latitude individually", (done) ->
-      # Latitude
-      expr = { type: "op", op: "latitude", exprs: [{ type: "field", table: "responses:form1234", column: "data:q1234:value" }] }
+    it("updates latitude individually", function(done) {
+      // Latitude
+      const expr = { type: "op", op: "latitude", exprs: [{ type: "field", table: "responses:form1234", column: "data:q1234:value" }] };
 
-      @updater.updateData({ q1234: { value: { latitude: 2, longitude: 3, altitude: 4 }}}, expr, 45, (error, data) =>
-        assert not error
-        compare data, { q1234: { value: { latitude: 45, longitude: 3, altitude: 4 }}}
-        done()
-      )
+      return this.updater.updateData({ q1234: { value: { latitude: 2, longitude: 3, altitude: 4 }}}, expr, 45, (error, data) => {
+        assert(!error);
+        compare(data, { q1234: { value: { latitude: 45, longitude: 3, altitude: 4 }}});
+        return done();
+      });
+    });
 
-    it "updates longitude individually", (done) ->
-      # Latitude
-      expr = { type: "op", op: "longitude", exprs: [{ type: "field", table: "responses:form1234", column: "data:q1234:value" }] }
+    it("updates longitude individually", function(done) {
+      // Latitude
+      const expr = { type: "op", op: "longitude", exprs: [{ type: "field", table: "responses:form1234", column: "data:q1234:value" }] };
 
-      @updater.updateData({ q1234: { value: { latitude: 2, longitude: 3, altitude: 4 }}}, expr, 45, (error, data) =>
-        assert not error
-        compare data, { q1234: { value: { latitude: 2, longitude: 45, altitude: 4 }}}
-        done()
-      )
+      return this.updater.updateData({ q1234: { value: { latitude: 2, longitude: 3, altitude: 4 }}}, expr, 45, (error, data) => {
+        assert(!error);
+        compare(data, { q1234: { value: { latitude: 2, longitude: 45, altitude: 4 }}});
+        return done();
+      });
+    });
 
-    it "updates accuracy", (done) ->
-      expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:accuracy" }
+    it("updates accuracy", function(done) {
+      const expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:accuracy" };
 
-      @updater.updateData({ q1234: { value: { latitude: 2, longitude: 3, altitude: 4 }}}, expr, 45, (error, data) =>
-        assert not error
-        compare data, { q1234: { value: { latitude: 2, longitude: 3, accuracy: 45, altitude: 4 }}}
-        done()
-      )
+      return this.updater.updateData({ q1234: { value: { latitude: 2, longitude: 3, altitude: 4 }}}, expr, 45, (error, data) => {
+        assert(!error);
+        compare(data, { q1234: { value: { latitude: 2, longitude: 3, accuracy: 45, altitude: 4 }}});
+        return done();
+      });
+    });
 
-    it "updates altitude", (done) ->
-      expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:altitude" }
+    it("updates altitude", function(done) {
+      const expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:altitude" };
 
-      @updater.updateData({ q1234: { value: { latitude: 2, longitude: 3, altitude: 4 }}}, expr, 45, (error, data) =>
-        assert not error
-        compare data, { q1234: { value: { latitude: 2, longitude: 3, altitude: 45 }}}
-        done()
-      )
+      return this.updater.updateData({ q1234: { value: { latitude: 2, longitude: 3, altitude: 4 }}}, expr, 45, (error, data) => {
+        assert(!error);
+        compare(data, { q1234: { value: { latitude: 2, longitude: 3, altitude: 45 }}});
+        return done();
+      });
+    });
 
-    it "updates method", (done) ->
-      expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:method" }
+    return it("updates method", function(done) {
+      const expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:method" };
 
-      @updater.updateData({ q1234: { value: { latitude: 2, longitude: 3, altitude: 4 }}}, expr, "gps", (error, data) =>
-        assert not error
-        compare data, { q1234: { value: { latitude: 2, longitude: 3, altitude: 4, method: "gps" }}}
-        done()
-      )
+      return this.updater.updateData({ q1234: { value: { latitude: 2, longitude: 3, altitude: 4 }}}, expr, "gps", (error, data) => {
+        assert(!error);
+        compare(data, { q1234: { value: { latitude: 2, longitude: 3, altitude: 4, method: "gps" }}});
+        return done();
+      });
+    });
+  });
 
-  it "updates na/don't know", (done) ->
-    formDesign = {
-      _type: "Form"
+  it("updates na/don't know", function(done) {
+    const formDesign = {
+      _type: "Form",
       contents: [
         {
-          _id: "q1234"
-          _type: "TextQuestion"
-          text: { en: "Q1234" }
+          _id: "q1234",
+          _type: "TextQuestion",
+          text: { en: "Q1234" },
           alternates: { na: true }
         }
       ]
-    }
+    };
 
-    updater = new ResponseDataExprValueUpdater(formDesign, null, null)
-    expr = { type: "field", table: "responses:form1234", column: "data:q1234:na" }
+    const updater = new ResponseDataExprValueUpdater(formDesign, null, null);
+    const expr = { type: "field", table: "responses:form1234", column: "data:q1234:na" };
     
-    updater.updateData({ }, expr, true, (error, data) =>
-      assert not error
-      compare data, { q1234: { alternate: "na" } }
-      done()
-    )
+    return updater.updateData({ }, expr, true, (error, data) => {
+      assert(!error);
+      compare(data, { q1234: { alternate: "na" } });
+      return done();
+    });
+  });
 
-  it "updates contains with one value", (done) ->
-    formDesign = {
-      _type: "Form"
+  it("updates contains with one value", function(done) {
+    const formDesign = {
+      _type: "Form",
       contents: [
         {
-          _id: "q1234"
-          _type: "MulticheckQuestion"
-          text: { en: "Q1234" }
+          _id: "q1234",
+          _type: "MulticheckQuestion",
+          text: { en: "Q1234" },
           choices: [{ id: "a" }, { id: "b" }, { id: "c" }]
         }
       ]
-    }
+    };
 
-    # Contains expression
-    expr = { type: "op", op: "contains", exprs: [{ type: "field", table: "responses:form1234", column: "data:q1234:value" }, { type: "literal", valueType: "enumset", value: ['b'] } ] }
-    updater = new ResponseDataExprValueUpdater(formDesign, null, null)
+    // Contains expression
+    const expr = { type: "op", op: "contains", exprs: [{ type: "field", table: "responses:form1234", column: "data:q1234:value" }, { type: "literal", valueType: "enumset", value: ['b'] } ] };
+    const updater = new ResponseDataExprValueUpdater(formDesign, null, null);
 
-    # Set contains to true
-    updater.updateData { }, expr, true, (error, data) =>
-      assert not error
-      compare data, { q1234: { value: ['b'] } }
+    // Set contains to true
+    return updater.updateData({ }, expr, true, (error, data) => {
+      assert(!error);
+      compare(data, { q1234: { value: ['b'] } });
 
-      # Set it to false
-      updater.updateData { q1234: { value: ['b', 'c'] } }, expr, false, (error, data) =>
-        assert not error
-        compare data, { q1234: { value: ['c'] } }
-        done()
+      // Set it to false
+      return updater.updateData({ q1234: { value: ['b', 'c'] } }, expr, false, (error, data) => {
+        assert(!error);
+        compare(data, { q1234: { value: ['c'] } });
+        return done();
+      });
+    });
+  });
 
-  it "updates specify", (done) ->
-    formDesign = {
-      _type: "Form"
+  it("updates specify", function(done) {
+    const formDesign = {
+      _type: "Form",
       contents: [
         {
-          _id: "q1234"
-          _type: "RadioQuestion"
-          text: { en: "Q1234" }
+          _id: "q1234",
+          _type: "RadioQuestion",
+          text: { en: "Q1234" },
           choices: [{ id: "a" }, { id: "b", specify: true }]
         }
       ]
-    }
+    };
 
-    expr = { type: "field", table: "responses:form1234", column: "data:q1234:specify:b" }
-    updater = new ResponseDataExprValueUpdater(formDesign, null, null)
+    const expr = { type: "field", table: "responses:form1234", column: "data:q1234:specify:b" };
+    const updater = new ResponseDataExprValueUpdater(formDesign, null, null);
 
-    updater.updateData({ }, expr, "apple", (error, data) =>
-      assert not error
-      compare data, { q1234: { specify: { b: "apple" } } }
-      done()
-    )
+    return updater.updateData({ }, expr, "apple", (error, data) => {
+      assert(!error);
+      compare(data, { q1234: { specify: { b: "apple" } } });
+      return done();
+    });
+  });
     
-  it "updates comments", (done) ->
-    formDesign = {
-      _type: "Form"
+  it("updates comments", function(done) {
+    const formDesign = {
+      _type: "Form",
       contents: [
         {
-          _id: "q1234"
-          _type: "TextQuestion"
-          text: { en: "Q1234" }
+          _id: "q1234",
+          _type: "TextQuestion",
+          text: { en: "Q1234" },
           commentsField: true
         }
       ]
-    }
+    };
 
-    expr = { type: "field", table: "responses:form1234", column: "data:q1234:comments" }
-    updater = new ResponseDataExprValueUpdater(formDesign, null, null)
+    const expr = { type: "field", table: "responses:form1234", column: "data:q1234:comments" };
+    const updater = new ResponseDataExprValueUpdater(formDesign, null, null);
 
-    updater.updateData({ }, expr, "apple", (error, data) =>
-      assert not error
-      compare data, { q1234: { comments: "apple" } }
-      done()
-    )
+    return updater.updateData({ }, expr, "apple", (error, data) => {
+      assert(!error);
+      compare(data, { q1234: { comments: "apple" } });
+      return done();
+    });
+  });
 
-  it "cleans data", (done) ->
-    # Make a form with a condition
-    design = {
-      _type: "Form"
+  it("cleans data", function(done) {
+    // Make a form with a condition
+    const design = {
+      _type: "Form",
       contents: [
         {
-          _id: "q1"
-          _type: "TextQuestion"
-          text: { en: "Q1" }
-          conditions: []
+          _id: "q1",
+          _type: "TextQuestion",
+          text: { en: "Q1" },
+          conditions: [],
           validations: []
-        }      
+        },      
         {
-          _id: "q2"
-          _type: "TextQuestion"
-          text: { en: "Q2" }
-          # Conditional on q1
-          conditions: [{ lhs: { question: "q1" }, op: "present" }]
+          _id: "q2",
+          _type: "TextQuestion",
+          text: { en: "Q2" },
+          // Conditional on q1
+          conditions: [{ lhs: { question: "q1" }, op: "present" }],
           validations: []
         }      
       ]
-    }
+    };
 
-    updater = new ResponseDataExprValueUpdater(design, null, null)
+    const updater = new ResponseDataExprValueUpdater(design, null, null);
 
-    # q1
-    expr = { type: "field", table: "responses:form1234", column: "data:q1:value" }
+    // q1
+    const expr = { type: "field", table: "responses:form1234", column: "data:q1:value" };
 
-    # Set q1 = null
-    updater.updateData({ q1: { value: "a" }, q2: { value: "b" }}, expr, null, (error, data) =>
-      assert not error
-      updater.cleanData(data, (->), (error, cleanData) =>
-        compare cleanData, { q1: { value: null } }, JSON.stringify(data)
-        done()  
-      )
-    )
+    // Set q1 = null
+    return updater.updateData({ q1: { value: "a" }, q2: { value: "b" }}, expr, null, (error, data) => {
+      assert(!error);
+      return updater.cleanData(data, (function() {}), (error, cleanData) => {
+        compare(cleanData, { q1: { value: null } }, JSON.stringify(data));
+        return done();  
+      });
+    });
+  });
 
-  describe "CBT tests", ->
-    beforeEach ->
-      formDesign = {
-        _type: "Form"
+  describe("CBT tests", function() {
+    beforeEach(function() {
+      const formDesign = {
+        _type: "Form",
         contents: [
           {
-            _id: "q1234"
-            _type: "AquagenxCBTQuestion"
+            _id: "q1234",
+            _type: "AquagenxCBTQuestion",
             text: { en: "Q1234" }
           }
         ]
-      }
+      };
 
-      @updater = new ResponseDataExprValueUpdater(formDesign, null, null)
+      this.updater = new ResponseDataExprValueUpdater(formDesign, null, null);
 
-      @testIndividualCBTField = (field, value, done) =>
-        expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:cbt:#{field}" }
+      this.testIndividualCBTField = (field, value, done) => {
+        const expr = { type: "field", table: "responses:form1234", column: `data:q1234:value:cbt:${field}` };
 
-        @updater.updateData({}, expr, value, (error, data) =>
-          assert not error
-          cbt = {}
-          cbt[field] = value
-          compare data, { q1234: { value: { cbt: cbt } } }
-          done()
-        )
+        return this.updater.updateData({}, expr, value, (error, data) => {
+          assert(!error);
+          const cbt = {};
+          cbt[field] = value;
+          compare(data, { q1234: { value: { cbt } } });
+          return done();
+        });
+      };
 
-      @testExistingCBTField = (field, value, done) =>
-        expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:cbt:#{field}" }
+      return this.testExistingCBTField = (field, value, done) => {
+        const expr = { type: "field", table: "responses:form1234", column: `data:q1234:value:cbt:${field}` };
 
-        @updater.updateData({ q1234: { value: { cbt: {mpn: 4, confidence: 80, healthRisk: 'Unsafe'} } } }, expr, value, (error, data) =>
-          assert not error
-          expected = { q1234: { value: { cbt: {mpn: 4, confidence: 80, healthRisk: 'Unsafe'} } } }
-          expected['q1234']['value']['cbt'][field] = value
-          compare data, expected
-          done()
-        )
+        return this.updater.updateData({ q1234: { value: { cbt: {mpn: 4, confidence: 80, healthRisk: 'Unsafe'} } } }, expr, value, (error, data) => {
+          assert(!error);
+          const expected = { q1234: { value: { cbt: {mpn: 4, confidence: 80, healthRisk: 'Unsafe'} } } };
+          expected['q1234']['value']['cbt'][field] = value;
+          compare(data, expected);
+          return done();
+        });
+      };
+    });
 
-    it "updates c1 individually", (done) ->
-      @testIndividualCBTField('c1', 4, done)
+    it("updates c1 individually", function(done) {
+      return this.testIndividualCBTField('c1', 4, done);
+    });
 
-    it "updates existing c1", (done) ->
-      @testIndividualCBTField('c1', 4, done)
+    it("updates existing c1", function(done) {
+      return this.testIndividualCBTField('c1', 4, done);
+    });
 
-    it "updates c2 individually", (done) ->
-      @testIndividualCBTField('c2', 4, done)
+    it("updates c2 individually", function(done) {
+      return this.testIndividualCBTField('c2', 4, done);
+    });
       
-    it "updates existing c2", (done) ->
-      @testIndividualCBTField('c2', 4, done)
+    it("updates existing c2", function(done) {
+      return this.testIndividualCBTField('c2', 4, done);
+    });
 
-    it "updates c3 individually", (done) ->
-      @testIndividualCBTField('c3', 4, done)
+    it("updates c3 individually", function(done) {
+      return this.testIndividualCBTField('c3', 4, done);
+    });
       
-    it "updates existing c3", (done) ->
-      @testIndividualCBTField('c3', 4, done)
+    it("updates existing c3", function(done) {
+      return this.testIndividualCBTField('c3', 4, done);
+    });
 
-    it "updates c4 individually", (done) ->
-      @testIndividualCBTField('c4', 4, done)
+    it("updates c4 individually", function(done) {
+      return this.testIndividualCBTField('c4', 4, done);
+    });
       
-    it "updates existing c4", (done) ->
-      @testIndividualCBTField('c4', 4, done)
+    it("updates existing c4", function(done) {
+      return this.testIndividualCBTField('c4', 4, done);
+    });
 
-    it "updates c5 individually", (done) ->
-      @testIndividualCBTField('c5', 4, done)
+    it("updates c5 individually", function(done) {
+      return this.testIndividualCBTField('c5', 4, done);
+    });
       
-    it "updates existing c5", (done) ->
-      @testIndividualCBTField('c5', 4, done)
+    it("updates existing c5", function(done) {
+      return this.testIndividualCBTField('c5', 4, done);
+    });
 
-    it "updates mpn individually", (done) ->
-      @testIndividualCBTField('mpn', 4, done)
+    it("updates mpn individually", function(done) {
+      return this.testIndividualCBTField('mpn', 4, done);
+    });
 
-    it "updates mpn existing data", (done) ->
-      @testExistingCBTField('mpn', 6, done)
+    it("updates mpn existing data", function(done) {
+      return this.testExistingCBTField('mpn', 6, done);
+    });
 
-    it "updates confidence individually", (done) ->
-      @testIndividualCBTField('confidence', 4, done)
+    it("updates confidence individually", function(done) {
+      return this.testIndividualCBTField('confidence', 4, done);
+    });
 
-    it "updates confidence existing data", (done) ->
-      @testExistingCBTField('confidence', 96, done)
+    it("updates confidence existing data", function(done) {
+      return this.testExistingCBTField('confidence', 96, done);
+    });
 
-    it "updates healthRisk individually", (done) ->
-      @testIndividualCBTField('healthRisk', 4, done)
+    it("updates healthRisk individually", function(done) {
+      return this.testIndividualCBTField('healthRisk', 4, done);
+    });
 
-    it "updates healthRisk existing data", (done) ->
-      @testExistingCBTField('healthRisk', 'High Risk/Probably Unsafe', done)
+    it("updates healthRisk existing data", function(done) {
+      return this.testExistingCBTField('healthRisk', 'High Risk/Probably Unsafe', done);
+    });
       
-    it "updates image individually", (done) ->
-      # mpn
-      expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:image" }
+    it("updates image individually", function(done) {
+      // mpn
+      const expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:image" };
 
-      @updater.updateData({}, expr, 'https://api.mwater.co/v3/images/abc', (error, data) =>
-        assert not error
-        compare data, { q1234: { value: { image: 'https://api.mwater.co/v3/images/abc' } } }
-        done()
-      )
+      return this.updater.updateData({}, expr, 'https://api.mwater.co/v3/images/abc', (error, data) => {
+        assert(!error);
+        compare(data, { q1234: { value: { image: 'https://api.mwater.co/v3/images/abc' } } });
+        return done();
+      });
+    });
 
-    it "updates image existing data", (done) ->
-      # mpn
-      expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:image" }
+    return it("updates image existing data", function(done) {
+      // mpn
+      const expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:image" };
 
-      @updater.updateData({ q1234: { value: { image: 'https://api.mwater.co/v3/images/abc' } } }, expr, 'https://api.mwater.co/v3/images/xyz', (error, data) =>
-        assert not error
-        compare data, { q1234: { value: { image: 'https://api.mwater.co/v3/images/xyz' } } }
-        done()
-      )
+      return this.updater.updateData({ q1234: { value: { image: 'https://api.mwater.co/v3/images/abc' } } }, expr, 'https://api.mwater.co/v3/images/xyz', (error, data) => {
+        assert(!error);
+        compare(data, { q1234: { value: { image: 'https://api.mwater.co/v3/images/xyz' } } });
+        return done();
+      });
+    });
+  });
 
-  describe "handles cascading list question", ->
-    beforeEach ->
-      formDesign = {
+  describe("handles cascading list question", function() {
+    beforeEach(function() {
+      const formDesign = {
         _type: "Form",
         contents: [
           {
@@ -883,73 +964,79 @@ describe "ResponseDataExprValueUpdater", ->
             "validations":[]
           }
         ]
-      }
+      };
 
-      @updater = new ResponseDataExprValueUpdater(formDesign, null, null)
+      return this.updater = new ResponseDataExprValueUpdater(formDesign, null, null);
+    });
 
-    it "handles cascading field", (done) ->
-      expr = {"type":"field","table":"responses:form1234","column":"data:q1234:value:c0"}
-      @updater.updateData({ }, expr, "FH75Bd8sGs", (error, data) =>
-        assert not error
-        compare data, { q1234: { value: { c0: "FH75Bd8sGs" } } }
-        done()
-      )
+    it("handles cascading field", function(done) {
+      const expr = {"type":"field","table":"responses:form1234","column":"data:q1234:value:c0"};
+      return this.updater.updateData({ }, expr, "FH75Bd8sGs", (error, data) => {
+        assert(!error);
+        compare(data, { q1234: { value: { c0: "FH75Bd8sGs" } } });
+        return done();
+      });
+    });
 
-    it "rejects unknown field value", (done) ->
-      expr = {"type":"field","table":"responses:form1234","column":"data:q1234:value:c0"}
-      @updater.updateData({ }, expr, "123", (error, data) =>
-        assert error
-        assert.equal 'Column "Type" value 123 in question "Food" not found', error.message
-        done()
-      )
+    it("rejects unknown field value", function(done) {
+      const expr = {"type":"field","table":"responses:form1234","column":"data:q1234:value:c0"};
+      return this.updater.updateData({ }, expr, "123", (error, data) => {
+        assert(error);
+        assert.equal('Column "Type" value 123 in question "Food" not found', error.message);
+        return done();
+      });
+    });
     
-    it "updates cascading answer", (done) ->
-      expr1 = {"type":"field","table":"responses:form1234","column":"data:q1234:value:c0"}
-      expr2 = {"type":"field","table":"responses:form1234","column":"data:q1234:value:c1"}
+    it("updates cascading answer", function(done) {
+      const expr1 = {"type":"field","table":"responses:form1234","column":"data:q1234:value:c0"};
+      const expr2 = {"type":"field","table":"responses:form1234","column":"data:q1234:value:c1"};
 
-      @updater.updateData({ }, expr1, "FH75Bd8sGs", (error, data) =>
-        assert not error
-        compare data, { q1234: { value: { c0: "FH75Bd8sGs" } } }
+      return this.updater.updateData({ }, expr1, "FH75Bd8sGs", (error, data) => {
+        assert(!error);
+        compare(data, { q1234: { value: { c0: "FH75Bd8sGs" } } });
 
-        @updater.updateData(data, expr2, "9Hfz7rQtX1", (error, data) =>
-          assert not error
-          compare data, { q1234: { value: { c0: "FH75Bd8sGs", c1: "9Hfz7rQtX1" } } }
+        return this.updater.updateData(data, expr2, "9Hfz7rQtX1", (error, data) => {
+          assert(!error);
+          compare(data, { q1234: { value: { c0: "FH75Bd8sGs", c1: "9Hfz7rQtX1" } } });
 
-          # Cleaning should fill in the id by finding the row
-          @updater.cleanData(data, (->), (error, cleanData) =>
-            compare cleanData, { q1234: { value: { c0: "FH75Bd8sGs", c1: "9Hfz7rQtX1", id: "a847771205894fc1bb0584a567ef275e" } } }
-            done()
-          )
-        )
-      )
+          // Cleaning should fill in the id by finding the row
+          return this.updater.cleanData(data, (function() {}), (error, cleanData) => {
+            compare(cleanData, { q1234: { value: { c0: "FH75Bd8sGs", c1: "9Hfz7rQtX1", id: "a847771205894fc1bb0584a567ef275e" } } });
+            return done();
+          });
+        });
+      });
+    });
 
-    it "prevents selecting a non-existant row", (done) ->
-      expr1 = {"type":"field","table":"responses:form1234","column":"data:q1234:value:c0"}
-      expr2 = {"type":"field","table":"responses:form1234","column":"data:q1234:value:c1"}
+    return it("prevents selecting a non-existant row", function(done) {
+      const expr1 = {"type":"field","table":"responses:form1234","column":"data:q1234:value:c0"};
+      const expr2 = {"type":"field","table":"responses:form1234","column":"data:q1234:value:c1"};
 
-      @updater.updateData({ }, expr1, "FH75Bd8sGs", (error, data) =>
-        assert not error
-        compare data, { q1234: { value: { c0: "FH75Bd8sGs" } } }
+      return this.updater.updateData({ }, expr1, "FH75Bd8sGs", (error, data) => {
+        assert(!error);
+        compare(data, { q1234: { value: { c0: "FH75Bd8sGs" } } });
 
-        @updater.updateData(data, expr2, "rxq8WyVxaP", (error, data2) =>
-          # This row combination doesn't exist, so it should fail here
-          # If we waited for the cleaning, it would just remove bad data rather than flag it
-          assert error
-          assert.equal 'Row referenced in question "Food" not found', error.message
+        return this.updater.updateData(data, expr2, "rxq8WyVxaP", (error, data2) => {
+          // This row combination doesn't exist, so it should fail here
+          // If we waited for the cleaning, it would just remove bad data rather than flag it
+          assert(error);
+          assert.equal('Row referenced in question "Food" not found', error.message);
 
-          compare data, { q1234: { value: { c0: "FH75Bd8sGs" } } }
+          compare(data, { q1234: { value: { c0: "FH75Bd8sGs" } } });
 
-          # Cleaning should clear the answer
-          @updater.cleanData(data, (->), (error, cleanData) =>
-            compare cleanData, { q1234: { } }
-            done()
-          )
-        )
-      )
+          // Cleaning should clear the answer
+          return this.updater.cleanData(data, (function() {}), (error, cleanData) => {
+            compare(cleanData, { q1234: { } });
+            return done();
+          });
+        });
+      });
+    });
+  });
 
-  describe "handles cascading ref question", ->
-    beforeEach ->
-      @formDesign = {
+  return describe("handles cascading ref question", function() {
+    beforeEach(function() {
+      return this.formDesign = {
         _type: "Form",
         contents: [
           {
@@ -964,59 +1051,63 @@ describe "ResponseDataExprValueUpdater", ->
             "validations":[]
           }
         ]
-      }
+      };});
 
-    it "searches", ->
-      # Mock data source
-      dataSource = {
-        performQuery: (query, callback) =>
-          # Should query for row matching c1 and c2, returning _id
-          compare query, {
-            type: "query"
+    return it("searches", async function() {
+      // Mock data source
+      const dataSource = {
+        performQuery: (query, callback) => {
+          // Should query for row matching c1 and c2, returning _id
+          compare(query, {
+            type: "query",
             selects: [
               { type: "select", expr: { type: "field", tableAlias: "main", column: "_id" }, alias: "value" }
-            ]
-            from: { type: "table", table: "custom.ts1.t1", alias: "main" }
+            ],
+            from: { type: "table", table: "custom.ts1.t1", alias: "main" },
             where: {
               type: "op", op: "and", exprs: [
-                { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "main", column: "c1" }, "v1"] }
+                { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "main", column: "c1" }, "v1"] },
                 { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "main", column: "c2" }, "v2"] }
               ]
-            }
+            },
             limit: 2
-          }
-          callback(null, [{ value: "12345" }])
-      }
+          });
+          return callback(null, [{ value: "12345" }]);
+        }
+      };
 
-      # Create schema with communities
-      schema = new Schema()
+      // Create schema with communities
+      let schema = new Schema();
       schema = schema.addTable({
-        id: "custom.ts1.t1"
-        primaryKey: "_id"
-        name: { _base: "en", en: "Custom 1" }
+        id: "custom.ts1.t1",
+        primaryKey: "_id",
+        name: { _base: "en", en: "Custom 1" },
         contents: [
-          { id: "c1", name: { _base: "en", en: "C1"}, type: "text" }
+          { id: "c1", name: { _base: "en", en: "C1"}, type: "text" },
           { id: "c2", name: { _base: "en", en: "C2"}, type: "text" }
         ]
-      })
+      });
 
-      expr1 = {
+      const expr1 = {
         type:"scalar", 
         table: "responses:form1234",
         joins: ["data:q1234:value"],
         expr: { type: "field", table: "custom.ts1.t1", column: "c1" }
-      }
+      };
 
-      expr2 = {
+      const expr2 = {
         type:"scalar", 
         table: "responses:form1234",
         joins: ["data:q1234:value"],
         expr: { type: "field", table: "custom.ts1.t1", column: "c2" }
-      }
+      };
 
-      updater = new ResponseDataExprValueUpdater(@formDesign, schema, dataSource)
+      const updater = new ResponseDataExprValueUpdater(this.formDesign, schema, dataSource);
 
-      assert.isTrue(updater.canUpdate(expr1), "Cannot update")
+      assert.isTrue(updater.canUpdate(expr1), "Cannot update");
 
-      data = await updater.updateDataMultiple({}, [{ expr: expr1, value: "v1" }, { expr: expr2, value: "v2" }])
-      compare data, { q1234: { value: "12345" } }
+      const data = await updater.updateDataMultiple({}, [{ expr: expr1, value: "v1" }, { expr: expr2, value: "v2" }]);
+      return compare(data, { q1234: { value: "12345" } });
+  });
+});
+});

@@ -1,190 +1,218 @@
-_ = require 'underscore'
-assert = require('chai').assert
-Backbone = require 'backbone'
-sinon = require 'sinon'
+import _ from 'underscore';
+import { assert } from 'chai';
+import Backbone from 'backbone';
+import sinon from 'sinon';
+import { default as CurrentPositionFinder } from '../src/CurrentPositionFinder';
 
-CurrentPositionFinder = require('../src/CurrentPositionFinder').default
+const initialDelay = 10000;
+const goodDelay = 5000;
+const excellentAcc = 5;
+const goodAcc = 10;
+const fairAcc = 50;
+const recentThreshold = 90000;
 
-initialDelay = 10000
-goodDelay = 5000
-excellentAcc = 5
-goodAcc = 10
-fairAcc = 50
-recentThreshold = 90000
+const createPos = (accuracy, timeago = 0) => ({
+  coords: {
+    latitude: 1,
+    longitude: 2,
+    accuracy
+  },
 
-createPos = (accuracy, timeago = 0) ->
-  return {
-    coords: {
-      latitude: 1
-      longitude: 2
-      accuracy: accuracy
-    }
-    timestamp: new Date().getTime() - timeago
+  timestamp: new Date().getTime() - timeago
+});
+
+// Uses an algorithm to accurately find current position (coords + timestamp). Fires status events and found event. 
+describe("CurrentPositionFinder", function() {
+  beforeEach(function() {
+    this.locationFinder = new MockLocationFinder();
+    this.clock = sinon.useFakeTimers();
+    this.posFinder = new CurrentPositionFinder({locationFinder: this.locationFinder});
+
+    this.pos = null;
+    this.posFinder.on("found", pos => {
+      return this.pos = pos;
+    });
+
+    this.status = null;
+    this.posFinder.on("status", status => {
+      return this.status = status;
+    });
+
+    return this.posFinder.start();
+  });
+
+  afterEach(function() {
+    return this.clock.restore();
+  });
+
+  it("starts location finder", function() {
+    return assert.isTrue(this.locationFinder.watching);
+  });
+
+  it("sets location if excellent", function() {
+    const pos = createPos(excellentAcc - 1);
+    this.locationFinder.fire(pos);
+    return assert.deepEqual(this.pos, pos);
+  });
+
+  it("stops location finder after setting", function() {
+    const pos = createPos(excellentAcc - 1);
+    this.locationFinder.fire(pos);
+    return assert.isFalse(this.locationFinder.watching);
+  });
+
+  it("stops on stop", function() {
+    this.posFinder.stop();
+
+    const pos = createPos(excellentAcc - 1);
+    this.locationFinder.fire(pos);
+    assert.isNull(this.pos);
+    return assert.equal(this.status.strength, "none");
+  });
+
+  it("does not set immediately if good", function() {
+    const pos = createPos(goodAcc - 1);
+    this.locationFinder.fire(pos);
+    return assert(!this.pos);
+  });
+
+  it("sets after good delay if good", function() {
+    const pos = createPos(goodAcc - 1);
+    this.locationFinder.fire(pos);
+
+    this.clock.tick(goodDelay + 1);
+    return assert.deepEqual(this.pos, pos);
+  });
+
+  it("sets after first good signal, using last good report", function() {
+    const pos1 = createPos(goodAcc - 1);
+    this.locationFinder.fire(pos1);
+
+    this.clock.tick(goodDelay/3);
+
+    const pos2 = createPos(goodAcc - 2);
+    this.locationFinder.fire(pos2);
+
+    this.clock.tick(goodDelay/3);
+
+    // Bad position
+    const pos3 = createPos(goodAcc + 2);
+    this.locationFinder.fire(pos3);
+
+    this.clock.tick((goodDelay/3) + 10);
+    
+    return assert.deepEqual(this.pos, pos2);
+  });
+
+  it("still sets after good delay even if signal is now poor", function() {
+    const pos1 = createPos(goodAcc - 1);
+    this.locationFinder.fire(pos1);
+
+    this.clock.tick(goodDelay/2);
+
+    const pos2 = createPos(goodAcc + 100);
+    this.locationFinder.fire(pos2);
+
+    this.clock.tick((goodDelay/2) + 2);
+
+    return assert.deepEqual(this.pos, pos1);
+  });
+
+  it("useable true if good", function() {
+    const pos1 = createPos(goodAcc - 1);
+    this.locationFinder.fire(pos1);
+
+    return assert.equal(this.status.useable, true);
+  });    
+
+  it("useable false initially", function() {
+    return assert.equal(this.status.useable, false);
+  });
+
+  it("strength is none initially", function() {
+    return assert.equal(this.status.strength, "none");
+  });
+
+  it("strength is none initially if old gps", function() {
+    const pos1 = createPos(goodAcc - 1, recentThreshold + 1);
+    this.locationFinder.fire(pos1);
+    return assert.equal(this.status.strength, "none");
+  });
+
+  it("strength is poor if poor", function() {
+    const pos1 = createPos(fairAcc + 1);
+    this.locationFinder.fire(pos1);
+    return assert.equal(this.status.strength, "poor");
+  });
+
+  it("strength is fair if fair", function() {
+    const pos1 = createPos(fairAcc - 1);
+    this.locationFinder.fire(pos1);
+    assert.equal(this.status.strength, "fair");
+    return assert.equal(this.posFinder.strength, "fair");
+  });
+  
+  it("useable false immediately if poor", function() {
+    const pos1 = createPos(fairAcc + 1);
+    this.locationFinder.fire(pos1);
+    return assert.equal(this.status.useable, false);
+  });
+
+  it("useable false immediately if fair", function() {
+    const pos1 = createPos(fairAcc - 1);
+    this.locationFinder.fire(pos1);
+    return assert.equal(this.status.useable, false);
+  });
+
+  it("useable true if poor and after initial delay", function() {
+    const pos1 = createPos(fairAcc + 1);
+    this.locationFinder.fire(pos1);
+
+    this.clock.tick(initialDelay + 2);
+
+    assert.equal(this.status.useable, true);
+    return assert.deepEqual(this.status.pos, pos1);
+  });
+
+  it("useable true if fair and after initial delay", function() {
+    const pos1 = createPos(fairAcc - 1);
+    this.locationFinder.fire(pos1);
+
+    this.clock.tick(initialDelay + 2);
+
+    assert.equal(this.status.useable, true);
+    return assert.deepEqual(this.status.pos, pos1);
+  });
+
+  it("fires error if location finder reports error", function() {
+    let error = '';
+    this.posFinder.on('error', err => error = err);
+
+    this.locationFinder.trigger('error', "some error");
+    assert.equal(error, 'some error');
+    return assert.equal(this.posFinder.error, 'some error');
+  });
+
+  return it("stops if location finder reports error", function() {
+    this.locationFinder.trigger('error', "some error");
+    return assert.equal(this.posFinder.running, false);
+  });
+});
+
+class MockLocationFinder {
+  constructor() {
+    _.extend(this, Backbone.Events);
   }
 
-# Uses an algorithm to accurately find current position (coords + timestamp). Fires status events and found event. 
-describe "CurrentPositionFinder", ->
-  beforeEach ->
-    @locationFinder = new MockLocationFinder()
-    @clock = sinon.useFakeTimers()
-    @posFinder = new CurrentPositionFinder({locationFinder: @locationFinder})
+  getLocation(success, error) {}
+  startWatch() {
+    return this.watching = true;
+  }
+  stopWatch() {
+    return this.watching = false;
+  }
 
-    @pos = null
-    @posFinder.on "found", (pos) =>
-      @pos = pos
-
-    @status = null
-    @posFinder.on "status", (status) =>
-      @status = status
-
-    @posFinder.start()
-
-  afterEach ->
-    @clock.restore()
-
-  it "starts location finder", ->
-    assert.isTrue @locationFinder.watching
-
-  it "sets location if excellent", ->
-    pos = createPos(excellentAcc - 1)
-    @locationFinder.fire(pos)
-    assert.deepEqual @pos, pos
-
-  it "stops location finder after setting", ->
-    pos = createPos(excellentAcc - 1)
-    @locationFinder.fire(pos)
-    assert.isFalse @locationFinder.watching
-
-  it "stops on stop", ->
-    @posFinder.stop()
-
-    pos = createPos(excellentAcc - 1)
-    @locationFinder.fire(pos)
-    assert.isNull @pos
-    assert.equal @status.strength, "none"
-
-  it "does not set immediately if good", ->
-    pos = createPos(goodAcc - 1)
-    @locationFinder.fire(pos)
-    assert not @pos
-
-  it "sets after good delay if good", ->
-    pos = createPos(goodAcc - 1)
-    @locationFinder.fire(pos)
-
-    @clock.tick(goodDelay + 1)
-    assert.deepEqual @pos, pos
-
-  it "sets after first good signal, using last good report", ->
-    pos1 = createPos(goodAcc - 1)
-    @locationFinder.fire(pos1)
-
-    @clock.tick(goodDelay/3)
-
-    pos2 = createPos(goodAcc - 2)
-    @locationFinder.fire(pos2)
-
-    @clock.tick(goodDelay/3)
-
-    # Bad position
-    pos3 = createPos(goodAcc + 2)
-    @locationFinder.fire(pos3)
-
-    @clock.tick(goodDelay/3 + 10)
-    
-    assert.deepEqual @pos, pos2
-
-  it "still sets after good delay even if signal is now poor", ->
-    pos1 = createPos(goodAcc - 1)
-    @locationFinder.fire(pos1)
-
-    @clock.tick(goodDelay/2)
-
-    pos2 = createPos(goodAcc + 100)
-    @locationFinder.fire(pos2)
-
-    @clock.tick(goodDelay/2 + 2)
-
-    assert.deepEqual @pos, pos1
-
-  it "useable true if good", ->
-    pos1 = createPos(goodAcc - 1)
-    @locationFinder.fire(pos1)
-
-    assert.equal @status.useable, true    
-
-  it "useable false initially", ->
-    assert.equal @status.useable, false
-
-  it "strength is none initially", ->
-    assert.equal @status.strength, "none"
-
-  it "strength is none initially if old gps", ->
-    pos1 = createPos(goodAcc - 1, recentThreshold + 1)
-    @locationFinder.fire(pos1)
-    assert.equal @status.strength, "none"
-
-  it "strength is poor if poor", ->
-    pos1 = createPos(fairAcc + 1)
-    @locationFinder.fire(pos1)
-    assert.equal @status.strength, "poor"
-
-  it "strength is fair if fair", ->
-    pos1 = createPos(fairAcc - 1)
-    @locationFinder.fire(pos1)
-    assert.equal @status.strength, "fair"
-    assert.equal @posFinder.strength, "fair"
-  
-  it "useable false immediately if poor", ->
-    pos1 = createPos(fairAcc + 1)
-    @locationFinder.fire(pos1)
-    assert.equal @status.useable, false
-
-  it "useable false immediately if fair", ->
-    pos1 = createPos(fairAcc - 1)
-    @locationFinder.fire(pos1)
-    assert.equal @status.useable, false
-
-  it "useable true if poor and after initial delay", ->
-    pos1 = createPos(fairAcc + 1)
-    @locationFinder.fire(pos1)
-
-    @clock.tick(initialDelay + 2)
-
-    assert.equal @status.useable, true
-    assert.deepEqual @status.pos, pos1
-
-  it "useable true if fair and after initial delay", ->
-    pos1 = createPos(fairAcc - 1)
-    @locationFinder.fire(pos1)
-
-    @clock.tick(initialDelay + 2)
-
-    assert.equal @status.useable, true
-    assert.deepEqual @status.pos, pos1
-
-  it "fires error if location finder reports error", ->
-    error = ''
-    @posFinder.on 'error', (err) ->
-      error = err
-
-    @locationFinder.trigger 'error', "some error"
-    assert.equal error, 'some error'
-    assert.equal @posFinder.error, 'some error'
-
-  it "stops if location finder reports error", ->
-    @locationFinder.trigger 'error', "some error"
-    assert.equal @posFinder.running, false
-
-class MockLocationFinder
-  constructor:  ->
-    _.extend @, Backbone.Events
-
-  getLocation: (success, error) ->
-  startWatch: ->
-    @watching = true
-  stopWatch: ->
-    @watching = false
-
-  fire: (loc) ->
-    @trigger 'found', loc
+  fire(loc) {
+    return this.trigger('found', loc);
+  }
+}

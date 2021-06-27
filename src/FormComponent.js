@@ -1,199 +1,239 @@
-PropTypes = require('prop-types')
-_ = require 'lodash'
-React = require 'react'
-R = React.createElement
+let FormComponent;
+import PropTypes from 'prop-types';
+import _ from 'lodash';
+import React from 'react';
+const R = React.createElement;
 
-SectionsComponent = require './SectionsComponent'
-ItemListComponent = require './ItemListComponent'
-ezlocalize = require 'ez-localize'
+import SectionsComponent from './SectionsComponent';
+import ItemListComponent from './ItemListComponent';
+import ezlocalize from 'ez-localize';
+import ResponseCleaner from './ResponseCleaner';
+import { default as ResponseRow } from './ResponseRow';
+import DefaultValueApplier from './DefaultValueApplier';
+import VisibilityCalculator from './VisibilityCalculator';
+import RandomAskedCalculator from './RandomAskedCalculator';
 
-ResponseCleaner = require './ResponseCleaner'
-ResponseRow = require('./ResponseRow').default
-DefaultValueApplier = require './DefaultValueApplier'
-VisibilityCalculator = require './VisibilityCalculator'
-RandomAskedCalculator = require './RandomAskedCalculator'
-
-# Displays a form that can be filled out
-module.exports = class FormComponent extends React.Component
-  @propTypes:
-    formCtx: PropTypes.object.isRequired   # Context to use for form. See docs/FormsContext.md
-    design: PropTypes.object.isRequired # Form design. See schema.coffee
-  
-    data: PropTypes.object.isRequired # Form response data. See docs/Answer Formats.md
-    onDataChange: PropTypes.func.isRequired # Called when response data changes
-
-    schema: PropTypes.object.isRequired  # Schema to use, including form
-
-    deployment: PropTypes.string.isRequired  # The current deployment
-    locale: PropTypes.string          # e.g. "fr"
+// Displays a form that can be filled out
+export default FormComponent = (function() {
+  FormComponent = class FormComponent extends React.Component {
+    static initClass() {
+      this.propTypes = {
+        formCtx: PropTypes.object.isRequired,   // Context to use for form. See docs/FormsContext.md
+        design: PropTypes.object.isRequired, // Form design. See schema.coffee
     
-    onSubmit: PropTypes.func                # Called when submit is pressed
-    onSaveLater: PropTypes.func             # Optional save for later
-    onDiscard: PropTypes.func               # Called when discard is pressed
-
-    submitLabel: PropTypes.string           # To override submit label
-    saveLaterLabel: PropTypes.string        # To override Save For Later label
-    discardLabel: PropTypes.string          # To override Discard label
-
-    entity: PropTypes.object            # Form-level entity to load
-    entityType: PropTypes.string        # Type of form-level entity to load
-
-    singlePageMode: PropTypes.bool      # True to render as a single page, not divided into sections
-    disableConfidentialFields: PropTypes.bool # True to disable the confidential fields, used during editing responses with confidential data
-
-    forceAllVisible: PropTypes.bool     # Force all questions to be visible
-
-  @childContextTypes: _.extend({}, require('./formContextTypes'), {
-    T: PropTypes.func.isRequired
-    locale: PropTypes.string          # e.g. "fr"
-    disableConfidentialFields: PropTypes.bool
-  })
-
-  constructor: (props) ->
-    super(props)
-
-    @state = {
-      visibilityStructure: {}
-      T: @createLocalizer(@props.design, @props.locale)
+        data: PropTypes.object.isRequired, // Form response data. See docs/Answer Formats.md
+        onDataChange: PropTypes.func.isRequired, // Called when response data changes
+  
+        schema: PropTypes.object.isRequired,  // Schema to use, including form
+  
+        deployment: PropTypes.string.isRequired,  // The current deployment
+        locale: PropTypes.string,          // e.g. "fr"
+      
+        onSubmit: PropTypes.func,                // Called when submit is pressed
+        onSaveLater: PropTypes.func,             // Optional save for later
+        onDiscard: PropTypes.func,               // Called when discard is pressed
+  
+        submitLabel: PropTypes.string,           // To override submit label
+        saveLaterLabel: PropTypes.string,        // To override Save For Later label
+        discardLabel: PropTypes.string,          // To override Discard label
+  
+        entity: PropTypes.object,            // Form-level entity to load
+        entityType: PropTypes.string,        // Type of form-level entity to load
+  
+        singlePageMode: PropTypes.bool,      // True to render as a single page, not divided into sections
+        disableConfidentialFields: PropTypes.bool, // True to disable the confidential fields, used during editing responses with confidential data
+  
+        forceAllVisible: PropTypes.bool     // Force all questions to be visible
+      };
+  
+      this.childContextTypes = _.extend({}, require('./formContextTypes'), {
+        T: PropTypes.func.isRequired,
+        locale: PropTypes.string,          // e.g. "fr"
+        disableConfidentialFields: PropTypes.bool
+      });
     }
 
-    # Save which data visibility structure applies to
-    @currentData = null
+    constructor(props) {
+      this.isVisible = this.isVisible.bind(this);
+      this.createResponseRow = this.createResponseRow.bind(this);
+      this.handleDataChange = this.handleDataChange.bind(this);
+      this.handleNext = this.handleNext.bind(this);
+      super(props);
 
-  getChildContext: -> 
-    _.extend({}, @props.formCtx, {
-      T: @state.T
-      locale: @props.locale
-      disableConfidentialFields: @props.disableConfidentialFields
-    })
+      this.state = {
+        visibilityStructure: {},
+        T: this.createLocalizer(this.props.design, this.props.locale)
+      };
 
-  componentWillReceiveProps: (nextProps) ->
-    if @props.design != nextProps.design or @props.locale != nextProps.locale
-      @setState(T: @createLocalizer(nextProps.design, nextProps.locale))
-
-  componentDidUpdate: (prevProps) ->
-    # When data change is external, process it to set visibility, etc.
-    if prevProps.data != @props.data and not _.isEqual(@props.data, @currentData)
-      @handleDataChange(@props.data)
-
-  # This will clean the data that has been passed at creation
-  # It will also initialize the visibilityStructure
-  # And set the sticky data
-  componentWillMount: ->
-    @handleDataChange(@props.data)
-
-  # Creates a localizer for the form design
-  createLocalizer: (design, locale) ->
-    # Create localizer
-    localizedStrings = design.localizedStrings or []
-    localizerData = {
-      locales: design.locales
-      strings: localizedStrings
+      // Save which data visibility structure applies to
+      this.currentData = null;
     }
-    T = new ezlocalize.Localizer(localizerData, locale).T
-    return T
 
-  handleSubmit: =>
-    # Cannot submit if at least one item is invalid
-    result = await @itemListComponent.validate(true)
-    if not result
-      @props.onSubmit()
+    getChildContext() { 
+      return _.extend({}, this.props.formCtx, {
+        T: this.state.T,
+        locale: this.props.locale,
+        disableConfidentialFields: this.props.disableConfidentialFields
+      });
+    }
 
-  isVisible: (itemId) =>
-    return @props.forceAllVisible or @state.visibilityStructure[itemId]
+    componentWillReceiveProps(nextProps) {
+      if ((this.props.design !== nextProps.design) || (this.props.locale !== nextProps.locale)) {
+        return this.setState({T: this.createLocalizer(nextProps.design, nextProps.locale)});
+      }
+    }
 
-  createResponseRow: (data) =>
-    return new ResponseRow({
-      responseData: data
-      formDesign: @props.design
-      schema: @props.schema
-      getEntityById: @props.formCtx.getEntityById
-      getEntityByCode: @props.formCtx.getEntityByCode
-      getCustomTableRow: @props.formCtx.getCustomTableRow
-      deployment: @props.deployment
-    })
+    componentDidUpdate(prevProps) {
+      // When data change is external, process it to set visibility, etc.
+      if ((prevProps.data !== this.props.data) && !_.isEqual(this.props.data, this.currentData)) {
+        return this.handleDataChange(this.props.data);
+      }
+    }
 
-  handleDataChange: (data) =>
-    visibilityCalculator = new VisibilityCalculator(@props.design, @props.schema)
-    defaultValueApplier = new DefaultValueApplier(@props.design, @props.formCtx.stickyStorage, @props.entity, @props.entityType)
-    randomAskedCalculator = new RandomAskedCalculator(@props.design)
-    responseCleaner = new ResponseCleaner()
+    // This will clean the data that has been passed at creation
+    // It will also initialize the visibilityStructure
+    // And set the sticky data
+    componentWillMount() {
+      return this.handleDataChange(this.props.data);
+    }
 
-    # Immediately update data, as another answer might be clicked on (e.g. blur from a number input and clicking on a radio answer)
-    @currentData = data
-    @props.onDataChange(data)
+    // Creates a localizer for the form design
+    createLocalizer(design, locale) {
+      // Create localizer
+      const localizedStrings = design.localizedStrings || [];
+      const localizerData = {
+        locales: design.locales,
+        strings: localizedStrings
+      };
+      const {
+        T
+      } = new ezlocalize.Localizer(localizerData, locale);
+      return T;
+    }
 
-    # Clean response data, remembering which data object is being cleaned
-    this.cleanInProgress = data
+    handleSubmit = async () => {
+      // Cannot submit if at least one item is invalid
+      const result = await this.itemListComponent.validate(true);
+      if (!result) {
+        return this.props.onSubmit();
+      }
+    };
 
-    responseCleaner.cleanData @props.design, visibilityCalculator, defaultValueApplier, randomAskedCalculator, data, @createResponseRow, @state.visibilityStructure, (error, results) =>
-      if error
-        alert(T("Error saving data") + ": #{error.message}")
-        return
+    isVisible(itemId) {
+      return this.props.forceAllVisible || this.state.visibilityStructure[itemId];
+    }
 
-      # Ignore if from a previous clean
-      if data != this.cleanInProgress 
-        console.log("Ignoring stale handleDataChange data")
-        return
+    createResponseRow(data) {
+      return new ResponseRow({
+        responseData: data,
+        formDesign: this.props.design,
+        schema: this.props.schema,
+        getEntityById: this.props.formCtx.getEntityById,
+        getEntityByCode: this.props.formCtx.getEntityByCode,
+        getCustomTableRow: this.props.formCtx.getCustomTableRow,
+        deployment: this.props.deployment
+      });
+    }
 
-      @setState(visibilityStructure: results.visibilityStructure)
-      # Ignore if unchanged
-      if not _.isEqual(data, results.data)
-        @currentData = results.data
-        @props.onDataChange(results.data)
+    handleDataChange(data) {
+      const visibilityCalculator = new VisibilityCalculator(this.props.design, this.props.schema);
+      const defaultValueApplier = new DefaultValueApplier(this.props.design, this.props.formCtx.stickyStorage, this.props.entity, this.props.entityType);
+      const randomAskedCalculator = new RandomAskedCalculator(this.props.design);
+      const responseCleaner = new ResponseCleaner();
 
-  handleNext: () =>
-    @submit.focus()
+      // Immediately update data, as another answer might be clicked on (e.g. blur from a number input and clicking on a radio answer)
+      this.currentData = data;
+      this.props.onDataChange(data);
 
-  render: ->
-    if @props.design.contents[0] and @props.design.contents[0]._type == "Section" and not @props.singlePageMode
-      R SectionsComponent,
-        contents: @props.design.contents
-        data: @props.data
-        onDataChange: @handleDataChange
-        responseRow: @createResponseRow(@props.data)
-        schema: @props.schema
-        onSubmit: @props.onSubmit
-        onSaveLater: @props.onSaveLater
-        onDiscard: @props.onDiscard
-        isVisible: @isVisible
-    else
-      R 'div', null,
-        R ItemListComponent,
-          ref: ((c) => @itemListComponent = c)
-          contents: @props.design.contents
-          data: @props.data
-          onDataChange: @handleDataChange
-          responseRow: @createResponseRow(@props.data)
-          schema: @props.schema
-          isVisible: @isVisible 
-          onNext: @handleNext
+      // Clean response data, remembering which data object is being cleaned
+      this.cleanInProgress = data;
 
-        if @props.onSubmit
-          R 'button', type: "button", key: 'submitButton', className: "btn btn-primary", ref: ((c) => @submit = c), onClick: @handleSubmit,
-            if @props.submitLabel
-              @props.submitLabel
-            else
-              @state.T("Submit")
+      return responseCleaner.cleanData(this.props.design, visibilityCalculator, defaultValueApplier, randomAskedCalculator, data, this.createResponseRow, this.state.visibilityStructure, (error, results) => {
+        if (error) {
+          alert(T("Error saving data") + `: ${error.message}`);
+          return;
+        }
 
-        "\u00A0"
+        // Ignore if from a previous clean
+        if (data !== this.cleanInProgress) { 
+          console.log("Ignoring stale handleDataChange data");
+          return;
+        }
 
-        if @props.onSaveLater
-          [
-            R 'button', type: "button", key: 'saveLaterButton', className: "btn btn-default", onClick: @props.onSaveLater,
-              if @props.saveLaterLabel
-                @props.saveLaterLabel
-              else
-                @state.T("Save for Later")
-            "\u00A0"
-          ]
+        this.setState({visibilityStructure: results.visibilityStructure});
+        // Ignore if unchanged
+        if (!_.isEqual(data, results.data)) {
+          this.currentData = results.data;
+          return this.props.onDataChange(results.data);
+        }
+      });
+    }
 
-        if @props.onDiscard
-          R 'button', type:"button", key: 'discardButton', className: "btn btn-default", onClick: @props.onDiscard,
-            if @props.discardLabel
-              @props.discardLabel
-            else
-              [
-                R 'span', className: "glyphicon glyphicon-trash"
-                " " + @state.T("Discard")
-              ]
+    handleNext() {
+      return this.submit.focus();
+    }
+
+    render() {
+      if (this.props.design.contents[0] && (this.props.design.contents[0]._type === "Section") && !this.props.singlePageMode) {
+        return R(SectionsComponent, {
+          contents: this.props.design.contents,
+          data: this.props.data,
+          onDataChange: this.handleDataChange,
+          responseRow: this.createResponseRow(this.props.data),
+          schema: this.props.schema,
+          onSubmit: this.props.onSubmit,
+          onSaveLater: this.props.onSaveLater,
+          onDiscard: this.props.onDiscard,
+          isVisible: this.isVisible
+        }
+        );
+      } else {
+        return R('div', null,
+          R(ItemListComponent, {
+            ref: (c => { return this.itemListComponent = c; }),
+            contents: this.props.design.contents,
+            data: this.props.data,
+            onDataChange: this.handleDataChange,
+            responseRow: this.createResponseRow(this.props.data),
+            schema: this.props.schema,
+            isVisible: this.isVisible, 
+            onNext: this.handleNext
+          }
+          ),
+
+          this.props.onSubmit ?
+            R('button', {type: "button", key: 'submitButton', className: "btn btn-primary", ref: (c => { return this.submit = c; }), onClick: this.handleSubmit},
+              this.props.submitLabel ?
+                this.props.submitLabel
+              :
+                this.state.T("Submit")
+            ) : undefined,
+
+          "\u00A0",
+
+          this.props.onSaveLater ?
+            [
+              R('button', {type: "button", key: 'saveLaterButton', className: "btn btn-default", onClick: this.props.onSaveLater},
+                this.props.saveLaterLabel ?
+                  this.props.saveLaterLabel
+                :
+                  this.state.T("Save for Later")
+              ),
+              "\u00A0"
+            ] : undefined,
+
+          this.props.onDiscard ?
+            R('button', {type:"button", key: 'discardButton', className: "btn btn-default", onClick: this.props.onDiscard},
+              this.props.discardLabel ?
+                this.props.discardLabel
+              :
+                [
+                  R('span', {className: "glyphicon glyphicon-trash"}),
+                  " " + this.state.T("Discard")
+                ]) : undefined);
+      }
+    }
+  };
+  FormComponent.initClass();
+  return FormComponent;
+})();

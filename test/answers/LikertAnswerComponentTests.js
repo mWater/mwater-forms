@@ -1,101 +1,110 @@
-_ = require 'lodash'
-assert = require('chai').assert
+import _ from 'lodash';
+import { assert } from 'chai';
+import TestComponent from 'react-library/lib/TestComponent';
+import ReactTestUtils from 'react-dom/test-utils';
+import LikertAnswerComponent from '../../src/answers/LikertAnswerComponent';
+import React from 'react';
+import ReactDOM from 'react-dom';
+const R = React.createElement;
 
-TestComponent = require('react-library/lib/TestComponent')
-ReactTestUtils = require('react-dom/test-utils')
+describe('LikertAnswerComponent', function() {
+  before(function() {
+    this.toDestroy = [];
 
-LikertAnswerComponent = require '../../src/answers/LikertAnswerComponent'
-
-React = require 'react'
-ReactDOM = require 'react-dom'
-R = React.createElement
-
-describe 'LikertAnswerComponent', ->
-  before ->
-    @toDestroy = []
-
-    @render = (options = {}) =>
-      options = _.extend {
-        answer: {}
+    return this.render = (options = {}) => {
+      options = _.extend({
+        answer: {},
         choices: [
-          { id: "choiceA", label: { _base: "en", en: "Choice A" } }
-          { id: "choiceB", label: { _base: "en", en: "Choice B" } }
+          { id: "choiceA", label: { _base: "en", en: "Choice A" } },
+          { id: "choiceB", label: { _base: "en", en: "Choice B" } },
           { id: "choiceC", label: { _base: "en", en: "Choice C" } }
         ],
         items: [
-          { id: "itemA", label: { _base: "en", en: "Item A" }, hint: { _base: "en", en: "a-hint" } }
-          { id: "itemB", label: { _base: "en", en: "Item B" } }
+          { id: "itemA", label: { _base: "en", en: "Item A" }, hint: { _base: "en", en: "a-hint" } },
+          { id: "itemB", label: { _base: "en", en: "Item B" } },
           { id: "itemC", label: { _base: "en", en: "Item C" } }
         ],
-        onAnswerChange: () ->
-          null
-      }, options
+        onAnswerChange() {
+          return null;
+        }
+      }, options);
 
-      elem = R(LikertAnswerComponent, options)
-      comp = new TestComponent(elem)
-      @toDestroy.push(comp)
-      return comp
+      const elem = R(LikertAnswerComponent, options);
+      const comp = new TestComponent(elem);
+      this.toDestroy.push(comp);
+      return comp;
+    };
+  });
 
-  afterEach ->
-    for comp in @toDestroy
-      comp.destroy()
-    @toDestroy = []
+  afterEach(function() {
+    for (let comp of this.toDestroy) {
+      comp.destroy();
+    }
+    return this.toDestroy = [];});
 
-  it "displays items", ->
-    testComponent = @render()
+  it("displays items", function() {
+    const testComponent = this.render();
 
-    choiceA = testComponent.findDOMNodeByText(/Item A/)
-    assert choiceA?, 'Not showing item A'
+    const choiceA = testComponent.findDOMNodeByText(/Item A/);
+    assert((choiceA != null), 'Not showing item A');
 
-    choiceB = testComponent.findDOMNodeByText(/Item B/)
-    assert choiceB?, 'Not showing item B'
+    const choiceB = testComponent.findDOMNodeByText(/Item B/);
+    assert((choiceB != null), 'Not showing item B');
 
-    choiceC = testComponent.findDOMNodeByText(/Item C/)
-    assert choiceC?, 'Not showing item C'
+    const choiceC = testComponent.findDOMNodeByText(/Item C/);
+    return assert((choiceC != null), 'Not showing item C');
+  });
 
-  it "displays choices", ->
-    testComponent = @render()
+  it("displays choices", function() {
+    const testComponent = this.render();
 
-    choiceA = testComponent.findDOMNodeByText(/Choice A/)
-    assert choiceA?, 'Not showing choice A'
+    const choiceA = testComponent.findDOMNodeByText(/Choice A/);
+    assert((choiceA != null), 'Not showing choice A');
 
-    choiceB = testComponent.findDOMNodeByText(/Choice B/)
-    assert choiceB?, 'Not showing choice B'
+    const choiceB = testComponent.findDOMNodeByText(/Choice B/);
+    assert((choiceB != null), 'Not showing choice B');
 
-    choiceC = testComponent.findDOMNodeByText(/Choice C/)
-    assert choiceC?, 'Not showing choice C'
+    const choiceC = testComponent.findDOMNodeByText(/Choice C/);
+    return assert((choiceC != null), 'Not showing choice C');
+  });
 
-  it "displays choice hints", ->
-    testComponent = @render()
+  it("displays choice hints", function() {
+    const testComponent = this.render();
 
-    hintA = testComponent.findDOMNodeByText(/a-hint/)
-    assert hintA?, 'Not showing hint'
+    const hintA = testComponent.findDOMNodeByText(/a-hint/);
+    return assert((hintA != null), 'Not showing hint');
+  });
 
-  it "records selected choice", (done) ->
-    testComponent = @render({
-      onAnswerChange: (answer) ->
-        assert.deepEqual answer.value, {'itemB':'choiceB'}
-        done()
-    })
+  it("records selected choice", function(done) {
+    const testComponent = this.render({
+      onAnswerChange(answer) {
+        assert.deepEqual(answer.value, {'itemB':'choiceB'});
+        return done();
+      }
+    });
 
-    id = "itemB:choiceB"
+    const id = "itemB:choiceB";
 
-    itemBchoiceB = testComponent.findComponentById(id)
+    const itemBchoiceB = testComponent.findComponentById(id);
 
-    assert itemBchoiceB?, 'could not find item B, choice B, radio btn'
-    TestComponent.click(itemBchoiceB)
+    assert((itemBchoiceB != null), 'could not find item B, choice B, radio btn');
+    return TestComponent.click(itemBchoiceB);
+  });
 
-  it "allows unselecting choice by clicking twice", (done) ->
-    testComponent = @render({
-      answer: {value: {'itemB': 'choiceB'}}
-      onAnswerChange: (answer) ->
-        assert.deepEqual answer.value, {}
-        done()
-    })
+  return it("allows unselecting choice by clicking twice", function(done) {
+    const testComponent = this.render({
+      answer: {value: {'itemB': 'choiceB'}},
+      onAnswerChange(answer) {
+        assert.deepEqual(answer.value, {});
+        return done();
+      }
+    });
 
-    id = "itemB:choiceB"
+    const id = "itemB:choiceB";
 
-    itemBchoiceB = testComponent.findComponentById(id)
+    const itemBchoiceB = testComponent.findComponentById(id);
 
-    assert itemBchoiceB?, 'could not find item B, choice B, radio btn'
-    TestComponent.click(itemBchoiceB)
+    assert((itemBchoiceB != null), 'could not find item B, choice B, radio btn');
+    return TestComponent.click(itemBchoiceB);
+  });
+});

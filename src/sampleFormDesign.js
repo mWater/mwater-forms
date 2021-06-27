@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   "_type": "Form",
   "_schema": 11,
   "name": {
@@ -2528,4 +2528,4 @@ module.exports = {
       "name": "English"
     }
   ]
-}
+};

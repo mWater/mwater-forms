@@ -1,56 +1,63 @@
-assert = require('chai').assert
+import { assert } from 'chai';
+import TestComponent from 'react-library/lib/TestComponent';
+import ReactTestUtils from 'react-dom/test-utils';
+import TextListAnswerComponent from '../../src/answers/TextListAnswerComponent';
+import React from 'react';
+import ReactDOM from 'react-dom';
+const R = React.createElement;
 
-TestComponent = require('react-library/lib/TestComponent')
-ReactTestUtils = require('react-dom/test-utils')
+describe('TextListAnswerComponent', function() {
+  before(function() {
+    this.toDestroy = [];
 
-TextListAnswerComponent = require '../../src/answers/TextListAnswerComponent'
+    return this.render = (options = {}) => {
+      const elem = R(TextListAnswerComponent, options);
+      const comp = new TestComponent(elem);
+      this.toDestroy.push(comp);
+      return comp;
+    };
+  });
 
-React = require 'react'
-ReactDOM = require 'react-dom'
-R = React.createElement
+  afterEach(function() {
+    for (let comp of this.toDestroy) {
+      comp.destroy();
+    }
+    return this.toDestroy = [];});
 
-describe 'TextListAnswerComponent', ->
-  before ->
-    @toDestroy = []
+  it("records add", function(done) {
+    const testComponent = this.render({
+      onValueChange(value) {
+        assert.deepEqual(value, ['some text']);
+        return done();
+      }
+    });
+    const newLine = testComponent.findComponentById('newLine');
 
-    @render = (options = {}) =>
-      elem = R(TextListAnswerComponent, options)
-      comp = new TestComponent(elem)
-      @toDestroy.push(comp)
-      return comp
+    return TestComponent.changeValue(newLine, 'some text');
+  });
 
-  afterEach ->
-    for comp in @toDestroy
-      comp.destroy()
-    @toDestroy = []
+  it("records remove", function(done) {
+    const testComponent = this.render({
+      value: ['some text'],
+      onValueChange(value) {
+        assert.deepEqual(value, []);
+        return done();
+      }
+    });
+    const removeBtn = ReactTestUtils.findRenderedDOMComponentWithClass(testComponent.getComponent(), 'remove');
+    return TestComponent.click(removeBtn);
+  });
 
-  it "records add", (done) ->
-    testComponent = @render({
-      onValueChange: (value) ->
-        assert.deepEqual value, ['some text']
-        done()
-    })
-    newLine = testComponent.findComponentById('newLine')
+  return it("loads existing values", function(done) {
+    const testComponent = this.render({
+      value: ['some text'],
+      onValueChange(value) {
+        assert.deepEqual(value, ['some text', 'more text']);
+        return done();
+      }
+    });
+    const newLine = testComponent.findComponentById('newLine');
 
-    TestComponent.changeValue(newLine, 'some text')
-
-  it "records remove", (done) ->
-    testComponent = @render({
-      value: ['some text']
-      onValueChange: (value) ->
-        assert.deepEqual value, []
-        done()
-    })
-    removeBtn = ReactTestUtils.findRenderedDOMComponentWithClass(testComponent.getComponent(), 'remove')
-    TestComponent.click(removeBtn)
-
-  it "loads existing values", (done) ->
-    testComponent = @render({
-      value: ['some text']
-      onValueChange: (value) ->
-        assert.deepEqual value, ['some text', 'more text']
-        done()
-    })
-    newLine = testComponent.findComponentById('newLine')
-
-    TestComponent.changeValue(newLine, 'more text')
+    return TestComponent.changeValue(newLine, 'more text');
+  });
+});

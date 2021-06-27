@@ -1,106 +1,128 @@
-assert = require('chai').assert
+import { assert } from 'chai';
+import TestComponent from 'react-library/lib/TestComponent';
+import ReactTestUtils from 'react-dom/test-utils';
+import BarcodeAnswerComponent from '../../src/answers/BarcodeAnswerComponent';
+import React from 'react';
+import ReactDOM from 'react-dom';
+const R = React.createElement;
+import PropTypes from 'prop-types';
 
-TestComponent = require('react-library/lib/TestComponent')
-ReactTestUtils = require('react-dom/test-utils')
+class BarcodeContext extends React.Component {
+  static initClass() {
+    this.childContextTypes = {
+      scanBarcode: PropTypes.func,
+      T: PropTypes.func.isRequired
+    };
+  }
 
-BarcodeAnswerComponent = require '../../src/answers/BarcodeAnswerComponent'
+  getChildContext() {
+    const ctx = {
+      T(str) { return str; }
+    };
 
-React = require 'react'
-ReactDOM = require 'react-dom'
-R = React.createElement
-PropTypes = require('prop-types')
-
-class BarcodeContext extends React.Component
-  @childContextTypes:
-    scanBarcode: PropTypes.func
-    T: PropTypes.func.isRequired
-
-  getChildContext: ->
-    ctx = {
-      T: (str) -> str
+    if (this.props.enableScanBarcode) {
+      ctx.scanBarcode = function(callback) {
+        const f = () => callback.success('0123456789');
+        return setTimeout(f, 30);
+      };
     }
-
-    if @props.enableScanBarcode
-      ctx.scanBarcode = (callback) ->
-        f = () ->
-          callback.success('0123456789')
-        setTimeout f, 30
         
-    return ctx
+    return ctx;
+  }
 
-  render: ->
-    return @props.children
+  render() {
+    return this.props.children;
+  }
+}
+BarcodeContext.initClass();
 
-describe 'BarcodeAnswerComponent', ->
-  describe 'Works without scanBarcode', ->
-    beforeEach ->
-      @toDestroy = []
+describe('BarcodeAnswerComponent', function() {
+  describe('Works without scanBarcode', function() {
+    beforeEach(function() {
+      this.toDestroy = [];
 
-      @render = (options = {}) =>
-        elem = R(BarcodeContext, {},
+      return this.render = (options = {}) => {
+        const elem = R(BarcodeContext, {},
           R(BarcodeAnswerComponent, options)
-        )
-        comp = new TestComponent(elem)
-        @toDestroy.push(comp)
-        return comp
+        );
+        const comp = new TestComponent(elem);
+        this.toDestroy.push(comp);
+        return comp;
+      };
+    });
 
-    afterEach ->
-      for comp in @toDestroy
-        comp.destroy()
+    afterEach(function() {
+      return this.toDestroy.map((comp) =>
+        comp.destroy());
+    });
 
-    it "shows text if not supported", ->
-      # If no context is passed, scanBarcode is not defined and so the feature is not supported
-      comp = @render({onValueChange: () -> null})
-      component = comp.findDOMNodeByText(/not supported/i)
-      assert component?, 'Not showing not supported text'
+    return it("shows text if not supported", function() {
+      // If no context is passed, scanBarcode is not defined and so the feature is not supported
+      const comp = this.render({onValueChange() { return null; }});
+      const component = comp.findDOMNodeByText(/not supported/i);
+      return assert((component != null), 'Not showing not supported text');
+    });
+  });
 
 
-  describe 'Works with scanBarcode', ->
-    beforeEach ->
-      @toDestroy = []
+  return describe('Works with scanBarcode', function() {
+    beforeEach(function() {
+      this.toDestroy = [];
 
-      @render = (options = {}) =>
-        elem = R(BarcodeContext, { enableScanBarcode: true },
+      return this.render = (options = {}) => {
+        const elem = R(BarcodeContext, { enableScanBarcode: true },
           R(BarcodeAnswerComponent, options)
-        )
-        #elem = R(BarcodeAnswerComponent, options)
-        comp = new TestComponent(elem)
-        @toDestroy.push(comp)
-        return comp
+        );
+        //elem = R(BarcodeAnswerComponent, options)
+        const comp = new TestComponent(elem);
+        this.toDestroy.push(comp);
+        return comp;
+      };
+    });
 
-    afterEach ->
-      for comp in @toDestroy
-        comp.destroy()
+    afterEach(function() {
+      return this.toDestroy.map((comp) =>
+        comp.destroy());
+    });
 
-    it "shows scan button", ->
-      comp = @render({onValueChange: () -> null})
-      button = ReactTestUtils.findRenderedDOMComponentWithClass(comp.getComponent(), 'btn')
-      assert button?, 'Not showing scan button'
+    it("shows scan button", function() {
+      const comp = this.render({onValueChange() { return null; }});
+      const button = ReactTestUtils.findRenderedDOMComponentWithClass(comp.getComponent(), 'btn');
+      return assert((button != null), 'Not showing scan button');
+    });
 
-    it "shows clear button when value is set", ->
-      comp = @render({
-        onValueChange: () ->
-          null
+    it("shows clear button when value is set", function() {
+      const comp = this.render({
+        onValueChange() {
+          return null;
+        },
         value: 'sometext'
-      })
-      # TODO: the method to find the Scan button doesn't seem to work
-      component = comp.findDOMNodeByText(/Clear/i)
-      assert component?, 'Not showing clear button'
+      });
+      // TODO: the method to find the Scan button doesn't seem to work
+      const component = comp.findDOMNodeByText(/Clear/i);
+      return assert((component != null), 'Not showing clear button');
+    });
 
-    it "shows scan button", (done) ->
-      comp = @render({onValueChange: (value) ->
-        assert.equal value, "0123456789"
-        done()
-      })
-      button = ReactTestUtils.findRenderedDOMComponentWithClass(comp.getComponent(), 'btn')
-      TestComponent.click(button)
+    it("shows scan button", function(done) {
+      const comp = this.render({onValueChange(value) {
+        assert.equal(value, "0123456789");
+        return done();
+      }
+      });
+      const button = ReactTestUtils.findRenderedDOMComponentWithClass(comp.getComponent(), 'btn');
+      return TestComponent.click(button);
+    });
 
-    it "clears when clear pressed", (done) ->
-      comp = @render({
-        value: 'sometext'
-        onValueChange: (value) ->
-          assert.equal value, null
-          done()
-      })
-      button = ReactTestUtils.findRenderedDOMComponentWithClass(comp.getComponent(), 'btn')
-      TestComponent.click(button)
+    return it("clears when clear pressed", function(done) {
+      const comp = this.render({
+        value: 'sometext',
+        onValueChange(value) {
+          assert.equal(value, null);
+          return done();
+        }
+      });
+      const button = ReactTestUtils.findRenderedDOMComponentWithClass(comp.getComponent(), 'btn');
+      return TestComponent.click(button);
+    });
+  });
+});

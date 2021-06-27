@@ -1,171 +1,218 @@
-PropTypes = require('prop-types')
-_ = require 'lodash'
-React = require 'react'
-R = React.createElement
+let SectionsComponent;
+import PropTypes from 'prop-types';
+import _ from 'lodash';
+import React from 'react';
+const R = React.createElement;
 
-ItemListComponent = require './ItemListComponent'
-formUtils = require './formUtils'
-TextExprsComponent = require './TextExprsComponent'
+import ItemListComponent from './ItemListComponent';
+import formUtils from './formUtils';
+import TextExprsComponent from './TextExprsComponent';
 
-module.exports = class SectionsComponent extends React.Component
-  @contextTypes:
-    locale: PropTypes.string
-    T: PropTypes.func.isRequired  # Localizer to use
-
-  @propTypes:
-    contents: PropTypes.array.isRequired 
-    data: PropTypes.object      # Current data of response. 
-    onDataChange: PropTypes.func.isRequired
-
-    schema: PropTypes.object.isRequired  # Schema to use, including form
-    responseRow: PropTypes.object.isRequired    # ResponseRow object (for roster entry if in roster)
-
-    isVisible: PropTypes.func.isRequired # (id) tells if an item is visible or not
-
-    onSubmit: PropTypes.func                # Called when submit is pressed
-    onSaveLater: PropTypes.func             # Optional save for later
-    onDiscard: PropTypes.func               # Called when discard is pressed
-
-  constructor: (props) ->
-    super(props)
-
-    @state = {
-      sectionNum: 0
+export default SectionsComponent = (function() {
+  SectionsComponent = class SectionsComponent extends React.Component {
+    static initClass() {
+      this.contextTypes = {
+        locale: PropTypes.string,
+        T: PropTypes.func.isRequired  // Localizer to use
+      };
+  
+      this.propTypes = {
+        contents: PropTypes.array.isRequired, 
+        data: PropTypes.object,      // Current data of response. 
+        onDataChange: PropTypes.func.isRequired,
+  
+        schema: PropTypes.object.isRequired,  // Schema to use, including form
+        responseRow: PropTypes.object.isRequired,    // ResponseRow object (for roster entry if in roster)
+  
+        isVisible: PropTypes.func.isRequired, // (id) tells if an item is visible or not
+  
+        onSubmit: PropTypes.func,                // Called when submit is pressed
+        onSaveLater: PropTypes.func,             // Optional save for later
+        onDiscard: PropTypes.func
+      };
+                     // Called when discard is pressed
     }
 
-  handleSubmit: =>
-    result = await @itemListComponent.validate(true)
-    if not result
-      @props.onSubmit()
+    constructor(props) {
+      this.handleBackSection = this.handleBackSection.bind(this);
+      this.handleBreadcrumbClick = this.handleBreadcrumbClick.bind(this);
+      this.handleItemListNext = this.handleItemListNext.bind(this);
+      super(props);
 
-  hasPreviousSection: ->
-    # Returns true if a visible index exist with a higher value
-    return @nextVisibleSectionIndex(@state.sectionNum - 1, -1) != -1
+      this.state = {
+        sectionNum: 0
+      };
+    }
 
-  hasNextSection: ->
-    # Returns true if a visible index exist with a higher value
-    return @nextVisibleSectionIndex(@state.sectionNum + 1, 1) != -1
+    handleSubmit = async () => {
+      const result = await this.itemListComponent.validate(true);
+      if (!result) {
+        return this.props.onSubmit();
+      }
+    };
 
-  nextVisibleSectionIndex: (index, increment) ->
-    if index < 0
-      return -1
-    if index >= @props.contents.length
-      return -1
-    section = @props.contents[index]
-    isVisible = @props.isVisible(section._id)
-    if isVisible
-      return index
-    else
-      return @nextVisibleSectionIndex(index + increment, increment)
+    hasPreviousSection() {
+      // Returns true if a visible index exist with a higher value
+      return this.nextVisibleSectionIndex(this.state.sectionNum - 1, -1) !== -1;
+    }
 
-  handleBackSection: =>
-    # Move to previous that is visible
-    previousVisibleIndex = @nextVisibleSectionIndex(@state.sectionNum - 1, -1)
-    if previousVisibleIndex != -1
-      @setState(sectionNum: previousVisibleIndex)
+    hasNextSection() {
+      // Returns true if a visible index exist with a higher value
+      return this.nextVisibleSectionIndex(this.state.sectionNum + 1, 1) !== -1;
+    }
 
-      # Scroll to top of section
-      @sections.scrollIntoView()
+    nextVisibleSectionIndex(index, increment) {
+      if (index < 0) {
+        return -1;
+      }
+      if (index >= this.props.contents.length) {
+        return -1;
+      }
+      const section = this.props.contents[index];
+      const isVisible = this.props.isVisible(section._id);
+      if (isVisible) {
+        return index;
+      } else {
+        return this.nextVisibleSectionIndex(index + increment, increment);
+      }
+    }
 
-    # This should never happen... simply ignore
+    handleBackSection() {
+      // Move to previous that is visible
+      const previousVisibleIndex = this.nextVisibleSectionIndex(this.state.sectionNum - 1, -1);
+      if (previousVisibleIndex !== -1) {
+        this.setState({sectionNum: previousVisibleIndex});
 
-  handleNextSection: =>
-    result = await @itemListComponent.validate(true)
-    if result
-      return
+        // Scroll to top of section
+        return this.sections.scrollIntoView();
+      }
+    }
 
-    # Move to next that is visible
-    nextVisibleIndex = @nextVisibleSectionIndex(@state.sectionNum + 1, 1)
-    if nextVisibleIndex != -1
-      @setState(sectionNum: nextVisibleIndex)
+      // This should never happen... simply ignore
 
-      # Scroll to top of section
-      @sections.scrollIntoView()
+    handleNextSection = async () => {
+      const result = await this.itemListComponent.validate(true);
+      if (result) {
+        return;
+      }
+
+      // Move to next that is visible
+      const nextVisibleIndex = this.nextVisibleSectionIndex(this.state.sectionNum + 1, 1);
+      if (nextVisibleIndex !== -1) {
+        this.setState({sectionNum: nextVisibleIndex});
+
+        // Scroll to top of section
+        return this.sections.scrollIntoView();
+      }
+    };
       
-    # This should never happen... simply ignore
+      // This should never happen... simply ignore
 
-  handleBreadcrumbClick: (index) =>
-    @setState(sectionNum: index)
+    handleBreadcrumbClick(index) {
+      return this.setState({sectionNum: index});
+    }
 
-  handleItemListNext: () =>
-    @nextOrSubmit.focus()
+    handleItemListNext() {
+      return this.nextOrSubmit.focus();
+    }
 
-  renderBreadcrumbs: ->
-    breadcrumbs = []
-    index = 0
-    while index < @state.sectionNum
-      section = @props.contents[index]
-      visible = @props.isVisible(section._id)
-      breadcrumbs.push R 'li', {key: index},
-        R 'b', null,
-          if visible
-            R 'a', {className: "section-crumb", disabled: not visible, onClick: @handleBreadcrumbClick.bind(this, index)},
-              "#{index + 1}."
-          else
-            "#{index + 1}."
-      index++
+    renderBreadcrumbs() {
+      const breadcrumbs = [];
+      let index = 0;
+      while (index < this.state.sectionNum) {
+        const section = this.props.contents[index];
+        const visible = this.props.isVisible(section._id);
+        breadcrumbs.push(R('li', {key: index},
+          R('b', null,
+            visible ?
+              R('a', {className: "section-crumb", disabled: !visible, onClick: this.handleBreadcrumbClick.bind(this, index)},
+                `${index + 1}.`)
+            :
+              `${index + 1}.`
+          )
+        )
+        );
+        index++;
+      }
 
-    currentSectionName = formUtils.localizeString(@props.contents[@state.sectionNum].name, @context.locale)
-    breadcrumbs.push R 'li', {key: @state.sectionNum},
-      R 'b', null,
-        "#{@state.sectionNum + 1}. #{currentSectionName}"
+      const currentSectionName = formUtils.localizeString(this.props.contents[this.state.sectionNum].name, this.context.locale);
+      breadcrumbs.push(R('li', {key: this.state.sectionNum},
+        R('b', null,
+          `${this.state.sectionNum + 1}. ${currentSectionName}`)
+      )
+      );
 
-    return R 'ul', className: "breadcrumb",
-      breadcrumbs
+      return R('ul', {className: "breadcrumb"},
+        breadcrumbs);
+    }
 
-  renderSection: ->
-    section = @props.contents[@state.sectionNum]
+    renderSection() {
+      const section = this.props.contents[this.state.sectionNum];
 
-    R 'div', key: section._id,
-      R 'h3', null, formUtils.localizeString(section.name, @context.locale)
+      return R('div', {key: section._id},
+        R('h3', null, formUtils.localizeString(section.name, this.context.locale)),
 
-      R ItemListComponent, 
-        ref: ((c) => @itemListComponent = c)
-        contents: section.contents
-        data: @props.data
-        onDataChange: @props.onDataChange
-        isVisible: @props.isVisible
-        responseRow: @props.responseRow
-        onNext: @handleItemListNext
-        schema: @props.schema
+        R(ItemListComponent, { 
+          ref: (c => { return this.itemListComponent = c; }),
+          contents: section.contents,
+          data: this.props.data,
+          onDataChange: this.props.onDataChange,
+          isVisible: this.props.isVisible,
+          responseRow: this.props.responseRow,
+          onNext: this.handleItemListNext,
+          schema: this.props.schema
+        }
+        )
+      );
+    }
 
-  renderButtons: ->
-    R 'div', className: "form-controls",
-      # If can go back
-      if @hasPreviousSection()
-        [
-          R 'button', key: "back", type: "button", className: "btn btn-default", onClick: @handleBackSection,
-            R 'span', className: "glyphicon glyphicon-backward"
-            " " + @context.T("Back")
-          "\u00A0"
-        ]
+    renderButtons() {
+      return R('div', {className: "form-controls"},
+        // If can go back
+        this.hasPreviousSection() ?
+          [
+            R('button', {key: "back", type: "button", className: "btn btn-default", onClick: this.handleBackSection},
+              R('span', {className: "glyphicon glyphicon-backward"}),
+              " " + this.context.T("Back")),
+            "\u00A0"
+          ] : undefined,
 
-      # Can go forward or submit
-      if @hasNextSection()
-        R 'button', key: "next", type: "button", ref: ((c) => @nextOrSubmit = c), className: "btn btn-primary", onClick: @handleNextSection,
-          @context.T("Next") + " " 
-          R 'span', className: "glyphicon glyphicon-forward"
-      else if @props.onSubmit
-        R 'button', key: "submit", type: "button", ref: ((c) => @nextOrSubmit = c), className: "btn btn-primary", onClick: @handleSubmit,
-          @context.T("Submit")
+        // Can go forward or submit
+        (() => {
+        if (this.hasNextSection()) {
+          return R('button', {key: "next", type: "button", ref: (c => { return this.nextOrSubmit = c; }), className: "btn btn-primary", onClick: this.handleNextSection},
+            this.context.T("Next") + " ", 
+            R('span', {className: "glyphicon glyphicon-forward"}));
+        } else if (this.props.onSubmit) {
+          return R('button', {key: "submit", type: "button", ref: (c => { return this.nextOrSubmit = c; }), className: "btn btn-primary", onClick: this.handleSubmit},
+            this.context.T("Submit"));
+        }
+      })(),
 
-      "\u00A0"
+        "\u00A0",
 
-      if @props.onSaveLater
-        [
-          R 'button', key: "saveLater", type: "button", className: "btn btn-default", onClick: @props.onSaveLater,
-            @context.T("Save for Later")
-          "\u00A0"
-        ]
+        this.props.onSaveLater ?
+          [
+            R('button', {key: "saveLater", type: "button", className: "btn btn-default", onClick: this.props.onSaveLater},
+              this.context.T("Save for Later")),
+            "\u00A0"
+          ] : undefined,
 
-      if @props.onDiscard
-        R 'button', key: "discard", type:"button", className: "btn btn-default", onClick: @props.onDiscard,
-          R 'span', className: "glyphicon glyphicon-trash"
-          " " + @context.T("Discard")
+        this.props.onDiscard ?
+          R('button', {key: "discard", type:"button", className: "btn btn-default", onClick: this.props.onDiscard},
+            R('span', {className: "glyphicon glyphicon-trash"}),
+            " " + this.context.T("Discard")) : undefined
+      );
+    }
 
-  render: ->
-    R 'div', ref: ((c) => @sections = c),
-      @renderBreadcrumbs()
-      R 'div', className: "sections",
-        @renderSection()
-      @renderButtons()
+    render() {
+      return R('div', {ref: (c => { return this.sections = c; })},
+        this.renderBreadcrumbs(),
+        R('div', {className: "sections"},
+          this.renderSection()),
+        this.renderButtons());
+    }
+  };
+  SectionsComponent.initClass();
+  return SectionsComponent;
+})();

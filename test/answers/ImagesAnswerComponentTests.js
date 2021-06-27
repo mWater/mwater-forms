@@ -1,5 +1,5 @@
-# TODO: SurveyorPro: Make a component version of these tests
-###
+// TODO: SurveyorPro: Make a component version of these tests
+/*
 _ = require 'underscore'
 $ = require 'jquery'
 Backbone = require 'backbone'
@@ -24,12 +24,12 @@ class MockImageAcquirer
 
 describe 'ImagesQuestion', ->
   beforeEach ->
-    # Create model
+    * Create model
     @model = new Backbone.Model 
 
   context 'With a no image acquirer', ->
     beforeEach ->
-      # Create context
+      * Create context
       @ctx = {
         imageManager: new MockImageManager()
       }
@@ -43,7 +43,7 @@ describe 'ImagesQuestion', ->
       }
       @qview = @compiler.compileQuestion(@q).render()
 
-    # Run common tests
+    * Run common tests
     commonQuestionTestList.call(this)
 
     it 'displays no image', ->
@@ -102,7 +102,7 @@ describe 'ImagesQuestion', ->
 
   context 'With an image acquirer', ->
     beforeEach ->
-      # Create context
+      * Create context
       @ctx = {
         imageManager: new MockImageManager()
         imageAcquirer: new MockImageAcquirer()
@@ -154,5 +154,5 @@ describe 'ImagesQuestion', ->
 
       window.confirm = _oldConfirm
 
-###
+*/
         

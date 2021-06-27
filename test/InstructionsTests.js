@@ -1,5 +1,5 @@
-# TODO: SurveyorPro: Move tests to InstructionsComponent
-###
+// TODO: SurveyorPro: Move tests to InstructionsComponent
+/*
 $ = require 'jquery'
 Backbone = require 'backbone'
 Backbone.$ = $
@@ -20,4 +20,4 @@ describe "Instructions", ->
   it "renders markdown", ->
     assert.match @qview.el.outerHTML, /<em>emphasis<\/em>/    
 
-###
+*/

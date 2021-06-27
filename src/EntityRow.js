@@ -1,95 +1,115 @@
-_ = require 'lodash'
+let EntityRow;
+import _ from 'lodash';
 
-###
+/*
 
 Implements the type of row object required by mwater-expressions' PromiseExprEvaluator. Allows expressions to be evaluated
 on an entity
 
-###
-module.exports = class EntityRow
-  # Options:
-  #  entityType: e.g. "water_point"
-  #  entity: object of entity
-  #  schema: schema that includes entity type
-  #  getEntityById(entityType, entityId, callback): looks up entity
-  #    callback: called with an entity e.g. { _id: some id, a: "abc", b: 123 } or callback null if entity not found
-  constructor: (options) ->
-    @options = options
+*/
+export default EntityRow = class EntityRow {
+  // Options:
+  //  entityType: e.g. "water_point"
+  //  entity: object of entity
+  //  schema: schema that includes entity type
+  //  getEntityById(entityType, entityId, callback): looks up entity
+  //    callback: called with an entity e.g. { _id: some id, a: "abc", b: 123 } or callback null if entity not found
+  constructor(options) {
+    this.options = options;
 
-    @entityType = options.entityType
-    @entity = options.entity
-    @schema = options.schema
-    @getEntityById = options.getEntityById
+    this.entityType = options.entityType;
+    this.entity = options.entity;
+    this.schema = options.schema;
+    this.getEntityById = options.getEntityById;
+  }
 
-  # Gets primary key of row. callback is called with (error, value)
-  getPrimaryKey: () ->
-    return Promise.resolve(@entity._id)
+  // Gets primary key of row. callback is called with (error, value)
+  getPrimaryKey() {
+    return Promise.resolve(this.entity._id);
+  }
 
-  # Gets the value of a column, returning a promise
-  getField: (columnId) ->
-    # Get column (gracefully handle if no schema)
-    if @schema
-      column = @schema.getColumn("entities.#{@entityType}", columnId)
+  // Gets the value of a column, returning a promise
+  getField(columnId) {
+    // Get column (gracefully handle if no schema)
+    let column;
+    if (this.schema) {
+      column = this.schema.getColumn(`entities.${this.entityType}`, columnId);
+    }
 
-    # Get value
-    value = @entity[columnId]
+    // Get value
+    const value = this.entity[columnId];
 
-    # Handle case of column not found by just returning value
-    if not column
-      return Promise.resolve(value)
+    // Handle case of column not found by just returning value
+    if (!column) {
+      return Promise.resolve(value);
+    }
 
-    if not value?
-      return Promise.resolve(null)
+    if ((value == null)) {
+      return Promise.resolve(null);
+    }
 
-    # Simple value
-    return Promise.resolve(value)
+    // Simple value
+    return Promise.resolve(value);
+  }
 
-  followJoin: (columnId) ->
-    # Get column (gracefully handle if no schema)
-    if @schema
-      column = @schema.getColumn("entities.#{@entityType}", columnId)
+  async followJoin(columnId) {
+    // Get column (gracefully handle if no schema)
+    let column, entity, entityType;
+    if (this.schema) {
+      column = this.schema.getColumn(`entities.${this.entityType}`, columnId);
+    }
 
-    if not column
-      return null
+    if (!column) {
+      return null;
+    }
 
-    # Get value
-    value = @entity[columnId]
+    // Get value
+    const value = this.entity[columnId];
 
-    if column.type == "id"
-      # Can handle joins to another entity
-      if column.idTable.match(/^entities\./)
-        # Get the entity
-        entityType = column.idTable.substr(9)
-        entity = await new Promise((resolve, reject) => 
-          @getEntityById(entityType, value, (entity) => resolve(entity))
-        )
-        if (entity) 
+    if (column.type === "id") {
+      // Can handle joins to another entity
+      if (column.idTable.match(/^entities\./)) {
+        // Get the entity
+        entityType = column.idTable.substr(9);
+        entity = await new Promise((resolve, reject) => { 
+          return this.getEntityById(entityType, value, entity => resolve(entity));
+        });
+        if (entity) { 
           return new EntityRow({
-            entityType: entityType
-            entity: entity
-            schema: @schema
-            getEntityById: @getEntityById
-          })
-        return null
+            entityType,
+            entity,
+            schema: this.schema,
+            getEntityById: this.getEntityById
+          });
+        }
+        return null;
+      }
+    }
 
-    # This is legacy code, as newer will leave as type "id"
-    if column.type == "join"
-      # Do not support n-n, 1-n joins
-      if column.join.type in ['1-n', 'n-n']
-        return null
+    // This is legacy code, as newer will leave as type "id"
+    if (column.type === "join") {
+      // Do not support n-n, 1-n joins
+      if (['1-n', 'n-n'].includes(column.join.type)) {
+        return null;
+      }
 
-      # Can handle joins to another entity
-      if column.join.toTable.match(/^entities\./)
-        # Get the entity
-        entityType = column.join.toTable.substr(9)
-        entity = await new Promise((resolve, reject) => 
-          @getEntityById(entityType, value, (entity) => resolve(entity))
-        )
-        if (entity) 
+      // Can handle joins to another entity
+      if (column.join.toTable.match(/^entities\./)) {
+        // Get the entity
+        entityType = column.join.toTable.substr(9);
+        entity = await new Promise((resolve, reject) => { 
+          return this.getEntityById(entityType, value, entity => resolve(entity));
+        });
+        if (entity) { 
           return new EntityRow({
-            entityType: entityType
-            entity: entity
-            schema: @schema
-            getEntityById: @getEntityById
-          })
-        return null
+            entityType,
+            entity,
+            schema: this.schema,
+            getEntityById: this.getEntityById
+          });
+        }
+        return null;
+      }
+    }
+  }
+};

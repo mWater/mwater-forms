@@ -1,89 +1,100 @@
-assert = require('chai').assert
+import { assert } from 'chai';
+import TestComponent from 'react-library/lib/TestComponent';
+import ReactTestUtils from 'react-dom/test-utils';
+import NumberAnswerComponent from '../../src/answers/NumberAnswerComponent';
+import React from 'react';
+import ReactDOM from 'react-dom';
+const R = React.createElement;
 
-TestComponent = require('react-library/lib/TestComponent')
-ReactTestUtils = require('react-dom/test-utils')
+describe('NumberAnswerComponent', function() {
+  before(function() {
+    this.toDestroy = [];
 
-NumberAnswerComponent = require '../../src/answers/NumberAnswerComponent'
+    return this.render = (options = {}) => {
+      const elem = R(NumberAnswerComponent, options);
+      const comp = new TestComponent(elem);
+      this.toDestroy.push(comp);
+      return comp;
+    };
+  });
 
-React = require 'react'
-ReactDOM = require 'react-dom'
-R = React.createElement
+  afterEach(function() {
+    for (let comp of this.toDestroy) {
+      comp.destroy();
+    }
+    return this.toDestroy = [];});
 
-describe 'NumberAnswerComponent', ->
-  before ->
-    @toDestroy = []
+  it("records decimal number", function(done) {
+    const comp = this.render({
+      decimal: true,
+      onChange(value) {
+        assert.equal(value, 123.4);
+        return done();
+      }
+    });
+    const input = comp.findInput();
+    TestComponent.changeValue(input, "123.4");
+    return ReactTestUtils.Simulate.blur(input);
+  });
 
-    @render = (options = {}) =>
-      elem = R(NumberAnswerComponent, options)
-      comp = new TestComponent(elem)
-      @toDestroy.push(comp)
-      return comp
+  it("records whole number", function(done) {
+    const comp = this.render({
+      decimal: false,
+      onChange(value) {
+        assert.equal(value, 123);
+        return done();
+      }
+    });
+    const input = comp.findInput();
+    TestComponent.changeValue(input, "123");
+    return ReactTestUtils.Simulate.blur(input);
+  });
 
-  afterEach ->
-    for comp in @toDestroy
-      comp.destroy()
-    @toDestroy = []
+  it("enforces decimal number", function(done) {
+    const comp = this.render({
+      decimal: true,
+      onChange(value) {
+        assert.equal(value, null);
+        return done();
+      }
+    });
+    const input = comp.findInput();
+    TestComponent.changeValue(input, "123.4abc");
+    return ReactTestUtils.Simulate.blur(input);
+  });
 
-  it "records decimal number", (done) ->
-    comp = @render({
-      decimal: true
-      onChange: (value) ->
-        assert.equal value, 123.4
-        done()
-    })
-    input = comp.findInput()
-    TestComponent.changeValue(input, "123.4")
-    ReactTestUtils.Simulate.blur(input)
+  it("enforces whole number", function(done) {
+    const comp = this.render({
+      decimal: false,
+      onChange(value) {
+        return assert.fail();
+      }
+    });
+    const input = comp.findInput();
+    TestComponent.changeValue(input, "123.4");
+    ReactTestUtils.Simulate.blur(input);
+    return done();
+  });
 
-  it "records whole number", (done) ->
-    comp = @render({
-      decimal: false
-      onChange: (value) ->
-        assert.equal value, 123
-        done()
-    })
-    input = comp.findInput()
-    TestComponent.changeValue(input, "123")
-    ReactTestUtils.Simulate.blur(input)
+  it("validates decimal number", function() {
+    const comp = this.render({
+      decimal: true,
+      onChange() {}
+    });
+    const input = comp.findInput();
+    TestComponent.changeValue(input, "123.4");
+    ReactTestUtils.Simulate.blur(input);
+    return assert(!comp.getComponent().validate());
+  });
 
-  it "enforces decimal number", (done) ->
-    comp = @render({
-      decimal: true
-      onChange: (value) ->
-        assert.equal value, null
-        done()
-    })
-    input = comp.findInput()
-    TestComponent.changeValue(input, "123.4abc")
-    ReactTestUtils.Simulate.blur(input)
-
-  it "enforces whole number", (done) ->
-    comp = @render({
-      decimal: false
-      onChange: (value) ->
-        assert.fail()
-    })
-    input = comp.findInput()
-    TestComponent.changeValue(input, "123.4")
-    ReactTestUtils.Simulate.blur(input)
-    done()
-
-  it "validates decimal number", ->
-    comp = @render({
-      decimal: true
-      onChange: ->
-    })
-    input = comp.findInput()
-    TestComponent.changeValue(input, "123.4")
-    ReactTestUtils.Simulate.blur(input)
-    assert not comp.getComponent().validate()
-
-  it "fails validation if invalid whole number", ->
-    comp = @render({
-      decimal: false
-      onChange: ->
-    })
-    input = comp.findInput()
-    TestComponent.changeValue(input, "123abc")
-    ReactTestUtils.Simulate.blur(input)
-    assert comp.getComponent().validate()
+  return it("fails validation if invalid whole number", function() {
+    const comp = this.render({
+      decimal: false,
+      onChange() {}
+    });
+    const input = comp.findInput();
+    TestComponent.changeValue(input, "123abc");
+    ReactTestUtils.Simulate.blur(input);
+    return assert(comp.getComponent().validate());
+  });
+});

@@ -1,88 +1,105 @@
-_ = require 'lodash'
-formUtils = require './formUtils'
+import _ from 'lodash';
+import formUtils from './formUtils';
+import React from 'react';
+const R = React.createElement;
 
-React = require 'react'
-R = React.createElement
+import QuestionComponent from './QuestionComponent';
+import InstructionsComponent from './InstructionsComponent';
+import TimerComponent from './TimerComponent';
+import GroupComponent from './GroupComponent';
+import RosterGroupComponent from './RosterGroupComponent';
+import RosterMatrixComponent from './RosterMatrixComponent';
 
-QuestionComponent = require './QuestionComponent'
-InstructionsComponent = require './InstructionsComponent'
-TimerComponent = require './TimerComponent'
-GroupComponent = require './GroupComponent'
-RosterGroupComponent = require './RosterGroupComponent'
-RosterMatrixComponent = require './RosterMatrixComponent'
+// Render an item, given its data, visibility function, etc.
+export function renderItem(item, data, responseRow, schema, onDataChange, isVisible, onNext, ref) {
+  const handleAnswerChange = (id, answer) => {
+    const change = {};
+    change[id] = answer;
+    return onDataChange(_.extend({}, data, change));
+  };
 
-# Render an item, given its data, visibility function, etc.
-exports.renderItem = (item, data, responseRow, schema, onDataChange, isVisible, onNext, ref) ->
-  handleAnswerChange = (id, answer) =>
-    change = {}
-    change[id] = answer
-    onDataChange(_.extend({}, data, change))
-
-  if formUtils.isQuestion(item)
-    component = R QuestionComponent,
+  if (formUtils.isQuestion(item)) {
+    let component;
+    return component = R(QuestionComponent, {
       key: item._id,
-      ref: ref
-      question: item
-      onAnswerChange: handleAnswerChange.bind(null, item._id)
-      data: data
-      responseRow: responseRow
-      schema: schema
-      onNext: onNext
-  else if item._type == "Instructions"
-    return R InstructionsComponent,
+      ref,
+      question: item,
+      onAnswerChange: handleAnswerChange.bind(null, item._id),
+      data,
+      responseRow,
+      schema,
+      onNext
+    }
+    );
+  } else if (item._type === "Instructions") {
+    return R(InstructionsComponent, {
       key: item._id,
-      ref: ref
-      instructions: item
-      data: data
-      responseRow: responseRow
-      schema: schema
-  else if item._type == "Timer"
-    return R TimerComponent,
+      ref,
+      instructions: item,
+      data,
+      responseRow,
+      schema
+    }
+    );
+  } else if (item._type === "Timer") {
+    return R(TimerComponent, {
       key: item._id,
-      ref: ref
+      ref,
       timer: item
-  else if item._type == "Group"
-    return R GroupComponent,
+    }
+    );
+  } else if (item._type === "Group") {
+    return R(GroupComponent, {
       key: item._id,
-      ref: ref
-      group: item
-      data: data
-      onDataChange: onDataChange
-      responseRow: responseRow
-      schema: schema
-      isVisible: isVisible
-      onNext: onNext
-  else if item._type == "RosterGroup"
-    return R RosterGroupComponent,
+      ref,
+      group: item,
+      data,
+      onDataChange,
+      responseRow,
+      schema,
+      isVisible,
+      onNext
+    }
+    );
+  } else if (item._type === "RosterGroup") {
+    return R(RosterGroupComponent, {
       key: item._id,
-      ref: ref
-      rosterGroup: item
-      data: data
-      onDataChange: onDataChange
-      responseRow: responseRow
-      schema: schema
-      isVisible: isVisible
-  else if item._type == "RosterMatrix"
-    return R RosterMatrixComponent,
+      ref,
+      rosterGroup: item,
+      data,
+      onDataChange,
+      responseRow,
+      schema,
+      isVisible
+    }
+    );
+  } else if (item._type === "RosterMatrix") {
+    return R(RosterMatrixComponent, {
       key: item._id,
-      ref: ref
-      rosterMatrix: item
-      data: data
-      onDataChange: onDataChange
-      schema: schema
-      responseRow: responseRow
-      isVisible: isVisible
-  else if item._type == "Section"
-    # Sections are not usually rendered like this, except when in single-page mode. In which case, render as a group
-    return R GroupComponent,
+      ref,
+      rosterMatrix: item,
+      data,
+      onDataChange,
+      schema,
+      responseRow,
+      isVisible
+    }
+    );
+  } else if (item._type === "Section") {
+    // Sections are not usually rendered like this, except when in single-page mode. In which case, render as a group
+    return R(GroupComponent, {
       key: item._id,
-      ref: ref
-      group: item
-      data: data
-      onDataChange: onDataChange
-      responseRow: responseRow
-      schema: schema
-      isVisible: isVisible
-      onNext: onNext
-  else
-    throw new Error("Unknown item of type #{item._type}")
+      ref,
+      group: item,
+      data,
+      onDataChange,
+      responseRow,
+      schema,
+      isVisible,
+      onNext
+    }
+    );
+  } else {
+    throw new Error(`Unknown item of type ${item._type}`);
+  }
+}

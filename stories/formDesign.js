@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   "name": {
     "en": "Archives Test Survey",
     "_base": "en"
@@ -154,4 +154,4 @@ module.exports = {
       "conditions": []
     }
   ]
-}
+};

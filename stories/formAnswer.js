@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   "219ec736b2574009a743ff5a0c8b766a": [
     {
       "_id": "e271b3a5fa4d473a918839f7272e2933",
@@ -67,4 +67,4 @@ module.exports = {
       }
     }
   ]
-}
+};

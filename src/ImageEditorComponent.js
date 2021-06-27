@@ -1,32 +1,47 @@
-PropTypes = require('prop-types')
-React = require 'react'
-R = React.createElement
-ImageAnswerComponent = require './answers/ImageAnswerComponent'
+let ImageEditorComponent;
+import PropTypes from 'prop-types';
+import React from 'react';
+const R = React.createElement;
+import ImageAnswerComponent from './answers/ImageAnswerComponent';
 
-# Edit an image 
-module.exports = class ImageEditorComponent extends React.Component
-  @propTypes:
-    imageManager: PropTypes.object.isRequired
-    imageAcquirer: PropTypes.object
-    image: PropTypes.object             # e.g. { id: someid, caption: caption }
-    onImageChange: PropTypes.func       # Called when image changed
-    T: PropTypes.func.isRequired        # Localizer to use
-    consentPrompt: PropTypes.string    # Question to prompt for consent
-
-  @childContextTypes:
-    imageManager: PropTypes.object.isRequired
-    imageAcquirer: PropTypes.object
-    T: PropTypes.func.isRequired  # Localizer to use
-
-  getChildContext: -> 
-    {
-      imageManager: @props.imageManager
-      imageAcquirer: @props.imageAcquirer
-      T: @props.T
+// Edit an image 
+export default ImageEditorComponent = (function() {
+  ImageEditorComponent = class ImageEditorComponent extends React.Component {
+    static initClass() {
+      this.propTypes = {
+        imageManager: PropTypes.object.isRequired,
+        imageAcquirer: PropTypes.object,
+        image: PropTypes.object,             // e.g. { id: someid, caption: caption }
+        onImageChange: PropTypes.func,       // Called when image changed
+        T: PropTypes.func.isRequired,        // Localizer to use
+        consentPrompt: PropTypes.string    // Question to prompt for consent
+      };
+  
+      this.childContextTypes = {
+        imageManager: PropTypes.object.isRequired,
+        imageAcquirer: PropTypes.object,
+        T: PropTypes.func.isRequired
+      };
+        // Localizer to use
     }
 
-  render: ->
-    R ImageAnswerComponent, 
-      image: @props.image
-      onImageChange: @props.onImageChange
-      consentPrompt: @props.consentPrompt
+    getChildContext() { 
+      return {
+        imageManager: this.props.imageManager,
+        imageAcquirer: this.props.imageAcquirer,
+        T: this.props.T
+      };
+    }
+
+    render() {
+      return R(ImageAnswerComponent, { 
+        image: this.props.image,
+        onImageChange: this.props.onImageChange,
+        consentPrompt: this.props.consentPrompt
+      }
+      );
+    }
+  };
+  ImageEditorComponent.initClass();
+  return ImageEditorComponent;
+})();

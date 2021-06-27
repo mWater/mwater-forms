@@ -1,161 +1,193 @@
-_ = require 'lodash'
-PropTypes = require('prop-types')
-React = require 'react'
-R = React.createElement
+let MatrixAnswerComponent;
+import _ from 'lodash';
+import PropTypes from 'prop-types';
+import React from 'react';
+const R = React.createElement;
 
-formUtils = require '../formUtils'
-MatrixColumnCellComponent = require '../MatrixColumnCellComponent'
+import formUtils from '../formUtils';
+import MatrixColumnCellComponent from '../MatrixColumnCellComponent';
+import ValidationCompiler from './ValidationCompiler';
 
-ValidationCompiler = require './ValidationCompiler'
-
-# Matrix with columns and items
-module.exports = class MatrixAnswerComponent extends React.Component
-  @contextTypes:
-    locale: PropTypes.string  # Current locale (e.g. "en")
-
-  @propTypes:
-    items: PropTypes.arrayOf(PropTypes.shape({
-      # Unique (within the question) id of the item. Cannot be "na" or "dontknow" as they are reserved for alternates
-      id: PropTypes.string.isRequired
-
-      # Label of the choice, localized
-      label: PropTypes.object.isRequired
-
-      # Hint associated with a choice
-      hint: PropTypes.object
-    })).isRequired
-
-    # Array of matrix columns
-    columns: PropTypes.array.isRequired
-
-    value: PropTypes.object                    # See answer format
-    onValueChange: PropTypes.func.isRequired
-    alternate: PropTypes.string                # Alternate value if selected
-
-    data: PropTypes.object      # Current data of response (for roster entry if in roster)
-    responseRow: PropTypes.object    # ResponseRow object (for roster entry if in roster)
-    schema: PropTypes.object.isRequired  # Schema to use, including form
-
-  constructor: (props) ->
-    super(props)
-
-    @state = {
-      validationErrors: {}  # Map of "<item.id>_<column.id>" to validation error
+// Matrix with columns and items
+export default MatrixAnswerComponent = (function() {
+  MatrixAnswerComponent = class MatrixAnswerComponent extends React.Component {
+    static initClass() {
+      this.contextTypes =
+        {locale: PropTypes.string};  // Current locale (e.g. "en")
+  
+      this.propTypes = {
+        items: PropTypes.arrayOf(PropTypes.shape({
+          // Unique (within the question) id of the item. Cannot be "na" or "dontknow" as they are reserved for alternates
+          id: PropTypes.string.isRequired,
+  
+          // Label of the choice, localized
+          label: PropTypes.object.isRequired,
+  
+          // Hint associated with a choice
+          hint: PropTypes.object
+        })).isRequired,
+  
+        // Array of matrix columns
+        columns: PropTypes.array.isRequired,
+  
+        value: PropTypes.object,                    // See answer format
+        onValueChange: PropTypes.func.isRequired,
+        alternate: PropTypes.string,                // Alternate value if selected
+  
+        data: PropTypes.object,      // Current data of response (for roster entry if in roster)
+        responseRow: PropTypes.object,    // ResponseRow object (for roster entry if in roster)
+        schema: PropTypes.object.isRequired
+      };
+        // Schema to use, including form
     }
 
-  focus: () ->
-    # TODO
-    null
+    constructor(props) {
+      this.handleCellChange = this.handleCellChange.bind(this);
+      super(props);
 
-  # Validate a matrix answer. Returns true if invalid was found, false otherwise
-  validate: ->
-    # Alternate selected means cannot be invalid
-    if @props.alternate
-      return false
+      this.state = {
+        validationErrors: {}  // Map of "<item.id>_<column.id>" to validation error
+      };
+    }
 
-    validationErrors = {}
+    focus() {
+      // TODO
+      return null;
+    }
 
-    # Important to let know the caller if something has been found (so it can scrollToFirst properly)
-    foundInvalid = false
+    // Validate a matrix answer. Returns true if invalid was found, false otherwise
+    validate() {
+      // Alternate selected means cannot be invalid
+      if (this.props.alternate) {
+        return false;
+      }
 
-    # For each entry
-    for item, rowIndex in @props.items
-      # For each column
-      for column, columnIndex in @props.columns
-        key = "#{item.id}_#{column._id}"
+      const validationErrors = {};
 
-        data = @props.value?[item.id]?[column._id]
+      // Important to let know the caller if something has been found (so it can scrollToFirst properly)
+      let foundInvalid = false;
 
-        if column.required and (not data?.value? or data?.value == '')
-          foundInvalid = true
-          validationErrors[key] = true
-          continue
+      // For each entry
+      for (let rowIndex = 0; rowIndex < this.props.items.length; rowIndex++) {
+        // For each column
+        const item = this.props.items[rowIndex];
+        for (let columnIndex = 0; columnIndex < this.props.columns.length; columnIndex++) {
+          const column = this.props.columns[columnIndex];
+          const key = `${item.id}_${column._id}`;
 
-        if column.validations and column.validations.length > 0
-          validationError = new ValidationCompiler(@context.locale).compileValidations(column.validations)(data)
-          if validationError
-            foundInvalid = true
-            validationErrors[key] = validationError
+          const data = this.props.value?.[item.id]?.[column._id];
 
-    # Save state
-    @setState(validationErrors: validationErrors)
+          if (column.required && ((data?.value == null) || (data?.value === ''))) {
+            foundInvalid = true;
+            validationErrors[key] = true;
+            continue;
+          }
 
-    return foundInvalid
+          if (column.validations && (column.validations.length > 0)) {
+            const validationError = new ValidationCompiler(this.context.locale).compileValidations(column.validations)(data);
+            if (validationError) {
+              foundInvalid = true;
+              validationErrors[key] = validationError;
+            }
+          }
+        }
+      }
 
-  handleCellChange: (item, column, answer) =>
-    matrixValue = @props.value or {}
+      // Save state
+      this.setState({validationErrors});
 
-    # Get data of the item, which is indexed by item id in the answer
-    itemData = matrixValue[item.id] or {}
+      return foundInvalid;
+    }
 
-    # Set column in item
-    change = {}
-    change[column._id] = answer
-    itemData = _.extend({}, itemData, change)
+    handleCellChange(item, column, answer) {
+      let matrixValue = this.props.value || {};
 
-    # Set item data within value
-    change = {}
-    change[item.id] = itemData
-    matrixValue = _.extend({}, matrixValue, change)
+      // Get data of the item, which is indexed by item id in the answer
+      let itemData = matrixValue[item.id] || {};
 
-    @props.onValueChange(matrixValue)
+      // Set column in item
+      let change = {};
+      change[column._id] = answer;
+      itemData = _.extend({}, itemData, change);
 
-  renderColumnHeader: (column, index) ->
-    R 'th', key: "header:#{column._id}",
-      formUtils.localizeString(column.text, @context.locale)
+      // Set item data within value
+      change = {};
+      change[item.id] = itemData;
+      matrixValue = _.extend({}, matrixValue, change);
 
-      # Required star
-      if column.required
-        R 'span', className: "required", "*"
+      return this.props.onValueChange(matrixValue);
+    }
 
-  # Render the header row
-  renderHeader: ->
-    R 'thead', null,
-      R 'tr', null,
-        # First item
-        R('th', null)
-        _.map(@props.columns, (column, index) => @renderColumnHeader(column, index))
+    renderColumnHeader(column, index) {
+      return R('th', {key: `header:${column._id}`},
+        formUtils.localizeString(column.text, this.context.locale),
 
-  renderCell: (item, itemIndex, column, columnIndex) ->
-    matrixValue = @props.value or {}
+        // Required star
+        column.required ?
+          R('span', {className: "required"}, "*") : undefined
+      );
+    }
 
-    # Get data of the item, which is indexed by item id in the answer
-    itemData = matrixValue[item.id] or {}
+    // Render the header row
+    renderHeader() {
+      return R('thead', null,
+        R('tr', null,
+          // First item
+          R('th', null),
+          _.map(this.props.columns, (column, index) => this.renderColumnHeader(column, index)))
+      );
+    }
 
-    # Get cell answer which is inside the item data, indexed by column id
-    cellAnswer = itemData[column._id] or {}
+    renderCell(item, itemIndex, column, columnIndex) {
+      const matrixValue = this.props.value || {};
 
-    # Determine if invalid
-    key = "#{item.id}_#{column._id}"
-    invalid = @state.validationErrors[key]
+      // Get data of the item, which is indexed by item id in the answer
+      const itemData = matrixValue[item.id] || {};
 
-    # Render cell
-    return R MatrixColumnCellComponent, 
-      key: column._id
-      column: column
-      data: @props.data
-      responseRow: @props.responseRow
-      answer: cellAnswer
-      onAnswerChange: @handleCellChange.bind(null, item, column)
-      invalid: invalid?
-      schema: @props.schema
+      // Get cell answer which is inside the item data, indexed by column id
+      const cellAnswer = itemData[column._id] || {};
 
-  renderItem: (item, index) ->
-    R 'tr', key: index,
-      R 'td', key: "_item", 
-        R 'label', null, formUtils.localizeString(item.label, @context.locale)
-        if item.hint
-          [
-            R('br')
-            R 'div', className: "text-muted", formUtils.localizeString(item.hint, @context.locale)
-          ]
-      _.map @props.columns, (column, columnIndex) => @renderCell(item, index, column, columnIndex)
+      // Determine if invalid
+      const key = `${item.id}_${column._id}`;
+      const invalid = this.state.validationErrors[key];
 
-  render: ->
-    # Create table
-    # borderCollapse is set to separate (overriding bootstrap table value), so that we can properly see the validation
-    # error borders (or else the top one of the first row is missing since it's being collapsed with the th border)
-    R 'table', className: "table", style: {borderCollapse: 'separate'},
-      @renderHeader()
-      R 'tbody', null,
-        _.map(@props.items, (item, index) => @renderItem(item, index))
+      // Render cell
+      return R(MatrixColumnCellComponent, { 
+        key: column._id,
+        column,
+        data: this.props.data,
+        responseRow: this.props.responseRow,
+        answer: cellAnswer,
+        onAnswerChange: this.handleCellChange.bind(null, item, column),
+        invalid: (invalid != null),
+        schema: this.props.schema
+      }
+      );
+    }
+
+    renderItem(item, index) {
+      return R('tr', {key: index},
+        R('td', {key: "_item"}, 
+          R('label', null, formUtils.localizeString(item.label, this.context.locale)),
+          item.hint ?
+            [
+              R('br'),
+              R('div', {className: "text-muted"}, formUtils.localizeString(item.hint, this.context.locale))
+            ] : undefined),
+        _.map(this.props.columns, (column, columnIndex) => this.renderCell(item, index, column, columnIndex)));
+    }
+
+    render() {
+      // Create table
+      // borderCollapse is set to separate (overriding bootstrap table value), so that we can properly see the validation
+      // error borders (or else the top one of the first row is missing since it's being collapsed with the th border)
+      return R('table', {className: "table", style: {borderCollapse: 'separate'}},
+        this.renderHeader(),
+        R('tbody', null,
+          _.map(this.props.items, (item, index) => this.renderItem(item, index)))
+      );
+    }
+  };
+  MatrixAnswerComponent.initClass();
+  return MatrixAnswerComponent;
+})();

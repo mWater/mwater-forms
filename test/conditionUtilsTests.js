@@ -1,493 +1,597 @@
-_ = require 'lodash'
-assert = require('chai').assert
-conditionUtils = require '../src/conditionUtils'
+import _ from 'lodash';
+import { assert } from 'chai';
+import conditionUtils from '../src/conditionUtils';
 
-describe "conditionUtils", ->
-  describe 'compileCondition', ->
-    beforeEach ->
-      @compileCondition = (lhs, op, rhs) =>
-        cond = {
-          lhs: { question: "lhsid" }
-          op: op
-          rhs: if rhs? then { literal: rhs } else undefined
-        }
-        return conditionUtils.compileCondition(cond)
+describe("conditionUtils", function() {
+  describe('compileCondition', function() {
+    beforeEach(function() {
+      this.compileCondition = (lhs, op, rhs) => {
+        const cond = {
+          lhs: { question: "lhsid" },
+          op,
+          rhs: (rhs != null) ? { literal: rhs } : undefined
+        };
+        return conditionUtils.compileCondition(cond);
+      };
 
-      # lhsExtras is stuff to add to answer of lhs question
-      @testTrue = (lhs, op, rhs, lhsExtras={}) =>
-        data = {lhsid: _.extend({ value: lhs }, lhsExtras)}
-        condition = @compileCondition(lhs, op, rhs, lhsExtras)
-        assert.isTrue condition(data)
+      // lhsExtras is stuff to add to answer of lhs question
+      this.testTrue = (lhs, op, rhs, lhsExtras={}) => {
+        const data = {lhsid: _.extend({ value: lhs }, lhsExtras)};
+        const condition = this.compileCondition(lhs, op, rhs, lhsExtras);
+        return assert.isTrue(condition(data));
+      };
 
-      # lhsExtras is stuff to add to answer of lhs question
-      @testFalse = (lhs, op, rhs, lhsExtras={}) =>
-        data = {lhsid: _.extend({ value: lhs }, lhsExtras)}
-        condition = @compileCondition(lhs, op, rhs, lhsExtras)
-        assert.isFalse condition(data)
+      // lhsExtras is stuff to add to answer of lhs question
+      return this.testFalse = (lhs, op, rhs, lhsExtras={}) => {
+        const data = {lhsid: _.extend({ value: lhs }, lhsExtras)};
+        const condition = this.compileCondition(lhs, op, rhs, lhsExtras);
+        return assert.isFalse(condition(data));
+      };
+    });
 
-    describe "present", ->
-      it "handles null", ->
-        @testFalse(null, "present")
+    describe("present", function() {
+      it("handles null", function() {
+        return this.testFalse(null, "present");
+      });
 
-      it "handles zero", ->
-        @testTrue(0, "present")
+      it("handles zero", function() {
+        return this.testTrue(0, "present");
+      });
 
-      it "handles empty string", ->
-        @testTrue("abc", "present")
-        @testFalse("", "present")
+      it("handles empty string", function() {
+        this.testTrue("abc", "present");
+        return this.testFalse("", "present");
+      });
 
-      it "handles empty list", ->
-        @testTrue([""], "present")
-        @testFalse([], "present")
+      it("handles empty list", function() {
+        this.testTrue([""], "present");
+        return this.testFalse([], "present");
+      });
 
-      it "handles empty objects", ->
-        @testTrue({something: 'value'}, "present")
-        @testFalse({something: null}, "present")
-        @testFalse({}, "present")
+      return it("handles empty objects", function() {
+        this.testTrue({something: 'value'}, "present");
+        this.testFalse({something: null}, "present");
+        return this.testFalse({}, "present");
+      });
+    });
 
-    describe "!present", ->
-      it "handles zero", ->
-        @testFalse(0, "!present")
+    describe("!present", function() {
+      it("handles zero", function() {
+        return this.testFalse(0, "!present");
+      });
 
-      it "handles null", ->
-        @testTrue(null, "!present")
+      it("handles null", function() {
+        return this.testTrue(null, "!present");
+      });
 
-      it "handles empty string", ->
-        @testTrue("", "!present")
-        @testFalse("abc", "!present")
+      it("handles empty string", function() {
+        this.testTrue("", "!present");
+        return this.testFalse("abc", "!present");
+      });
 
-      it "handles empty list", ->
-        @testTrue([], "!present")
-        @testFalse([""], "!present")
+      it("handles empty list", function() {
+        this.testTrue([], "!present");
+        return this.testFalse([""], "!present");
+      });
 
-      it "handles empty objects", ->
-        @testFalse({something: 'value'}, "!present")
-        @testTrue({something: null}, "!present")
-        @testTrue({}, "!present")
+      return it("handles empty objects", function() {
+        this.testFalse({something: 'value'}, "!present");
+        this.testTrue({something: null}, "!present");
+        return this.testTrue({}, "!present");
+      });
+    });
 
-    it "compiles contains", ->
-      @testTrue("abc", "contains", "ab")
-      @testFalse("abc", "contains", "abcd")
+    it("compiles contains", function() {
+      this.testTrue("abc", "contains", "ab");
+      return this.testFalse("abc", "contains", "abcd");
+    });
 
-    it "compiles !contains", ->
-      @testFalse("abc", "!contains", "ab")
-      @testTrue("abc", "!contains", "abcd")
+    it("compiles !contains", function() {
+      this.testFalse("abc", "!contains", "ab");
+      return this.testTrue("abc", "!contains", "abcd");
+    });
 
-    it "compiles =", ->
-      @testTrue(3, "=", 3)
-      @testFalse(3, "=", 4)
+    it("compiles =", function() {
+      this.testTrue(3, "=", 3);
+      return this.testFalse(3, "=", 4);
+    });
 
-    it "compiles !=", ->
-      @testTrue(3, "!=", 4)
-      @testFalse(3, "!=", 3)
+    it("compiles !=", function() {
+      this.testTrue(3, "!=", 4);
+      return this.testFalse(3, "!=", 3);
+    });
 
-    it "compiles >", ->
-      @testTrue(3, ">", 2)
-      @testFalse(3, ">", 3)
+    it("compiles >", function() {
+      this.testTrue(3, ">", 2);
+      return this.testFalse(3, ">", 3);
+    });
 
-    it "compiles <", ->
-      @testTrue(2, "<", 3)
-      @testFalse(3, "<", 3)
+    it("compiles <", function() {
+      this.testTrue(2, "<", 3);
+      return this.testFalse(3, "<", 3);
+    });
 
-    it "compiles is", ->
-      @testTrue("id1", "is", "id1")
-      @testFalse("id1", "is", "id2")
+    it("compiles is", function() {
+      this.testTrue("id1", "is", "id1");
+      return this.testFalse("id1", "is", "id2");
+    });
 
-    it "compiles isnt", ->
-      @testTrue("id1", "isnt", "id2")
-      @testFalse("id1", "isnt", "id1")
+    it("compiles isnt", function() {
+      this.testTrue("id1", "isnt", "id2");
+      return this.testFalse("id1", "isnt", "id1");
+    });
 
-    it "compiles includes", ->
-      @testTrue(["id1", "id2"], "includes", "id1")
-      @testFalse(["id1", "id2"], "includes", "id3")
+    it("compiles includes", function() {
+      this.testTrue(["id1", "id2"], "includes", "id1");
+      return this.testFalse(["id1", "id2"], "includes", "id3");
+    });
 
-    it "compiles !includes", ->
-      @testTrue(["id1", "id2"], "!includes", "id3")
-      @testFalse(["id1", "id2"], "!includes", "id2")
+    it("compiles !includes", function() {
+      this.testTrue(["id1", "id2"], "!includes", "id3");
+      return this.testFalse(["id1", "id2"], "!includes", "id2");
+    });
 
-    it "compiles before", ->
-      @testTrue("2014-03-31", "before", "2014-04-01")
-      @testFalse("2014-03-31", "before", "2014-03-31")
+    it("compiles before", function() {
+      this.testTrue("2014-03-31", "before", "2014-04-01");
+      return this.testFalse("2014-03-31", "before", "2014-03-31");
+    });
 
-    it "compiles after", ->
-      @testTrue("2014-03-31", "after", "2014-03-30")
-      @testFalse("2014-03-31", "after", "2014-03-31")
+    it("compiles after", function() {
+      this.testTrue("2014-03-31", "after", "2014-03-30");
+      return this.testFalse("2014-03-31", "after", "2014-03-31");
+    });
 
-    it "compiles true", ->
-      @testTrue(true, "true")
-      @testFalse(false, "true")
+    it("compiles true", function() {
+      this.testTrue(true, "true");
+      return this.testFalse(false, "true");
+    });
 
-    it "compiles false", ->
-      @testTrue(false, "false")
-      @testFalse(true, "false")
-      @testTrue(undefined, "false")
-      @testTrue(null, "false")
+    it("compiles false", function() {
+      this.testTrue(false, "false");
+      this.testFalse(true, "false");
+      this.testTrue(undefined, "false");
+      return this.testTrue(null, "false");
+    });
 
-    it "compiles isoneof", ->
-      @testTrue("abc", "isoneof", ["abc", "def"])
-      @testTrue("def", "isoneof", ["abc", "def"])
-      @testFalse("xyz", "isoneof", ["abc", "def"])
+    it("compiles isoneof", function() {
+      this.testTrue("abc", "isoneof", ["abc", "def"]);
+      this.testTrue("def", "isoneof", ["abc", "def"]);
+      return this.testFalse("xyz", "isoneof", ["abc", "def"]);
+    });
 
-    it "compiles isntoneof", ->
-      @testFalse("abc", "isntoneof", ["abc", "def"])
-      @testTrue("xyz", "isntoneof", ["abc", "def"])
+    it("compiles isntoneof", function() {
+      this.testFalse("abc", "isntoneof", ["abc", "def"]);
+      return this.testTrue("xyz", "isntoneof", ["abc", "def"]);
+    });
 
-    it "compiles isoneof array", ->
-      @testTrue(["abc"], "isoneof", ["abc", "def"])
-      @testTrue(["abc", "def"], "isoneof", ["abc", "def"])
-      @testFalse(["xyz"], "isoneof", ["abc", "def"])
+    it("compiles isoneof array", function() {
+      this.testTrue(["abc"], "isoneof", ["abc", "def"]);
+      this.testTrue(["abc", "def"], "isoneof", ["abc", "def"]);
+      return this.testFalse(["xyz"], "isoneof", ["abc", "def"]);
+    });
 
-    it "compiles isntoneof array", ->
-      @testFalse(["abc"], "isntoneof", ["abc", "def"])
-      @testTrue(["xyz"], "isntoneof", ["abc", "def"])
+    it("compiles isntoneof array", function() {
+      this.testFalse(["abc"], "isntoneof", ["abc", "def"]);
+      return this.testTrue(["xyz"], "isntoneof", ["abc", "def"]);
+    });
 
-    it "compiles is alternate", ->
-      @testTrue(null, "is", "na", { alternate: "na" })
-      @testTrue(null, "is", "dontknow", { alternate: "dontknow" })
-      @testFalse(null, "is", "dontknow", { alternate: "na" })
+    it("compiles is alternate", function() {
+      this.testTrue(null, "is", "na", { alternate: "na" });
+      this.testTrue(null, "is", "dontknow", { alternate: "dontknow" });
+      return this.testFalse(null, "is", "dontknow", { alternate: "na" });
+    });
 
-    it "compiles isnt alternate", ->
-      @testFalse(null, "isnt", "na", { alternate: "na" })
-      @testFalse(null, "isnt", "dontknow", { alternate: "dontknow" })
-      @testTrue(null, "isnt", "dontknow", { alternate: "na" })
+    it("compiles isnt alternate", function() {
+      this.testFalse(null, "isnt", "na", { alternate: "na" });
+      this.testFalse(null, "isnt", "dontknow", { alternate: "dontknow" });
+      return this.testTrue(null, "isnt", "dontknow", { alternate: "na" });
+    });
 
-    it "compiles isoneof alternate", ->
-      @testTrue("abc", "isoneof", ["abc", "def"])
-      @testTrue(null, "isoneof", ["abc", "na"], { alternate: "na" } )
-      @testFalse(null, "isoneof", ["abc", "def"], { alternate: "na" } )
+    it("compiles isoneof alternate", function() {
+      this.testTrue("abc", "isoneof", ["abc", "def"]);
+      this.testTrue(null, "isoneof", ["abc", "na"], { alternate: "na" } );
+      return this.testFalse(null, "isoneof", ["abc", "def"], { alternate: "na" } );
+    });
 
-    it "compiles isntoneof alternate", ->
-      @testFalse(null, "isntoneof", ["na", "def"], { alternate: "na"})
-      @testTrue(null, "isntoneof", ["abc", "def"], { alternate: "na"})
+    it("compiles isntoneof alternate", function() {
+      this.testFalse(null, "isntoneof", ["na", "def"], { alternate: "na"});
+      return this.testTrue(null, "isntoneof", ["abc", "def"], { alternate: "na"});
+    });
 
-    it "compiles includes alternate", ->
-      @testTrue(["abc", "def"], "includes", "abc")
-      @testTrue(null, "includes", "na", { alternate: "na" } )
-      @testFalse(null, "includes", "abc", { alternate: "na" } )
+    it("compiles includes alternate", function() {
+      this.testTrue(["abc", "def"], "includes", "abc");
+      this.testTrue(null, "includes", "na", { alternate: "na" } );
+      return this.testFalse(null, "includes", "abc", { alternate: "na" } );
+    });
 
-    it "compiles !includes alternate", ->
-      @testFalse(["abc", "def"], "!includes", "abc")
-      @testFalse(null, "!includes", "na", { alternate: "na" } )
-      @testTrue(null, "!includes", "abc", { alternate: "na" } )
+    return it("compiles !includes alternate", function() {
+      this.testFalse(["abc", "def"], "!includes", "abc");
+      this.testFalse(null, "!includes", "na", { alternate: "na" } );
+      return this.testTrue(null, "!includes", "abc", { alternate: "na" } );
+    });
+  });
 
-  describe "compileConditions", ->
-    it "combines conditions", ->
-      data = {
-        lhsid1: { value: 1 }
-        lhsid2: { value: 2 }
-      }
+  describe("compileConditions", () => it("combines conditions", function() {
+    const data = {
+      lhsid1: { value: 1 },
+      lhsid2: { value: 2 }
+    };
 
-      cond1 = {
-        lhs: { question: "lhsid1" }
-        op: "="
-        rhs: { literal: 1 }
-      }
+    const cond1 = {
+      lhs: { question: "lhsid1" },
+      op: "=",
+      rhs: { literal: 1 }
+    };
 
-      cond2 = {
-        lhs: { question: "lhsid2" }
-        op: "="
-        rhs: { literal: 2 }
-      }
+    const cond2 = {
+      lhs: { question: "lhsid2" },
+      op: "=",
+      rhs: { literal: 2 }
+    };
 
-      cond = conditionUtils.compileConditions([cond1, cond2])
-      assert.isTrue cond(data)
+    const cond = conditionUtils.compileConditions([cond1, cond2]);
+    assert.isTrue(cond(data));
 
-      data["lhsid2"] = { value: 3 }
-      assert.isFalse cond(data)
+    data["lhsid2"] = { value: 3 };
+    return assert.isFalse(cond(data));
+  }));
 
-  describe "applicableOps", ->
-    it 'is correct for TextQuestion', ->
-      ops = conditionUtils.applicableOps({ _type:"TextQuestion" })
-      assert.deepEqual _.pluck(ops, "id"), ['present', '!present', 'contains', '!contains']
+  describe("applicableOps", function() {
+    it('is correct for TextQuestion', function() {
+      const ops = conditionUtils.applicableOps({ _type:"TextQuestion" });
+      return assert.deepEqual(_.pluck(ops, "id"), ['present', '!present', 'contains', '!contains']);
+  });
 
-    it 'is correct for TextColumnQuestion', ->
-      ops = conditionUtils.applicableOps({ _type:"TextColumnQuestion" })
-      assert.deepEqual _.pluck(ops, "id"), ['present', '!present', 'contains', '!contains']
+    it('is correct for TextColumnQuestion', function() {
+      const ops = conditionUtils.applicableOps({ _type:"TextColumnQuestion" });
+      return assert.deepEqual(_.pluck(ops, "id"), ['present', '!present', 'contains', '!contains']);
+  });
 
-    it 'is correct for Question with N/A alternate', ->
-      ops = conditionUtils.applicableOps({ _type:"TextQuestion", alternates: { na: true } })
-      assert.deepEqual _.pluck(ops, "id"), ['present', '!present', 'contains', '!contains', 'is', 'isnt', 'isoneof', 'isntoneof']
+    it('is correct for Question with N/A alternate', function() {
+      const ops = conditionUtils.applicableOps({ _type:"TextQuestion", alternates: { na: true } });
+      return assert.deepEqual(_.pluck(ops, "id"), ['present', '!present', 'contains', '!contains', 'is', 'isnt', 'isoneof', 'isntoneof']);
+  });
 
-    it 'is correct for Question with Dont Know alternate', ->
-      ops = conditionUtils.applicableOps({ _type:"TextQuestion", alternates: { dontknow: true } })
-      assert.deepEqual _.pluck(ops, "id"), ['present', '!present', 'contains', '!contains', 'is', 'isnt', 'isoneof', 'isntoneof']
+    it('is correct for Question with Dont Know alternate', function() {
+      const ops = conditionUtils.applicableOps({ _type:"TextQuestion", alternates: { dontknow: true } });
+      return assert.deepEqual(_.pluck(ops, "id"), ['present', '!present', 'contains', '!contains', 'is', 'isnt', 'isoneof', 'isntoneof']);
+  });
 
-    it 'is correct for NumberQuestion', ->
-      ops = conditionUtils.applicableOps({ _type:"NumberQuestion" })
-      assert.deepEqual _.pluck(ops, "id"), ['present', '!present', '=', '!=', '>', '<']
+    it('is correct for NumberQuestion', function() {
+      const ops = conditionUtils.applicableOps({ _type:"NumberQuestion" });
+      return assert.deepEqual(_.pluck(ops, "id"), ['present', '!present', '=', '!=', '>', '<']);
+  });
       
-    it 'is correct for NumberColumnQuestion', ->
-      ops = conditionUtils.applicableOps({ _type:"NumberColumnQuestion" })
-      assert.deepEqual _.pluck(ops, "id"), ['present', '!present', '=', '!=', '>', '<']
+    it('is correct for NumberColumnQuestion', function() {
+      const ops = conditionUtils.applicableOps({ _type:"NumberColumnQuestion" });
+      return assert.deepEqual(_.pluck(ops, "id"), ['present', '!present', '=', '!=', '>', '<']);
+  });
       
-    it 'is correct for DropdownQuestion', ->
-      ops = conditionUtils.applicableOps({ _type:"DropdownQuestion" })
-      assert.deepEqual _.pluck(ops, "id"), ['present', '!present', 'is', 'isnt', 'isoneof', 'isntoneof']
+    it('is correct for DropdownQuestion', function() {
+      const ops = conditionUtils.applicableOps({ _type:"DropdownQuestion" });
+      return assert.deepEqual(_.pluck(ops, "id"), ['present', '!present', 'is', 'isnt', 'isoneof', 'isntoneof']);
+  });
       
-    it 'is correct for DropdowColumnnQuestion', ->
-      ops = conditionUtils.applicableOps({ _type:"DropdownColumnQuestion" })
-      assert.deepEqual _.pluck(ops, "id"), ['present', '!present', 'is', 'isnt', 'isoneof', 'isntoneof']
+    it('is correct for DropdowColumnnQuestion', function() {
+      const ops = conditionUtils.applicableOps({ _type:"DropdownColumnQuestion" });
+      return assert.deepEqual(_.pluck(ops, "id"), ['present', '!present', 'is', 'isnt', 'isoneof', 'isntoneof']);
+  });
       
-    it 'is correct for RadioQuestion', ->
-      ops = conditionUtils.applicableOps({ _type:"RadioQuestion" })
-      assert.deepEqual _.pluck(ops, "id"), ['present', '!present', 'is', 'isnt', 'isoneof', 'isntoneof']
+    it('is correct for RadioQuestion', function() {
+      const ops = conditionUtils.applicableOps({ _type:"RadioQuestion" });
+      return assert.deepEqual(_.pluck(ops, "id"), ['present', '!present', 'is', 'isnt', 'isoneof', 'isntoneof']);
+  });
 
-    it 'is correct for RadioQuestion with N/A alternate', ->
-      ops = conditionUtils.applicableOps({ _type:"RadioQuestion", alternates: { na: true }})
-      assert.deepEqual _.pluck(ops, "id"), ['present', '!present', 'is', 'isnt', 'isoneof', 'isntoneof']
+    it('is correct for RadioQuestion with N/A alternate', function() {
+      const ops = conditionUtils.applicableOps({ _type:"RadioQuestion", alternates: { na: true }});
+      return assert.deepEqual(_.pluck(ops, "id"), ['present', '!present', 'is', 'isnt', 'isoneof', 'isntoneof']);
+  });
       
-    it 'is correct for MulticheckQuestion', ->
-      ops = conditionUtils.applicableOps({ _type:"MulticheckQuestion" })
-      assert.deepEqual _.pluck(ops, "id"), ['present', '!present', 'includes', '!includes', 'isoneof', 'isntoneof']
+    it('is correct for MulticheckQuestion', function() {
+      const ops = conditionUtils.applicableOps({ _type:"MulticheckQuestion" });
+      return assert.deepEqual(_.pluck(ops, "id"), ['present', '!present', 'includes', '!includes', 'isoneof', 'isntoneof']);
+  });
 
-    it 'is correct for MulticheckQuestion with N/A alternate', ->
-      ops = conditionUtils.applicableOps({ _type:"MulticheckQuestion", alternates: { na: true } })
-      assert.deepEqual _.pluck(ops, "id"), ['present', '!present', 'includes', '!includes', 'isoneof', 'isntoneof'], "Same as does not use is/isn't"
+    it('is correct for MulticheckQuestion with N/A alternate', function() {
+      const ops = conditionUtils.applicableOps({ _type:"MulticheckQuestion", alternates: { na: true } });
+      return assert.deepEqual(_.pluck(ops, "id"), ['present', '!present', 'includes', '!includes', 'isoneof', 'isntoneof'], "Same as does not use is/isn't");
+    });
       
-    it 'is correct for DateQuestion', ->
-      ops = conditionUtils.applicableOps({ _type:"DateQuestion" })
-      assert.deepEqual _.pluck(ops, "id"), ['present', '!present', 'before', 'after']
+    it('is correct for DateQuestion', function() {
+      const ops = conditionUtils.applicableOps({ _type:"DateQuestion" });
+      return assert.deepEqual(_.pluck(ops, "id"), ['present', '!present', 'before', 'after']);
+  });
       
-    it 'is correct for UnitsQuestion', ->
-      ops = conditionUtils.applicableOps({ _type:"UnitsQuestion" })
-      assert.deepEqual _.pluck(ops, "id"), ['present', '!present']
+    it('is correct for UnitsQuestion', function() {
+      const ops = conditionUtils.applicableOps({ _type:"UnitsQuestion" });
+      return assert.deepEqual(_.pluck(ops, "id"), ['present', '!present']);
+  });
 
-    it 'is correct for LocationQuestion', ->
-      ops = conditionUtils.applicableOps({ _type:"LocationQuestion" })
-      assert.deepEqual _.pluck(ops, "id"), ['present', '!present']
+    it('is correct for LocationQuestion', function() {
+      const ops = conditionUtils.applicableOps({ _type:"LocationQuestion" });
+      return assert.deepEqual(_.pluck(ops, "id"), ['present', '!present']);
+  });
 
-    it 'is correct for ImageQuestion', ->
-      ops = conditionUtils.applicableOps({ _type:"ImageQuestion" })
-      assert.deepEqual _.pluck(ops, "id"), ['present', '!present']
+    it('is correct for ImageQuestion', function() {
+      const ops = conditionUtils.applicableOps({ _type:"ImageQuestion" });
+      return assert.deepEqual(_.pluck(ops, "id"), ['present', '!present']);
+  });
 
-    it 'is correct for ImagesQuestion', ->
-      ops = conditionUtils.applicableOps({ _type:"ImagesQuestion" })
-      assert.deepEqual _.pluck(ops, "id"), ['present', '!present']
+    it('is correct for ImagesQuestion', function() {
+      const ops = conditionUtils.applicableOps({ _type:"ImagesQuestion" });
+      return assert.deepEqual(_.pluck(ops, "id"), ['present', '!present']);
+  });
 
-    it 'is correct for TextListQuestion', ->
-      ops = conditionUtils.applicableOps({ _type:"TextListQuestion" })
-      assert.deepEqual _.pluck(ops, "id"), ['present', '!present']
+    it('is correct for TextListQuestion', function() {
+      const ops = conditionUtils.applicableOps({ _type:"TextListQuestion" });
+      return assert.deepEqual(_.pluck(ops, "id"), ['present', '!present']);
+  });
 
-    # it 'is correct for MultipleTextQuestion', ->
-    #   ops = conditionUtils.applicableOps({ _type:"MultipleTextQuestion" })
-    #   assert.deepEqual _.pluck(ops, "id"), ['present', '!present']
+    // it 'is correct for MultipleTextQuestion', ->
+    //   ops = conditionUtils.applicableOps({ _type:"MultipleTextQuestion" })
+    //   assert.deepEqual _.pluck(ops, "id"), ['present', '!present']
 
-    # it 'is correct for MultipleNumberQuestion', ->
-    #   ops = conditionUtils.applicableOps({ _type:"MultipleNumberQuestion" })
-    #   assert.deepEqual _.pluck(ops, "id"), ['present', '!present']
+    // it 'is correct for MultipleNumberQuestion', ->
+    //   ops = conditionUtils.applicableOps({ _type:"MultipleNumberQuestion" })
+    //   assert.deepEqual _.pluck(ops, "id"), ['present', '!present']
 
-    it 'is correct for CheckQuestion', ->
-      ops = conditionUtils.applicableOps({ _type:"CheckQuestion" })
-      assert.deepEqual _.pluck(ops, "id"), ['true', 'false']
+    it('is correct for CheckQuestion', function() {
+      const ops = conditionUtils.applicableOps({ _type:"CheckQuestion" });
+      return assert.deepEqual(_.pluck(ops, "id"), ['true', 'false']);
+  });
 
-    it 'is correct for CheckColumnQuestion', ->
-      ops = conditionUtils.applicableOps({ _type:"CheckColumnQuestion" })
-      assert.deepEqual _.pluck(ops, "id"), ['true', 'false']
+    return it('is correct for CheckColumnQuestion', function() {
+      const ops = conditionUtils.applicableOps({ _type:"CheckColumnQuestion" });
+      return assert.deepEqual(_.pluck(ops, "id"), ['true', 'false']);
+  });
+});
 
-  describe "rhsType", ->
-    it 'is correct for TextQuestion', ->
-      assert.equal conditionUtils.rhsType({ _type:"TextQuestion" }, "present"), null
-      assert.equal conditionUtils.rhsType({ _type:"TextQuestion" }, "contains"), "text"
+  describe("rhsType", function() {
+    it('is correct for TextQuestion', function() {
+      assert.equal(conditionUtils.rhsType({ _type:"TextQuestion" }, "present"), null);
+      return assert.equal(conditionUtils.rhsType({ _type:"TextQuestion" }, "contains"), "text");
+    });
 
-    it 'is correct for NumberQuestion', ->
-      assert.equal conditionUtils.rhsType({ _type:"NumberQuestion" }, "present"), null
-      assert.equal conditionUtils.rhsType({ _type:"NumberQuestion" }, ">"), "number"
+    it('is correct for NumberQuestion', function() {
+      assert.equal(conditionUtils.rhsType({ _type:"NumberQuestion" }, "present"), null);
+      return assert.equal(conditionUtils.rhsType({ _type:"NumberQuestion" }, ">"), "number");
+    });
 
-    it 'is correct for DropdownQuestion', ->
-      assert.equal conditionUtils.rhsType({ _type:"DropdownQuestion" }, "present"), null
-      assert.equal conditionUtils.rhsType({ _type:"DropdownQuestion" }, "is"), "choice"
-      assert.equal conditionUtils.rhsType({ _type:"DropdownQuestion" }, "isoneof"), "choices"
-      assert.equal conditionUtils.rhsType({ _type:"DropdownQuestion" }, "isntoneof"), "choices"
+    it('is correct for DropdownQuestion', function() {
+      assert.equal(conditionUtils.rhsType({ _type:"DropdownQuestion" }, "present"), null);
+      assert.equal(conditionUtils.rhsType({ _type:"DropdownQuestion" }, "is"), "choice");
+      assert.equal(conditionUtils.rhsType({ _type:"DropdownQuestion" }, "isoneof"), "choices");
+      return assert.equal(conditionUtils.rhsType({ _type:"DropdownQuestion" }, "isntoneof"), "choices");
+    });
 
-    it 'is correct for DropdownColumnQuestion', ->
-      assert.equal conditionUtils.rhsType({ _type:"DropdownColumnQuestion" }, "present"), null
-      assert.equal conditionUtils.rhsType({ _type:"DropdownColumnQuestion" }, "is"), "choice"
-      assert.equal conditionUtils.rhsType({ _type:"DropdownColumnQuestion" }, "isoneof"), "choices"
-      assert.equal conditionUtils.rhsType({ _type:"DropdownColumnQuestion" }, "isntoneof"), "choices"
+    it('is correct for DropdownColumnQuestion', function() {
+      assert.equal(conditionUtils.rhsType({ _type:"DropdownColumnQuestion" }, "present"), null);
+      assert.equal(conditionUtils.rhsType({ _type:"DropdownColumnQuestion" }, "is"), "choice");
+      assert.equal(conditionUtils.rhsType({ _type:"DropdownColumnQuestion" }, "isoneof"), "choices");
+      return assert.equal(conditionUtils.rhsType({ _type:"DropdownColumnQuestion" }, "isntoneof"), "choices");
+    });
 
-    it 'is correct for MulticheckQuestion', ->
-      assert.equal conditionUtils.rhsType({ _type:"MulticheckQuestion" }, "present"), null
-      assert.equal conditionUtils.rhsType({ _type:"MulticheckQuestion" }, "includes"), "choice"
+    return it('is correct for MulticheckQuestion', function() {
+      assert.equal(conditionUtils.rhsType({ _type:"MulticheckQuestion" }, "present"), null);
+      return assert.equal(conditionUtils.rhsType({ _type:"MulticheckQuestion" }, "includes"), "choice");
+    });
+  });
 
-  describe "rhsChoices", ->
-    it 'is correct for DropdownQuestion', ->
-      q = { 
-        _type:"DropdownQuestion"
+  describe("rhsChoices", function() {
+    it('is correct for DropdownQuestion', function() {
+      const q = { 
+        _type:"DropdownQuestion",
         choices: [
-          { id: "id1", label: { _base: "en", en: "First" }}
+          { id: "id1", label: { _base: "en", en: "First" }},
           { id: "id2", label: { _base: "es", en: "Second", es: "Segundo" }}
         ]
-      }
+      };
 
-      choices = conditionUtils.rhsChoices(q, "is")
-      assert.deepEqual choices, [{ id: "id1", text: "First"}, { id: "id2", text: "Segundo"}]
+      const choices = conditionUtils.rhsChoices(q, "is");
+      return assert.deepEqual(choices, [{ id: "id1", text: "First"}, { id: "id2", text: "Segundo"}]);
+  });
 
-    it 'is correct for DropdownQuestion with N/A', ->
-      q = { 
-        _type:"DropdownQuestion"
-        alternates: { na: true }
+    it('is correct for DropdownQuestion with N/A', function() {
+      const q = { 
+        _type:"DropdownQuestion",
+        alternates: { na: true },
         choices: [
-          { id: "id1", label: { _base: "en", en: "First" }}
+          { id: "id1", label: { _base: "en", en: "First" }},
           { id: "id2", label: { _base: "es", en: "Second", es: "Segundo" }}
         ]
-      }
+      };
 
-      choices = conditionUtils.rhsChoices(q, "is")
-      assert.deepEqual choices, [{ id: "id1", text: "First"}, { id: "id2", text: "Segundo"}, { id: "na", text: "Not Applicable"}]
+      const choices = conditionUtils.rhsChoices(q, "is");
+      return assert.deepEqual(choices, [{ id: "id1", text: "First"}, { id: "id2", text: "Segundo"}, { id: "na", text: "Not Applicable"}]);
+  });
 
-    it 'is correct for TextQuestion with N/A and Dont Know' , ->
-      q = { 
-        _type:"TextQuestion"
+    return it('is correct for TextQuestion with N/A and Dont Know' , function() {
+      const q = { 
+        _type:"TextQuestion",
         alternates: { na: true, dontknow: true }
-      }
+      };
 
-      choices = conditionUtils.rhsChoices(q, "is")
-      assert.deepEqual choices, [{ id: "dontknow", text: "Don't Know"}, { id: "na", text: "Not Applicable"}]
+      const choices = conditionUtils.rhsChoices(q, "is");
+      return assert.deepEqual(choices, [{ id: "dontknow", text: "Don't Know"}, { id: "na", text: "Not Applicable"}]);
+  });
+});
 
-  describe "validateCondition", ->
-    before ->
-      @form = {
+  describe("validateCondition", function() {
+    before(function() {
+      return this.form = {
         contents: [
-          { _id: "001", _type: "TextQuestion" }
-          { _id: "002", _type: "NumberQuestion" }
+          { _id: "001", _type: "TextQuestion" },
+          { _id: "002", _type: "NumberQuestion" },
           { 
-            _id: "003"
-            _type: "RadioQuestion"
+            _id: "003",
+            _type: "RadioQuestion",
             choices: [
-              { id: "dog", label: { _base:"en", en: "Dog"}}
+              { id: "dog", label: { _base:"en", en: "Dog"}},
               { id: "cat", label: { _base:"en", en: "Cat"}}
-            ]
+            ],
             alternates: { na: true }
           }
         ]
-      }
+      };});
 
-    it "fails for no lhs", ->
-      assert.isFalse conditionUtils.validateCondition({
-      }, @form)
+    it("fails for no lhs", function() {
+      return assert.isFalse(conditionUtils.validateCondition({
+      }, this.form)
+      );
+    });
 
-    it "fails for non-existant question", ->
-      assert.isFalse conditionUtils.validateCondition({
+    it("fails for non-existant question", function() {
+      return assert.isFalse(conditionUtils.validateCondition({
         lhs: { question : "xxx" } 
-      }, @form)
+      }, this.form)
+      );
+    });
 
-    it "fails for no op", ->
-      assert.isFalse conditionUtils.validateCondition({
+    it("fails for no op", function() {
+      return assert.isFalse(conditionUtils.validateCondition({
         lhs: { question : "001" } 
-      }, @form)
+      }, this.form)
+      );
+    });
 
-    it "fails for inappropriate op", ->
-      assert.isFalse conditionUtils.validateCondition({
-        lhs: { question : "001" }
+    it("fails for inappropriate op", function() {
+      return assert.isFalse(conditionUtils.validateCondition({
+        lhs: { question : "001" },
         op: ">" 
-      }, @form)
+      }, this.form)
+      );
+    });
 
-    it "fails for no rhs on non-unary", ->
-      assert.isFalse conditionUtils.validateCondition({
-        lhs: { question : "002" }
+    it("fails for no rhs on non-unary", function() {
+      return assert.isFalse(conditionUtils.validateCondition({
+        lhs: { question : "002" },
         op: ">"
-      }, @form)
+      }, this.form)
+      );
+    });
 
-    it "fails for wrong rhs type", ->
-      assert.isFalse conditionUtils.validateCondition({
-        lhs: { question : "002" }
-        op: ">"
+    it("fails for wrong rhs type", function() {
+      return assert.isFalse(conditionUtils.validateCondition({
+        lhs: { question : "002" },
+        op: ">",
         rhs: { literal: "xyz" }
-      }, @form)
+      }, this.form)
+      );
+    });
 
-    it "fails for non-existant id of choice", ->
-      assert.isFalse conditionUtils.validateCondition({
-        lhs: { question : "003" }
-        op: "is"
+    it("fails for non-existant id of choice", function() {
+      assert.isFalse(conditionUtils.validateCondition({
+        lhs: { question : "003" },
+        op: "is",
         rhs: { literal: "xyz" }
-        }, @form)
+        }, this.form)
+      );
 
-      assert.isTrue conditionUtils.validateCondition({
-        lhs: { question : "003" }
-        op: "is"
+      return assert.isTrue(conditionUtils.validateCondition({
+        lhs: { question : "003" },
+        op: "is",
         rhs: { literal: "dog" }
-        }, @form)
+        }, this.form)
+      );
+    });
 
-    it "fails for non-existant id of choices", ->
-      assert.isFalse conditionUtils.validateCondition({
-        lhs: { question : "003" }
-        op: "isoneof"
+    it("fails for non-existant id of choices", function() {
+      assert.isFalse(conditionUtils.validateCondition({
+        lhs: { question : "003" },
+        op: "isoneof",
         rhs: { literal: ["xyz"] }
-        }, @form)
+        }, this.form)
+      );
 
-      assert.isTrue conditionUtils.validateCondition({
-        lhs: { question : "003" }
-        op: "isoneof"
+      return assert.isTrue(conditionUtils.validateCondition({
+        lhs: { question : "003" },
+        op: "isoneof",
         rhs: { literal: ["dog"] }
-        }, @form)
+        }, this.form)
+      );
+    });
 
-    it "true for alternate id of choice", ->
-      assert.isTrue conditionUtils.validateCondition({
-        lhs: { question : "003" }
-        op: "is"
+    it("true for alternate id of choice", function() {
+      return assert.isTrue(conditionUtils.validateCondition({
+        lhs: { question : "003" },
+        op: "is",
         rhs: { literal: "na" }
-        }, @form)
+        }, this.form)
+      );
+    });
 
-    it "true for alternate id of choices", ->
-      assert.isTrue conditionUtils.validateCondition({
-        lhs: { question : "003" }
-        op: "isoneof"
+    it("true for alternate id of choices", function() {
+      return assert.isTrue(conditionUtils.validateCondition({
+        lhs: { question : "003" },
+        op: "isoneof",
         rhs: { literal: ["na"] }
-        }, @form)
+        }, this.form)
+      );
+    });
 
-    it "succeeds if ok", ->
-      assert.isTrue conditionUtils.validateCondition({
-        lhs: { question : "002" }
-        op: ">"
+    return it("succeeds if ok", function() {
+      return assert.isTrue(conditionUtils.validateCondition({
+        lhs: { question : "002" },
+        op: ">",
         rhs: { literal: 4 }
-      }, @form)
+      }, this.form)
+      );
+    });
+  });
 
 
-  describe "summarizeConditions", ->
-    before ->
-      @form = {
+  return describe("summarizeConditions", function() {
+    before(function() {
+      return this.form = {
         contents: [
-          { _id: "001", _type: "TextQuestion", text: { en: "Q1" } }
-          { _id: "002", _type: "NumberQuestion", text: { en: "Q2" } }
+          { _id: "001", _type: "TextQuestion", text: { en: "Q1" } },
+          { _id: "002", _type: "NumberQuestion", text: { en: "Q2" } },
           { 
-            _id: "003"
-            _type: "RadioQuestion"
-            text: { en: "Q3" }
+            _id: "003",
+            _type: "RadioQuestion",
+            text: { en: "Q3" },
             choices: [
-              { id: "dog", label: { _base:"en", en: "Dog"}}
+              { id: "dog", label: { _base:"en", en: "Dog"}},
               { id: "cat", label: { _base:"en", en: "Cat"}}
-            ]
+            ],
             alternates: { na: true }
           }
         ]
-      }
+      };});
 
-    it "none", ->
-      assert.equal conditionUtils.summarizeConditions([], @form), ""
+    it("none", function() {
+      return assert.equal(conditionUtils.summarizeConditions([], this.form), "");
+    });
 
-    it "unary condition", ->
-      assert.equal conditionUtils.summarizeConditions([{
-        lhs: { question : "002" }
+    it("unary condition", function() {
+      return assert.equal(conditionUtils.summarizeConditions([{
+        lhs: { question : "002" },
         op: "present"
-      }], @form), "Q2 was answered"
+      }], this.form), "Q2 was answered");
+    });
 
-    it "value rhs", ->
-      assert.equal conditionUtils.summarizeConditions([{
-        lhs: { question : "002" }
-        op: ">"
+    it("value rhs", function() {
+      return assert.equal(conditionUtils.summarizeConditions([{
+        lhs: { question : "002" },
+        op: ">",
         rhs: { literal: 4 }
-      }], @form), "Q2 is greater than 4"
+      }], this.form), "Q2 is greater than 4");
+    });
 
-    it "choice rhs", ->
-      assert.equal conditionUtils.summarizeConditions([{
-        lhs: { question : "003" }
-        op: "is"
+    it("choice rhs", function() {
+      return assert.equal(conditionUtils.summarizeConditions([{
+        lhs: { question : "003" },
+        op: "is",
         rhs: { literal: "dog" }
-      }], @form), "Q3 is Dog"
+      }], this.form), "Q3 is Dog");
+    });
 
-    it "choices rhs", ->
-      assert.equal conditionUtils.summarizeConditions([{
-        lhs: { question : "003" }
-        op: "isoneof"
+    return it("choices rhs", function() {
+      return assert.equal(conditionUtils.summarizeConditions([{
+        lhs: { question : "003" },
+        op: "isoneof",
         rhs: { literal: ["dog", "cat"] }
-      }], @form), "Q3 is one of Dog, Cat"
+      }], this.form), "Q3 is one of Dog, Cat");
+    });
+  });
+});

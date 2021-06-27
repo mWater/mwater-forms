@@ -1,90 +1,94 @@
-assert = require('chai').assert
-sinon = require 'sinon'
-RandomAskedCalculator = require '../src/RandomAskedCalculator'
+import { assert } from 'chai';
+import sinon from 'sinon';
+import RandomAskedCalculator from '../src/RandomAskedCalculator';
 
-describe 'RandomAskedCalculator', ->
-  it "sets randomAsked for a visible question", ->
-    design = {
+describe('RandomAskedCalculator', function() {
+  it("sets randomAsked for a visible question", function() {
+    const design = {
       contents: [
         {
-          _id: 'testid'
-          _type: 'TextQuestion'
+          _id: 'testid',
+          _type: 'TextQuestion',
           randomAskProbability: 0.4
         }
       ]
-    }
+    };
 
-    randomAskedCalculator = new RandomAskedCalculator(design)
-    generateRandomValue = sinon.stub(randomAskedCalculator, "generateRandomValue").returns(true)
-    visibilityStructure = { testid: true }
+    const randomAskedCalculator = new RandomAskedCalculator(design);
+    const generateRandomValue = sinon.stub(randomAskedCalculator, "generateRandomValue").returns(true);
+    const visibilityStructure = { testid: true };
 
-    newData = randomAskedCalculator.calculateRandomAsked({}, visibilityStructure)
-    assert.deepEqual newData, { testid: { randomAsked: true }}
+    const newData = randomAskedCalculator.calculateRandomAsked({}, visibilityStructure);
+    assert.deepEqual(newData, { testid: { randomAsked: true }});
 
-    assert.isTrue generateRandomValue.calledWith(0.4)
+    return assert.isTrue(generateRandomValue.calledWith(0.4));
+  });
 
-  it "doesn't set randomAsked for an invisible question", ->
-    visibilityStructure = { 'testid': false }
+  it("doesn't set randomAsked for an invisible question", function() {
+    let visibilityStructure = { 'testid': false };
 
-    design = {
+    const design = {
       contents: [
         {
-          _id: 'testid'
-          _type: 'TextQuestion'
+          _id: 'testid',
+          _type: 'TextQuestion',
           randomAskProbability: 0.4
         }
       ]
-    }
+    };
 
-    randomAskedCalculator = new RandomAskedCalculator(design)
-    generateRandomValue = sinon.stub(randomAskedCalculator, "generateRandomValue").returns(true)
-    visibilityStructure = { testid: false }
+    const randomAskedCalculator = new RandomAskedCalculator(design);
+    const generateRandomValue = sinon.stub(randomAskedCalculator, "generateRandomValue").returns(true);
+    visibilityStructure = { testid: false };
 
-    newData = randomAskedCalculator.calculateRandomAsked({}, visibilityStructure)
-    assert.deepEqual newData, {}
+    const newData = randomAskedCalculator.calculateRandomAsked({}, visibilityStructure);
+    return assert.deepEqual(newData, {});
+});
 
-  it "sets randomAsked independently for roster entries", ->
-    design = {
+  return it("sets randomAsked independently for roster entries", function() {
+    const design = {
       contents: [
         {
-          _id: 'rosterid'
-          _type: 'RosterGroup'
+          _id: 'rosterid',
+          _type: 'RosterGroup',
           contents: [
             {
-              _id: 'testid'
-              _type: 'TextQuestion'
+              _id: 'testid',
+              _type: 'TextQuestion',
               randomAskProbability: 0.4
             }
           ]
         }
       ]
-    }
+    };
 
-    randomAskedCalculator = new RandomAskedCalculator(design)
-    generateRandomValue = sinon.stub(randomAskedCalculator, "generateRandomValue")
+    const randomAskedCalculator = new RandomAskedCalculator(design);
+    const generateRandomValue = sinon.stub(randomAskedCalculator, "generateRandomValue");
 
-    # Only second one returned true
-    generateRandomValue.onFirstCall().returns(false)
-    generateRandomValue.onSecondCall().returns(true)
+    // Only second one returned true
+    generateRandomValue.onFirstCall().returns(false);
+    generateRandomValue.onSecondCall().returns(true);
 
-    visibilityStructure = { 
-      "rosterid.0.testid": true
+    const visibilityStructure = { 
+      "rosterid.0.testid": true,
       "rosterid.1.testid": true 
-    }
+    };
 
-    # Data is present for roster
-    data = {
+    // Data is present for roster
+    const data = {
       rosterid: [
-        { _id: "e0", data: {} }
+        { _id: "e0", data: {} },
         { _id: "e1", data: {} }
       ]
-    }
+    };
 
-    newData = randomAskedCalculator.calculateRandomAsked(data, visibilityStructure)
+    const newData = randomAskedCalculator.calculateRandomAsked(data, visibilityStructure);
 
-    assert.deepEqual newData, {
+    return assert.deepEqual(newData, {
       rosterid: [
-        { _id: "e0", data: { testid: { randomAsked: false }}}
+        { _id: "e0", data: { testid: { randomAsked: false }}},
         { _id: "e1", data: { testid: { randomAsked: true }}}
       ]
-    }, JSON.stringify(newData, null, 2)
+    }, JSON.stringify(newData, null, 2));
+  });
+});

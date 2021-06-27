@@ -1,27 +1,44 @@
-PropTypes = require('prop-types')
-React = require 'react'
-R = React.createElement
+let CheckAnswerComponent;
+import PropTypes from 'prop-types';
+import React from 'react';
+const R = React.createElement;
 
-formUtils = require '../formUtils'
+import formUtils from '../formUtils';
 
-# This one is very different from the other AnswerComponents since it's displayed before the title (passed has children)
-# TODO: SurveyorPro: Fix checkbox title size
+// This one is very different from the other AnswerComponents since it's displayed before the title (passed has children)
+// TODO: SurveyorPro: Fix checkbox title size
 
-module.exports = class CheckAnswerComponent extends React.Component
-  @propTypes:
-    value: PropTypes.bool
-    onValueChange: PropTypes.func.isRequired
-    label: PropTypes.object.isRequired
+export default CheckAnswerComponent = (function() {
+  CheckAnswerComponent = class CheckAnswerComponent extends React.Component {
+    constructor(...args) {
+      super(...args);
+      this.handleValueChange = this.handleValueChange.bind(this);
+    }
 
-  @defaultProps:
-    value: false
+    static initClass() {
+      this.propTypes = {
+        value: PropTypes.bool,
+        onValueChange: PropTypes.func.isRequired,
+        label: PropTypes.object.isRequired
+      };
+  
+      this.defaultProps =
+        {value: false};
+    }
 
-  focus: () ->
-    @checkbox.focus()
+    focus() {
+      return this.checkbox.focus();
+    }
 
-  handleValueChange: () =>
-    @props.onValueChange(!@props.value)
+    handleValueChange() {
+      return this.props.onValueChange(!this.props.value);
+    }
 
-  render: ->
-    R 'div', className: "choice touch-checkbox #{if @props.value then "checked" else ""}", onClick: @handleValueChange, ref: ((c) => @checkbox = c),
-      @props.children
+    render() {
+      return R('div', {className: `choice touch-checkbox ${this.props.value ? "checked" : ""}`, onClick: this.handleValueChange, ref: (c => { return this.checkbox = c; })},
+        this.props.children);
+    }
+  };
+  CheckAnswerComponent.initClass();
+  return CheckAnswerComponent;
+})();

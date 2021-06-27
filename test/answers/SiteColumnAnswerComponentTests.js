@@ -1,100 +1,122 @@
-_ = require 'lodash'
-assert = require('chai').assert
+import _ from 'lodash';
+import { assert } from 'chai';
+import TestComponent from 'react-library/lib/TestComponent';
+import ReactTestUtils from 'react-dom/test-utils';
+import SiteColumnAnswerComponent from '../../src/answers/SiteColumnAnswerComponent';
+import AnswerValidator from '../../src/answers/AnswerValidator';
+import React from 'react';
+import ReactDOM from 'react-dom';
+const R = React.createElement;
+import PropTypes from 'prop-types';
 
-TestComponent = require('react-library/lib/TestComponent')
-ReactTestUtils = require('react-dom/test-utils')
+class SiteContext extends React.Component {
+  static initClass() {
+    this.childContextTypes = {
+      selectEntity: PropTypes.func,
+      getEntityById: PropTypes.func,
+      getEntityByCode: PropTypes.func,
+      renderEntityListItemView: PropTypes.func,
+      T: PropTypes.func
+    };
+  }
 
-SiteColumnAnswerComponent = require '../../src/answers/SiteColumnAnswerComponent'
-AnswerValidator = require '../../src/answers/AnswerValidator'
+  getChildContext() {
+    return {
+      selectEntity(options) {
+        return options.callback("testid");
+      },
+      getEntityById(entityType, entityId, callback) {
+        if (entityId === "testid") {
+          return callback({
+            _id: "testid",
+            code: '10007'
+            });
+        }
+      },
+      getEntityByCode(entityType, entityCode, callback) {
+        if (entityCode === '10007') {
+          return callback({
+            _id: "testid",
+            code: '10007'
+          });
+        }
+      },
+      renderEntityListItemView(entityType, entity) {
+        return R('div', null, entity.code);
+      },
+      T(str) { return str; }
+    };
+  }
 
-React = require 'react'
-ReactDOM = require 'react-dom'
-R = React.createElement
-PropTypes = require('prop-types')
+  render() {
+    return this.props.children;
+  }
+}
+SiteContext.initClass();
 
-class SiteContext extends React.Component
-  @childContextTypes:
-    selectEntity: PropTypes.func
-    getEntityById: PropTypes.func
-    getEntityByCode: PropTypes.func
-    renderEntityListItemView: PropTypes.func
-    T: PropTypes.func
+describe('SiteColumnAnswerComponent', function() {
+  beforeEach(function() {
+    this.toDestroy = [];
 
-  getChildContext: ->
-    selectEntity: (options) ->
-      options.callback("testid")
-    getEntityById: (entityType, entityId, callback) ->
-      if entityId == "testid"
-        callback({
-          _id: "testid"
-          code: '10007'
-          })
-    getEntityByCode: (entityType, entityCode, callback) ->
-      if entityCode == '10007'
-        callback({
-          _id: "testid"
-          code: '10007'
-        })
-    renderEntityListItemView: (entityType, entity) ->
-      R 'div', null, entity.code
-    T: (str) -> str
+    return this.render = (options = {}) => {
+      const elem = R(SiteContext, {}, R(SiteColumnAnswerComponent, options));
+      const comp = new TestComponent(elem);
+      this.toDestroy.push(comp);
+      return comp;
+    };
+  });
 
-  render: ->
-    return @props.children
+  afterEach(function() {
+    return this.toDestroy.map((comp) =>
+      comp.destroy());
+  });
 
-describe 'SiteColumnAnswerComponent', ->
-  beforeEach ->
-    @toDestroy = []
+  it("selects entity", function(done) {
+    const testComponent = this.render({
+      siteType: "water_point",
+      async onValueChange(value) {
+        assert.equal(value.code, "10007");
 
-    @render = (options = {}) =>
-      elem = R(SiteContext, {}, R(SiteColumnAnswerComponent, options))
-      comp = new TestComponent(elem)
-      @toDestroy.push(comp)
-      return comp
+        // Validate answer
+        const answer = {value};
+        const answerValidator = new AnswerValidator();
+        const question = {_type: "SiteColumnQuestion"};
+        const result = await answerValidator.validate(question, answer);
+        assert.equal(result, null);
 
-  afterEach ->
-    for comp in @toDestroy
-      comp.destroy()
+        return done();
+      }
+    });
+    return TestComponent.click(testComponent.findDOMNodeByText(/Select/));
+  });
 
-  it "selects entity", (done) ->
-    testComponent = @render({
-      siteType: "water_point"
-      onValueChange: (value) ->
-        assert.equal value.code, "10007"
+  it("displays entity", function(done) {
+    const testComponent = this.render({
+      siteType: "water_point",
+      value: { code: "10007" },
+      onValueChange(value) {}
+    });
 
-        # Validate answer
-        answer = {value: value}
-        answerValidator = new AnswerValidator()
-        question = {_type: "SiteColumnQuestion"}
-        result = await answerValidator.validate(question, answer)
-        assert.equal result, null
+    return _.defer(() => {
+      // Check for display
+      assert(testComponent.findDOMNodeByText(/10007/), "Should display code");
+      return done();
+    });
+  });
 
-        done()
-    })
-    TestComponent.click(testComponent.findDOMNodeByText(/Select/))
+  return it("clears entity", function(done) {
+    const testComponent = this.render({
+      siteType: "water_point",
+      value: { code: "10007" },
+      onValueChange(value) {
+        assert(!value);
+        return done();
+      }
+    });
 
-  it "displays entity", (done) ->
-    testComponent = @render({
-      siteType: "water_point"
-      value: { code: "10007" }
-      onValueChange: (value) ->
-    })
-
-    _.defer () =>
-      # Check for display
-      assert testComponent.findDOMNodeByText(/10007/), "Should display code"
-      done()
-
-  it "clears entity", (done) ->
-    testComponent = @render({
-      siteType: "water_point"
-      value: { code: "10007" }
-      onValueChange: (value) ->
-        assert not value
-        done()
-    })
-
-    clearButton = ReactTestUtils.findRenderedDOMComponentWithTag(testComponent.getComponent(), 'button')
-    assert clearButton
-    TestComponent.click(clearButton)
+    const clearButton = ReactTestUtils.findRenderedDOMComponentWithTag(testComponent.getComponent(), 'button');
+    assert(clearButton);
+    return TestComponent.click(clearButton);
+  });
+});
 

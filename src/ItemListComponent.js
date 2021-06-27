@@ -1,52 +1,73 @@
-PropTypes = require('prop-types')
-_ = require 'lodash'
-React = require 'react'
-R = React.createElement
+let ItemListComponent;
+import PropTypes from 'prop-types';
+import _ from 'lodash';
+import React from 'react';
+const R = React.createElement;
 
-formUtils = require './formUtils'
-formRenderUtils = require './formRenderUtils'
+import formUtils from './formUtils';
+import formRenderUtils from './formRenderUtils';
 
-# Display a list of items
-module.exports = class ItemListComponent extends React.Component
-  @propTypes:
-    contents: PropTypes.array.isRequired 
-    data: PropTypes.object      # Current data of response (for roster entry if in roster)
-    responseRow: PropTypes.object.isRequired    # ResponseRow object (for roster entry if in roster)
-    onDataChange: PropTypes.func.isRequired
-    onNext: PropTypes.func
-    isVisible: PropTypes.func.isRequired # (id) tells if an item is visible or not
-    schema: PropTypes.object.isRequired  # Schema to use, including form
+// Display a list of items
+export default ItemListComponent = (function() {
+  ItemListComponent = class ItemListComponent extends React.Component {
+    static initClass() {
+      this.propTypes = {
+        contents: PropTypes.array.isRequired, 
+        data: PropTypes.object,      // Current data of response (for roster entry if in roster)
+        responseRow: PropTypes.object.isRequired,    // ResponseRow object (for roster entry if in roster)
+        onDataChange: PropTypes.func.isRequired,
+        onNext: PropTypes.func,
+        isVisible: PropTypes.func.isRequired, // (id) tells if an item is visible or not
+        schema: PropTypes.object.isRequired
+      };
+        // Schema to use, including form
+    }
 
-  constructor: (props) ->
-    super(props)
+    constructor(props) {
+      this.renderItem = this.renderItem.bind(this);
+      super(props);
 
-    # Refs of all items
-    @itemRefs = {}
+      // Refs of all items
+      this.itemRefs = {};
+    }
     
-  validate: (scrollToFirstInvalid) ->
-    foundInvalid = false
-    for item in @props.contents
-      # Only if validation is possible
-      if @itemRefs[item._id]?.validate
-        result = await @itemRefs[item._id]?.validate(scrollToFirstInvalid and not foundInvalid)
-        # DO NOT BREAK, it's important to call validate on each item
-        if result
-          foundInvalid = true
+    async validate(scrollToFirstInvalid) {
+      let foundInvalid = false;
+      for (let item of this.props.contents) {
+        // Only if validation is possible
+        if (this.itemRefs[item._id]?.validate) {
+          const result = await this.itemRefs[item._id]?.validate(scrollToFirstInvalid && !foundInvalid);
+          // DO NOT BREAK, it's important to call validate on each item
+          if (result) {
+            foundInvalid = true;
+          }
+        }
+      }
 
-    return foundInvalid
+      return foundInvalid;
+    }
 
-  handleNext: (index) ->
-    index++
-    if index >= @props.contents.length
-      @props.onNext?()
-    else
-      @itemRefs[@props.contents[index]._id]?.focus?()
+    handleNext(index) {
+      index++;
+      if (index >= this.props.contents.length) {
+        return this.props.onNext?.();
+      } else {
+        return this.itemRefs[this.props.contents[index]._id]?.focus?.();
+      }
+    }
 
-  renderItem: (item, index) =>
-    if @props.isVisible(item._id) and not item.disabled
-      formRenderUtils.renderItem(item, @props.data, @props.responseRow, @props.schema, @props.onDataChange, @props.isVisible, @handleNext.bind(this, index), (c) => @itemRefs[item._id] = c)
+    renderItem(item, index) {
+      if (this.props.isVisible(item._id) && !item.disabled) {
+        return formRenderUtils.renderItem(item, this.props.data, this.props.responseRow, this.props.schema, this.props.onDataChange, this.props.isVisible, this.handleNext.bind(this, index), c => { return this.itemRefs[item._id] = c; });
+      }
+    }
 
-  render: ->
-    R 'div', null,
-      _.map(@props.contents, @renderItem)
+    render() {
+      return R('div', null,
+        _.map(this.props.contents, this.renderItem));
+    }
+  };
+  ItemListComponent.initClass();
+  return ItemListComponent;
+})();
 

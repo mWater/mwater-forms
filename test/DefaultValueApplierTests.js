@@ -1,327 +1,347 @@
-assert = require('chai').assert
-moment = require 'moment'
-DefaultValueApplier = require '../src/DefaultValueApplier'
+import { assert } from 'chai';
+import moment from 'moment';
+import DefaultValueApplier from '../src/DefaultValueApplier';
 
-describe 'DefaultValueApplier', ->
-  beforeEach ->
-    @design = {contents: [
+describe('DefaultValueApplier', function() {
+  beforeEach(function() {
+    this.design = {contents: [
       {
-        _type: 'TextQuestion'
-        _id: 'testId'
+        _type: 'TextQuestion',
+        _id: 'testId',
         sticky: true
       }
-    ]}
+    ]};
 
-    @stickyStorage = {
-      get: (questionId) ->
-        assert.equal questionId, 'testId'
-        return 'data'
-    }
+    this.stickyStorage = {
+      get(questionId) {
+        assert.equal(questionId, 'testId');
+        return 'data';
+      }
+    };
 
-    @defaultValueApplier = new DefaultValueApplier(@design, @stickyStorage)
+    return this.defaultValueApplier = new DefaultValueApplier(this.design, this.stickyStorage);
+  });
 
-  it 'sets a sticky value for a question that was invisible and just became visible', ->
+  it('sets a sticky value for a question that was invisible and just became visible', function() {
 
-    data = {somethingElse: 'random data'}
+    const data = {somethingElse: 'random data'};
 
-    previousVisibilityStructure = {'testId': false}
-    newVisibilityStructure = {'testId': true}
+    const previousVisibilityStructure = {'testId': false};
+    const newVisibilityStructure = {'testId': true};
 
-    newData = @defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure)
+    const newData = this.defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure);
 
-    expectedData = {
-      testId: {value: 'data'}
+    const expectedData = {
+      testId: {value: 'data'},
       somethingElse: 'random data'
-    }
+    };
 
-    assert data != newData
-    assert.deepEqual expectedData, newData
+    assert(data !== newData);
+    return assert.deepEqual(expectedData, newData);
+  });
 
-  it 'sets a sticky value for a question that was invisible and just became visible (even if defaultValue is set)', ->
-    @design.contents[0].defaultValue = 'default value'
-    data = {somethingElse: 'random data'}
+  it('sets a sticky value for a question that was invisible and just became visible (even if defaultValue is set)', function() {
+    this.design.contents[0].defaultValue = 'default value';
+    const data = {somethingElse: 'random data'};
 
-    previousVisibilityStructure = {'testId': false}
-    newVisibilityStructure = {'testId': true}
+    const previousVisibilityStructure = {'testId': false};
+    const newVisibilityStructure = {'testId': true};
 
-    newData = @defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure)
+    const newData = this.defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure);
 
-    expectedData = {
-      testId: {value: 'data'}
+    const expectedData = {
+      testId: {value: 'data'},
       somethingElse: 'random data'
-    }
+    };
 
-    assert data != newData
-    assert.deepEqual expectedData, newData
+    assert(data !== newData);
+    return assert.deepEqual(expectedData, newData);
+  });
 
-  it 'sets a default value for a question that was invisible and just became visible (not sticky)', ->
-    @design.contents[0].defaultValue = 'default value'
-    @design.contents[0].sticky = false
-    data = {somethingElse: 'random data'}
+  it('sets a default value for a question that was invisible and just became visible (not sticky)', function() {
+    this.design.contents[0].defaultValue = 'default value';
+    this.design.contents[0].sticky = false;
+    const data = {somethingElse: 'random data'};
 
-    previousVisibilityStructure = {'testId': false}
-    newVisibilityStructure = {'testId': true}
+    const previousVisibilityStructure = {'testId': false};
+    const newVisibilityStructure = {'testId': true};
 
-    newData = @defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure)
+    const newData = this.defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure);
 
-    expectedData = {
-      testId: {value: 'default value'}
+    const expectedData = {
+      testId: {value: 'default value'},
       somethingElse: 'random data'
-    }
+    };
 
-    assert data != newData
-    assert.deepEqual expectedData, newData
+    assert(data !== newData);
+    return assert.deepEqual(expectedData, newData);
+  });
 
-  it 'sets no value for a question that was invisible and just became visible (sticky with no entry)', ->
-    @design.contents[0].defaultValue = 'default value'
-    # No entry in sticky storage
-    @defaultValueApplier.stickyStorage = {
-      get: (questionId) ->
-        assert.equal questionId, 'testId'
-        return null
-    }
-    data = {somethingElse: 'random data'}
+  it('sets no value for a question that was invisible and just became visible (sticky with no entry)', function() {
+    this.design.contents[0].defaultValue = 'default value';
+    // No entry in sticky storage
+    this.defaultValueApplier.stickyStorage = {
+      get(questionId) {
+        assert.equal(questionId, 'testId');
+        return null;
+      }
+    };
+    const data = {somethingElse: 'random data'};
 
-    previousVisibilityStructure = {'testId': false}
-    newVisibilityStructure = {'testId': true}
+    const previousVisibilityStructure = {'testId': false};
+    const newVisibilityStructure = {'testId': true};
 
-    newData = @defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure)
+    const newData = this.defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure);
 
-    expectedData = {
+    const expectedData = {
       somethingElse: 'random data'
-    }
+    };
 
-    assert data != newData
-    assert.deepEqual expectedData, newData
+    assert(data !== newData);
+    return assert.deepEqual(expectedData, newData);
+  });
 
-  it "sets a sticky value for a question that just became visible because previousVisibilityStructure is empty", ->
-    data = {somethingElse: 'random data'}
+  it("sets a sticky value for a question that just became visible because previousVisibilityStructure is empty", function() {
+    const data = {somethingElse: 'random data'};
 
-    previousVisibilityStructure = {}
-    newVisibilityStructure = {'testId': true}
+    const previousVisibilityStructure = {};
+    const newVisibilityStructure = {'testId': true};
 
-    newData = @defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure)
+    const newData = this.defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure);
 
-    expectedData = {
-      testId: {value: 'data'}
+    const expectedData = {
+      testId: {value: 'data'},
       somethingElse: 'random data'
-    }
+    };
 
-    assert data != newData
-    assert.deepEqual expectedData, newData
+    assert(data !== newData);
+    return assert.deepEqual(expectedData, newData);
+  });
 
-  it "sets an entity value for an entity question that just became visible", ->
-    @design = {contents: [
+  it("sets an entity value for an entity question that just became visible", function() {
+    this.design = {contents: [
       {
-        _type: 'EntityQuestion'
-        _id: 'entityQuestionId'
+        _type: 'EntityQuestion',
+        _id: 'entityQuestionId',
         entityType: 'water_point'
       }
-    ]}
+    ]};
 
-    entity = {code: 'entityCode', _id: 'entityId'}
-    entityType = 'water_point'
+    const entity = {code: 'entityCode', _id: 'entityId'};
+    const entityType = 'water_point';
 
-    @defaultValueApplier = new DefaultValueApplier(@design, @stickyStorage, entity, entityType)
+    this.defaultValueApplier = new DefaultValueApplier(this.design, this.stickyStorage, entity, entityType);
 
-    data = {somethingElse: 'random data'}
+    const data = {somethingElse: 'random data'};
 
-    previousVisibilityStructure = {}
-    newVisibilityStructure = {'entityQuestionId': true}
+    const previousVisibilityStructure = {};
+    const newVisibilityStructure = {'entityQuestionId': true};
 
-    newData = @defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure)
+    const newData = this.defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure);
 
-    expectedData = {
-      entityQuestionId: {value: 'entityId'}
+    const expectedData = {
+      entityQuestionId: {value: 'entityId'},
       somethingElse: 'random data'
-    }
+    };
 
-    assert data != newData
-    assert.deepEqual expectedData, newData
+    assert(data !== newData);
+    return assert.deepEqual(expectedData, newData);
+  });
 
-  it "sets an entity value for a site question that just became visible", ->
-    @design = {contents: [
+  it("sets an entity value for a site question that just became visible", function() {
+    this.design = {contents: [
       {
-        _type: 'SiteQuestion'
-        _id: 'entityQuestionId'
+        _type: 'SiteQuestion',
+        _id: 'entityQuestionId',
         entityTypes: ['Water point']
       }
-    ]}
+    ]};
 
-    entity = {code: 'entityCode', _id: 'entityId'}
-    entityType = 'water_point'
+    const entity = {code: 'entityCode', _id: 'entityId'};
+    const entityType = 'water_point';
 
-    @defaultValueApplier = new DefaultValueApplier(@design, @stickyStorage, entity, entityType)
+    this.defaultValueApplier = new DefaultValueApplier(this.design, this.stickyStorage, entity, entityType);
 
-    data = {somethingElse: 'random data'}
+    const data = {somethingElse: 'random data'};
 
-    previousVisibilityStructure = {}
-    newVisibilityStructure = {'entityQuestionId': true}
+    const previousVisibilityStructure = {};
+    const newVisibilityStructure = {'entityQuestionId': true};
 
-    newData = @defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure)
+    const newData = this.defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure);
 
-    expectedData = {
-      entityQuestionId: {value: {code: 'entityCode'}}
+    const expectedData = {
+      entityQuestionId: {value: {code: 'entityCode'}},
       somethingElse: 'random data'
-    }
+    };
 
-    assert data != newData
-    assert.deepEqual expectedData, newData
+    assert(data !== newData);
+    return assert.deepEqual(expectedData, newData);
+  });
 
-  it "doesn't sets a sticky value for a question that was already set", ->
-    data = {somethingElse: 'random data', testId: {value: 'a'}}
-    previousVisibilityStructure = {}
-    newVisibilityStructure = {'testId': true}
+  it("doesn't sets a sticky value for a question that was already set", function() {
+    const data = {somethingElse: 'random data', testId: {value: 'a'}};
+    const previousVisibilityStructure = {};
+    const newVisibilityStructure = {'testId': true};
 
-    newData = @defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure)
+    const newData = this.defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure);
 
-    assert.deepEqual data, newData
+    return assert.deepEqual(data, newData);
+  });
 
-  it "doesn't sets a sticky value for a question that has an alternate value", ->
-    data = {somethingElse: 'random data', testId: {alternate: 'na'}}
-    previousVisibilityStructure = {}
-    newVisibilityStructure = {'testId': true}
+  it("doesn't sets a sticky value for a question that has an alternate value", function() {
+    const data = {somethingElse: 'random data', testId: {alternate: 'na'}};
+    const previousVisibilityStructure = {};
+    const newVisibilityStructure = {'testId': true};
 
-    newData = @defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure)
+    const newData = this.defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure);
 
-    assert.deepEqual data, newData
+    return assert.deepEqual(data, newData);
+  });
 
-  it "doesn't sets a sticky value for a question that has an alternate value", ->
-    data = {somethingElse: 'random data', testId: {alternate: 'na'}}
-    previousVisibilityStructure = {}
-    newVisibilityStructure = {'testId': true}
+  it("doesn't sets a sticky value for a question that has an alternate value", function() {
+    const data = {somethingElse: 'random data', testId: {alternate: 'na'}};
+    const previousVisibilityStructure = {};
+    const newVisibilityStructure = {'testId': true};
 
-    newData = @defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure)
+    const newData = this.defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure);
 
-    assert.deepEqual data, newData
+    return assert.deepEqual(data, newData);
+  });
 
-  it "doesn't sets a sticky value for a question that was already visible", ->
-    data = {somethingElse: 'random data'}
-    previousVisibilityStructure = {'testId': true}
-    newVisibilityStructure = {'testId': true}
+  it("doesn't sets a sticky value for a question that was already visible", function() {
+    const data = {somethingElse: 'random data'};
+    const previousVisibilityStructure = {'testId': true};
+    const newVisibilityStructure = {'testId': true};
 
-    newData = @defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure)
+    const newData = this.defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure);
 
-    assert.deepEqual data, newData
+    return assert.deepEqual(data, newData);
+  });
 
-  it "doesn't sets a sticky value for a question that stays invisible", ->
-    design = {contents: [
+  it("doesn't sets a sticky value for a question that stays invisible", function() {
+    const design = {contents: [
       {
-        _type: 'TextQuestion'
-        _id: 'testId'
+        _type: 'TextQuestion',
+        _id: 'testId',
         sticky: true
       }
-    ]}
-    data = {somethingElse: 'random data'}
-    stickyStorage = {
-      get: () ->
-        'data'
-    }
-    previousVisibilityStructure = {'testId': false}
-    newVisibilityStructure = {'testId': false}
+    ]};
+    const data = {somethingElse: 'random data'};
+    const stickyStorage = {
+      get() {
+        return 'data';
+      }
+    };
+    const previousVisibilityStructure = {'testId': false};
+    const newVisibilityStructure = {'testId': false};
 
-    @defaultValueApplier = new DefaultValueApplier(@design, @stickyStorage)
-    newData = @defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure)
+    this.defaultValueApplier = new DefaultValueApplier(this.design, this.stickyStorage);
+    const newData = this.defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure);
 
-    assert.deepEqual data, newData
+    return assert.deepEqual(data, newData);
+  });
 
-  it "sets now for a date question that just became visible", ->
-    @design = {contents: [
+  it("sets now for a date question that just became visible", function() {
+    this.design = {contents: [
       {
-        _type: 'DateQuestion'
-        _id: 'dateQuestionId'
-        format: 'll'
+        _type: 'DateQuestion',
+        _id: 'dateQuestionId',
+        format: 'll',
         defaultNow: true
       }
-    ]}
+    ]};
 
-    @defaultValueApplier = new DefaultValueApplier(@design, @stickyStorage)
+    this.defaultValueApplier = new DefaultValueApplier(this.design, this.stickyStorage);
 
-    data = {somethingElse: 'random data'}
+    const data = {somethingElse: 'random data'};
 
-    previousVisibilityStructure = {}
-    newVisibilityStructure = {'dateQuestionId': true}
+    const previousVisibilityStructure = {};
+    const newVisibilityStructure = {'dateQuestionId': true};
 
-    newData = @defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure)
+    const newData = this.defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure);
 
-    expectedData = {
-      dateQuestionId: {value: moment().format("YYYY-MM-DD")}
+    const expectedData = {
+      dateQuestionId: {value: moment().format("YYYY-MM-DD")},
       somethingElse: 'random data'
-    }
+    };
 
-    assert data != newData
-    assert.deepEqual expectedData, newData
+    assert(data !== newData);
+    return assert.deepEqual(expectedData, newData);
+  });
 
-  it "sets a sticky value for a roster question that just became visible", ->
-    @design = {contents: [
+  it("sets a sticky value for a roster question that just became visible", function() {
+    this.design = {contents: [
       {
-        _type: 'RosterMatrix'
-        _id: 'roster1'
+        _type: 'RosterMatrix',
+        _id: 'roster1',
         contents: [
           { _id: "testId", _type: "TextColumnQuestion", text: { en: "Name" }, sticky: true },
         ]
       }
-    ]}
+    ]};
 
-    data = {
-      somethingElse: 'random data'
+    const data = {
+      somethingElse: 'random data',
       roster1: [{
-        _id: "abc"
+        _id: "abc",
         data: {}
       }]
-    }
+    };
 
-    previousVisibilityStructure = {}
-    newVisibilityStructure = {'roster1.0.testId': true}
+    const previousVisibilityStructure = {};
+    const newVisibilityStructure = {'roster1.0.testId': true};
 
-    @defaultValueApplier = new DefaultValueApplier(@design, @stickyStorage)
-    newData = @defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure)
+    this.defaultValueApplier = new DefaultValueApplier(this.design, this.stickyStorage);
+    const newData = this.defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure);
 
-    expectedData = {
+    const expectedData = {
       roster1: [{
-        _id: "abc"
+        _id: "abc",
         data: {
           testId: {value: 'data'}
         }
-      }]
+      }],
       somethingElse: 'random data'
-    }
+    };
 
-    assert data != newData
-    assert.deepEqual expectedData, newData
+    assert(data !== newData);
+    return assert.deepEqual(expectedData, newData);
+  });
 
-  it "sets a sticky value for a matrix question that just became visible", ->
-    @design = {contents: [
+  return it("sets a sticky value for a matrix question that just became visible", function() {
+    this.design = {contents: [
       {
-        _type: 'MatrixQuestion'
-        _id: 'matrix1'
+        _type: 'MatrixQuestion',
+        _id: 'matrix1',
         items: [
           { _id: "item1" }
-        ]
+        ],
         columns: [
           { _id: "testId", _type: "TextColumnQuestion", text: { en: "Name" }, sticky: true },
         ]
       }
-    ]}
+    ]};
 
-    data = {
+    const data = {
       somethingElse: 'random data'
-    }
+    };
 
-    previousVisibilityStructure = {}
-    newVisibilityStructure = {'matrix1.item1.testId': true}
+    const previousVisibilityStructure = {};
+    const newVisibilityStructure = {'matrix1.item1.testId': true};
 
-    @defaultValueApplier = new DefaultValueApplier(@design, @stickyStorage)
-    newData = @defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure)
+    this.defaultValueApplier = new DefaultValueApplier(this.design, this.stickyStorage);
+    const newData = this.defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure);
 
-    expectedData = {
+    const expectedData = {
       matrix1: {
         item1: {
           testId: {value: 'data'}
         }
-      }
+      },
       somethingElse: 'random data'
-    }
+    };
 
-    assert data != newData
-    assert.deepEqual expectedData, newData
+    assert(data !== newData);
+    return assert.deepEqual(expectedData, newData);
+  });
+});

@@ -1,64 +1,81 @@
-formUtils = require './formUtils'
-_ = require 'lodash'
+let RandomAskedCalculator;
+import formUtils from './formUtils';
+import _ from 'lodash';
 
-# The RandomAskedCalculator sets the randomAsked property of visible answers, determining if the question will be visible.
-# If question has randomAskProbability, it is visible unless randomAsked is set to false, which this class determines.
-module.exports = class RandomAskedCalculator
-  constructor: (formDesign) ->
-    @formDesign = formDesign
+// The RandomAskedCalculator sets the randomAsked property of visible answers, determining if the question will be visible.
+// If question has randomAskProbability, it is visible unless randomAsked is set to false, which this class determines.
+export default RandomAskedCalculator = class RandomAskedCalculator {
+  constructor(formDesign) {
+    this.formDesign = formDesign;
+  }
 
-  calculateRandomAsked: (data, visibilityStructure) ->
-    # NOTE: Always remember that data is immutable
-    newData = _.cloneDeep(data)
+  calculateRandomAsked(data, visibilityStructure) {
+    // NOTE: Always remember that data is immutable
+    const newData = _.cloneDeep(data);
 
-    # Index all items by _id
-    items = _.indexBy(formUtils.allItems(@formDesign), "_id")
+    // Index all items by _id
+    const items = _.indexBy(formUtils.allItems(this.formDesign), "_id");
 
-    # For each item in visibility structure
-    for key, visible of visibilityStructure
-      # Do nothing with invisible
-      if not visible
-        continue
+    // For each item in visibility structure
+    for (let key in visibilityStructure) {
+      // Do nothing with invisible
+      var item;
+      const visible = visibilityStructure[key];
+      if (!visible) {
+        continue;
+      }
 
-      parts = key.split(".")
+      const parts = key.split(".");
 
-      # If simple key
-      if parts.length == 1
-        item = items[parts[0]]
-        if not item
-          continue
+      // If simple key
+      if (parts.length === 1) {
+        item = items[parts[0]];
+        if (!item) {
+          continue;
+        }
 
-        if item.randomAskProbability?
-          newData[item._id] = newData[item._id] or {}
-          if not newData[item._id].randomAsked?
-            newData[item._id].randomAsked = @generateRandomValue(item.randomAskProbability)
+        if (item.randomAskProbability != null) {
+          newData[item._id] = newData[item._id] || {};
+          if ((newData[item._id].randomAsked == null)) {
+            newData[item._id].randomAsked = this.generateRandomValue(item.randomAskProbability);
+          }
+        }
 
-      else 
-        # If not roster, skip
-        if not parts[1].match(/^\d+$/)
-          continue
+      } else { 
+        // If not roster, skip
+        if (!parts[1].match(/^\d+$/)) {
+          continue;
+        }
 
-        # Lookup question in roster
-        item = items[parts[2]]
-        if not item
-          continue
+        // Lookup question in roster
+        item = items[parts[2]];
+        if (!item) {
+          continue;
+        }
 
-        # Get roster index
-        entryIndex = parseInt(parts[1])
+        // Get roster index
+        const entryIndex = parseInt(parts[1]);
 
-        if item.randomAskProbability?
-          # Get enty data
-          entryData = newData[parts[0]][entryIndex].data
+        if (item.randomAskProbability != null) {
+          // Get enty data
+          const entryData = newData[parts[0]][entryIndex].data;
 
-          # Create structure
-          entryData[item._id] = entryData[item._id] or {}
+          // Create structure
+          entryData[item._id] = entryData[item._id] || {};
 
-          # Set randomAsked
-          if not entryData[item._id].randomAsked?
-            entryData[item._id].randomAsked = @generateRandomValue(item.randomAskProbability)
+          // Set randomAsked
+          if ((entryData[item._id].randomAsked == null)) {
+            entryData[item._id].randomAsked = this.generateRandomValue(item.randomAskProbability);
+          }
+        }
+      }
+    }
 
-    return newData
+    return newData;
+  }
 
-  # Randomly determine asked
-  generateRandomValue: (probability) ->
-    return Math.random() < probability
+  // Randomly determine asked
+  generateRandomValue(probability) {
+    return Math.random() < probability;
+  }
+};

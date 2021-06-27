@@ -1,788 +1,937 @@
-_ = require 'lodash'
-assert = require("chai").assert
+import _ from 'lodash';
+import { assert } from "chai";
+import ResponseModel from '../src/ResponseModel';
 
-ResponseModel = require '../src/ResponseModel'
-
-sampleForm = {
-  _id: "formid"
-  _rev: 3
-  design: { contents: [] }
+const sampleForm = {
+  _id: "formid",
+  _rev: 3,
+  design: { contents: [] },
   deployments: [
     {
-      _id: "dep1"
-      active: true
-      enumerators: [ "group:dep1en1" ]
+      _id: "dep1",
+      active: true,
+      enumerators: [ "group:dep1en1" ],
       approvalStages: [
         { approvers: [ "group:dep1ap1" ] }
-      ]
-      viewers: [ "group:dep1view1" ]
+      ],
+      viewers: [ "group:dep1view1" ],
       admins: [ "group:dep1admin1" ]
-    }
+    },
     {
-      _id: "dep2"
-      active: true
-      enumerators: [ "group:dep2en1" ]
+      _id: "dep2",
+      active: true,
+      enumerators: [ "group:dep2en1" ],
       approvalStages: [
         { approvers: [ "group:dep2ap1", "user:user" ] }
-      ]
-      viewers: [ "group:dep2view1", "user:user" ]
+      ],
+      viewers: [ "group:dep2view1", "user:user" ],
       admins: [ "group:dep2admin1", "user:user" ]
     }
-  ]
+  ],
   roles: [
     { id: "user:formadmin", role: "admin" }
   ]
-}
+};
 
-describe "ResponseModel", ->
-  describe "draft", ->
-    beforeEach ->
-      @response = { }
-      @form = _.cloneDeep(sampleForm)
-      @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep2en1"])
-      @model.draft()
+describe("ResponseModel", function() {
+  describe("draft", function() {
+    beforeEach(function() {
+      this.response = { };
+      this.form = _.cloneDeep(sampleForm);
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user", username: "user", groups: ["dep2en1"]});
+      return this.model.draft();
+    });
 
-    it "includes basic fields", ->
-      assert @response._id, "missing id"
-      assert.equal @response.form, @form._id, "missing form"
-      assert.equal @response.formRev, @form._rev, "missing rev"
-      assert.match @response.code, /^user-/, "bad code"
-      assert.equal @response.user, "user", "wrong user"
-      assert.equal @response.status, "draft"
+    it("includes basic fields", function() {
+      assert(this.response._id, "missing id");
+      assert.equal(this.response.form, this.form._id, "missing form");
+      assert.equal(this.response.formRev, this.form._rev, "missing rev");
+      assert.match(this.response.code, /^user-/, "bad code");
+      assert.equal(this.response.user, "user", "wrong user");
+      return assert.equal(this.response.status, "draft");
+    });
 
-    it "sets startedOn", ->
-      assert @response.startedOn
+    it("sets startedOn", function() {
+      return assert(this.response.startedOn);
+    });
             
-    it "selects first matching deployment", ->
-      assert.equal @response.deployment, "dep2"
+    it("selects first matching deployment", function() {
+      return assert.equal(this.response.deployment, "dep2");
+    });
 
-    it "includes self as admin", ->
-      assert.equal _.where(@response.roles, { id: "user:user", role: "admin"}).length, 1
+    it("includes self as admin", function() {
+      return assert.equal(_.where(this.response.roles, { id: "user:user", role: "admin"}).length, 1);
+    });
 
-    it "includes admins of deployment as admins", ->
-      assert.equal _.where(@response.roles, { id: "group:dep2admin1", role: "admin"}).length, 1
+    it("includes admins of deployment as admins", function() {
+      return assert.equal(_.where(this.response.roles, { id: "group:dep2admin1", role: "admin"}).length, 1);
+    });
 
-    it "includes admins of form as admins", ->
-      assert.equal _.where(@response.roles, { id: "user:formadmin", role: "admin"}).length, 1
+    it("includes admins of form as admins", function() {
+      return assert.equal(_.where(this.response.roles, { id: "user:formadmin", role: "admin"}).length, 1);
+    });
 
-    it "include approvers", ->
-      assert.equal _.where(@response.roles, { id: "group:dep2ap1", role: "view"}).length, 1
+    it("include approvers", function() {
+      return assert.equal(_.where(this.response.roles, { id: "group:dep2ap1", role: "view"}).length, 1);
+    });
 
-    it "does not include deployment viewers", ->
-      assert.equal _.where(@response.roles, { id: "group:dep2view1"}).length, 0
+    it("does not include deployment viewers", function() {
+      return assert.equal(_.where(this.response.roles, { id: "group:dep2view1"}).length, 0);
+    });
 
-    it "creates draft event", ->
-      assert.equal @response.events.length, 1
-      assert.equal @response.events[0].type, "draft"
-      assert.equal @response.events[0].by, "user"
-      assert @response.events[0].on
+    return it("creates draft event", function() {
+      assert.equal(this.response.events.length, 1);
+      assert.equal(this.response.events[0].type, "draft");
+      assert.equal(this.response.events[0].by, "user");
+      return assert(this.response.events[0].on);
+    });
+  });
 
-  describe "draft when deployed to all", ->
-    beforeEach ->
-      @response = { }
-      @form = _.cloneDeep(sampleForm)
-      @form.deployments[0].enumerators.push "all"
-      @model = new ResponseModel(response: @response, form: @form, user: "unknownUser", username: "unknownUser", groups: [])
-      @model.draft()
+  describe("draft when deployed to all", function() {
+    beforeEach(function() {
+      this.response = { };
+      this.form = _.cloneDeep(sampleForm);
+      this.form.deployments[0].enumerators.push("all");
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "unknownUser", username: "unknownUser", groups: []});
+      return this.model.draft();
+    });
 
-    it "selects first matching deployment", ->
-      assert.equal @response.deployment, "dep1"
+    return it("selects first matching deployment", function() {
+      return assert.equal(this.response.deployment, "dep1");
+    });
+  });
 
-  describe "submit when no approval stages", ->
-    beforeEach ->
-      @response = { }
-      @form = _.cloneDeep(sampleForm)
-      @form.deployments[1].approvalStages = []
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep2en1"])
-      @model.draft()
-      @model.submit()
+  describe("submit when no approval stages", function() {
+    beforeEach(function() {
+      this.response = { };
+      this.form = _.cloneDeep(sampleForm);
+      this.form.deployments[1].approvalStages = [];
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep2en1"]});
+      this.model.draft();
+      return this.model.submit();
+    });
 
-    it "makes response final", ->
-      assert.equal @response.status, "final"
+    it("makes response final", function() {
+      return assert.equal(this.response.status, "final");
+    });
 
-    it "sets submittedOn", ->
-      assert @response.submittedOn
+    it("sets submittedOn", function() {
+      return assert(this.response.submittedOn);
+    });
 
-    it "leaves self as viewer", ->
-      assert.equal _.where(@response.roles, { id: "user:user2", role: "view"}).length, 1
+    it("leaves self as viewer", function() {
+      return assert.equal(_.where(this.response.roles, { id: "user:user2", role: "view"}).length, 1);
+    });
 
-    it "includes admins of deployment as admins", ->
-      assert.equal _.where(@response.roles, { id: "group:dep2admin1", role: "admin"}).length, 1
+    it("includes admins of deployment as admins", function() {
+      return assert.equal(_.where(this.response.roles, { id: "group:dep2admin1", role: "admin"}).length, 1);
+    });
 
-    it "includes admins of form as admins", ->
-      assert.equal _.where(@response.roles, { id: "user:formadmin", role: "admin"}).length, 1
+    it("includes admins of form as admins", function() {
+      return assert.equal(_.where(this.response.roles, { id: "user:formadmin", role: "admin"}).length, 1);
+    });
 
-    it "includes viewers of deployment as viewers", ->
-      assert.equal _.where(@response.roles, { id: "group:dep2view1"}).length, 1
+    it("includes viewers of deployment as viewers", function() {
+      return assert.equal(_.where(this.response.roles, { id: "group:dep2view1"}).length, 1);
+    });
 
-    it "creates submit event", ->
-      assert.equal @response.events.length, 2
-      assert.equal @response.events[1].type, "submit"
-      assert.equal @response.events[1].by, "user2"
-      assert @response.events[1].on
+    it("creates submit event", function() {
+      assert.equal(this.response.events.length, 2);
+      assert.equal(this.response.events[1].type, "submit");
+      assert.equal(this.response.events[1].by, "user2");
+      return assert(this.response.events[1].on);
+    });
 
-    it "removes enumerator as viewer if deployment inactive", ->
-      assert.isTrue _.any(@response.roles, (r) -> r.id == "user:user2"), "Can see as enumerator"
+    it("removes enumerator as viewer if deployment inactive", function() {
+      assert.isTrue(_.any(this.response.roles, r => r.id === "user:user2"), "Can see as enumerator");
       
-      @form.deployments[1].active = false
-      @model.fixRoles()
+      this.form.deployments[1].active = false;
+      this.model.fixRoles();
 
-      assert.isFalse _.any(@response.roles, (r) -> r.id == "user:user2"), "Enumerator removed"
+      return assert.isFalse(_.any(this.response.roles, r => r.id === "user:user2"), "Enumerator removed");
+    });
 
-    it "removes everyone as viewer if form deleted", ->
-      assert.isTrue _.any(@response.roles, (r) -> r.id == "user:user2"), "Can see as enumerator"
+    return it("removes everyone as viewer if form deleted", function() {
+      assert.isTrue(_.any(this.response.roles, r => r.id === "user:user2"), "Can see as enumerator");
       
-      @form.state = 'deleted'
-      @model.fixRoles()
-
-      assert.deepEqual @response.roles, [], "No one can see deleted"
-
-  describe "submit when no approval stages with enumeratorAdminFinal", ->
-    beforeEach ->
-      @response = { }
-      @form = _.cloneDeep(sampleForm)
-      @form.deployments[1].approvalStages = []
-      @form.deployments[1].enumeratorAdminFinal = true
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep2en1"])
-      @model.draft()
-      @model.submit()
-
-    it "leaves self as admin", ->
-      assert.equal _.where(@response.roles, { id: "user:user2", role: "admin"}).length, 1
-
-  describe "submit when approval stages", ->
-    beforeEach ->
-      @response = { }
-      @form = _.cloneDeep(sampleForm)
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep2en1"])
-      @model.draft()
-      @model.submit()
-
-    it "makes response pending", ->
-      assert.equal @response.status, "pending"
-
-    it "sets submittedOn", ->
-      assert @response.submittedOn
-
-    it "sets approvals", ->
-      assert.deepEqual @response.approvals, []
-
-    it "leaves self as admin", ->
-      assert.equal _.where(@response.roles, { id: "user:user2", role: "admin"}).length, 1
-
-    it "includes approvers of first stage as admins", ->
-      assert.equal _.where(@response.roles, { id: "group:dep2ap1", role: "admin"}).length, 1
-
-    it "includes admins of deployment as admins", ->
-      assert.equal _.where(@response.roles, { id: "group:dep2admin1", role: "admin"}).length, 1
-
-    it "includes admins of form as admins", ->
-      assert.equal _.where(@response.roles, { id: "user:formadmin", role: "admin"}).length, 1
-
-    it "does not include deployment viewers", ->
-     assert.equal _.where(@response.roles, { id: "group:dep2view1"}).length, 0
-
-    it "makes response final if approval stage deleted", ->
-      @form.deployments[1].approvalStages = []
-      @model.fixRoles()
-      assert.equal @response.status, "final"
-
-    it "makes does not make draft response final if approval stage deleted", ->
-      @response.status = "draft"
-      @form.deployments[1].approvalStages = []
-      @model.fixRoles()
-      assert.equal @response.status, "draft"
-
-    it "creates submit event", ->
-      assert.equal @response.events.length, 2
-      assert.equal @response.events[1].type, "submit"
-      assert.equal @response.events[1].by, "user2"
-      assert @response.events[1].on
-
-  describe "approval when last stage", ->
-    beforeEach ->
-      @response = { }
-      @form = _.cloneDeep(sampleForm)
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep2en1"])
-      @model.draft()
-      @model.submit()
-      @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep2en1"])
-      @model.approve()
-
-    it "sets approvals", ->
-      assert.deepEqual _.pluck(@response.approvals, "by"), ["user"]
-
-    it "makes response final", ->
-      assert.equal @response.status, "final"
-
-    it "leaves self as viewer", ->
-      assert.equal _.where(@response.roles, { id: "user:user2", role: "view"}).length, 1
-
-    it "includes admins of deployment as admins", ->
-      assert.equal _.where(@response.roles, { id: "group:dep2admin1", role: "admin"}).length, 1
-
-    it "includes admins of form as admins", ->
-      assert.equal _.where(@response.roles, { id: "user:formadmin", role: "admin"}).length, 1
-
-    it "includes viewers of deployment as viewers", ->
-      assert.equal _.where(@response.roles, { id: "group:dep2view1"}).length, 1
-
-    it "creates approve event", ->
-      assert.equal @response.events.length, 3
-      assert.equal @response.events[2].type, "approve"
-      assert.equal @response.events[2].by, "user"
-      assert @response.events[2].on
-      assert not @response.events[2].override
-
-  describe "approval overrides", ->
-    beforeEach ->
-      @response = { }
-      @form = _.cloneDeep(sampleForm)
-      @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep2en1"])
-      @model.draft()
-      @model.submit()
-
-    it "sets override to false if done by approver", ->
-      @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep2ap1"])
-      @model.approve()
-      assert not @response.approvals[0].override
-
-    it "sets override to true if done by deployment admin", ->
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep2admin1"])
-      @model.approve()
-      assert.isTrue @response.approvals[0].override
-
-    it "sets override to true if done by form admin", ->
-      @model = new ResponseModel(response: @response, form: @form, user: "formadmin", username: "formadmin", groups: [])
-      @model.approve()
-      assert.isTrue @response.approvals[0].override
-
-    it "creates approve event with override", ->
-      @model = new ResponseModel(response: @response, form: @form, user: "formadmin", username: "formadmin", groups: [])
-      @model.approve()
-
-      assert.equal @response.events.length, 3
-      assert.equal @response.events[2].type, "approve"
-      assert.equal @response.events[2].by, "formadmin"
-      assert.isTrue @response.events[2].override
-      assert @response.events[1].on
-
-  describe "approval when not last stage", ->
-    beforeEach ->
-      @response = { }
-      @form = _.cloneDeep(sampleForm)
-
-      # Add extra stage
-      @form.deployments[1].approvalStages.push { approvers: ["group:dep2ap2"] }
-
-      @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep2en1"])
-      @model.draft()
-      @model.submit()
-      @model.approve()
-
-    it "leaves response pending", ->
-      assert.equal @response.status, "pending"
-
-    it "sets approvals", ->
-      assert.deepEqual _.pluck(@response.approvals, "by"), ["user"]
-
-    it "leaves self as admin", ->
-      assert.equal _.where(@response.roles, { id: "user:user", role: "admin"}).length, 1
-
-    it "includes approvers of second stage as admins", ->
-      assert.equal _.where(@response.roles, { id: "group:dep2ap2", role: "admin"}).length, 1
-
-    it "includes approvers of first stage as viewers", ->
-      assert.equal _.where(@response.roles, { id: "group:dep2ap1", role: "view"}).length, 1
-
-    it "includes admins of deployment as admins", ->
-      assert.equal _.where(@response.roles, { id: "group:dep2admin1", role: "admin"}).length, 1
-
-    it "includes admins of form as admins", ->
-      assert.equal _.where(@response.roles, { id: "user:formadmin", role: "admin"}).length, 1
-
-    it "does not include deployment viewers", ->
-     assert.equal _.where(@response.roles, { id: "group:dep2view1"}).length, 0
-
-    it "creates approve event", ->
-      assert.equal @response.events.length, 3
-      assert.equal @response.events[2].type, "approve"
-      assert.equal @response.events[2].by, "user"
-      assert @response.events[2].on
-      assert not @response.events[2].override
-
-  describe "redraft", ->
-    beforeEach ->
-      @response = { }
-      @form = _.cloneDeep(sampleForm)
-
-      @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep2en1"])
-
-      @model.draft()
-      @origId = @response._id
-      @model.submit()
-      @model.redraft()
-
-    it "does not overwrite id", ->
-      assert.equal @response._id, @origId
-
-    it "creates draft event", ->
-      assert.equal @response.events.length, 3
-      assert.equal @response.events[2].type, "draft"
-      assert.equal @response.events[2].by, "user"
-      assert @response.events[2].on
-
-    it "does not create repeated draft event if already in draft", ->
-      @model.redraft()
-      assert.equal @response.events.length, 3
-
-
-  describe "reject", ->
-    beforeEach ->
-      @response = { }
-      @form = _.cloneDeep(sampleForm)
-
-      @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep2en1"])
-
-      @model.draft()
-      @model.submit()
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep2ap1"])
-      @model.reject("message")
-
-    it "sets status rejected", ->
-      assert.equal @response.status, "rejected"
-
-    it "removes approvalStage", ->
-      assert.isUndefined @response.approvalStage
-
-    it "sets rejection message", ->
-      assert.equal @response.rejectionMessage, "message"
-
-    it "includes self as admin", ->
-      assert.equal _.where(@response.roles, { id: "user:user", role: "admin"}).length, 1
-
-    it "includes admins of deployment as admins", ->
-      assert.equal _.where(@response.roles, { id: "group:dep2admin1", role: "admin"}).length, 1
-
-    it "includes admins of form as admins", ->
-      assert.equal _.where(@response.roles, { id: "user:formadmin", role: "admin"}).length, 1
-
-    it "includes approvers as viewers", ->
-      assert.equal _.where(@response.roles, { id: "group:dep2ap1", role: "view"}).length, 1
-
-    it "does not include deployment viewers", ->
-      assert.equal _.where(@response.roles, { id: "group:dep2view1"}).length, 0
-
-    it "creates reject event", ->
-      assert.equal @response.events.length, 3
-      assert.equal @response.events[2].type, "reject"
-      assert.equal @response.events[2].by, "user2"
-      assert @response.events[2].on
-      assert not @response.events[2].override
-      assert.equal @response.events[2].message, "message"
-
-  describe "recordEdit", ->
-    it "does not record if done by enumerator", ->
-      response = { }
-      form = _.cloneDeep(sampleForm)
-      model = new ResponseModel(response: response, form: form, user: "user", username: "user", groups: ["dep2en1"])
-      model.draft()
-
-      model.recordEdit()
-      assert.equal response.events.length, 1
-
-    it "does record if done by other than enumerator", ->
-      response = { }
-      form = _.cloneDeep(sampleForm)
-      model = new ResponseModel(response: response, form: form, user: "user", username: "user", groups: ["dep2en1"])
-      model.draft()
-
-      model = new ResponseModel(response: response, form: @form, user: "user2", username: "user2", groups: ["dep2admin1"])
-      model.recordEdit()
-      assert.equal response.events.length, 2
-      assert.equal response.events[1].type, "edit"
-      assert.equal response.events[1].by, "user2"
-
-  describe "canSubmit", ->
-    beforeEach ->
-      @response = { }
-      @form = _.cloneDeep(sampleForm)
-
-      @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep1en1"])
-      @model.draft()
-
-    it "enumerator can submit", ->
-      @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep1en1"])
-      assert @model.canSubmit()
-
-    it "admin can submit from draft", ->
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1admin1"])
-      assert @model.canSubmit()
-
-    it "admin cannot submit from pending", ->
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1admin1"])
-      @model.submit()
-      assert not @model.canSubmit()
-
-  describe "canRedraft", ->
-    beforeEach ->
-      @response = { }
-      @form = _.cloneDeep(sampleForm)
-
-      @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep1en1"])
-      @model.draft()
-
-    it "enumerator can redraft final if enumeratorAdminFinal=true", ->
-      # Setup
-      @form.deployments[0].enumeratorAdminFinal = true
-      @model.submit()
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
-      @model.approve()
-
-      @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep1en1"])
-      assert @model.canRedraft()
-
-    it "enumerator cannot redraft final if enumeratorAdminFinal=false", ->
-      @model.submit()
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
-      @model.approve()
-      assert not @model.canRedraft()
-
-    it "admin cannot redraft (only can edit)", ->
-      @model.submit()
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1admin1"])
-      @model.approve()
-      assert.isFalse @model.canRedraft()
-
-    it "approvers cannot redraft (only can edit)", ->
-      @model.submit()
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
-      assert.isFalse @model.canRedraft()
-
-  describe "canReject", ->
-    beforeEach ->
-      @response = { }
-      @form = _.cloneDeep(sampleForm)
-
-      @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep1en1"])
-      @model.draft()
-
-    it "cannot reject drafts", ->
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
-      assert not @model.canReject()
-
-    it "approver cannot reject final", ->
-      @model.submit()
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
-      @model.approve()
-      assert not @model.canReject()
-
-    it "admin can reject final", ->
-      @model.submit()
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
-      @model.approve()
-      @model = new ResponseModel(response: @response, form: @form, user: "formadmin", groups: [])
-      assert @model.canReject()
-
-    it "enumerator cannot reject final", ->
-      @model.submit()
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
-      @model.approve()
-      @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep2en1"])
-      assert not @model.canReject()
-
-    it "can reject if approver", ->
-      @model.submit()
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
-      assert @model.canReject()
-
-    it "can reject if deployment admin", ->
-      @model.submit()
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1admin1"])
-      assert @model.canReject()
-
-    it "can reject if form admin", ->
-      @model.submit()
-      @model = new ResponseModel(response: @response, form: @form, user: "formadmin", username: "formadmin", groups: [])
-      assert @model.canReject()
-
-  describe "canDelete", ->
-    beforeEach ->
-      @response = { }
-      @form = _.cloneDeep(sampleForm)
-
-      @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep1en1"])
-      @model.draft()
-
-    it "can delete if enumerator and in draft", ->
-      assert @model.canDelete()
-
-    it "cannot delete pending if enumerator", ->
-      @model.submit()
-      assert.isFalse @model.canDelete()
-
-    it "can delete rejected if enumerator", ->
-      @model.submit()
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
-      @model.reject("bad")
-      @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep2en1"])
-      assert @model.canDelete()
-
-    it "cannot delete final if enumerator", ->
-      @model.submit()
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
-      @model.approve()
-      @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep2en1"])
-      assert not @model.canDelete()
-
-    it "can delete final if enumerator and enumeratorAdminFinal", ->
-      @model.submit()
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
-      @model.approve()
-      @form.deployments[0].enumeratorAdminFinal = true
-      @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep2en1"])
-      assert @model.canDelete()
-
-    it "can delete pending if approver with preventEditing=false or null", ->
-      @model.submit()
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
-      assert @model.canDelete()
-
-    it "cannot delete pending if approver with preventEditing=true", ->
-      @model.submit()
-      @form.deployments[0].approvalStages[0].preventEditing = true
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
-      assert not @model.canDelete()
-
-    it "cannot delete final if approver", ->
-      @model.submit()
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
-      @model.approve()
-      assert not @model.canDelete()
-
-    it "can delete final if admin", ->
-      @model.submit()
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
-      @model.approve()
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1admin1"])
-      assert @model.canDelete()
-
-  describe "canEdit", ->
-    beforeEach ->
-      @response = { }
-      @form = _.cloneDeep(sampleForm)
-
-      @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep1en1"])
-      @model.draft()
-
-    it "can edit if enumerator and in draft", ->
-      assert @model.canEdit()
-
-    it "cannot edit pending if enumerator", ->
-      @model.submit()
-      assert not @model.canEdit()
-
-    it "can edit rejected if enumerator", ->
-      @model.submit()
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
-      @model.reject("bad")
-      @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep2en1"])
-      assert @model.canEdit()
-
-    it "cannot edit final if enumerator", ->
-      @model.submit()
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
-      @model.approve()
-      @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep2en1"])
-      assert not @model.canEdit()
-
-    it "can edit final if enumerator and even if enumeratorAdminFinal", ->
-      @model.submit()
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
-      @model.approve()
-      @form.deployments[0].enumeratorAdminFinal = true
-      @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep2en1"])
-      assert not @model.canEdit()
-
-    it "can edit pending if approver with preventEditing=false or null", ->
-      @model.submit()
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
-      assert @model.canEdit()
-
-    it "cannot edit pending if approver with preventEditing=true", ->
-      @model.submit()
-      @form.deployments[0].approvalStages[0].preventEditing = true
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
-      assert not @model.canEdit()
-
-    it "cannot edit final if approver", ->
-      @model.submit()
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
-      @model.approve()
-      assert not @model.canEdit()
-
-    it "can edit final if admin", ->
-      @model.submit()
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
-      @model.approve()
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1admin1"])
-      assert @model.canEdit()
-
-  describe "canApprove", ->
-    beforeEach ->
-      @response = { }
-      @form = _.cloneDeep(sampleForm)
-
-      @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep1en1"])
-      @model.draft()
-
-    it "cannot approve drafts", ->
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
-      assert not @model.canApprove()
-
-    it "cannot approve final", ->
-      @model.submit()
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
-      @model.approve()
-      assert not @model.canApprove()
-
-    it "cannot approve if enumerator", ->
-      assert not @model.canApprove()
-
-    it "can approve if approver", ->
-      @model.submit()
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
-      assert @model.canApprove()
-
-    it "can approve if deployment admin", ->
-      @model.submit()
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1admin1"])
-      assert @model.canApprove()
-
-    it "can approve if form admin", ->
-      @model.submit()
-      @model = new ResponseModel(response: @response, form: @form, user: "formadmin", username: "formadmin", groups: [])
-      assert @model.canApprove()
-
-  describe "amApprover", ->
-    beforeEach ->
-      @response = { }
-      @form = _.cloneDeep(sampleForm)
-
-      @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep1en1"])
-      @model.draft()
-
-    it "am approver if approver", ->
-      @model.submit()
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1ap1"])
-      assert @model.amApprover()
-
-    it "am not approver if deployment admin", ->
-      @model.submit()
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep1admin1"])
-      assert.isFalse @model.amApprover()
-
-    it "am not approver if form admin", ->
-      @model.submit()
-      @model = new ResponseModel(response: @response, form: @form, user: "formadmin", username: "formadmin", groups: [])
-      assert.isFalse @model.amApprover()
-
-
-
-  describe "inactive deployments", ->
-    it "skips over inactive deployments", ->
-      @response = { }
-      # Add to both but set first inactive
-      @form = _.cloneDeep(sampleForm)
-
-      @form.deployments[1].enumerators.push "group:dep1en1"
-      @form.deployments[0].active = false
-
-      @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep2en1"])
-      @model.draft()
-      assert.equal @response.deployment, "dep2"
-
-    it "requires active deployment", ->
-      @response = { }
-      @form = _.cloneDeep(sampleForm)
-      @form.deployments[0].active = false
-      @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep2en1"])
-      assert.throws ->
-        @model.draft()
-
-  describe "entities field", ->
-    beforeEach ->
-      # Create form with entity question
-      @response = { }
-      @form = _.cloneDeep(sampleForm)
-      @form.design = {
+      this.form.state = 'deleted';
+      this.model.fixRoles();
+
+      return assert.deepEqual(this.response.roles, [], "No one can see deleted");
+    });
+  });
+
+  describe("submit when no approval stages with enumeratorAdminFinal", function() {
+    beforeEach(function() {
+      this.response = { };
+      this.form = _.cloneDeep(sampleForm);
+      this.form.deployments[1].approvalStages = [];
+      this.form.deployments[1].enumeratorAdminFinal = true;
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep2en1"]});
+      this.model.draft();
+      return this.model.submit();
+    });
+
+    return it("leaves self as admin", function() {
+      return assert.equal(_.where(this.response.roles, { id: "user:user2", role: "admin"}).length, 1);
+    });
+  });
+
+  describe("submit when approval stages", function() {
+    beforeEach(function() {
+      this.response = { };
+      this.form = _.cloneDeep(sampleForm);
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep2en1"]});
+      this.model.draft();
+      return this.model.submit();
+    });
+
+    it("makes response pending", function() {
+      return assert.equal(this.response.status, "pending");
+    });
+
+    it("sets submittedOn", function() {
+      return assert(this.response.submittedOn);
+    });
+
+    it("sets approvals", function() {
+      return assert.deepEqual(this.response.approvals, []);
+  });
+
+    it("leaves self as admin", function() {
+      return assert.equal(_.where(this.response.roles, { id: "user:user2", role: "admin"}).length, 1);
+    });
+
+    it("includes approvers of first stage as admins", function() {
+      return assert.equal(_.where(this.response.roles, { id: "group:dep2ap1", role: "admin"}).length, 1);
+    });
+
+    it("includes admins of deployment as admins", function() {
+      return assert.equal(_.where(this.response.roles, { id: "group:dep2admin1", role: "admin"}).length, 1);
+    });
+
+    it("includes admins of form as admins", function() {
+      return assert.equal(_.where(this.response.roles, { id: "user:formadmin", role: "admin"}).length, 1);
+    });
+
+    it("does not include deployment viewers", function() {
+     return assert.equal(_.where(this.response.roles, { id: "group:dep2view1"}).length, 0);
+    });
+
+    it("makes response final if approval stage deleted", function() {
+      this.form.deployments[1].approvalStages = [];
+      this.model.fixRoles();
+      return assert.equal(this.response.status, "final");
+    });
+
+    it("makes does not make draft response final if approval stage deleted", function() {
+      this.response.status = "draft";
+      this.form.deployments[1].approvalStages = [];
+      this.model.fixRoles();
+      return assert.equal(this.response.status, "draft");
+    });
+
+    return it("creates submit event", function() {
+      assert.equal(this.response.events.length, 2);
+      assert.equal(this.response.events[1].type, "submit");
+      assert.equal(this.response.events[1].by, "user2");
+      return assert(this.response.events[1].on);
+    });
+  });
+
+  describe("approval when last stage", function() {
+    beforeEach(function() {
+      this.response = { };
+      this.form = _.cloneDeep(sampleForm);
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep2en1"]});
+      this.model.draft();
+      this.model.submit();
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user", username: "user", groups: ["dep2en1"]});
+      return this.model.approve();
+    });
+
+    it("sets approvals", function() {
+      return assert.deepEqual(_.pluck(this.response.approvals, "by"), ["user"]);
+  });
+
+    it("makes response final", function() {
+      return assert.equal(this.response.status, "final");
+    });
+
+    it("leaves self as viewer", function() {
+      return assert.equal(_.where(this.response.roles, { id: "user:user2", role: "view"}).length, 1);
+    });
+
+    it("includes admins of deployment as admins", function() {
+      return assert.equal(_.where(this.response.roles, { id: "group:dep2admin1", role: "admin"}).length, 1);
+    });
+
+    it("includes admins of form as admins", function() {
+      return assert.equal(_.where(this.response.roles, { id: "user:formadmin", role: "admin"}).length, 1);
+    });
+
+    it("includes viewers of deployment as viewers", function() {
+      return assert.equal(_.where(this.response.roles, { id: "group:dep2view1"}).length, 1);
+    });
+
+    return it("creates approve event", function() {
+      assert.equal(this.response.events.length, 3);
+      assert.equal(this.response.events[2].type, "approve");
+      assert.equal(this.response.events[2].by, "user");
+      assert(this.response.events[2].on);
+      return assert(!this.response.events[2].override);
+    });
+  });
+
+  describe("approval overrides", function() {
+    beforeEach(function() {
+      this.response = { };
+      this.form = _.cloneDeep(sampleForm);
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user", username: "user", groups: ["dep2en1"]});
+      this.model.draft();
+      return this.model.submit();
+    });
+
+    it("sets override to false if done by approver", function() {
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user", username: "user", groups: ["dep2ap1"]});
+      this.model.approve();
+      return assert(!this.response.approvals[0].override);
+    });
+
+    it("sets override to true if done by deployment admin", function() {
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep2admin1"]});
+      this.model.approve();
+      return assert.isTrue(this.response.approvals[0].override);
+    });
+
+    it("sets override to true if done by form admin", function() {
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "formadmin", username: "formadmin", groups: []});
+      this.model.approve();
+      return assert.isTrue(this.response.approvals[0].override);
+    });
+
+    return it("creates approve event with override", function() {
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "formadmin", username: "formadmin", groups: []});
+      this.model.approve();
+
+      assert.equal(this.response.events.length, 3);
+      assert.equal(this.response.events[2].type, "approve");
+      assert.equal(this.response.events[2].by, "formadmin");
+      assert.isTrue(this.response.events[2].override);
+      return assert(this.response.events[1].on);
+    });
+  });
+
+  describe("approval when not last stage", function() {
+    beforeEach(function() {
+      this.response = { };
+      this.form = _.cloneDeep(sampleForm);
+
+      // Add extra stage
+      this.form.deployments[1].approvalStages.push({ approvers: ["group:dep2ap2"] });
+
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user", username: "user", groups: ["dep2en1"]});
+      this.model.draft();
+      this.model.submit();
+      return this.model.approve();
+    });
+
+    it("leaves response pending", function() {
+      return assert.equal(this.response.status, "pending");
+    });
+
+    it("sets approvals", function() {
+      return assert.deepEqual(_.pluck(this.response.approvals, "by"), ["user"]);
+  });
+
+    it("leaves self as admin", function() {
+      return assert.equal(_.where(this.response.roles, { id: "user:user", role: "admin"}).length, 1);
+    });
+
+    it("includes approvers of second stage as admins", function() {
+      return assert.equal(_.where(this.response.roles, { id: "group:dep2ap2", role: "admin"}).length, 1);
+    });
+
+    it("includes approvers of first stage as viewers", function() {
+      return assert.equal(_.where(this.response.roles, { id: "group:dep2ap1", role: "view"}).length, 1);
+    });
+
+    it("includes admins of deployment as admins", function() {
+      return assert.equal(_.where(this.response.roles, { id: "group:dep2admin1", role: "admin"}).length, 1);
+    });
+
+    it("includes admins of form as admins", function() {
+      return assert.equal(_.where(this.response.roles, { id: "user:formadmin", role: "admin"}).length, 1);
+    });
+
+    it("does not include deployment viewers", function() {
+     return assert.equal(_.where(this.response.roles, { id: "group:dep2view1"}).length, 0);
+    });
+
+    return it("creates approve event", function() {
+      assert.equal(this.response.events.length, 3);
+      assert.equal(this.response.events[2].type, "approve");
+      assert.equal(this.response.events[2].by, "user");
+      assert(this.response.events[2].on);
+      return assert(!this.response.events[2].override);
+    });
+  });
+
+  describe("redraft", function() {
+    beforeEach(function() {
+      this.response = { };
+      this.form = _.cloneDeep(sampleForm);
+
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user", username: "user", groups: ["dep2en1"]});
+
+      this.model.draft();
+      this.origId = this.response._id;
+      this.model.submit();
+      return this.model.redraft();
+    });
+
+    it("does not overwrite id", function() {
+      return assert.equal(this.response._id, this.origId);
+    });
+
+    it("creates draft event", function() {
+      assert.equal(this.response.events.length, 3);
+      assert.equal(this.response.events[2].type, "draft");
+      assert.equal(this.response.events[2].by, "user");
+      return assert(this.response.events[2].on);
+    });
+
+    return it("does not create repeated draft event if already in draft", function() {
+      this.model.redraft();
+      return assert.equal(this.response.events.length, 3);
+    });
+  });
+
+
+  describe("reject", function() {
+    beforeEach(function() {
+      this.response = { };
+      this.form = _.cloneDeep(sampleForm);
+
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user", username: "user", groups: ["dep2en1"]});
+
+      this.model.draft();
+      this.model.submit();
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep2ap1"]});
+      return this.model.reject("message");
+    });
+
+    it("sets status rejected", function() {
+      return assert.equal(this.response.status, "rejected");
+    });
+
+    it("removes approvalStage", function() {
+      return assert.isUndefined(this.response.approvalStage);
+    });
+
+    it("sets rejection message", function() {
+      return assert.equal(this.response.rejectionMessage, "message");
+    });
+
+    it("includes self as admin", function() {
+      return assert.equal(_.where(this.response.roles, { id: "user:user", role: "admin"}).length, 1);
+    });
+
+    it("includes admins of deployment as admins", function() {
+      return assert.equal(_.where(this.response.roles, { id: "group:dep2admin1", role: "admin"}).length, 1);
+    });
+
+    it("includes admins of form as admins", function() {
+      return assert.equal(_.where(this.response.roles, { id: "user:formadmin", role: "admin"}).length, 1);
+    });
+
+    it("includes approvers as viewers", function() {
+      return assert.equal(_.where(this.response.roles, { id: "group:dep2ap1", role: "view"}).length, 1);
+    });
+
+    it("does not include deployment viewers", function() {
+      return assert.equal(_.where(this.response.roles, { id: "group:dep2view1"}).length, 0);
+    });
+
+    return it("creates reject event", function() {
+      assert.equal(this.response.events.length, 3);
+      assert.equal(this.response.events[2].type, "reject");
+      assert.equal(this.response.events[2].by, "user2");
+      assert(this.response.events[2].on);
+      assert(!this.response.events[2].override);
+      return assert.equal(this.response.events[2].message, "message");
+    });
+  });
+
+  describe("recordEdit", function() {
+    it("does not record if done by enumerator", function() {
+      const response = { };
+      const form = _.cloneDeep(sampleForm);
+      const model = new ResponseModel({response, form, user: "user", username: "user", groups: ["dep2en1"]});
+      model.draft();
+
+      model.recordEdit();
+      return assert.equal(response.events.length, 1);
+    });
+
+    return it("does record if done by other than enumerator", function() {
+      const response = { };
+      const form = _.cloneDeep(sampleForm);
+      let model = new ResponseModel({response, form, user: "user", username: "user", groups: ["dep2en1"]});
+      model.draft();
+
+      model = new ResponseModel({response, form: this.form, user: "user2", username: "user2", groups: ["dep2admin1"]});
+      model.recordEdit();
+      assert.equal(response.events.length, 2);
+      assert.equal(response.events[1].type, "edit");
+      return assert.equal(response.events[1].by, "user2");
+    });
+  });
+
+  describe("canSubmit", function() {
+    beforeEach(function() {
+      this.response = { };
+      this.form = _.cloneDeep(sampleForm);
+
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user", username: "user", groups: ["dep1en1"]});
+      return this.model.draft();
+    });
+
+    it("enumerator can submit", function() {
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user", username: "user", groups: ["dep1en1"]});
+      return assert(this.model.canSubmit());
+    });
+
+    it("admin can submit from draft", function() {
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep1admin1"]});
+      return assert(this.model.canSubmit());
+    });
+
+    return it("admin cannot submit from pending", function() {
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep1admin1"]});
+      this.model.submit();
+      return assert(!this.model.canSubmit());
+    });
+  });
+
+  describe("canRedraft", function() {
+    beforeEach(function() {
+      this.response = { };
+      this.form = _.cloneDeep(sampleForm);
+
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user", username: "user", groups: ["dep1en1"]});
+      return this.model.draft();
+    });
+
+    it("enumerator can redraft final if enumeratorAdminFinal=true", function() {
+      // Setup
+      this.form.deployments[0].enumeratorAdminFinal = true;
+      this.model.submit();
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep1ap1"]});
+      this.model.approve();
+
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user", username: "user", groups: ["dep1en1"]});
+      return assert(this.model.canRedraft());
+    });
+
+    it("enumerator cannot redraft final if enumeratorAdminFinal=false", function() {
+      this.model.submit();
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep1ap1"]});
+      this.model.approve();
+      return assert(!this.model.canRedraft());
+    });
+
+    it("admin cannot redraft (only can edit)", function() {
+      this.model.submit();
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep1admin1"]});
+      this.model.approve();
+      return assert.isFalse(this.model.canRedraft());
+    });
+
+    return it("approvers cannot redraft (only can edit)", function() {
+      this.model.submit();
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep1ap1"]});
+      return assert.isFalse(this.model.canRedraft());
+    });
+  });
+
+  describe("canReject", function() {
+    beforeEach(function() {
+      this.response = { };
+      this.form = _.cloneDeep(sampleForm);
+
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user", username: "user", groups: ["dep1en1"]});
+      return this.model.draft();
+    });
+
+    it("cannot reject drafts", function() {
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep1ap1"]});
+      return assert(!this.model.canReject());
+    });
+
+    it("approver cannot reject final", function() {
+      this.model.submit();
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep1ap1"]});
+      this.model.approve();
+      return assert(!this.model.canReject());
+    });
+
+    it("admin can reject final", function() {
+      this.model.submit();
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep1ap1"]});
+      this.model.approve();
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "formadmin", groups: []});
+      return assert(this.model.canReject());
+    });
+
+    it("enumerator cannot reject final", function() {
+      this.model.submit();
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep1ap1"]});
+      this.model.approve();
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user", username: "user", groups: ["dep2en1"]});
+      return assert(!this.model.canReject());
+    });
+
+    it("can reject if approver", function() {
+      this.model.submit();
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep1ap1"]});
+      return assert(this.model.canReject());
+    });
+
+    it("can reject if deployment admin", function() {
+      this.model.submit();
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep1admin1"]});
+      return assert(this.model.canReject());
+    });
+
+    return it("can reject if form admin", function() {
+      this.model.submit();
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "formadmin", username: "formadmin", groups: []});
+      return assert(this.model.canReject());
+    });
+  });
+
+  describe("canDelete", function() {
+    beforeEach(function() {
+      this.response = { };
+      this.form = _.cloneDeep(sampleForm);
+
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user", username: "user", groups: ["dep1en1"]});
+      return this.model.draft();
+    });
+
+    it("can delete if enumerator and in draft", function() {
+      return assert(this.model.canDelete());
+    });
+
+    it("cannot delete pending if enumerator", function() {
+      this.model.submit();
+      return assert.isFalse(this.model.canDelete());
+    });
+
+    it("can delete rejected if enumerator", function() {
+      this.model.submit();
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep1ap1"]});
+      this.model.reject("bad");
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user", username: "user", groups: ["dep2en1"]});
+      return assert(this.model.canDelete());
+    });
+
+    it("cannot delete final if enumerator", function() {
+      this.model.submit();
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep1ap1"]});
+      this.model.approve();
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user", username: "user", groups: ["dep2en1"]});
+      return assert(!this.model.canDelete());
+    });
+
+    it("can delete final if enumerator and enumeratorAdminFinal", function() {
+      this.model.submit();
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep1ap1"]});
+      this.model.approve();
+      this.form.deployments[0].enumeratorAdminFinal = true;
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user", username: "user", groups: ["dep2en1"]});
+      return assert(this.model.canDelete());
+    });
+
+    it("can delete pending if approver with preventEditing=false or null", function() {
+      this.model.submit();
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep1ap1"]});
+      return assert(this.model.canDelete());
+    });
+
+    it("cannot delete pending if approver with preventEditing=true", function() {
+      this.model.submit();
+      this.form.deployments[0].approvalStages[0].preventEditing = true;
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep1ap1"]});
+      return assert(!this.model.canDelete());
+    });
+
+    it("cannot delete final if approver", function() {
+      this.model.submit();
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep1ap1"]});
+      this.model.approve();
+      return assert(!this.model.canDelete());
+    });
+
+    return it("can delete final if admin", function() {
+      this.model.submit();
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep1ap1"]});
+      this.model.approve();
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep1admin1"]});
+      return assert(this.model.canDelete());
+    });
+  });
+
+  describe("canEdit", function() {
+    beforeEach(function() {
+      this.response = { };
+      this.form = _.cloneDeep(sampleForm);
+
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user", username: "user", groups: ["dep1en1"]});
+      return this.model.draft();
+    });
+
+    it("can edit if enumerator and in draft", function() {
+      return assert(this.model.canEdit());
+    });
+
+    it("cannot edit pending if enumerator", function() {
+      this.model.submit();
+      return assert(!this.model.canEdit());
+    });
+
+    it("can edit rejected if enumerator", function() {
+      this.model.submit();
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep1ap1"]});
+      this.model.reject("bad");
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user", username: "user", groups: ["dep2en1"]});
+      return assert(this.model.canEdit());
+    });
+
+    it("cannot edit final if enumerator", function() {
+      this.model.submit();
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep1ap1"]});
+      this.model.approve();
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user", username: "user", groups: ["dep2en1"]});
+      return assert(!this.model.canEdit());
+    });
+
+    it("can edit final if enumerator and even if enumeratorAdminFinal", function() {
+      this.model.submit();
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep1ap1"]});
+      this.model.approve();
+      this.form.deployments[0].enumeratorAdminFinal = true;
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user", username: "user", groups: ["dep2en1"]});
+      return assert(!this.model.canEdit());
+    });
+
+    it("can edit pending if approver with preventEditing=false or null", function() {
+      this.model.submit();
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep1ap1"]});
+      return assert(this.model.canEdit());
+    });
+
+    it("cannot edit pending if approver with preventEditing=true", function() {
+      this.model.submit();
+      this.form.deployments[0].approvalStages[0].preventEditing = true;
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep1ap1"]});
+      return assert(!this.model.canEdit());
+    });
+
+    it("cannot edit final if approver", function() {
+      this.model.submit();
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep1ap1"]});
+      this.model.approve();
+      return assert(!this.model.canEdit());
+    });
+
+    return it("can edit final if admin", function() {
+      this.model.submit();
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep1ap1"]});
+      this.model.approve();
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep1admin1"]});
+      return assert(this.model.canEdit());
+    });
+  });
+
+  describe("canApprove", function() {
+    beforeEach(function() {
+      this.response = { };
+      this.form = _.cloneDeep(sampleForm);
+
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user", username: "user", groups: ["dep1en1"]});
+      return this.model.draft();
+    });
+
+    it("cannot approve drafts", function() {
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep1ap1"]});
+      return assert(!this.model.canApprove());
+    });
+
+    it("cannot approve final", function() {
+      this.model.submit();
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep1ap1"]});
+      this.model.approve();
+      return assert(!this.model.canApprove());
+    });
+
+    it("cannot approve if enumerator", function() {
+      return assert(!this.model.canApprove());
+    });
+
+    it("can approve if approver", function() {
+      this.model.submit();
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep1ap1"]});
+      return assert(this.model.canApprove());
+    });
+
+    it("can approve if deployment admin", function() {
+      this.model.submit();
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep1admin1"]});
+      return assert(this.model.canApprove());
+    });
+
+    return it("can approve if form admin", function() {
+      this.model.submit();
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "formadmin", username: "formadmin", groups: []});
+      return assert(this.model.canApprove());
+    });
+  });
+
+  describe("amApprover", function() {
+    beforeEach(function() {
+      this.response = { };
+      this.form = _.cloneDeep(sampleForm);
+
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user", username: "user", groups: ["dep1en1"]});
+      return this.model.draft();
+    });
+
+    it("am approver if approver", function() {
+      this.model.submit();
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep1ap1"]});
+      return assert(this.model.amApprover());
+    });
+
+    it("am not approver if deployment admin", function() {
+      this.model.submit();
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep1admin1"]});
+      return assert.isFalse(this.model.amApprover());
+    });
+
+    return it("am not approver if form admin", function() {
+      this.model.submit();
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "formadmin", username: "formadmin", groups: []});
+      return assert.isFalse(this.model.amApprover());
+    });
+  });
+
+
+
+  describe("inactive deployments", function() {
+    it("skips over inactive deployments", function() {
+      this.response = { };
+      // Add to both but set first inactive
+      this.form = _.cloneDeep(sampleForm);
+
+      this.form.deployments[1].enumerators.push("group:dep1en1");
+      this.form.deployments[0].active = false;
+
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user", username: "user", groups: ["dep2en1"]});
+      this.model.draft();
+      return assert.equal(this.response.deployment, "dep2");
+    });
+
+    return it("requires active deployment", function() {
+      this.response = { };
+      this.form = _.cloneDeep(sampleForm);
+      this.form.deployments[0].active = false;
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user", username: "user", groups: ["dep2en1"]});
+      return assert.throws(function() {
+        return this.model.draft();
+      });
+    });
+  });
+
+  describe("entities field", function() {
+    beforeEach(function() {
+      // Create form with entity question
+      this.response = { };
+      this.form = _.cloneDeep(sampleForm);
+      return this.form.design = {
         contents: [
           {
-            _id: "q1"
-            _type: "EntityQuestion"
-            text: { _base: "en", en: "English" }
+            _id: "q1",
+            _type: "EntityQuestion",
+            text: { _base: "en", en: "English" },
             entityType: "type1"
-          }
+          },
           {
-            _id: "q2"
-            _type: "SiteQuestion"
-            text: { _base: "en", en: "English" }
+            _id: "q2",
+            _type: "SiteQuestion",
+            text: { _base: "en", en: "English" },
             siteTypes: ['community']
           }
         ]
-      }
+      };});
 
-    it "sets entities", ->
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep2en1"])
-      @model.draft()
+    it("sets entities", function() {
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep2en1"]});
+      this.model.draft();
 
-      # Set entity question value
-      @response.data = { q1: { value: "entityid123" } }
-      @model.submit()
+      // Set entity question value
+      this.response.data = { q1: { value: "entityid123" } };
+      this.model.submit();
 
-      # Check that entities was filled out
-      assert.deepEqual @response.entities, [
+      // Check that entities was filled out
+      return assert.deepEqual(this.response.entities, [
         { question: "q1", entityType: "type1", property: "_id", value: "entityid123" }
-      ], JSON.stringify(@response.entities)
+      ], JSON.stringify(this.response.entities));
+    });
 
-    it "sets sites", ->
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep2en1"])
-      @model.draft()
+    it("sets sites", function() {
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep2en1"]});
+      this.model.draft();
 
-      # Set entity question value
-      @response.data = { q2: { value: { code: "10007" } } }
-      @model.submit()
+      // Set entity question value
+      this.response.data = { q2: { value: { code: "10007" } } };
+      this.model.submit();
 
-      # Check that entities was filled out
-      assert.deepEqual @response.entities, [
+      // Check that entities was filled out
+      return assert.deepEqual(this.response.entities, [
         { question: "q2", entityType: "community", property: "code", value: "10007" }
-      ], JSON.stringify(@response.entities)
+      ], JSON.stringify(this.response.entities));
+    });
 
-    it "resets entities", ->
-      @model = new ResponseModel(response: @response, form: @form, user: "user2", username: "user2", groups: ["dep2en1"])
-      @model.draft()
+    return it("resets entities", function() {
+      this.model = new ResponseModel({response: this.response, form: this.form, user: "user2", username: "user2", groups: ["dep2en1"]});
+      this.model.draft();
 
-      # Set entity question value
-      @response.data = { q1: { value: "entityid123" } }
-      @model.submit()
+      // Set entity question value
+      this.response.data = { q1: { value: "entityid123" } };
+      this.model.submit();
 
-      # Reset 
-      @model.redraft()
-      @response.data = { q1: { value: "" } }
-      @model.submit()
+      // Reset 
+      this.model.redraft();
+      this.response.data = { q1: { value: "" } };
+      this.model.submit();
 
-      # Check that entities was not filled out
-      assert.deepEqual @response.entities, []
+      // Check that entities was not filled out
+      return assert.deepEqual(this.response.entities, []);
+  });
+});
 
-  describe "deleted deployments", ->
-    it "does not crash on non existing deployment", ->
-      @response = { }
-      @form = _.cloneDeep(sampleForm)
+  return describe("deleted deployments", () => it("does not crash on non existing deployment", function() {
+    this.response = { };
+    this.form = _.cloneDeep(sampleForm);
 
-      @model = new ResponseModel(response: @response, form: @form, user: "user", username: "user", groups: ["dep1en1"])
-      @model.draft()
+    this.model = new ResponseModel({response: this.response, form: this.form, user: "user", username: "user", groups: ["dep1en1"]});
+    this.model.draft();
 
-      @form.deployments = []
-      @model.fixRoles()
+    this.form.deployments = [];
+    this.model.fixRoles();
 
-      assert.deepEqual @response.roles, [{ id: "user:formadmin", role: "admin" }, { id: "user:user", role: "admin" }]
+    return assert.deepEqual(this.response.roles, [{ id: "user:formadmin", role: "admin" }, { id: "user:user", role: "admin" }]);
+}));
+});

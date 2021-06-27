@@ -1,72 +1,94 @@
-PropTypes = require('prop-types')
-React = require 'react'
-R = React.createElement
-AsyncLoadComponent = require('react-library/lib/AsyncLoadComponent')
-classNames = require('classnames')
+let RotationAwareImageComponent;
+import PropTypes from 'prop-types';
+import React from 'react';
+const R = React.createElement;
+import AsyncLoadComponent from 'react-library/lib/AsyncLoadComponent';
+import classNames from 'classnames';
 
-module.exports = class RotationAwareImageComponent extends AsyncLoadComponent
-  @propTypes: 
-    image: PropTypes.object.isRequired
-    imageManager: PropTypes.object.isRequired
-    thumbnail: PropTypes.bool
-    height: PropTypes.number
-    onClick: PropTypes.func
+export default RotationAwareImageComponent = (function() {
+  RotationAwareImageComponent = class RotationAwareImageComponent extends AsyncLoadComponent {
+    static initClass() {
+      this.propTypes = { 
+        image: PropTypes.object.isRequired,
+        imageManager: PropTypes.object.isRequired,
+        thumbnail: PropTypes.bool,
+        height: PropTypes.number,
+        onClick: PropTypes.func
+      };
+    }
 
-  # Override to determine if a load is needed. Not called on mounting
-  isLoadNeeded: (newProps, oldProps) ->
-    return newProps.image.id != oldProps.image.id or newProps.thumbnail != oldProps.thumbnail
+    // Override to determine if a load is needed. Not called on mounting
+    isLoadNeeded(newProps, oldProps) {
+      return (newProps.image.id !== oldProps.image.id) || (newProps.thumbnail !== oldProps.thumbnail);
+    }
 
-  # Call callback with state changes
-  load: (props, prevProps, callback) ->
-    if props.thumbnail
-      props.imageManager.getImageThumbnailUrl(props.image.id, (url) =>
-        callback(url: url, error: false)
-      , => callback(error: true))
-    else
-      props.imageManager.getImageUrl(props.image.id, (url) =>
-        callback(url: url, error: false)
-      , => callback(error: true))
+    // Call callback with state changes
+    load(props, prevProps, callback) {
+      if (props.thumbnail) {
+        return props.imageManager.getImageThumbnailUrl(props.image.id, url => {
+          return callback({url, error: false});
+        }
+        , () => callback({error: true}));
+      } else {
+        return props.imageManager.getImageUrl(props.image.id, url => {
+          return callback({url, error: false});
+        }
+        , () => callback({error: true}));
+      }
+    }
 
-  render: ->
-    imageStyle = {}
-    containerStyle = {}
-    classes = classNames({
-      "img-thumbnail": @props.thumbnail
-      "rotated": @props.image.rotation
-      "rotate-90": @props.image.rotation and @props.image.rotation == 90
-      "rotate-180": @props.image.rotation and @props.image.rotation == 180
-      "rotate-270": @props.image.rotation and @props.image.rotation == 270 
-    })
+    render() {
+      const imageStyle = {};
+      const containerStyle = {};
+      const classes = classNames({
+        "img-thumbnail": this.props.thumbnail,
+        "rotated": this.props.image.rotation,
+        "rotate-90": this.props.image.rotation && (this.props.image.rotation === 90),
+        "rotate-180": this.props.image.rotation && (this.props.image.rotation === 180),
+        "rotate-270": this.props.image.rotation && (this.props.image.rotation === 270) 
+      });
 
-    containerClasses= classNames({
-      "rotated-image-container": true
-      "rotated-thumbnail": @props.thumbnail
-    })
+      const containerClasses= classNames({
+        "rotated-image-container": true,
+        "rotated-thumbnail": this.props.thumbnail
+      });
 
-    if @props.thumbnail
-      if @props.image.rotation == 90 or @props.image.rotation == 270
-        imageStyle.maxHeight = @props.width or 160
-        imageStyle.maxWidth = @props.height or 160
-      else
-        imageStyle.maxHeight = @props.height or 160
-        imageStyle.maxWidth = @props.width or 160
+      if (this.props.thumbnail) {
+        if ((this.props.image.rotation === 90) || (this.props.image.rotation === 270)) {
+          imageStyle.maxHeight = this.props.width || 160;
+          imageStyle.maxWidth = this.props.height || 160;
+        } else {
+          imageStyle.maxHeight = this.props.height || 160;
+          imageStyle.maxWidth = this.props.width || 160;
+        }
 
-      containerStyle.height = @props.height or 160
-    else
-      imageStyle.maxWidth = "100%"
+        containerStyle.height = this.props.height || 160;
+      } else {
+        imageStyle.maxWidth = "100%";
+      }
 
-    if @state.url 
-      return R 'span', 
-        ref: (c) => @parent = c
-        className: containerClasses
-        style: containerStyle,
-          R 'img',
-            ref: (c) => @image = c
-            src: @state.url
-            style: imageStyle
-            className: classes
-            onClick: @props.onClick
-            alt: @props.image.caption or ""
+      if (this.state.url) { 
+        return R('span', { 
+          ref: c => { return this.parent = c; },
+          className: containerClasses,
+          style: containerStyle
+        },
+            R('img', {
+              ref: c => { return this.image = c; },
+              src: this.state.url,
+              style: imageStyle,
+              className: classes,
+              onClick: this.props.onClick,
+              alt: this.props.image.caption || ""
+            }
+            )
+        );
 
-    else
-      return null
+      } else {
+        return null;
+      }
+    }
+  };
+  RotationAwareImageComponent.initClass();
+  return RotationAwareImageComponent;
+})();

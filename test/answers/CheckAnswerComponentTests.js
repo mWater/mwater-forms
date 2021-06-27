@@ -1,43 +1,49 @@
-assert = require('chai').assert
-CheckAnswerComponent = require '../../src/answers/CheckAnswerComponent'
+import { assert } from 'chai';
+import CheckAnswerComponent from '../../src/answers/CheckAnswerComponent';
+import TestComponent from 'react-library/lib/TestComponent';
+import ReactTestUtils from 'react-dom/test-utils';
+import React from 'react';
+import ReactDOM from 'react-dom';
+const R = React.createElement;
 
-TestComponent = require('react-library/lib/TestComponent')
-ReactTestUtils = require('react-dom/test-utils')
+describe('CheckAnswerComponent', function() {
+  beforeEach(function() {
+    this.toDestroy = [];
 
-React = require 'react'
-ReactDOM = require 'react-dom'
-R = React.createElement
+    return this.render = (options = {}) => {
+      const elem = R(CheckAnswerComponent, options);
+      const comp = new TestComponent(elem);
+      this.toDestroy.push(comp);
+      return comp;
+    };
+  });
 
-describe 'CheckAnswerComponent', ->
-  beforeEach ->
-    @toDestroy = []
+  afterEach(function() {
+    return this.toDestroy.map((comp) =>
+      comp.destroy());
+  });
 
-    @render = (options = {}) =>
-      elem = R(CheckAnswerComponent, options)
-      comp = new TestComponent(elem)
-      @toDestroy.push(comp)
-      return comp
+  it("can check", function(callback) {
+    const onValueChange = function(value) {
+      assert.equal(value, true);
+      return callback();
+    };
 
-  afterEach ->
-    for comp in @toDestroy
-      comp.destroy()
+    this.comp = this.render({value: false, onValueChange, label: {en: 'test label', _base: 'en'}});
+    const checkbox = ReactTestUtils.findRenderedDOMComponentWithClass(this.comp.getComponent(), 'touch-checkbox');
 
-  it "can check", (callback) ->
-    onValueChange = (value) ->
-      assert.equal value, true
-      callback()
+    return TestComponent.click(checkbox);
+  });
 
-    @comp = @render({value: false, onValueChange: onValueChange, label: {en: 'test label', _base: 'en'}})
-    checkbox = ReactTestUtils.findRenderedDOMComponentWithClass(@comp.getComponent(), 'touch-checkbox')
+  return it("can uncheck", function(callback) {
+    const onValueChange = function(value) {
+      assert.equal(value, false);
+      return callback();
+    };
 
-    TestComponent.click(checkbox)
+    this.comp = this.render({value: true, onValueChange, label: {en: 'test label', _base: 'en'}});
+    const checkbox = ReactTestUtils.findRenderedDOMComponentWithClass(this.comp.getComponent(), 'touch-checkbox');
 
-  it "can uncheck", (callback) ->
-    onValueChange = (value) ->
-      assert.equal value, false
-      callback()
-
-    @comp = @render({value: true, onValueChange: onValueChange, label: {en: 'test label', _base: 'en'}})
-    checkbox = ReactTestUtils.findRenderedDOMComponentWithClass(@comp.getComponent(), 'touch-checkbox')
-
-    TestComponent.click(checkbox)
+    return TestComponent.click(checkbox);
+  });
+});

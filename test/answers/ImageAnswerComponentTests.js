@@ -1,5 +1,5 @@
-# TODO: SurveyorPro: Make a component version of these tests
-###
+// TODO: SurveyorPro: Make a component version of these tests
+/*
 assert = require("chai").assert
 forms = require '../src'
 UIDriver = require './helpers/UIDriver'
@@ -22,12 +22,12 @@ class MockImageAcquirer
 
 describe 'ImageQuestion', ->
   beforeEach ->
-    # Create model
+    * Create model
     @model = new Backbone.Model 
 
   context 'With a no image acquirer', ->
     beforeEach ->
-      # Create context
+      * Create context
       @ctx = {
         imageManager: new MockImageManager()
       }
@@ -41,7 +41,7 @@ describe 'ImageQuestion', ->
       }
       @qview = @compiler.compileQuestion(@q).render()
 
-    # Run common tests
+    * Run common tests
     commonQuestionTestList.call(this)
 
     it 'displays no image', ->
@@ -73,7 +73,7 @@ describe 'ImageQuestion', ->
 
   context 'With an image acquirer', ->
     beforeEach ->
-      # Create context
+      * Create context
       @ctx = {
         imageManager: new MockImageManager()
         imageAcquirer: new MockImageAcquirer()
@@ -124,5 +124,5 @@ describe 'ImageQuestion', ->
 
       window.confirm = _oldConfirm
 
-###
+*/
     

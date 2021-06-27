@@ -1,498 +1,644 @@
-_ = require 'lodash'
-localizations = require '../localizations.json'
-uuid = require 'uuid'
+import _ from 'lodash';
+import localizations from '../localizations.json';
+import uuid from 'uuid';
 
-# Create ~ 128-bit uid without dashes
-exports.createUid = -> uuid().replace(/-/g, "")
+// Create ~ 128-bit uid without dashes
+export function createUid() { return uuid().replace(/-/g, ""); }
 
-# Create short unique id, with ~42 bits randomness to keep unique amoung a few choices
-exports.createShortUid = ->
-  chrs = "abcdefghjklmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ123456789"
-  id = ""
-  for i in [1..7]
-    id = id + chrs[_.random(0, chrs.length - 1)]
-  return id
+// Create short unique id, with ~42 bits randomness to keep unique amoung a few choices
+export function createShortUid() {
+  const chrs = "abcdefghjklmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ123456789";
+  let id = "";
+  for (let i = 1; i <= 7; i++) {
+    id = id + chrs[_.random(0, chrs.length - 1)];
+  }
+  return id;
+}
 
-# Create medium unique id, with ~58 bits randomness to keep unique amoung a 1,000,000 choices
-exports.createMediumUid = ->
-  chrs = "abcdefghjklmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ123456789"
-  id = ""
-  for i in [1..10]
-    id = id + chrs[_.random(0, chrs.length - 1)]
-  return id
+// Create medium unique id, with ~58 bits randomness to keep unique amoung a 1,000,000 choices
+export function createMediumUid() {
+  const chrs = "abcdefghjklmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ123456789";
+  let id = "";
+  for (let i = 1; i <= 10; i++) {
+    id = id + chrs[_.random(0, chrs.length - 1)];
+  }
+  return id;
+}
 
-# Create a base32 time code to write on forms
-exports.createBase32TimeCode = (date) ->
-  # Characters to use (skip 1, I, 0, O)
-  chars = "23456789ABCDEFGHJLKMNPQRSTUVWXYZ"
+// Create a base32 time code to write on forms
+export function createBase32TimeCode(date) {
+  // Characters to use (skip 1, I, 0, O)
+  const chars = "23456789ABCDEFGHJLKMNPQRSTUVWXYZ";
 
-  # Subtract date from July 1, 2013
-  base = new Date(2013, 6, 1, 0, 0, 0, 0)
+  // Subtract date from July 1, 2013
+  const base = new Date(2013, 6, 1, 0, 0, 0, 0);
 
-  # Get seconds since
-  diff = Math.floor((date.getTime() - base.getTime()) / 1000)
+  // Get seconds since
+  let diff = Math.floor((date.getTime() - base.getTime()) / 1000);
 
-  # Convert to array of base 32 characters
-  code = ""
+  // Convert to array of base 32 characters
+  let code = "";
 
-  while diff >= 1
-    num = diff % 32
-    diff = Math.floor(diff / 32)
-    code = chars[num] + code
-
-  return code
-
-exports.isQuestion = (item) ->
-  return item._type? and item._type.match(/Question$/)
-
-exports.isExpression = (item) ->
-  return item._type? and (item._type in ["TextColumn", "Calculation"])
-
-exports.localizeString = (str, locale) ->
-  # If null, return empty string
-  if not str? 
-    return ""
-
-  # Return for locale if present
-  if locale and str[locale]
-    return str[locale]
-
-  # Return base if present
-  if str._base and str[str._base]
-    return str[str._base] || ""
-
-  # Return english
-  if str.en
-    return str.en
-    
-  return ""
-
-# Gets all questions in form before reference item specified
-# refItem can be null for all questions
-# rosterId is the rosterId to use. null for only top-level
-exports.priorQuestions = (formDesign, refItem = null, rosterId = null) ->
-  questions = []
-
-  # Append all child items
-  appendChildren = (parentItem, currentRosterId) ->
-    for child in parentItem.contents
-      # If ids match, abort
-      if refItem? and child._id == refItem._id
-        return true
-
-      if currentRosterId == rosterId and exports.isQuestion(child)
-        questions.push(child)
-
-      if child.contents
-        if child._type in ["RosterGroup", "RosterMatrix"]
-          if appendChildren(child, child.rosterId or child._id)
-            return true
-        else
-          if appendChildren(child, currentRosterId)
-            return true
-
-    return false
-
-  appendChildren(formDesign, null)
-  return questions
-
-exports.getRosterIds = (formDesign) ->
-  rosterIds = []
-
-  recurse = (item) ->
-    if item._type in ["RosterGroup", "RosterMatrix"]
-      rosterIds.push(item.rosterId or item._id)
-    if item.contents
-      for subitem in item.contents
-        recurse(subitem)
-
-  recurse(formDesign)
-
-  return _.uniq(rosterIds)
-
-# Finds an item by id in a form
-exports.findItem = (formDesign, itemId) ->
-  for item in formDesign.contents
-    # If ids match
-    if item._id == itemId
-      return item
-
-    if item.contents
-      found = exports.findItem(item, itemId)
-      if found
-        return found
-
-# All items under an item including self
-exports.allItems = (rootItem) ->
-  items = []
-  items.push(rootItem)
-  if rootItem.contents
-    for item in rootItem.contents
-      items = items.concat(exports.allItems(item))
-
-  return items
-
-# Fills question with default values and removes extraneous fields
-exports.prepareQuestion = (q) ->
-  _.defaults q, {
-    _id: exports.createUid()
-    text: {}
-    conditions: []
-    validations: []
-    required: false
+  while (diff >= 1) {
+    const num = diff % 32;
+    diff = Math.floor(diff / 32);
+    code = chars[num] + code;
   }
 
-  switch q._type
-    when "TextQuestion"
-      _.defaults q, { format: "singleline" }
-    when "NumberQuestion", "NumberColumnQuestion"
-      _.defaults q, { decimal: true }
-    when "DropdownQuestion", "RadioQuestion", "MulticheckQuestion", "DropdownColumnQuestion"
-      _.defaults q, { choices: [] }
-    when "SiteColumnQuestion"
-      _.defaults q, { siteType: "water_point" }
-    when "LikertQuestion"
-      _.defaults q, { items: [], choices: [] }
-    when "DateQuestion" # , "DateTimeQuestion"??
-      _.defaults q, { format: "YYYY-MM-DD" }
-    when "UnitsQuestion", "UnitsColumnQuestion"
-      _.defaults q, { units: [], defaultUnits: null, unitsPosition: "suffix", decimal: true  }
-    when "LocationQuestion"
-      _.defaults q, { calculateAdminRegion: true }
-    when "CheckQuestion"
-      _.defaults q, { label: {} }
-    when "EntityQuestion"
-      _.defaults q, { entityFilter: {}, displayProperties: [], selectionMode: "external", selectProperties: [], selectText: { _base: "en", en: "Select" }, propertyLinks: [] }
-    when "LikertQuestion"
-      _.defaults q, { items: [], choices: [] }
-    when "MatrixQuestion"
-      _.defaults q, { items: [], columns: [] }
-    when "AquagenxCBTQuestion"
-      _.defaults q, {  }
-    when "CascadingListQuestion"
-      _.defaults q, { rows: [], columns: [] }
-    when "CascadingRefQuestion"
-      _.defaults q, { dropdowns: [] }
+  return code;
+}
 
-  # Get known fields
-  knownFields = ['_id', '_type', 'text', 'textExprs', 'conditions', 'conditionExpr', 'validations', 
-    'required', 'code', 'hint', 'help', 'alternates', 'commentsField', 'recordLocation', 'recordTimestamp', 'sticky', 'exportId', 'disabled']
+export function isQuestion(item) {
+  return (item._type != null) && item._type.match(/Question$/);
+}
 
-  switch q._type
-    when "TextQuestion"
-      knownFields.push "format"
-    when "DateQuestion", "DateColumnQuestion"
-      knownFields.push "format"
-      knownFields.push "defaultNow"
-    when "NumberQuestion", "NumberColumnQuestion"
-      knownFields.push "decimal"
-    when "RadioQuestion"
-      knownFields.push "choices"
-      knownFields.push "displayMode"
-    when "DropdownQuestion", "MulticheckQuestion", "DropdownColumnQuestion"
-      knownFields.push "choices"
-    when "LikertQuestion"
-      knownFields.push "items"
-      knownFields.push "choices"
-    when "UnitsQuestion", "UnitsColumnQuestion"
-      knownFields.push "decimal"
-      knownFields.push "units"
-      knownFields.push "defaultUnits"
-      knownFields.push "unitsPosition"
-    when "CheckQuestion"
-      knownFields.push "label"
-    when "SiteQuestion"
-      knownFields.push "siteTypes"
-    when "SiteColumnQuestion" 
-      knownFields.push "siteType"
-    when "ImageQuestion", "ImagesQuestion"
-      knownFields.push "consentPrompt"
-    when "EntityQuestion"
-      knownFields.push "entityType"
-      knownFields.push "entityFilter"
-      knownFields.push "displayProperties"
-      knownFields.push "selectionMode"
-      knownFields.push "selectProperties"
-      knownFields.push "mapProperty"
-      knownFields.push "selectText"
-      knownFields.push "propertyLinks"
-      knownFields.push "hidden"
-      knownFields.push "createEntity"
-    when "AdminRegionQuestion"
-      knownFields.push "defaultValue"
-    when "MatrixQuestion"
-      knownFields.push "items"
-      knownFields.push "columns"
-    when "LocationQuestion"
-      knownFields.push "calculateAdminRegion"
-      knownFields.push "disableSetByMap"
-      knownFields.push "disableManualLatLng"
-    when "CascadingListQuestion"
-      knownFields.push "rows"
-      knownFields.push "columns"
-    when "CascadingRefQuestion"
-      knownFields.push "tableId"
-      knownFields.push "dropdowns"
+export function isExpression(item) {
+  return (item._type != null) && (["TextColumn", "Calculation"].includes(item._type));
+}
 
-  # Strip unknown fields
-  for key in _.keys(q)
-    if not _.contains(knownFields, key)
-      delete q[key]
+export function localizeString(str, locale) {
+  // If null, return empty string
+  if ((str == null)) { 
+    return "";
+  }
 
-  return q
+  // Return for locale if present
+  if (locale && str[locale]) {
+    return str[locale];
+  }
 
-exports.changeQuestionType = (question, newType) ->
-  # Clear validations (they are type specific)
-  question.validations = []
+  // Return base if present
+  if (str._base && str[str._base]) {
+    return str[str._base] || "";
+  }
 
-  # Clear format (type specific)
-  delete question.format 
-
-  # Set type
-  question._type = newType
-
-  # Prepare question to ensure correct fields
-  exports.prepareQuestion(question)
-
-  return question
-
-# Gets type of the answer: text, number, choice, choices, date, units, boolean, location, image, images, texts, site, entity, admin_region, items_choices, matrix, aquagenx_cbt, cascading_list, cascading_ref
-exports.getAnswerType = (q) ->
-  switch q._type
-    when "TextQuestion", "TextColumnQuestion"
-      return "text"
-    when "NumberQuestion", "NumberColumnQuestion", "StopwatchQuestion"
-      return "number"
-    when "DropdownQuestion", "RadioQuestion", "DropdownColumnQuestion"
-      return "choice"
-    when "MulticheckQuestion"
-      return "choices"
-    when "DateQuestion", "DateColumnQuestion"
-      return "date"
-    when "UnitsQuestion", "UnitsColumnQuestion"
-      return "units"
-    when "CheckQuestion", "CheckColumnQuestion"
-      return "boolean"
-    when "LocationQuestion"
-      return "location"
-    when "ImageQuestion"
-      return "image"
-    when "ImagesQuestion"
-      return "images"
-    when "TextListQuestion"
-      return "texts"
-    when "SiteQuestion", "SiteColumnQuestion"
-      return "site"
-    when "BarcodeQuestion"
-      return "text"
-    when "EntityQuestion"
-      return "entity"
-    when "AdminRegionQuestion"
-      return "admin_region"
-    when "MatrixQuestion"
-      return "matrix"
-    when "LikertQuestion"
-      return "items_choices"
-    when "AquagenxCBTQuestion"
-      return "aquagenx_cbt"
-    when "CascadingListQuestion"
-      return "cascading_list"
-    when "CascadingRefQuestion"
-      return "cascading_ref"
-    when "TextColumn", "Calculation"
-      return "expr"
-    else throw new Error("Unknown question type #{q._type}")
-
-# Check if a form is all sections
-exports.isSectioned = (form) ->
-  return form.contents.length > 0 and _.every form.contents, (item) -> item._type == "Section"
-
-# Duplicates an item (form design, section or question)
-# idMap is a map of old _ids to new _ids. If any not present, new uid will be used
-exports.duplicateItem = (item, idMap) ->
-  # If form or section and ids not mapped, map ids
-  if not idMap 
-    idMap = {}
-
-  if item._type in ["Form", "Section"]
-    for question in exports.priorQuestions(item)
-      # Map non-mapped ones
-      if not idMap[question._id]
-        idMap[question._id] = exports.createUid()
-  else if item._id
-    idMap[item._id] = exports.createUid()
-
-  dup = _.cloneDeep(item)
-  delete dup.confidential
-  delete dup.confidentialRadius
-
-  # Set up id
-  if dup._id
-    dup._basedOn = dup._id
-    if idMap and idMap[dup._id]
-      dup._id = idMap[dup._id]
-    else
-      dup._id = exports.createUid()
-
-  # Fix condition references, or remove conditions
-  if dup.conditions
-    dup.conditions = _.filter dup.conditions, (cond) =>
-      if cond.lhs and cond.lhs.question
-        # Check if in id
-        if idMap and idMap[cond.lhs.question]
-          # Map id
-          cond.lhs.question = idMap[cond.lhs.question]
-          return true
-        # Could not be mapped
-        return false
-
-      # For future AND and OR TODO
-      return true
-
-  # Duplicate contents
-  if dup.contents
-    dup.contents = _.map dup.contents, (item) =>
-      exports.duplicateItem(item, idMap)
-
-  if dup.calculations
-    calculations = _.map dup.calculations, (item) =>
-      exports.duplicateItem(item, idMap)
-
-    calculations = JSON.stringify(calculations)
-    # Replace each part of idMap
-    for key, value of idMap
-      calculations = calculations.replace(new RegExp(_.escapeRegExp(key), "g"), value)
-
-    calculations = JSON.parse(calculations)
-    dup.calculations = calculations
-
-  return dup
-
-# Finds all localized strings in an object
-exports.extractLocalizedStrings = (obj) ->
-  if not obj?
-    return []
+  // Return english
+  if (str.en) {
+    return str.en;
+  }
     
-  # Return self if string
-  if obj._base?
-    return [obj]
+  return "";
+}
 
-  strs = []
+// Gets all questions in form before reference item specified
+// refItem can be null for all questions
+// rosterId is the rosterId to use. null for only top-level
+export function priorQuestions(formDesign, refItem = null, rosterId = null) {
+  const questions = [];
 
-  # If array, concat each
-  if _.isArray(obj)
-    for item in obj
-      strs = strs.concat(@extractLocalizedStrings(item))
-  else if _.isObject(obj)
-    for key, value of obj
-      strs = strs.concat(@extractLocalizedStrings(value))
+  // Append all child items
+  var appendChildren = function(parentItem, currentRosterId) {
+    for (let child of parentItem.contents) {
+      // If ids match, abort
+      if ((refItem != null) && (child._id === refItem._id)) {
+        return true;
+      }
 
-  return strs
+      if ((currentRosterId === rosterId) && exports.isQuestion(child)) {
+        questions.push(child);
+      }
 
-exports.updateLocalizations = (formDesign) ->
-  formDesign.localizedStrings = formDesign.localizedStrings or []
+      if (child.contents) {
+        if (["RosterGroup", "RosterMatrix"].includes(child._type)) {
+          if (appendChildren(child, child.rosterId || child._id)) {
+            return true;
+          }
+        } else {
+          if (appendChildren(child, currentRosterId)) {
+            return true;
+          }
+        }
+      }
+    }
 
-  # Map existing ones in form
-  existing = {}
-  for str in formDesign.localizedStrings
-    if str.en
-      existing[str.en] = true
+    return false;
+  };
 
-  # Add new localizations
-  for str in localizations.strings
-    if str.en and not existing[str.en] and not str._unused
-      formDesign.localizedStrings.push str
-      existing[str.en] = true
+  appendChildren(formDesign, null);
+  return questions;
+}
 
-# Determines if has at least one localization in locale
-exports.hasLocalizations = (obj, locale) ->
-  strs = exports.extractLocalizedStrings(obj)
-  return _.any(strs, (str) -> str[locale])
+export function getRosterIds(formDesign) {
+  const rosterIds = [];
 
-# Finds an entity question of the specified type, or a legacy site question
-exports.findEntityQuestion = (formDesign, entityType) ->
-  question = _.find exports.priorQuestions(formDesign), (q) -> 
-    if q._type == "EntityQuestion" and q.entityType == entityType
-      return true
+  var recurse = function(item) {
+    if (["RosterGroup", "RosterMatrix"].includes(item._type)) {
+      rosterIds.push(item.rosterId || item._id);
+    }
+    if (item.contents) {
+      return item.contents.map((subitem) =>
+        recurse(subitem));
+    }
+  };
 
-    if q._type == "SiteQuestion" 
-      questionEntityType = exports.getSiteEntityType(q)
-      if questionEntityType == entityType
-        return true
-    return false
+  recurse(formDesign);
 
-  if question
-    return question
+  return _.uniq(rosterIds);
+}
+
+// Finds an item by id in a form
+export function findItem(formDesign, itemId) {
+  for (let item of formDesign.contents) {
+    // If ids match
+    if (item._id === itemId) {
+      return item;
+    }
+
+    if (item.contents) {
+      const found = exports.findItem(item, itemId);
+      if (found) {
+        return found;
+      }
+    }
+  }
+}
+
+// All items under an item including self
+export function allItems(rootItem) {
+  let items = [];
+  items.push(rootItem);
+  if (rootItem.contents) {
+    for (let item of rootItem.contents) {
+      items = items.concat(exports.allItems(item));
+    }
+  }
+
+  return items;
+}
+
+// Fills question with default values and removes extraneous fields
+export function prepareQuestion(q) {
+  _.defaults(q, {
+    _id: exports.createUid(),
+    text: {},
+    conditions: [],
+    validations: [],
+    required: false
+  });
+
+  switch (q._type) {
+    case "TextQuestion":
+      _.defaults(q, { format: "singleline" });
+      break;
+    case "NumberQuestion": case "NumberColumnQuestion":
+      _.defaults(q, { decimal: true });
+      break;
+    case "DropdownQuestion": case "RadioQuestion": case "MulticheckQuestion": case "DropdownColumnQuestion":
+      _.defaults(q, { choices: [] });
+      break;
+    case "SiteColumnQuestion":
+      _.defaults(q, { siteType: "water_point" });
+      break;
+    case "LikertQuestion":
+      _.defaults(q, { items: [], choices: [] });
+      break;
+    case "DateQuestion": // , "DateTimeQuestion"??
+      _.defaults(q, { format: "YYYY-MM-DD" });
+      break;
+    case "UnitsQuestion": case "UnitsColumnQuestion":
+      _.defaults(q, { units: [], defaultUnits: null, unitsPosition: "suffix", decimal: true  });
+      break;
+    case "LocationQuestion":
+      _.defaults(q, { calculateAdminRegion: true });
+      break;
+    case "CheckQuestion":
+      _.defaults(q, { label: {} });
+      break;
+    case "EntityQuestion":
+      _.defaults(q, { entityFilter: {}, displayProperties: [], selectionMode: "external", selectProperties: [], selectText: { _base: "en", en: "Select" }, propertyLinks: [] });
+      break;
+    case "LikertQuestion":
+      _.defaults(q, { items: [], choices: [] });
+      break;
+    case "MatrixQuestion":
+      _.defaults(q, { items: [], columns: [] });
+      break;
+    case "AquagenxCBTQuestion":
+      _.defaults(q, {  });
+      break;
+    case "CascadingListQuestion":
+      _.defaults(q, { rows: [], columns: [] });
+      break;
+    case "CascadingRefQuestion":
+      _.defaults(q, { dropdowns: [] });
+      break;
+  }
+
+  // Get known fields
+  const knownFields = ['_id', '_type', 'text', 'textExprs', 'conditions', 'conditionExpr', 'validations', 
+    'required', 'code', 'hint', 'help', 'alternates', 'commentsField', 'recordLocation', 'recordTimestamp', 'sticky', 'exportId', 'disabled'];
+
+  switch (q._type) {
+    case "TextQuestion":
+      knownFields.push("format");
+      break;
+    case "DateQuestion": case "DateColumnQuestion":
+      knownFields.push("format");
+      knownFields.push("defaultNow");
+      break;
+    case "NumberQuestion": case "NumberColumnQuestion":
+      knownFields.push("decimal");
+      break;
+    case "RadioQuestion":
+      knownFields.push("choices");
+      knownFields.push("displayMode");
+      break;
+    case "DropdownQuestion": case "MulticheckQuestion": case "DropdownColumnQuestion":
+      knownFields.push("choices");
+      break;
+    case "LikertQuestion":
+      knownFields.push("items");
+      knownFields.push("choices");
+      break;
+    case "UnitsQuestion": case "UnitsColumnQuestion":
+      knownFields.push("decimal");
+      knownFields.push("units");
+      knownFields.push("defaultUnits");
+      knownFields.push("unitsPosition");
+      break;
+    case "CheckQuestion":
+      knownFields.push("label");
+      break;
+    case "SiteQuestion":
+      knownFields.push("siteTypes");
+      break;
+    case "SiteColumnQuestion": 
+      knownFields.push("siteType");
+      break;
+    case "ImageQuestion": case "ImagesQuestion":
+      knownFields.push("consentPrompt");
+      break;
+    case "EntityQuestion":
+      knownFields.push("entityType");
+      knownFields.push("entityFilter");
+      knownFields.push("displayProperties");
+      knownFields.push("selectionMode");
+      knownFields.push("selectProperties");
+      knownFields.push("mapProperty");
+      knownFields.push("selectText");
+      knownFields.push("propertyLinks");
+      knownFields.push("hidden");
+      knownFields.push("createEntity");
+      break;
+    case "AdminRegionQuestion":
+      knownFields.push("defaultValue");
+      break;
+    case "MatrixQuestion":
+      knownFields.push("items");
+      knownFields.push("columns");
+      break;
+    case "LocationQuestion":
+      knownFields.push("calculateAdminRegion");
+      knownFields.push("disableSetByMap");
+      knownFields.push("disableManualLatLng");
+      break;
+    case "CascadingListQuestion":
+      knownFields.push("rows");
+      knownFields.push("columns");
+      break;
+    case "CascadingRefQuestion":
+      knownFields.push("tableId");
+      knownFields.push("dropdowns");
+      break;
+  }
+
+  // Strip unknown fields
+  for (let key of _.keys(q)) {
+    if (!_.contains(knownFields, key)) {
+      delete q[key];
+    }
+  }
+
+  return q;
+}
+
+export function changeQuestionType(question, newType) {
+  // Clear validations (they are type specific)
+  question.validations = [];
+
+  // Clear format (type specific)
+  delete question.format; 
+
+  // Set type
+  question._type = newType;
+
+  // Prepare question to ensure correct fields
+  exports.prepareQuestion(question);
+
+  return question;
+}
+
+// Gets type of the answer: text, number, choice, choices, date, units, boolean, location, image, images, texts, site, entity, admin_region, items_choices, matrix, aquagenx_cbt, cascading_list, cascading_ref
+export function getAnswerType(q) {
+  switch (q._type) {
+    case "TextQuestion": case "TextColumnQuestion":
+      return "text";
+    case "NumberQuestion": case "NumberColumnQuestion": case "StopwatchQuestion":
+      return "number";
+    case "DropdownQuestion": case "RadioQuestion": case "DropdownColumnQuestion":
+      return "choice";
+    case "MulticheckQuestion":
+      return "choices";
+    case "DateQuestion": case "DateColumnQuestion":
+      return "date";
+    case "UnitsQuestion": case "UnitsColumnQuestion":
+      return "units";
+    case "CheckQuestion": case "CheckColumnQuestion":
+      return "boolean";
+    case "LocationQuestion":
+      return "location";
+    case "ImageQuestion":
+      return "image";
+    case "ImagesQuestion":
+      return "images";
+    case "TextListQuestion":
+      return "texts";
+    case "SiteQuestion": case "SiteColumnQuestion":
+      return "site";
+    case "BarcodeQuestion":
+      return "text";
+    case "EntityQuestion":
+      return "entity";
+    case "AdminRegionQuestion":
+      return "admin_region";
+    case "MatrixQuestion":
+      return "matrix";
+    case "LikertQuestion":
+      return "items_choices";
+    case "AquagenxCBTQuestion":
+      return "aquagenx_cbt";
+    case "CascadingListQuestion":
+      return "cascading_list";
+    case "CascadingRefQuestion":
+      return "cascading_ref";
+    case "TextColumn": case "Calculation":
+      return "expr";
+    default: throw new Error(`Unknown question type ${q._type}`);
+  }
+}
+
+// Check if a form is all sections
+export function isSectioned(form) {
+  return (form.contents.length > 0) && _.every(form.contents, item => item._type === "Section");
+}
+
+// Duplicates an item (form design, section or question)
+// idMap is a map of old _ids to new _ids. If any not present, new uid will be used
+export function duplicateItem(item, idMap) {
+  // If form or section and ids not mapped, map ids
+  let question;
+  if (!idMap) { 
+    idMap = {};
+  }
+
+  if (["Form", "Section"].includes(item._type)) {
+    for (question of exports.priorQuestions(item)) {
+      // Map non-mapped ones
+      if (!idMap[question._id]) {
+        idMap[question._id] = exports.createUid();
+      }
+    }
+  } else if (item._id) {
+    idMap[item._id] = exports.createUid();
+  }
+
+  const dup = _.cloneDeep(item);
+  delete dup.confidential;
+  delete dup.confidentialRadius;
+
+  // Set up id
+  if (dup._id) {
+    dup._basedOn = dup._id;
+    if (idMap && idMap[dup._id]) {
+      dup._id = idMap[dup._id];
+    } else {
+      dup._id = exports.createUid();
+    }
+  }
+
+  // Fix condition references, or remove conditions
+  if (dup.conditions) {
+    dup.conditions = _.filter(dup.conditions, cond => {
+      if (cond.lhs && cond.lhs.question) {
+        // Check if in id
+        if (idMap && idMap[cond.lhs.question]) {
+          // Map id
+          cond.lhs.question = idMap[cond.lhs.question];
+          return true;
+        }
+        // Could not be mapped
+        return false;
+      }
+
+      // For future AND and OR TODO
+      return true;
+    });
+  }
+
+  // Duplicate contents
+  if (dup.contents) {
+    dup.contents = _.map(dup.contents, item => {
+      return exports.duplicateItem(item, idMap);
+    });
+  }
+
+  if (dup.calculations) {
+    let calculations = _.map(dup.calculations, item => {
+      return exports.duplicateItem(item, idMap);
+    });
+
+    calculations = JSON.stringify(calculations);
+    // Replace each part of idMap
+    for (let key in idMap) {
+      const value = idMap[key];
+      calculations = calculations.replace(new RegExp(_.escapeRegExp(key), "g"), value);
+    }
+
+    calculations = JSON.parse(calculations);
+    dup.calculations = calculations;
+  }
+
+  return dup;
+}
+
+// Finds all localized strings in an object
+export function extractLocalizedStrings(obj) {
+  if ((obj == null)) {
+    return [];
+  }
+    
+  // Return self if string
+  if (obj._base != null) {
+    return [obj];
+  }
+
+  let strs = [];
+
+  // If array, concat each
+  if (_.isArray(obj)) {
+    for (let item of obj) {
+      strs = strs.concat(this.extractLocalizedStrings(item));
+    }
+  } else if (_.isObject(obj)) {
+    for (let key in obj) {
+      const value = obj[key];
+      strs = strs.concat(this.extractLocalizedStrings(value));
+    }
+  }
+
+  return strs;
+}
+
+export function updateLocalizations(formDesign) {
+  let str;
+  formDesign.localizedStrings = formDesign.localizedStrings || [];
+
+  // Map existing ones in form
+  const existing = {};
+  for (str of formDesign.localizedStrings) {
+    if (str.en) {
+      existing[str.en] = true;
+    }
+  }
+
+  // Add new localizations
+  return (() => {
+    const result = [];
+    for (str of localizations.strings) {
+      if (str.en && !existing[str.en] && !str._unused) {
+        formDesign.localizedStrings.push(str);
+        result.push(existing[str.en] = true);
+      } else {
+        result.push(undefined);
+      }
+    }
+    return result;
+  })();
+}
+
+// Determines if has at least one localization in locale
+export function hasLocalizations(obj, locale) {
+  const strs = exports.extractLocalizedStrings(obj);
+  return _.any(strs, str => str[locale]);
+}
+
+// Finds an entity question of the specified type, or a legacy site question
+export function findEntityQuestion(formDesign, entityType) {
+  let question = _.find(exports.priorQuestions(formDesign), function(q) { 
+    if ((q._type === "EntityQuestion") && (q.entityType === entityType)) {
+      return true;
+    }
+
+    if (q._type === "SiteQuestion") { 
+      const questionEntityType = exports.getSiteEntityType(q);
+      if (questionEntityType === entityType) {
+        return true;
+      }
+    }
+    return false;
+  });
+
+  if (question) {
+    return question;
+  }
   
-  for rosterId in exports.getRosterIds(formDesign)
-    question = _.find exports.priorQuestions(formDesign, null, rosterId), (q) -> 
-      if q._type == "EntityQuestion" and q.entityType == entityType
-        return true
+  for (let rosterId of exports.getRosterIds(formDesign)) {
+    question = _.find(exports.priorQuestions(formDesign, null, rosterId), function(q) { 
+      if ((q._type === "EntityQuestion") && (q.entityType === entityType)) {
+        return true;
+      }
 
-      if q._type == "SiteColumnQuestion" and q.siteType == entityType
-        return true
+      if ((q._type === "SiteColumnQuestion") && (q.siteType === entityType)) {
+        return true;
+      }
 
-      if q._type == "SiteQuestion" 
-        questionEntityType = exports.getSiteEntityType(q)
-        if questionEntityType == entityType
-          return true
-      return false
+      if (q._type === "SiteQuestion") { 
+        const questionEntityType = exports.getSiteEntityType(q);
+        if (questionEntityType === entityType) {
+          return true;
+        }
+      }
+      return false;
+    });
     
-    if question
-      return question
+    if (question) {
+      return question;
+    }
+  }
     
-  return null
+  return null;
+}
 
-# Finds all references to entities in a response. Returns array of: 
-# {
-#   question: _id of question
-#   roster: _id of roster entry, null if not in roster
-#   entityType: e.g. "water_point"
-#   property: property code (e.g "_id" or "code") of entity that is referenced in value
-#   value: value of entity property that is referenced
-# }
-exports.extractEntityReferences = (formDesign, responseData) ->
-  results = []
+// Finds all references to entities in a response. Returns array of: 
+// {
+//   question: _id of question
+//   roster: _id of roster entry, null if not in roster
+//   entityType: e.g. "water_point"
+//   property: property code (e.g "_id" or "code") of entity that is referenced in value
+//   value: value of entity property that is referenced
+// }
+export function extractEntityReferences(formDesign, responseData) {
+  let code, entityType, question, value;
+  const results = [];
 
-  # Handle non-roster
-  for question in exports.priorQuestions(formDesign)
-    switch exports.getAnswerType(question)
-      when "site"
-        code = responseData[question._id]?.value?.code
-        entityType = exports.getSiteEntityType(question)
-        if code
-          results.push({ question: question._id, entityType: entityType, property: "code", value: code })
-      when "entity"
-        value = responseData[question._id]?.value
-        if value
-          results.push({ question: question._id, entityType: question.entityType, property: "_id", value: value })
+  // Handle non-roster
+  for (question of exports.priorQuestions(formDesign)) {
+    switch (exports.getAnswerType(question)) {
+      case "site":
+        code = responseData[question._id]?.value?.code;
+        entityType = exports.getSiteEntityType(question);
+        if (code) {
+          results.push({ question: question._id, entityType, property: "code", value: code });
+        }
+        break;
+      case "entity":
+        value = responseData[question._id]?.value;
+        if (value) {
+          results.push({ question: question._id, entityType: question.entityType, property: "_id", value });
+        }
+        break;
+    }
+  }
 
-  for rosterId in exports.getRosterIds(formDesign)
-    for question in exports.priorQuestions(formDesign, null, rosterId)
-      switch exports.getAnswerType(question)
-        when "site"
-          for rosterEntry in (responseData[rosterId] or [])
-            code = rosterEntry.data[question._id]?.value?.code
-            entityType = exports.getSiteEntityType(question)
-            if code
-              results.push({ question: question._id, roster: rosterEntry._id, entityType: entityType, property: "code", value: code })
-        when "entity"
-          for rosterEntry in (responseData[rosterId] or [])
-            value = rosterEntry.data[question._id]?.value
-            if value
-              results.push({ question: question._id, roster: rosterEntry._id, entityType: question.entityType, property: "_id", value: value })
+  for (let rosterId of exports.getRosterIds(formDesign)) {
+    for (question of exports.priorQuestions(formDesign, null, rosterId)) {
+      var rosterEntry;
+      switch (exports.getAnswerType(question)) {
+        case "site":
+          for (rosterEntry of (responseData[rosterId] || [])) {
+            code = rosterEntry.data[question._id]?.value?.code;
+            entityType = exports.getSiteEntityType(question);
+            if (code) {
+              results.push({ question: question._id, roster: rosterEntry._id, entityType, property: "code", value: code });
+            }
+          }
+          break;
+        case "entity":
+          for (rosterEntry of (responseData[rosterId] || [])) {
+            value = rosterEntry.data[question._id]?.value;
+            if (value) {
+              results.push({ question: question._id, roster: rosterEntry._id, entityType: question.entityType, property: "_id", value });
+            }
+          }
+          break;
+      }
+    }
+  }
 
-  return results
+  return results;
+}
 
-# Gets the entity type (e.g. "water_point") for a site question
-exports.getSiteEntityType = (question) ->
-  entityType = if question.siteTypes and question.siteTypes[0] then _.first(question.siteTypes).toLowerCase().replace(new RegExp(' ', 'g'), "_") else "water_point"
-  return entityType
+// Gets the entity type (e.g. "water_point") for a site question
+export function getSiteEntityType(question) {
+  const entityType = question.siteTypes && question.siteTypes[0] ? _.first(question.siteTypes).toLowerCase().replace(new RegExp(' ', 'g'), "_") : "water_point";
+  return entityType;
+}
 
-# Get list of custom table ids referenced by a form (cascading ref questions)
-exports.getCustomTablesReferenced = (formDesign) ->
-  items = exports.allItems(formDesign)
+// Get list of custom table ids referenced by a form (cascading ref questions)
+export function getCustomTablesReferenced(formDesign) {
+  const items = exports.allItems(formDesign);
 
-  crqs = _.filter(items, (item) => item._type == "CascadingRefQuestion")
-  tableIds = _.uniq(_.pluck(crqs, "tableId"))
-  return tableIds
+  const crqs = _.filter(items, item => item._type === "CascadingRefQuestion");
+  const tableIds = _.uniq(_.pluck(crqs, "tableId"));
+  return tableIds;
+}

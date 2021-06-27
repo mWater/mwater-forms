@@ -1,53 +1,58 @@
-assert = require('chai').assert
+import { assert } from 'chai';
+import TestComponent from 'react-library/lib/TestComponent';
+import ReactTestUtils from 'react-dom/test-utils';
+import DateAnswerComponent from '../../src/answers/DateAnswerComponent';
+import React from 'react';
+import ReactDOM from 'react-dom';
+const R = React.createElement;
 
-TestComponent = require('react-library/lib/TestComponent')
-ReactTestUtils = require('react-dom/test-utils')
+// TODO: Fix 3 failing test
+// Cannot find datetimepicker
 
-DateAnswerComponent = require '../../src/answers/DateAnswerComponent'
+describe.skip('DateAnswerComponent', function() {
+  beforeEach(function() {
+    this.toDestroy = [];
 
-React = require 'react'
-ReactDOM = require 'react-dom'
-R = React.createElement
+    return this.render = (options = {}) => {
+      const elem = R(DateAnswerComponent, options);
+      const comp = new TestComponent(elem);
+      this.toDestroy.push(comp);
+      return comp;
+    };
+  });
 
-# TODO: Fix 3 failing test
-# Cannot find datetimepicker
+  afterEach(function() {
+    return this.toDestroy.map((comp) =>
+      comp.destroy());
+  });
 
-describe.skip 'DateAnswerComponent', ->
-  beforeEach ->
-    @toDestroy = []
+  it("displays format YYYY-MM-DD", function(done) {
+    const testComponent = this.render({
+      value: null,
+      onValueChange(value) {
+        assert.equal(value, "2013-12-31");
+        return done();
+      }
 
-    @render = (options = {}) =>
-      elem = R(DateAnswerComponent, options)
-      comp = new TestComponent(elem)
-      @toDestroy.push(comp)
-      return comp
+    });
+    return TestComponent.changeValue(testComponent.findInput(), "2013-12-31");
+  });
 
-  afterEach ->
-    for comp in @toDestroy
-      comp.destroy()
+  it("displays format MM/DD/YYYY", function() {
+    assert(false, 'Test not updated yet');
+    this.q.format = "MM/DD/YYYY";
+    this.qview = this.compiler.compileQuestion(this.q).render();
 
-  it "displays format YYYY-MM-DD", (done) ->
-    testComponent = @render({
-      value: null
-      onValueChange: (value) ->
-        assert.equal value, "2013-12-31"
-        done()
+    this.model.set("q1234", { value: "2013-12-31"});
+    return assert.equal(this.qview.$el.find("input").val(), "12/31/2013");
+  });
 
-    })
-    TestComponent.changeValue(testComponent.findInput(), "2013-12-31")
+  return it("handles arbitrary date formats in Moment.js format", function() {
+    assert(false, 'Test not updated yet');
+    this.q.format = "MMDDYYYY";
+    this.qview = this.compiler.compileQuestion(this.q).render();
 
-  it "displays format MM/DD/YYYY", ->
-    assert false, 'Test not updated yet'
-    @q.format = "MM/DD/YYYY"
-    @qview = @compiler.compileQuestion(@q).render()
-
-    @model.set("q1234", { value: "2013-12-31"})
-    assert.equal @qview.$el.find("input").val(), "12/31/2013"
-
-  it "handles arbitrary date formats in Moment.js format", ->
-    assert false, 'Test not updated yet'
-    @q.format = "MMDDYYYY"
-    @qview = @compiler.compileQuestion(@q).render()
-
-    @model.set("q1234", { value: "2013-12-31"})
-    assert.equal @qview.$el.find("input").val(), "12312013"
+    this.model.set("q1234", { value: "2013-12-31"});
+    return assert.equal(this.qview.$el.find("input").val(), "12312013");
+  });
+});

@@ -1,5 +1,5 @@
-# TODO: SurveyorPro: Make sure all the tests are in SectionsComponentTests
-###
+// TODO: SurveyorPro: Make sure all the tests are in SectionsComponentTests
+/*
 _ = require 'lodash'
 $ = require 'jquery'
 Backbone = require 'backbone'
@@ -98,4 +98,4 @@ describe "Sections", ->
     @view = @compiler.compileForm(form).render()
 
     assert.match @view.$el.html(), /Borrar/, "Should be in Spanish"
-###
+*/

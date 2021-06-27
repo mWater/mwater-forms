@@ -1,80 +1,98 @@
 
-# Utility functions and classes for mwater-forms
+// Utility functions and classes for mwater-forms
 
-# Gets the { angle, distance } from and to locations
-exports.getRelativeLocation = (fromLoc, toLoc) ->
-  x1 = fromLoc.longitude
-  y1 = fromLoc.latitude
-  x2 = toLoc.longitude
-  y2 = toLoc.latitude
+// Gets the { angle, distance } from and to locations
+export function getRelativeLocation(fromLoc, toLoc) {
+  const x1 = fromLoc.longitude;
+  const y1 = fromLoc.latitude;
+  const x2 = toLoc.longitude;
+  const y2 = toLoc.latitude;
   
-  # Convert to relative position (approximate)
-  dy = (y2 - y1) / 57.2957795 * 6371000
-  dx = Math.cos(y1 / 57.2957795) * (x2 - x1) / 57.2957795 * 6371000
+  // Convert to relative position (approximate)
+  const dy = ((y2 - y1) / 57.2957795) * 6371000;
+  const dx = ((Math.cos(y1 / 57.2957795) * (x2 - x1)) / 57.2957795) * 6371000;
   
-  # Determine direction and angle
-  distance = Math.sqrt(dx * dx + dy * dy)
-  angle = 90 - (Math.atan2(dy, dx) * 57.2957795)
-  angle += 360 if angle < 0
-  angle -= 360 if angle > 360
+  // Determine direction and angle
+  const distance = Math.sqrt((dx * dx) + (dy * dy));
+  let angle = 90 - (Math.atan2(dy, dx) * 57.2957795);
+  if (angle < 0) { angle += 360; }
+  if (angle > 360) { angle -= 360; }
 
-  return { angle: angle, distance: distance }
+  return { angle, distance };
+}
 
-exports.getCompassBearing = (angle, T) ->
-  # Get approximate direction
-  compassDir = (Math.floor((angle + 22.5) / 45)) % 8
-  compassStrs = [T("N"), T("NE"), T("E"), T("SE"), T("S"), T("SW"), T("W"), T("NW")]
-  return compassStrs[compassDir]
+export function getCompassBearing(angle, T) {
+  // Get approximate direction
+  const compassDir = (Math.floor((angle + 22.5) / 45)) % 8;
+  const compassStrs = [T("N"), T("NE"), T("E"), T("SE"), T("S"), T("SW"), T("W"), T("NW")];
+  return compassStrs[compassDir];
+}
 
-exports.formatRelativeLocation = (relLoc, T) ->
-  if relLoc.distance > 1000
-    distance = (relLoc.distance / 1000).toFixed(1) + " " + T("km")
-  else
-    distance = (relLoc.distance).toFixed(0) + " " + T("m")
+export function formatRelativeLocation(relLoc, T) {
+  let distance;
+  if (relLoc.distance > 1000) {
+    distance = (relLoc.distance / 1000).toFixed(1) + " " + T("km");
+  } else {
+    distance = (relLoc.distance).toFixed(0) + " " + T("m");
+  }
 
-  return distance + " " + exports.getCompassBearing(relLoc.angle, T)
+  return distance + " " + exports.getCompassBearing(relLoc.angle, T);
+}
 
-# Calculates the relative strength of a GPS signal into "none", "poor", "fair", "good" or "excellent"
-exports.calculateGPSStrength = (pos) ->
-  excellentAcc = 5
-  goodAcc = 10
-  fairAcc = 50
-  # Recent is 90 seconds because some devices update only once per minute if no movement
-  recentThreshold = 90000
+// Calculates the relative strength of a GPS signal into "none", "poor", "fair", "good" or "excellent"
+export function calculateGPSStrength(pos) {
+  const excellentAcc = 5;
+  const goodAcc = 10;
+  const fairAcc = 50;
+  // Recent is 90 seconds because some devices update only once per minute if no movement
+  const recentThreshold = 90000;
 
-  if not pos
-    return "none"
+  if (!pos) {
+    return "none";
+  }
 
-  # If old, accuracy is none
-  if pos.timestamp < new Date().getTime() - recentThreshold
-    return "none"
+  // If old, accuracy is none
+  if (pos.timestamp < (new Date().getTime() - recentThreshold)) {
+    return "none";
+  }
 
-  if pos.coords.accuracy <= excellentAcc
-    return "excellent"
+  if (pos.coords.accuracy <= excellentAcc) {
+    return "excellent";
+  }
 
-  if pos.coords.accuracy <= goodAcc
-    return "good"
+  if (pos.coords.accuracy <= goodAcc) {
+    return "good";
+  }
 
-  if pos.coords.accuracy <= fairAcc
-    return "fair"
+  if (pos.coords.accuracy <= fairAcc) {
+    return "fair";
+  }
 
-  return "poor"
+  return "poor";
+}
 
-# Format GPS strength in human-readable, Bootstrap-friendly way
-exports.formatGPSStrength = (pos, T) =>
-  strength = exports.calculateGPSStrength(pos)
-  switch strength
-    when "none"
-      text = T('Waiting for GPS...')
-      textClass = 'text-danger'
-    when "poor"
-      text = T('Very Low GPS Signal ±{0}m', pos.coords.accuracy.toFixed(0))
-      textClass = 'text-warning'
-    when "fair"
-      text = T('Low GPS Signal ±{0}m', pos.coords.accuracy.toFixed(0))
-      textClass = 'text-warning'
-    when "good", "excellent"
-      text = T('Good GPS Signal ±{0}m', pos.coords.accuracy.toFixed(0))
-      textClass = 'text-success'
+// Format GPS strength in human-readable, Bootstrap-friendly way
+export let formatGPSStrength = (pos, T) => {
+  let text, textClass;
+  const strength = exports.calculateGPSStrength(pos);
+  switch (strength) {
+    case "none":
+      text = T('Waiting for GPS...');
+      textClass = 'text-danger';
+      break;
+    case "poor":
+      text = T('Very Low GPS Signal ±{0}m', pos.coords.accuracy.toFixed(0));
+      textClass = 'text-warning';
+      break;
+    case "fair":
+      text = T('Low GPS Signal ±{0}m', pos.coords.accuracy.toFixed(0));
+      textClass = 'text-warning';
+      break;
+    case "good": case "excellent":
+      text = T('Good GPS Signal ±{0}m', pos.coords.accuracy.toFixed(0));
+      textClass = 'text-success';
+      break;
+  }
       
-  return { class: textClass, text: text } 
+  return { class: textClass, text };
+}; 

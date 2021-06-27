@@ -1,30 +1,23 @@
-PropTypes = require('prop-types')
-React = require 'react'
+import PropTypes from 'prop-types';
+import React from 'react';
 
-# Context types for forms. See formContext.d.ts for details
-module.exports = {
-  selectEntity: PropTypes.func
-  editEntity: PropTypes.func
-  renderEntitySummaryView: PropTypes.func.isRequired
-  renderEntityListItemView: PropTypes.func.isRequired
-  canEditEntity: PropTypes.func
+// Context types for forms. See formContext.d.ts for details
+export let selectEntity = PropTypes.func;
 
-  getEntityById: PropTypes.func     # Gets an entity by id (entityType, entityId, callback)
-  getEntityByCode: PropTypes.func   # Gets an entity by code (entityType, entityCode, callback)
-
-  locationFinder: PropTypes.object
-  displayMap: PropTypes.func # Takes location ({ latitude, etc.}) and callback (called back with new location)
-
-  stickyStorage: PropTypes.object
-  scanBarcode: PropTypes.func
-  
-  getAdminRegionPath: PropTypes.func.isRequired # Call with (id, callback). Callback (error, [{ id:, level: <e.g. 1>, name: <e.g. Manitoba>, type: <e.g. Province>}] in level ascending order)
-  getSubAdminRegions: PropTypes.func.isRequired # Call with (id, callback). Callback (error, [{ id:, level: <e.g. 1>, name: <e.g. Manitoba>, type: <e.g. Province>}] of admin regions directly under the specified id)
-  findAdminRegionByLatLng: PropTypes.func.isRequired # Call with (lat, lng, callback). Callback (error, id)
-
-  imageManager: PropTypes.object.isRequired
-  imageAcquirer: PropTypes.object
-
-  getCustomTableRows: PropTypes.func.isRequired
-  getCustomTableRow: PropTypes.func.isRequired
-}
+export let editEntity = PropTypes.func;
+export let renderEntitySummaryView = PropTypes.func.isRequired;
+export let renderEntityListItemView = PropTypes.func.isRequired;
+export let canEditEntity = PropTypes.func;
+export let getEntityById = PropTypes.func;
+export let getEntityByCode = PropTypes.func;
+export let locationFinder = PropTypes.object;
+export let displayMap = PropTypes.func;
+export let stickyStorage = PropTypes.object;
+export let scanBarcode = PropTypes.func;
+export let getAdminRegionPath = PropTypes.func.isRequired;
+export let getSubAdminRegions = PropTypes.func.isRequired;
+export let findAdminRegionByLatLng = PropTypes.func.isRequired;
+export let imageManager = PropTypes.object.isRequired;
+export let imageAcquirer = PropTypes.object;
+export let getCustomTableRows = PropTypes.func.isRequired;
+export let getCustomTableRow = PropTypes.func.isRequired;

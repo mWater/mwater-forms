@@ -1,109 +1,150 @@
-PropTypes = require('prop-types')
-React = require 'react'
-R = React.createElement
+let UnitsAnswerComponent;
+import PropTypes from 'prop-types';
+import React from 'react';
+const R = React.createElement;
 
-formUtils = require '../formUtils'
-ui = require 'react-library/lib/bootstrap'
+import formUtils from '../formUtils';
+import ui from 'react-library/lib/bootstrap';
 
-# Not tested
-module.exports = class UnitsAnswerComponent extends React.Component
-  @contextTypes:
-    locale: PropTypes.string  # Current locale (e.g. "en")
+// Not tested
+export default UnitsAnswerComponent = (function() {
+  UnitsAnswerComponent = class UnitsAnswerComponent extends React.Component {
+    static initClass() {
+      this.contextTypes =
+        {locale: PropTypes.string};  // Current locale (e.g. "en")
+  
+      this.propTypes = {
+        answer: PropTypes.object.isRequired,
+        onValueChange: PropTypes.func.isRequired,
+        units: PropTypes.array.isRequired,
+        defaultUnits: PropTypes.string,
+        prefix: PropTypes.bool.isRequired,
+        decimal: PropTypes.bool.isRequired,
+        onNextOrComments: PropTypes.func
+      };
+    }
 
-  @propTypes:
-    answer: PropTypes.object.isRequired
-    onValueChange: PropTypes.func.isRequired
-    units: PropTypes.array.isRequired
-    defaultUnits: PropTypes.string
-    prefix: PropTypes.bool.isRequired
-    decimal: PropTypes.bool.isRequired
-    onNextOrComments: PropTypes.func
+    constructor(props) {
+      this.handleKeyDown = this.handleKeyDown.bind(this);
+      this.handleInternalNext = this.handleInternalNext.bind(this);
+      this.handleValueChange = this.handleValueChange.bind(this);
+      this.handleUnitChange = this.handleUnitChange.bind(this);
+      super(props);
+      this.state = {quantity: this.getSelectedQuantity(props.answer), selectedUnits: this.getSelectedUnit(props.answer)};
+    }
 
-  constructor: (props) ->
-    super(props)
-    @state = {quantity: @getSelectedQuantity(props.answer), selectedUnits: @getSelectedUnit(props.answer)}
+    componentWillReceiveProps(nextProps) {
+      return this.setState({quantity: this.getSelectedQuantity(nextProps.answer), selectedUnits: this.getSelectedUnit(nextProps.answer)});
+    }
 
-  componentWillReceiveProps: (nextProps) ->
-    @setState(quantity: @getSelectedQuantity(nextProps.answer), selectedUnits: @getSelectedUnit(nextProps.answer))
+    focus() {
+      if (this.props.prefix) {
+        return this.quantity.focus();
+      } else {
+        return this.units.focus();
+      }
+    }
 
-  focus: () ->
-    if @props.prefix
-      @quantity.focus()
-    else
-      @units.focus()
+    handleKeyDown(ev) {
+      if (this.props.onNextOrComments != null) {
+        // When pressing ENTER or TAB
+        if ((ev.keyCode === 13) || (ev.keyCode === 9)) {
+          this.props.onNextOrComments(ev);
+          // It's important to prevent the default behavior when handling tabs (or else the tab is applied after the focus change)
+          return ev.preventDefault();
+        }
+      }
+    }
 
-  handleKeyDown: (ev) =>
-    if @props.onNextOrComments?
-      # When pressing ENTER or TAB
-      if ev.keyCode == 13 or ev.keyCode == 9
-        @props.onNextOrComments(ev)
-        # It's important to prevent the default behavior when handling tabs (or else the tab is applied after the focus change)
-        ev.preventDefault()
+    handleInternalNext(ev) {
+      // When pressing ENTER or TAB
+      if ((ev.keyCode === 13) || (ev.keyCode === 9)) {
+        if (this.props.prefix) {
+          this.quantity.focus();
+        } else {
+          this.units.focus();
+        }
+        // It's important to prevent the default behavior when handling tabs (or else the tab is applied after the focus change)
+        return ev.preventDefault();
+      }
+    }
 
-  handleInternalNext: (ev) =>
-    # When pressing ENTER or TAB
-    if ev.keyCode == 13 or ev.keyCode == 9
-      if @props.prefix
-        @quantity.focus()
-      else
-        @units.focus()
-      # It's important to prevent the default behavior when handling tabs (or else the tab is applied after the focus change)
-      ev.preventDefault()
+    handleValueChange(val) {
+      return this.changed(val, this.state.selectedUnits);
+    }
 
-  handleValueChange: (val) =>
-    @changed(val, @state.selectedUnits)
+    handleUnitChange(val) {
+      return this.changed(this.state.quantity, val.target.value);
+    }
 
-  handleUnitChange: (val) =>
-    @changed(@state.quantity, val.target.value)
+    changed(quantity, unit) {
+      unit = unit ? unit : this.props.defaultUnits;
+      return this.props.onValueChange({quantity, units: unit});
+    }
 
-  changed: (quantity, unit) ->
-    unit = if unit then unit else @props.defaultUnits
-    @props.onValueChange({quantity: quantity, units: unit})
+    getSelectedUnit(answer) {
+      if (answer.value != null) {
+        return answer.value.units;
+      }
 
-  getSelectedUnit: (answer) ->
-    if answer.value?
-      return answer.value.units
+      if (this.props.defaultUnits != null) {
+        return this.props.defaultUnits;
+      }
 
-    if @props.defaultUnits?
-      return @props.defaultUnits
+      return null;
+    }
 
-    return null
+    getSelectedQuantity(answer) {
+      if (answer.value?.quantity != null) {
+        return answer.value.quantity;
+      }
+      return null;
+    }
 
-  getSelectedQuantity: (answer) ->
-    if answer.value?.quantity?
-      return answer.value.quantity
-    return null
+    createNumberInput() {
+      return R('td', null,
+        R(ui.NumberInput, {
+          ref: c => { return this.quantity = c; },
+          decimal: this.props.decimal,
+          value: (this.state.quantity != null) ? this.state.quantity : undefined,
+          onChange: this.handleValueChange,
+          onTab: this.props.prefix ? this.props.onNextOrComments : this.handleInternalNext,
+          onEnter: this.props.prefix ? this.props.onNextOrComments : this.handleInternalNext
+        }
+        )
+      );
+    }
 
-  createNumberInput: ->
-    return R 'td', null,
-      R ui.NumberInput,
-        ref: (c) => @quantity = c
-        decimal: @props.decimal
-        value: if @state.quantity? then @state.quantity
-        onChange: @handleValueChange
-        onTab: if @props.prefix then @props.onNextOrComments else @handleInternalNext
-        onEnter: if @props.prefix then @props.onNextOrComments else @handleInternalNext
-
-  render: ->
-    R 'table', null,
-      R 'tbody', null,
-        R 'tr', null,
-          if not @props.prefix
-            @createNumberInput()
-          R 'td', null,
-            R 'select', {
-              id: "units"
-              ref: (c) => @units = c
-              className: "form-control"
-              style: {width: "auto"}
-              onChange: @handleUnitChange
-              value: if @state.selectedUnits == null then '' else @state.selectedUnits
-            },
-              if not @props.defaultUnits
-                R 'option', value: "",
-                  "Select units"
-              for unit in @props.units
-                R 'option', key: unit.id, value:unit.id,
-                  formUtils.localizeString(unit.label, @context.locale)
-          if @props.prefix
-            @createNumberInput()
+    render() {
+      return R('table', null,
+        R('tbody', null,
+          R('tr', null,
+            !this.props.prefix ?
+              this.createNumberInput() : undefined,
+            R('td', null,
+              R('select', {
+                id: "units",
+                ref: c => { return this.units = c; },
+                className: "form-control",
+                style: {width: "auto"},
+                onChange: this.handleUnitChange,
+                value: this.state.selectedUnits === null ? '' : this.state.selectedUnits
+              },
+                !this.props.defaultUnits ?
+                  R('option', {value: ""},
+                    "Select units") : undefined,
+                this.props.units.map((unit) =>
+                  R('option', {key: unit.id, value:unit.id},
+                    formUtils.localizeString(unit.label, this.context.locale)))
+              )
+            ),
+            this.props.prefix ?
+              this.createNumberInput() : undefined
+          )
+        )
+      );
+    }
+  };
+  UnitsAnswerComponent.initClass();
+  return UnitsAnswerComponent;
+})();

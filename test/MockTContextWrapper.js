@@ -1,11 +1,20 @@
-React = require 'react'
-PropTypes = require('prop-types')
+let MockTContextWrapper;
+import React from 'react';
+import PropTypes from 'prop-types';
 
-# Add context "T" which is required by question component
-module.exports = class MockTContextWrapper extends React.Component
-  @childContextTypes: 
-    T: PropTypes.func.isRequired  # Localizer to use
+// Add context "T" which is required by question component
+export default MockTContextWrapper = (function() {
+  MockTContextWrapper = class MockTContextWrapper extends React.Component {
+    static initClass() {
+      this.childContextTypes = 
+        {T: PropTypes.func.isRequired};
+        // Localizer to use
+    }
 
-  getChildContext: -> { T: (str) -> str }
+    getChildContext() { return { T(str) { return str; } }; }
 
-  render: -> @props.children
+    render() { return this.props.children; }
+  };
+  MockTContextWrapper.initClass();
+  return MockTContextWrapper;
+})();

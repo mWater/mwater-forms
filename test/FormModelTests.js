@@ -1,129 +1,137 @@
-assert = require("chai").assert
-FormModel = require '../src/FormModel'
+import { assert } from "chai";
+import FormModel from '../src/FormModel';
 
-describe "FormModel", ->
-  it "gets deployment subjects", ->
-    form = {
+describe("FormModel", function() {
+  it("gets deployment subjects", function() {
+    const form = {
       roles: [
-      ]
+      ],
 
       deployments: [
         {
-          enumerators: [ "a" ]
+          enumerators: [ "a" ],
           approvalStages: [
             { approvers: [ "b", "c", "d" ] }
-          ]
-          viewers: [ "d" ]
+          ],
+          viewers: [ "d" ],
           admins: [ "e" ]
-        }
+        },
         {
-          enumerators: [ "f" ]
-          approvalStages: []
-          viewers: [ "g" ]
+          enumerators: [ "f" ],
+          approvalStages: [],
+          viewers: [ "g" ],
           admins: [ "h" ]
         }      ]
-    }
-    model = new FormModel(form)
-    assert.sameMembers(["a", "b", "c", "d", "e", "f", "g", "h"], model.getDeploymentSubjects())
+    };
+    const model = new FormModel(form);
+    return assert.sameMembers(["a", "b", "c", "d", "e", "f", "g", "h"], model.getDeploymentSubjects());
+  });
 
-  it "gets corrects viewers", ->
-    form = {
+  it("gets corrects viewers", function() {
+    const form = {
       roles: [
-        { id: "a", role: "admin" }
+        { id: "a", role: "admin" },
         { id: "b", role: "view" }
-      ]
+      ],
 
       deployments: [
         {
-          enumerators: [ "a" ]
+          enumerators: [ "a" ],
           approvalStages: [
             { approvers: [ "b", "c" ] }
-          ]
-          viewers: [ "c" ]
+          ],
+          viewers: [ "c" ],
           admins: [ ]
         }
       ]
-    }
-    model = new FormModel(form)
-    model.correctViewers()
-    assert.deepEqual(form.roles, [
-        { id: "a", role: "admin" }
-        { id: "b", role: "view" }
+    };
+    const model = new FormModel(form);
+    model.correctViewers();
+    return assert.deepEqual(form.roles, [
+        { id: "a", role: "admin" },
+        { id: "b", role: "view" },
         { id: "c", role: "view" }
-    ])
+    ]);
+  });
 
-  it "canDeleteRole prevents deleting admin", ->
-    form = {
+  it("canDeleteRole prevents deleting admin", function() {
+    const form = {
       roles: [
-        { id: "a", role: "admin" }
+        { id: "a", role: "admin" },
         { id: "b", role: "view" }
-      ]
+      ],
 
       deployments: []
-    }
-    model = new FormModel(form)
-    assert !model.canDeleteRole({ id: "a", role: "admin" })
-    assert model.canDeleteRole({ id: "b", role: "view" })
+    };
+    const model = new FormModel(form);
+    assert(!model.canDeleteRole({ id: "a", role: "admin" }));
+    return assert(model.canDeleteRole({ id: "b", role: "view" }));
+  });
 
-  it "canDeleteRole allows deleting 2nd admin", ->
-    form = {
+  it("canDeleteRole allows deleting 2nd admin", function() {
+    const form = {
       roles: [
-        { id: "a", role: "admin" }
-        { id: "b", role: "view" }
+        { id: "a", role: "admin" },
+        { id: "b", role: "view" },
         { id: "c", role: "admin" }
-      ]
+      ],
 
       deployments: []
-    }
-    model = new FormModel(form)
-    assert model.canDeleteRole({ id: "a", role: "admin" })
-    assert model.canDeleteRole({ id: "b", role: "view" })
+    };
+    const model = new FormModel(form);
+    assert(model.canDeleteRole({ id: "a", role: "admin" }));
+    return assert(model.canDeleteRole({ id: "b", role: "view" }));
+  });
 
-  it "canChangeRole prevents changing only admin", ->
-    form = {
+  it("canChangeRole prevents changing only admin", function() {
+    const form = {
       roles: [
-        { id: "a", role: "admin" }
+        { id: "a", role: "admin" },
         { id: "b", role: "view" }
-      ]
+      ],
 
       deployments: []
-    }
-    model = new FormModel(form)
-    assert !model.canChangeRole({ id: "a", role: "admin" })
-    assert model.canChangeRole({ id: "b", role: "view" })
+    };
+    const model = new FormModel(form);
+    assert(!model.canChangeRole({ id: "a", role: "admin" }));
+    return assert(model.canChangeRole({ id: "b", role: "view" }));
+  });
 
-  it "checks admin for user", ->
-    form = {
+  it("checks admin for user", function() {
+    const form = {
       roles: [
-        { id: "user:a", role: "admin" }
-        { id: "group:b", role: "admin" }
+        { id: "user:a", role: "admin" },
+        { id: "group:b", role: "admin" },
         { id: "group:c", role: "view" }
-      ]
+      ],
 
       deployments: []
-    }
-    model = new FormModel(form)
-    assert model.amAdmin("a", [])
-    assert model.amAdmin("x", "b")
-    assert not model.amAdmin("x", "c")
+    };
+    const model = new FormModel(form);
+    assert(model.amAdmin("a", []));
+    assert(model.amAdmin("x", "b"));
+    return assert(!model.amAdmin("x", "c"));
+  });
 
-  it "determines if deployment admin", ->
-    form = {
+  return it("determines if deployment admin", function() {
+    const form = {
       roles: [
-      ]
+      ],
 
       deployments: [
         {
-          enumerators: ["user:a"]
+          enumerators: ["user:a"],
           approvalStages: [
             { approvers: [ "user:b" ] }
-          ]
-          viewers: [ "user:d" ]
+          ],
+          viewers: [ "user:d" ],
           admins: [ "user:e" ]
         }
       ]
-    }
-    model = new FormModel(form)
-    assert.isTrue model.amDeploymentAdmin("e", [])
-    assert.isFalse model.amDeploymentAdmin("b", [])
+    };
+    const model = new FormModel(form);
+    assert.isTrue(model.amDeploymentAdmin("e", []));
+    return assert.isFalse(model.amDeploymentAdmin("b", []));
+  });
+});
 

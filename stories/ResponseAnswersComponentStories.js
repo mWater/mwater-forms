@@ -1,95 +1,115 @@
-storiesOf = require('@storybook/react').storiesOf
-{action} = require('@storybook/addon-actions')
-{withKnobs, text, boolean, number} = require '@storybook/addon-knobs'
+import { storiesOf } from '@storybook/react';
+import { action } from '@storybook/addon-actions';
+import { withKnobs, text, boolean, number } from '@storybook/addon-knobs';
+import _ from 'lodash';
+import React from 'react';
+const H = React.DOM;
+const R = React.createElement;
 
-_ = require 'lodash'
-React = require 'react'
-H = React.DOM
-R = React.createElement
+import ResponseAnswersComponent from "../src/ResponseAnswersComponent";
+import simpleForm from './formDesign';
+import sampleForm2 from '../src/sampleForm2';
+import answers from './formAnswer';
+import prevAnswers from './previousAnswers';
 
-ResponseAnswersComponent = require "../src/ResponseAnswersComponent"
-simpleForm = require './formDesign'
-sampleForm2 = require '../src/sampleForm2'
-answers = require './formAnswer'
-prevAnswers = require './previousAnswers'
+const T = function(str) {
+  if (arguments.length > 1) {
+    const iterable = Array.from(arguments).slice(1);
+    for (let index = 0; index < iterable.length; index++) {
+      const subValue = iterable[index];
+      const tag = `{${index}}`;
+      str = str.replace(tag, subValue);
+    }
+  }
+  return str;
+};
 
-T = (str) ->
-  if arguments.length > 1
-    for subValue, index in Array.from(arguments).slice(1)
-      tag = "{#{index}}"
-      str = str.replace(tag, subValue)
-  return str
+const formCtx = {
+  locale: "en", 
+  getAdminRegionPath(id, callback) {
+    if (id === 'manitoba') {
+      return callback(null, [canada, manitoba]);
+    } else if (id === 'ontario') {
+      return callback(null, [canada, ontario]);
+    } else if (id === "canada") {
+      return callback(null, [canada]);
+    } else {
+      return callback(null, []);
+    }
+  },
 
-formCtx = {
-  locale: "en" 
-  getAdminRegionPath: (id, callback) ->
-    if id == 'manitoba'
-      callback(null, [canada, manitoba])
-    else if id == 'ontario'
-      callback(null, [canada, ontario])
-    else if id == "canada"
-      callback(null, [canada])
-    else
-      callback(null, [])
+  getSubAdminRegions(id, level, callback) {
+    if ((id == null)) {
+      return callback(null, [canada]);
+    } else if (id === "canada") {
+      return callback(null, [manitoba, ontario]);
+    } else {
+      return callback(null, []);
+    }
+  },
 
-  getSubAdminRegions: (id, level, callback) ->
-    if not id?
-      callback(null, [canada])
-    else if id == "canada"
-      callback(null, [manitoba, ontario])
-    else
-      callback(null, [])
+  renderEntitySummaryView(entityType, entity) {
+    return JSON.stringify(entity);
+  },
 
-  renderEntitySummaryView: (entityType, entity) ->
-    JSON.stringify(entity)
+  renderEntityListItemView(entityType, entity) {
+    return JSON.stringify(entity);
+  },
 
-  renderEntityListItemView: (entityType, entity) ->
-    JSON.stringify(entity)
-
-  findAdminRegionByLatLng: (lat, lng, callback) -> callback("Not implemented")
+  findAdminRegionByLatLng(lat, lng, callback) { return callback("Not implemented"); },
 
   imageManager: {
-    getImageUrl: (id, success, error) -> error("Not implemented")
-    getImageThumbnailUrl: (id, success, error) -> error("Not implemented")
-  }
+    getImageUrl(id, success, error) { return error("Not implemented"); },
+    getImageThumbnailUrl(id, success, error) { return error("Not implemented"); }
+  },
 
   stickyStorage: {
-    get: (questionId) ->
-      return testStickyStorage[questionId]
-    set: (questionId, value) ->
-      return testStickyStorage[questionId] = value
+    get(questionId) {
+      return testStickyStorage[questionId];
+    },
+    set(questionId, value) {
+      return testStickyStorage[questionId] = value;
+    }
+  },
+
+  selectEntity: options => {
+    return options.callback("1234");
+  },
+
+  getEntityById: (entityType, entityId, callback) => {
+    if (entityId === "1234") {
+      return callback({ _id: "1234", code: "10007", name: "Test" });
+    } else {
+      return callback(null);
+    }
+  },
+
+  getEntityByCode: (entityType, entityCode, callback) => {
+    if (entityCode === "10007") {
+      return callback({ _id: "1234", code: "10007", name: "Test" });
+    } else {
+      return callback(null);
+    }
   }
+};
 
-  selectEntity: (options) =>
-    options.callback("1234")
-
-  getEntityById: (entityType, entityId, callback) =>
-    if entityId == "1234"
-      callback({ _id: "1234", code: "10007", name: "Test" })
-    else
-      callback(null)
-
-  getEntityByCode: (entityType, entityCode, callback) =>
-    if entityCode == "10007"
-      callback({ _id: "1234", code: "10007", name: "Test" })
-    else
-      callback(null)
-}
-
-stories = storiesOf('ResponseAnswersComponent', module);
+const stories = storiesOf('ResponseAnswersComponent', module);
 stories.addDecorator(withKnobs);
 
 stories
-  .add 'With Previous Data', =>
-    R ResponseAnswersComponent,
-      formDesign: simpleForm
-      data: answers
-      schema: {}
-      formCtx: formCtx
-      T: T
-      prevData: prevAnswers
-      showPrevAnswers: boolean('Show previous answers', false)
-      highlightChanges: boolean('Highlight changes', false)
-      hideUnchangedAnswers: boolean('Hide unchanged answers', false)
-      showChangedLink: boolean('Show changed link', false)
+  .add('With Previous Data', () => {
+    return R(ResponseAnswersComponent, {
+      formDesign: simpleForm,
+      data: answers,
+      schema: {},
+      formCtx,
+      T,
+      prevData: prevAnswers,
+      showPrevAnswers: boolean('Show previous answers', false),
+      highlightChanges: boolean('Highlight changes', false),
+      hideUnchangedAnswers: boolean('Hide unchanged answers', false),
+      showChangedLink: boolean('Show changed link', false),
       onChangedLinkClick: () => action('changeLinkClicked')()
+    }
+    );
+});

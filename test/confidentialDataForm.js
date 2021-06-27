@@ -1,38 +1,39 @@
-# Minimal form that passes validation
-module.exports = -> {
-  _id: "abc123"
-  state: "active"
+// Minimal form that passes validation
+export default () => ({
+  _id: "abc123",
+  state: "active",
+
   design: {
-    _type: "Form"
-    _schema: 3
-    name: {}
+    _type: "Form",
+    _schema: 3,
+    name: {},
     contents: [
       { 
-        _id: "a1"
-        _type: "TextQuestion"
-        format: "singleline"
-        confidential: true
-        text: {}
-        conditions: []
+        _id: "a1",
+        _type: "TextQuestion",
+        format: "singleline",
+        confidential: true,
+        text: {},
+        conditions: [],
         validations: []
-      }
+      },
       { 
-        _id: "b1"
-        _type: "NumberQuestion"
-        decimal: true
-        text: {}
-        conditions: []
+        _id: "b1",
+        _type: "NumberQuestion",
+        decimal: true,
+        text: {},
+        conditions: [],
         validations: []
-      }
+      },
       { 
-        _id: "c1"
-        _type: "LocationQuestion"
-        text: {}
-        conditions: []
-        validations: []
-        confidential: true
+        _id: "c1",
+        _type: "LocationQuestion",
+        text: {},
+        conditions: [],
+        validations: [],
+        confidential: true,
         confidentialRadius: 10000
-      }
+      },
       {
         "_id": "r1",
         "name": {
@@ -64,12 +65,14 @@ module.exports = -> {
         "allowRemove": true,
         "entryTitleExprs": []
       }
-    ]
+    ],
     locales: [{ code: "en", name: "English"}]
-  }
+  },
+
   roles: [
     { id: "user:user1", role: "admin" }
-  ]
-  created: { on: "2014-08-08", by: "user1" }
+  ],
+
+  created: { on: "2014-08-08", by: "user1" },
   modified: { on: "2014-08-08", by: "user1" }
-}
+});

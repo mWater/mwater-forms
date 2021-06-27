@@ -1,529 +1,634 @@
-PropTypes = require('prop-types')
-_ = require 'lodash'
-React = require 'react'
-R = React.createElement
+let QuestionComponent;
+import PropTypes from 'prop-types';
+import _ from 'lodash';
+import React from 'react';
+const R = React.createElement;
 
-formUtils = require './formUtils'
-Markdown = require("markdown-it")
-TextExprsComponent = require './TextExprsComponent'
+import formUtils from './formUtils';
+import Markdown from "markdown-it";
+import TextExprsComponent from './TextExprsComponent';
+import LocationFinder from './LocationFinder';
+import { default as CurrentPositionFinder } from './CurrentPositionFinder';
+import AnswerValidator from './answers/AnswerValidator';
+import AdminRegionAnswerComponent from './answers/AdminRegionAnswerComponent';
+import AquagenxCBTAnswerComponent from './answers/AquagenxCBTAnswerComponent';
+import BarcodeAnswerComponent from './answers/BarcodeAnswerComponent';
+import CheckAnswerComponent from './answers/CheckAnswerComponent';
+import DateAnswerComponent from './answers/DateAnswerComponent';
+import DropdownAnswerComponent from './answers/DropdownAnswerComponent';
+import EntityAnswerComponent from './answers/EntityAnswerComponent';
+import ImageAnswerComponent from './answers/ImageAnswerComponent';
+import ImagesAnswerComponent from './answers/ImagesAnswerComponent';
+import LikertAnswerComponent from './answers/LikertAnswerComponent';
+import LocationAnswerComponent from './answers/LocationAnswerComponent';
+import MatrixAnswerComponent from './answers/MatrixAnswerComponent';
+import MulticheckAnswerComponent from './answers/MulticheckAnswerComponent';
+import NumberAnswerComponent from './answers/NumberAnswerComponent';
+import RadioAnswerComponent from './answers/RadioAnswerComponent';
+import SiteAnswerComponent from './answers/SiteAnswerComponent';
+import StopwatchAnswerComponent from './answers/StopwatchAnswerComponent';
+import TextAnswerComponent from './answers/TextAnswerComponent';
+import TextListAnswerComponent from './answers/TextListAnswerComponent';
+import UnitsAnswerComponent from './answers/UnitsAnswerComponent';
+import { CascadingListAnswerComponent } from './answers/CascadingListAnswerComponent';
+import { CascadingRefAnswerComponent } from './answers/CascadingRefAnswerComponent';
 
-LocationFinder = require './LocationFinder'
-CurrentPositionFinder = require('./CurrentPositionFinder').default
-
-AnswerValidator = require './answers/AnswerValidator'
-
-AdminRegionAnswerComponent = require './answers/AdminRegionAnswerComponent'
-AquagenxCBTAnswerComponent = require './answers/AquagenxCBTAnswerComponent'
-BarcodeAnswerComponent = require './answers/BarcodeAnswerComponent'
-CheckAnswerComponent = require './answers/CheckAnswerComponent'
-DateAnswerComponent = require './answers/DateAnswerComponent'
-DropdownAnswerComponent = require './answers/DropdownAnswerComponent'
-EntityAnswerComponent = require './answers/EntityAnswerComponent'
-ImageAnswerComponent = require './answers/ImageAnswerComponent'
-ImagesAnswerComponent = require './answers/ImagesAnswerComponent'
-LikertAnswerComponent = require './answers/LikertAnswerComponent'
-LocationAnswerComponent = require './answers/LocationAnswerComponent'
-MatrixAnswerComponent = require './answers/MatrixAnswerComponent'
-MulticheckAnswerComponent = require './answers/MulticheckAnswerComponent'
-NumberAnswerComponent = require './answers/NumberAnswerComponent'
-RadioAnswerComponent = require './answers/RadioAnswerComponent'
-SiteAnswerComponent = require './answers/SiteAnswerComponent'
-StopwatchAnswerComponent = require './answers/StopwatchAnswerComponent'
-TextAnswerComponent = require './answers/TextAnswerComponent'
-TextListAnswerComponent = require './answers/TextListAnswerComponent'
-UnitsAnswerComponent = require './answers/UnitsAnswerComponent'
-CascadingListAnswerComponent = require('./answers/CascadingListAnswerComponent').CascadingListAnswerComponent
-CascadingRefAnswerComponent = require('./answers/CascadingRefAnswerComponent').CascadingRefAnswerComponent
-
-# Question component that displays a question of any type.
-# Displays question text and hint
-# Displays toggleable help 
-# Displays required (*)
-# Displays comments field
-# Does NOT fill in when sticky and visible for first time. This is done by data cleaning
-# Does NOT remove answer when invisible. This is done by data cleaning
-# Does NOT check conditions and make self invisible. This is done by parent (ItemListComponent)
-# Displays alternates and makes exclusive with answer
-module.exports = class QuestionComponent extends React.Component
-  @contextTypes:
-    locale: PropTypes.string
-    stickyStorage: PropTypes.object   # Storage for sticky values
-    locationFinder: PropTypes.object
-    T: PropTypes.func.isRequired  # Localizer to use
-    disableConfidentialFields: PropTypes.bool
-    getCustomTableRows: PropTypes.func.isRequired
-
-  @propTypes:
-    question: PropTypes.object.isRequired # Design of question. See schema
-    data: PropTypes.object      # Current data of response (for roster entry if in roster)
-    responseRow: PropTypes.object    # ResponseRow object (for roster entry if in roster)
-    onAnswerChange: PropTypes.func.isRequired
-    displayMissingRequired: PropTypes.bool
-    onNext: PropTypes.func
-    schema: PropTypes.object.isRequired  # Schema to use, including form
-
-  constructor: (props) ->
-    super(props)
-
-    @state = {
-      helpVisible: false    # True to display help
-      validationError: null
-      # savedValue and savedSpecify are used to save the value when selecting an alternate answer
-      savedValue: null
-      savedSpecify: null
+// Question component that displays a question of any type.
+// Displays question text and hint
+// Displays toggleable help 
+// Displays required (*)
+// Displays comments field
+// Does NOT fill in when sticky and visible for first time. This is done by data cleaning
+// Does NOT remove answer when invisible. This is done by data cleaning
+// Does NOT check conditions and make self invisible. This is done by parent (ItemListComponent)
+// Displays alternates and makes exclusive with answer
+export default QuestionComponent = (function() {
+  QuestionComponent = class QuestionComponent extends React.Component {
+    static initClass() {
+      this.contextTypes = {
+        locale: PropTypes.string,
+        stickyStorage: PropTypes.object,   // Storage for sticky values
+        locationFinder: PropTypes.object,
+        T: PropTypes.func.isRequired,  // Localizer to use
+        disableConfidentialFields: PropTypes.bool,
+        getCustomTableRows: PropTypes.func.isRequired
+      };
+  
+      this.propTypes = {
+        question: PropTypes.object.isRequired, // Design of question. See schema
+        data: PropTypes.object,      // Current data of response (for roster entry if in roster)
+        responseRow: PropTypes.object,    // ResponseRow object (for roster entry if in roster)
+        onAnswerChange: PropTypes.func.isRequired,
+        displayMissingRequired: PropTypes.bool,
+        onNext: PropTypes.func,
+        schema: PropTypes.object.isRequired
+      };
+        // Schema to use, including form
     }
 
-  componentWillUnmount: ->
-    @unmounted = true
+    constructor(props) {
+      this.handleToggleHelp = this.handleToggleHelp.bind(this);
+      this.handleValueChange = this.handleValueChange.bind(this);
+      this.handleCurrentPositionFound = this.handleCurrentPositionFound.bind(this);
+      this.handleCurrentPositionStatus = this.handleCurrentPositionStatus.bind(this);
+      this.handleAnswerChange = this.handleAnswerChange.bind(this);
+      this.handleAlternate = this.handleAlternate.bind(this);
+      this.handleCommentsChange = this.handleCommentsChange.bind(this);
+      this.handleNextOrComments = this.handleNextOrComments.bind(this);
+      super(props);
 
-    # Stop position finder
-    if @currentPositionFinder
-      @currentPositionFinder.stop()
+      this.state = {
+        helpVisible: false,    // True to display help
+        validationError: null,
+        // savedValue and savedSpecify are used to save the value when selecting an alternate answer
+        savedValue: null,
+        savedSpecify: null
+      };
+    }
 
-  shouldComponentUpdate: (nextProps, nextState, nextContext) ->
-    if @context.locale != nextContext.locale
-      return true
-    if nextProps.question.textExprs? and nextProps.question.textExprs.length > 0
-      return true
-    if nextProps.question.choices?
-      for choice in nextProps.question.choices
-        if choice.conditions? and choice.conditions.length > 0
-          return true
+    componentWillUnmount() {
+      this.unmounted = true;
 
-    if nextProps.question != @props.question
-      return true
+      // Stop position finder
+      if (this.currentPositionFinder) {
+        return this.currentPositionFinder.stop();
+      }
+    }
 
-    oldAnswer = @props.data[@props.question._id]
-    newAnswer = nextProps.data[@props.question._id]
-    if newAnswer != oldAnswer
-      return true
+    shouldComponentUpdate(nextProps, nextState, nextContext) {
+      if (this.context.locale !== nextContext.locale) {
+        return true;
+      }
+      if ((nextProps.question.textExprs != null) && (nextProps.question.textExprs.length > 0)) {
+        return true;
+      }
+      if (nextProps.question.choices != null) {
+        for (let choice of nextProps.question.choices) {
+          if ((choice.conditions != null) && (choice.conditions.length > 0)) {
+            return true;
+          }
+        }
+      }
 
-    if not _.isEqual @state, nextState
-      return true
-    return false
+      if (nextProps.question !== this.props.question) {
+        return true;
+      }
 
-  focus: ->
-    answer = @answer
-    if answer? and answer.focus?
-      answer.focus()
+      const oldAnswer = this.props.data[this.props.question._id];
+      const newAnswer = nextProps.data[this.props.question._id];
+      if (newAnswer !== oldAnswer) {
+        return true;
+      }
 
-  getAnswer: ->
-    # The answer to this question
-    answer = @props.data[@props.question._id]
-    if answer?
-      return answer
-    return {}
+      if (!_.isEqual(this.state, nextState)) {
+        return true;
+      }
+      return false;
+    }
 
-  # Returns true if validation error
-  validate: (scrollToFirstInvalid) ->
-    # If we are disabling confidential data return true
-    if @context.disableConfidentialFields and @props.question.confidential
-      return false
+    focus() {
+      const {
+        answer
+      } = this;
+      if ((answer != null) && (answer.focus != null)) {
+        return answer.focus();
+      }
+    }
 
-    # If answer has custom validation, use that
-    if @answer?.validate
-      answerInvalid = @answer?.validate()
+    getAnswer() {
+      // The answer to this question
+      const answer = this.props.data[this.props.question._id];
+      if (answer != null) {
+        return answer;
+      }
+      return {};
+    }
 
-      if answerInvalid and scrollToFirstInvalid
-        @prompt.scrollIntoView()
+    // Returns true if validation error
+    async validate(scrollToFirstInvalid) {
+      // If we are disabling confidential data return true
+      if (this.context.disableConfidentialFields && this.props.question.confidential) {
+        return false;
+      }
 
-      if answerInvalid
-        @setState(validationError: answerInvalid)
-        return answerInvalid
+      // If answer has custom validation, use that
+      if (this.answer?.validate) {
+        const answerInvalid = this.answer?.validate();
 
-    validationError = await new AnswerValidator(@props.schema, @props.responseRow, @context.locale).validate(@props.question, @getAnswer())
+        if (answerInvalid && scrollToFirstInvalid) {
+          this.prompt.scrollIntoView();
+        }
 
-    # Check for isValid function in answer component, as some answer components don't store invalid answers
-    # like the number answer.
-    if not validationError and @answer?.isValid and not @answer?.isValid()
-      validationError = true
+        if (answerInvalid) {
+          this.setState({validationError: answerInvalid});
+          return answerInvalid;
+        }
+      }
 
-    if validationError?
-      if scrollToFirstInvalid
-        @prompt.scrollIntoView()
-      @setState(validationError: validationError)
-      return true
-    else
-      @setState(validationError: null)
-      return false
+      let validationError = await new AnswerValidator(this.props.schema, this.props.responseRow, this.context.locale).validate(this.props.question, this.getAnswer());
 
-  handleToggleHelp: =>
-    @setState(helpVisible: not @state.helpVisible)
+      // Check for isValid function in answer component, as some answer components don't store invalid answers
+      // like the number answer.
+      if (!validationError && this.answer?.isValid && !this.answer?.isValid()) {
+        validationError = true;
+      }
 
-  handleValueChange: (value) =>
-    @handleAnswerChange(_.extend({}, @getAnswer(), { value: value }, alternate: null))
+      if (validationError != null) {
+        if (scrollToFirstInvalid) {
+          this.prompt.scrollIntoView();
+        }
+        this.setState({validationError});
+        return true;
+      } else {
+        this.setState({validationError: null});
+        return false;
+      }
+    }
 
-  # Record a position found
-  handleCurrentPositionFound: (loc) =>
-    if not @unmounted
-      newAnswer = _.clone @getAnswer()
-      newAnswer.location = _.pick(loc.coords, "latitude", "longitude", "accuracy", "altitude", "altitudeAccuracy")
-      @props.onAnswerChange(newAnswer)
+    handleToggleHelp() {
+      return this.setState({helpVisible: !this.state.helpVisible});
+    }
 
-  handleCurrentPositionStatus: (status) =>
-    # Always record useable positions
-    if status.useable
-      @handleCurrentPositionFound(status.pos)
+    handleValueChange(value) {
+      return this.handleAnswerChange(_.extend({}, this.getAnswer(), { value }, {alternate: null}));
+    }
 
-  handleAnswerChange: (newAnswer) =>
-    readonly = @context.disableConfidentialFields and @props.question.confidential 
-    if readonly
-      return
+    // Record a position found
+    handleCurrentPositionFound(loc) {
+      if (!this.unmounted) {
+        const newAnswer = _.clone(this.getAnswer());
+        newAnswer.location = _.pick(loc.coords, "latitude", "longitude", "accuracy", "altitude", "altitudeAccuracy");
+        return this.props.onAnswerChange(newAnswer);
+      }
+    }
 
-    oldAnswer = @getAnswer()
-    if @props.question.sticky and @context.stickyStorage? and newAnswer.value?
-      # TODO: SurveyorPro: What should happen if value is set to null?
-      # TODO: SurveyorPro: What should happen if alternate is set? (or anything else that didn't change the value field)
-      @context.stickyStorage.set(@props.question._id, newAnswer.value)
+    handleCurrentPositionStatus(status) {
+      // Always record useable positions
+      if (status.useable) {
+        return this.handleCurrentPositionFound(status.pos);
+      }
+    }
 
-    if @props.question.recordTimestamp and not oldAnswer.timestamp?
-      newAnswer.timestamp = new Date().toISOString()
+    handleAnswerChange(newAnswer) {
+      const readonly = this.context.disableConfidentialFields && this.props.question.confidential; 
+      if (readonly) {
+        return;
+      }
 
-    # Record location if no answer and not already getting location
-    if @props.question.recordLocation and not oldAnswer.location? and not @currentPositionFinder
-      # Create location finder
-      locationFinder = @context.locationFinder or new LocationFinder()
+      const oldAnswer = this.getAnswer();
+      if (this.props.question.sticky && (this.context.stickyStorage != null) && (newAnswer.value != null)) {
+        // TODO: SurveyorPro: What should happen if value is set to null?
+        // TODO: SurveyorPro: What should happen if alternate is set? (or anything else that didn't change the value field)
+        this.context.stickyStorage.set(this.props.question._id, newAnswer.value);
+      }
 
-      # Create position finder
-      @currentPositionFinder = new CurrentPositionFinder(locationFinder: locationFinder)
+      if (this.props.question.recordTimestamp && (oldAnswer.timestamp == null)) {
+        newAnswer.timestamp = new Date().toISOString();
+      }
 
-      # Listen to current position events (for setting location)
-      @currentPositionFinder.on 'found', @handleCurrentPositionFound
-      @currentPositionFinder.on 'status', @handleCurrentPositionStatus
-      @currentPositionFinder.start()
+      // Record location if no answer and not already getting location
+      if (this.props.question.recordLocation && (oldAnswer.location == null) && !this.currentPositionFinder) {
+        // Create location finder
+        const locationFinder = this.context.locationFinder || new LocationFinder();
 
-    @props.onAnswerChange(newAnswer)
+        // Create position finder
+        this.currentPositionFinder = new CurrentPositionFinder({locationFinder});
 
-  handleAlternate: (alternate) =>
-    answer = @getAnswer()
-    # If we are selecting a new alternate
-    if answer.alternate != alternate
-      # If old alternate was null (important not to do this when changing from an alternate value to another)
-      if not answer.alternate?
-        # It saves value and specify
-        @setState({ savedValue: answer.value, savedSpecify: answer.specify })
-      # Then clear value, specify and set alternate
-      @handleAnswerChange(_.extend({}, answer, {
-        value: null
-        specify: null
-        alternate: alternate
-      }))
-    else
-      # Clear alternate and put back saved value and specify
-      @handleAnswerChange(_.extend({}, answer, {
-        value: @state.savedValue
-        specify: @state.savedSpecify
-        alternate: null
-      }))
-      @setState({savedValue: null, savedSpecify: null})
+        // Listen to current position events (for setting location)
+        this.currentPositionFinder.on('found', this.handleCurrentPositionFound);
+        this.currentPositionFinder.on('status', this.handleCurrentPositionStatus);
+        this.currentPositionFinder.start();
+      }
 
-  handleCommentsChange: (ev) =>
-    @handleAnswerChange(_.extend({}, @getAnswer(), { comments: ev.target.value }))
+      return this.props.onAnswerChange(newAnswer);
+    }
 
-  # Either jump to next question or select the comments box
-  handleNextOrComments: (ev) =>
-    # If it has a comment box, set the focus on it
-    if @props.question.commentsField?
-      comments = @comments
-      # For some reason, comments can be null here sometimes
-      comments?.focus()
-      comments?.select()
-    # Else we lose the focus and go to the next question
-    else
-      # Blur the input (remove the focus)
-      ev.target.blur()
-      @props.onNext?()
+    handleAlternate(alternate) {
+      const answer = this.getAnswer();
+      // If we are selecting a new alternate
+      if (answer.alternate !== alternate) {
+        // If old alternate was null (important not to do this when changing from an alternate value to another)
+        if ((answer.alternate == null)) {
+          // It saves value and specify
+          this.setState({ savedValue: answer.value, savedSpecify: answer.specify });
+        }
+        // Then clear value, specify and set alternate
+        return this.handleAnswerChange(_.extend({}, answer, {
+          value: null,
+          specify: null,
+          alternate
+        }));
+      } else {
+        // Clear alternate and put back saved value and specify
+        this.handleAnswerChange(_.extend({}, answer, {
+          value: this.state.savedValue,
+          specify: this.state.savedSpecify,
+          alternate: null
+        }));
+        return this.setState({savedValue: null, savedSpecify: null});
+      }
+    }
 
-  renderPrompt: ->
-    promptDiv = R 'div', className: "prompt", ref: ((c) => @prompt = c),
-      if @props.question.code
-        R 'span', className: "question-code", @props.question.code + ": "
+    handleCommentsChange(ev) {
+      return this.handleAnswerChange(_.extend({}, this.getAnswer(), { comments: ev.target.value }));
+    }
 
-      R TextExprsComponent,
-        localizedStr: @props.question.text 
-        exprs: @props.question.textExprs
-        schema: @props.schema
-        responseRow: @props.responseRow
-        locale: @context.locale
+    // Either jump to next question or select the comments box
+    handleNextOrComments(ev) {
+      // If it has a comment box, set the focus on it
+      if (this.props.question.commentsField != null) {
+        const {
+          comments
+        } = this;
+        // For some reason, comments can be null here sometimes
+        comments?.focus();
+        return comments?.select();
+      // Else we lose the focus and go to the next question
+      } else {
+        // Blur the input (remove the focus)
+        ev.target.blur();
+        return this.props.onNext?.();
+      }
+    }
 
-      # Required star
-      if @props.question.required and not (@context.disableConfidentialFields and @props.question.confidential)
-        R 'span', className: "required", "*"
+    renderPrompt() {
+      const promptDiv = R('div', {className: "prompt", ref: (c => { return this.prompt = c; })},
+        this.props.question.code ?
+          R('span', {className: "question-code"}, this.props.question.code + ": ") : undefined,
 
-      if @props.question.help
-        R 'button', type: "button", id: 'helpbtn', className: "btn btn-link btn-sm", onClick: @handleToggleHelp,
-          R 'span', className: "glyphicon glyphicon-question-sign"
+        R(TextExprsComponent, {
+          localizedStr: this.props.question.text, 
+          exprs: this.props.question.textExprs,
+          schema: this.props.schema,
+          responseRow: this.props.responseRow,
+          locale: this.context.locale
+        }
+        ),
 
-    # Special case!
-    if @props.question._type == 'CheckQuestion'
-      R CheckAnswerComponent, {
-        ref: ((c) => @answer = c)
-        value: @getAnswer().value
-        onValueChange: @handleValueChange
-        label: @props.question.label
-      }, promptDiv
-    else
-      return promptDiv
+        // Required star
+        this.props.question.required && !(this.context.disableConfidentialFields && this.props.question.confidential) ?
+          R('span', {className: "required"}, "*") : undefined,
 
-  renderHint: ->
-    R 'div', null,
-      if @props.question.hint
-        R 'div', className: "text-muted", formUtils.localizeString(@props.question.hint, @context.locale)
-      if @context.disableConfidentialFields and @props.question.confidential
-        R 'div', className: "text-muted", @context.T("Confidential answers may not be edited.")
+        this.props.question.help ?
+          R('button', {type: "button", id: 'helpbtn', className: "btn btn-link btn-sm", onClick: this.handleToggleHelp},
+            R('span', {className: "glyphicon glyphicon-question-sign"})) : undefined
+      );
 
-  renderHelp: ->
-    if @state.helpVisible and @props.question.help
-      R 'div', className: "help well well-sm", dangerouslySetInnerHTML: { __html: new Markdown().render(formUtils.localizeString(@props.question.help, @context.locale)) }
+      // Special case!
+      if (this.props.question._type === 'CheckQuestion') {
+        return R(CheckAnswerComponent, {
+          ref: (c => { return this.answer = c; }),
+          value: this.getAnswer().value,
+          onValueChange: this.handleValueChange,
+          label: this.props.question.label
+        }, promptDiv);
+      } else {
+        return promptDiv;
+      }
+    }
 
-  renderValidationError: ->
-    if @state.validationError? and typeof(@state.validationError) == "string"
-      R 'div', className: "validation-message text-danger",
-        @state.validationError
+    renderHint() {
+      return R('div', null,
+        this.props.question.hint ?
+          R('div', {className: "text-muted"}, formUtils.localizeString(this.props.question.hint, this.context.locale)) : undefined,
+        this.context.disableConfidentialFields && this.props.question.confidential ?
+          R('div', {className: "text-muted"}, this.context.T("Confidential answers may not be edited.")) : undefined
+      );
+    }
 
-  renderAlternates: ->
-    if @props.question.alternates and (@props.question.alternates.na or @props.question.alternates.dontknow)
-      R 'div', null,
-        if @props.question.alternates.dontknow
-          R 'div', id: 'dn', className: "touch-checkbox alternate #{if @getAnswer().alternate == 'dontknow' then 'checked'}", onClick: @handleAlternate.bind(null, 'dontknow'),
-            @context.T("Don't Know")
-        if @props.question.alternates.na
-          R 'div', id: 'na', className: "touch-checkbox alternate #{if @getAnswer().alternate == 'na' then 'checked'}", onClick: @handleAlternate.bind(null, 'na'),
-            @context.T("Not Applicable")
+    renderHelp() {
+      if (this.state.helpVisible && this.props.question.help) {
+        return R('div', {className: "help well well-sm", dangerouslySetInnerHTML: { __html: new Markdown().render(formUtils.localizeString(this.props.question.help, this.context.locale)) }});
+      }
+    }
 
-  renderCommentsField: ->
-    if @props.question.commentsField
-      R 'textarea', className: "form-control question-comments", id: "comments", ref: ((c) => @comments = c), placeholder: @context.T("Comments"), value: @getAnswer().comments, onChange: @handleCommentsChange
+    renderValidationError() {
+      if ((this.state.validationError != null) && (typeof(this.state.validationError) === "string")) {
+        return R('div', {className: "validation-message text-danger"},
+          this.state.validationError);
+      }
+    }
 
-  renderAnswer: ->
-    answer = @getAnswer()
-    readonly = (@context.disableConfidentialFields and @props.question.confidential) or answer?.confidential?
+    renderAlternates() {
+      if (this.props.question.alternates && (this.props.question.alternates.na || this.props.question.alternates.dontknow)) {
+        return R('div', null,
+          this.props.question.alternates.dontknow ?
+            R('div', {id: 'dn', className: `touch-checkbox alternate ${this.getAnswer().alternate === 'dontknow' ? 'checked' : undefined}`, onClick: this.handleAlternate.bind(null, 'dontknow')},
+              this.context.T("Don't Know")) : undefined,
+          this.props.question.alternates.na ?
+            R('div', {id: 'na', className: `touch-checkbox alternate ${this.getAnswer().alternate === 'na' ? 'checked' : undefined}`, onClick: this.handleAlternate.bind(null, 'na')},
+              this.context.T("Not Applicable")) : undefined
+        );
+      }
+    }
+
+    renderCommentsField() {
+      if (this.props.question.commentsField) {
+        return R('textarea', {className: "form-control question-comments", id: "comments", ref: (c => { return this.comments = c; }), placeholder: this.context.T("Comments"), value: this.getAnswer().comments, onChange: this.handleCommentsChange});
+      }
+    }
+
+    renderAnswer() {
+      const answer = this.getAnswer();
+      const readonly = (this.context.disableConfidentialFields && this.props.question.confidential) || (answer?.confidential != null);
     
-    switch @props.question._type
-      when "TextQuestion"
-        return R TextAnswerComponent, {
-          ref: ((c) => @answer = c)
-          value: answer.value
-          format: @props.question.format
-          readOnly: readonly
-          onValueChange: @handleValueChange
-          onNextOrComments: @handleNextOrComments
-        }
+      switch (this.props.question._type) {
+        case "TextQuestion":
+          return R(TextAnswerComponent, {
+            ref: (c => { return this.answer = c; }),
+            value: answer.value,
+            format: this.props.question.format,
+            readOnly: readonly,
+            onValueChange: this.handleValueChange,
+            onNextOrComments: this.handleNextOrComments
+          });
+          break;
 
-      when "NumberQuestion"
-        return R NumberAnswerComponent, {
-          ref: ((c) => @answer = c)
-          value: answer.value
-          onChange: if not readonly then @handleValueChange
-          decimal: @props.question.decimal
-          onNextOrComments: @handleNextOrComments
-        }
+        case "NumberQuestion":
+          return R(NumberAnswerComponent, {
+            ref: (c => { return this.answer = c; }),
+            value: answer.value,
+            onChange: !readonly ? this.handleValueChange : undefined,
+            decimal: this.props.question.decimal,
+            onNextOrComments: this.handleNextOrComments
+          });
+          break;
 
-      when "DropdownQuestion"
-        return R DropdownAnswerComponent, {
-          ref: ((c) => @answer = c)
-          choices: @props.question.choices
-          answer: answer
-          data: @props.data
-          onAnswerChange: @handleAnswerChange
-        }
+        case "DropdownQuestion":
+          return R(DropdownAnswerComponent, {
+            ref: (c => { return this.answer = c; }),
+            choices: this.props.question.choices,
+            answer,
+            data: this.props.data,
+            onAnswerChange: this.handleAnswerChange
+          });
+          break;
 
-      when "LikertQuestion"
-        return R LikertAnswerComponent, {
-          ref: ((c) => @answer = c)
-          items: @props.question.items
-          choices: @props.question.choices
-          answer: answer
-          data: @props.data
-          onAnswerChange: @handleAnswerChange
-        }
+        case "LikertQuestion":
+          return R(LikertAnswerComponent, {
+            ref: (c => { return this.answer = c; }),
+            items: this.props.question.items,
+            choices: this.props.question.choices,
+            answer,
+            data: this.props.data,
+            onAnswerChange: this.handleAnswerChange
+          });
+          break;
 
-      when "RadioQuestion"
-        return R RadioAnswerComponent, {
-          ref: ((c) => @answer = c)
-          choices: @props.question.choices
-          answer: answer
-          data: @props.data
-          displayMode: @props.question.displayMode
-          onAnswerChange: @handleAnswerChange
-        }
+        case "RadioQuestion":
+          return R(RadioAnswerComponent, {
+            ref: (c => { return this.answer = c; }),
+            choices: this.props.question.choices,
+            answer,
+            data: this.props.data,
+            displayMode: this.props.question.displayMode,
+            onAnswerChange: this.handleAnswerChange
+          });
+          break;
 
-      when "MulticheckQuestion"
-        return R MulticheckAnswerComponent, {
-          ref: ((c) => @answer = c)
-          choices: @props.question.choices
-          data: @props.data
-          answer: answer
-          onAnswerChange: @handleAnswerChange
-        }
+        case "MulticheckQuestion":
+          return R(MulticheckAnswerComponent, {
+            ref: (c => { return this.answer = c; }),
+            choices: this.props.question.choices,
+            data: this.props.data,
+            answer,
+            onAnswerChange: this.handleAnswerChange
+          });
+          break;
 
-      when "DateQuestion"
-        return R DateAnswerComponent, {
-          ref: ((c) => @answer = c)
-          value: answer.value
-          onValueChange: @handleValueChange
-          format: @props.question.format
-          placeholder: @props.question.placeholder
-          onNextOrComments: @handleNextOrComments
-        }
+        case "DateQuestion":
+          return R(DateAnswerComponent, {
+            ref: (c => { return this.answer = c; }),
+            value: answer.value,
+            onValueChange: this.handleValueChange,
+            format: this.props.question.format,
+            placeholder: this.props.question.placeholder,
+            onNextOrComments: this.handleNextOrComments
+          });
+          break;
 
-      when "UnitsQuestion"
-        return R UnitsAnswerComponent, {
-          ref: ((c) => @answer = c)
-          answer: answer
-          onValueChange: @handleValueChange
-          units: @props.question.units
-          defaultUnits: @props.question.defaultUnits
-          prefix: @props.question.unitsPosition == 'prefix'
-          decimal: @props.question.decimal
-          onNextOrComments: @handleNextOrComments
-        }
+        case "UnitsQuestion":
+          return R(UnitsAnswerComponent, {
+            ref: (c => { return this.answer = c; }),
+            answer,
+            onValueChange: this.handleValueChange,
+            units: this.props.question.units,
+            defaultUnits: this.props.question.defaultUnits,
+            prefix: this.props.question.unitsPosition === 'prefix',
+            decimal: this.props.question.decimal,
+            onNextOrComments: this.handleNextOrComments
+          });
+          break;
 
-      when "CheckQuestion"
-        # Look at renderPrompt special case
-        return null
+        case "CheckQuestion":
+          // Look at renderPrompt special case
+          return null;
+          break;
 
-      when "LocationQuestion"
-        return R LocationAnswerComponent, {
-          ref: ((c) => @answer = c)
-          disableSetByMap: @props.question.disableSetByMap
-          disableManualLatLng: @props.question.disableManualLatLng
-          value: answer.value
-          onValueChange: @handleValueChange
-        }
+        case "LocationQuestion":
+          return R(LocationAnswerComponent, {
+            ref: (c => { return this.answer = c; }),
+            disableSetByMap: this.props.question.disableSetByMap,
+            disableManualLatLng: this.props.question.disableManualLatLng,
+            value: answer.value,
+            onValueChange: this.handleValueChange
+          });
+          break;
 
-      when "ImageQuestion"
-        return R ImageAnswerComponent,
-          ref: ((c) => @answer = c)
-          image: answer.value
-          onImageChange: @handleValueChange
-          consentPrompt: if @props.question.consentPrompt then formUtils.localizeString(@props.question.consentPrompt, @context.locale)
+        case "ImageQuestion":
+          return R(ImageAnswerComponent, {
+            ref: (c => { return this.answer = c; }),
+            image: answer.value,
+            onImageChange: this.handleValueChange,
+            consentPrompt: this.props.question.consentPrompt ? formUtils.localizeString(this.props.question.consentPrompt, this.context.locale) : undefined
+          }
+          );
+          break;
 
-      when "ImagesQuestion"
-        return R ImagesAnswerComponent, {
-          ref: ((c) => @answer = c)
-          imagelist: answer.value
-          onImagelistChange: @handleValueChange
-          consentPrompt: if @props.question.consentPrompt then formUtils.localizeString(@props.question.consentPrompt, @context.locale)
-        }
+        case "ImagesQuestion":
+          return R(ImagesAnswerComponent, {
+            ref: (c => { return this.answer = c; }),
+            imagelist: answer.value,
+            onImagelistChange: this.handleValueChange,
+            consentPrompt: this.props.question.consentPrompt ? formUtils.localizeString(this.props.question.consentPrompt, this.context.locale) : undefined
+          });
+          break;
 
-      when "TextListQuestion"
-        return R TextListAnswerComponent, {
-          ref: ((c) => @answer = c)
-          value: answer.value
-          onValueChange: @handleValueChange
-          onNextOrComments: @handleNextOrComments
-        }
+        case "TextListQuestion":
+          return R(TextListAnswerComponent, {
+            ref: (c => { return this.answer = c; }),
+            value: answer.value,
+            onValueChange: this.handleValueChange,
+            onNextOrComments: this.handleNextOrComments
+          });
+          break;
 
-      when "SiteQuestion"
-        return R SiteAnswerComponent, {
-          ref: ((c) => @answer = c)
-          value: answer.value
-          onValueChange: @handleValueChange
-          siteTypes: @props.question.siteTypes
-          T: @context.T
-        }
+        case "SiteQuestion":
+          return R(SiteAnswerComponent, {
+            ref: (c => { return this.answer = c; }),
+            value: answer.value,
+            onValueChange: this.handleValueChange,
+            siteTypes: this.props.question.siteTypes,
+            T: this.context.T
+          });
+          break;
 
-      when "BarcodeQuestion"
-        return R BarcodeAnswerComponent, {
-          ref: ((c) => @answer = c)
-          value: answer.value
-          onValueChange: @handleValueChange
-        }
+        case "BarcodeQuestion":
+          return R(BarcodeAnswerComponent, {
+            ref: (c => { return this.answer = c; }),
+            value: answer.value,
+            onValueChange: this.handleValueChange
+          });
+          break;
 
-      when "EntityQuestion"
-        return R EntityAnswerComponent, {
-          ref: ((c) => @answer = c)
-          value: answer.value
-          entityType: @props.question.entityType
-          onValueChange: @handleValueChange
-        }
+        case "EntityQuestion":
+          return R(EntityAnswerComponent, {
+            ref: (c => { return this.answer = c; }),
+            value: answer.value,
+            entityType: this.props.question.entityType,
+            onValueChange: this.handleValueChange
+          });
+          break;
 
-      when "AdminRegionQuestion"
-        return R AdminRegionAnswerComponent, {
-          ref: ((c) => @answer = c)
-          value: answer.value
-          onChange: @handleValueChange
-        }
+        case "AdminRegionQuestion":
+          return R(AdminRegionAnswerComponent, {
+            ref: (c => { return this.answer = c; }),
+            value: answer.value,
+            onChange: this.handleValueChange
+          });
+          break;
 
-      when "StopwatchQuestion"
-        return R StopwatchAnswerComponent, {
-          ref: ((c) => @answer = c)
-          value: answer.value
-          onValueChange: @handleValueChange
-          T: @context.T
-        }
+        case "StopwatchQuestion":
+          return R(StopwatchAnswerComponent, {
+            ref: (c => { return this.answer = c; }),
+            value: answer.value,
+            onValueChange: this.handleValueChange,
+            T: this.context.T
+          });
+          break;
 
-      when "MatrixQuestion"
-        return R MatrixAnswerComponent, {
-          ref: ((c) => @answer = c)
-          value: answer.value
-          onValueChange: @handleValueChange
-          alternate: answer.alternate
-          items: @props.question.items
-          columns: @props.question.columns
-          data: @props.data
-          responseRow: @props.responseRow
-          schema: @props.schema
-        }
+        case "MatrixQuestion":
+          return R(MatrixAnswerComponent, {
+            ref: (c => { return this.answer = c; }),
+            value: answer.value,
+            onValueChange: this.handleValueChange,
+            alternate: answer.alternate,
+            items: this.props.question.items,
+            columns: this.props.question.columns,
+            data: this.props.data,
+            responseRow: this.props.responseRow,
+            schema: this.props.schema
+          });
+          break;
 
-      when "AquagenxCBTQuestion"
-        return R AquagenxCBTAnswerComponent, {
-          ref: ((c) => @answer = c)
-          value: answer.value
-          onValueChange: @handleValueChange
-          questionId: @props.question._id
-        }
+        case "AquagenxCBTQuestion":
+          return R(AquagenxCBTAnswerComponent, {
+            ref: (c => { return this.answer = c; }),
+            value: answer.value,
+            onValueChange: this.handleValueChange,
+            questionId: this.props.question._id
+          });
+          break;
 
-      when "CascadingListQuestion"
-        return R CascadingListAnswerComponent, {
-          ref: ((c) => @answer = c)
-          value: answer.value
-          onValueChange: @handleValueChange
-          columns: @props.question.columns
-          rows: @props.question.rows
-          sortOptions: @props.question.sortOptions
-          T: @context.T
-          locale: @context.locale
-        }
+        case "CascadingListQuestion":
+          return R(CascadingListAnswerComponent, {
+            ref: (c => { return this.answer = c; }),
+            value: answer.value,
+            onValueChange: this.handleValueChange,
+            columns: this.props.question.columns,
+            rows: this.props.question.rows,
+            sortOptions: this.props.question.sortOptions,
+            T: this.context.T,
+            locale: this.context.locale
+          });
+          break;
 
-      when "CascadingRefQuestion"
-        return R CascadingRefAnswerComponent, {
-          ref: ((c) => @answer = c)
-          question: @props.question
-          value: answer.value
-          onValueChange: @handleValueChange
-          schema: @props.schema
-          getCustomTableRows: @context.getCustomTableRows
-          T: @context.T
-          locale: @context.locale
-        }
+        case "CascadingRefQuestion":
+          return R(CascadingRefAnswerComponent, {
+            ref: (c => { return this.answer = c; }),
+            question: this.props.question,
+            value: answer.value,
+            onValueChange: this.handleValueChange,
+            schema: this.props.schema,
+            getCustomTableRows: this.context.getCustomTableRows,
+            T: this.context.T,
+            locale: this.context.locale
+          });
+          break;
 
-      else
-        return "Unknown type #{@props.question._type}"
-    return null
+        default:
+          return `Unknown type ${this.props.question._type}`;
+      }
+      return null;
+    }
 
-  render: ->
-    answer = @getAnswer()
-    # Create classname to include invalid if invalid
-    className = "question"
-    if @state.validationError?
-      className += " invalid"
+    render() {
+      const answer = this.getAnswer();
+      // Create classname to include invalid if invalid
+      let className = "question";
+      if (this.state.validationError != null) {
+        className += " invalid";
+      }
 
-    R 'div', className: className, "data-qn-id": @props.question._id,
-      @renderPrompt()
-      @renderHint()
-      @renderHelp()
+      return R('div', {className, "data-qn-id": this.props.question._id},
+        this.renderPrompt(),
+        this.renderHint(),
+        this.renderHelp(),
 
-      R 'div', className: "answer",
-        @renderAnswer()
+        R('div', {className: "answer"},
+          this.renderAnswer()),
 
-      if answer.confidential?
-        R 'span', className: 'help-block', T("Confidential answers may not be edited.")
+        (answer.confidential != null) ?
+          R('span', {className: 'help-block'}, T("Confidential answers may not be edited.")) : undefined,
       
-      if not answer.confidential?
-        [
-          @renderAlternates()
-          @renderValidationError()
-        ]
-      @renderCommentsField()
+        (answer.confidential == null) ?
+          [
+            this.renderAlternates(),
+            this.renderValidationError()
+          ] : undefined,
+        this.renderCommentsField());
+    }
+  };
+  QuestionComponent.initClass();
+  return QuestionComponent;
+})();

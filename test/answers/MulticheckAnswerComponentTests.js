@@ -1,138 +1,156 @@
-_ = require 'lodash'
-assert = require('chai').assert
+import _ from 'lodash';
+import { assert } from 'chai';
+import TestComponent from 'react-library/lib/TestComponent';
+import ReactTestUtils from 'react-dom/test-utils';
+import MulticheckAnswerComponent from '../../src/answers/MulticheckAnswerComponent';
+import React from 'react';
+import ReactDOM from 'react-dom';
+const R = React.createElement;
 
-TestComponent = require('react-library/lib/TestComponent')
-ReactTestUtils = require('react-dom/test-utils')
+describe('MulticheckAnswerComponent', function() {
+  before(function() {
+    this.toDestroy = [];
 
-MulticheckAnswerComponent = require '../../src/answers/MulticheckAnswerComponent'
-
-React = require 'react'
-ReactDOM = require 'react-dom'
-R = React.createElement
-
-describe 'MulticheckAnswerComponent', ->
-  before ->
-    @toDestroy = []
-
-    @render = (options = {}) =>
-      options = _.extend {
+    return this.render = (options = {}) => {
+      options = _.extend({
         choices: [
-          { id: "a", label: { _base: "en", en: "AA" }, hint: { _base: "en", en: "a-hint" } }
-          { id: "b", label: { _base: "en", en: "BB" } }
+          { id: "a", label: { _base: "en", en: "AA" }, hint: { _base: "en", en: "a-hint" } },
+          { id: "b", label: { _base: "en", en: "BB" } },
           { id: "c", label: { _base: "en", en: "CC" }, specify: true }
-        ]
-        answer: {value: []}
-        onAnswerChange: () ->
-          null
-      }, options
-      elem = R(MulticheckAnswerComponent, options)
-      comp = new TestComponent(elem)
-      @toDestroy.push(comp)
-      return comp
+        ],
+        answer: {value: []},
+        onAnswerChange() {
+          return null;
+        }
+      }, options);
+      const elem = R(MulticheckAnswerComponent, options);
+      const comp = new TestComponent(elem);
+      this.toDestroy.push(comp);
+      return comp;
+    };
+  });
 
-  afterEach ->
-    for comp in @toDestroy
-      comp.destroy()
-    @toDestroy = []
+  afterEach(function() {
+    for (let comp of this.toDestroy) {
+      comp.destroy();
+    }
+    return this.toDestroy = [];});
 
-  it "displays choices", ->
-    testComponent = @render()
+  it("displays choices", function() {
+    const testComponent = this.render();
 
-    choiceA = testComponent.findDOMNodeByText(/AA/)
-    assert choiceA?, 'Not showing choice AA'
+    const choiceA = testComponent.findDOMNodeByText(/AA/);
+    assert((choiceA != null), 'Not showing choice AA');
 
-    choiceB = testComponent.findDOMNodeByText(/BB/)
-    assert choiceB?, 'Not showing choice BB'
+    const choiceB = testComponent.findDOMNodeByText(/BB/);
+    assert((choiceB != null), 'Not showing choice BB');
 
-    choiceC = testComponent.findDOMNodeByText(/CC/)
-    assert choiceC?, 'Not showing choice CC'
+    const choiceC = testComponent.findDOMNodeByText(/CC/);
+    return assert((choiceC != null), 'Not showing choice CC');
+  });
 
-  it "displays choice hints", ->
-    testComponent = @render()
+  it("displays choice hints", function() {
+    const testComponent = this.render();
 
-    hintA = testComponent.findDOMNodeByText(/a-hint/)
-    assert hintA?, 'Not showing hint'
+    const hintA = testComponent.findDOMNodeByText(/a-hint/);
+    return assert((hintA != null), 'Not showing hint');
+  });
 
-  it "records selected choice", (done) ->
-    testComponent = @render({
-      onAnswerChange: (answer) ->
-        assert.deepEqual answer.value, ['a']
-        done()
-    })
+  it("records selected choice", function(done) {
+    const testComponent = this.render({
+      onAnswerChange(answer) {
+        assert.deepEqual(answer.value, ['a']);
+        return done();
+      }
+    });
 
-    choiceA = testComponent.findComponentById('a')
+    const choiceA = testComponent.findComponentById('a');
 
-    assert choiceA?, 'could not find choice A'
-    TestComponent.click(choiceA)
+    assert((choiceA != null), 'could not find choice A');
+    return TestComponent.click(choiceA);
+  });
 
-  it "records multiple selected choice", (done) ->
-    testComponent = @render({
-      answer: {value: ['a']}
-      onAnswerChange: (answer) ->
-        assert.deepEqual answer.value, ['a', 'b']
-        done()
-    })
+  it("records multiple selected choice", function(done) {
+    const testComponent = this.render({
+      answer: {value: ['a']},
+      onAnswerChange(answer) {
+        assert.deepEqual(answer.value, ['a', 'b']);
+        return done();
+      }
+    });
 
-    choiceB = testComponent.findComponentById('b')
+    const choiceB = testComponent.findComponentById('b');
 
-    assert choiceB?, 'could not find choice B'
-    TestComponent.click(choiceB)
+    assert((choiceB != null), 'could not find choice B');
+    return TestComponent.click(choiceB);
+  });
 
-  it "can unselected choice", (done) ->
-    testComponent = @render({
-      answer: {value: ['a', 'b']}
-      onAnswerChange: (answer) ->
-        assert.deepEqual answer.value, ['a']
-        done()
-    })
+  it("can unselected choice", function(done) {
+    const testComponent = this.render({
+      answer: {value: ['a', 'b']},
+      onAnswerChange(answer) {
+        assert.deepEqual(answer.value, ['a']);
+        return done();
+      }
+    });
 
-    choiceB = testComponent.findComponentById('b')
+    const choiceB = testComponent.findComponentById('b');
 
-    assert choiceB?, 'could not find choice B'
-    TestComponent.click(choiceB)
+    assert((choiceB != null), 'could not find choice B');
+    return TestComponent.click(choiceB);
+  });
 
-  it "displays specify box", ->
-    testComponent = @render {value: ['c']}
+  it("displays specify box", function() {
+    const testComponent = this.render({value: ['c']});
 
-    specifyInput = ReactTestUtils.findRenderedDOMComponentWithClass.bind(this, testComponent.getComponent(), 'specify-input')
+    const specifyInput = ReactTestUtils.findRenderedDOMComponentWithClass.bind(this, testComponent.getComponent(), 'specify-input');
 
-    assert specifyInput?, 'could not find specify input'
+    return assert((specifyInput != null), 'could not find specify input');
+  });
 
-  it "it doesn't displays specify box when a choice without specify is selected", ->
-    testComponent = @render {value: ['a']}
+  it("it doesn't displays specify box when a choice without specify is selected", function() {
+    const testComponent = this.render({value: ['a']});
 
-    assert.throws(ReactTestUtils.findRenderedDOMComponentWithClass.bind(this, testComponent.getComponent(), 'specify-input'), 'Did not find exactly one match (found: 0) for class:specify-input')
+    return assert.throws(ReactTestUtils.findRenderedDOMComponentWithClass.bind(this, testComponent.getComponent(), 'specify-input'), 'Did not find exactly one match (found: 0) for class:specify-input');
+  });
 
 
-  it "records specify value", (done) ->
-    testComponent = @render {
-      onAnswerChange: (answer) ->
-        assert.deepEqual answer.specify, {'c': 'specify'}
-        done()
+  it("records specify value", function(done) {
+    const testComponent = this.render({
+      onAnswerChange(answer) {
+        assert.deepEqual(answer.specify, {'c': 'specify'});
+        return done();
+      },
       answer: {value: ['c']}
-    }
+    });
 
-    specifyInput = ReactTestUtils.findRenderedDOMComponentWithClass(testComponent.getComponent(), 'specify-input')
-    TestComponent.changeValue(specifyInput, 'specify')
+    const specifyInput = ReactTestUtils.findRenderedDOMComponentWithClass(testComponent.getComponent(), 'specify-input');
+    return TestComponent.changeValue(specifyInput, 'specify');
+  });
 
-  it "does remove specify value on unselection", (done) ->
-    testComponent = @render {
-      onAnswerChange: (answer) ->
-        assert.deepEqual answer.specify, {}
-        done()
+  it("does remove specify value on unselection", function(done) {
+    const testComponent = this.render({
+      onAnswerChange(answer) {
+        assert.deepEqual(answer.specify, {});
+        return done();
+      },
       answer: {value: ['c'], specify: {c: 'specify'}}
-    }
+    });
 
-    choiceC = testComponent.findComponentById('c')
-    TestComponent.click(choiceC)
+    const choiceC = testComponent.findComponentById('c');
+    return TestComponent.click(choiceC);
+  });
 
-  it "does not remove specify value on other selection", (done) ->
-    testComponent = @render {
-      onAnswerChange: (answer) ->
-        assert.deepEqual answer.specify, {c: 'specify'}
-        done()
+  return it("does not remove specify value on other selection", function(done) {
+    const testComponent = this.render({
+      onAnswerChange(answer) {
+        assert.deepEqual(answer.specify, {c: 'specify'});
+        return done();
+      },
       answer: {value: ['c'], specify: {c: 'specify'}}
-    }
+    });
 
-    choiceB = testComponent.findComponentById('b')
-    TestComponent.click(choiceB)
+    const choiceB = testComponent.findComponentById('b');
+    return TestComponent.click(choiceB);
+  });
+});

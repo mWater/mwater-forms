@@ -1,56 +1,85 @@
-PropTypes = require('prop-types')
-React = require 'react'
-R = React.createElement
+let BarcodeAnswerComponent;
+import PropTypes from 'prop-types';
+import React from 'react';
+const R = React.createElement;
 
-formUtils = require '../formUtils'
+import formUtils from '../formUtils';
 
-# Functional? I haven't tried this one yet
-# Not tested
+// Functional? I haven't tried this one yet
+// Not tested
 
-module.exports = class BarcodeAnswerComponent extends React.Component
-  @contextTypes:
-    scanBarcode: PropTypes.func
-    T: PropTypes.func.isRequired  # Localizer to use
+export default BarcodeAnswerComponent = (function() {
+  BarcodeAnswerComponent = class BarcodeAnswerComponent extends React.Component {
+    constructor(...args) {
+      super(...args);
+      this.handleValueChange = this.handleValueChange.bind(this);
+      this.handleScanClick = this.handleScanClick.bind(this);
+      this.handleClearClick = this.handleClearClick.bind(this);
+    }
 
-  @propTypes:
-    value: PropTypes.string
-    onValueChange: PropTypes.func.isRequired
+    static initClass() {
+      this.contextTypes = {
+        scanBarcode: PropTypes.func,
+        T: PropTypes.func.isRequired  // Localizer to use
+      };
+  
+      this.propTypes = {
+        value: PropTypes.string,
+        onValueChange: PropTypes.func.isRequired
+      };
+    }
 
-  focus: () ->
-    # Nothing to focus
-    null
+    focus() {
+      // Nothing to focus
+      return null;
+    }
 
-  handleValueChange: () =>
-    @props.onValueChange(!@props.value)
+    handleValueChange() {
+      return this.props.onValueChange(!this.props.value);
+    }
 
-  handleScanClick: =>
-    @context.scanBarcode({ success: (text) =>
-      @props.onValueChange(text)
-    })
+    handleScanClick() {
+      return this.context.scanBarcode({ success: text => {
+        return this.props.onValueChange(text);
+      }
+      });
+    }
 
-  handleClearClick: =>
-    @props.onValueChange(null)
+    handleClearClick() {
+      return this.props.onValueChange(null);
+    }
 
-  render: ->
-    supported = @context.scanBarcode?
+    render() {
+      const supported = (this.context.scanBarcode != null);
 
-    if @props.value
-      return R 'div', null,
-        R 'pre', null,
-          R 'p', null,
-            @props.value
-        R 'div', null,
-          R 'button', {className: "btn btn-default", onClick: @handleClearClick, type: "button"},
-            R 'span', {className: "glyphicon glyphicon-remove"},
-            @context.T("Clear")
-    else
-      if supported
-        R('div', null,
-          R('button', {className: "btn btn-default", onClick: @handleScanClick, type: "button"},
-            R('span', {className: "glyphicon glyphicon-qrcode"})
-            @context.T("Scan")
+      if (this.props.value) {
+        return R('div', null,
+          R('pre', null,
+            R('p', null,
+              this.props.value)
+          ),
+          R('div', null,
+            R('button', {className: "btn btn-default", onClick: this.handleClearClick, type: "button"},
+              R('span', {className: "glyphicon glyphicon-remove"},
+              this.context.T("Clear"))
+            )
           )
-        )
-      else
-        return R 'div', className: "text-warning",
-          @context.T("Barcode scanning not supported on this platform")
+        );
+      } else {
+        if (supported) {
+          return R('div', null,
+            R('button', {className: "btn btn-default", onClick: this.handleScanClick, type: "button"},
+              R('span', {className: "glyphicon glyphicon-qrcode"}),
+              this.context.T("Scan")
+            )
+          );
+        } else {
+          return R('div', {className: "text-warning"},
+            this.context.T("Barcode scanning not supported on this platform"));
+        }
+      }
+    }
+  };
+  BarcodeAnswerComponent.initClass();
+  return BarcodeAnswerComponent;
+})();

@@ -1,44 +1,50 @@
-assert = require('chai').assert
+import { assert } from 'chai';
+import TestComponent from 'react-library/lib/TestComponent';
+import ReactTestUtils from 'react-dom/test-utils';
+import React from 'react';
+import ReactDOM from 'react-dom';
+const R = React.createElement;
 
-TestComponent = require('react-library/lib/TestComponent')
-ReactTestUtils = require('react-dom/test-utils')
+import TextAnswerComponent from '../../src/answers/TextAnswerComponent';
 
-React = require 'react'
-ReactDOM = require 'react-dom'
-R = React.createElement
+describe('TextAnswerComponent', function() {
+  beforeEach(function() {
+    this.toDestroy = [];
 
-TextAnswerComponent = require '../../src/answers/TextAnswerComponent'
+    return this.render = (options = {}) => {
+      const elem = R(TextAnswerComponent, options);
+      const comp = new TestComponent(elem);
+      this.toDestroy.push(comp);
+      return comp;
+    };
+  });
 
-describe 'TextAnswerComponent', ->
-  beforeEach ->
-    @toDestroy = []
+  afterEach(function() {
+    return this.toDestroy.map((comp) =>
+      comp.destroy());
+  });
 
-    @render = (options = {}) =>
-      elem = R(TextAnswerComponent, options)
-      comp = new TestComponent(elem)
-      @toDestroy.push(comp)
-      return comp
+  it("records string in singleline answer", function(callback) {
+    const onValueChange = function(value) {
+      assert.equal(value, "response");
+      return callback();
+    };
 
-  afterEach ->
-    for comp in @toDestroy
-      comp.destroy()
+    this.comp = this.render({value: null, onValueChange, format: 'singleline'});
+    const input = this.comp.findInput();
+    TestComponent.changeValue(input, "response");
+    return ReactTestUtils.Simulate.blur(input);
+  });
 
-  it "records string in singleline answer", (callback) ->
-    onValueChange = (value) ->
-      assert.equal value, "response"
-      callback()
+  return it("records string in singleline answer", function(callback) {
+    const onValueChange = function(value) {
+      assert.equal(value, "response");
+      return callback();
+    };
 
-    @comp = @render({value: null, onValueChange: onValueChange, format: 'singleline'})
-    input = @comp.findInput()
-    TestComponent.changeValue(input, "response")
-    ReactTestUtils.Simulate.blur(input)
-
-  it "records string in singleline answer", (callback) ->
-    onValueChange = (value) ->
-      assert.equal value, "response"
-      callback()
-
-    @comp = @render({value: null, onValueChange: onValueChange, format: 'multiline'})
-    textArea = ReactTestUtils.findRenderedDOMComponentWithTag(@comp.getComponent(), "textarea")
-    TestComponent.changeValue(textArea, "response")
-    ReactTestUtils.Simulate.blur(textArea)
+    this.comp = this.render({value: null, onValueChange, format: 'multiline'});
+    const textArea = ReactTestUtils.findRenderedDOMComponentWithTag(this.comp.getComponent(), "textarea");
+    TestComponent.changeValue(textArea, "response");
+    return ReactTestUtils.Simulate.blur(textArea);
+  });
+});

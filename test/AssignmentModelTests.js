@@ -1,20 +1,19 @@
-_ = require 'lodash'
-assert = require('chai').assert
+import _ from 'lodash';
+import { assert } from 'chai';
+import AssignmentModel from '../src/AssignmentModel';
 
-AssignmentModel = require('../src/AssignmentModel')
+describe('AssignmentModel', () => it("sets roles", function() {
+  const options = {};
+  const deployment = {_id: 'deploymentId', admins: ['deploymentAdminId']};
+  const assignment = {deployment: deployment._id, assignedTo: ['viewer1Id', 'deploymentAdminId']};
+  options.assignment = assignment;
+  options.form = {id: 'formId', roles: [{role: 'admin', id:'formAdminId'}, {role: 'view', id:'formViewId'}], deployments: [deployment]};
+  options.user = 'testUserId';
+  options.groups = [];
+  const assignmentModel = new AssignmentModel(options);
 
-describe 'AssignmentModel', ->
-  it "sets roles", () ->
-    options = {}
-    deployment = {_id: 'deploymentId', admins: ['deploymentAdminId']}
-    assignment = {deployment: deployment._id, assignedTo: ['viewer1Id', 'deploymentAdminId']}
-    options.assignment = assignment
-    options.form = {id: 'formId', roles: [{role: 'admin', id:'formAdminId'}, {role: 'view', id:'formViewId'}], deployments: [deployment]}
-    options.user = 'testUserId'
-    options.groups = []
-    assignmentModel = new AssignmentModel(options)
+  const expectedRoles = [{role: 'admin', id:'formAdminId'}, {role: 'admin', id:'deploymentAdminId'}, {role: 'view', id: 'viewer1Id'}];
 
-    expectedRoles = [{role: 'admin', id:'formAdminId'}, {role: 'admin', id:'deploymentAdminId'}, {role: 'view', id: 'viewer1Id'}]
-
-    assert.deepEqual assignment.roles, expectedRoles
+  return assert.deepEqual(assignment.roles, expectedRoles);
+}));
 

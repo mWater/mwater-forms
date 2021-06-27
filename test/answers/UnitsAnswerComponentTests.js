@@ -1,106 +1,115 @@
-_ = require 'lodash'
-assert = require('chai').assert
+import _ from 'lodash';
+import { assert } from 'chai';
+import TestComponent from 'react-library/lib/TestComponent';
+import ReactTestUtils from 'react-dom/test-utils';
+import UnitsAnswerComponent from '../../src/answers/UnitsAnswerComponent';
+import React from 'react';
+import ReactDOM from 'react-dom';
+const R = React.createElement;
 
-TestComponent = require('react-library/lib/TestComponent')
-ReactTestUtils = require('react-dom/test-utils')
+describe('UnitsAnswerComponent', function() {
+  beforeEach(function() {
+    this.toDestroy = [];
 
-UnitsAnswerComponent = require '../../src/answers/UnitsAnswerComponent'
-
-React = require 'react'
-ReactDOM = require 'react-dom'
-R = React.createElement
-
-describe 'UnitsAnswerComponent', ->
-  beforeEach ->
-    @toDestroy = []
-
-    @render = (options = {}) =>
-      options = _.extend {
-        onValueChange: () ->
-          null
+    return this.render = (options = {}) => {
+      options = _.extend({
+        onValueChange() {
+          return null;
+        },
         units: [
-          { id: "a", label: { _base: "en", es: "AA" }, hint: { _base: "en", es: "a-hint" } }
-          { id: "b", label: { _base: "en", es: "BB" } }
+          { id: "a", label: { _base: "en", es: "AA" }, hint: { _base: "en", es: "a-hint" } },
+          { id: "b", label: { _base: "en", es: "BB" } },
           { id: "c", label: { _base: "en", es: "CC" } }
-        ]
-        prefix: false
+        ],
+        prefix: false,
         decimal: true
-      }, options
-      elem = R(UnitsAnswerComponent, options)
-      comp = new TestComponent(elem)
-      @toDestroy.push(comp)
-      return comp
+      }, options);
+      const elem = R(UnitsAnswerComponent, options);
+      const comp = new TestComponent(elem);
+      this.toDestroy.push(comp);
+      return comp;
+    };
+  });
 
-  afterEach ->
-    for comp in @toDestroy
-      comp.destroy()
+  afterEach(function() {
+    return this.toDestroy.map((comp) =>
+      comp.destroy());
+  });
 
-  it "allows changing of units", (done) ->
-    testComponent = @render({
+  it("allows changing of units", function(done) {
+    const testComponent = this.render({
       answer: {
-        quantity: null
+        quantity: null,
         units: 'a'
+      },
+      onValueChange(value) {
+        assert.equal(value.units, 'b');
+        return done();
       }
-      onValueChange: (value) ->
-        assert.equal value.units, 'b'
-        done()
-    })
+    });
 
-    unitInput = ReactTestUtils.findAllInRenderedTree testComponent.getComponent(), (inst) ->
-      return ReactTestUtils.isDOMComponent(inst) && inst.id == 'units'
+    let unitInput = ReactTestUtils.findAllInRenderedTree(testComponent.getComponent(), inst => ReactTestUtils.isDOMComponent(inst) && (inst.id === 'units'));
 
-    unitInput = unitInput[0]
+    unitInput = unitInput[0];
 
-    TestComponent.changeValue(unitInput, 'b')
+    return TestComponent.changeValue(unitInput, 'b');
+  });
 
-  it "allows changing of decimal quantity", (done) ->
-    testComponent = @render({
+  it("allows changing of decimal quantity", function(done) {
+    const testComponent = this.render({
       answer: {
-        quantity: 'a'
+        quantity: 'a',
         unit: null
+      },
+
+      onValueChange(value) {
+        assert.equal(value.quantity, 13.33);
+        return done();
       }
+    });
 
-      onValueChange: (value) ->
-        assert.equal value.quantity, 13.33
-        done()
-    })
+    const quantityInput = ReactTestUtils.findRenderedDOMComponentWithTag(testComponent.getComponent(), "INPUT");
 
-    quantityInput = ReactTestUtils.findRenderedDOMComponentWithTag testComponent.getComponent(), "INPUT"
+    TestComponent.changeValue(quantityInput, '13.33');
+    return ReactTestUtils.Simulate.blur(quantityInput);
+  });
 
-    TestComponent.changeValue(quantityInput, '13.33')
-    ReactTestUtils.Simulate.blur(quantityInput)
-
-  it "allows changing of whole quantity", (done) ->
-    testComponent = @render({
+  it("allows changing of whole quantity", function(done) {
+    const testComponent = this.render({
       answer: {
-        quantity: 'a'
+        quantity: 'a',
         unit: null
+      },
+      decimal: false,
+      onValueChange(value) {
+        assert.equal(value.quantity, 13);
+        return done();
       }
-      decimal: false
-      onValueChange: (value) ->
-        assert.equal value.quantity, 13
-        done()
-    })
+    });
 
-    quantityInput = ReactTestUtils.findRenderedDOMComponentWithTag testComponent.getComponent(), "INPUT"
+    const quantityInput = ReactTestUtils.findRenderedDOMComponentWithTag(testComponent.getComponent(), "INPUT");
 
-    TestComponent.changeValue(quantityInput, '13')
-    ReactTestUtils.Simulate.blur(quantityInput)
+    TestComponent.changeValue(quantityInput, '13');
+    return ReactTestUtils.Simulate.blur(quantityInput);
+  });
 
-  it "defaults unit", (done) ->
-    testComponent = @render({
+  return it("defaults unit", function(done) {
+    const testComponent = this.render({
       answer: {
-        quantity: null
+        quantity: null,
         units: null
+      },
+      defaultUnits: 'b',
+      onValueChange(value) {
+        assert.equal(value.quantity, 13.33);
+        assert.equal(value.units, 'b');
+        return done();
       }
-      defaultUnits: 'b'
-      onValueChange: (value) ->
-        assert.equal value.quantity, 13.33
-        assert.equal value.units, 'b'
-        done()
-    })
+    });
 
-    quantityInput = ReactTestUtils.findRenderedDOMComponentWithTag testComponent.getComponent(), "INPUT"
+    const quantityInput = ReactTestUtils.findRenderedDOMComponentWithTag(testComponent.getComponent(), "INPUT");
 
-    TestComponent.changeValue(quantityInput, '13.33')
-    ReactTestUtils.Simulate.blur(quantityInput)
+    TestComponent.changeValue(quantityInput, '13.33');
+    return ReactTestUtils.Simulate.blur(quantityInput);
+  });
+});

@@ -1,102 +1,144 @@
-_ = require 'lodash'
-PropTypes = require('prop-types')
-React = require 'react'
-R = React.createElement
+let TextListAnswerComponent;
+import _ from 'lodash';
+import PropTypes from 'prop-types';
+import React from 'react';
+const R = React.createElement;
 
-module.exports = class TextListAnswerComponent extends React.Component
-  @propTypes:
-    value: PropTypes.array
-    onValueChange: PropTypes.func.isRequired
-    onNextOrComments: PropTypes.func
+export default TextListAnswerComponent = (function() {
+  TextListAnswerComponent = class TextListAnswerComponent extends React.Component {
+    constructor(...args) {
+      super(...args);
+      this.handleChange = this.handleChange.bind(this);
+      this.handleNewLineChange = this.handleNewLineChange.bind(this);
+      this.handleKeydown = this.handleKeydown.bind(this);
+      this.handleRemoveClick = this.handleRemoveClick.bind(this);
+    }
 
-  focus: () ->
-    @newLine?.focus()
+    static initClass() {
+      this.propTypes = {
+        value: PropTypes.array,
+        onValueChange: PropTypes.func.isRequired,
+        onNextOrComments: PropTypes.func
+      };
+    }
 
-  handleChange: (index, ev) =>
-    if @props.value?
-      newValue = _.clone @props.value
-    else
-      newValue = []
-    newValue[index] = ev.target.value
-    @props.onValueChange(newValue)
+    focus() {
+      return this.newLine?.focus();
+    }
 
-  handleNewLineChange: (ev) =>
-    if @props.value?
-      newValue = _.clone @props.value
-    else
-      newValue = []
-    newValue.push (ev.target.value)
-    @props.onValueChange(newValue)
+    handleChange(index, ev) {
+      let newValue;
+      if (this.props.value != null) {
+        newValue = _.clone(this.props.value);
+      } else {
+        newValue = [];
+      }
+      newValue[index] = ev.target.value;
+      return this.props.onValueChange(newValue);
+    }
 
-  handleKeydown: (index, ev) =>
-    if @props.value?
-      value = _.clone @props.value
-    else
-      value = []
+    handleNewLineChange(ev) {
+      let newValue;
+      if (this.props.value != null) {
+        newValue = _.clone(this.props.value);
+      } else {
+        newValue = [];
+      }
+      newValue.push((ev.target.value));
+      return this.props.onValueChange(newValue);
+    }
 
-    # When pressing ENTER or TAB
-    if ev.keyCode == 13 or ev.keyCode == 9
-      # If the index is equal to the items length, it means that it's the last empty entry
-      if index >= value.length
-        if @props.onNextOrComments?
-          @props.onNextOrComments(ev)
-      # If it equals to one less, we focus the newLine input
-      if index == value.length - 1
-        nextInput = @newLine
-        nextInput.focus()
-      # If not, we focus the next input
-      else
-        nextInput = @["input#{index+1}"]
-        nextInput.focus()
-      # It's important to prevent the default behavior when handling tabs (or else the tab is applied after the focus change)
-      ev.preventDefault()
+    handleKeydown(index, ev) {
+      let value;
+      if (this.props.value != null) {
+        value = _.clone(this.props.value);
+      } else {
+        value = [];
+      }
 
-  handleRemoveClick: (index, ev) =>
-    if @props.value?
-      newValue = _.clone @props.value
-    else
-      newValue = []
-    newValue.splice(index, 1)
-    @props.onValueChange(newValue)
+      // When pressing ENTER or TAB
+      if ((ev.keyCode === 13) || (ev.keyCode === 9)) {
+        // If the index is equal to the items length, it means that it's the last empty entry
+        let nextInput;
+        if (index >= value.length) {
+          if (this.props.onNextOrComments != null) {
+            this.props.onNextOrComments(ev);
+          }
+        }
+        // If it equals to one less, we focus the newLine input
+        if (index === (value.length - 1)) {
+          nextInput = this.newLine;
+          nextInput.focus();
+        // If not, we focus the next input
+        } else {
+          nextInput = this[`input${index+1}`];
+          nextInput.focus();
+        }
+        // It's important to prevent the default behavior when handling tabs (or else the tab is applied after the focus change)
+        return ev.preventDefault();
+      }
+    }
 
-  render: ->
-    value = @props.value or []
+    handleRemoveClick(index, ev) {
+      let newValue;
+      if (this.props.value != null) {
+        newValue = _.clone(this.props.value);
+      } else {
+        newValue = [];
+      }
+      newValue.splice(index, 1);
+      return this.props.onValueChange(newValue);
+    }
 
-    R 'table', style: {width: "100%"},
-      R 'tbody', null,
-        for textLine, index in value
-          R 'tr', key: index,
-            R 'td', null,
-              R 'b', null,
-                "#{index + 1}.\u00a0"
-            R 'td', null,
-              R 'div', className: "input-group",
-                R 'input', {
-                  ref: ((c) => @["input#{index}"] = c)
-                  type:"text"
-                  className: "form-control box"
-                  value: textLine
-                  onChange: @handleChange.bind(null, index)
-                  onKeyDown: @handleKeydown.bind(null, index)
-                  autoFocus: index == value.length - 1
-                  onFocus: (ev) ->
-                    # Necessary or else the cursor is set before the first character after a new line is created
-                    ev.target.setSelectionRange(textLine.length, textLine.length)
-                }
-                R 'span', className: "input-group-btn",
-                  R 'button', className: "btn btn-link remove", "data-index": index, type:"button", onClick: @handleRemoveClick.bind(null, index),
-                    R 'span', className: "glyphicon glyphicon-remove"
-        R 'tr', null,
-          R 'td', null
-          R 'td', null,
-            R 'div', className: "input-group",
-              R 'input', {
-                type: "text"
-                className: "form-control box"
-                onChange: @handleNewLineChange
-                value: ""
-                ref: (c) => @newLine = c
-                id: 'newLine'
-              }
+    render() {
+      const value = this.props.value || [];
 
-              R 'span', className: "input-group-btn", style: {paddingRight: '39px'}
+      return R('table', {style: {width: "100%"}},
+        R('tbody', null,
+          value.map((textLine, index) =>
+            R('tr', {key: index},
+              R('td', null,
+                R('b', null,
+                  `${index + 1}.\u00a0`)
+              ),
+              R('td', null,
+                R('div', {className: "input-group"},
+                  R('input', {
+                    ref: (c => { return this[`input${index}`] = c; }),
+                    type:"text",
+                    className: "form-control box",
+                    value: textLine,
+                    onChange: this.handleChange.bind(null, index),
+                    onKeyDown: this.handleKeydown.bind(null, index),
+                    autoFocus: index === (value.length - 1),
+                    onFocus(ev) {
+                      // Necessary or else the cursor is set before the first character after a new line is created
+                      return ev.target.setSelectionRange(textLine.length, textLine.length);
+                    }
+                  }),
+                  R('span', {className: "input-group-btn"},
+                    R('button', {className: "btn btn-link remove", "data-index": index, type:"button", onClick: this.handleRemoveClick.bind(null, index)},
+                      R('span', {className: "glyphicon glyphicon-remove"}))
+                  )
+                )
+              )
+            )),
+          R('tr', null,
+            R('td', null),
+            R('td', null,
+              R('div', {className: "input-group"},
+                R('input', {
+                  type: "text",
+                  className: "form-control box",
+                  onChange: this.handleNewLineChange,
+                  value: "",
+                  ref: c => { return this.newLine = c; },
+                  id: 'newLine'
+                }),
+
+                R('span', {className: "input-group-btn", style: {paddingRight: '39px'}}))))));
+    }
+  };
+  TextListAnswerComponent.initClass();
+  return TextListAnswerComponent;
+})();
