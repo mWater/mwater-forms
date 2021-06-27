@@ -1,6 +1,8 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 import _ from 'lodash';
 import { assert } from 'chai';
-import conditionUtils from '../src/conditionUtils';
+import * as conditionUtils from '../src/conditionUtils';
 
 describe("conditionUtils", function() {
   describe('compileCondition', function() {

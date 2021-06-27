@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let TextAnswerComponent;
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -19,10 +21,8 @@ export default TextAnswerComponent = (function() {
     }
 
     constructor(props) {
-      this.handleKeyDown = this.handleKeyDown.bind(this);
-      this.handleBlur = this.handleBlur.bind(this);
       super(props);
-    
+
       this.state = {text: props.value};
     }
 
@@ -37,7 +37,7 @@ export default TextAnswerComponent = (function() {
       return this.input.focus();
     }
 
-    handleKeyDown(ev) {
+    handleKeyDown = ev => {
       if (this.props.onNextOrComments != null) {
         // When pressing ENTER or TAB
         if ((ev.keyCode === 13) || (ev.keyCode === 9)) {
@@ -46,11 +46,11 @@ export default TextAnswerComponent = (function() {
           return ev.preventDefault();
         }
       }
-    }
+    };
 
-    handleBlur(ev) {
+    handleBlur = ev => {
       return this.props.onValueChange(ev.target.value ? ev.target.value : null);
-    }
+    };
 
     render() {
       if (this.props.format === "multiline") {

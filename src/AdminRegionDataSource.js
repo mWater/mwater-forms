@@ -1,16 +1,15 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let AdminRegionDataSource;
 import $ from 'jquery';
 
 // Gets the admin region information from an mWater server. Here as a convenience for creating the form context
-export default AdminRegionDataSource = class AdminRegionDataSource { 
+export default AdminRegionDataSource = class AdminRegionDataSource {
   constructor(apiUrl) {
-    this.getAdminRegionPath = this.getAdminRegionPath.bind(this);
-    this.getSubAdminRegions = this.getSubAdminRegions.bind(this);
-    this.findAdminRegionByLatLng = this.findAdminRegionByLatLng.bind(this);
     this.apiUrl = apiUrl;
   }
 
-  getAdminRegionPath(id, callback) {
+  getAdminRegionPath = (id, callback) => {
     // select _id as id, level as level, name as name, type as type from admin_regions as ar 
     // where ar._id = any((select jsonb_array_elements_text(path) from admin_regions as ar2 where ar2._id = THE_ID))
     const query = {
@@ -52,9 +51,9 @@ export default AdminRegionDataSource = class AdminRegionDataSource {
     };
 
     return this._executeQuery(query, callback);
-  }
+  };
 
-  getSubAdminRegions(id, level, callback) {
+  getSubAdminRegions = (id, level, callback) => {
     // select _id as id, level as level, name as name, type as type from admin_regions as ar
     // where path @> '[ID]'::jsonb and ar.level = LEVEL order by ar.name
     const query = {
@@ -99,9 +98,9 @@ export default AdminRegionDataSource = class AdminRegionDataSource {
     }
 
     return this._executeQuery(query, callback);
-  }
+  };
 
-  findAdminRegionByLatLng(lat, lng, callback) {
+  findAdminRegionByLatLng = (lat, lng, callback) => {
     // select _id as id from admin_regions as ar
     // where ST_Intersects(ar.shape, ST_Transform(ST_SetSRID(ST_MakePoint(LNG, LAT), 4326), 3857) order by ar.level desc limit 1
     const query = {
@@ -133,7 +132,7 @@ export default AdminRegionDataSource = class AdminRegionDataSource {
 
       return callback(null, null);
      });
-  }
+  };
 
   _executeQuery(query, callback) {
     const url = this.apiUrl + "jsonql?jsonql=" + encodeURIComponent(JSON.stringify(query));

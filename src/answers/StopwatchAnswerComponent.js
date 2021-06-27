@@ -1,19 +1,28 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let StopwatchAnswerComponent;
 import PropTypes from 'prop-types';
 import React from 'react';
 const R = React.createElement;
 
-const now = () => new Date().getTime();
-const toSeconds = function(ticks) { if (ticks != null) { return ticks / 1000; } else { return null; } };
-const toTicks = function(seconds) { if (seconds != null) { return seconds * 1000; } else { return null; } };
-const integerDiv = (dividend, divisor) => [Math.floor(dividend / divisor), dividend % divisor];
-const zeroPad = function(val, length) {
+function now() {
+  return new Date().getTime();
+}
+
+function toSeconds(ticks) { if (ticks != null) { return ticks / 1000; } else { return null; } }
+function toTicks(seconds) { if (seconds != null) { return seconds * 1000; } else { return null; } }
+
+function integerDiv(dividend, divisor) {
+  return [Math.floor(dividend / divisor), dividend % divisor];
+}
+
+function zeroPad(val, length) {
   val += '';
   const numPads = length - val.length;
   if (numPads > 0) { return new Array(numPads + 1).join('0') + val; } else { return val; }
-};
+}
 
-const getDisplayValue = function(ticks) {
+function getDisplayValue(ticks) {
   if (ticks != null) {
     let seconds;
     let [minutes, remainder] = integerDiv(ticks, 60000);
@@ -22,7 +31,7 @@ const getDisplayValue = function(ticks) {
     seconds = zeroPad(seconds, 2);
     return minutes + ":" + seconds;
   } else { return "--:--"; }
-};
+}
 
 // Creates a stopwatch timer component on the form, can be start/stop/reset
 export default StopwatchAnswerComponent = (function() {
@@ -37,9 +46,6 @@ export default StopwatchAnswerComponent = (function() {
     }
 
     constructor(props) {
-      this.handleStartClick = this.handleStartClick.bind(this);
-      this.handleStopClick = this.handleStopClick.bind(this);
-      this.handleResetClick = this.handleResetClick.bind(this);
       super(props);
       const ticks = toTicks(props.value);
       this.state = {
@@ -55,29 +61,29 @@ export default StopwatchAnswerComponent = (function() {
     }
 
     // Starts a timer to update @elapsedTicks every 10 ms
-    handleStartClick() {
+    handleStartClick = () => {
       const startTime = now() - (this.state.elapsedTicks || 0); // for restarts we need to fudge the startTime
       const update = () => this.setState({elapsedTicks: now() - startTime});
       this.setState({timerId: setInterval(update, 10)}); // create a timer and store its id\
       return this.props.onValueChange(null);
-    }
+    };
 
     // Stores the value in seconds
     persistValue(ticks) { return this.props.onValueChange(toSeconds(ticks)); }
 
     // Stops the timer and persists the value
-    handleStopClick() {
+    handleStopClick = () => {
       clearInterval(this.state.timerId); // stop the running timer
       this.setState({timerId: null});
       return this.persistValue(this.state.elapsedTicks);
-    }
+    };
 
     // Stops timer and resets @elapsedTicks to 0
-    handleResetClick() {
+    handleResetClick = () => {
       clearInterval(this.state.timerId);
       this.setState({elapsedTicks: null, timerId: null});
       return this.props.onValueChange(null);
-    }
+    };
 
     render() {
       const isRunning = (this.state.timerId != null);

@@ -1,10 +1,12 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let InstructionsComponent;
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import React from 'react';
 const R = React.createElement;
 
-import formUtils from './formUtils';
+import * as formUtils from './formUtils';
 import TextExprsComponent from './TextExprsComponent';
 
 export default InstructionsComponent = (function() {

@@ -1,18 +1,15 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let LikertAnswerComponent;
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 const R = React.createElement;
 
-import formUtils from '../formUtils';
+import * as formUtils from '../formUtils';
 
 export default LikertAnswerComponent = (function() {
   LikertAnswerComponent = class LikertAnswerComponent extends React.Component {
-    constructor(...args) {
-      super(...args);
-      this.handleValueChange = this.handleValueChange.bind(this);
-    }
-
     static initClass() {
       this.contextTypes =
         {locale: PropTypes.string};  // Current locale (e.g. "en")
@@ -49,7 +46,7 @@ export default LikertAnswerComponent = (function() {
       return null;
     }
 
-    handleValueChange(choice, item) {
+    handleValueChange = (choice, item) => {
       let newValue;
       if (this.props.answer.value != null) {
         newValue = _.clone(this.props.answer.value);
@@ -63,7 +60,7 @@ export default LikertAnswerComponent = (function() {
       }
 
       return this.props.onAnswerChange(_.extend({}, this.props.answer, { value: newValue }));
-    }
+    };
 
     renderChoice(item, choice) {
       let value;

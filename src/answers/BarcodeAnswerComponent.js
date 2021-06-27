@@ -1,22 +1,17 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let BarcodeAnswerComponent;
 import PropTypes from 'prop-types';
 import React from 'react';
 const R = React.createElement;
 
-import formUtils from '../formUtils';
+import * as formUtils from '../formUtils';
 
 // Functional? I haven't tried this one yet
 // Not tested
 
 export default BarcodeAnswerComponent = (function() {
   BarcodeAnswerComponent = class BarcodeAnswerComponent extends React.Component {
-    constructor(...args) {
-      super(...args);
-      this.handleValueChange = this.handleValueChange.bind(this);
-      this.handleScanClick = this.handleScanClick.bind(this);
-      this.handleClearClick = this.handleClearClick.bind(this);
-    }
-
     static initClass() {
       this.contextTypes = {
         scanBarcode: PropTypes.func,
@@ -34,20 +29,20 @@ export default BarcodeAnswerComponent = (function() {
       return null;
     }
 
-    handleValueChange() {
+    handleValueChange = () => {
       return this.props.onValueChange(!this.props.value);
-    }
+    };
 
-    handleScanClick() {
+    handleScanClick = () => {
       return this.context.scanBarcode({ success: text => {
         return this.props.onValueChange(text);
       }
       });
-    }
+    };
 
-    handleClearClick() {
+    handleClearClick = () => {
       return this.props.onValueChange(null);
-    }
+    };
 
     render() {
       const supported = (this.context.scanBarcode != null);

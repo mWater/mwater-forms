@@ -1,6 +1,8 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let FormModel;
 import _ from 'lodash';
-import formUtils from './formUtils';
+import * as formUtils from './formUtils';
 
 // Model of a form object that allows manipulation and asking of questions
 export default FormModel = class FormModel {
@@ -10,10 +12,10 @@ export default FormModel = class FormModel {
 
   // Gets all subjects that must be able to see form because of deployments
   getDeploymentSubjects() {
-    const getDeploymentSubs = function(deployment) {
+    function getDeploymentSubs(deployment) {
       const approvers = _.flatten(_.map(deployment.approvalStages, stage => stage.approvers));
       return _.union(approvers, deployment.enumerators, deployment.viewers, deployment.admins);
-    };
+    }
 
     // Get all deployment subjects
     const deploySubs = _.uniq(_.flatten(_.map(this.form.deployments, getDeploymentSubs)));

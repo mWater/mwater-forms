@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 import _ from 'lodash';
 import { assert } from 'chai';
 import TestComponent from 'react-library/lib/TestComponent';
@@ -7,26 +9,28 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 const R = React.createElement;
 
-const createOptions = options => _.extend({
-  onAnswerChange() {
-    return null;
-  },
-  answer: {},
-  choices: [
-    {
-      id: 'a',
-      label: {'en': 'label a', '_base': 'en'},
-      hint: {'en': 'hint a', '_base': 'en'},
-      specify: false
+function createOptions(options) {
+  return _.extend({
+    onAnswerChange() {
+      return null;
     },
-    {
-      id: 'b',
-      label: {'en': 'label b', '_base': 'en'},
-      hint: {'en': 'hint b', '_base': 'en'},
-      specify: true
-    }
-  ]
-}, options);
+    answer: {},
+    choices: [
+      {
+        id: 'a',
+        label: {'en': 'label a', '_base': 'en'},
+        hint: {'en': 'hint a', '_base': 'en'},
+        specify: false
+      },
+      {
+        id: 'b',
+        label: {'en': 'label b', '_base': 'en'},
+        hint: {'en': 'hint b', '_base': 'en'},
+        specify: true
+      }
+    ]
+  }, options);
+}
 
 describe('DropdownAnswerComponent', function() {
   beforeEach(function() {

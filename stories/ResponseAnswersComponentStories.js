@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { withKnobs, text, boolean, number } from '@storybook/addon-knobs';
@@ -10,9 +12,9 @@ import ResponseAnswersComponent from "../src/ResponseAnswersComponent";
 import simpleForm from './formDesign';
 import sampleForm2 from '../src/sampleForm2';
 import answers from './formAnswer';
-import prevAnswers from './previousAnswers';
+import * as prevAnswers from './previousAnswers';
 
-const T = function(str) {
+function T(str) {
   if (arguments.length > 1) {
     const iterable = Array.from(arguments).slice(1);
     for (let index = 0; index < iterable.length; index++) {
@@ -22,7 +24,7 @@ const T = function(str) {
     }
   }
   return str;
-};
+}
 
 const formCtx = {
   locale: "en", 

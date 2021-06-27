@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let DateTimePickerComponent;
 import _ from 'lodash';
 import PropTypes from 'prop-types';
@@ -13,12 +15,6 @@ import 'eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min
 
 export default DateTimePickerComponent = (function() {
   DateTimePickerComponent = class DateTimePickerComponent extends React.Component {
-    constructor(...args) {
-      super(...args);
-      this.onChange = this.onChange.bind(this);
-      this.handleInputFocus = this.handleInputFocus.bind(this);
-    }
-
     static initClass() {
       this.propTypes = {
         // date format
@@ -44,9 +40,9 @@ export default DateTimePickerComponent = (function() {
         {timepicker: false};
     }
 
-    onChange(event) {
+    onChange = event => {
       return this.props.onChange?.(event.date);
-    }
+    };
 
     componentDidMount() {
       return this.createNativeComponent(this.props);
@@ -59,7 +55,7 @@ export default DateTimePickerComponent = (function() {
     destroyNativeComponent() {
       return $(this.datetimepicker).data("DateTimePicker").destroy();
     }
-  
+
     createNativeComponent(props) {
       const pickerOptions = { showClear: props.showClear, useStrict: true, focusOnShow: false };
 
@@ -108,10 +104,10 @@ export default DateTimePickerComponent = (function() {
       return $(node).on("dp.change", this.onChange);
     }
 
-    handleInputFocus() {
+    handleInputFocus = () => {
       const node = this.datetimepicker;
       return $(node).data("DateTimePicker").show();
-    }
+    };
 
     render() {
       // Override z-index due to bootstrap oddness

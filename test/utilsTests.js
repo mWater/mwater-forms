@@ -1,9 +1,13 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 import _ from 'lodash';
 import { assert } from "chai";
-import utils from '../src/utils';
+import * as utils from '../src/utils';
 
 // Fake localization
-const T = str => str;
+function T(str) {
+  return str;
+}
 
 describe("utils.getRelativeLocation", function() {
   it("gives correct angle and bearing S", function() {

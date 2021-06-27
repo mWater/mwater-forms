@@ -1,10 +1,12 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let QuestionComponent;
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import React from 'react';
 const R = React.createElement;
 
-import formUtils from './formUtils';
+import * as formUtils from './formUtils';
 import Markdown from "markdown-it";
 import TextExprsComponent from './TextExprsComponent';
 import LocationFinder from './LocationFinder';
@@ -67,14 +69,6 @@ export default QuestionComponent = (function() {
     }
 
     constructor(props) {
-      this.handleToggleHelp = this.handleToggleHelp.bind(this);
-      this.handleValueChange = this.handleValueChange.bind(this);
-      this.handleCurrentPositionFound = this.handleCurrentPositionFound.bind(this);
-      this.handleCurrentPositionStatus = this.handleCurrentPositionStatus.bind(this);
-      this.handleAnswerChange = this.handleAnswerChange.bind(this);
-      this.handleAlternate = this.handleAlternate.bind(this);
-      this.handleCommentsChange = this.handleCommentsChange.bind(this);
-      this.handleNextOrComments = this.handleNextOrComments.bind(this);
       super(props);
 
       this.state = {
@@ -185,31 +179,31 @@ export default QuestionComponent = (function() {
       }
     }
 
-    handleToggleHelp() {
+    handleToggleHelp = () => {
       return this.setState({helpVisible: !this.state.helpVisible});
-    }
+    };
 
-    handleValueChange(value) {
+    handleValueChange = value => {
       return this.handleAnswerChange(_.extend({}, this.getAnswer(), { value }, {alternate: null}));
-    }
+    };
 
     // Record a position found
-    handleCurrentPositionFound(loc) {
+    handleCurrentPositionFound = loc => {
       if (!this.unmounted) {
         const newAnswer = _.clone(this.getAnswer());
         newAnswer.location = _.pick(loc.coords, "latitude", "longitude", "accuracy", "altitude", "altitudeAccuracy");
         return this.props.onAnswerChange(newAnswer);
       }
-    }
+    };
 
-    handleCurrentPositionStatus(status) {
+    handleCurrentPositionStatus = status => {
       // Always record useable positions
       if (status.useable) {
         return this.handleCurrentPositionFound(status.pos);
       }
-    }
+    };
 
-    handleAnswerChange(newAnswer) {
+    handleAnswerChange = newAnswer => {
       const readonly = this.context.disableConfidentialFields && this.props.question.confidential; 
       if (readonly) {
         return;
@@ -241,9 +235,9 @@ export default QuestionComponent = (function() {
       }
 
       return this.props.onAnswerChange(newAnswer);
-    }
+    };
 
-    handleAlternate(alternate) {
+    handleAlternate = alternate => {
       const answer = this.getAnswer();
       // If we are selecting a new alternate
       if (answer.alternate !== alternate) {
@@ -267,14 +261,14 @@ export default QuestionComponent = (function() {
         }));
         return this.setState({savedValue: null, savedSpecify: null});
       }
-    }
+    };
 
-    handleCommentsChange(ev) {
+    handleCommentsChange = ev => {
       return this.handleAnswerChange(_.extend({}, this.getAnswer(), { comments: ev.target.value }));
-    }
+    };
 
     // Either jump to next question or select the comments box
-    handleNextOrComments(ev) {
+    handleNextOrComments = ev => {
       // If it has a comment box, set the focus on it
       if (this.props.question.commentsField != null) {
         const {
@@ -289,7 +283,7 @@ export default QuestionComponent = (function() {
         ev.target.blur();
         return this.props.onNext?.();
       }
-    }
+    };
 
     renderPrompt() {
       const promptDiv = R('div', {className: "prompt", ref: (c => { return this.prompt = c; })},

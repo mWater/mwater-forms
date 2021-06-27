@@ -1,5 +1,7 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 import _ from 'lodash';
-import formUtils from './formUtils';
+import * as formUtils from './formUtils';
 import React from 'react';
 const R = React.createElement;
 

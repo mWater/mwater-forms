@@ -1,9 +1,11 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let AnswerValidator;
 import _ from 'lodash';
-import siteCodes from '../siteCodes';
+import * as siteCodes from '../siteCodes';
 import { PromiseExprEvaluator } from 'mwater-expressions';
 import ValidationCompiler from './ValidationCompiler';
-import formUtils from '../formUtils';
+import * as formUtils from '../formUtils';
 
 // AnswerValidator gets called when a form is submitted (or on next)
 // Only the validate method is not internal

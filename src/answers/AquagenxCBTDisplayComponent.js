@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let AquagenxCBTDisplayComponent;
 import _ from 'lodash';
 import PropTypes from 'prop-types';
@@ -10,11 +12,6 @@ import ImageDisplayComponent from '../ImageDisplayComponent';
 
 export default AquagenxCBTDisplayComponent = (function() {
   AquagenxCBTDisplayComponent = class AquagenxCBTDisplayComponent extends React.Component {
-    constructor(...args) {
-      super(...args);
-      this.handleClick = this.handleClick.bind(this);
-    }
-
     static initClass() {
       this.contextTypes =
         {T: PropTypes.func.isRequired};  // Localizer to use
@@ -28,11 +25,11 @@ export default AquagenxCBTDisplayComponent = (function() {
        // If not specified, do not display image
     }
 
-    handleClick() {
+    handleClick = () => {
       if (this.props.onEdit) {
         return this.props.onEdit();
       }
-    }
+    };
 
     renderStyle() {
       const mainId = `#cbtDisplay${this.props.questionId}`;

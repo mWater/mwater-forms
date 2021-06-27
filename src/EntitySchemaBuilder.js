@@ -1,6 +1,8 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let EntitySchemaBuilder;
 import _ from 'lodash';
-import formUtils from './formUtils';
+import * as formUtils from './formUtils';
 
 // Builds schema for entities. Always add entities before forms
 export default EntitySchemaBuilder = class EntitySchemaBuilder {  
@@ -342,7 +344,7 @@ export default EntitySchemaBuilder = class EntitySchemaBuilder {
 };
 
 // Append a string to each language
-const appendStr = function(str, suffix) {
+function appendStr(str, suffix) {
   const output = {};
   for (let key in str) {
     const value = str[key];
@@ -358,10 +360,10 @@ const appendStr = function(str, suffix) {
     }
   }
   return output;
-};
+}
 
 // Map a tree that consists of items with optional 'contents' array. null means to discard item
-var mapTree = function(tree, func) {
+function mapTree(tree, func) {
   if (!tree) {
     return tree;
   }
@@ -373,10 +375,10 @@ var mapTree = function(tree, func) {
     }
     return newItem;
   })));
-};
+}
 
 // Traverse a tree, calling func for each item
-var traverseTree = function(tree, func) {
+function traverseTree(tree, func) {
   if (!tree) {
     return;
   }
@@ -393,11 +395,10 @@ var traverseTree = function(tree, func) {
     }
     return result;
   })();
-};
-
+}
 
 // Make a plural form (in English)
-var pluralize = function(lstr) {
+function pluralize(lstr) {
   let pstr;
   const str = lstr.en;
   if (!str) {
@@ -416,4 +417,4 @@ var pluralize = function(lstr) {
   }
   
   return _.extend({}, lstr, {en: pstr});
-};
+}

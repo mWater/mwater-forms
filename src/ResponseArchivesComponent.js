@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let ResponseArchivesComponent;
 import PropTypes from 'prop-types';
 import _ from 'lodash';
@@ -9,11 +11,6 @@ import moment from 'moment';
 // Show complete change history of response
 export default ResponseArchivesComponent = (function() {
   ResponseArchivesComponent = class ResponseArchivesComponent extends React.Component {
-    constructor(...args) {
-      super(...args);
-      this.renderRecord = this.renderRecord.bind(this);
-    }
-
     static initClass() {
       this.propTypes = {
         formDesign: PropTypes.object.isRequired,
@@ -29,7 +26,7 @@ export default ResponseArchivesComponent = (function() {
        // The usernames
     }
 
-    renderRecord(record, previousRecord) {
+    renderRecord = (record, previousRecord) => {
       return R('div', {key: record._rev , style: {marginTop: 10}},
         R('p', {key: 'summary'},
           "Changes made by ",
@@ -55,7 +52,7 @@ export default ResponseArchivesComponent = (function() {
           )
         )
       );
-    }
+    };
 
 
     render() {

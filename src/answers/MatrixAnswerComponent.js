@@ -1,10 +1,12 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let MatrixAnswerComponent;
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 const R = React.createElement;
 
-import formUtils from '../formUtils';
+import * as formUtils from '../formUtils';
 import MatrixColumnCellComponent from '../MatrixColumnCellComponent';
 import ValidationCompiler from './ValidationCompiler';
 
@@ -42,7 +44,6 @@ export default MatrixAnswerComponent = (function() {
     }
 
     constructor(props) {
-      this.handleCellChange = this.handleCellChange.bind(this);
       super(props);
 
       this.state = {
@@ -99,7 +100,7 @@ export default MatrixAnswerComponent = (function() {
       return foundInvalid;
     }
 
-    handleCellChange(item, column, answer) {
+    handleCellChange = (item, column, answer) => {
       let matrixValue = this.props.value || {};
 
       // Get data of the item, which is indexed by item id in the answer
@@ -116,7 +117,7 @@ export default MatrixAnswerComponent = (function() {
       matrixValue = _.extend({}, matrixValue, change);
 
       return this.props.onValueChange(matrixValue);
-    }
+    };
 
     renderColumnHeader(column, index) {
       return R('th', {key: `header:${column._id}`},

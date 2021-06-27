@@ -1,11 +1,13 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let MatrixColumnCellComponent;
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import React from 'react';
 const R = React.createElement;
 
-import formUtils from './formUtils';
-import conditionUtils from './conditionUtils';
+import * as formUtils from './formUtils';
+import * as conditionUtils from './conditionUtils';
 import NumberAnswerComponent from './answers/NumberAnswerComponent';
 import DateAnswerComponent from './answers/DateAnswerComponent';
 import UnitsAnswerComponent from './answers/UnitsAnswerComponent';
@@ -15,11 +17,6 @@ import TextExprsComponent from './TextExprsComponent';
 // Cell of a matrix column
 export default MatrixColumnCellComponent = (function() {
   MatrixColumnCellComponent = class MatrixColumnCellComponent extends React.Component {
-    constructor(...args) {
-      super(...args);
-      this.handleValueChange = this.handleValueChange.bind(this);
-    }
-
     static initClass() {
       this.propTypes = { 
         column: PropTypes.object.isRequired,       // Column. See designSchema
@@ -35,9 +32,9 @@ export default MatrixColumnCellComponent = (function() {
         {locale: PropTypes.string};
     }
 
-    handleValueChange(value) {
+    handleValueChange = value => {
       return this.props.onAnswerChange(_.extend({}, this.props.answer, {value}));
-    }
+    };
 
     areConditionsValid(choice) {
       if ((choice.conditions == null)) {

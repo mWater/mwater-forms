@@ -1,10 +1,12 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let RosterGroupComponent;
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import React from 'react';
 const R = React.createElement;
 
-import formUtils from './formUtils';
+import * as formUtils from './formUtils';
 import TextExprsComponent from './TextExprsComponent';
 
 // TODO Add focus()
@@ -13,15 +15,6 @@ import TextExprsComponent from './TextExprsComponent';
 // A roster group is a group of questions that is asked once for each roster entry
 export default RosterGroupComponent = (function() {
   RosterGroupComponent = class RosterGroupComponent extends React.Component {
-    constructor(...args) {
-      super(...args);
-      this.handleAnswerChange = this.handleAnswerChange.bind(this);
-      this.handleEntryDataChange = this.handleEntryDataChange.bind(this);
-      this.handleAdd = this.handleAdd.bind(this);
-      this.handleRemove = this.handleRemove.bind(this);
-      this.isChildVisible = this.isChildVisible.bind(this);
-    }
-
     static initClass() {
       this.contextTypes = {
         locale: PropTypes.string,
@@ -51,30 +44,30 @@ export default RosterGroupComponent = (function() {
     }
 
     // Propagate an answer change to the onDataChange
-    handleAnswerChange(answer) {
+    handleAnswerChange = answer => {
       const change = {};
       change[this.getAnswerId()] = answer;
       return this.props.onDataChange(_.extend({}, this.props.data, change));
-    }
+    };
 
     // Handles a change in data of a specific entry of the roster
-    handleEntryDataChange(index, data) {
+    handleEntryDataChange = (index, data) => {
       const answer = this.getAnswer().slice();
       answer[index] = _.extend({}, answer[index], { data });
       return this.handleAnswerChange(answer);
-    }
+    };
 
-    handleAdd() {
+    handleAdd = () => {
       const answer = this.getAnswer().slice();
       answer.push({ _id: formUtils.createUid(), data: {} });
       return this.handleAnswerChange(answer);
-    }
+    };
 
-    handleRemove(index) {
+    handleRemove = index => {
       const answer = this.getAnswer().slice();
       answer.splice(index, 1);
       return this.handleAnswerChange(answer);
-    }
+    };
 
     async validate(scrollToFirstInvalid) {
       // For each entry
@@ -91,9 +84,9 @@ export default RosterGroupComponent = (function() {
       return foundInvalid;
     }
 
-    isChildVisible(index, id) {
+    isChildVisible = (index, id) => {
       return this.props.isVisible(`${this.getAnswerId()}.${index}.${id}`);
-    }
+    };
 
     renderName() {
       return R('h4', {key: "prompt"},

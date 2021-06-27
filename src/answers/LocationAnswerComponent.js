@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let LocationAnswerComponent;
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -8,11 +10,6 @@ import LocationFinder from '../LocationFinder';
 
 export default LocationAnswerComponent = (function() {
   LocationAnswerComponent = class LocationAnswerComponent extends React.Component {
-    constructor(...args) {
-      super(...args);
-      this.handleUseMap = this.handleUseMap.bind(this);
-    }
-
     static initClass() {
       this.contextTypes = {
         displayMap: PropTypes.func,
@@ -33,7 +30,7 @@ export default LocationAnswerComponent = (function() {
       return null;
     }
 
-    handleUseMap() {
+    handleUseMap = () => {
       if (this.context.displayMap != null) {
         return this.context.displayMap(this.props.value, newLoc => {
           // Wrap to -180, 180
@@ -58,7 +55,7 @@ export default LocationAnswerComponent = (function() {
           return this.props.onValueChange(newLoc);
         });
       }
-    }
+    };
 
     render() {
       return R(LocationEditorComponent, {

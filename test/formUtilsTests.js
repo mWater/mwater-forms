@@ -1,12 +1,20 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 import _ from 'lodash';
 import { assert } from "chai";
-import formUtils from '../src/formUtils';
-import simpleForm from './simpleForm';
-import sectionedForm from './sectionedForm';
-import propertyLinksFormDesign from './propertyLinksFormDesign';
+import * as formUtils from '../src/formUtils';
+import * as simpleForm from './simpleForm';
+import sectionedForm, * as sectionedFormExports from './sectionedForm';
+import * as propertyLinksFormDesign from './propertyLinksFormDesign';
 import canonical from 'canonical-json';
 
-const compare = (actual, expected) => assert.equal(canonical(actual), canonical(expected), "\n" + canonical(actual) + "\n" + canonical(expected) + "\n");
+function compare(actual, expected) {
+  return assert.equal(
+    canonical(actual),
+    canonical(expected),
+    "\n" + canonical(actual) + "\n" + canonical(expected) + "\n"
+  );
+}
 
 describe("FormUtils", function() {
   describe("priorQuestions", () => context('two prior questions, one following', function() {
@@ -16,12 +24,12 @@ describe("FormUtils", function() {
   });
 
     it("correctly handles sections", function() {
-      const priors = formUtils.priorQuestions(sectionedForm, sectionedForm.contents[0].contents[2]);
+      const priors = formUtils.priorQuestions(sectionedForm, sectionedFormExports.contents[0].contents[2]);
       return assert.deepEqual(_.pluck(priors, "_id"), ['0001', '0002']);
   });
 
     it("correctly handles sections as item", function() {
-      const priors = formUtils.priorQuestions(sectionedForm, sectionedForm.contents[1]);
+      const priors = formUtils.priorQuestions(sectionedForm, sectionedFormExports.contents[1]);
       return assert.deepEqual(_.pluck(priors, "_id"), ['0001', '0002', '0003', '0004', 'N0005']);
   });
 
@@ -188,19 +196,19 @@ describe("FormUtils", function() {
 
     describe("duplicate section", function() {
       before(function() {
-        return this.duplicate = formUtils.duplicateItem(sectionedForm.contents[0]);
+        return this.duplicate = formUtils.duplicateItem(sectionedFormExports.contents[0]);
       });
 
       it("sets new id", function() {
-        return assert.notEqual(this.duplicate._id, sectionedForm.contents[0]._id);
+        return assert.notEqual(this.duplicate._id, sectionedFormExports.contents[0]._id);
       });
 
       it("sets _basedOn", function() {
-        return assert.equal(this.duplicate._basedOn, sectionedForm.contents[0]._id);
+        return assert.equal(this.duplicate._basedOn, sectionedFormExports.contents[0]._id);
       });
 
       it("duplicates questions", function() {
-        return assert.equal(this.duplicate.contents[0]._basedOn, sectionedForm.contents[0].contents[0]._id);
+        return assert.equal(this.duplicate.contents[0]._basedOn, sectionedFormExports.contents[0].contents[0]._id);
       });
 
       it("maps references in conditions", function() {
@@ -212,7 +220,7 @@ describe("FormUtils", function() {
     });  
 
     it("removes conditions which reference non-present questions", function() {
-      this.duplicate = formUtils.duplicateItem(sectionedForm.contents[1]);
+      this.duplicate = formUtils.duplicateItem(sectionedFormExports.contents[1]);
       return assert.equal(this.duplicate.contents[0].conditions.length, 0);
     });
 
@@ -282,11 +290,11 @@ describe("FormUtils", function() {
       });
 
       it("sets _basedOn", function() {
-        return assert.equal(this.duplicate.contents[0]._basedOn, sectionedForm.contents[0]._id);
+        return assert.equal(this.duplicate.contents[0]._basedOn, sectionedFormExports.contents[0]._id);
       });
 
       it("duplicates questions", function() {
-        return assert.equal(this.duplicate.contents[0].contents[0]._basedOn, sectionedForm.contents[0].contents[0]._id);
+        return assert.equal(this.duplicate.contents[0].contents[0]._basedOn, sectionedFormExports.contents[0].contents[0]._id);
       });
 
       it("maps references across sections", function() {

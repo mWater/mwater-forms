@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 import EventEmiiter from 'events';
 import _ from 'lodash';
 
@@ -5,10 +7,6 @@ import _ from 'lodash';
 // Pass storage as option (implementing localStorage API) to get caching of position
 class LocationFinder {
   constructor(options) {
-    this.on = this.on.bind(this);
-    this.off = this.off.bind(this);
-    this.pause = this.pause.bind(this);
-    this.resume = this.resume.bind(this);
     this.eventEmitter = new EventEmiiter();
 
     // "error" messages are handled specially and will crash if not handled!
@@ -20,13 +18,13 @@ class LocationFinder {
     this.watchCount = 0;
   }
 
-  on(event, callback) {
+  on = (event, callback) => {
     return this.eventEmitter.on(event, callback);
-  }
+  };
 
-  off(event, callback) {
+  off = (event, callback) => {
     return this.eventEmitter.removeListener(event, callback);
-  }
+  };
 
   cacheLocation(pos) {
     if (this.storage != null) {
@@ -48,7 +46,7 @@ class LocationFinder {
       return pos;
     }
   }
-    
+
   getLocation(success, error) {
     // If no geolocation, send error immediately
     if (!navigator.geolocation) {
@@ -219,14 +217,14 @@ class LocationFinder {
     return document.removeEventListener("resume", this.resume);
   }
 
-  pause() {
+  pause = () => {
     if (this.locationWatchId != null) {
       navigator.geolocation.clearWatch(this.locationWatchId);
       return this.locationWatchId = undefined;
     }
-  }
+  };
 
-  resume() {
+  resume = () => {
     const highAccuracy = pos => {
       this.cacheLocation(pos);
       return this.eventEmitter.emit('found', pos);
@@ -247,7 +245,7 @@ class LocationFinder {
           enableHighAccuracy : true
       });  
     }
-  }
+  };
 }
 
 export default LocationFinder;  

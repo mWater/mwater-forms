@@ -1,21 +1,17 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let MulticheckAnswerComponent;
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 const R = React.createElement;
 
-import formUtils from '../formUtils';
-import conditionUtils from '../conditionUtils';
+import * as formUtils from '../formUtils';
+import * as conditionUtils from '../conditionUtils';
 
 // Multiple checkboxes where more than one can be checked
 export default MulticheckAnswerComponent = (function() {
   MulticheckAnswerComponent = class MulticheckAnswerComponent extends React.Component {
-    constructor(...args) {
-      super(...args);
-      this.handleValueChange = this.handleValueChange.bind(this);
-      this.handleSpecifyChange = this.handleSpecifyChange.bind(this);
-    }
-
     static initClass() {
       this.contextTypes =
         {locale: PropTypes.string};  // Current locale (e.g. "en")
@@ -48,7 +44,7 @@ export default MulticheckAnswerComponent = (function() {
       return null;
     }
 
-    handleValueChange(choice) {
+    handleValueChange = choice => {
       let specify;
       const ids = this.props.answer.value || [];
       if (ids.includes(choice.id)) {
@@ -64,14 +60,14 @@ export default MulticheckAnswerComponent = (function() {
       } else {
         return this.props.onAnswerChange({value: _.union(ids, [choice.id]), specify: this.props.answer.specify});
       }
-    }
+    };
 
-    handleSpecifyChange(id, ev) {
+    handleSpecifyChange = (id, ev) => {
       const change = {};
       change[id] = ev.target.value;
       const specify = _.extend({}, this.props.answer.specify, change);
       return this.props.onAnswerChange({value: this.props.answer.value, specify});
-    }
+    };
 
     areConditionsValid(choice) {
       if ((choice.conditions == null)) {

@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 // Minimal form that passes validation
 export default () => ({
   _id: "abc123",

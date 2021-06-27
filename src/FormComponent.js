@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let FormComponent;
 import PropTypes from 'prop-types';
 import _ from 'lodash';
@@ -54,10 +56,6 @@ export default FormComponent = (function() {
     }
 
     constructor(props) {
-      this.isVisible = this.isVisible.bind(this);
-      this.createResponseRow = this.createResponseRow.bind(this);
-      this.handleDataChange = this.handleDataChange.bind(this);
-      this.handleNext = this.handleNext.bind(this);
       super(props);
 
       this.state = {
@@ -119,11 +117,11 @@ export default FormComponent = (function() {
       }
     };
 
-    isVisible(itemId) {
+    isVisible = itemId => {
       return this.props.forceAllVisible || this.state.visibilityStructure[itemId];
-    }
+    };
 
-    createResponseRow(data) {
+    createResponseRow = data => {
       return new ResponseRow({
         responseData: data,
         formDesign: this.props.design,
@@ -133,9 +131,9 @@ export default FormComponent = (function() {
         getCustomTableRow: this.props.formCtx.getCustomTableRow,
         deployment: this.props.deployment
       });
-    }
+    };
 
-    handleDataChange(data) {
+    handleDataChange = data => {
       const visibilityCalculator = new VisibilityCalculator(this.props.design, this.props.schema);
       const defaultValueApplier = new DefaultValueApplier(this.props.design, this.props.formCtx.stickyStorage, this.props.entity, this.props.entityType);
       const randomAskedCalculator = new RandomAskedCalculator(this.props.design);
@@ -167,11 +165,11 @@ export default FormComponent = (function() {
           return this.props.onDataChange(results.data);
         }
       });
-    }
+    };
 
-    handleNext() {
+    handleNext = () => {
       return this.submit.focus();
-    }
+    };
 
     render() {
       if (this.props.design.contents[0] && (this.props.design.contents[0]._type === "Section") && !this.props.singlePageMode) {

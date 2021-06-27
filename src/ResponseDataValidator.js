@@ -1,7 +1,9 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let ResponseDataValidator;
 import AnswerValidator from './answers/AnswerValidator';
 import ValidationCompiler from './answers/ValidationCompiler';
-import formUtils from './formUtils';
+import * as formUtils from './formUtils';
 
 // ResponseDataValidator checks whether the entire data is valid for a response
 export default ResponseDataValidator = class ResponseDataValidator {

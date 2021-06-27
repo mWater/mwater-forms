@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 // Module that handles calling EC Compact Dry Plate automatic counting
 import _ from 'lodash';
 

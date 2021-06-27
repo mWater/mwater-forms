@@ -1,10 +1,12 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let RosterMatrixComponent;
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import React from 'react';
 const R = React.createElement;
 
-import formUtils from './formUtils';
+import * as formUtils from './formUtils';
 import ValidationCompiler from './answers/ValidationCompiler';
 import ReorderableListComponent from "react-library/lib/reorderable/ReorderableListComponent";
 import MatrixColumnCellComponent from './MatrixColumnCellComponent';
@@ -30,13 +32,6 @@ export default RosterMatrixComponent = (function() {
     }
 
     constructor(props) {
-      this.handleAnswerChange = this.handleAnswerChange.bind(this);
-      this.handleEntryDataChange = this.handleEntryDataChange.bind(this);
-      this.handleAdd = this.handleAdd.bind(this);
-      this.handleRemove = this.handleRemove.bind(this);
-      this.handleCellChange = this.handleCellChange.bind(this);
-      this.handleSort = this.handleSort.bind(this);
-      this.renderEntry = this.renderEntry.bind(this);
       super(props);
 
       this.state = {
@@ -95,32 +90,32 @@ export default RosterMatrixComponent = (function() {
     }
 
     // Propagate an answer change to the onDataChange
-    handleAnswerChange(answer) {
+    handleAnswerChange = answer => {
       const change = {};
       change[this.getAnswerId()] = answer;
       return this.props.onDataChange(_.extend({}, this.props.data, change));
-    }
+    };
 
     // Handles a change in data of a specific entry of the roster
-    handleEntryDataChange(index, data) {
+    handleEntryDataChange = (index, data) => {
       const answer = this.getAnswer().slice();
       answer[index] = _.extend({}, answer[index], { data });
       return this.handleAnswerChange(answer);
-    }
+    };
 
-    handleAdd() {
+    handleAdd = () => {
       const answer = this.getAnswer().slice();
       answer.push({ _id: formUtils.createUid(), data: {} });
       return this.handleAnswerChange(answer);
-    }
+    };
 
-    handleRemove(index) {
+    handleRemove = index => {
       const answer = this.getAnswer().slice();
       answer.splice(index, 1);
       return this.handleAnswerChange(answer);
-    }
+    };
 
-    handleCellChange(entryIndex, columnId, answer) {
+    handleCellChange = (entryIndex, columnId, answer) => {
       let {
         data
       } = this.getAnswer()[entryIndex];
@@ -129,13 +124,13 @@ export default RosterMatrixComponent = (function() {
       data = _.extend({}, data, change);
 
       return this.handleEntryDataChange(entryIndex, data);
-    }
+    };
 
-    handleSort(column, order) {
+    handleSort = (column, order) => {
       let answer = this.getAnswer();
       answer = _.sortByOrder(answer, [(item => item.data[column._id]?.value)], [order]);
       return this.handleAnswerChange(answer);
-    }
+    };
 
     renderName() {
       return R('h4', {key: "prompt", ref: (c => { return this.prompt = c; })},
@@ -191,7 +186,7 @@ export default RosterMatrixComponent = (function() {
       );
     }
 
-    renderEntry(entry, index, connectDragSource, connectDragPreview, connectDropTarget) {
+    renderEntry = (entry, index, connectDragSource, connectDragPreview, connectDropTarget) => {
       const elem = R('tr', {key: index},
         _.map(this.props.rosterMatrix.contents, (column, columnIndex) => this.renderCell(entry, index, column, columnIndex)),
         this.props.rosterMatrix.allowRemove ?
@@ -202,7 +197,7 @@ export default RosterMatrixComponent = (function() {
       );  
 
       return connectDropTarget(connectDragPreview(connectDragSource(elem)));
-    }
+    };
 
     renderAdd() {
       if (this.props.rosterMatrix.allowAdd) {

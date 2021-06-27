@@ -1,9 +1,11 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let DateAnswerComponent;
 import PropTypes from 'prop-types';
 import React from 'react';
 const R = React.createElement;
 
-import formUtils from '../formUtils';
+import * as formUtils from '../formUtils';
 import moment from 'moment';
 import DateTimePickerComponent from '../DateTimePickerComponent';
 
@@ -23,19 +25,15 @@ export default DateAnswerComponent = (function() {
     }
 
     constructor(props) {
-      this.componentWillReceiveProps = this.componentWillReceiveProps.bind(this);
-      this.updateState = this.updateState.bind(this);
-      this.handleKeyDown = this.handleKeyDown.bind(this);
-      this.handleChange = this.handleChange.bind(this);
       super(props);
       this.updateState(props);
     }
 
-    componentWillReceiveProps(nextProps) {
+    componentWillReceiveProps = nextProps => {
       return this.updateState(nextProps);
-    }
-    
-    updateState(props) {
+    };
+
+    updateState = props => {
       let detailLevel;
       const {
         format
@@ -81,7 +79,7 @@ export default DateAnswerComponent = (function() {
         // This is a weird lifecycle quirk of it being called on the constructor
         return this.state = {detailLevel, isoFormat, placeholder};
       }
-    }
+    };
 
     focus() {
       const {
@@ -92,7 +90,7 @@ export default DateAnswerComponent = (function() {
       }
     }
 
-    handleKeyDown(ev) {
+    handleKeyDown = ev => {
       if (this.props.onNextOrComments != null) {
         // When pressing ENTER or TAB
         if ((ev.keyCode === 13) || (ev.keyCode === 9)) {
@@ -101,9 +99,9 @@ export default DateAnswerComponent = (function() {
           return ev.preventDefault();
         }
       }
-    }
+    };
 
-    handleChange(date) {
+    handleChange = date => {
       // Get date
       if (!date) {
         this.props.onValueChange(null);
@@ -130,7 +128,7 @@ export default DateAnswerComponent = (function() {
       }
 
       return this.props.onValueChange(date);
-    }
+    };
 
     render() {
       let {

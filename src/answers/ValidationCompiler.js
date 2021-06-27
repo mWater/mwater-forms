@@ -1,17 +1,15 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let ValidationCompiler;
 import _ from 'lodash';
 
 // Compiles validations
 export default ValidationCompiler = class ValidationCompiler {
-  constructor(locale) { 
-    this.compileString = this.compileString.bind(this);
-    this.compileValidationMessage = this.compileValidationMessage.bind(this);
-    this.compileValidation = this.compileValidation.bind(this);
-    this.compileValidations = this.compileValidations.bind(this);
+  constructor(locale) {
     this.locale = locale;
   }
 
-  compileString(str) {
+  compileString = str => {
     // If no base or null, return null
     if ((str == null) || !str._base) {
       return null;
@@ -24,17 +22,17 @@ export default ValidationCompiler = class ValidationCompiler {
 
     // Return base if present
     return str[str._base] || "";
-  }
+  };
 
-  compileValidationMessage(val) {
+  compileValidationMessage = val => {
     const str = this.compileString(val.message);
     if (str) {
       return str;
     }
     return true;
-  }
+  };
 
-  compileValidation(val) {
+  compileValidation = val => {
     switch (val.op) {
       case "lengthRange":
         return answer => {
@@ -75,9 +73,9 @@ export default ValidationCompiler = class ValidationCompiler {
       default:
         throw new Error("Unknown validation op " + val.op);
     }
-  }
+  };
 
-  compileValidations(vals) {
+  compileValidations = vals => {
     const compVals = _.map(vals, this.compileValidation);
     return answer => {
       for (let compVal of compVals) {
@@ -89,5 +87,5 @@ export default ValidationCompiler = class ValidationCompiler {
 
       return null;
     };
-  }
+  };
 };

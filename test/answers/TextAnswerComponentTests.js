@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 import { assert } from 'chai';
 import TestComponent from 'react-library/lib/TestComponent';
 import ReactTestUtils from 'react-dom/test-utils';
@@ -25,10 +27,10 @@ describe('TextAnswerComponent', function() {
   });
 
   it("records string in singleline answer", function(callback) {
-    const onValueChange = function(value) {
+    function onValueChange(value) {
       assert.equal(value, "response");
       return callback();
-    };
+    }
 
     this.comp = this.render({value: null, onValueChange, format: 'singleline'});
     const input = this.comp.findInput();
@@ -37,10 +39,10 @@ describe('TextAnswerComponent', function() {
   });
 
   return it("records string in singleline answer", function(callback) {
-    const onValueChange = function(value) {
+    function onValueChange(value) {
       assert.equal(value, "response");
       return callback();
-    };
+    }
 
     this.comp = this.render({value: null, onValueChange, format: 'multiline'});
     const textArea = ReactTestUtils.findRenderedDOMComponentWithTag(this.comp.getComponent(), "textarea");

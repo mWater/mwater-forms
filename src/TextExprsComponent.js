@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let TextExprsComponent;
 import PropTypes from 'prop-types';
 import _ from 'lodash';
@@ -5,7 +7,7 @@ import React from 'react';
 const R = React.createElement;
 
 import async from 'async';
-import formUtils from './formUtils';
+import * as formUtils from './formUtils';
 import { PromiseExprEvaluator } from 'mwater-expressions';
 import { ExprUtils } from 'mwater-expressions';
 import d3Format from "d3-format";

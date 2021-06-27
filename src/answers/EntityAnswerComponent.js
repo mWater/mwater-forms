@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let EntityAnswerComponent;
 import PropTypes from 'prop-types';
 import _ from 'lodash';
@@ -10,13 +12,6 @@ import AsyncLoadComponent from 'react-library/lib/AsyncLoadComponent';
 // State is needed for canEditEntity which requires entire entity
 export default EntityAnswerComponent = (function() {
   EntityAnswerComponent = class EntityAnswerComponent extends AsyncLoadComponent {
-    constructor(...args) {
-      super(...args);
-      this.handleSelectEntity = this.handleSelectEntity.bind(this);
-      this.handleClearEntity = this.handleClearEntity.bind(this);
-      this.handleEditEntity = this.handleEditEntity.bind(this);
-    }
-
     static initClass() {
       this.contextTypes = {
         selectEntity: PropTypes.func,
@@ -57,7 +52,7 @@ export default EntityAnswerComponent = (function() {
     }
 
     // Called to select an entity using an external mechanism (calls @ctx.selectEntity)
-    handleSelectEntity() {
+    handleSelectEntity = () => {
       if (!this.context.selectEntity) {
         return alert(this.context.T("Not supported on this platform"));
       }
@@ -68,13 +63,13 @@ export default EntityAnswerComponent = (function() {
           return this.props.onValueChange(value);
         }
       });
-    }
+    };
 
-    handleClearEntity() {
+    handleClearEntity = () => {
       return this.props.onValueChange(null);
-    }
+    };
 
-    handleEditEntity() {
+    handleEditEntity = () => {
       if (!this.context.editEntity) {
         return alert(this.context.T("Not supported on this platform"));
       }
@@ -83,7 +78,7 @@ export default EntityAnswerComponent = (function() {
         this.props.onValueChange(this.props.value);
         return this.forceLoad();
       });
-    }
+    };
 
     renderEntityButtons() {
       return R('div', null,

@@ -1,7 +1,9 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let ResponseCleaner;
 import _ from 'lodash';
-import formUtils from './formUtils';
-import conditionUtils from './conditionUtils';
+import * as formUtils from './formUtils';
+import * as conditionUtils from './conditionUtils';
 import async from 'async';
 
 /*
@@ -16,19 +18,16 @@ Therefore, it's an iterative process which is also asynchronous, as condition ev
 
 */
 export default ResponseCleaner = class ResponseCleaner {
-
-  // Cleans data, calling back with { data: cleaned data, visibilityStructure: final visibility structure (since expensive to compute) }
-  // The old visibility structure is needed as defaulting of values requires knowledge of how visibility has changed
-  // The process of computing visibility, cleaning data and applying stickyData/defaultValue can trigger more changes
-  // and should be repeated until the visibilityStructure is stable.
-  // A simple case: Question A, B and C with B only visible if A is set and C only visible if B is set and B containing a defaultValue
-  // Setting a value to A will make B visible and set to defaultValue, but C will remain invisible until the process is repeated
-  // responseRowFactory: returns responseRow when called with data
-  constructor() {
-    this.cleanData = this.cleanData.bind(this);
-  }
-
-  cleanData(design, visibilityCalculator, defaultValueApplier, randomAskedCalculator, data, responseRowFactory, oldVisibilityStructure, callback) {
+  cleanData = (
+    design,
+    visibilityCalculator,
+    defaultValueApplier,
+    randomAskedCalculator,
+    data,
+    responseRowFactory,
+    oldVisibilityStructure,
+    callback
+  ) => {
     let nbIterations = 0;
     let complete = false;
     let newData = data;
@@ -84,7 +83,7 @@ export default ResponseCleaner = class ResponseCleaner {
 
       return callback(null, { data: newData, visibilityStructure: newVisibilityStructure });
     });
-  }
+  };
 
   // Remove data entries for all the invisible questions
   cleanDataBasedOnVisibility(data, visibilityStructure) {

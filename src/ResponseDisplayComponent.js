@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let ResponseDisplayComponent;
 import PropTypes from 'prop-types';
 import _ from 'lodash';
@@ -32,8 +34,6 @@ export default ResponseDisplayComponent = (function() {
     }
 
     constructor(props) {
-      this.handleHideHistory = this.handleHideHistory.bind(this);
-      this.handleShowHistory = this.handleShowHistory.bind(this);
       super(props);
 
       this.state = {
@@ -51,7 +51,7 @@ export default ResponseDisplayComponent = (function() {
     componentWillMount() {
       return this.loadEventUsernames(this.props.response.events);
     }
-    
+
     componentDidMount() {
       return this.loadHistory(this.props);
     }
@@ -138,13 +138,13 @@ export default ResponseDisplayComponent = (function() {
       return T;
     }
 
-    handleHideHistory() {
+    handleHideHistory = () => {
       return this.setState({showCompleteHistory: false});
-    }
+    };
 
-    handleShowHistory() {
+    handleShowHistory = () => {
       return this.setState({showCompleteHistory: true});
-    }
+    };
 
     renderEvent(ev) {
       if ((this.state.eventsUsernames == null)) {

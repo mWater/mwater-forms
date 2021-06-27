@@ -1,5 +1,7 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let RandomAskedCalculator;
-import formUtils from './formUtils';
+import * as formUtils from './formUtils';
 import _ from 'lodash';
 
 // The RandomAskedCalculator sets the randomAsked property of visible answers, determining if the question will be visible.

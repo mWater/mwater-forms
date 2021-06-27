@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 // No longer used!
 // _ = require 'lodash'
 // assert = require('chai').assert

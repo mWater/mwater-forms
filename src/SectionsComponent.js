@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let SectionsComponent;
 import PropTypes from 'prop-types';
 import _ from 'lodash';
@@ -5,7 +7,7 @@ import React from 'react';
 const R = React.createElement;
 
 import ItemListComponent from './ItemListComponent';
-import formUtils from './formUtils';
+import * as formUtils from './formUtils';
 import TextExprsComponent from './TextExprsComponent';
 
 export default SectionsComponent = (function() {
@@ -34,9 +36,6 @@ export default SectionsComponent = (function() {
     }
 
     constructor(props) {
-      this.handleBackSection = this.handleBackSection.bind(this);
-      this.handleBreadcrumbClick = this.handleBreadcrumbClick.bind(this);
-      this.handleItemListNext = this.handleItemListNext.bind(this);
       super(props);
 
       this.state = {
@@ -77,7 +76,7 @@ export default SectionsComponent = (function() {
       }
     }
 
-    handleBackSection() {
+    handleBackSection = () => {
       // Move to previous that is visible
       const previousVisibleIndex = this.nextVisibleSectionIndex(this.state.sectionNum - 1, -1);
       if (previousVisibleIndex !== -1) {
@@ -86,9 +85,9 @@ export default SectionsComponent = (function() {
         // Scroll to top of section
         return this.sections.scrollIntoView();
       }
-    }
+    };
 
-      // This should never happen... simply ignore
+    // This should never happen... simply ignore
 
     handleNextSection = async () => {
       const result = await this.itemListComponent.validate(true);
@@ -105,16 +104,16 @@ export default SectionsComponent = (function() {
         return this.sections.scrollIntoView();
       }
     };
-      
-      // This should never happen... simply ignore
 
-    handleBreadcrumbClick(index) {
+    // This should never happen... simply ignore
+
+    handleBreadcrumbClick = index => {
       return this.setState({sectionNum: index});
-    }
+    };
 
-    handleItemListNext() {
+    handleItemListNext = () => {
       return this.nextOrSubmit.focus();
-    }
+    };
 
     renderBreadcrumbs() {
       const breadcrumbs = [];

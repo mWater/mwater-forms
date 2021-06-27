@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let AdminRegionSelectComponent;
 import PropTypes from 'prop-types';
 import _ from 'lodash';
@@ -8,11 +10,6 @@ import AsyncLoadComponent from 'react-library/lib/AsyncLoadComponent';
 // Allows selecting an admin region via cascading dropdowns
 export default AdminRegionSelectComponent = (function() {
   AdminRegionSelectComponent = class AdminRegionSelectComponent extends AsyncLoadComponent {
-    constructor(...args) {
-      super(...args);
-      this.handleChange = this.handleChange.bind(this);
-    }
-
     static initClass() { 
       this.propTypes = { 
         getAdminRegionPath: PropTypes.func.isRequired, // Call with (id, callback). Callback (error, [{ id:, level: <e.g. 1>, name: <e.g. Manitoba>, type: <e.g. Province>}] in level ascending order)
@@ -72,11 +69,11 @@ export default AdminRegionSelectComponent = (function() {
       }
     }
 
-      // props.imageManager.getImageUrl(props.imageId, (url) =>
-      //   callback(url: url, error: false)
-      // , => callback(error: true))
+    // props.imageManager.getImageUrl(props.imageId, (url) =>
+    //   callback(url: url, error: false)
+    // , => callback(error: true))
 
-    handleChange(level, ev) {
+    handleChange = (level, ev) => {
       if (ev.target.value) {
         return this.props.onChange(ev.target.value);
       } else if (level > 0) {
@@ -85,8 +82,8 @@ export default AdminRegionSelectComponent = (function() {
       } else {
         return this.props.onChange(null);
       }
-    }
-  
+    };
+
     renderLevel(level) {
       if (!this.state.path[level] && (!this.state[`level${level}s`] || (this.state[`level${level}s`].length === 0))) {
         return null;

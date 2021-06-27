@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 import _ from 'underscore';
 import { assert } from 'chai';
 import React from 'react';
@@ -189,10 +191,11 @@ describe("QuestionComponent", function() {
 
         testComponent.setElement(R(MockTContextWrapper, null, R(QuestionComponent, this.options)));
 
-        const callback = function() {
+        function callback() {
           const dn = testComponent.findComponentById('dn');
           return TestComponent.click(dn);
-        };
+        }
+
         return setTimeout(callback, 30);
       }
     };

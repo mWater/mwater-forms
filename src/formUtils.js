@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 import _ from 'lodash';
 import localizations from '../localizations.json';
 import uuid from 'uuid';
@@ -87,7 +89,7 @@ export function priorQuestions(formDesign, refItem = null, rosterId = null) {
   const questions = [];
 
   // Append all child items
-  var appendChildren = function(parentItem, currentRosterId) {
+  function appendChildren(parentItem, currentRosterId) {
     for (let child of parentItem.contents) {
       // If ids match, abort
       if ((refItem != null) && (child._id === refItem._id)) {
@@ -112,7 +114,7 @@ export function priorQuestions(formDesign, refItem = null, rosterId = null) {
     }
 
     return false;
-  };
+  }
 
   appendChildren(formDesign, null);
   return questions;
@@ -121,7 +123,7 @@ export function priorQuestions(formDesign, refItem = null, rosterId = null) {
 export function getRosterIds(formDesign) {
   const rosterIds = [];
 
-  var recurse = function(item) {
+  function recurse(item) {
     if (["RosterGroup", "RosterMatrix"].includes(item._type)) {
       rosterIds.push(item.rosterId || item._id);
     }
@@ -129,7 +131,7 @@ export function getRosterIds(formDesign) {
       return item.contents.map((subitem) =>
         recurse(subitem));
     }
-  };
+  }
 
   recurse(formDesign);
 

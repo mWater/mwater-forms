@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let ImagesAnswerComponent;
 import PropTypes from 'prop-types';
 import _ from 'lodash';
@@ -25,8 +27,6 @@ export default ImagesAnswerComponent = (function() {
     }
 
     constructor(props) {
-      this.handleAdd = this.handleAdd.bind(this);
-      this.handleClickImage = this.handleClickImage.bind(this);
       super(props);
 
       this.state = { modalImageId: null }; // Image id of modal. null if not open
@@ -37,7 +37,7 @@ export default ImagesAnswerComponent = (function() {
       return null;
     }
 
-    handleAdd() {
+    handleAdd = () => {
       // Check consent
       if (this.props.consentPrompt) {
         if (!confirm(this.props.consentPrompt)) {
@@ -54,11 +54,11 @@ export default ImagesAnswerComponent = (function() {
         return this.props.onImagelistChange(imagelist);
       }
       , err => alert(err));
-    }
+    };
 
-    handleClickImage(id) {
+    handleClickImage = id => {
       return this.setState({modalImageId: id});
-    }
+    };
 
     renderModal() {
       let onRemove, onRotate, onSetCover;

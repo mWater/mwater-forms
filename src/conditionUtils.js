@@ -1,6 +1,8 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let compileCondition;
 import _ from 'lodash';
-import formUtils from './formUtils';
+import * as formUtils from './formUtils';
 
 // Helpful utilities when building conditions
 const allOps = [
@@ -169,13 +171,13 @@ export let compileConditions = conds => {
 };
 
 // Maps op id to complete op info
-const getOpDetails = function(op) {
+function getOpDetails(op) {
   const opDetail = _.findWhere(allOps, {id: op});
   if (!opDetail) {
     throw new Error(`Unknown op ${op}`);
   }
   return opDetail;
-};
+}
 
 // Gets list of applicable operators for a lhs question
 // Return includes id and text for each one, suitable for a select2 control

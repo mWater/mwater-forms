@@ -1,9 +1,11 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let SiteAnswerComponent;
 import PropTypes from 'prop-types';
 import React from 'react';
 const R = React.createElement;
 
-import formUtils from '../formUtils';
+import * as formUtils from '../formUtils';
 import EntityDisplayComponent from '../EntityDisplayComponent';
 
 export default SiteAnswerComponent = (function() {
@@ -25,12 +27,8 @@ export default SiteAnswerComponent = (function() {
     }
 
     constructor(props) {
-      this.handleKeyDown = this.handleKeyDown.bind(this);
-      this.handleSelectClick = this.handleSelectClick.bind(this);
-      this.handleChange = this.handleChange.bind(this);
-      this.handleBlur = this.handleBlur.bind(this);
       super(props);
-    
+
       this.state = {text: props.value?.code || ""};
     }
 
@@ -45,7 +43,7 @@ export default SiteAnswerComponent = (function() {
       return this.input.focus();
     }
 
-    handleKeyDown(ev) {
+    handleKeyDown = ev => {
       if (this.props.onNextOrComments != null) {
         // When pressing ENTER or TAB
         if ((ev.keyCode === 13) || (ev.keyCode === 9)) {
@@ -54,7 +52,7 @@ export default SiteAnswerComponent = (function() {
           return ev.preventDefault();
         }
       }
-    }
+    };
 
     getEntityType() {
       // Convert to new entity type (legacy sometimes had capital letter and spaces)
@@ -63,7 +61,7 @@ export default SiteAnswerComponent = (function() {
       return entityType;
     }
 
-    handleSelectClick() {
+    handleSelectClick = () => {
       const entityType = this.getEntityType();
 
       return this.context.selectEntity({ entityType, callback: entityId => {
@@ -83,19 +81,19 @@ export default SiteAnswerComponent = (function() {
         });
       }
       });
-    }
+    };
 
-    handleChange(ev) { 
+    handleChange = ev => { 
       return this.setState({text: ev.target.value});
-    }
+    };
 
-    handleBlur(ev) {
+    handleBlur = ev => {
       if (ev.target.value) {
         return this.props.onValueChange({ code: ev.target.value });
       } else {
         return this.props.onValueChange(null);
       }
-    }
+    };
 
     render() {
       return R('div', null,

@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let ResponseViewEditComponent;
 import PropTypes from 'prop-types';
 import _ from 'lodash';
@@ -33,16 +35,6 @@ export default ResponseViewEditComponent = (function() {
     }
 
     constructor(props) {
-      this.handleApprove = this.handleApprove.bind(this);
-      this.handleReject = this.handleReject.bind(this);
-      this.handleUnreject = this.handleUnreject.bind(this);
-      this.handleDelete = this.handleDelete.bind(this);
-      this.handleDataChange = this.handleDataChange.bind(this);
-      this.handleDiscard = this.handleDiscard.bind(this);
-      this.handleSaveLater = this.handleSaveLater.bind(this);
-      this.handleEdit = this.handleEdit.bind(this);
-      this.handleLocaleChange = this.handleLocaleChange.bind(this);
-      this.handleSubmit = this.handleSubmit.bind(this);
       super(props);
       this.state = {
         editMode: false,  // True if in edit mode
@@ -59,7 +51,7 @@ export default ResponseViewEditComponent = (function() {
       return responseModel = new ResponseModel({response, form: this.props.form, user: this.props.login?.user, username: this.props.login?.username, groups: this.props.login?.groups});
     }
 
-    handleApprove() {
+    handleApprove = () => {
       // TODO no longer needed if response model becomes immutable
       const response = _.cloneDeep(this.props.response);
       const responseModel = this.createResponseModel(response);
@@ -70,9 +62,9 @@ export default ResponseViewEditComponent = (function() {
 
       responseModel.approve();
       return this.props.onUpdateResponse(response);
-    }
+    };
 
-    handleReject() {
+    handleReject = () => {
       // TODO no longer needed if response model becomes immutable
       const response = _.cloneDeep(this.props.response);
       const responseModel = this.createResponseModel(response);
@@ -88,9 +80,9 @@ export default ResponseViewEditComponent = (function() {
 
       responseModel.reject(message);
       return this.props.onUpdateResponse(response);
-    }
+    };
 
-    handleUnreject() {
+    handleUnreject = () => {
       // TODO no longer needed if response model becomes immutable
       const response = _.cloneDeep(this.props.response);
       const responseModel = this.createResponseModel(response);
@@ -101,23 +93,23 @@ export default ResponseViewEditComponent = (function() {
 
       responseModel.submit();
       return this.props.onUpdateResponse(response);
-    }
+    };
 
-    handleDelete() {
+    handleDelete = () => {
       if (!confirm("Permanently delete response?")) {
         return;
       }
 
       return this.props.onDeleteResponse();
-    }
+    };
 
-    handleDataChange(data) { return this.setState({unsavedData: data}); }
-    handleDiscard() { return this.setState({editMode: false, unsavedData: null}); }
-    handleSaveLater() { return alert("Drafts cannot be saved in this mode. Discard or submit to keep changes"); }
-    handleEdit() { return this.setState({editMode: true, unsavedData: null}); }
-    handleLocaleChange(ev) { return this.setState({locale: ev.target.value}); }
+    handleDataChange = data => { return this.setState({unsavedData: data}); };
+    handleDiscard = () => { return this.setState({editMode: false, unsavedData: null}); };
+    handleSaveLater = () => { return alert("Drafts cannot be saved in this mode. Discard or submit to keep changes"); };
+    handleEdit = () => { return this.setState({editMode: true, unsavedData: null}); };
+    handleLocaleChange = ev => { return this.setState({locale: ev.target.value}); };
 
-    handleSubmit() {
+    handleSubmit = () => {
       // TODO no longer needed if response model becomes immutable
       const response = _.cloneDeep(this.props.response);
       const responseModel = this.createResponseModel(response);
@@ -142,7 +134,7 @@ export default ResponseViewEditComponent = (function() {
       this.setState({editMode: false, unsavedData: null});
 
       return this.props.onUpdateResponse(response);
-    }
+    };
 
     // Render locales
     renderLocales() {

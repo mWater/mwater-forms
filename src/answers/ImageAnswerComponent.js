@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let ImageAnswerComponent;
 import _ from 'lodash';
 import PropTypes from 'prop-types';
@@ -26,8 +28,6 @@ export default ImageAnswerComponent = (function() {
     }
 
     constructor(props) {
-      this.handleClickImage = this.handleClickImage.bind(this);
-      this.handleAdd = this.handleAdd.bind(this);
       super(props);
 
       this.state = { modalOpen: false };
@@ -38,11 +38,11 @@ export default ImageAnswerComponent = (function() {
       return null;
     }
 
-    handleClickImage() {
+    handleClickImage = () => {
       return this.setState({modalOpen: true});
-    }
+    };
 
-    handleAdd() {
+    handleAdd = () => {
       // Check consent
       if (this.props.consentPrompt) {
         if (!confirm(this.props.consentPrompt)) {
@@ -56,7 +56,7 @@ export default ImageAnswerComponent = (function() {
         return this.props.onImageChange({ id, rotation });
       }
       , err => alert(err));
-    }
+    };
 
     renderModal() {
       if (!this.state.modalOpen) {

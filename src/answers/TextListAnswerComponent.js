@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let TextListAnswerComponent;
 import _ from 'lodash';
 import PropTypes from 'prop-types';
@@ -6,14 +8,6 @@ const R = React.createElement;
 
 export default TextListAnswerComponent = (function() {
   TextListAnswerComponent = class TextListAnswerComponent extends React.Component {
-    constructor(...args) {
-      super(...args);
-      this.handleChange = this.handleChange.bind(this);
-      this.handleNewLineChange = this.handleNewLineChange.bind(this);
-      this.handleKeydown = this.handleKeydown.bind(this);
-      this.handleRemoveClick = this.handleRemoveClick.bind(this);
-    }
-
     static initClass() {
       this.propTypes = {
         value: PropTypes.array,
@@ -26,7 +20,7 @@ export default TextListAnswerComponent = (function() {
       return this.newLine?.focus();
     }
 
-    handleChange(index, ev) {
+    handleChange = (index, ev) => {
       let newValue;
       if (this.props.value != null) {
         newValue = _.clone(this.props.value);
@@ -35,9 +29,9 @@ export default TextListAnswerComponent = (function() {
       }
       newValue[index] = ev.target.value;
       return this.props.onValueChange(newValue);
-    }
+    };
 
-    handleNewLineChange(ev) {
+    handleNewLineChange = ev => {
       let newValue;
       if (this.props.value != null) {
         newValue = _.clone(this.props.value);
@@ -46,9 +40,9 @@ export default TextListAnswerComponent = (function() {
       }
       newValue.push((ev.target.value));
       return this.props.onValueChange(newValue);
-    }
+    };
 
-    handleKeydown(index, ev) {
+    handleKeydown = (index, ev) => {
       let value;
       if (this.props.value != null) {
         value = _.clone(this.props.value);
@@ -77,9 +71,9 @@ export default TextListAnswerComponent = (function() {
         // It's important to prevent the default behavior when handling tabs (or else the tab is applied after the focus change)
         return ev.preventDefault();
       }
-    }
+    };
 
-    handleRemoveClick(index, ev) {
+    handleRemoveClick = (index, ev) => {
       let newValue;
       if (this.props.value != null) {
         newValue = _.clone(this.props.value);
@@ -88,7 +82,7 @@ export default TextListAnswerComponent = (function() {
       }
       newValue.splice(index, 1);
       return this.props.onValueChange(newValue);
-    }
+    };
 
     render() {
       const value = this.props.value || [];

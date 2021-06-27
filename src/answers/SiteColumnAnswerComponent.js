@@ -1,20 +1,16 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let SiteColumnAnswerComponent;
 import PropTypes from 'prop-types';
 import React from 'react';
 const R = React.createElement;
 
 import EntityDisplayComponent from '../EntityDisplayComponent';
-import formUtils from '../formUtils';
+import * as formUtils from '../formUtils';
 
 // Displays a site answer in a cell. No direct code entering, but stores answer as a code.
 export default SiteColumnAnswerComponent = (function() {
   SiteColumnAnswerComponent = class SiteColumnAnswerComponent extends React.Component {
-    constructor(...args) {
-      super(...args);
-      this.handleSelectClick = this.handleSelectClick.bind(this);
-      this.handleClearClick = this.handleClearClick.bind(this);
-    }
-
     static initClass() {
       this.contextTypes = {
         selectEntity: PropTypes.func,
@@ -31,7 +27,7 @@ export default SiteColumnAnswerComponent = (function() {
       };
     }
 
-    handleSelectClick() {
+    handleSelectClick = () => {
       return this.context.selectEntity({ entityType: this.props.siteType, callback: entityId => {
         // Get entity
         return this.context.getEntityById(this.props.siteType, entityId, entity => {
@@ -39,11 +35,11 @@ export default SiteColumnAnswerComponent = (function() {
         });
       }
       });
-    }
+    };
 
-    handleClearClick() {
+    handleClearClick = () => {
       return this.props.onValueChange(null);
-    }
+    };
 
     render() {
       if (this.props.value?.code) {

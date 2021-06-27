@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let ImageDisplayComponent;
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -17,8 +19,6 @@ export default ImageDisplayComponent = (function() {
     }
 
     constructor(props) {
-      this.handleImgError = this.handleImgError.bind(this);
-      this.handleImgClick = this.handleImgClick.bind(this);
       super(props);
       this.state = { error: false, url: null, popup: false };
     }
@@ -34,9 +34,8 @@ export default ImageDisplayComponent = (function() {
       , () => this.setState({error: true}));
     }
 
-    handleImgError() { return this.setState({error: true}); }
-
-    handleImgClick() { return this.setState({popup: true}); }
+    handleImgError = () => { return this.setState({error: true}); };
+    handleImgClick = () => { return this.setState({popup: true}); };
 
     render() {
       let src;

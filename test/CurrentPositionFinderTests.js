@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 import _ from 'underscore';
 import { assert } from 'chai';
 import Backbone from 'backbone';
@@ -11,15 +13,17 @@ const goodAcc = 10;
 const fairAcc = 50;
 const recentThreshold = 90000;
 
-const createPos = (accuracy, timeago = 0) => ({
-  coords: {
-    latitude: 1,
-    longitude: 2,
-    accuracy
-  },
+function createPos(accuracy, timeago = 0) {
+  return {
+    coords: {
+      latitude: 1,
+      longitude: 2,
+      accuracy
+    },
 
-  timestamp: new Date().getTime() - timeago
-});
+    timestamp: new Date().getTime() - timeago
+  };
+}
 
 // Uses an algorithm to accurately find current position (coords + timestamp). Fires status events and found event. 
 describe("CurrentPositionFinder", function() {

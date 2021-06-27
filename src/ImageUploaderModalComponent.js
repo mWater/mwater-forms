@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let ImageUploaderModalComponent;
 import PropTypes from 'prop-types';
 
@@ -6,7 +8,7 @@ import React from 'react';
 
 const R = React.createElement;
 
-import formUtils from './formUtils';
+import * as formUtils from './formUtils';
 import ModalPopupComponent from 'react-library/lib/ModalPopupComponent';
 
 // Based on http://www.matlus.com/html5-file-upload-with-progress/
@@ -43,12 +45,6 @@ export default ImageUploaderModalComponent = (function() {
     }
 
     constructor(props) {
-      this.handleUploadProgress = this.handleUploadProgress.bind(this);
-      this.handleUploadComplete = this.handleUploadComplete.bind(this);
-      this.handleUploadFailed = this.handleUploadFailed.bind(this);
-      this.handleUploadCanceled = this.handleUploadCanceled.bind(this);
-      this.handleCancel = this.handleCancel.bind(this);
-      this.handleFileSelected = this.handleFileSelected.bind(this);
       super(props);
 
       this.state = { 
@@ -58,7 +54,7 @@ export default ImageUploaderModalComponent = (function() {
       };
     }
 
-    handleUploadProgress(evt) {
+    handleUploadProgress = evt => {
       let percentComplete;
       if (evt.lengthComputable) {
         percentComplete = Math.round((evt.loaded * 100) / evt.total);
@@ -66,9 +62,9 @@ export default ImageUploaderModalComponent = (function() {
       } else {
         return this.setState({percentComplete: 100});
       }
-    }
+    };
 
-    handleUploadComplete(evt) {
+    handleUploadComplete = evt => {
       // This event is raised when the server send back a response 
       if (evt.target.status === 200) {
         return this.props.onSuccess(this.state.id);
@@ -76,23 +72,23 @@ export default ImageUploaderModalComponent = (function() {
         alert(this.props.T("Upload failed: {0}", evt.target.responseText));
         return this.props.onCancel();
       }
-    }
+    };
 
-    handleUploadFailed(evt) {
+    handleUploadFailed = evt => {
       alert(this.props.T("Error uploading file. You must be connected to the Internet for image upload to work from a web browser."));
       return this.props.onCancel();
-    }
+    };
 
-    handleUploadCanceled(evt) {
+    handleUploadCanceled = evt => {
       alert(this.props.T("Upload cancelled"));
       return this.props.onCancel();
-    }
+    };
 
-    handleCancel() {
+    handleCancel = () => {
       return this.state.xhr?.abort();
-    }
+    };
 
-    handleFileSelected(ev) {
+    handleFileSelected = ev => {
       // Get file information
       const file = ev.target.files[0];
       if (!file) {
@@ -129,7 +125,7 @@ export default ImageUploaderModalComponent = (function() {
       // Begin upload
       xhr.open("POST", url);
       return xhr.send(fd);
-    }
+    };
 
     renderContents() {
       return R('div', null,

@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 import { assert } from 'chai';
 import CheckAnswerComponent from '../../src/answers/CheckAnswerComponent';
 import TestComponent from 'react-library/lib/TestComponent';
@@ -24,10 +26,10 @@ describe('CheckAnswerComponent', function() {
   });
 
   it("can check", function(callback) {
-    const onValueChange = function(value) {
+    function onValueChange(value) {
       assert.equal(value, true);
       return callback();
-    };
+    }
 
     this.comp = this.render({value: false, onValueChange, label: {en: 'test label', _base: 'en'}});
     const checkbox = ReactTestUtils.findRenderedDOMComponentWithClass(this.comp.getComponent(), 'touch-checkbox');
@@ -36,10 +38,10 @@ describe('CheckAnswerComponent', function() {
   });
 
   return it("can uncheck", function(callback) {
-    const onValueChange = function(value) {
+    function onValueChange(value) {
       assert.equal(value, false);
       return callback();
-    };
+    }
 
     this.comp = this.render({value: true, onValueChange, label: {en: 'test label', _base: 'en'}});
     const checkbox = ReactTestUtils.findRenderedDOMComponentWithClass(this.comp.getComponent(), 'touch-checkbox');

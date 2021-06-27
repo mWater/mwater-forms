@@ -1,8 +1,17 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 import _ from 'lodash';
 import { assert } from "chai";
 import ConditionsExprCompiler from '../src/ConditionsExprCompiler';
 import canonical from 'canonical-json';
-const compare = (actual, expected) => assert.equal(canonical(actual), canonical(expected), "\n" + canonical(actual) + "\n" + canonical(expected) + "\n");
+
+function compare(actual, expected) {
+  return assert.equal(
+    canonical(actual),
+    canonical(expected),
+    "\n" + canonical(actual) + "\n" + canonical(expected) + "\n"
+  );
+}
 
 // NOTE: A thorough check can be done with mwater-server/scripts/form_condition_tests.coffee
 

@@ -1,7 +1,9 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let DefaultValueApplier;
 import _ from 'lodash';
 import moment from 'moment';
-import formUtils from './formUtils';
+import * as formUtils from './formUtils';
 
 // The DefaultValueApplier applies a value stored in the stickyStorage as a default answer to a question.
 // It uses the following logic:

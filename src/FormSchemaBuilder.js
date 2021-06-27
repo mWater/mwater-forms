@@ -1,6 +1,8 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let FormSchemaBuilder;
 import _ from 'lodash';
-import formUtils from './formUtils';
+import * as formUtils from './formUtils';
 import { ExprUtils } from 'mwater-expressions';
 import { ExprCompiler } from 'mwater-expressions';
 import update from 'update-object';
@@ -1960,7 +1962,7 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
 };
 
 // Append a string to each language
-var appendStr = function(str, suffix) {
+function appendStr(str, suffix) {
   const output = {};
   for (let key in str) {
     const value = str[key];
@@ -1976,10 +1978,10 @@ var appendStr = function(str, suffix) {
     }
   }
   return output;
-};
+}
 
 // Map a tree that consists of items with optional 'contents' array. null means to discard item
-var mapTree = function(tree, func) {
+function mapTree(tree, func) {
   if (!tree) {
     return tree;
   }
@@ -1997,12 +1999,12 @@ var mapTree = function(tree, func) {
   }
 
   return output;
-};
+}
 
 // Convert an expression that is the expr of an indicator property into an expression
 // that instead references the indicator calculation columns. This is to allow indicator
 // properties that are calculations (have an expr) from the form
-var formizeIndicatorPropertyExpr = function(expr, form, indicatorCalculation, indicator) {
+function formizeIndicatorPropertyExpr(expr, form, indicatorCalculation, indicator) {
   if (!expr) {
     return expr;
   }
@@ -2029,50 +2031,57 @@ var formizeIndicatorPropertyExpr = function(expr, form, indicatorCalculation, in
       return formizeIndicatorPropertyExpr(value, form, indicatorCalculation, indicator);
     }
   });
-};
+}
 
 // Create a webmercator geometry from a lat/lng
-var createWebmercatorGeometry = (dataColumn, latPath, lngPath, tableAlias) => // e.g. ST_Transform(ST_Intersection(ST_SetSRID(ST_MakePoint(data#>>'{questionid,value,longitude}'::decimal, data#>>'{questionid,value,latitude}'::decimal), 4326), ST_MakeEnvelope(-180, -85, 180, 85, 4326)), 3857)
-({
-  type: "op",
-  op: "ST_Transform",
+function createWebmercatorGeometry(
+  dataColumn,
+  latPath,
+  lngPath,
+  // e.g. ST_Transform(ST_Intersection(ST_SetSRID(ST_MakePoint(data#>>'{questionid,value,longitude}'::decimal, data#>>'{questionid,value,latitude}'::decimal), 4326), ST_MakeEnvelope(-180, -85, 180, 85, 4326)), 3857)
+  tableAlias
+) {
+  return {
+    type: "op",
+    op: "ST_Transform",
 
-  exprs: [
-    {
-      type: "op",
-      op: "ST_Intersection",
-      exprs: [
-        {
-          type: "op",
-          op: "ST_SetSRID",
-          exprs: [
-            {
-              type: "op",
-              op: "ST_MakePoint",
-              exprs: [
-                {
-                  type: "op",
-                  op: "::decimal",
-                  exprs: [
-                    { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias, column: dataColumn }, lngPath] }
-                  ]
-                },
-                {
-                  type: "op",
-                  op: "::decimal",
-                  exprs: [
-                    { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias, column: dataColumn }, latPath] }
-                  ]
-                }
-              ]
-            },
-            4326
-          ]
-        },
-        { type: "op", op: "ST_MakeEnvelope", exprs: [-180, -85, 180, 85, 4326] }
-      ]
-    },
-    3857
-  ]
-});
+    exprs: [
+      {
+        type: "op",
+        op: "ST_Intersection",
+        exprs: [
+          {
+            type: "op",
+            op: "ST_SetSRID",
+            exprs: [
+              {
+                type: "op",
+                op: "ST_MakePoint",
+                exprs: [
+                  {
+                    type: "op",
+                    op: "::decimal",
+                    exprs: [
+                      { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias, column: dataColumn }, lngPath] }
+                    ]
+                  },
+                  {
+                    type: "op",
+                    op: "::decimal",
+                    exprs: [
+                      { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias, column: dataColumn }, latPath] }
+                    ]
+                  }
+                ]
+              },
+              4326
+            ]
+          },
+          { type: "op", op: "ST_MakeEnvelope", exprs: [-180, -85, 180, 85, 4326] }
+        ]
+      },
+      3857
+    ]
+  };
+}
 

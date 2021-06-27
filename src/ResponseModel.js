@@ -1,6 +1,8 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let ResponseModel;
 import _ from 'lodash';
-import formUtils from './formUtils';
+import * as formUtils from './formUtils';
 
 // Model of a response object that allows manipulation and asking of questions
 // Options are:

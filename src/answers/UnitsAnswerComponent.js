@@ -1,9 +1,11 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let UnitsAnswerComponent;
 import PropTypes from 'prop-types';
 import React from 'react';
 const R = React.createElement;
 
-import formUtils from '../formUtils';
+import * as formUtils from '../formUtils';
 import ui from 'react-library/lib/bootstrap';
 
 // Not tested
@@ -25,10 +27,6 @@ export default UnitsAnswerComponent = (function() {
     }
 
     constructor(props) {
-      this.handleKeyDown = this.handleKeyDown.bind(this);
-      this.handleInternalNext = this.handleInternalNext.bind(this);
-      this.handleValueChange = this.handleValueChange.bind(this);
-      this.handleUnitChange = this.handleUnitChange.bind(this);
       super(props);
       this.state = {quantity: this.getSelectedQuantity(props.answer), selectedUnits: this.getSelectedUnit(props.answer)};
     }
@@ -45,7 +43,7 @@ export default UnitsAnswerComponent = (function() {
       }
     }
 
-    handleKeyDown(ev) {
+    handleKeyDown = ev => {
       if (this.props.onNextOrComments != null) {
         // When pressing ENTER or TAB
         if ((ev.keyCode === 13) || (ev.keyCode === 9)) {
@@ -54,9 +52,9 @@ export default UnitsAnswerComponent = (function() {
           return ev.preventDefault();
         }
       }
-    }
+    };
 
-    handleInternalNext(ev) {
+    handleInternalNext = ev => {
       // When pressing ENTER or TAB
       if ((ev.keyCode === 13) || (ev.keyCode === 9)) {
         if (this.props.prefix) {
@@ -67,15 +65,15 @@ export default UnitsAnswerComponent = (function() {
         // It's important to prevent the default behavior when handling tabs (or else the tab is applied after the focus change)
         return ev.preventDefault();
       }
-    }
+    };
 
-    handleValueChange(val) {
+    handleValueChange = val => {
       return this.changed(val, this.state.selectedUnits);
-    }
+    };
 
-    handleUnitChange(val) {
+    handleUnitChange = val => {
       return this.changed(this.state.quantity, val.target.value);
-    }
+    };
 
     changed(quantity, unit) {
       unit = unit ? unit : this.props.defaultUnits;

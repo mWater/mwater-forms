@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 /*
 DEPRECATED!! Use the typescript definition files!
 */
@@ -6,10 +8,12 @@ import _ from 'lodash';
 
 // Because of extend limitations in JSON schema, this allows us to include
 // all basic properties but still use additionalProperties: false
-const extendQuestionProperties = properties => _.defaults(properties, {
-  _id: {}, code: {}, text: {}, textExprs: {}, required: {}, disabled: {}, conditions: {}, conditionExpr: {}, hint: {}, help: {}, sticky: {},
-  alternates: {}, commentsField: {}, recordTimestamp: {}, recordLocation: {}, sensor: {}, _basedOn: {}, exportId: {}, contents: {}, items: {}
-});
+function extendQuestionProperties(properties) {
+  return _.defaults(properties, {
+    _id: {}, code: {}, text: {}, textExprs: {}, required: {}, disabled: {}, conditions: {}, conditionExpr: {}, hint: {}, help: {}, sticky: {},
+    alternates: {}, commentsField: {}, recordTimestamp: {}, recordLocation: {}, sensor: {}, _basedOn: {}, exportId: {}, contents: {}, items: {}
+  });
+}
 
 // This is the design of a form which is stored in the "design" field of forms in mWater
 export default {

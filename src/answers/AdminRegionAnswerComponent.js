@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let AdminRegionAnswerComponent;
 import PropTypes from 'prop-types';
 import _ from 'lodash';
@@ -27,10 +29,6 @@ export default AdminRegionAnswerComponent = (function() {
     }
 
     constructor(props) {
-      this.handleUseGPS = this.handleUseGPS.bind(this);
-      this.handleCancelUseGPS = this.handleCancelUseGPS.bind(this);
-      this.handleUseMap = this.handleUseMap.bind(this);
-      this.handleChange = this.handleChange.bind(this);
       super(props);
       this.state = {
         waiting: false, // True when waiting for gps
@@ -43,7 +41,7 @@ export default AdminRegionAnswerComponent = (function() {
       return null;
     }
 
-    handleUseGPS() {
+    handleUseGPS = () => {
       return this.setState({ error: null, waiting: true }, () => {
         return this.context.locationFinder.getLocation(location => {
           // If no longer waiting, ignore
@@ -71,13 +69,13 @@ export default AdminRegionAnswerComponent = (function() {
           return this.setState({error: this.context.T("Unable to get location"), waiting: false});
       });
       });
-    }
+    };
 
-    handleCancelUseGPS() {
+    handleCancelUseGPS = () => {
       return this.setState({waiting: false});
-    }
+    };
 
-    handleUseMap() {
+    handleUseMap = () => {
       this.setState({error: null, waiting: false});
 
       return this.context.displayMap(null, location => {
@@ -96,12 +94,12 @@ export default AdminRegionAnswerComponent = (function() {
           return this.props.onChange(id);
           });
       });
-    }
+    };
 
-    handleChange(id) {
+    handleChange = id => {
       this.setState({error: null, waiting: false});
       return this.props.onChange(id);
-    }
+    };
 
     renderEntityButtons() {
       return R('div', null,

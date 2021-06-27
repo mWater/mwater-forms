@@ -1,10 +1,12 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let AquagenxCBTAnswerComponent;
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 const R = React.createElement;
 
-import formUtils from '../formUtils';
+import * as formUtils from '../formUtils';
 import ImageThumbnailComponent from '../ImageThumbnailComponent';
 import ImagePopupComponent from '../ImagePopupComponent';
 import AquagenxCBTPopupComponent from './AquagenxCBTPopupComponent';
@@ -33,10 +35,6 @@ export default AquagenxCBTAnswerComponent = (function() {
     }
 
     constructor(props) {
-      this.handleClickImage = this.handleClickImage.bind(this);
-      this.handleAdd = this.handleAdd.bind(this);
-      this.handleEditClick = this.handleEditClick.bind(this);
-      this.handleClearClick = this.handleClearClick.bind(this);
       super(props);
 
       this.state = { imageModal: null, aquagenxModal: null };
@@ -46,7 +44,7 @@ export default AquagenxCBTAnswerComponent = (function() {
       return null;
     }
 
-    handleClickImage() {
+    handleClickImage = () => {
       const modal = React.createElement(ImagePopupComponent, {
         imageManager: this.context.imageManager,
         image: this.props.value.image,
@@ -69,9 +67,9 @@ export default AquagenxCBTAnswerComponent = (function() {
       );
 
       return this.setState({imageModal: modal});
-    }
+    };
 
-    handleAdd() {
+    handleAdd = () => {
       // Call imageAcquirer
       return this.context.imageAcquirer.acquire(id => {
         // Add to model
@@ -80,9 +78,9 @@ export default AquagenxCBTAnswerComponent = (function() {
         return this.props.onValueChange(value);
       }
       , err => { throw err; });
-    }
+    };
 
-    handleEditClick() {
+    handleEditClick = () => {
       const modal = React.createElement(AquagenxCBTPopupComponent, {
         value: this.props.value,
         questionId: this.props.questionId,
@@ -97,13 +95,13 @@ export default AquagenxCBTAnswerComponent = (function() {
       );
 
       return this.setState({aquagenxModal: modal});
-    }
+    };
 
-    handleClearClick() {
+    handleClearClick = () => {
       const value = _.clone(this.props.value);
       value.cbt = null;
       return this.props.onValueChange(value);
-    }
+    };
 
     renderImage() {
       return R('div', null,

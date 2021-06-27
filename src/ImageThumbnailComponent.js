@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let ImageThumbnailComponent;
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -7,11 +9,6 @@ import AsyncLoadComponent from 'react-library/lib/AsyncLoadComponent';
 // Displays a thumbnail of an image
 export default ImageThumbnailComponent = (function() {
   ImageThumbnailComponent = class ImageThumbnailComponent extends AsyncLoadComponent {
-    constructor(...args) {
-      super(...args);
-      this.handleError = this.handleError.bind(this);
-    }
-
     static initClass() { 
       this.propTypes = { 
         imageManager: PropTypes.object.isRequired,
@@ -33,9 +30,9 @@ export default ImageThumbnailComponent = (function() {
       , () => callback({error: true}));
     }
 
-    handleError() {
+    handleError = () => {
       return this.setState({error: true});
-    }
+    };
 
     render() {
       let url;

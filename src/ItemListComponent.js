@@ -1,11 +1,13 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let ItemListComponent;
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import React from 'react';
 const R = React.createElement;
 
-import formUtils from './formUtils';
-import formRenderUtils from './formRenderUtils';
+import * as formUtils from './formUtils';
+import * as formRenderUtils from './formRenderUtils';
 
 // Display a list of items
 export default ItemListComponent = (function() {
@@ -24,13 +26,12 @@ export default ItemListComponent = (function() {
     }
 
     constructor(props) {
-      this.renderItem = this.renderItem.bind(this);
       super(props);
 
       // Refs of all items
       this.itemRefs = {};
     }
-    
+
     async validate(scrollToFirstInvalid) {
       let foundInvalid = false;
       for (let item of this.props.contents) {
@@ -56,11 +57,11 @@ export default ItemListComponent = (function() {
       }
     }
 
-    renderItem(item, index) {
+    renderItem = (item, index) => {
       if (this.props.isVisible(item._id) && !item.disabled) {
         return formRenderUtils.renderItem(item, this.props.data, this.props.responseRow, this.props.schema, this.props.onDataChange, this.props.isVisible, this.handleNext.bind(this, index), c => { return this.itemRefs[item._id] = c; });
       }
-    }
+    };
 
     render() {
       return R('div', null,

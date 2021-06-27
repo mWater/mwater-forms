@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let AquagenxCBTPopupComponent;
 import _ from 'lodash';
 import PropTypes from 'prop-types';
@@ -65,7 +67,6 @@ export default AquagenxCBTPopupComponent = (function() {
     }
 
     constructor(props) {
-      this.handleSaveClick = this.handleSaveClick.bind(this);
       super(props);
 
       const value = _.clone(props.value) || {};
@@ -115,9 +116,9 @@ export default AquagenxCBTPopupComponent = (function() {
       return this.setState({value});
     }
 
-    handleSaveClick() {
+    handleSaveClick = () => {
       return this.props.onSave(this.state.value);
-    }
+    };
 
     renderStyle() {
       const mainId = `#cbtPopup${this.props.questionId}`;

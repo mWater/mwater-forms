@@ -1,8 +1,10 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let VisibilityCalculator;
 import _ from 'lodash';
-import formUtils from './formUtils';
+import * as formUtils from './formUtils';
 import async from 'async';
-import conditionUtils from './conditionUtils';
+import * as conditionUtils from './conditionUtils';
 import { PromiseExprEvaluator } from 'mwater-expressions';
 
 /*

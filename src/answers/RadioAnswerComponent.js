@@ -1,20 +1,16 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 let RadioAnswerComponent;
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 const R = React.createElement;
 
-import formUtils from '../formUtils';
-import conditionUtils from '../conditionUtils';
+import * as formUtils from '../formUtils';
+import * as conditionUtils from '../conditionUtils';
 
 export default RadioAnswerComponent = (function() {
   RadioAnswerComponent = class RadioAnswerComponent extends React.Component {
-    constructor(...args) {
-      super(...args);
-      this.handleValueChange = this.handleValueChange.bind(this);
-      this.handleSpecifyChange = this.handleSpecifyChange.bind(this);
-    }
-
     static initClass() {
       this.contextTypes =
         {locale: PropTypes.string};  // Current locale (e.g. "en")
@@ -46,20 +42,20 @@ export default RadioAnswerComponent = (function() {
       return null;
     }
 
-    handleValueChange(choice) {
+    handleValueChange = choice => {
       if (choice.id === this.props.answer.value) {
         return this.props.onAnswerChange({value: null, specify: null });
       } else {
         return this.props.onAnswerChange({value: choice.id, specify: null });
       }
-    }
+    };
 
-    handleSpecifyChange(id, ev) {
+    handleSpecifyChange = (id, ev) => {
       const change = {};
       change[id] = ev.target.value;
       const specify = _.extend({}, this.props.answer.specify, change);
       return this.props.onAnswerChange({value: this.props.answer.value, specify });
-    }
+    };
 
     // Render specify input box
     renderSpecify(choice) {

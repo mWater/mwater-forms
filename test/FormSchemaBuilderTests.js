@@ -1,12 +1,20 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 import _ from 'lodash';
 import { assert } from 'chai';
 import { Schema } from 'mwater-expressions';
 import FormSchemaBuilder from '../src/FormSchemaBuilder';
 import canonical from 'canonical-json';
-import formUtils from '../src/formUtils';
+import * as formUtils from '../src/formUtils';
 import confidentialDataForm from './confidentialDataForm';
 
-const compare = (actual, expected) => assert.equal(canonical(actual), canonical(expected), "\nGOT:" + canonical(actual) + "\nEXP:" + canonical(expected) + "\n");
+function compare(actual, expected) {
+  return assert.equal(
+    canonical(actual),
+    canonical(expected),
+    "\nGOT:" + canonical(actual) + "\nEXP:" + canonical(expected) + "\n"
+  );
+}
 
 describe("FormSchemaBuilder addForm", function() {
   it("adds form as table", function() {

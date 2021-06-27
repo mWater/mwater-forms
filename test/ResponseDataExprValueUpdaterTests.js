@@ -1,10 +1,18 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 import _ from 'lodash';
 import { assert } from 'chai';
 import { default as ResponseDataExprValueUpdater } from '../src/ResponseDataExprValueUpdater';
 import { Schema } from 'mwater-expressions';
 import canonical from 'canonical-json';
 
-const compare = (actual, expected) => assert.equal(canonical(actual), canonical(expected), "\ngot:" + canonical(actual) + "\nexp:" + canonical(expected) + "\n");
+function compare(actual, expected) {
+  return assert.equal(
+    canonical(actual),
+    canonical(expected),
+    "\ngot:" + canonical(actual) + "\nexp:" + canonical(expected) + "\n"
+  );
+}
 
 describe("ResponseDataExprValueUpdater", function() {
   describe("updates simple question values", function() {

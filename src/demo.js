@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 import PropTypes from 'prop-types';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -135,18 +137,17 @@ const response = {"_id":"b35def73cc67423283fde8aaddd8d7a1","_rev":3,"code":"bron
 const exprFormDesign = {"_id":"7072b6924b6e491b903770cac4a82ae9","_rev":14,"deployments":[{"_id":"746a449d2bbd40f8b96055db4201610f","name":"depl1","active":true,"admins":[],"public":false,"viewers":[],"enumerators":["user:14de12d6532c4aca8c959856055966f8"],"approvalStages":[]}],"state":"active","design":{"name":{"en":"Roster Matrix Survey","_base":"en"},"_type":"Form","_schema":21,"locales":[{"code":"en","name":"English"},{"code":"ne","name":"नेपाली"}],"contents":[{"_id":"c3064394529a40c9832e87b950147615","name":{"en":"Untitled Section","ne":"title navako section","_base":"en"},"_type":"Section","contents":[{"_id":"aa331b86fb5d40ffbf6600e8357e2b0a","name":{"en":"test","ne":"kjhkjhkj","_base":"en"},"_type":"RosterMatrix","allowAdd":true,"contents":[{"_id":"9b567415c7d84fc3a2803a9c8b45a087","text":{"en":"Name","ne":"Naam k ho?","_base":"en"},"_type":"TextColumnQuestion","required":false,"validations":[]},{"_id":"0e38e0e24e9948d9a8fc133d4e3da4ff","text":{"en":"Age","_base":"en"},"_type":"NumberColumnQuestion","decimal":true,"required":false,"validations":[]},{"_id":"20bef3d0d36d4cf8876f7fb6b2bab339","text":{"en":"result","_base":"en"},"_type":"Calculation","required":false,"validations":[], "format": "$.2f","expr":{"type":"field","table":"responses:7072b6924b6e491b903770cac4a82ae9:roster:aa331b86fb5d40ffbf6600e8357e2b0a","column":"data:0e38e0e24e9948d9a8fc133d4e3da4ff:value"}}],"conditions":[],"allowRemove":true},{"_id":"35926207ee444e1e8051967b5b46f3bd","name":{"en":"sghfh","_base":"en"},"_type":"RosterGroup","allowAdd":true,"contents":[{"_id":"c905bfc528dd4dd1b9e5cdb199ff62b2","text":{"en":"asdasdasd","_base":"en"},"_type":"TextQuestion","format":"singleline","required":false,"textExprs":[],"conditions":[],"validations":[]},{"_id":"8cd524b0f8d749f79dd0667f54a65ef3","text":{"en":"Ages sdf","_base":"en"},"_type":"NumberQuestion","textExprs":[],"conditions":[],"validations":[]}],"conditions":[],"allowRemove":true}],"conditions":[]}],"localizedStrings":[{"en":"Add","_base":"en"},{"en":"Admin Override","_base":"en"},{"en":"Answered","_base":"en"},{"en":"Approved","_base":"en"},{"en":"Back","_base":"en"},{"en":"Barcode scanning not supported on this platform","_base":"en"},{"en":"Cancel","_base":"en"},{"en":"Cancel GPS","_base":"en"},{"en":"Change Selection","_base":"en"},{"en":"Clear","_base":"en"},{"en":"Clear Selection","_base":"en"},{"en":"Click +Add to add an item","_base":"en"},{"en":"Click on the compartments to change color","_base":"en"},{"en":"Close","_base":"en"},{"en":"Comments","_base":"en"},{"en":"Confidential answers may not be edited.","_base":"en"},{"en":"Data is stored in {0}","_base":"en"},{"en":"Discard","_base":"en"},{"en":"Don't Know","_base":"en"},{"en":"Draft","_base":"en"},{"en":"Drafted","_base":"en"},{"en":"E","_base":"en"},{"en":"Edit","_base":"en"},{"en":"Edit Selection","_base":"en"},{"en":"Edited","_base":"en"},{"en":"Either site has been deleted or you do not have permission to view it","_base":"en"},{"en":"Error","_base":"en"},{"en":"Error saving data","_base":"en"},{"en":"Error uploading file. You must be connected to the Internet for image upload to work from a web browser.","_base":"en"},{"en":"False","_base":"en"},{"en":"Final","_base":"en"},{"en":"Good GPS Signal ±{0}m","_base":"en"},{"en":"Health Risk Category Based on MPN and Confidence Interval","_base":"en"},{"en":"Hide History","_base":"en"},{"en":"High Risk/Possibly Unsafe","_base":"en"},{"en":"High Risk/Probably Unsafe","_base":"en"},{"en":"IP Address","_base":"en"},{"en":"Image must be a jpeg file","_base":"en"},{"en":"Intermediate Risk/Possibly Safe","_base":"en"},{"en":"Intermediate Risk/Probably Safe","_base":"en"},{"en":"Loading History...","_base":"en"},{"en":"Loading...","_base":"en"},{"en":"Low GPS Signal ±{0}m","_base":"en"},{"en":"Low Risk/Safe","_base":"en"},{"en":"MPN/100ml","_base":"en"},{"en":"N","_base":"en"},{"en":"NE","_base":"en"},{"en":"NW","_base":"en"},{"en":"Next","_base":"en"},{"en":"No images present","_base":"en"},{"en":"None","_base":"en"},{"en":"Not Applicable","_base":"en"},{"en":"Not found","_base":"en"},{"en":"Not supported on this platform","_base":"en"},{"en":"Pending","_base":"en"},{"en":"Record","_base":"en"},{"en":"Redacted","_base":"en"},{"en":"Rejected","_base":"en"},{"en":"Remove","_base":"en"},{"en":"Reset","_base":"en"},{"en":"Response Id","_base":"en"},{"en":"Rotate","_base":"en"},{"en":"S","_base":"en"},{"en":"SE","_base":"en"},{"en":"SW","_base":"en"},{"en":"Save","_base":"en"},{"en":"Save for Later","_base":"en"},{"en":"Scan","_base":"en"},{"en":"Select","_base":"en"},{"en":"Select...","_base":"en"},{"en":"Set Using GPS","_base":"en"},{"en":"Set Using Map","_base":"en"},{"en":"Set as Cover Image","_base":"en"},{"en":"Show Changes","_base":"en"},{"en":"Show Complete History of Changes","_base":"en"},{"en":"Show History","_base":"en"},{"en":"Start","_base":"en"},{"en":"Status","_base":"en"},{"en":"Stop","_base":"en"},{"en":"Submit","_base":"en"},{"en":"Submitted","_base":"en"},{"en":"True","_base":"en"},{"en":"Unable to connect to server","_base":"en"},{"en":"Unable to get location","_base":"en"},{"en":"Unable to lookup location","_base":"en"},{"en":"Unable to select that site as it does not have an mWater ID. Please synchronize first with the server.","_base":"en"},{"en":"Unsafe","_base":"en"},{"en":"Upload Image","_base":"en"},{"en":"Upload cancelled","_base":"en"},{"en":"Upload failed: {0}","_base":"en"},{"en":"Uploading Image...","_base":"en"},{"en":"Upper 95% Confidence Interval/100ml","_base":"en"},{"en":"User","_base":"en"},{"en":"Very Low GPS Signal ±{0}m","_base":"en"},{"en":"W","_base":"en"},{"en":"Waiting for GPS...","_base":"en"},{"en":"by","_base":"en"},{"en":"km","_base":"en"},{"en":"m","_base":"en"},{"en":"mWater ID of Site","_base":"en"},{"en":"on","_base":"en"}]},"roles":[{"id":"user:14de12d6532c4aca8c959856055966f8","role":"view"},{"id":"user:broncha","role":"admin"},{"id":"user:mike","role":"admin"}],"created":{"on":"2019-09-18T11:15:32.215Z","by":"broncha"},"modified":{"on":"2019-09-29T09:51:17.619Z","by":"broncha"},"_viewable":true,"_editable":true,"_deployable":true,"_deployed_to_me":false};
 const exprResponse = {"_id":"4fb961b47ae94472bb95123c1ad96123","_rev":3,"code":"bronchatest-7W24AB","form":"7072b6924b6e491b903770cac4a82ae9","formRev":14,"deployment":"746a449d2bbd40f8b96055db4201610f","approvals":[],"user":"14de12d6532c4aca8c959856055966f8","status":"final","data":{"35926207ee444e1e8051967b5b46f3bd":[{"_id":"86d025292d56498c8306bb38854e1830","data":{"8cd524b0f8d749f79dd0667f54a65ef3":{"value":358,"alternate":null},"c905bfc528dd4dd1b9e5cdb199ff62b2":{"value":"Jff","alternate":null}}}],"aa331b86fb5d40ffbf6600e8357e2b0a":[{"_id":"edf250e8a49e4bfc82abe8ca727f2b91","data":{"0e38e0e24e9948d9a8fc133d4e3da4ff":{"value":30},"9b567415c7d84fc3a2803a9c8b45a087":{"value":"Gfh"}}},{"_id":"4319369f35e44d989aefd62ef2437095","data":{"0e38e0e24e9948d9a8fc133d4e3da4ff":{"value":60},"9b567415c7d84fc3a2803a9c8b45a087":{"value":"Kgc"}}}]},"startedOn":"2019-09-29T09:51:41.596Z","submittedOn":"2019-09-29T09:52:08.425Z","entities":[],"events":[{"by":"14de12d6532c4aca8c959856055966f8","on":"2019-09-29T09:51:41.598Z","type":"draft"},{"by":"14de12d6532c4aca8c959856055966f8","on":"2019-09-29T09:52:08.426Z","type":"submit"}],"roles":[{"id":"user:broncha","role":"admin"},{"id":"user:mike","role":"admin"},{"id":"user:14de12d6532c4aca8c959856055966f8","role":"view"}],"created":{"on":"2019-09-29T09:51:46.790Z","by":"14de12d6532c4aca8c959856055966f8"},"modified":{"on":"2019-09-29T09:52:18.691Z","by":"14de12d6532c4aca8c959856055966f8"},"username":"bronchatest","ipAddress":"27.34.111.61"};
 
-class DemoLocationEditorComponent extends React.Component { 
+class DemoLocationEditorComponent extends React.Component {
   constructor(props) {
-    this.handleLocationChange = this.handleLocationChange.bind(this);
     super(props);
 
     this.state = {location: null};
   }
 
-  handleLocationChange(location) {
+  handleLocationChange = location => {
     console.log(location);
     return this.setState({location});
-  }
+  };
 
   render() {
     return R(LocationEditorComponent, { 
@@ -274,7 +275,6 @@ const cascadingRefCustomTableset = {
 
 class DemoComponent extends React.Component {
   constructor(props) {
-    this.handleDataChange = this.handleDataChange.bind(this);
     super(props);
 
     // data = { site01: { value: { code: "10007"}, confidential: true}}
@@ -284,10 +284,10 @@ class DemoComponent extends React.Component {
     this.state = {data};
   }
 
-  handleDataChange(data) {
+  handleDataChange = data => {
     console.log(data);
     return this.setState({data});
-  }
+  };
 
   render() {
     // R ItemListComponent, 
