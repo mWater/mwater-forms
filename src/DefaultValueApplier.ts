@@ -13,14 +13,14 @@ import * as formUtils from "./formUtils"
 export default DefaultValueApplier = class DefaultValueApplier {
   // entity is an object
   // entityType is a string
-  constructor(formDesign, stickyStorage, entity, entityType) {
+  constructor(formDesign: any, stickyStorage: any, entity: any, entityType: any) {
     this.formDesign = formDesign
     this.stickyStorage = stickyStorage
     this.entity = entity
     this.entityType = entityType
   }
 
-  setStickyData(data, previousVisibilityStructure, newVisibilityStructure) {
+  setStickyData(data: any, previousVisibilityStructure: any, newVisibilityStructure: any) {
     // NOTE: Always remember that data is immutable
     const newData = _.cloneDeep(data)
     const questions = []
@@ -106,7 +106,7 @@ export default DefaultValueApplier = class DefaultValueApplier {
   // - entityType/entity
   // - sticky with a stored sticky value
   // - defaultValue
-  getHighestPriorityDefaultValue(question) {
+  getHighestPriorityDefaultValue(question: any) {
     if (
       this.entityType != null &&
       this.entity != null &&

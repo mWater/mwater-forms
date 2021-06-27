@@ -7,7 +7,7 @@ import * as conditionUtils from "./conditionUtils"
 
 // Compiles conditions into mWater expressions
 export default ConditionsExprCompiler = class ConditionsExprCompiler {
-  constructor(formDesign) {
+  constructor(formDesign: any) {
     this.formDesign = formDesign
 
     // Index all items
@@ -19,7 +19,7 @@ export default ConditionsExprCompiler = class ConditionsExprCompiler {
     }
   }
 
-  compileConditions(conditions, tableId) {
+  compileConditions(conditions: any, tableId: any) {
     let type
     if (!conditions || conditions.length === 0) {
       return null

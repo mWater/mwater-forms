@@ -43,7 +43,7 @@ export default RadioAnswerComponent = (function () {
       return null
     }
 
-    handleValueChange = (choice) => {
+    handleValueChange = (choice: any) => {
       if (choice.id === this.props.answer.value) {
         return this.props.onAnswerChange({ value: null, specify: null })
       } else {
@@ -51,7 +51,7 @@ export default RadioAnswerComponent = (function () {
       }
     }
 
-    handleSpecifyChange = (id, ev) => {
+    handleSpecifyChange = (id: any, ev: any) => {
       const change = {}
       change[id] = ev.target.value
       const specify = _.extend({}, this.props.answer.specify, change)
@@ -59,7 +59,7 @@ export default RadioAnswerComponent = (function () {
     }
 
     // Render specify input box
-    renderSpecify(choice) {
+    renderSpecify(choice: any) {
       let value
       if (this.props.answer.specify != null) {
         value = this.props.answer.specify[choice.id]
@@ -74,7 +74,7 @@ export default RadioAnswerComponent = (function () {
       })
     }
 
-    areConditionsValid(choice) {
+    areConditionsValid(choice: any) {
       if (choice.conditions == null) {
         return true
       }
@@ -100,7 +100,7 @@ export default RadioAnswerComponent = (function () {
       }
     }
 
-    renderVerticalChoice(choice) {
+    renderVerticalChoice(choice: any) {
       if (this.areConditionsValid(choice)) {
         return R(
           "div",

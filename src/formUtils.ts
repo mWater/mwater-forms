@@ -6,7 +6,7 @@ import uuid from "uuid"
 
 // Create ~ 128-bit uid without dashes
 export function createUid() {
-  return uuid().replace(/-/g, "")
+  return uuid().replace(/-/g, "");
 }
 
 // Create short unique id, with ~42 bits randomness to keep unique amoung a few choices
@@ -30,7 +30,7 @@ export function createMediumUid() {
 }
 
 // Create a base32 time code to write on forms
-export function createBase32TimeCode(date) {
+export function createBase32TimeCode(date: any) {
   // Characters to use (skip 1, I, 0, O)
   const chars = "23456789ABCDEFGHJLKMNPQRSTUVWXYZ"
 
@@ -52,15 +52,15 @@ export function createBase32TimeCode(date) {
   return code
 }
 
-export function isQuestion(item) {
-  return item._type != null && item._type.match(/Question$/)
+export function isQuestion(item: any) {
+  return item._type != null && item._type.match(/Question$/);
 }
 
-export function isExpression(item) {
+export function isExpression(item: any) {
   return item._type != null && ["TextColumn", "Calculation"].includes(item._type)
 }
 
-export function localizeString(str, locale) {
+export function localizeString(str: any, locale: any) {
   // If null, return empty string
   if (str == null) {
     return ""
@@ -87,11 +87,11 @@ export function localizeString(str, locale) {
 // Gets all questions in form before reference item specified
 // refItem can be null for all questions
 // rosterId is the rosterId to use. null for only top-level
-export function priorQuestions(formDesign, refItem = null, rosterId = null) {
-  const questions = []
+export function priorQuestions(formDesign: any, refItem = null, rosterId = null) {
+  const questions: any = []
 
   // Append all child items
-  function appendChildren(parentItem, currentRosterId) {
+  function appendChildren(parentItem: any, currentRosterId: any) {
     for (let child of parentItem.contents) {
       // If ids match, abort
       if (refItem != null && child._id === refItem._id) {
@@ -122,15 +122,15 @@ export function priorQuestions(formDesign, refItem = null, rosterId = null) {
   return questions
 }
 
-export function getRosterIds(formDesign) {
-  const rosterIds = []
+export function getRosterIds(formDesign: any) {
+  const rosterIds: any = []
 
-  function recurse(item) {
+  function recurse(item: any) {
     if (["RosterGroup", "RosterMatrix"].includes(item._type)) {
       rosterIds.push(item.rosterId || item._id)
     }
     if (item.contents) {
-      return item.contents.map((subitem) => recurse(subitem))
+      return item.contents.map((subitem: any) => recurse(subitem));
     }
   }
 
@@ -140,7 +140,7 @@ export function getRosterIds(formDesign) {
 }
 
 // Finds an item by id in a form
-export function findItem(formDesign, itemId) {
+export function findItem(formDesign: any, itemId: any) {
   for (let item of formDesign.contents) {
     // If ids match
     if (item._id === itemId) {
@@ -157,7 +157,7 @@ export function findItem(formDesign, itemId) {
 }
 
 // All items under an item including self
-export function allItems(rootItem) {
+export function allItems(rootItem: any) {
   let items = []
   items.push(rootItem)
   if (rootItem.contents) {
@@ -170,7 +170,7 @@ export function allItems(rootItem) {
 }
 
 // Fills question with default values and removes extraneous fields
-export function prepareQuestion(q) {
+export function prepareQuestion(q: any) {
   _.defaults(q, {
     _id: exports.createUid(),
     text: {},
@@ -351,7 +351,7 @@ export function prepareQuestion(q) {
   return q
 }
 
-export function changeQuestionType(question, newType) {
+export function changeQuestionType(question: any, newType: any) {
   // Clear validations (they are type specific)
   question.validations = []
 
@@ -368,7 +368,7 @@ export function changeQuestionType(question, newType) {
 }
 
 // Gets type of the answer: text, number, choice, choices, date, units, boolean, location, image, images, texts, site, entity, admin_region, items_choices, matrix, aquagenx_cbt, cascading_list, cascading_ref
-export function getAnswerType(q) {
+export function getAnswerType(q: any) {
   switch (q._type) {
     case "TextQuestion":
     case "TextColumnQuestion":
@@ -428,13 +428,13 @@ export function getAnswerType(q) {
 }
 
 // Check if a form is all sections
-export function isSectioned(form) {
+export function isSectioned(form: any) {
   return form.contents.length > 0 && _.every(form.contents, (item) => item._type === "Section")
 }
 
 // Duplicates an item (form design, section or question)
 // idMap is a map of old _ids to new _ids. If any not present, new uid will be used
-export function duplicateItem(item, idMap) {
+export function duplicateItem(item: any, idMap: any) {
   // If form or section and ids not mapped, map ids
   let question
   if (!idMap) {
@@ -512,7 +512,19 @@ export function duplicateItem(item, idMap) {
 }
 
 // Finds all localized strings in an object
-export function extractLocalizedStrings(obj) {
+export function extractLocalizedStrings(
+  this: any,
+  this: any,
+  this: any,
+  this: any,
+  this: any,
+  this: any,
+  this: any,
+  this: any,
+  this: any,
+  this: any,
+  obj: any
+) {
   if (obj == null) {
     return []
   }
@@ -522,7 +534,7 @@ export function extractLocalizedStrings(obj) {
     return [obj]
   }
 
-  let strs = []
+  let strs: any = []
 
   // If array, concat each
   if (_.isArray(obj)) {
@@ -539,7 +551,7 @@ export function extractLocalizedStrings(obj) {
   return strs
 }
 
-export function updateLocalizations(formDesign) {
+export function updateLocalizations(formDesign: any) {
   let str
   formDesign.localizedStrings = formDesign.localizedStrings || []
 
@@ -567,13 +579,13 @@ export function updateLocalizations(formDesign) {
 }
 
 // Determines if has at least one localization in locale
-export function hasLocalizations(obj, locale) {
+export function hasLocalizations(obj: any, locale: any) {
   const strs = exports.extractLocalizedStrings(obj)
   return _.any(strs, (str) => str[locale])
 }
 
 // Finds an entity question of the specified type, or a legacy site question
-export function findEntityQuestion(formDesign, entityType) {
+export function findEntityQuestion(formDesign: any, entityType: any) {
   let question = _.find(exports.priorQuestions(formDesign), function (q) {
     if (q._type === "EntityQuestion" && q.entityType === entityType) {
       return true
@@ -627,7 +639,7 @@ export function findEntityQuestion(formDesign, entityType) {
 //   property: property code (e.g "_id" or "code") of entity that is referenced in value
 //   value: value of entity property that is referenced
 // }
-export function extractEntityReferences(formDesign, responseData) {
+export function extractEntityReferences(formDesign: any, responseData: any) {
   let code, entityType, question, value
   const results = []
 
@@ -691,7 +703,7 @@ export function extractEntityReferences(formDesign, responseData) {
 }
 
 // Gets the entity type (e.g. "water_point") for a site question
-export function getSiteEntityType(question) {
+export function getSiteEntityType(question: any) {
   const entityType =
     question.siteTypes && question.siteTypes[0]
       ? _.first(question.siteTypes).toLowerCase().replace(new RegExp(" ", "g"), "_")
@@ -700,7 +712,7 @@ export function getSiteEntityType(question) {
 }
 
 // Get list of custom table ids referenced by a form (cascading ref questions)
-export function getCustomTablesReferenced(formDesign) {
+export function getCustomTablesReferenced(formDesign: any) {
   const items = exports.allItems(formDesign)
 
   const crqs = _.filter(items, (item) => item._type === "CascadingRefQuestion")

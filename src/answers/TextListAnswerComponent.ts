@@ -20,7 +20,7 @@ export default TextListAnswerComponent = (function () {
       return this.newLine?.focus()
     }
 
-    handleChange = (index, ev) => {
+    handleChange = (index: any, ev: any) => {
       let newValue
       if (this.props.value != null) {
         newValue = _.clone(this.props.value)
@@ -31,7 +31,7 @@ export default TextListAnswerComponent = (function () {
       return this.props.onValueChange(newValue)
     }
 
-    handleNewLineChange = (ev) => {
+    handleNewLineChange = (ev: any) => {
       let newValue
       if (this.props.value != null) {
         newValue = _.clone(this.props.value)
@@ -42,7 +42,7 @@ export default TextListAnswerComponent = (function () {
       return this.props.onValueChange(newValue)
     }
 
-    handleKeydown = (index, ev) => {
+    handleKeydown = (index: any, ev: any) => {
       let value
       if (this.props.value != null) {
         value = _.clone(this.props.value)
@@ -73,7 +73,7 @@ export default TextListAnswerComponent = (function () {
       }
     }
 
-    handleRemoveClick = (index, ev) => {
+    handleRemoveClick = (index: any, ev: any) => {
       let newValue
       if (this.props.value != null) {
         newValue = _.clone(this.props.value)
@@ -93,7 +93,7 @@ export default TextListAnswerComponent = (function () {
         R(
           "tbody",
           null,
-          value.map((textLine, index) =>
+          value.map((textLine: any, index: any) =>
             R(
               "tr",
               { key: index },
@@ -105,7 +105,7 @@ export default TextListAnswerComponent = (function () {
                   "div",
                   { className: "input-group" },
                   R("input", {
-                    ref: (c) => {
+                    ref: (c: any) => {
                       return (this[`input${index}`] = c)
                     },
                     type: "text",
@@ -114,7 +114,7 @@ export default TextListAnswerComponent = (function () {
                     onChange: this.handleChange.bind(null, index),
                     onKeyDown: this.handleKeydown.bind(null, index),
                     autoFocus: index === value.length - 1,
-                    onFocus(ev) {
+                    onFocus(ev: any) {
                       // Necessary or else the cursor is set before the first character after a new line is created
                       return ev.target.setSelectionRange(textLine.length, textLine.length)
                     }
@@ -163,7 +163,7 @@ export default TextListAnswerComponent = (function () {
             )
           )
         )
-      )
+      );
     }
   }
   TextListAnswerComponent.initClass()

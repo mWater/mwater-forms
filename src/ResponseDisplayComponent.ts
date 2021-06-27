@@ -33,7 +33,7 @@ export default ResponseDisplayComponent = (function () {
       })
     }
 
-    constructor(props) {
+    constructor(props: any) {
       super(props)
 
       this.state = {
@@ -56,11 +56,11 @@ export default ResponseDisplayComponent = (function () {
       return this.loadHistory(this.props)
     }
 
-    loadHistory(props) {
+    loadHistory(props: any) {
       const url = props.apiUrl + "archives/responses/" + props.response._id + "?client=" + (props.login?.client || "")
       this.setState({ loadingHistory: true })
       return $.ajax({ dataType: "json", url })
-        .done((history) => {
+        .done((history: any) => {
           // Get only ones since first submission
           const index = _.findIndex(history, (rev) => ["pending", "final"].includes(rev.status))
           history = history.slice(0, index + 1)
@@ -77,13 +77,13 @@ export default ResponseDisplayComponent = (function () {
 
           return this.setState({ loadingHistory: false, history: compactHistory })
         })
-        .fail((xhr) => {
+        .fail((xhr: any) => {
           return this.setState({ loadingHistory: false, history: null })
-        })
+        });
     }
 
     // Load user names related to events
-    loadEventUsernames(events) {
+    loadEventUsernames(events: any) {
       events = this.props.response.events || []
 
       const byArray = _.compact(_.pluck(events, "by"))
@@ -92,17 +92,17 @@ export default ResponseDisplayComponent = (function () {
         const url = this.props.apiUrl + "users_public_data?filter=" + JSON.stringify(filter)
         this.setState({ loadingUsernames: true })
         return $.ajax({ dataType: "json", url })
-          .done((rows) => {
+          .done((rows: any) => {
             // eventsUsernames is an object with a key for each _id value
             return this.setState({ loadingUsernames: false, eventsUsernames: _.indexBy(rows, "_id") })
           })
-          .fail((xhr) => {
+          .fail((xhr: any) => {
             return this.setState({ loadingUsernames: false, eventsUsernames: null })
-          })
+          });
       }
     }
 
-    componentWillReceiveProps(nextProps) {
+    componentWillReceiveProps(nextProps: any) {
       let events
       if (this.props.form.design !== nextProps.form.design || this.props.locale !== nextProps.locale) {
         this.setState({ T: this.createLocalizer(nextProps.form.design, nextProps.locale) })
@@ -127,7 +127,7 @@ export default ResponseDisplayComponent = (function () {
     }
 
     // Creates a localizer for the form design
-    createLocalizer(design, locale) {
+    createLocalizer(design: any, locale: any) {
       // Create localizer
       const localizedStrings = design.localizedStrings || []
       const localizerData = {
@@ -146,7 +146,7 @@ export default ResponseDisplayComponent = (function () {
       return this.setState({ showCompleteHistory: true })
     }
 
-    renderEvent(ev) {
+    renderEvent(ev: any) {
       if (this.state.eventsUsernames == null) {
         return null
       }

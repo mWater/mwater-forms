@@ -5,7 +5,7 @@
 let HtmlText
 
 export default HtmlText = class HtmlText {
-  constructor(html) {
+  constructor(html: any) {
     this.html = html
     this.render()
   }

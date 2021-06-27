@@ -26,7 +26,7 @@ Rosters are referenced by entry index: e.g. { "somerosterid.2.somequestionid": t
 
 */
 export default VisibilityCalculator = class VisibilityCalculator {
-  constructor(formDesign, schema) {
+  constructor(formDesign: any, schema: any) {
     this.formDesign = formDesign
     this.schema = schema
   }
@@ -34,22 +34,22 @@ export default VisibilityCalculator = class VisibilityCalculator {
   // Updates the visibilityStructure dictionary with one entry for each element
   // data is the data of the response
   // responseRow is a ResponseRow which represents the same row
-  createVisibilityStructure(data, responseRow, callback) {
+  createVisibilityStructure(data: any, responseRow: any, callback: any) {
     const visibilityStructure = {}
-    return this.processItem(this.formDesign, false, data, responseRow, visibilityStructure, "", (error) => {
+    return this.processItem(this.formDesign, false, data, responseRow, visibilityStructure, "", (error: any) => {
       if (error) {
         return callback(error)
       } else {
         return callback(null, visibilityStructure)
       }
-    })
+    });
   }
 
   // Process a form, section or a group (they both behave the same way when it comes to determining visibility)
-  processGroup(item, forceToInvisible, data, responseRow, visibilityStructure, prefix, callback) {
+  processGroup(item: any, forceToInvisible: any, data: any, responseRow: any, visibilityStructure: any, prefix: any, callback: any) {
     // Once visibility is calculated, call this
-    let isVisible
-    const applyResult = (isVisible) => {
+    let isVisible: any
+    const applyResult = (isVisible: any) => {
       // Forms don't have an _id at design level
       if (item._id) {
         visibilityStructure[prefix + item._id] = isVisible
@@ -96,7 +96,7 @@ export default VisibilityCalculator = class VisibilityCalculator {
 
   // If the parent is invisible, forceToInvisible is set to true and the item will be invisible no matter what
   // The prefix contains the info set by a RosterGroup or a RosterMatrix
-  processItem(item, forceToInvisible, data, responseRow, visibilityStructure, prefix, callback) {
+  processItem(item: any, forceToInvisible: any, data: any, responseRow: any, visibilityStructure: any, prefix: any, callback: any) {
     if (formUtils.isQuestion(item)) {
       return this.processQuestion(item, forceToInvisible, data, responseRow, visibilityStructure, prefix, callback)
     } else if (["TextColumn", "Calculation"].includes(item._type)) {
@@ -118,10 +118,10 @@ export default VisibilityCalculator = class VisibilityCalculator {
 
   // Sets visible to false if forceToInvisible is true or the conditions and data make the question invisible
   // The prefix contains the info set by a RosterGroup or a RosterMatrix
-  processQuestion(question, forceToInvisible, data, responseRow, visibilityStructure, prefix, callback) {
+  processQuestion(question: any, forceToInvisible: any, data: any, responseRow: any, visibilityStructure: any, prefix: any, callback: any) {
     // Once visibility is calculated, call this
-    let isVisible
-    const applyResult = (isVisible) => {
+    let isVisible: any
+    const applyResult = (isVisible: any) => {
       visibilityStructure[prefix + question._id] = isVisible
 
       if (question._type === "MatrixQuestion") {
@@ -187,14 +187,14 @@ export default VisibilityCalculator = class VisibilityCalculator {
   // Handles RosterGroup and RosterMatrix
   // The visibility of the Rosters are similar to questions, the extra logic is for handling the children
   // The logic is a bit more tricky when a rosterId is set. It uses that other roster data for calculating the visibility of its children.
-  processRoster(rosterGroup, forceToInvisible, data, responseRow, visibilityStructure, prefix, callback) {
-    let isVisible
+  processRoster(rosterGroup: any, forceToInvisible: any, data: any, responseRow: any, visibilityStructure: any, prefix: any, callback: any) {
+    let isVisible: any
     if (rosterGroup._type !== "RosterGroup" && rosterGroup._type !== "RosterMatrix") {
       throw new Error("Should be a RosterGroup or RosterMatrix")
     }
 
-    const applyResult = (isVisible) => {
-      let dataId
+    const applyResult = (isVisible: any) => {
+      let dataId: any
       visibilityStructure[rosterGroup._id] = isVisible
 
       // The data used (and passed down to sub items) is the one specified by rosterId if set
@@ -210,7 +210,7 @@ export default VisibilityCalculator = class VisibilityCalculator {
         // Get subrows
         return responseRow
           .followJoin(`data:${dataId}`)
-          .then((rosterRows) => {
+          .then((rosterRows: any) => {
             // For each entry of roster
             return async.forEachOf(
               subData,
@@ -237,7 +237,7 @@ export default VisibilityCalculator = class VisibilityCalculator {
               callback
             )
           })
-          .catch(callback)
+          .catch(callback);
       } else {
         return callback(null)
       }

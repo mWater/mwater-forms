@@ -26,7 +26,7 @@ import LocationFinder from "./LocationFinder"
 import { CustomTablesetSchemaBuilder } from "./CustomTablesetSchemaBuilder"
 
 // Setup mock localizer
-global.T = function (str) {
+global.T = function (str: any) {
   if (arguments.length > 1) {
     const iterable = Array.from(arguments).slice(1)
     for (let index = 0; index < iterable.length; index++) {
@@ -48,7 +48,7 @@ const testStickyStorage = {
 
 const formCtx = {
   locale: "en",
-  getAdminRegionPath(id, callback) {
+  getAdminRegionPath(id: any, callback: any) {
     if (id === "manitoba") {
       return callback(null, [canada, manitoba])
     } else if (id === "ontario") {
@@ -60,7 +60,7 @@ const formCtx = {
     }
   },
 
-  getSubAdminRegions(id, level, callback) {
+  getSubAdminRegions(id: any, level: any, callback: any) {
     if (id == null) {
       return callback(null, [canada])
     } else if (id === "canada") {
@@ -70,41 +70,41 @@ const formCtx = {
     }
   },
 
-  renderEntitySummaryView(entityType, entity) {
+  renderEntitySummaryView(entityType: any, entity: any) {
     return JSON.stringify(entity)
   },
 
-  renderEntityListItemView(entityType, entity) {
+  renderEntityListItemView(entityType: any, entity: any) {
     return JSON.stringify(entity)
   },
 
-  findAdminRegionByLatLng(lat, lng, callback) {
+  findAdminRegionByLatLng(lat: any, lng: any, callback: any) {
     return callback("Not implemented")
   },
 
   imageManager: {
-    getImageUrl(id, success, error) {
+    getImageUrl(id: any, success: any, error: any) {
       return error("Not implemented")
     },
-    getThumbnailImageUrl(id, success, error) {
+    getThumbnailImageUrl(id: any, success: any, error: any) {
       return error("Not implemented")
     }
   },
 
   stickyStorage: {
-    get(questionId) {
+    get(questionId: any) {
       return testStickyStorage[questionId]
     },
-    set(questionId, value) {
+    set(questionId: any, value: any) {
       return (testStickyStorage[questionId] = value)
     }
   },
 
-  selectEntity: (options) => {
+  selectEntity: (options: any) => {
     return options.callback("1234")
   },
 
-  getEntityById: (entityType, entityId, callback) => {
+  getEntityById: (entityType: any, entityId: any, callback: any) => {
     if (entityId === "1234") {
       return callback({ _id: "1234", code: "10007", name: "Test" })
     } else {
@@ -112,7 +112,7 @@ const formCtx = {
     }
   },
 
-  getEntityByCode: (entityType, entityCode, callback) => {
+  getEntityByCode: (entityType: any, entityCode: any, callback: any) => {
     if (entityCode === "10007") {
       return callback({ _id: "1234", code: "10007", name: "Test" })
     } else {
@@ -120,7 +120,7 @@ const formCtx = {
     }
   },
 
-  getCustomTableRows: (tableId) => {
+  getCustomTableRows: (tableId: any) => {
     if (tableId === "custom.ts.cities") {
       return new Promise((resolve, reject) => {
         return setTimeout(() => resolve(cascadingRefRows), 2000)
@@ -129,13 +129,13 @@ const formCtx = {
     return null
   },
 
-  getCustomTableRow: (tableId, rowId) => {
+  getCustomTableRow: (tableId: any, rowId: any) => {
     if (tableId === "custom.ts.cities") {
       return Promise.resolve(_.findWhere(cascadingRefRows, { _id: rowId }))
     }
   },
 
-  displayMap: (location, onSet) => {
+  displayMap: (location: any, onSet: any) => {
     return alert("Map")
   }
 }
@@ -555,13 +555,13 @@ const exprResponse = {
 }
 
 class DemoLocationEditorComponent extends React.Component {
-  constructor(props) {
+  constructor(props: any) {
     super(props)
 
     this.state = { location: null }
   }
 
-  handleLocationChange = (location) => {
+  handleLocationChange = (location: any) => {
     console.log(location)
     return this.setState({ location })
   }
@@ -692,7 +692,7 @@ const cascadingRefCustomTableset = {
 }
 
 class DemoComponent extends React.Component {
-  constructor(props) {
+  constructor(props: any) {
     super(props)
 
     // data = { site01: { value: { code: "10007"}, confidential: true}}
@@ -702,7 +702,7 @@ class DemoComponent extends React.Component {
     this.state = { data }
   }
 
-  handleDataChange = (data) => {
+  handleDataChange = (data: any) => {
     console.log(data)
     return this.setState({ data })
   }

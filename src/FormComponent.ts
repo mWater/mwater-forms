@@ -55,7 +55,7 @@ export default FormComponent = (function () {
       })
     }
 
-    constructor(props) {
+    constructor(props: any) {
       super(props)
 
       this.state = {
@@ -75,13 +75,13 @@ export default FormComponent = (function () {
       })
     }
 
-    componentWillReceiveProps(nextProps) {
+    componentWillReceiveProps(nextProps: any) {
       if (this.props.design !== nextProps.design || this.props.locale !== nextProps.locale) {
         return this.setState({ T: this.createLocalizer(nextProps.design, nextProps.locale) })
       }
     }
 
-    componentDidUpdate(prevProps) {
+    componentDidUpdate(prevProps: any) {
       // When data change is external, process it to set visibility, etc.
       if (prevProps.data !== this.props.data && !_.isEqual(this.props.data, this.currentData)) {
         return this.handleDataChange(this.props.data)
@@ -96,7 +96,7 @@ export default FormComponent = (function () {
     }
 
     // Creates a localizer for the form design
-    createLocalizer(design, locale) {
+    createLocalizer(design: any, locale: any) {
       // Create localizer
       const localizedStrings = design.localizedStrings || []
       const localizerData = {
@@ -115,11 +115,11 @@ export default FormComponent = (function () {
       }
     }
 
-    isVisible = (itemId) => {
+    isVisible = (itemId: any) => {
       return this.props.forceAllVisible || this.state.visibilityStructure[itemId]
     }
 
-    createResponseRow = (data) => {
+    createResponseRow = (data: any) => {
       return new ResponseRow({
         responseData: data,
         formDesign: this.props.design,
@@ -131,7 +131,7 @@ export default FormComponent = (function () {
       })
     }
 
-    handleDataChange = (data) => {
+    handleDataChange = (data: any) => {
       const visibilityCalculator = new VisibilityCalculator(this.props.design, this.props.schema)
       const defaultValueApplier = new DefaultValueApplier(
         this.props.design,
@@ -157,7 +157,7 @@ export default FormComponent = (function () {
         data,
         this.createResponseRow,
         this.state.visibilityStructure,
-        (error, results) => {
+        (error: any, results: any) => {
           if (error) {
             alert(T("Error saving data") + `: ${error.message}`)
             return
@@ -176,7 +176,7 @@ export default FormComponent = (function () {
             return this.props.onDataChange(results.data)
           }
         }
-      )
+      );
     }
 
     handleNext = () => {
@@ -205,7 +205,7 @@ export default FormComponent = (function () {
           "div",
           null,
           R(ItemListComponent, {
-            ref: (c) => {
+            ref: (c: any) => {
               return (this.itemListComponent = c)
             },
             contents: this.props.design.contents,
@@ -224,7 +224,7 @@ export default FormComponent = (function () {
                   type: "button",
                   key: "submitButton",
                   className: "btn btn-primary",
-                  ref: (c) => {
+                  ref: (c: any) => {
                     return (this.submit = c)
                   },
                   onClick: this.handleSubmit
@@ -260,7 +260,7 @@ export default FormComponent = (function () {
                   : [R("span", { className: "glyphicon glyphicon-trash" }), " " + this.state.T("Discard")]
               )
             : undefined
-        )
+        );
       }
     }
   }

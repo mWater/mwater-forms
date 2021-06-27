@@ -6,7 +6,7 @@ import _ from "lodash"
 // Improved location finder. Triggers found event with HTML5 position object (containing coords, etc).
 // Pass storage as option (implementing localStorage API) to get caching of position
 class LocationFinder {
-  constructor(options) {
+  constructor(options: any) {
     this.eventEmitter = new EventEmiiter()
 
     // "error" messages are handled specially and will crash if not handled!
@@ -18,15 +18,15 @@ class LocationFinder {
     this.watchCount = 0
   }
 
-  on = (event, callback) => {
+  on = (event: any, callback: any) => {
     return this.eventEmitter.on(event, callback)
   }
 
-  off = (event, callback) => {
+  off = (event: any, callback: any) => {
     return this.eventEmitter.removeListener(event, callback)
   }
 
-  cacheLocation(pos) {
+  cacheLocation(pos: any) {
     if (this.storage != null) {
       return this.storage.set("LocationFinder.lastPosition", JSON.stringify(pos))
     }
@@ -47,7 +47,7 @@ class LocationFinder {
     }
   }
 
-  getLocation(success, error) {
+  getLocation(success: any, error: any) {
     // If no geolocation, send error immediately
     if (!navigator.geolocation) {
       if (error) {
@@ -59,18 +59,18 @@ class LocationFinder {
     console.log("Getting location")
 
     // Both failures are required to trigger error
-    const triggerLocationError = _.after(2, (err) => {
+    const triggerLocationError = _.after(2, (err: any) => {
       if (error) {
         return error(err)
       }
     })
 
-    const lowAccuracyError = (err) => {
+    const lowAccuracyError = (err: any) => {
       console.error(`Low accuracy location error: ${err.message}`)
       return triggerLocationError(err)
     }
 
-    const highAccuracyError = (err) => {
+    const highAccuracyError = (err: any) => {
       console.error(`High accuracy location error: ${err.message}`)
       return triggerLocationError(err)
     }
@@ -78,7 +78,7 @@ class LocationFinder {
     let lowAccuracyFired = false
     let highAccuracyFired = false
 
-    const lowAccuracy = (pos) => {
+    const lowAccuracy = (pos: any) => {
       if (!highAccuracyFired) {
         lowAccuracyFired = true
         this.cacheLocation(pos)
@@ -86,7 +86,7 @@ class LocationFinder {
       }
     }
 
-    const highAccuracy = (pos) => {
+    const highAccuracy = (pos: any) => {
       highAccuracyFired = true
       this.cacheLocation(pos)
       return success(pos)
@@ -125,7 +125,7 @@ class LocationFinder {
     let lowAccuracyFired = false
     let cachedFired = false
 
-    const lowAccuracy = (pos) => {
+    const lowAccuracy = (pos: any) => {
       if (!highAccuracyFired) {
         lowAccuracyFired = true
         this.cacheLocation(pos)
@@ -133,7 +133,7 @@ class LocationFinder {
       }
     }
 
-    const lowAccuracyError = (err) => {
+    const lowAccuracyError = (err: any) => {
       // Low accuracy errors are not enough to trigger final error
       console.error(`Low accuracy watch location error: ${err.message}`)
       // if failed due to PERMISSION_DENIED emit error, or should we always emit error?
@@ -142,13 +142,13 @@ class LocationFinder {
       }
     }
 
-    const highAccuracy = (pos) => {
+    const highAccuracy = (pos: any) => {
       highAccuracyFired = true
       this.cacheLocation(pos)
       return this.eventEmitter.emit("found", pos)
     }
 
-    const highAccuracyError = (err) => {
+    const highAccuracyError = (err: any) => {
       // High accuracy error is not final (https://w3c.github.io/geolocation-api/#position_options_interface)
       console.error(`High accuracy watch location error: ${err.message}`)
       // if failed due to PERMISSION_DENIED emit error, or should we always emit error?
@@ -225,12 +225,12 @@ class LocationFinder {
   }
 
   resume = () => {
-    const highAccuracy = (pos) => {
+    const highAccuracy = (pos: any) => {
       this.cacheLocation(pos)
       return this.eventEmitter.emit("found", pos)
     }
 
-    const highAccuracyError = (err) => {
+    const highAccuracyError = (err: any) => {
       console.error(`High accuracy watch location error: ${err.message}`)
 
       // No longer watching since there was an error

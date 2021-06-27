@@ -44,7 +44,7 @@ export default MatrixAnswerComponent = (function () {
       // Schema to use, including form
     }
 
-    constructor(props) {
+    constructor(props: any) {
       super(props)
 
       this.state = {
@@ -103,7 +103,7 @@ export default MatrixAnswerComponent = (function () {
       return foundInvalid
     }
 
-    handleCellChange = (item, column, answer) => {
+    handleCellChange = (item: any, column: any, answer: any) => {
       let matrixValue = this.props.value || {}
 
       // Get data of the item, which is indexed by item id in the answer
@@ -122,7 +122,7 @@ export default MatrixAnswerComponent = (function () {
       return this.props.onValueChange(matrixValue)
     }
 
-    renderColumnHeader(column, index) {
+    renderColumnHeader(column: any, index: any) {
       return R(
         "th",
         { key: `header:${column._id}` },
@@ -148,7 +148,7 @@ export default MatrixAnswerComponent = (function () {
       )
     }
 
-    renderCell(item, itemIndex, column, columnIndex) {
+    renderCell(item: any, itemIndex: any, column: any, columnIndex: any) {
       const matrixValue = this.props.value || {}
 
       // Get data of the item, which is indexed by item id in the answer
@@ -174,7 +174,7 @@ export default MatrixAnswerComponent = (function () {
       })
     }
 
-    renderItem(item, index) {
+    renderItem(item: any, index: any) {
       return R(
         "tr",
         { key: index },

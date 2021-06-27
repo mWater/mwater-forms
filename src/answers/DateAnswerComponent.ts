@@ -23,16 +23,16 @@ export default DateAnswerComponent = (function () {
       this.defaultProps = { format: "YYYY-MM-DD" }
     }
 
-    constructor(props) {
+    constructor(props: any) {
       super(props)
       this.updateState(props)
     }
 
-    componentWillReceiveProps = (nextProps) => {
+    componentWillReceiveProps = (nextProps: any) => {
       return this.updateState(nextProps)
     }
 
-    updateState = (props) => {
+    updateState = (props: any) => {
       let detailLevel
       const { format } = props
       let isoFormat = null
@@ -83,7 +83,7 @@ export default DateAnswerComponent = (function () {
       }
     }
 
-    handleKeyDown = (ev) => {
+    handleKeyDown = (ev: any) => {
       if (this.props.onNextOrComments != null) {
         // When pressing ENTER or TAB
         if (ev.keyCode === 13 || ev.keyCode === 9) {
@@ -94,7 +94,7 @@ export default DateAnswerComponent = (function () {
       }
     }
 
-    handleChange = (date) => {
+    handleChange = (date: any) => {
       // Get date
       if (!date) {
         this.props.onValueChange(null)

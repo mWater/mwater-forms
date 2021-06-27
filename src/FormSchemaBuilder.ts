@@ -14,7 +14,7 @@ import { healthRiskEnum } from "./answers/aquagenxCBTUtils"
 // Adds a form to a mwater-expressions schema
 export default FormSchemaBuilder = class FormSchemaBuilder {
   // indicators is at least all indicators referenced in indicator calculations. Can be empty and indicator calculations will be omitted
-  addForm(schema, form, cloneFormsDeprecated, isAdmin = true, indicators) {
+  addForm(schema: any, form: any, cloneFormsDeprecated: any, isAdmin = true, indicators: any) {
     const contents = []
 
     const metadata = []
@@ -164,7 +164,7 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
     const conditionsExprCompiler = new ConditionsExprCompiler(form.design)
 
     // List of joins in format: { table: destination table, column: join column to add }
-    const reverseJoins = []
+    const reverseJoins: any = []
     this.addFormItem(form.design, contents, `responses:${form._id}`, conditionsExprCompiler, null, reverseJoins)
 
     // Add to schema
@@ -199,7 +199,7 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
   // Add joins back from entities to site and entity questions
   // reverseJoins: list of joins in format: { table: destination table, column: join column to add }
   // Adds to section with id "!related_forms" with name "Related Forms"
-  addReverseJoins(schema, form, reverseJoins) {
+  addReverseJoins(schema: any, form: any, reverseJoins: any) {
     for (let reverseJoin of reverseJoins) {
       const column = _.clone(reverseJoin.column)
 
@@ -244,7 +244,7 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
   }
 
   // tableId is form table, not roster table
-  addRosterTables(schema, design, conditionsExprCompiler, reverseJoins, tableId) {
+  addRosterTables(schema: any, design: any, conditionsExprCompiler: any, reverseJoins: any, tableId: any) {
     // For each item
     for (let item of formUtils.allItems(design)) {
       if (["RosterGroup", "RosterMatrix"].includes(item._type)) {
@@ -302,7 +302,7 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
   }
 
   // Create a section in schema called Indicators with one subsection for each indicator calculated
-  addIndicatorCalculations(schema, form, indicators) {
+  addIndicatorCalculations(schema: any, form: any, indicators: any) {
     // If not calculations, don't add indicators section
     if (!form.indicatorCalculations || form.indicatorCalculations.length === 0) {
       return schema
@@ -353,7 +353,7 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
   }
 
   // Create a subsection of Indicators for an indicator calculation.
-  createIndicatorCalculationSection(indicatorCalculation, schema, indicators, form) {
+  createIndicatorCalculationSection(indicatorCalculation: any, schema: any, indicators: any, form: any) {
     // Find indicator
     const indicator = _.findWhere(indicators, { _id: indicatorCalculation.indicator })
 
@@ -485,7 +485,7 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
     return section
   }
 
-  addConfidentialDataForRosters(schema, form, conditionsExprCompiler) {
+  addConfidentialDataForRosters(schema: any, form: any, conditionsExprCompiler: any) {
     for (let item of formUtils.allItems(form.design)) {
       if (["RosterGroup", "RosterMatrix"].includes(item._type)) {
         const tableId = `responses:${form._id}:roster:${item.rosterId || item._id}`
@@ -533,10 +533,10 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
     return schema
   }
 
-  addConfidentialData(schema, form, conditionsExprCompiler) {
+  addConfidentialData(schema: any, form: any, conditionsExprCompiler: any) {
     const tableId = `responses:${form._id}`
 
-    const addData = (question) => {
+    const addData = (question: any) => {
       if (question.confidential) {
         let confidentialDataSection = _.find(schema.getTable(tableId).contents, { id: "confidentialData" })
 
@@ -590,15 +590,15 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
   // That is, if a roster is entirely invisible, roster items will not be conditioned on the overall visibility, as they simply won't exist
   // reverseJoins: list of reverse joins to add to. In format: { table: destination table, column: join column to add }. This list will be mutated. Pass in empty list in general.
   addFormItem(
-    item,
-    contents,
-    tableId,
-    conditionsExprCompiler,
-    existingConditionExpr,
+    item: any,
+    contents: any,
+    tableId: any,
+    conditionsExprCompiler: any,
+    existingConditionExpr: any,
     reverseJoins = [],
     confidentialData = false
   ) {
-    const addColumn = (column) => {
+    const addColumn = (column: any) => {
       if (formUtils.isQuestion(item) && item.confidential) {
         if (confidentialData) {
           column.confidential = true
@@ -626,7 +626,7 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
       } else if (["Section", "Group"].includes(item._type)) {
         // Create section contents
         let sectionConditionExpr
-        const sectionContents = []
+        const sectionContents: any = []
         if (conditionsExprCompiler) {
           sectionConditionExpr = ExprUtils.andExprs(
             tableId,
@@ -966,7 +966,7 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
             }
           })
 
-          var addCxColumn = (label, v) =>
+          var addCxColumn = (label: any, v: any) =>
             section.contents.push({
               id: `${dataColumn}:${item._id}:value:cbt:${v}`,
               type: "boolean",
@@ -2118,7 +2118,7 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
     }
   }
 
-  addCalculations(schema, form) {
+  addCalculations(schema: any, form: any) {
     // If not calculations, don't add  section
     if (!form.design.calculations || form.design.calculations.length === 0) {
       return schema
@@ -2169,7 +2169,7 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
 }
 
 // Append a string to each language
-function appendStr(str, suffix) {
+function appendStr(str: any, suffix: any) {
   const output = {}
   for (let key in str) {
     const value = str[key]
@@ -2188,7 +2188,7 @@ function appendStr(str, suffix) {
 }
 
 // Map a tree that consists of items with optional 'contents' array. null means to discard item
-function mapTree(tree, func) {
+function mapTree(tree: any, func: any) {
   if (!tree) {
     return tree
   }
@@ -2211,7 +2211,7 @@ function mapTree(tree, func) {
 // Convert an expression that is the expr of an indicator property into an expression
 // that instead references the indicator calculation columns. This is to allow indicator
 // properties that are calculations (have an expr) from the form
-function formizeIndicatorPropertyExpr(expr, form, indicatorCalculation, indicator) {
+function formizeIndicatorPropertyExpr(expr: any, form: any, indicatorCalculation: any, indicator: any) {
   if (!expr) {
     return expr
   }
@@ -2246,11 +2246,11 @@ function formizeIndicatorPropertyExpr(expr, form, indicatorCalculation, indicato
 
 // Create a webmercator geometry from a lat/lng
 function createWebmercatorGeometry(
-  dataColumn,
-  latPath,
-  lngPath,
+  dataColumn: any,
+  latPath: any,
+  lngPath: any,
   // e.g. ST_Transform(ST_Intersection(ST_SetSRID(ST_MakePoint(data#>>'{questionid,value,longitude}'::decimal, data#>>'{questionid,value,latitude}'::decimal), 4326), ST_MakeEnvelope(-180, -85, 180, 85, 4326)), 3857)
-  tableAlias
+  tableAlias: any
 ) {
   return {
     type: "op",

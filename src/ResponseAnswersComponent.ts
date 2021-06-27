@@ -52,12 +52,12 @@ export default ResponseAnswersComponent = (function () {
     }
 
     // Check if form design or data are different
-    isLoadNeeded(newProps, oldProps) {
+    isLoadNeeded(newProps: any, oldProps: any) {
       return !_.isEqual(newProps.formDesign, oldProps.formDesign) || !_.isEqual(newProps.data, oldProps.data)
     }
 
     // Call callback with state changes
-    load(props, prevProps, callback) {
+    load(props: any, prevProps: any, callback: any) {
       const responseRow = new ResponseRow({
         responseData: props.data,
         formDesign: props.formDesign,
@@ -71,19 +71,19 @@ export default ResponseAnswersComponent = (function () {
       return new VisibilityCalculator(props.formDesign, props.schema).createVisibilityStructure(
         props.data,
         responseRow,
-        (error, visibilityStructure) => {
+        (error: any, visibilityStructure: any) => {
           return callback({ error, visibilityStructure, responseRow })
         }
-      )
+      );
     }
 
-    handleLocationClick(location) {
+    handleLocationClick(location: any) {
       if (this.props.formCtx.displayMap) {
         return this.props.formCtx.displayMap(location)
       }
     }
 
-    renderLocation(location) {
+    renderLocation(location: any) {
       if (location) {
         return R(
           "div",
@@ -99,7 +99,7 @@ export default ResponseAnswersComponent = (function () {
       }
     }
 
-    renderAnswer(q, answer) {
+    renderAnswer(q: any, answer: any) {
       let label, specify
       if (!answer) {
         return null
@@ -328,7 +328,7 @@ export default ResponseAnswersComponent = (function () {
     }
 
     // Special render on multiple rows
-    renderLikertAnswer(q, answer, prevAnswer) {
+    renderLikertAnswer(q: any, answer: any, prevAnswer: any) {
       if (!answer) {
         return null
       }
@@ -388,7 +388,7 @@ export default ResponseAnswersComponent = (function () {
       }
     }
 
-    renderQuestion(q, dataId) {
+    renderQuestion(q: any, dataId: any) {
       // Get answer
       let answer
       const dataIds = dataId.split(".")
@@ -518,7 +518,7 @@ export default ResponseAnswersComponent = (function () {
 
     // Add all the items with the proper rosterId to items array
     // Looks inside groups and sections
-    collectItemsReferencingRoster(items, contents, rosterId) {
+    collectItemsReferencingRoster(items: any, contents: any, rosterId: any) {
       // Get the contents of all the other question that are referencing this roster
       return (() => {
         const result = []
@@ -538,7 +538,7 @@ export default ResponseAnswersComponent = (function () {
 
     // dataId is the key used for looking up the data + testing visibility
     // dataId is simply item._id except for rosters children
-    renderItem(item, visibilityStructure, dataId) {
+    renderItem(item: any, visibilityStructure: any, dataId: any) {
       let data, items
       var contents, dataId
       if (!visibilityStructure[dataId]) {
@@ -720,7 +720,7 @@ export default ResponseAnswersComponent = (function () {
       }
     }
 
-    renderExpression(q, dataId) {
+    renderExpression(q: any, dataId: any) {
       return [
         R(
           "tr",
@@ -733,7 +733,7 @@ export default ResponseAnswersComponent = (function () {
       ]
     }
 
-    renderExpressionAnswer(q, dataId) {
+    renderExpressionAnswer(q: any, dataId: any) {
       let rosterId = null
       let rosterEntryIndex = undefined
       if (dataId != null) {

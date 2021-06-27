@@ -26,7 +26,7 @@ export default ImagesAnswerComponent = (function () {
       // Question to prompt for consent
     }
 
-    constructor(props) {
+    constructor(props: any) {
       super(props)
 
       this.state = { modalImageId: null } // Image id of modal. null if not open
@@ -47,18 +47,18 @@ export default ImagesAnswerComponent = (function () {
 
       // Call imageAcquirer
       return this.context.imageAcquirer.acquire(
-        (id, rotation = 0) => {
+        (id: any, rotation = 0) => {
           // Add to image list
           let imagelist = this.props.imagelist || []
           imagelist = imagelist.slice()
           imagelist.push({ id, cover: imagelist.length === 0, rotation })
           return this.props.onImagelistChange(imagelist)
         },
-        (err) => alert(err)
-      )
+        (err: any) => alert(err)
+      );
     }
 
-    handleClickImage = (id) => {
+    handleClickImage = (id: any) => {
       return this.setState({ modalImageId: id })
     }
 

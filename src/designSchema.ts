@@ -8,7 +8,7 @@ import _ from "lodash"
 
 // Because of extend limitations in JSON schema, this allows us to include
 // all basic properties but still use additionalProperties: false
-function extendQuestionProperties(properties) {
+function extendQuestionProperties(properties: any) {
   return _.defaults(properties, {
     _id: {},
     code: {},

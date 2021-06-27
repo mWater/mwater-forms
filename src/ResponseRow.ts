@@ -193,7 +193,7 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
       if (parts.length === 3 && parts[2] === "visible") {
         const visibilityCalculator = new VisibilityCalculator(this.formDesign, this.schema)
         const visibilityStructure = await new Promise<VisibilityStructure>((resolve, reject) => {
-          visibilityCalculator.createVisibilityStructure(this.responseData, this, (error, visibilityStructure) => {
+          visibilityCalculator.createVisibilityStructure(this.responseData, this, (error: any, visibilityStructure: any) => {
             if (error) {
               reject(error)
             } else {

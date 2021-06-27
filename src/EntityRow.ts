@@ -16,7 +16,7 @@ export default EntityRow = class EntityRow {
   //  schema: schema that includes entity type
   //  getEntityById(entityType, entityId, callback): looks up entity
   //    callback: called with an entity e.g. { _id: some id, a: "abc", b: 123 } or callback null if entity not found
-  constructor(options) {
+  constructor(options: any) {
     this.options = options
 
     this.entityType = options.entityType
@@ -31,7 +31,7 @@ export default EntityRow = class EntityRow {
   }
 
   // Gets the value of a column, returning a promise
-  getField(columnId) {
+  getField(columnId: any) {
     // Get column (gracefully handle if no schema)
     let column
     if (this.schema) {
@@ -54,9 +54,9 @@ export default EntityRow = class EntityRow {
     return Promise.resolve(value)
   }
 
-  async followJoin(columnId) {
+  async followJoin(columnId: any) {
     // Get column (gracefully handle if no schema)
-    let column, entity, entityType
+    let column, entity, entityType: any
     if (this.schema) {
       column = this.schema.getColumn(`entities.${this.entityType}`, columnId)
     }
@@ -74,7 +74,7 @@ export default EntityRow = class EntityRow {
         // Get the entity
         entityType = column.idTable.substr(9)
         entity = await new Promise((resolve, reject) => {
-          return this.getEntityById(entityType, value, (entity) => resolve(entity))
+          return this.getEntityById(entityType, value, (entity: any) => resolve(entity));
         })
         if (entity) {
           return new EntityRow({
@@ -100,7 +100,7 @@ export default EntityRow = class EntityRow {
         // Get the entity
         entityType = column.join.toTable.substr(9)
         entity = await new Promise((resolve, reject) => {
-          return this.getEntityById(entityType, value, (entity) => resolve(entity))
+          return this.getEntityById(entityType, value, (entity: any) => resolve(entity));
         })
         if (entity) {
           return new EntityRow({

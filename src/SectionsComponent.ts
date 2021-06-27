@@ -35,7 +35,7 @@ export default SectionsComponent = (function () {
       // Called when discard is pressed
     }
 
-    constructor(props) {
+    constructor(props: any) {
       super(props)
 
       this.state = {
@@ -60,7 +60,7 @@ export default SectionsComponent = (function () {
       return this.nextVisibleSectionIndex(this.state.sectionNum + 1, 1) !== -1
     }
 
-    nextVisibleSectionIndex(index, increment) {
+    nextVisibleSectionIndex(index: any, increment: any) {
       if (index < 0) {
         return -1
       }
@@ -107,7 +107,7 @@ export default SectionsComponent = (function () {
 
     // This should never happen... simply ignore
 
-    handleBreadcrumbClick = (index) => {
+    handleBreadcrumbClick = (index: any) => {
       return this.setState({ sectionNum: index })
     }
 
@@ -165,7 +165,7 @@ export default SectionsComponent = (function () {
         R("h3", null, formUtils.localizeString(section.name, this.context.locale)),
 
         R(ItemListComponent, {
-          ref: (c) => {
+          ref: (c: any) => {
             return (this.itemListComponent = c)
           },
           contents: section.contents,
@@ -176,7 +176,7 @@ export default SectionsComponent = (function () {
           onNext: this.handleItemListNext,
           schema: this.props.schema
         })
-      )
+      );
     }
 
     renderButtons() {

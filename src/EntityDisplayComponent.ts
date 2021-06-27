@@ -25,7 +25,7 @@ export default EntityDisplayComponent = (function () {
     }
 
     // Override to determine if a load is needed. Not called on mounting
-    isLoadNeeded(newProps, oldProps) {
+    isLoadNeeded(newProps: any, oldProps: any) {
       return (
         newProps.entityType !== oldProps.entityType ||
         newProps.entityId !== oldProps.entityId ||
@@ -34,20 +34,20 @@ export default EntityDisplayComponent = (function () {
     }
 
     // Call callback with state changes
-    load(props, prevProps, callback) {
+    load(props: any, prevProps: any, callback: any) {
       if (!props.entityId && !props.entityCode) {
         callback({ entity: null })
         return
       }
 
       if (props.entityId) {
-        return this.props.getEntityById(props.entityType, props.entityId, (entity) => {
+        return this.props.getEntityById(props.entityType, props.entityId, (entity: any) => {
           return callback({ entity })
-        })
+        });
       } else {
-        return this.props.getEntityByCode(props.entityType, props.entityCode, (entity) => {
+        return this.props.getEntityByCode(props.entityType, props.entityCode, (entity: any) => {
           return callback({ entity })
-        })
+        });
       }
     }
 

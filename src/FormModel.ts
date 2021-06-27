@@ -6,13 +6,13 @@ import * as formUtils from "./formUtils"
 
 // Model of a form object that allows manipulation and asking of questions
 export default FormModel = class FormModel {
-  constructor(form) {
+  constructor(form: any) {
     this.form = form
   }
 
   // Gets all subjects that must be able to see form because of deployments
   getDeploymentSubjects() {
-    function getDeploymentSubs(deployment) {
+    function getDeploymentSubs(deployment: any) {
       const approvers = _.flatten(_.map(deployment.approvalStages, (stage) => stage.approvers))
       return _.union(approvers, deployment.enumerators, deployment.viewers, deployment.admins)
     }
@@ -38,7 +38,7 @@ export default FormModel = class FormModel {
   }
 
   // Checks if the role must remain as a role due to being in a deployment or being only admin
-  canDeleteRole(role) {
+  canDeleteRole(role: any) {
     if (role.role === "admin" && _.where(this.form.roles, { role: "admin" }).length <= 1) {
       return false
     }
@@ -47,7 +47,7 @@ export default FormModel = class FormModel {
   }
 
   // Checks if the subject must remain as a role due to being only admin
-  canChangeRole(role) {
+  canChangeRole(role: any) {
     if (role.role === "admin" && _.where(this.form.roles, { role: "admin" }).length <= 1) {
       return false
     }
@@ -55,21 +55,21 @@ export default FormModel = class FormModel {
   }
 
   // Check if user is an admin
-  amAdmin(user, groups) {
+  amAdmin(user: any, groups: any) {
     let subjects = ["all", "user:" + user]
     subjects = subjects.concat(_.map(groups, (g) => "group:" + g))
     return _.any(this.form.roles, (r) => subjects.includes(r.id) && r.role === "admin")
   }
 
   // Check if user is admin or deploy
-  amDeploy(user, groups) {
+  amDeploy(user: any, groups: any) {
     let subjects = ["all", "user:" + user]
     subjects = subjects.concat(_.map(groups, (g) => "group:" + g))
     return _.any(this.form.roles, (r) => subjects.includes(r.id) && ["admin", "deploy"].includes(r.role))
   }
 
   // Check if user is admin of a deployment
-  amDeploymentAdmin(user, groups) {
+  amDeploymentAdmin(user: any, groups: any) {
     let subjects = ["all", "user:" + user]
     subjects = subjects.concat(_.map(groups, (g) => "group:" + g))
     return _.any(this.form.deployments, (dep) => _.intersection(dep.admins, subjects).length > 0)

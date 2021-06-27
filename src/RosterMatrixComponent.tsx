@@ -31,7 +31,7 @@ export default RosterMatrixComponent = (function () {
       // Schema to use, including form
     }
 
-    constructor(props) {
+    constructor(props: any) {
       super(props)
 
       this.state = {
@@ -50,7 +50,7 @@ export default RosterMatrixComponent = (function () {
       return this.props.data[this.getAnswerId()] || []
     }
 
-    validate(scrollToFirstInvalid) {
+    validate(scrollToFirstInvalid: any) {
       const validationErrors = {}
 
       // For each entry
@@ -92,14 +92,14 @@ export default RosterMatrixComponent = (function () {
     }
 
     // Propagate an answer change to the onDataChange
-    handleAnswerChange = (answer) => {
+    handleAnswerChange = (answer: any) => {
       const change = {}
       change[this.getAnswerId()] = answer
       return this.props.onDataChange(_.extend({}, this.props.data, change))
     }
 
     // Handles a change in data of a specific entry of the roster
-    handleEntryDataChange = (index, data) => {
+    handleEntryDataChange = (index: any, data: any) => {
       const answer = this.getAnswer().slice()
       answer[index] = _.extend({}, answer[index], { data })
       return this.handleAnswerChange(answer)
@@ -111,13 +111,13 @@ export default RosterMatrixComponent = (function () {
       return this.handleAnswerChange(answer)
     }
 
-    handleRemove = (index) => {
+    handleRemove = (index: any) => {
       const answer = this.getAnswer().slice()
       answer.splice(index, 1)
       return this.handleAnswerChange(answer)
     }
 
-    handleCellChange = (entryIndex, columnId, answer) => {
+    handleCellChange = (entryIndex: any, columnId: any, answer: any) => {
       let { data } = this.getAnswer()[entryIndex]
       const change = {}
       change[columnId] = answer
@@ -126,7 +126,7 @@ export default RosterMatrixComponent = (function () {
       return this.handleEntryDataChange(entryIndex, data)
     }
 
-    handleSort = (column, order) => {
+    handleSort = (column: any, order: any) => {
       let answer = this.getAnswer()
       answer = _.sortByOrder(answer, [(item) => item.data[column._id]?.value], [order])
       return this.handleAnswerChange(answer)
@@ -145,7 +145,7 @@ export default RosterMatrixComponent = (function () {
       )
     }
 
-    renderColumnHeader(column, index) {
+    renderColumnHeader(column: any, index: any) {
       return R(
         "th",
         { key: column._id },
@@ -188,7 +188,7 @@ export default RosterMatrixComponent = (function () {
       )
     }
 
-    renderCell(entry, entryIndex, column, columnIndex) {
+    renderCell(entry: any, entryIndex: any, column: any, columnIndex: any) {
       // Get data of the entry
       const entryData = this.getAnswer()[entryIndex].data
 
@@ -209,7 +209,7 @@ export default RosterMatrixComponent = (function () {
       })
     }
 
-    renderEntry = (entry, index, connectDragSource, connectDragPreview, connectDropTarget) => {
+    renderEntry = (entry: any, index: any, connectDragSource: any, connectDragPreview: any, connectDropTarget: any) => {
       const elem = R(
         "tr",
         { key: index },

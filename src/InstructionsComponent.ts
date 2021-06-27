@@ -23,7 +23,7 @@ export default InstructionsComponent = (function () {
       // Schema to use, including form
     }
 
-    shouldComponentUpdate(nextProps, nextState, nextContext) {
+    shouldComponentUpdate(nextProps: any, nextState: any, nextContext: any) {
       if (this.context.locale !== nextContext.locale) {
         return true
       }

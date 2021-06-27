@@ -26,7 +26,7 @@ export default ResponseArchivesComponent = (function () {
       // The usernames
     }
 
-    renderRecord = (record, previousRecord) => {
+    renderRecord = (record: any, previousRecord: any) => {
       return R(
         "div",
         { key: record._rev, style: { marginTop: 10 } },

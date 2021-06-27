@@ -28,7 +28,7 @@ export default AdminRegionAnswerComponent = (function () {
       // Called with new id
     }
 
-    constructor(props) {
+    constructor(props: any) {
       super(props)
       this.state = {
         waiting: false, // True when waiting for gps
@@ -44,7 +44,7 @@ export default AdminRegionAnswerComponent = (function () {
     handleUseGPS = () => {
       return this.setState({ error: null, waiting: true }, () => {
         return this.context.locationFinder.getLocation(
-          (location) => {
+          (location: any) => {
             // If no longer waiting, ignore
             if (!this.state.waiting) {
               return
@@ -54,7 +54,7 @@ export default AdminRegionAnswerComponent = (function () {
             return this.context.findAdminRegionByLatLng(
               location.coords.latitude,
               location.coords.longitude,
-              (error, id) => {
+              (error: any, id: any) => {
                 if (error) {
                   this.setState({ error: this.context.T("Unable to lookup location"), waiting: false })
                   return
@@ -63,9 +63,9 @@ export default AdminRegionAnswerComponent = (function () {
                 this.setState({ waiting: false })
                 return this.props.onChange(id)
               }
-            )
+            );
           },
-          (error) => {
+          (error: any) => {
             // If no longer waiting, ignore
             if (!this.state.waiting) {
               return
@@ -73,8 +73,8 @@ export default AdminRegionAnswerComponent = (function () {
 
             return this.setState({ error: this.context.T("Unable to get location"), waiting: false })
           }
-        )
-      })
+        );
+      });
     }
 
     handleCancelUseGPS = () => {
@@ -84,25 +84,25 @@ export default AdminRegionAnswerComponent = (function () {
     handleUseMap = () => {
       this.setState({ error: null, waiting: false })
 
-      return this.context.displayMap(null, (location) => {
+      return this.context.displayMap(null, (location: any) => {
         // Cancel if no location
         if (!location) {
           return
         }
 
         // Lookup location
-        return this.context.findAdminRegionByLatLng(location.latitude, location.longitude, (error, id) => {
+        return this.context.findAdminRegionByLatLng(location.latitude, location.longitude, (error: any, id: any) => {
           if (error) {
             this.setState({ error: this.context.T("Unable to lookup location") })
             return
           }
 
           return this.props.onChange(id)
-        })
-      })
+        });
+      });
     }
 
-    handleChange = (id) => {
+    handleChange = (id: any) => {
       this.setState({ error: null, waiting: false })
       return this.props.onChange(id)
     }

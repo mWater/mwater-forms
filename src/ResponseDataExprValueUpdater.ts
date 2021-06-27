@@ -125,7 +125,7 @@ export default class ResponseDataExprValueUpdater {
         data,
         createResponseRow,
         null,
-        (error, results) => {
+        (error: any, results: any) => {
           if (error) {
             reject(error)
           } else {
@@ -133,7 +133,7 @@ export default class ResponseDataExprValueUpdater {
           }
         }
       )
-    })
+    });
   }
 
   /** Validates the data. Clean first. */
@@ -160,7 +160,7 @@ export default class ResponseDataExprValueUpdater {
 
     const visibilityCalculator = new VisibilityCalculator(this.formDesign, this.schema)
     return new Promise((resolve, reject) => {
-      visibilityCalculator.createVisibilityStructure(data, responseRow, (error, visibilityStructure) => {
+      visibilityCalculator.createVisibilityStructure(data, responseRow, (error: any, visibilityStructure: any) => {
         if (error) {
           reject(error)
           return
@@ -170,7 +170,7 @@ export default class ResponseDataExprValueUpdater {
           .then(resolve)
           .catch(reject)
       })
-    })
+    });
   }
 
   /** Updates the data of a response, given multiple expressions and their values.

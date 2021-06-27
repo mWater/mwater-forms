@@ -30,13 +30,13 @@ export default SiteColumnAnswerComponent = (function () {
     handleSelectClick = () => {
       return this.context.selectEntity({
         entityType: this.props.siteType,
-        callback: (entityId) => {
+        callback: (entityId: any) => {
           // Get entity
-          return this.context.getEntityById(this.props.siteType, entityId, (entity) => {
+          return this.context.getEntityById(this.props.siteType, entityId, (entity: any) => {
             return this.props.onValueChange({ code: entity.code })
-          })
+          });
         }
-      })
+      });
     }
 
     handleClearClick = () => {

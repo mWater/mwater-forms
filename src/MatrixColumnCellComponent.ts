@@ -31,11 +31,11 @@ export default MatrixColumnCellComponent = (function () {
       this.contextTypes = { locale: PropTypes.string }
     }
 
-    handleValueChange = (value) => {
+    handleValueChange = (value: any) => {
       return this.props.onAnswerChange(_.extend({}, this.props.answer, { value }))
     }
 
-    areConditionsValid(choice) {
+    areConditionsValid(choice: any) {
       if (choice.conditions == null) {
         return true
       }

@@ -19,19 +19,19 @@ Therefore, it's an iterative process which is also asynchronous, as condition ev
 */
 export default ResponseCleaner = class ResponseCleaner {
   cleanData = (
-    design,
-    visibilityCalculator,
-    defaultValueApplier,
-    randomAskedCalculator,
-    data,
-    responseRowFactory,
-    oldVisibilityStructure,
-    callback
+    design: any,
+    visibilityCalculator: any,
+    defaultValueApplier: any,
+    randomAskedCalculator: any,
+    data: any,
+    responseRowFactory: any,
+    oldVisibilityStructure: any,
+    callback: any
   ) => {
     let nbIterations = 0
     let complete = false
     let newData = data
-    let newVisibilityStructure = null
+    let newVisibilityStructure: any = null
 
     // This needs to be repeated until it stabilizes
     return async.whilst(
@@ -41,7 +41,7 @@ export default ResponseCleaner = class ResponseCleaner {
         return visibilityCalculator.createVisibilityStructure(
           newData,
           responseRowFactory(newData),
-          (error, visibilityStructure) => {
+          (error: any, visibilityStructure: any) => {
             if (error) {
               return cb(error)
             }
@@ -80,7 +80,7 @@ export default ResponseCleaner = class ResponseCleaner {
 
             return cb(null)
           }
-        )
+        );
       },
       (error) => {
         if (error) {
@@ -89,11 +89,11 @@ export default ResponseCleaner = class ResponseCleaner {
 
         return callback(null, { data: newData, visibilityStructure: newVisibilityStructure })
       }
-    )
+    );
   }
 
   // Remove data entries for all the invisible questions
-  cleanDataBasedOnVisibility(data, visibilityStructure) {
+  cleanDataBasedOnVisibility(data: any, visibilityStructure: any) {
     const newData = _.cloneDeep(data)
 
     for (let key in visibilityStructure) {
@@ -146,13 +146,13 @@ export default ResponseCleaner = class ResponseCleaner {
   // Remove data entries for all the conditional choices that are false
   // 'DropdownQuestion', 'RadioQuestion' and 'DropdownColumnQuestion' can have choices that are only present if a condition
   // is filled. If the condition is no longer filled, the answer data needs to be removed
-  cleanDataBasedOnChoiceConditions(data, visibilityStructure, design) {
+  cleanDataBasedOnChoiceConditions(data: any, visibilityStructure: any, design: any) {
     const newData = _.cloneDeep(data)
 
     for (let key in visibilityStructure) {
       const visible = visibilityStructure[key]
       if (visible) {
-        var conditionData, deleteAnswer, questionId
+        var conditionData, deleteAnswer, questionId: any
         const values = key.split(".")
         let selectedChoice = null
 
@@ -217,7 +217,7 @@ export default ResponseCleaner = class ResponseCleaner {
   // Cascading lists might reference rows that don't exists,
   // or the c0, c1, etc. values might be out of date
   // or the id might be missing (if updated using ResponseDataExprValueUpdater)
-  cleanDataCascadingLists(data, visibilityStructure, design) {
+  cleanDataCascadingLists(data: any, visibilityStructure: any, design: any) {
     const newData = _.cloneDeep(data)
 
     for (var key in visibilityStructure) {
@@ -269,7 +269,7 @@ export default ResponseCleaner = class ResponseCleaner {
               }
             } else {
               // Look up by column values as id is not present
-              var value
+              var value: any
               let rows = question.rows.slice()
               for (key in answerValue) {
                 value = answerValue[key]

@@ -16,13 +16,13 @@ export default ResponseDataValidator = class ResponseDataValidator {
   //     RosterMatrix   -> matrixId.index.columnId
   //     RosterGroup   -> rosterGroupId.index.questionId
   //     QuestionMatrix -> matrixId.itemId.columnId
-  validate(formDesign, visibilityStructure, data, schema, responseRow) {
+  validate(formDesign: any, visibilityStructure: any, data: any, schema: any, responseRow: any) {
     return this.validateParentItem(formDesign, visibilityStructure, data, schema, responseRow, "")
   }
 
   // Validates an parent row
   //   keyPrefix: the part before the row id in the visibility structure. For rosters
-  async validateParentItem(parentItem, visibilityStructure, data, schema, responseRow, keyPrefix) {
+  async validateParentItem(parentItem: any, visibilityStructure: any, data: any, schema: any, responseRow: any, keyPrefix: any) {
     // Create validator
     const answerValidator = new AnswerValidator(schema, responseRow)
 

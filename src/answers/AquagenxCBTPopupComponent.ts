@@ -65,7 +65,7 @@ export default AquagenxCBTPopupComponent = (function () {
       }
     }
 
-    constructor(props) {
+    constructor(props: any) {
       super(props)
 
       const value = _.clone(props.value) || {}
@@ -82,32 +82,32 @@ export default AquagenxCBTPopupComponent = (function () {
       const { main } = this
       $(main)
         .find("#compartment1")
-        .click((ev) => {
+        .click((ev: any) => {
           return this.handleCompartmentClick("c1")
         })
       $(main)
         .find("#compartment2")
-        .click((ev) => {
+        .click((ev: any) => {
           return this.handleCompartmentClick("c2")
         })
       $(main)
         .find("#compartment3")
-        .click((ev) => {
+        .click((ev: any) => {
           return this.handleCompartmentClick("c3")
         })
       $(main)
         .find("#compartment4")
-        .click((ev) => {
+        .click((ev: any) => {
           return this.handleCompartmentClick("c4")
         })
       return $(main)
         .find("#compartment5")
-        .click((ev) => {
+        .click((ev: any) => {
           return this.handleCompartmentClick("c5")
-        })
+        });
     }
 
-    handleCompartmentClick(compartmentField) {
+    handleCompartmentClick(compartmentField: any) {
       const value = _.clone(this.state.value)
       value.cbt = _.clone(value.cbt)
       const cbtValues = value.cbt
@@ -232,7 +232,7 @@ fill: ${hoverColors[4]}; \
         R(
           "div",
           {
-            ref: (c) => {
+            ref: (c: any) => {
               return (this.main = c)
             },
             id: `cbtPopup${this.props.questionId}`
@@ -241,7 +241,7 @@ fill: ${hoverColors[4]}; \
           R("div", { dangerouslySetInnerHTML: { __html: aquagenxCBTSVGString } }),
           this.renderInfo()
         )
-      )
+      );
     }
   }
   AquagenxCBTPopupComponent.initClass()

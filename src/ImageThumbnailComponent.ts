@@ -18,19 +18,19 @@ export default ImageThumbnailComponent = (function () {
     }
 
     // Override to determine if a load is needed. Not called on mounting
-    isLoadNeeded(newProps, oldProps) {
+    isLoadNeeded(newProps: any, oldProps: any) {
       return newProps.imageId !== oldProps.imageId
     }
 
     // Call callback with state changes
-    load(props, prevProps, callback) {
+    load(props: any, prevProps: any, callback: any) {
       return props.imageManager.getImageUrl(
         props.imageId,
-        (url) => {
+        (url: any) => {
           return callback({ url, error: false })
         },
         () => callback({ error: true })
-      )
+      );
     }
 
     handleError = () => {

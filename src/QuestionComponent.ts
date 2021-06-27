@@ -68,7 +68,7 @@ export default QuestionComponent = (function () {
       // Schema to use, including form
     }
 
-    constructor(props) {
+    constructor(props: any) {
       super(props)
 
       this.state = {
@@ -89,7 +89,7 @@ export default QuestionComponent = (function () {
       }
     }
 
-    shouldComponentUpdate(nextProps, nextState, nextContext) {
+    shouldComponentUpdate(nextProps: any, nextState: any, nextContext: any) {
       if (this.context.locale !== nextContext.locale) {
         return true
       }
@@ -137,7 +137,7 @@ export default QuestionComponent = (function () {
     }
 
     // Returns true if validation error
-    async validate(scrollToFirstInvalid) {
+    async validate(scrollToFirstInvalid: any) {
       // If we are disabling confidential data return true
       if (this.context.disableConfidentialFields && this.props.question.confidential) {
         return false
@@ -185,12 +185,12 @@ export default QuestionComponent = (function () {
       return this.setState({ helpVisible: !this.state.helpVisible })
     }
 
-    handleValueChange = (value) => {
+    handleValueChange = (value: any) => {
       return this.handleAnswerChange(_.extend({}, this.getAnswer(), { value }, { alternate: null }))
     }
 
     // Record a position found
-    handleCurrentPositionFound = (loc) => {
+    handleCurrentPositionFound = (loc: any) => {
       if (!this.unmounted) {
         const newAnswer = _.clone(this.getAnswer())
         newAnswer.location = _.pick(loc.coords, "latitude", "longitude", "accuracy", "altitude", "altitudeAccuracy")
@@ -198,14 +198,14 @@ export default QuestionComponent = (function () {
       }
     }
 
-    handleCurrentPositionStatus = (status) => {
+    handleCurrentPositionStatus = (status: any) => {
       // Always record useable positions
       if (status.useable) {
         return this.handleCurrentPositionFound(status.pos)
       }
     }
 
-    handleAnswerChange = (newAnswer) => {
+    handleAnswerChange = (newAnswer: any) => {
       const readonly = this.context.disableConfidentialFields && this.props.question.confidential
       if (readonly) {
         return
@@ -239,7 +239,7 @@ export default QuestionComponent = (function () {
       return this.props.onAnswerChange(newAnswer)
     }
 
-    handleAlternate = (alternate) => {
+    handleAlternate = (alternate: any) => {
       const answer = this.getAnswer()
       // If we are selecting a new alternate
       if (answer.alternate !== alternate) {
@@ -269,12 +269,12 @@ export default QuestionComponent = (function () {
       }
     }
 
-    handleCommentsChange = (ev) => {
+    handleCommentsChange = (ev: any) => {
       return this.handleAnswerChange(_.extend({}, this.getAnswer(), { comments: ev.target.value }))
     }
 
     // Either jump to next question or select the comments box
-    handleNextOrComments = (ev) => {
+    handleNextOrComments = (ev: any) => {
       // If it has a comment box, set the focus on it
       if (this.props.question.commentsField != null) {
         const { comments } = this
@@ -436,7 +436,7 @@ export default QuestionComponent = (function () {
       switch (this.props.question._type) {
         case "TextQuestion":
           return R(TextAnswerComponent, {
-            ref: (c) => {
+            ref: (c: any) => {
               return (this.answer = c)
             },
             value: answer.value,
@@ -444,7 +444,7 @@ export default QuestionComponent = (function () {
             readOnly: readonly,
             onValueChange: this.handleValueChange,
             onNextOrComments: this.handleNextOrComments
-          })
+          });
           break
 
         case "NumberQuestion":
@@ -511,7 +511,7 @@ export default QuestionComponent = (function () {
 
         case "DateQuestion":
           return R(DateAnswerComponent, {
-            ref: (c) => {
+            ref: (c: any) => {
               return (this.answer = c)
             },
             value: answer.value,
@@ -519,12 +519,12 @@ export default QuestionComponent = (function () {
             format: this.props.question.format,
             placeholder: this.props.question.placeholder,
             onNextOrComments: this.handleNextOrComments
-          })
+          });
           break
 
         case "UnitsQuestion":
           return R(UnitsAnswerComponent, {
-            ref: (c) => {
+            ref: (c: any) => {
               return (this.answer = c)
             },
             answer,
@@ -534,7 +534,7 @@ export default QuestionComponent = (function () {
             prefix: this.props.question.unitsPosition === "prefix",
             decimal: this.props.question.decimal,
             onNextOrComments: this.handleNextOrComments
-          })
+          });
           break
 
         case "CheckQuestion":
@@ -556,7 +556,7 @@ export default QuestionComponent = (function () {
 
         case "ImageQuestion":
           return R(ImageAnswerComponent, {
-            ref: (c) => {
+            ref: (c: any) => {
               return (this.answer = c)
             },
             image: answer.value,
@@ -564,12 +564,12 @@ export default QuestionComponent = (function () {
             consentPrompt: this.props.question.consentPrompt
               ? formUtils.localizeString(this.props.question.consentPrompt, this.context.locale)
               : undefined
-          })
+          });
           break
 
         case "ImagesQuestion":
           return R(ImagesAnswerComponent, {
-            ref: (c) => {
+            ref: (c: any) => {
               return (this.answer = c)
             },
             imagelist: answer.value,
@@ -577,7 +577,7 @@ export default QuestionComponent = (function () {
             consentPrompt: this.props.question.consentPrompt
               ? formUtils.localizeString(this.props.question.consentPrompt, this.context.locale)
               : undefined
-          })
+          });
           break
 
         case "TextListQuestion":
@@ -593,14 +593,14 @@ export default QuestionComponent = (function () {
 
         case "SiteQuestion":
           return R(SiteAnswerComponent, {
-            ref: (c) => {
+            ref: (c: any) => {
               return (this.answer = c)
             },
             value: answer.value,
             onValueChange: this.handleValueChange,
             siteTypes: this.props.question.siteTypes,
             T: this.context.T
-          })
+          });
           break
 
         case "BarcodeQuestion":
@@ -626,28 +626,28 @@ export default QuestionComponent = (function () {
 
         case "AdminRegionQuestion":
           return R(AdminRegionAnswerComponent, {
-            ref: (c) => {
+            ref: (c: any) => {
               return (this.answer = c)
             },
             value: answer.value,
             onChange: this.handleValueChange
-          })
+          });
           break
 
         case "StopwatchQuestion":
           return R(StopwatchAnswerComponent, {
-            ref: (c) => {
+            ref: (c: any) => {
               return (this.answer = c)
             },
             value: answer.value,
             onValueChange: this.handleValueChange,
             T: this.context.T
-          })
+          });
           break
 
         case "MatrixQuestion":
           return R(MatrixAnswerComponent, {
-            ref: (c) => {
+            ref: (c: any) => {
               return (this.answer = c)
             },
             value: answer.value,
@@ -658,18 +658,18 @@ export default QuestionComponent = (function () {
             data: this.props.data,
             responseRow: this.props.responseRow,
             schema: this.props.schema
-          })
+          });
           break
 
         case "AquagenxCBTQuestion":
           return R(AquagenxCBTAnswerComponent, {
-            ref: (c) => {
+            ref: (c: any) => {
               return (this.answer = c)
             },
             value: answer.value,
             onValueChange: this.handleValueChange,
             questionId: this.props.question._id
-          })
+          });
           break
 
         case "CascadingListQuestion":

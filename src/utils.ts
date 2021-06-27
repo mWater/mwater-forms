@@ -4,7 +4,7 @@
 // Utility functions and classes for mwater-forms
 
 // Gets the { angle, distance } from and to locations
-export function getRelativeLocation(fromLoc, toLoc) {
+export function getRelativeLocation(fromLoc: any, toLoc: any) {
   const x1 = fromLoc.longitude
   const y1 = fromLoc.latitude
   const x2 = toLoc.longitude
@@ -27,14 +27,14 @@ export function getRelativeLocation(fromLoc, toLoc) {
   return { angle, distance }
 }
 
-export function getCompassBearing(angle, T) {
+export function getCompassBearing(angle: any, T: any) {
   // Get approximate direction
   const compassDir = Math.floor((angle + 22.5) / 45) % 8
   const compassStrs = [T("N"), T("NE"), T("E"), T("SE"), T("S"), T("SW"), T("W"), T("NW")]
   return compassStrs[compassDir]
 }
 
-export function formatRelativeLocation(relLoc, T) {
+export function formatRelativeLocation(relLoc: any, T: any) {
   let distance
   if (relLoc.distance > 1000) {
     distance = (relLoc.distance / 1000).toFixed(1) + " " + T("km")
@@ -46,7 +46,7 @@ export function formatRelativeLocation(relLoc, T) {
 }
 
 // Calculates the relative strength of a GPS signal into "none", "poor", "fair", "good" or "excellent"
-export function calculateGPSStrength(pos) {
+export function calculateGPSStrength(pos: any) {
   const excellentAcc = 5
   const goodAcc = 10
   const fairAcc = 50
@@ -78,7 +78,7 @@ export function calculateGPSStrength(pos) {
 }
 
 // Format GPS strength in human-readable, Bootstrap-friendly way
-export let formatGPSStrength = (pos, T) => {
+export let formatGPSStrength = (pos: any, T: any) => {
   let text, textClass
   const strength = exports.calculateGPSStrength(pos)
   switch (strength) {

@@ -26,19 +26,19 @@ export default ImagePopupComponent = (function () {
     }
 
     // Override to determine if a load is needed. Not called on mounting
-    isLoadNeeded(newProps, oldProps) {
+    isLoadNeeded(newProps: any, oldProps: any) {
       return newProps.id !== oldProps.id
     }
 
     // Call callback with state changes
-    load(props, prevProps, callback) {
+    load(props: any, prevProps: any, callback: any) {
       return this.props.imageManager.getImageUrl(
         props.image.id,
-        (url) => {
+        (url: any) => {
           return callback({ url, error: false })
         },
         () => callback({ error: true })
-      )
+      );
     }
 
     render() {

@@ -35,10 +35,10 @@ export default BarcodeAnswerComponent = (function () {
 
     handleScanClick = () => {
       return this.context.scanBarcode({
-        success: (text) => {
+        success: (text: any) => {
           return this.props.onValueChange(text)
         }
-      })
+      });
     }
 
     handleClearClick = () => {

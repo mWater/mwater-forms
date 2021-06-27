@@ -11,7 +11,7 @@ import * as formUtils from "./formUtils"
 // user: current username. Required
 // groups: group names of user
 export default ResponseModel = class ResponseModel {
-  constructor(options) {
+  constructor(options: any) {
     this.response = options.response
     this.form = options.form
     this.user = options.user
@@ -20,7 +20,7 @@ export default ResponseModel = class ResponseModel {
   }
 
   // Setup draft. deploymentId is optional _id of deployment to use for cases where ambiguous
-  draft(deploymentId) {
+  draft(deploymentId: any) {
     if (!this.response._id) {
       this.response._id = formUtils.createUid()
     }
@@ -181,7 +181,7 @@ export default ResponseModel = class ResponseModel {
   }
 
   // Reject a response with a specific rejection message
-  reject(message) {
+  reject(message: any) {
     if (!this.canReject()) {
       throw new Error("Cannot reject")
     }
@@ -230,7 +230,7 @@ export default ResponseModel = class ResponseModel {
   // Fixes roles to reflect status and approved fields
   fixRoles() {
     // Determine deployment
-    let admins, viewers
+    let admins: any, viewers: any
     const deployment = _.findWhere(this.form.deployments, { _id: this.response.deployment })
     if (!deployment) {
       admins = _.pluck(_.where(this.form.roles, { role: "admin" }), "id")
@@ -505,7 +505,7 @@ export default ResponseModel = class ResponseModel {
   }
 
   // Add an event
-  _addEvent(type, attrs = {}) {
+  _addEvent(type: any, attrs = {}) {
     const event = _.extend({ type, by: this.user, on: new Date().toISOString() }, attrs)
     this.response.events = this.response.events || []
     return this.response.events.push(event)

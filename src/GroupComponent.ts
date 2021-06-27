@@ -26,7 +26,7 @@ export default GroupComponent = (function () {
       // Schema to use, including form
     }
 
-    validate(scrollToFirstInvalid) {
+    validate(scrollToFirstInvalid: any) {
       return this.itemlist.validate(scrollToFirstInvalid)
     }
 
@@ -47,7 +47,7 @@ export default GroupComponent = (function () {
           "div",
           { key: "body", className: "panel-body" },
           R(ItemListComponent, {
-            ref: (c) => {
+            ref: (c: any) => {
               return (this.itemlist = c)
             },
             contents: this.props.group.contents,
@@ -59,7 +59,7 @@ export default GroupComponent = (function () {
             schema: this.props.schema
           })
         )
-      )
+      );
     }
   }
   GroupComponent.initClass()

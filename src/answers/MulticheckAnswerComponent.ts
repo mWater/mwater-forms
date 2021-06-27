@@ -45,7 +45,7 @@ export default MulticheckAnswerComponent = (function () {
       return null
     }
 
-    handleValueChange = (choice) => {
+    handleValueChange = (choice: any) => {
       let specify
       const ids = this.props.answer.value || []
       if (ids.includes(choice.id)) {
@@ -63,14 +63,14 @@ export default MulticheckAnswerComponent = (function () {
       }
     }
 
-    handleSpecifyChange = (id, ev) => {
+    handleSpecifyChange = (id: any, ev: any) => {
       const change = {}
       change[id] = ev.target.value
       const specify = _.extend({}, this.props.answer.specify, change)
       return this.props.onAnswerChange({ value: this.props.answer.value, specify })
     }
 
-    areConditionsValid(choice) {
+    areConditionsValid(choice: any) {
       if (choice.conditions == null) {
         return true
       }
@@ -78,7 +78,7 @@ export default MulticheckAnswerComponent = (function () {
     }
 
     // Render specify input box
-    renderSpecify(choice) {
+    renderSpecify(choice: any) {
       let value
       if (this.props.answer.specify != null) {
         value = this.props.answer.specify[choice.id]
@@ -93,7 +93,7 @@ export default MulticheckAnswerComponent = (function () {
       })
     }
 
-    renderChoice(choice) {
+    renderChoice(choice: any) {
       if (!this.areConditionsValid(choice)) {
         return null
       }

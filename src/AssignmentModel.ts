@@ -11,7 +11,7 @@ import * as formUtils from "./formUtils"
 // user: current username. Required
 // groups: group names of user
 export default AssignmentModel = class AssignmentModel {
-  constructor(options) {
+  constructor(options: any) {
     this.assignment = options.assignment
     this.form = options.form
     this.user = options.user
@@ -27,7 +27,7 @@ export default AssignmentModel = class AssignmentModel {
       throw new Error(`No matching deployments for ${this.form._id} user ${this.user}`)
     }
 
-    let admins = []
+    let admins: any = []
     let viewers = this.assignment.assignedTo
 
     // Add form admins always

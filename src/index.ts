@@ -41,23 +41,23 @@ export let minSchemaVersion = 1 // Minimum version of forms schema that can be c
 export let schema = require("./schema")
 
 // Simple form that displays a template based on loaded data
-export function templateView(template) {
+export function templateView(template: any) {
   return {
     el: $("<div></div>"),
-    load(data) {
+    load(data: any) {
       return $(this.el).html(template(data))
     }
-  }
+  };
 }
 
 // Creates a form view from a string
-export let instantiateView = (viewStr, options) => {
+export let instantiateView = (viewStr: any, options: any) => {
   const viewFunc = new Function("options", viewStr)
   return viewFunc(options)
 }
 
 // Create a base32 time code to write on forms
-export function createBase32TimeCode(date) {
+export function createBase32TimeCode(date: any) {
   // Characters to use (skip 1, I, 0, O)
   const chars = "23456789ABCDEFGHJLKMNPQRSTUVWXYZ"
 

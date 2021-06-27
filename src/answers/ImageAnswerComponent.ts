@@ -27,7 +27,7 @@ export default ImageAnswerComponent = (function () {
       // Question to prompt for consent
     }
 
-    constructor(props) {
+    constructor(props: any) {
       super(props)
 
       this.state = { modalOpen: false }
@@ -52,12 +52,12 @@ export default ImageAnswerComponent = (function () {
 
       // Call imageAcquirer
       return this.context.imageAcquirer.acquire(
-        (id, rotation = 0) => {
+        (id: any, rotation = 0) => {
           // Add to model
           return this.props.onImageChange({ id, rotation })
         },
-        (err) => alert(err)
-      )
+        (err: any) => alert(err)
+      );
     }
 
     renderModal() {

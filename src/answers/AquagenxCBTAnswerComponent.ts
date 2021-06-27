@@ -33,7 +33,7 @@ export default AquagenxCBTAnswerComponent = (function () {
       this.defaultProps = { value: { image: null, cbt: null } }
     }
 
-    constructor(props) {
+    constructor(props: any) {
       super(props)
 
       this.state = { imageModal: null, aquagenxModal: null }
@@ -70,23 +70,23 @@ export default AquagenxCBTAnswerComponent = (function () {
     handleAdd = () => {
       // Call imageAcquirer
       return this.context.imageAcquirer.acquire(
-        (id) => {
+        (id: any) => {
           // Add to model
           const value = _.clone(this.props.value)
           value.image = { id }
           return this.props.onValueChange(value)
         },
-        (err) => {
+        (err: any) => {
           throw err
         }
-      )
+      );
     }
 
     handleEditClick = () => {
       const modal = React.createElement(AquagenxCBTPopupComponent, {
         value: this.props.value,
         questionId: this.props.questionId,
-        onSave: (value) => {
+        onSave: (value: any) => {
           this.setState({ aquagenxModal: null })
           return this.props.onValueChange(value)
         },

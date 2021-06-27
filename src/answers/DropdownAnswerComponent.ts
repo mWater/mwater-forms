@@ -44,7 +44,7 @@ export default DropdownAnswerComponent = (function () {
       return this.select?.focus()
     }
 
-    handleValueChange = (ev) => {
+    handleValueChange = (ev: any) => {
       if (ev.target.value != null && ev.target.value !== "") {
         return this.props.onAnswerChange({ value: ev.target.value, specify: null })
       } else {
@@ -52,7 +52,7 @@ export default DropdownAnswerComponent = (function () {
       }
     }
 
-    handleSpecifyChange = (id, ev) => {
+    handleSpecifyChange = (id: any, ev: any) => {
       const change = {}
       change[id] = ev.target.value
       const specify = _.extend({}, this.props.answer.specify, change)
@@ -78,7 +78,7 @@ export default DropdownAnswerComponent = (function () {
       }
     }
 
-    areConditionsValid(choice) {
+    areConditionsValid(choice: any) {
       if (choice.conditions == null) {
         return true
       }
@@ -96,7 +96,7 @@ export default DropdownAnswerComponent = (function () {
             style: { width: "auto" },
             value: this.props.answer.value,
             onChange: this.handleValueChange,
-            ref: (c) => {
+            ref: (c: any) => {
               return (this.select = c)
             }
           },
@@ -113,7 +113,7 @@ export default DropdownAnswerComponent = (function () {
         ),
 
         this.renderSpecify()
-      )
+      );
     }
   }
   DropdownAnswerComponent.initClass()

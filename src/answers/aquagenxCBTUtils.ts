@@ -10,7 +10,7 @@ export let healthRiskEnum = [
   { id: "unsafe", name: { _base: "en", en: "Unsafe" }, code: "unsafe" }
 ]
 
-export function getHealthRiskString(healthRiskId, T) {
+export function getHealthRiskString(healthRiskId: any, T: any) {
   if (healthRiskId === "safe") {
     return T("Low Risk/Safe")
   }

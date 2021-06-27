@@ -25,25 +25,25 @@ export default ImageUploaderModalComponent = (function () {
       }
 
       // Static function to show modal easily
-      this.show = (apiUrl, client, T, success, forceCamera) => {
-        return ModalPopupComponent.show((onClose) => {
+      this.show = (apiUrl: any, client: any, T: any, success: any, forceCamera: any) => {
+        return ModalPopupComponent.show((onClose: any) => {
           return R(ImageUploaderModalComponent, {
             apiUrl,
             client,
             T,
             forceCamera,
             onCancel: onClose,
-            onSuccess: (id) => {
+            onSuccess: (id: any) => {
               onClose()
               return success(id)
             }
-          })
-        })
+          });
+        });
       }
       // True to force use of camera
     }
 
-    constructor(props) {
+    constructor(props: any) {
       super(props)
 
       this.state = {
@@ -53,7 +53,7 @@ export default ImageUploaderModalComponent = (function () {
       }
     }
 
-    handleUploadProgress = (evt) => {
+    handleUploadProgress = (evt: any) => {
       let percentComplete
       if (evt.lengthComputable) {
         percentComplete = Math.round((evt.loaded * 100) / evt.total)
@@ -63,7 +63,7 @@ export default ImageUploaderModalComponent = (function () {
       }
     }
 
-    handleUploadComplete = (evt) => {
+    handleUploadComplete = (evt: any) => {
       // This event is raised when the server send back a response
       if (evt.target.status === 200) {
         return this.props.onSuccess(this.state.id)
@@ -73,7 +73,7 @@ export default ImageUploaderModalComponent = (function () {
       }
     }
 
-    handleUploadFailed = (evt) => {
+    handleUploadFailed = (evt: any) => {
       alert(
         this.props.T(
           "Error uploading file. You must be connected to the Internet for image upload to work from a web browser."
@@ -82,7 +82,7 @@ export default ImageUploaderModalComponent = (function () {
       return this.props.onCancel()
     }
 
-    handleUploadCanceled = (evt) => {
+    handleUploadCanceled = (evt: any) => {
       alert(this.props.T("Upload cancelled"))
       return this.props.onCancel()
     }
@@ -91,7 +91,7 @@ export default ImageUploaderModalComponent = (function () {
       return this.state.xhr?.abort()
     }
 
-    handleFileSelected = (ev) => {
+    handleFileSelected = (ev: any) => {
       // Get file information
       const file = ev.target.files[0]
       if (!file) {

@@ -26,13 +26,13 @@ export default SiteAnswerComponent = (function () {
       }
     }
 
-    constructor(props) {
+    constructor(props: any) {
       super(props)
 
       this.state = { text: props.value?.code || "" }
     }
 
-    componentWillReceiveProps(nextProps) {
+    componentWillReceiveProps(nextProps: any) {
       // If different, override text
       if (nextProps.value?.code !== this.props.value?.code) {
         return this.setState({ text: nextProps.value?.code ? nextProps.value?.code : "" })
@@ -43,7 +43,7 @@ export default SiteAnswerComponent = (function () {
       return this.input.focus()
     }
 
-    handleKeyDown = (ev) => {
+    handleKeyDown = (ev: any) => {
       if (this.props.onNextOrComments != null) {
         // When pressing ENTER or TAB
         if (ev.keyCode === 13 || ev.keyCode === 9) {
@@ -66,11 +66,11 @@ export default SiteAnswerComponent = (function () {
 
       return this.context.selectEntity({
         entityType,
-        callback: (entityId) => {
+        callback: (entityId: any) => {
           console.log(`Issue584:${new Date().toISOString()}: after selectEntity ${entityType} ${entityId}`)
 
           // Get entity
-          return this.context.getEntityById(entityType, entityId, (entity) => {
+          return this.context.getEntityById(entityType, entityId, (entity: any) => {
             console.log(
               `Issue584:${new Date().toISOString()}: after getEntityById ${entityType} ${entityId} ${JSON.stringify(
                 entity
@@ -88,16 +88,16 @@ export default SiteAnswerComponent = (function () {
               return
             }
             return this.props.onValueChange({ code: entity.code })
-          })
+          });
         }
-      })
+      });
     }
 
-    handleChange = (ev) => {
+    handleChange = (ev: any) => {
       return this.setState({ text: ev.target.value })
     }
 
-    handleBlur = (ev) => {
+    handleBlur = (ev: any) => {
       if (ev.target.value) {
         return this.props.onValueChange({ code: ev.target.value })
       } else {
@@ -116,7 +116,7 @@ export default SiteAnswerComponent = (function () {
             type: "tel",
             className: "form-control",
             onKeyDown: this.handleKeyDown,
-            ref: (c) => {
+            ref: (c: any) => {
               return (this.input = c)
             },
             placeholder: this.context.T("mWater ID of Site"),
@@ -151,7 +151,7 @@ export default SiteAnswerComponent = (function () {
           renderEntityView: this.context.renderEntitySummaryView,
           T: this.context.T
         })
-      )
+      );
     }
   }
   SiteAnswerComponent.initClass()

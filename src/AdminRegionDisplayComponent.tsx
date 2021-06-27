@@ -20,20 +20,20 @@ export default AdminRegionDisplayComponent = (function () {
     }
 
     // Override to determine if a load is needed. Not called on mounting
-    isLoadNeeded(newProps, oldProps) {
+    isLoadNeeded(newProps: any, oldProps: any) {
       return newProps.value !== oldProps.value
     }
 
     // Call callback with state changes
-    load(props, prevProps, callback) {
+    load(props: any, prevProps: any, callback: any) {
       if (!props.value) {
         callback({ error: null, path: [] })
         return
       }
 
-      return props.getAdminRegionPath(props.value, (error, path) => {
+      return props.getAdminRegionPath(props.value, (error: any, path: any) => {
         return callback({ error, path })
-      })
+      });
     }
 
     render() {

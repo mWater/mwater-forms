@@ -13,8 +13,8 @@ import RosterGroupComponent from "./RosterGroupComponent"
 import RosterMatrixComponent from "./RosterMatrixComponent"
 
 // Render an item, given its data, visibility function, etc.
-export function renderItem(item, data, responseRow, schema, onDataChange, isVisible, onNext, ref) {
-  const handleAnswerChange = (id, answer) => {
+export function renderItem(item: any, data: any, responseRow: any, schema: any, onDataChange: any, isVisible: any, onNext: any, ref: any) {
+  const handleAnswerChange = (id: any, answer: any) => {
     const change = {}
     change[id] = answer
     return onDataChange(_.extend({}, data, change))

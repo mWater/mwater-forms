@@ -7,11 +7,11 @@ import _ from "lodash"
 // The RandomAskedCalculator sets the randomAsked property of visible answers, determining if the question will be visible.
 // If question has randomAskProbability, it is visible unless randomAsked is set to false, which this class determines.
 export default RandomAskedCalculator = class RandomAskedCalculator {
-  constructor(formDesign) {
+  constructor(formDesign: any) {
     this.formDesign = formDesign
   }
 
-  calculateRandomAsked(data, visibilityStructure) {
+  calculateRandomAsked(data: any, visibilityStructure: any) {
     // NOTE: Always remember that data is immutable
     const newData = _.cloneDeep(data)
 
@@ -76,7 +76,7 @@ export default RandomAskedCalculator = class RandomAskedCalculator {
   }
 
   // Randomly determine asked
-  generateRandomValue(probability) {
+  generateRandomValue(probability: any) {
     return Math.random() < probability
   }
 }

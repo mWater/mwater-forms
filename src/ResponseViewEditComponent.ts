@@ -34,7 +34,7 @@ export default ResponseViewEditComponent = (function () {
       // Localizer to use
     }
 
-    constructor(props) {
+    constructor(props: any) {
       super(props)
       this.state = {
         editMode: false, // True if in edit mode
@@ -46,7 +46,7 @@ export default ResponseViewEditComponent = (function () {
     }
 
     // Create a response model
-    createResponseModel(response) {
+    createResponseModel(response: any) {
       let responseModel
       return (responseModel = new ResponseModel({
         response,
@@ -109,7 +109,7 @@ export default ResponseViewEditComponent = (function () {
       return this.props.onDeleteResponse()
     }
 
-    handleDataChange = (data) => {
+    handleDataChange = (data: any) => {
       return this.setState({ unsavedData: data })
     }
     handleDiscard = () => {
@@ -121,7 +121,7 @@ export default ResponseViewEditComponent = (function () {
     handleEdit = () => {
       return this.setState({ editMode: true, unsavedData: null })
     }
-    handleLocaleChange = (ev) => {
+    handleLocaleChange = (ev: any) => {
       return this.setState({ locale: ev.target.value })
     }
 

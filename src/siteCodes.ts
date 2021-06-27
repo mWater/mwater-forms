@@ -1,7 +1,7 @@
 // TODO: This file was created by bulk-decaffeinate.
 // Sanity-check the conversion and remove this comment.
 // Validates mWater water site codes
-export function seqToCode(seq) {
+export function seqToCode(seq: any) {
   // Get string of seq number
   const str = "" + seq
 
@@ -21,7 +21,7 @@ export function seqToCode(seq) {
   return str + (sum % 10)
 }
 
-export function isValid(code) {
+export function isValid(code: any) {
   const seq = parseInt(code.substring(0, code.length - 1))
 
   return exports.seqToCode(seq) === code

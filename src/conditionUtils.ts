@@ -1,6 +1,6 @@
 // TODO: This file was created by bulk-decaffeinate.
 // Sanity-check the conversion and remove this comment.
-let compileCondition
+let compileCondition: any
 import _ from "lodash"
 import * as formUtils from "./formUtils"
 
@@ -27,20 +27,20 @@ const allOps = [
 ]
 
 // This code has been copied from FromCompiler, only getValue and getAlternate have been changed
-let _compileCondition = (compileCondition = (cond) => {
-  const getValue = (data) => {
+let _compileCondition = (compileCondition = (cond: any) => {
+  const getValue = (data: any) => {
     const answer = data[cond.lhs.question] || {}
     return answer.value
   }
 
-  const getAlternate = (data) => {
+  const getAlternate = (data: any) => {
     const answer = data[cond.lhs.question] || {}
     return answer.alternate
   }
 
   switch (cond.op) {
     case "present":
-      return (data) => {
+      return (data: any) => {
         const value = getValue(data)
         const present = value != null && value !== "" && !(value instanceof Array && value.length === 0)
         if (!present) {
@@ -60,9 +60,9 @@ let _compileCondition = (compileCondition = (cond) => {
             return true
           }
         }
-      }
+      };
     case "!present":
-      return (data) => {
+      return (data: any) => {
         const value = getValue(data)
         const notPresent = value == null || value === "" || (value instanceof Array && value.length === 0)
         if (notPresent) {
@@ -82,60 +82,60 @@ let _compileCondition = (compileCondition = (cond) => {
             return false
           }
         }
-      }
+      };
     case "contains":
-      return (data) => {
+      return (data: any) => {
         return (getValue(data) || "").indexOf(cond.rhs.literal) !== -1
-      }
+      };
     case "!contains":
-      return (data) => {
+      return (data: any) => {
         return (getValue(data) || "").indexOf(cond.rhs.literal) === -1
-      }
+      };
     case "=":
-      return (data) => {
+      return (data: any) => {
         return getValue(data) === cond.rhs.literal
-      }
+      };
     case ">":
     case "after":
-      return (data) => {
+      return (data: any) => {
         return getValue(data) > cond.rhs.literal
-      }
+      };
     case "<":
     case "before":
-      return (data) => {
+      return (data: any) => {
         return getValue(data) < cond.rhs.literal
-      }
+      };
     case "!=":
-      return (data) => {
+      return (data: any) => {
         return getValue(data) !== cond.rhs.literal
-      }
+      };
     case "includes":
-      return (data) => {
+      return (data: any) => {
         return _.contains(getValue(data) || [], cond.rhs.literal) || cond.rhs.literal === getAlternate(data)
-      }
+      };
     case "!includes":
-      return (data) => {
+      return (data: any) => {
         return !_.contains(getValue(data) || [], cond.rhs.literal) && cond.rhs.literal !== getAlternate(data)
-      }
+      };
     case "is":
-      return (data) => {
+      return (data: any) => {
         return getValue(data) === cond.rhs.literal || getAlternate(data) === cond.rhs.literal
-      }
+      };
     case "isnt":
-      return (data) => {
+      return (data: any) => {
         return getValue(data) !== cond.rhs.literal && getAlternate(data) !== cond.rhs.literal
-      }
+      };
     case "isoneof":
-      return (data) => {
+      return (data: any) => {
         const value = getValue(data)
         if (_.isArray(value)) {
           return _.intersection(cond.rhs.literal, value).length > 0 || _.contains(cond.rhs.literal, getAlternate(data))
         } else {
           return _.contains(cond.rhs.literal, value) || _.contains(cond.rhs.literal, getAlternate(data))
         }
-      }
+      };
     case "isntoneof":
-      return (data) => {
+      return (data: any) => {
         const value = getValue(data)
         if (_.isArray(value)) {
           return (
@@ -144,15 +144,15 @@ let _compileCondition = (compileCondition = (cond) => {
         } else {
           return !_.contains(cond.rhs.literal, value) && !_.contains(cond.rhs.literal, getAlternate(data))
         }
-      }
+      };
     case "true":
-      return (data) => {
+      return (data: any) => {
         return getValue(data) === true
-      }
+      };
     case "false":
-      return (data) => {
+      return (data: any) => {
         return getValue(data) !== true
-      }
+      };
     default:
       throw new Error("Unknown condition op " + cond.op)
   }
@@ -161,9 +161,9 @@ let _compileCondition = (compileCondition = (cond) => {
 export { _compileCondition as compileCondition }
 
 // This code has been copied from FromCompiler
-export let compileConditions = (conds) => {
+export let compileConditions = (conds: any) => {
   const compConds = _.map(conds, compileCondition)
-  return (data) => {
+  return (data: any) => {
     for (let compCond of compConds) {
       if (!compCond(data)) {
         return false
@@ -171,11 +171,11 @@ export let compileConditions = (conds) => {
     }
 
     return true
-  }
+  };
 }
 
 // Maps op id to complete op info
-function getOpDetails(op) {
+function getOpDetails(op: any) {
   const opDetail = _.findWhere(allOps, { id: op })
   if (!opDetail) {
     throw new Error(`Unknown op ${op}`)
@@ -185,7 +185,7 @@ function getOpDetails(op) {
 
 // Gets list of applicable operators for a lhs question
 // Return includes id and text for each one, suitable for a select2 control
-export function applicableOps(lhsQuestion) {
+export function applicableOps(lhsQuestion: any) {
   let ops = (() => {
     switch (lhsQuestion._type) {
       case "TextQuestion":
@@ -231,7 +231,7 @@ export function applicableOps(lhsQuestion) {
 
 // Gets rhs type for a question and operator.
 // Can be null (for unary), "text", "number", "choice", "choices", "date", "datetime"
-function _rhsType(lhsQuestion, op) {
+function _rhsType(lhsQuestion: any, op: any) {
   switch (op) {
     case "present":
     case "!present":
@@ -269,9 +269,9 @@ export { _rhsType as rhsType }
 
 // In the case of choice, returns choices for rhs (returns base localization)
 // Return includes id and text for each one, suitable for a select2 control
-export function rhsChoices(lhsQuestion, op) {
+export function rhsChoices(lhsQuestion: any, op: any) {
   // Doesn't apply to LikertQuestions/MatrixQuestions since simple conditions don't apply to them
-  let choices
+  let choices: any
   if (!["LikertQuestion", "MatrixQuestion"].includes(lhsQuestion._type)) {
     choices = _.map(lhsQuestion.choices, (choice) => ({
       id: choice.id,
@@ -293,7 +293,7 @@ export function rhsChoices(lhsQuestion, op) {
 }
 
 // Checks if condition is valid. True for yes, false for no
-export function validateCondition(cond, formDesign) {
+export function validateCondition(cond: any, formDesign: any) {
   // Check if lhs
   if (cond.lhs == null || !cond.lhs.question) {
     return false
@@ -359,11 +359,11 @@ export function validateCondition(cond, formDesign) {
   return true
 }
 
-export function summarizeConditions(conditions = [], formDesign, locale) {
+export function summarizeConditions(conditions = [], formDesign: any, locale: any) {
   return _.map(conditions, (cond) => exports.summarizeCondition(cond, formDesign, locale)).join(" and ")
 }
 
-export function summarizeCondition(cond, formDesign, locale) {
+export function summarizeCondition(cond: any, formDesign: any, locale: any) {
   if (!cond.lhs?.question) {
     return ""
   }

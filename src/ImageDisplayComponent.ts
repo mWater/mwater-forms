@@ -18,7 +18,7 @@ export default ImageDisplayComponent = (function () {
       }
     }
 
-    constructor(props) {
+    constructor(props: any) {
       super(props)
       this.state = { error: false, url: null, popup: false }
     }
@@ -26,19 +26,19 @@ export default ImageDisplayComponent = (function () {
     componentDidMount() {
       return this.update(this.props)
     }
-    componentWillReceiveProps(newProps) {
+    componentWillReceiveProps(newProps: any) {
       return this.update(newProps)
     }
 
-    update(props) {
+    update(props: any) {
       // Get URL of thumbnail
       return props.imageManager.getImageThumbnailUrl(
         props.image.id,
-        (url) => {
+        (url: any) => {
           return this.setState({ url, error: false })
         },
         () => this.setState({ error: true })
-      )
+      );
     }
 
     handleImgError = () => {

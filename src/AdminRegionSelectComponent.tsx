@@ -21,28 +21,28 @@ export default AdminRegionSelectComponent = (function () {
       // Localizer to use
     }
 
-    componentWillMount(props) {
+    componentWillMount(props: any) {
       super.componentWillMount(props)
 
       // Get countries initially
-      return this.props.getSubAdminRegions(null, 0, (error, level0s) => {
+      return this.props.getSubAdminRegions(null, 0, (error: any, level0s: any) => {
         return this.setState({ level0s })
-      })
+      });
     }
 
     // Override to determine if a load is needed. Not called on mounting
-    isLoadNeeded(newProps, oldProps) {
+    isLoadNeeded(newProps: any, oldProps: any) {
       return newProps.value !== oldProps.value
     }
 
     // Call callback with state changes
-    load(props, prevProps, callback) {
+    load(props: any, prevProps: any, callback: any) {
       // Leave current state alone while loading
       callback({ busy: true }) // loading is reserved
 
       // Get path
       if (props.value) {
-        return props.getAdminRegionPath(props.value, (error, path) => {
+        return props.getAdminRegionPath(props.value, (error: any, path: any) => {
           if (error) {
             return callback({ error, busy: false })
           }
@@ -59,21 +59,20 @@ export default AdminRegionSelectComponent = (function () {
           })
 
           // Get subadmins
-          return path.map((pathElem) =>
-            ((pathElem) => {
-              return props.getSubAdminRegions(pathElem.id, pathElem.level + 1, (error, subRegions) => {
-                if (error) {
-                  return callback({ error })
-                }
+          return path.map((pathElem: any) => ((pathElem) => {
+            return props.getSubAdminRegions(pathElem.id, pathElem.level + 1, (error: any, subRegions: any) => {
+              if (error) {
+                return callback({ error })
+              }
 
-                // Set levelNs to be list of values
-                const val = {}
-                val[`level${pathElem.level + 1}s`] = subRegions
-                return callback(val)
-              })
-            })(pathElem)
-          )
-        })
+              // Set levelNs to be list of values
+              const val = {}
+              val[`level${pathElem.level + 1}s`] = subRegions
+              return callback(val)
+            });
+          })(pathElem)
+          );
+        });
       } else {
         return callback({ error: null, path: [], busy: false })
       }
@@ -83,7 +82,7 @@ export default AdminRegionSelectComponent = (function () {
     //   callback(url: url, error: false)
     // , => callback(error: true))
 
-    handleChange = (level, ev) => {
+    handleChange = (level: any, ev: any) => {
       if (ev.target.value) {
         return this.props.onChange(ev.target.value)
       } else if (level > 0) {
@@ -94,7 +93,7 @@ export default AdminRegionSelectComponent = (function () {
       }
     }
 
-    renderLevel(level) {
+    renderLevel(level: any) {
       if (!this.state.path[level] && (!this.state[`level${level}s`] || this.state[`level${level}s`].length === 0)) {
         return null
       }

@@ -35,20 +35,20 @@ export default EntityAnswerComponent = (function () {
     }
 
     // Override to determine if a load is needed. Not called on mounting
-    isLoadNeeded(newProps, oldProps) {
+    isLoadNeeded(newProps: any, oldProps: any) {
       return newProps.entityType !== oldProps.entityType || newProps.value !== oldProps.value
     }
 
     // Call callback with state changes
-    load(props, prevProps, callback) {
+    load(props: any, prevProps: any, callback: any) {
       if (!props.value) {
         callback({ entity: null })
         return
       }
 
-      return this.context.getEntityById(props.entityType, props.value, (entity) => {
+      return this.context.getEntityById(props.entityType, props.value, (entity: any) => {
         return callback({ entity })
-      })
+      });
     }
 
     // Called to select an entity using an external mechanism (calls @ctx.selectEntity)
@@ -59,10 +59,10 @@ export default EntityAnswerComponent = (function () {
 
       return this.context.selectEntity({
         entityType: this.props.entityType,
-        callback: (value) => {
+        callback: (value: any) => {
           return this.props.onValueChange(value)
         }
-      })
+      });
     }
 
     handleClearEntity = () => {

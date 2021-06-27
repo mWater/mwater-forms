@@ -10,7 +10,7 @@ import * as formUtils from "../formUtils"
 // AnswerValidator gets called when a form is submitted (or on next)
 // Only the validate method is not internal
 export default AnswerValidator = class AnswerValidator {
-  constructor(schema, responseRow, locale) {
+  constructor(schema: any, responseRow: any, locale: any) {
     this.schema = schema
     this.responseRow = responseRow
     this.locale = locale
@@ -20,7 +20,7 @@ export default AnswerValidator = class AnswerValidator {
   // It makes sure required questions are properly answered
   // It checks answer type specific validations
   // It checks custom validations
-  async validate(question, answer) {
+  async validate(question: any, answer: any) {
     // If it has an alternate value, it cannot be invalid
     if (answer.alternate) {
       return null
@@ -40,7 +40,7 @@ export default AnswerValidator = class AnswerValidator {
       if (question.choices) {
         // MulticheckQuestion
         if (_.isArray(answer.value)) {
-          const specifyChoices = question.choices.filter((c) => c.specify).map((c) => c.id)
+          const specifyChoices = question.choices.filter((c: any) => c.specify).map((c: any) => c.id)
           const selectedSpecifyChoicecs = _.intersection(specifyChoices, answer.value)
 
           if (selectedSpecifyChoicecs.length > 0) {
@@ -113,7 +113,7 @@ export default AnswerValidator = class AnswerValidator {
     return null
   }
 
-  validateSpecificAnswerType(question, answer) {
+  validateSpecificAnswerType(question: any, answer: any) {
     switch (question._type) {
       case "TextQuestion":
         return this.validateTextQuestion(question, answer)
@@ -134,7 +134,7 @@ export default AnswerValidator = class AnswerValidator {
 
   // Valid if null or empty
   // Valid if code is valid (checksum)
-  validateSiteQuestion(question, answer) {
+  validateSiteQuestion(question: any, answer: any) {
     if (!answer.value) {
       return null
     }
@@ -153,7 +153,7 @@ export default AnswerValidator = class AnswerValidator {
   // Valid if null or empty
   // Valid if not email or url format
   // Else a match is performed on the anser value
-  validateTextQuestion(question, answer) {
+  validateTextQuestion(question: any, answer: any) {
     if (answer.value == null || answer.value === "") {
       return null
     }
@@ -186,7 +186,7 @@ export default AnswerValidator = class AnswerValidator {
   // Valid if null or empty
   // Valid if quantity is not set
   // Invalid if quantity is set but not units
-  validateUnitsQuestion(question, answer) {
+  validateUnitsQuestion(question: any, answer: any) {
     if (answer.value == null || answer.value === "") {
       return null
     }
@@ -203,7 +203,7 @@ export default AnswerValidator = class AnswerValidator {
   // Valid if null or empty
   // Valid if quantity is not set
   // Invalid if quantity is set but not units
-  validateLikertQuestion(question, answer) {
+  validateLikertQuestion(question: any, answer: any) {
     if (answer.value == null || answer.value === "") {
       return null
     }
@@ -219,7 +219,7 @@ export default AnswerValidator = class AnswerValidator {
   }
 
   // Valid if null or empty
-  validateNumberQuestion(question, answer) {
+  validateNumberQuestion(question: any, answer: any) {
     if (answer.value == null || answer.value === "") {
       return null
     }
@@ -227,7 +227,7 @@ export default AnswerValidator = class AnswerValidator {
     return null
   }
 
-  validateMatrixQuestion(question, answer) {
+  validateMatrixQuestion(question: any, answer: any) {
     const validationErrors = {}
 
     // For each entry

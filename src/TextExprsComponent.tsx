@@ -29,7 +29,7 @@ export default TextExprsComponent = (function () {
       // Format to be used by d3 formatter
     }
 
-    constructor(props) {
+    constructor(props: any) {
       super(props)
 
       this.state = {
@@ -78,7 +78,7 @@ export default TextExprsComponent = (function () {
       let str = formUtils.localizeString(this.props.localizedStr, this.props.locale) || ""
 
       // Perform substitutions ({0}, {1}, etc.)
-      str = str.replace(/\{(\d+)\}/g, (match, index) => {
+      str = str.replace(/\{(\d+)\}/g, (match: any, index: any) => {
         index = parseInt(index)
         if (this.state.exprValueStrs[index] != null) {
           return this.state.exprValueStrs[index]

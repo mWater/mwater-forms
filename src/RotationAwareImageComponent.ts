@@ -20,28 +20,28 @@ export default RotationAwareImageComponent = (function () {
     }
 
     // Override to determine if a load is needed. Not called on mounting
-    isLoadNeeded(newProps, oldProps) {
+    isLoadNeeded(newProps: any, oldProps: any) {
       return newProps.image.id !== oldProps.image.id || newProps.thumbnail !== oldProps.thumbnail
     }
 
     // Call callback with state changes
-    load(props, prevProps, callback) {
+    load(props: any, prevProps: any, callback: any) {
       if (props.thumbnail) {
         return props.imageManager.getImageThumbnailUrl(
           props.image.id,
-          (url) => {
+          (url: any) => {
             return callback({ url, error: false })
           },
           () => callback({ error: true })
-        )
+        );
       } else {
         return props.imageManager.getImageUrl(
           props.image.id,
-          (url) => {
+          (url: any) => {
             return callback({ url, error: false })
           },
           () => callback({ error: true })
-        )
+        );
       }
     }
 
@@ -86,7 +86,7 @@ export default RotationAwareImageComponent = (function () {
             style: containerStyle
           },
           R("img", {
-            ref: (c) => {
+            ref: (c: any) => {
               return (this.image = c)
             },
             src: this.state.url,
@@ -95,7 +95,7 @@ export default RotationAwareImageComponent = (function () {
             onClick: this.props.onClick,
             alt: this.props.image.caption || ""
           })
-        )
+        );
       } else {
         return null
       }

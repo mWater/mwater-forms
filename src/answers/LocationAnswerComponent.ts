@@ -32,7 +32,7 @@ export default LocationAnswerComponent = (function () {
 
     handleUseMap = () => {
       if (this.context.displayMap != null) {
-        return this.context.displayMap(this.props.value, (newLoc) => {
+        return this.context.displayMap(this.props.value, (newLoc: any) => {
           // Wrap to -180, 180
           while (newLoc.longitude < -180) {
             newLoc.longitude += 360
@@ -53,7 +53,7 @@ export default LocationAnswerComponent = (function () {
           newLoc.method = "map"
 
           return this.props.onValueChange(newLoc)
-        })
+        });
       }
     }
 

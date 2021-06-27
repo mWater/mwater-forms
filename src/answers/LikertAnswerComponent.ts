@@ -49,7 +49,7 @@ export default LikertAnswerComponent = (function () {
       return null
     }
 
-    handleValueChange = (choice, item) => {
+    handleValueChange = (choice: any, item: any) => {
       let newValue
       if (this.props.answer.value != null) {
         newValue = _.clone(this.props.answer.value)
@@ -65,7 +65,7 @@ export default LikertAnswerComponent = (function () {
       return this.props.onAnswerChange(_.extend({}, this.props.answer, { value: newValue }))
     }
 
-    renderChoice(item, choice) {
+    renderChoice(item: any, choice: any) {
       let value
       const id = `${item.id}:${choice.id}`
       if (this.props.answer.value != null) {
@@ -94,7 +94,7 @@ export default LikertAnswerComponent = (function () {
     //  R 'td', key: "label#{choice.id}",
     //    formUtils.localizeString(choice.label, @context.locale)
 
-    renderItem(item) {
+    renderItem(item: any) {
       return R(
         "tr",
         null,

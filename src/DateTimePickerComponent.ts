@@ -39,7 +39,7 @@ export default DateTimePickerComponent = (function () {
       this.defaultProps = { timepicker: false }
     }
 
-    onChange = (event) => {
+    onChange = (event: any) => {
       return this.props.onChange?.(event.date)
     }
 
@@ -55,7 +55,7 @@ export default DateTimePickerComponent = (function () {
       return $(this.datetimepicker).data("DateTimePicker").destroy()
     }
 
-    createNativeComponent(props) {
+    createNativeComponent(props: any) {
       const pickerOptions = { showClear: props.showClear, useStrict: true, focusOnShow: false }
 
       if (props.format != null) {
@@ -81,7 +81,7 @@ export default DateTimePickerComponent = (function () {
       return $(node).on("dp.change", this.onChange)
     }
 
-    componentWillReceiveProps(nextProps) {
+    componentWillReceiveProps(nextProps: any) {
       // If format changed, recreate
       if (nextProps.format !== this.props.format) {
         this.destroyNativeComponent()

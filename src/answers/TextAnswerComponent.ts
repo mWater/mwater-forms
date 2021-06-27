@@ -19,13 +19,13 @@ export default TextAnswerComponent = (function () {
       this.defaultProps = { readOnly: false }
     }
 
-    constructor(props) {
+    constructor(props: any) {
       super(props)
 
       this.state = { text: props.value }
     }
 
-    componentWillReceiveProps(nextProps) {
+    componentWillReceiveProps(nextProps: any) {
       // If different, override text
       if (nextProps.value !== this.props.value) {
         return this.setState({ text: nextProps.value != null ? nextProps.value : "" })
@@ -36,7 +36,7 @@ export default TextAnswerComponent = (function () {
       return this.input.focus()
     }
 
-    handleKeyDown = (ev) => {
+    handleKeyDown = (ev: any) => {
       if (this.props.onNextOrComments != null) {
         // When pressing ENTER or TAB
         if (ev.keyCode === 13 || ev.keyCode === 9) {
@@ -47,7 +47,7 @@ export default TextAnswerComponent = (function () {
       }
     }
 
-    handleBlur = (ev) => {
+    handleBlur = (ev: any) => {
       return this.props.onValueChange(ev.target.value ? ev.target.value : null)
     }
 

@@ -9,14 +9,14 @@ function now() {
   return new Date().getTime()
 }
 
-function toSeconds(ticks) {
+function toSeconds(ticks: any) {
   if (ticks != null) {
     return ticks / 1000
   } else {
     return null
   }
 }
-function toTicks(seconds) {
+function toTicks(seconds: any) {
   if (seconds != null) {
     return seconds * 1000
   } else {
@@ -24,11 +24,11 @@ function toTicks(seconds) {
   }
 }
 
-function integerDiv(dividend, divisor) {
+function integerDiv(dividend: any, divisor: any) {
   return [Math.floor(dividend / divisor), dividend % divisor]
 }
 
-function zeroPad(val, length) {
+function zeroPad(val: any, length: any) {
   val += ""
   const numPads = length - val.length
   if (numPads > 0) {
@@ -38,7 +38,7 @@ function zeroPad(val, length) {
   }
 }
 
-function getDisplayValue(ticks) {
+function getDisplayValue(ticks: any) {
   if (ticks != null) {
     let seconds
     let [minutes, remainder] = integerDiv(ticks, 60000)
@@ -63,7 +63,7 @@ export default StopwatchAnswerComponent = (function () {
       // Localizer to use
     }
 
-    constructor(props) {
+    constructor(props: any) {
       super(props)
       const ticks = toTicks(props.value)
       this.state = {
@@ -72,7 +72,7 @@ export default StopwatchAnswerComponent = (function () {
       }
     }
 
-    componentWillReceiveProps(nextProps) {
+    componentWillReceiveProps(nextProps: any) {
       if (this.state.timerId !== null) {
         // Don't update elapsedTicks if timer is active
         return this.setState({ elapsedTicks: toTicks(nextProps.value) })
@@ -88,7 +88,7 @@ export default StopwatchAnswerComponent = (function () {
     }
 
     // Stores the value in seconds
-    persistValue(ticks) {
+    persistValue(ticks: any) {
       return this.props.onValueChange(toSeconds(ticks))
     }
 

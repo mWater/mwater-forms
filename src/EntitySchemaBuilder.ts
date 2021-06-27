@@ -11,14 +11,14 @@ export default EntitySchemaBuilder = class EntitySchemaBuilder {
   //   propFilter: optional filter function that takes a property and returns true to include, false to exclude
   //   regionTypes: optional region types to add to schema
   // Returns updated schema
-  addEntities(schema, entityTypes, propFilter, regionTypes) {
+  addEntities(schema: any, entityTypes: any, propFilter: any, regionTypes: any) {
     // Keep list of reverse join columns (one to many) to add later. table and column
-    let contents, entityType, table
-    const reverseJoins = []
+    let contents, entityType: any, table
+    const reverseJoins: any = []
 
     // For each entity type, finding reverse joins
     for (entityType of entityTypes) {
-      traverseTree(entityType.properties, (prop) => {
+      traverseTree(entityType.properties, (prop: any) => {
         if (propFilter && !propFilter(prop)) {
           return null
         }
@@ -116,7 +116,7 @@ export default EntitySchemaBuilder = class EntitySchemaBuilder {
       let labelColumn = null
 
       // Add properties
-      contents = mapTree(entityType.properties || [], (prop) => {
+      contents = mapTree(entityType.properties || [], (prop: any) => {
         if (propFilter && !propFilter(prop)) {
           return null
         }
@@ -155,7 +155,7 @@ export default EntitySchemaBuilder = class EntitySchemaBuilder {
       })
 
       // Add custom regions right after admin_region if exists
-      contents = mapTree(contents, function (item) {
+      contents = mapTree(contents, function (item: any) {
         if (item.id !== "admin_region" || !regionTypes || regionTypes.length === 0) {
           return item
         }
@@ -396,7 +396,7 @@ export default EntitySchemaBuilder = class EntitySchemaBuilder {
 }
 
 // Append a string to each language
-function appendStr(str, suffix) {
+function appendStr(str: any, suffix: any) {
   const output = {}
   for (let key in str) {
     const value = str[key]
@@ -415,7 +415,7 @@ function appendStr(str, suffix) {
 }
 
 // Map a tree that consists of items with optional 'contents' array. null means to discard item
-function mapTree(tree, func) {
+function mapTree(tree: any, func: any) {
   if (!tree) {
     return tree
   }
@@ -434,7 +434,7 @@ function mapTree(tree, func) {
 }
 
 // Traverse a tree, calling func for each item
-function traverseTree(tree, func) {
+function traverseTree(tree: any, func: any) {
   if (!tree) {
     return
   }
@@ -454,7 +454,7 @@ function traverseTree(tree, func) {
 }
 
 // Make a plural form (in English)
-function pluralize(lstr) {
+function pluralize(lstr: any) {
   let pstr
   const str = lstr.en
   if (!str) {

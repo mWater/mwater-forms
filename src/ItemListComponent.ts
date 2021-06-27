@@ -25,14 +25,14 @@ export default ItemListComponent = (function () {
       // Schema to use, including form
     }
 
-    constructor(props) {
+    constructor(props: any) {
       super(props)
 
       // Refs of all items
       this.itemRefs = {}
     }
 
-    async validate(scrollToFirstInvalid) {
+    async validate(scrollToFirstInvalid: any) {
       let foundInvalid = false
       for (let item of this.props.contents) {
         // Only if validation is possible
@@ -48,7 +48,7 @@ export default ItemListComponent = (function () {
       return foundInvalid
     }
 
-    handleNext(index) {
+    handleNext(index: any) {
       index++
       if (index >= this.props.contents.length) {
         return this.props.onNext?.()
@@ -57,7 +57,7 @@ export default ItemListComponent = (function () {
       }
     }
 
-    renderItem = (item, index) => {
+    renderItem = (item: any, index: any) => {
       if (this.props.isVisible(item._id) && !item.disabled) {
         return formRenderUtils.renderItem(
           item,
@@ -67,10 +67,10 @@ export default ItemListComponent = (function () {
           this.props.onDataChange,
           this.props.isVisible,
           this.handleNext.bind(this, index),
-          (c) => {
+          (c: any) => {
             return (this.itemRefs[item._id] = c)
           }
-        )
+        );
       }
     }
 

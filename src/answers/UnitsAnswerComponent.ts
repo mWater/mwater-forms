@@ -25,7 +25,7 @@ export default UnitsAnswerComponent = (function () {
       }
     }
 
-    constructor(props) {
+    constructor(props: any) {
       super(props)
       this.state = {
         quantity: this.getSelectedQuantity(props.answer),
@@ -33,7 +33,7 @@ export default UnitsAnswerComponent = (function () {
       }
     }
 
-    componentWillReceiveProps(nextProps) {
+    componentWillReceiveProps(nextProps: any) {
       return this.setState({
         quantity: this.getSelectedQuantity(nextProps.answer),
         selectedUnits: this.getSelectedUnit(nextProps.answer)
@@ -48,7 +48,7 @@ export default UnitsAnswerComponent = (function () {
       }
     }
 
-    handleKeyDown = (ev) => {
+    handleKeyDown = (ev: any) => {
       if (this.props.onNextOrComments != null) {
         // When pressing ENTER or TAB
         if (ev.keyCode === 13 || ev.keyCode === 9) {
@@ -59,7 +59,7 @@ export default UnitsAnswerComponent = (function () {
       }
     }
 
-    handleInternalNext = (ev) => {
+    handleInternalNext = (ev: any) => {
       // When pressing ENTER or TAB
       if (ev.keyCode === 13 || ev.keyCode === 9) {
         if (this.props.prefix) {
@@ -72,20 +72,20 @@ export default UnitsAnswerComponent = (function () {
       }
     }
 
-    handleValueChange = (val) => {
+    handleValueChange = (val: any) => {
       return this.changed(val, this.state.selectedUnits)
     }
 
-    handleUnitChange = (val) => {
+    handleUnitChange = (val: any) => {
       return this.changed(this.state.quantity, val.target.value)
     }
 
-    changed(quantity, unit) {
+    changed(quantity: any, unit: any) {
       unit = unit ? unit : this.props.defaultUnits
       return this.props.onValueChange({ quantity, units: unit })
     }
 
-    getSelectedUnit(answer) {
+    getSelectedUnit(answer: any) {
       if (answer.value != null) {
         return answer.value.units
       }
@@ -97,7 +97,7 @@ export default UnitsAnswerComponent = (function () {
       return null
     }
 
-    getSelectedQuantity(answer) {
+    getSelectedQuantity(answer: any) {
       if (answer.value?.quantity != null) {
         return answer.value.quantity
       }
@@ -139,7 +139,7 @@ export default UnitsAnswerComponent = (function () {
                 "select",
                 {
                   id: "units",
-                  ref: (c) => {
+                  ref: (c: any) => {
                     return (this.units = c)
                   },
                   className: "form-control",
@@ -148,19 +148,18 @@ export default UnitsAnswerComponent = (function () {
                   value: this.state.selectedUnits === null ? "" : this.state.selectedUnits
                 },
                 !this.props.defaultUnits ? R("option", { value: "" }, "Select units") : undefined,
-                this.props.units.map((unit) =>
-                  R(
-                    "option",
-                    { key: unit.id, value: unit.id },
-                    formUtils.localizeString(unit.label, this.context.locale)
-                  )
+                this.props.units.map((unit: any) => R(
+                  "option",
+                  { key: unit.id, value: unit.id },
+                  formUtils.localizeString(unit.label, this.context.locale)
+                )
                 )
               )
             ),
             this.props.prefix ? this.createNumberInput() : undefined
           )
         )
-      )
+      );
     }
   }
   UnitsAnswerComponent.initClass()

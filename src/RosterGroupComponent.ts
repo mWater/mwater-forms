@@ -44,14 +44,14 @@ export default RosterGroupComponent = (function () {
     }
 
     // Propagate an answer change to the onDataChange
-    handleAnswerChange = (answer) => {
+    handleAnswerChange = (answer: any) => {
       const change = {}
       change[this.getAnswerId()] = answer
       return this.props.onDataChange(_.extend({}, this.props.data, change))
     }
 
     // Handles a change in data of a specific entry of the roster
-    handleEntryDataChange = (index, data) => {
+    handleEntryDataChange = (index: any, data: any) => {
       const answer = this.getAnswer().slice()
       answer[index] = _.extend({}, answer[index], { data })
       return this.handleAnswerChange(answer)
@@ -63,13 +63,13 @@ export default RosterGroupComponent = (function () {
       return this.handleAnswerChange(answer)
     }
 
-    handleRemove = (index) => {
+    handleRemove = (index: any) => {
       const answer = this.getAnswer().slice()
       answer.splice(index, 1)
       return this.handleAnswerChange(answer)
     }
 
-    async validate(scrollToFirstInvalid) {
+    async validate(scrollToFirstInvalid: any) {
       // For each entry
       let foundInvalid = false
       const iterable = this.getAnswer()
@@ -84,7 +84,7 @@ export default RosterGroupComponent = (function () {
       return foundInvalid
     }
 
-    isChildVisible = (index, id) => {
+    isChildVisible = (index: any, id: any) => {
       return this.props.isVisible(`${this.getAnswerId()}.${index}.${id}`)
     }
 
@@ -92,7 +92,7 @@ export default RosterGroupComponent = (function () {
       return R("h4", { key: "prompt" }, formUtils.localizeString(this.props.rosterGroup.name, this.context.locale))
     }
 
-    renderEntryTitle(entry, index) {
+    renderEntryTitle(entry: any, index: any) {
       return R(TextExprsComponent, {
         localizedStr: this.props.rosterGroup.entryTitle,
         exprs: this.props.rosterGroup.entryTitleExprs,
@@ -102,7 +102,7 @@ export default RosterGroupComponent = (function () {
       })
     }
 
-    renderEntry(entry, index) {
+    renderEntry(entry: any, index: any) {
       // To avoid circularity
       const ItemListComponent = require("./ItemListComponent")
 
@@ -132,7 +132,7 @@ export default RosterGroupComponent = (function () {
             : undefined,
 
           R(ItemListComponent, {
-            ref: (c) => {
+            ref: (c: any) => {
               return (this[`itemlist_${index}`] = c)
             },
             contents: this.props.rosterGroup.contents,
@@ -143,7 +143,7 @@ export default RosterGroupComponent = (function () {
             schema: this.props.schema
           })
         )
-      )
+      );
     }
 
     renderAdd() {
