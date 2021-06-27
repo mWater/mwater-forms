@@ -512,19 +512,7 @@ export function duplicateItem(item: any, idMap: any) {
 }
 
 // Finds all localized strings in an object
-export function extractLocalizedStrings(
-  this: any,
-  this: any,
-  this: any,
-  this: any,
-  this: any,
-  this: any,
-  this: any,
-  this: any,
-  this: any,
-  this: any,
-  obj: any
-) {
+export function extractLocalizedStrings(obj: any) {
   if (obj == null) {
     return []
   }
