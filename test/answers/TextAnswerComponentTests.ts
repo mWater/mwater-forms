@@ -22,11 +22,11 @@ describe("TextAnswerComponent", function () {
   })
 
   afterEach(function () {
-    return this.toDestroy.map((comp) => comp.destroy())
+    return this.toDestroy.map((comp: any) => comp.destroy());
   })
 
   it("records string in singleline answer", function (callback) {
-    function onValueChange(value) {
+    function onValueChange(value: any) {
       assert.equal(value, "response")
       return callback()
     }
@@ -38,7 +38,7 @@ describe("TextAnswerComponent", function () {
   })
 
   return it("records string in singleline answer", function (callback) {
-    function onValueChange(value) {
+    function onValueChange(value: any) {
       assert.equal(value, "response")
       return callback()
     }
@@ -47,5 +47,5 @@ describe("TextAnswerComponent", function () {
     const textArea = ReactTestUtils.findRenderedDOMComponentWithTag(this.comp.getComponent(), "textarea")
     TestComponent.changeValue(textArea, "response")
     return ReactTestUtils.Simulate.blur(textArea)
-  })
+  });
 })

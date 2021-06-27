@@ -8,7 +8,7 @@ import canonical from "canonical-json"
 import * as formUtils from "../src/formUtils"
 import confidentialDataForm from "./confidentialDataForm"
 
-function compare(actual, expected) {
+function compare(actual: any, expected: any) {
   return assert.equal(
     canonical(actual),
     canonical(expected),
@@ -485,7 +485,7 @@ describe("FormSchemaBuilder addForm", function () {
 
   describe("Answer types", function () {
     before(function () {
-      return (this.testQuestion = function (questionOptions, expectedColumns) {
+      return this.testQuestion = function (questionOptions: any, expectedColumns: any) {
         // Create question
         const question = {
           _id: "questionid",
@@ -530,7 +530,7 @@ describe("FormSchemaBuilder addForm", function () {
           }
           return result
         })()
-      })
+      };
     })
 
     it("text", function () {

@@ -6,7 +6,7 @@ import VisibilityCalculator from "../src/VisibilityCalculator"
 import { Schema } from "mwater-expressions"
 import canonical from "canonical-json"
 
-function compare(actual, expected) {
+function compare(actual: any, expected: any) {
   return assert.equal(
     canonical(actual),
     canonical(expected),
@@ -17,14 +17,14 @@ function compare(actual, expected) {
 describe("ResponseDataValidator", function () {
   before(function () {
     // Fake row response that returns array for every field, to simulate getting roster rows
-    return (this.responseRow = {
-      getField(columnId) {
+    return this.responseRow = {
+      getField(columnId: any) {
         return Promise.resolve([null, null, null, null, null])
       },
-      followJoin(columnId) {
+      followJoin(columnId: any) {
         return Promise.resolve([null, null, null, null, null])
       }
-    })
+    };
   })
 
   describe("without sections", function () {

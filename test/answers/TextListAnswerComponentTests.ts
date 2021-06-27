@@ -29,7 +29,7 @@ describe("TextListAnswerComponent", function () {
 
   it("records add", function (done) {
     const testComponent = this.render({
-      onValueChange(value) {
+      onValueChange(value: any) {
         assert.deepEqual(value, ["some text"])
         return done()
       }
@@ -42,7 +42,7 @@ describe("TextListAnswerComponent", function () {
   it("records remove", function (done) {
     const testComponent = this.render({
       value: ["some text"],
-      onValueChange(value) {
+      onValueChange(value: any) {
         assert.deepEqual(value, [])
         return done()
       }
@@ -54,7 +54,7 @@ describe("TextListAnswerComponent", function () {
   return it("loads existing values", function (done) {
     const testComponent = this.render({
       value: ["some text"],
-      onValueChange(value) {
+      onValueChange(value: any) {
         assert.deepEqual(value, ["some text", "more text"])
         return done()
       }
@@ -62,5 +62,5 @@ describe("TextListAnswerComponent", function () {
     const newLine = testComponent.findComponentById("newLine")
 
     return TestComponent.changeValue(newLine, "more text")
-  })
+  });
 })

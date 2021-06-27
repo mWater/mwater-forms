@@ -4,7 +4,7 @@ import { assert } from "chai"
 import canonical from "canonical-json"
 
 // Handy compare assertion that deep compares
-export default (actual, expected, message) =>
+export default (actual: any, expected: any, message: any) =>
   assert.equal(
     canonical(actual),
     canonical(expected),

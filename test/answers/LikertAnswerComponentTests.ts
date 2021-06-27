@@ -83,7 +83,7 @@ describe("LikertAnswerComponent", function () {
 
   it("records selected choice", function (done) {
     const testComponent = this.render({
-      onAnswerChange(answer) {
+      onAnswerChange(answer: any) {
         assert.deepEqual(answer.value, { itemB: "choiceB" })
         return done()
       }
@@ -100,7 +100,7 @@ describe("LikertAnswerComponent", function () {
   return it("allows unselecting choice by clicking twice", function (done) {
     const testComponent = this.render({
       answer: { value: { itemB: "choiceB" } },
-      onAnswerChange(answer) {
+      onAnswerChange(answer: any) {
         assert.deepEqual(answer.value, {})
         return done()
       }
@@ -112,5 +112,5 @@ describe("LikertAnswerComponent", function () {
 
     assert(itemBchoiceB != null, "could not find item B, choice B, radio btn")
     return TestComponent.click(itemBchoiceB)
-  })
+  });
 })

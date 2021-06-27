@@ -41,7 +41,7 @@ describe("EntityRow", function () {
       entityType: "a",
       entity: { y: "someid" },
       schema: this.schema,
-      getEntityById: (entityType, entityId, callback) => {
+      getEntityById: (entityType: any, entityId: any, callback: any) => {
         assert.equal(entityType, "b")
         assert.equal(entityId, "someid")
         return callback({ x: "abc" })
@@ -57,7 +57,7 @@ describe("EntityRow", function () {
       entityType: "a",
       entity: { y: "someid" },
       schema: this.schema,
-      getEntityById: (entityType, entityId, callback) => {
+      getEntityById: (entityType: any, entityId: any, callback: any) => {
         assert.equal(entityType, "b")
         assert.equal(entityId, "someid")
         return callback({ x: "abc" })
@@ -67,5 +67,5 @@ describe("EntityRow", function () {
     let value = await row.followJoin("y")
     value = await value.getField("x")
     return assert.equal(value, "abc")
-  })
+  });
 })

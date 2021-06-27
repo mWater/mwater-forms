@@ -10,22 +10,22 @@ import ReactDOM from "react-dom"
 const R = React.createElement
 
 describe("StopwatchAnswerComponent", function () {
-  let clock = null
+  let clock: any = null
 
   before(function () {
     clock = sinon.useFakeTimers()
 
     this.toDestroy = []
 
-    return (this.render = (options = {}) => {
+    return this.render = (options = {}) => {
       if (!options.T) {
-        options.T = (str) => str
+        options.T = (str: any) => str
       }
       const elem = R(StopwatchAnswerComponent, options)
       const comp = new TestComponent(elem)
       this.toDestroy.push(comp)
       return comp
-    })
+    };
   })
 
   afterEach(function () {
@@ -40,7 +40,7 @@ describe("StopwatchAnswerComponent", function () {
   it("records after [start, ticks, stop]", function (done) {
     let ready = false
     const comp = this.render({
-      onValueChange(value) {
+      onValueChange(value: any) {
         if (ready) {
           assert.equal(value, 1.23)
           return done()
@@ -58,7 +58,7 @@ describe("StopwatchAnswerComponent", function () {
   return it("resets after [start, ticks, stop, reset]", function (done) {
     let ready = false
     const comp = this.render({
-      onValueChange(value) {
+      onValueChange(value: any) {
         if (ready) {
           assert.equal(value, null)
           return done()
@@ -73,5 +73,5 @@ describe("StopwatchAnswerComponent", function () {
     ReactTestUtils.Simulate.click(btnStop)
     ready = true
     return ReactTestUtils.Simulate.click(btnReset)
-  })
+  });
 })

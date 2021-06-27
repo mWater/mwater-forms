@@ -6,7 +6,7 @@ import { default as ResponseDataExprValueUpdater } from "../src/ResponseDataExpr
 import { Schema } from "mwater-expressions"
 import canonical from "canonical-json"
 
-function compare(actual, expected) {
+function compare(actual: any, expected: any) {
   return assert.equal(
     canonical(actual),
     canonical(expected),
@@ -18,7 +18,7 @@ describe("ResponseDataExprValueUpdater", function () {
   describe("updates simple question values", function () {
     beforeEach(function () {
       // Test updating a single value. newValue is optional different resulting value
-      return (this.testUpdate = function (type, options, value, done, newValue) {
+      return this.testUpdate = function (type: any, options: any, value: any, done: any, newValue: any) {
         // Make simple question
         const question = {
           _id: "q1234",
@@ -42,7 +42,7 @@ describe("ResponseDataExprValueUpdater", function () {
           compare(data, { q1234: { value: newValue || value } })
           return done()
         })
-      })
+      };
     })
 
     it("TextQuestion, TextColumnQuestion", function (done) {
@@ -109,7 +109,7 @@ describe("ResponseDataExprValueUpdater", function () {
   describe("Complex questions", function () {
     before(function () {
       // Test updating a single expression. answer is expected answer
-      return (this.testUpdate = function (questionType, options, column, value, oldAnswer, newAnswer, done) {
+      return this.testUpdate = function (questionType: any, options: any, column: any, value: any, oldAnswer: any, newAnswer: any, done: any) {
         // Make simple question
         const question = {
           _id: "q1234",
@@ -133,7 +133,7 @@ describe("ResponseDataExprValueUpdater", function () {
           compare(data, { q1234: newAnswer })
           return done()
         })
-      })
+      };
     })
 
     describe("LikertQuestion", function () {
@@ -333,7 +333,7 @@ describe("ResponseDataExprValueUpdater", function () {
       it("searches", async function () {
         // Mock data source
         const dataSource = {
-          performQuery: (query, callback) => {
+          performQuery: (query: any, callback: any) => {
             // Should query for communities, getting the code and searching by name
             compare(query, {
               type: "query",
@@ -386,7 +386,7 @@ describe("ResponseDataExprValueUpdater", function () {
       it("searches with direct _id", function (done) {
         // Mock data source
         const dataSource = {
-          performQuery: (query, callback) => {
+          performQuery: (query: any, callback: any) => {
             // Should query for communities, getting the code and searching by name
             compare(query, {
               type: "query",
@@ -436,7 +436,7 @@ describe("ResponseDataExprValueUpdater", function () {
       return it("shortcuts if has code", function (done) {
         // Mock data source
         const dataSource = {
-          performQuery: (query, callback) => {
+          performQuery: (query: any, callback: any) => {
             return callback(new Error("Should not query"))
           }
         }
@@ -472,7 +472,7 @@ describe("ResponseDataExprValueUpdater", function () {
           compare(data.q1234.value, { code: "10007" })
           return done()
         })
-      })
+      });
     })
 
     describe("EntityQuestion", function () {
@@ -510,7 +510,7 @@ describe("ResponseDataExprValueUpdater", function () {
       return it("searches", function (done) {
         // Mock data source
         const dataSource = {
-          performQuery: (query, callback) => {
+          performQuery: (query: any, callback: any) => {
             // Should query for communities, getting the code and searching by name
             compare(query, {
               type: "query",
@@ -557,7 +557,7 @@ describe("ResponseDataExprValueUpdater", function () {
           compare(data.q1234.value, "12345")
           return done()
         })
-      })
+      });
     })
 
     return describe("AdminRegionQuestion", function () {
@@ -595,7 +595,7 @@ describe("ResponseDataExprValueUpdater", function () {
       return it("searches", function (done) {
         // Mock data source
         const dataSource = {
-          performQuery: (query, callback) => {
+          performQuery: (query: any, callback: any) => {
             // Should query for communities, getting the code and searching by name
             compare(query, {
               type: "query",
@@ -642,8 +642,8 @@ describe("ResponseDataExprValueUpdater", function () {
           compare(data.q1234.value, "12345")
           return done()
         })
-      })
-    })
+      });
+    });
   })
 
   describe("locations", function () {
@@ -674,12 +674,12 @@ describe("ResponseDataExprValueUpdater", function () {
         { q1234: { value: { latitude: 2, longitude: 3, altitude: 4 } } },
         expr,
         45,
-        (error, data) => {
+        (error: any, data: any) => {
           assert(!error)
           compare(data, { q1234: { value: { latitude: 45, longitude: 3, altitude: 4 } } })
           return done()
         }
-      )
+      );
     })
 
     it("updates longitude individually", function (done) {
@@ -694,12 +694,12 @@ describe("ResponseDataExprValueUpdater", function () {
         { q1234: { value: { latitude: 2, longitude: 3, altitude: 4 } } },
         expr,
         45,
-        (error, data) => {
+        (error: any, data: any) => {
           assert(!error)
           compare(data, { q1234: { value: { latitude: 2, longitude: 45, altitude: 4 } } })
           return done()
         }
-      )
+      );
     })
 
     it("updates accuracy", function (done) {
@@ -709,12 +709,12 @@ describe("ResponseDataExprValueUpdater", function () {
         { q1234: { value: { latitude: 2, longitude: 3, altitude: 4 } } },
         expr,
         45,
-        (error, data) => {
+        (error: any, data: any) => {
           assert(!error)
           compare(data, { q1234: { value: { latitude: 2, longitude: 3, accuracy: 45, altitude: 4 } } })
           return done()
         }
-      )
+      );
     })
 
     it("updates altitude", function (done) {
@@ -724,12 +724,12 @@ describe("ResponseDataExprValueUpdater", function () {
         { q1234: { value: { latitude: 2, longitude: 3, altitude: 4 } } },
         expr,
         45,
-        (error, data) => {
+        (error: any, data: any) => {
           assert(!error)
           compare(data, { q1234: { value: { latitude: 2, longitude: 3, altitude: 45 } } })
           return done()
         }
-      )
+      );
     })
 
     return it("updates method", function (done) {
@@ -739,13 +739,13 @@ describe("ResponseDataExprValueUpdater", function () {
         { q1234: { value: { latitude: 2, longitude: 3, altitude: 4 } } },
         expr,
         "gps",
-        (error, data) => {
+        (error: any, data: any) => {
           assert(!error)
           compare(data, { q1234: { value: { latitude: 2, longitude: 3, altitude: 4, method: "gps" } } })
           return done()
         }
-      )
-    })
+      );
+    });
   })
 
   it("updates na/don't know", function (done) {
@@ -912,34 +912,34 @@ describe("ResponseDataExprValueUpdater", function () {
 
       this.updater = new ResponseDataExprValueUpdater(formDesign, null, null)
 
-      this.testIndividualCBTField = (field, value, done) => {
+      this.testIndividualCBTField = (field: any, value: any, done: any) => {
         const expr = { type: "field", table: "responses:form1234", column: `data:q1234:value:cbt:${field}` }
 
-        return this.updater.updateData({}, expr, value, (error, data) => {
+        return this.updater.updateData({}, expr, value, (error: any, data: any) => {
           assert(!error)
           const cbt = {}
           cbt[field] = value
           compare(data, { q1234: { value: { cbt } } })
           return done()
-        })
+        });
       }
 
-      return (this.testExistingCBTField = (field, value, done) => {
+      return this.testExistingCBTField = (field: any, value: any, done: any) => {
         const expr = { type: "field", table: "responses:form1234", column: `data:q1234:value:cbt:${field}` }
 
         return this.updater.updateData(
           { q1234: { value: { cbt: { mpn: 4, confidence: 80, healthRisk: "Unsafe" } } } },
           expr,
           value,
-          (error, data) => {
+          (error: any, data: any) => {
             assert(!error)
             const expected = { q1234: { value: { cbt: { mpn: 4, confidence: 80, healthRisk: "Unsafe" } } } }
             expected["q1234"]["value"]["cbt"][field] = value
             compare(data, expected)
             return done()
           }
-        )
-      })
+        );
+      };
     })
 
     it("updates c1 individually", function (done) {
@@ -1010,11 +1010,11 @@ describe("ResponseDataExprValueUpdater", function () {
       // mpn
       const expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:image" }
 
-      return this.updater.updateData({}, expr, "https://api.mwater.co/v3/images/abc", (error, data) => {
+      return this.updater.updateData({}, expr, "https://api.mwater.co/v3/images/abc", (error: any, data: any) => {
         assert(!error)
         compare(data, { q1234: { value: { image: "https://api.mwater.co/v3/images/abc" } } })
         return done()
-      })
+      });
     })
 
     return it("updates image existing data", function (done) {
@@ -1025,13 +1025,13 @@ describe("ResponseDataExprValueUpdater", function () {
         { q1234: { value: { image: "https://api.mwater.co/v3/images/abc" } } },
         expr,
         "https://api.mwater.co/v3/images/xyz",
-        (error, data) => {
+        (error: any, data: any) => {
           assert(!error)
           compare(data, { q1234: { value: { image: "https://api.mwater.co/v3/images/xyz" } } })
           return done()
         }
-      )
-    })
+      );
+    });
   })
 
   describe("handles cascading list question", function () {
@@ -1088,31 +1088,31 @@ describe("ResponseDataExprValueUpdater", function () {
 
     it("handles cascading field", function (done) {
       const expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:c0" }
-      return this.updater.updateData({}, expr, "FH75Bd8sGs", (error, data) => {
+      return this.updater.updateData({}, expr, "FH75Bd8sGs", (error: any, data: any) => {
         assert(!error)
         compare(data, { q1234: { value: { c0: "FH75Bd8sGs" } } })
         return done()
-      })
+      });
     })
 
     it("rejects unknown field value", function (done) {
       const expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:c0" }
-      return this.updater.updateData({}, expr, "123", (error, data) => {
+      return this.updater.updateData({}, expr, "123", (error: any, data: any) => {
         assert(error)
         assert.equal('Column "Type" value 123 in question "Food" not found', error.message)
         return done()
-      })
+      });
     })
 
     it("updates cascading answer", function (done) {
       const expr1 = { type: "field", table: "responses:form1234", column: "data:q1234:value:c0" }
       const expr2 = { type: "field", table: "responses:form1234", column: "data:q1234:value:c1" }
 
-      return this.updater.updateData({}, expr1, "FH75Bd8sGs", (error, data) => {
+      return this.updater.updateData({}, expr1, "FH75Bd8sGs", (error: any, data: any) => {
         assert(!error)
         compare(data, { q1234: { value: { c0: "FH75Bd8sGs" } } })
 
-        return this.updater.updateData(data, expr2, "9Hfz7rQtX1", (error, data) => {
+        return this.updater.updateData(data, expr2, "9Hfz7rQtX1", (error: any, data: any) => {
           assert(!error)
           compare(data, { q1234: { value: { c0: "FH75Bd8sGs", c1: "9Hfz7rQtX1" } } })
 
@@ -1120,26 +1120,26 @@ describe("ResponseDataExprValueUpdater", function () {
           return this.updater.cleanData(
             data,
             function () {},
-            (error, cleanData) => {
+            (error: any, cleanData: any) => {
               compare(cleanData, {
                 q1234: { value: { c0: "FH75Bd8sGs", c1: "9Hfz7rQtX1", id: "a847771205894fc1bb0584a567ef275e" } }
               })
               return done()
             }
-          )
-        })
-      })
+          );
+        });
+      });
     })
 
     return it("prevents selecting a non-existant row", function (done) {
       const expr1 = { type: "field", table: "responses:form1234", column: "data:q1234:value:c0" }
       const expr2 = { type: "field", table: "responses:form1234", column: "data:q1234:value:c1" }
 
-      return this.updater.updateData({}, expr1, "FH75Bd8sGs", (error, data) => {
+      return this.updater.updateData({}, expr1, "FH75Bd8sGs", (error: any, data: any) => {
         assert(!error)
         compare(data, { q1234: { value: { c0: "FH75Bd8sGs" } } })
 
-        return this.updater.updateData(data, expr2, "rxq8WyVxaP", (error, data2) => {
+        return this.updater.updateData(data, expr2, "rxq8WyVxaP", (error: any, data2: any) => {
           // This row combination doesn't exist, so it should fail here
           // If we waited for the cleaning, it would just remove bad data rather than flag it
           assert(error)
@@ -1151,14 +1151,14 @@ describe("ResponseDataExprValueUpdater", function () {
           return this.updater.cleanData(
             data,
             function () {},
-            (error, cleanData) => {
+            (error: any, cleanData: any) => {
               compare(cleanData, { q1234: {} })
               return done()
             }
-          )
-        })
-      })
-    })
+          );
+        });
+      });
+    });
   })
 
   return describe("handles cascading ref question", function () {
@@ -1184,7 +1184,7 @@ describe("ResponseDataExprValueUpdater", function () {
     return it("searches", async function () {
       // Mock data source
       const dataSource = {
-        performQuery: (query, callback) => {
+        performQuery: (query: any, callback: any) => {
           // Should query for row matching c1 and c2, returning _id
           compare(query, {
             type: "query",
@@ -1239,6 +1239,6 @@ describe("ResponseDataExprValueUpdater", function () {
         { expr: expr2, value: "v2" }
       ])
       return compare(data, { q1234: { value: "12345" } })
-    })
-  })
+    });
+  });
 })

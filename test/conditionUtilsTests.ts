@@ -7,7 +7,7 @@ import * as conditionUtils from "../src/conditionUtils"
 describe("conditionUtils", function () {
   describe("compileCondition", function () {
     beforeEach(function () {
-      this.compileCondition = (lhs, op, rhs) => {
+      this.compileCondition = (lhs: any, op: any, rhs: any) => {
         const cond = {
           lhs: { question: "lhsid" },
           op,
@@ -17,18 +17,18 @@ describe("conditionUtils", function () {
       }
 
       // lhsExtras is stuff to add to answer of lhs question
-      this.testTrue = (lhs, op, rhs, lhsExtras = {}) => {
+      this.testTrue = (lhs: any, op: any, rhs: any, lhsExtras = {}) => {
         const data = { lhsid: _.extend({ value: lhs }, lhsExtras) }
         const condition = this.compileCondition(lhs, op, rhs, lhsExtras)
         return assert.isTrue(condition(data))
       }
 
       // lhsExtras is stuff to add to answer of lhs question
-      return (this.testFalse = (lhs, op, rhs, lhsExtras = {}) => {
+      return this.testFalse = (lhs: any, op: any, rhs: any, lhsExtras = {}) => {
         const data = { lhsid: _.extend({ value: lhs }, lhsExtras) }
         const condition = this.compileCondition(lhs, op, rhs, lhsExtras)
         return assert.isFalse(condition(data))
-      })
+      };
     })
 
     describe("present", function () {

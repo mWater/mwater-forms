@@ -32,7 +32,7 @@ class SiteContext extends React.Component {
       getEntityById() {
         return null
       },
-      getEntityByCode(code) {
+      getEntityByCode(code: any) {
         if (code === "10007") {
           return true
         }
@@ -47,7 +47,7 @@ class SiteContext extends React.Component {
       T() {
         return null
       }
-    }
+    };
   }
 
   render() {
@@ -69,12 +69,12 @@ describe("SiteAnswerComponent", function () {
   })
 
   afterEach(function () {
-    return this.toDestroy.map((comp) => comp.destroy())
+    return this.toDestroy.map((comp: any) => comp.destroy());
   })
 
   it("allows valid site codes", function (done) {
     const testComponent = this.render({
-      async onValueChange(value) {
+      async onValueChange(value: any) {
         assert.equal(value.code, "10007")
 
         // Validate answer
@@ -94,7 +94,7 @@ describe("SiteAnswerComponent", function () {
 
   return it("rejects invalid site codes", function (done) {
     const testComponent = this.render({
-      async onValueChange(value) {
+      async onValueChange(value: any) {
         assert.equal(value.code, "10008")
 
         // Validate answer
@@ -110,5 +110,5 @@ describe("SiteAnswerComponent", function () {
     const input = testComponent.findInput()
     TestComponent.changeValue(input, "10008")
     return ReactTestUtils.Simulate.blur(input)
-  })
+  });
 })

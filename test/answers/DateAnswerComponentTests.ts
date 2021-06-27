@@ -24,13 +24,13 @@ describe.skip("DateAnswerComponent", function () {
   })
 
   afterEach(function () {
-    return this.toDestroy.map((comp) => comp.destroy())
+    return this.toDestroy.map((comp: any) => comp.destroy());
   })
 
   it("displays format YYYY-MM-DD", function (done) {
     const testComponent = this.render({
       value: null,
-      onValueChange(value) {
+      onValueChange(value: any) {
         assert.equal(value, "2013-12-31")
         return done()
       }

@@ -14,10 +14,10 @@ export default MockTContextWrapper = (function () {
 
     getChildContext() {
       return {
-        T(str) {
+        T(str: any) {
           return str
         }
-      }
+      };
     }
 
     render() {

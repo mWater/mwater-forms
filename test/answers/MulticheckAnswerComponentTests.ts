@@ -64,7 +64,7 @@ describe("MulticheckAnswerComponent", function () {
 
   it("records selected choice", function (done) {
     const testComponent = this.render({
-      onAnswerChange(answer) {
+      onAnswerChange(answer: any) {
         assert.deepEqual(answer.value, ["a"])
         return done()
       }
@@ -79,7 +79,7 @@ describe("MulticheckAnswerComponent", function () {
   it("records multiple selected choice", function (done) {
     const testComponent = this.render({
       answer: { value: ["a"] },
-      onAnswerChange(answer) {
+      onAnswerChange(answer: any) {
         assert.deepEqual(answer.value, ["a", "b"])
         return done()
       }
@@ -94,7 +94,7 @@ describe("MulticheckAnswerComponent", function () {
   it("can unselected choice", function (done) {
     const testComponent = this.render({
       answer: { value: ["a", "b"] },
-      onAnswerChange(answer) {
+      onAnswerChange(answer: any) {
         assert.deepEqual(answer.value, ["a"])
         return done()
       }
@@ -129,7 +129,7 @@ describe("MulticheckAnswerComponent", function () {
 
   it("records specify value", function (done) {
     const testComponent = this.render({
-      onAnswerChange(answer) {
+      onAnswerChange(answer: any) {
         assert.deepEqual(answer.specify, { c: "specify" })
         return done()
       },
@@ -142,7 +142,7 @@ describe("MulticheckAnswerComponent", function () {
 
   it("does remove specify value on unselection", function (done) {
     const testComponent = this.render({
-      onAnswerChange(answer) {
+      onAnswerChange(answer: any) {
         assert.deepEqual(answer.specify, {})
         return done()
       },
@@ -155,7 +155,7 @@ describe("MulticheckAnswerComponent", function () {
 
   return it("does not remove specify value on other selection", function (done) {
     const testComponent = this.render({
-      onAnswerChange(answer) {
+      onAnswerChange(answer: any) {
         assert.deepEqual(answer.specify, { c: "specify" })
         return done()
       },
@@ -164,5 +164,5 @@ describe("MulticheckAnswerComponent", function () {
 
     const choiceB = testComponent.findComponentById("b")
     return TestComponent.click(choiceB)
-  })
+  });
 })

@@ -21,7 +21,7 @@ describe("ResponseCleaner", function () {
 
       // Fake defaultValueApplier
       const defaultValueApplier = {
-        setStickyData(newData, oldVisibilityStructure, newVisibilityStructure) {
+        setStickyData(newData: any, oldVisibilityStructure: any, newVisibilityStructure: any) {
           newData = _.cloneDeep(newData)
           // Default q2
           if (!oldVisibilityStructure["q2"] && newVisibilityStructure["q2"]) {
@@ -34,7 +34,7 @@ describe("ResponseCleaner", function () {
 
       // Fake random asked calculator
       const randomAskedCalculator = {
-        calculateRandomAsked(data, visibilityStructure) {
+        calculateRandomAsked(data: any, visibilityStructure: any) {
           return data
         }
       }
@@ -53,13 +53,13 @@ describe("ResponseCleaner", function () {
         data,
         function () {},
         oldVisibilityStructure,
-        (error, results) => {
+        (error: any, results: any) => {
           assert(!error)
           assert.deepEqual(results.data, { q1: { value: "sometext" }, q2: { value: "defaulttext" } })
           assert.deepEqual(results.visibilityStructure, { q1: true, q2: true, q3: false })
           return done()
         }
-      )
+      );
     })
 
     return it("does not delete disabled questions data", function (done) {
@@ -72,14 +72,14 @@ describe("ResponseCleaner", function () {
 
       // Fake defaultValueApplier
       const defaultValueApplier = {
-        setStickyData(newData, oldVisibilityStructure, newVisibilityStructure) {
+        setStickyData(newData: any, oldVisibilityStructure: any, newVisibilityStructure: any) {
           return newData
         }
       }
 
       // Fake random asked calculator
       const randomAskedCalculator = {
-        calculateRandomAsked(data, visibilityStructure) {
+        calculateRandomAsked(data: any, visibilityStructure: any) {
           return data
         }
       }
@@ -98,13 +98,13 @@ describe("ResponseCleaner", function () {
         data,
         function () {},
         oldVisibilityStructure,
-        (error, results) => {
+        (error: any, results: any) => {
           assert(!error)
           assert.deepEqual(results.data, { q1: { value: "sometext" } })
           return done()
         }
-      )
-    })
+      );
+    });
   })
 
   describe("cleanDataBasedOnVisibility", function () {

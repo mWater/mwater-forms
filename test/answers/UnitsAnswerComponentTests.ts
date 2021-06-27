@@ -37,7 +37,7 @@ describe("UnitsAnswerComponent", function () {
   })
 
   afterEach(function () {
-    return this.toDestroy.map((comp) => comp.destroy())
+    return this.toDestroy.map((comp: any) => comp.destroy());
   })
 
   it("allows changing of units", function (done) {
@@ -46,7 +46,7 @@ describe("UnitsAnswerComponent", function () {
         quantity: null,
         units: "a"
       },
-      onValueChange(value) {
+      onValueChange(value: any) {
         assert.equal(value.units, "b")
         return done()
       }
@@ -69,7 +69,7 @@ describe("UnitsAnswerComponent", function () {
         unit: null
       },
 
-      onValueChange(value) {
+      onValueChange(value: any) {
         assert.equal(value.quantity, 13.33)
         return done()
       }
@@ -88,7 +88,7 @@ describe("UnitsAnswerComponent", function () {
         unit: null
       },
       decimal: false,
-      onValueChange(value) {
+      onValueChange(value: any) {
         assert.equal(value.quantity, 13)
         return done()
       }
@@ -107,7 +107,7 @@ describe("UnitsAnswerComponent", function () {
         units: null
       },
       defaultUnits: "b",
-      onValueChange(value) {
+      onValueChange(value: any) {
         assert.equal(value.quantity, 13.33)
         assert.equal(value.units, "b")
         return done()
@@ -118,5 +118,5 @@ describe("UnitsAnswerComponent", function () {
 
     TestComponent.changeValue(quantityInput, "13.33")
     return ReactTestUtils.Simulate.blur(quantityInput)
-  })
+  });
 })

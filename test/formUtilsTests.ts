@@ -8,7 +8,7 @@ import sectionedForm, * as sectionedFormExports from "./sectionedForm"
 import * as propertyLinksFormDesign from "./propertyLinksFormDesign"
 import canonical from "canonical-json"
 
-function compare(actual, expected) {
+function compare(actual: any, expected: any) {
   return assert.equal(
     canonical(actual),
     canonical(expected),

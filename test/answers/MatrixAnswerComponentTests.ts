@@ -60,7 +60,7 @@ describe("MatrixAnswerComponent", function () {
 
   return it("records text change", function (done) {
     const testComponent = this.render({
-      onValueChange(value) {
+      onValueChange(value: any) {
         assert.deepEqual(value, { a: { c1: { value: "x" } } })
         return done()
       }
@@ -69,5 +69,5 @@ describe("MatrixAnswerComponent", function () {
     const inputs = ReactTestUtils.scryRenderedDOMComponentsWithTag(testComponent.getComponent(), "input")
     inputs[0].value = "x"
     return ReactTestUtils.Simulate.change(inputs[0])
-  })
+  });
 })

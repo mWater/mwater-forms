@@ -4,11 +4,11 @@ import $ from "jquery"
 import { assert } from "chai"
 
 class UIDriver {
-  constructor(el) {
+  constructor(el: any) {
     this.el = $(el)
   }
 
-  getDisabled(str) {
+  getDisabled(str: any) {
     for (let item of this.el.find("a,button")) {
       if ($(item).text().indexOf(str) !== -1) {
         return $(item).is(":disabled")
@@ -17,7 +17,7 @@ class UIDriver {
     return assert.fail(null, str, "Can't find: " + str)
   }
 
-  click(str) {
+  click(str: any) {
     for (let item of this.el.find("a,button")) {
       if ($(item).text().indexOf(str) !== -1) {
         //console.log "Clicking: " + $(item).text()
@@ -28,7 +28,7 @@ class UIDriver {
     return assert.fail(null, str, "Can't find: " + str)
   }
 
-  fill(str, value) {
+  fill(str: any, value: any) {
     return (() => {
       const result = []
       for (let item of this.el.find("label")) {
@@ -51,7 +51,7 @@ class UIDriver {
     return this.el.html()
   }
 
-  wait(after) {
+  wait(after: any) {
     return setTimeout(after, 10)
   }
 }

@@ -117,7 +117,7 @@ describe("VisibilityCalculator", function () {
         responseData: data
       })
 
-      return this.visibilityCalculator.createVisibilityStructure(data, responseRow, (error, visibilityStructure) => {
+      return this.visibilityCalculator.createVisibilityStructure(data, responseRow, (error: any, visibilityStructure: any) => {
         const expectedVisibilityStructure = {
           sectionId: true,
           checkboxQuestionId: true,
@@ -136,8 +136,8 @@ describe("VisibilityCalculator", function () {
         }
         assert.deepEqual(visibilityStructure, expectedVisibilityStructure)
         return done()
-      })
-    })
+      });
+    });
   })
 
   describe("processQuestion", function () {
@@ -158,11 +158,11 @@ describe("VisibilityCalculator", function () {
           null,
           visibilityStructure,
           "",
-          (error) => {
+          (error: any) => {
             assert.deepEqual({ testId: false }, visibilityStructure)
             return done()
           }
-        )
+        );
       })
 
       it("sets visibility using the prefix", function (done) {
@@ -176,11 +176,11 @@ describe("VisibilityCalculator", function () {
           null,
           visibilityStructure,
           "testprefix.",
-          (error) => {
+          (error: any) => {
             assert.deepEqual({ "testprefix.testId": true }, visibilityStructure)
             return done()
           }
-        )
+        );
       })
 
       it("sets visibility to true if conditions is null, undefined or empty", function (done) {
@@ -195,7 +195,7 @@ describe("VisibilityCalculator", function () {
           null,
           visibilityStructure,
           "",
-          (error) => {
+          (error: any) => {
             assert.deepEqual({ testId: true }, visibilityStructure)
 
             question = { _id: "testId", conditions: null }
@@ -207,7 +207,7 @@ describe("VisibilityCalculator", function () {
               null,
               visibilityStructure,
               "",
-              (error) => {
+              (error: any) => {
                 assert.deepEqual({ testId: true }, visibilityStructure)
 
                 question = { _id: "testId", conditions: [] }
@@ -219,22 +219,22 @@ describe("VisibilityCalculator", function () {
                   null,
                   visibilityStructure,
                   "",
-                  (error) => {
+                  (error: any) => {
                     assert.deepEqual({ testId: true }, visibilityStructure)
                     return done()
                   }
-                )
+                );
               }
-            )
+            );
           }
-        )
+        );
       })
 
       it("evaluates conditionExpr true", function (done) {
         const data = {}
         const question = { _id: "testId", conditionExpr: { type: "literal", valueType: "boolean", value: true } }
         const visibilityStructure = {}
-        this.visibilityCalculator.processQuestion(question, false, data, null, visibilityStructure, "", (error) => {
+        this.visibilityCalculator.processQuestion(question, false, data, null, visibilityStructure, "", (error: any) => {
           assert.deepEqual({ testId: true }, visibilityStructure)
           return done()
         })
@@ -244,7 +244,7 @@ describe("VisibilityCalculator", function () {
         const data = {}
         const question = { _id: "testId", conditionExpr: { type: "literal", valueType: "boolean", value: false } }
         const visibilityStructure = {}
-        this.visibilityCalculator.processQuestion(question, false, data, null, visibilityStructure, "", (error) => {
+        this.visibilityCalculator.processQuestion(question, false, data, null, visibilityStructure, "", (error: any) => {
           assert.deepEqual({ testId: false }, visibilityStructure)
           return done()
         })
@@ -254,7 +254,7 @@ describe("VisibilityCalculator", function () {
         const data = {}
         const question = { _id: "testId", conditionExpr: { type: "literal", valueType: "boolean", value: null } }
         const visibilityStructure = {}
-        this.visibilityCalculator.processQuestion(question, false, data, null, visibilityStructure, "", (error) => {
+        this.visibilityCalculator.processQuestion(question, false, data, null, visibilityStructure, "", (error: any) => {
           assert.deepEqual({ testId: false }, visibilityStructure)
           return done()
         })
@@ -274,11 +274,11 @@ describe("VisibilityCalculator", function () {
           null,
           visibilityStructure,
           "",
-          (error) => {
+          (error: any) => {
             assert.deepEqual({ testId: true }, visibilityStructure)
             return done()
           }
-        )
+        );
       })
 
       it("sets visibility to false if conditions is false", function (done) {
@@ -295,11 +295,11 @@ describe("VisibilityCalculator", function () {
           null,
           visibilityStructure,
           "",
-          (error) => {
+          (error: any) => {
             assert.deepEqual(visibilityStructure, { testId: false })
             return done()
           }
-        )
+        );
       })
 
       it("sets visibility to true if randomAsked is null", function (done) {
@@ -319,11 +319,11 @@ describe("VisibilityCalculator", function () {
           null,
           visibilityStructure,
           "",
-          (error) => {
+          (error: any) => {
             assert.deepEqual(visibilityStructure, { testId: true })
             return done()
           }
-        )
+        );
       })
 
       return it("sets visibility to false if randomAsked is false", function (done) {
@@ -344,13 +344,13 @@ describe("VisibilityCalculator", function () {
           null,
           visibilityStructure,
           "",
-          (error) => {
+          (error: any) => {
             assert.deepEqual(visibilityStructure, { testId: false })
             return done()
           }
-        )
-      })
-    })
+        );
+      });
+    });
   })
 
   return describe("processGroup", () =>
@@ -401,17 +401,17 @@ describe("VisibilityCalculator", function () {
       const data = {}
 
       const firstSection = form.contents[0]
-      return visibilityCalculator.processGroup(firstSection, false, data, null, visibilityStructure, "", (error) => {
+      return visibilityCalculator.processGroup(firstSection, false, data, null, visibilityStructure, "", (error: any) => {
         assert.deepEqual({ firstSectionId: true, checkboxQuestionId: true }, visibilityStructure)
 
         const secondSection = form.contents[1]
-        return visibilityCalculator.processGroup(secondSection, true, data, null, visibilityStructure, "", (error) => {
+        return visibilityCalculator.processGroup(secondSection, true, data, null, visibilityStructure, "", (error: any) => {
           assert.deepEqual(
             { firstSectionId: true, checkboxQuestionId: true, secondSectionId: false, anotherQuestionId: false },
             visibilityStructure
           )
           return done()
-        })
-      })
-    }))
+        });
+      });
+    }));
 })

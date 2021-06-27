@@ -44,7 +44,7 @@ describe("QuestionComponent", function () {
   })
 
   afterEach(function () {
-    return this.toDestroy.map((comp) => comp.destroy())
+    return this.toDestroy.map((comp: any) => comp.destroy());
   })
 
   it("displays question text", function () {
@@ -87,7 +87,7 @@ describe("QuestionComponent", function () {
 
     this.question.commentsField = true
     testComponent = this.render({
-      onAnswerChange(answer) {
+      onAnswerChange(answer: any) {
         assert.equal(answer.comments, "some comment")
         return done()
       }
@@ -113,7 +113,7 @@ describe("QuestionComponent", function () {
     this.question.commentsField = true
     const testComponent = this.render({
       data: { q1234: { comments: "some comment" } },
-      onAnswerChange(answer) {
+      onAnswerChange(answer: any) {
         const after = new Date().toISOString()
         // Some imprecision in the date stamp was causing occassional failures
         assert(answer.timestamp.substr(0, 10) >= before.substr(0, 10), answer.timestamp + " < " + before)
@@ -130,7 +130,7 @@ describe("QuestionComponent", function () {
   it("records alternate na", function (done) {
     this.question.alternates = { na: true }
     const testComponent = this.render({
-      onAnswerChange(answer) {
+      onAnswerChange(answer: any) {
         assert.equal(answer.alternate, "na")
         return done()
       }
@@ -151,7 +151,7 @@ describe("QuestionComponent", function () {
   it("records alternate dontknow", function (done) {
     this.question.alternates = { dontknow: true, na: true }
     const testComponent = this.render({
-      onAnswerChange(answer) {
+      onAnswerChange(answer: any) {
         assert.equal(answer.alternate, "dontknow")
         return done()
       }
@@ -164,7 +164,7 @@ describe("QuestionComponent", function () {
     this.question.alternates = { dontknow: true, na: true }
     const testComponent = this.render({
       data: { q1234: { value: "test" } },
-      onAnswerChange(answer) {
+      onAnswerChange(answer: any) {
         assert.equal(answer.alternate, "dontknow")
         assert.equal(answer.value, null)
         return done()
@@ -179,12 +179,12 @@ describe("QuestionComponent", function () {
     this.question.alternates = { dontknow: true, na: true }
     const myOptions = {
       data: { q1234: { value: "test" } },
-      onAnswerChange: (answer) => {
+      onAnswerChange: (answer: any) => {
         assert.equal(answer.alternate, "dontknow")
         assert.equal(answer.value, null)
 
         this.options.data = { q1234: answer }
-        this.options.onAnswerChange = function (answer) {
+        this.options.onAnswerChange = function (answer: any) {
           assert.equal(null, answer.alternate, "Alternate shouldn't be set anymore")
           assert.equal(answer.value, "test", "Should be back to test")
           return done()
@@ -210,7 +210,7 @@ describe("QuestionComponent", function () {
     this.question.alternates = { dontknow: true, na: true }
     const testComponent = this.render({
       data: { q1234: { alternate: "na" } },
-      onAnswerChange(answer) {
+      onAnswerChange(answer: any) {
         assert.equal(answer.alternate, null)
         assert.equal(answer.value, "test")
         return done()
@@ -219,5 +219,5 @@ describe("QuestionComponent", function () {
     const input = testComponent.findComponentById("input")
     TestComponent.changeValue(input, "test")
     return ReactTestUtils.Simulate.blur(input)
-  })
+  });
 })

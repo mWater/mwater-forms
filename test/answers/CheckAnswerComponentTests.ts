@@ -21,11 +21,11 @@ describe("CheckAnswerComponent", function () {
   })
 
   afterEach(function () {
-    return this.toDestroy.map((comp) => comp.destroy())
+    return this.toDestroy.map((comp: any) => comp.destroy());
   })
 
   it("can check", function (callback) {
-    function onValueChange(value) {
+    function onValueChange(value: any) {
       assert.equal(value, true)
       return callback()
     }
@@ -37,7 +37,7 @@ describe("CheckAnswerComponent", function () {
   })
 
   return it("can uncheck", function (callback) {
-    function onValueChange(value) {
+    function onValueChange(value: any) {
       assert.equal(value, false)
       return callback()
     }
@@ -46,5 +46,5 @@ describe("CheckAnswerComponent", function () {
     const checkbox = ReactTestUtils.findRenderedDOMComponentWithClass(this.comp.getComponent(), "touch-checkbox")
 
     return TestComponent.click(checkbox)
-  })
+  });
 })

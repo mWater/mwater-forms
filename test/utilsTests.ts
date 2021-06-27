@@ -5,7 +5,7 @@ import { assert } from "chai"
 import * as utils from "../src/utils"
 
 // Fake localization
-function T(str) {
+function T(str: any) {
   return str
 }
 

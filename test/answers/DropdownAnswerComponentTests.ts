@@ -9,7 +9,7 @@ import React from "react"
 import ReactDOM from "react-dom"
 const R = React.createElement
 
-function createOptions(options) {
+function createOptions(options: any) {
   return _.extend(
     {
       onAnswerChange() {
@@ -48,13 +48,13 @@ describe("DropdownAnswerComponent", function () {
   })
 
   afterEach(function () {
-    return this.toDestroy.map((comp) => comp.destroy())
+    return this.toDestroy.map((comp: any) => comp.destroy());
   })
 
   it("accepts known value", function (done) {
     const testComponent = this.render(
       createOptions({
-        onAnswerChange(answer) {
+        onAnswerChange(answer: any) {
           assert.equal(answer.value, "a")
           return done()
         }
@@ -68,7 +68,7 @@ describe("DropdownAnswerComponent", function () {
   it("is not disabled with empty value", function (done) {
     const testComponent = this.render(
       createOptions({
-        onAnswerChange(answer) {
+        onAnswerChange(answer: any) {
           assert.equal(answer.value, null)
           return done()
         },
@@ -119,7 +119,7 @@ describe("DropdownAnswerComponent", function () {
   it("records specify value", function (done) {
     const testComponent = this.render(
       createOptions({
-        onAnswerChange(answer) {
+        onAnswerChange(answer: any) {
           assert.deepEqual(answer.specify, { b: "specify" })
           return done()
         },
@@ -134,7 +134,7 @@ describe("DropdownAnswerComponent", function () {
   return it("removes specify value on other selection", function (done) {
     const testComponent = this.render(
       createOptions({
-        onAnswerChange(answer) {
+        onAnswerChange(answer: any) {
           assert.deepEqual(answer.specify, null)
           return done()
         },
@@ -144,5 +144,5 @@ describe("DropdownAnswerComponent", function () {
 
     const select = ReactTestUtils.findRenderedDOMComponentWithTag(testComponent.getComponent(), "select")
     return TestComponent.changeValue(select, "b")
-  })
+  });
 })

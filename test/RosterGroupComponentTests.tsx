@@ -18,7 +18,7 @@ describe("RosterGroupComponent", function () {
     this.toDestroy = []
 
     // Options should include data
-    this.render = (options) => {
+    this.render = (options: any) => {
       const elem = R(
         RosterGroupComponent,
         _.defaults(options, {
@@ -49,11 +49,11 @@ describe("RosterGroupComponent", function () {
   })
 
   afterEach(function () {
-    return this.toDestroy.map((comp) => comp.destroy())
+    return this.toDestroy.map((comp: any) => comp.destroy());
   })
 
   it("adds entry when add is clicked", function (done) {
-    const onDataChange = (val) => {
+    const onDataChange = (val: any) => {
       assert.equal(val.a.length, 1)
       assert(val.a[0]._id)
       assert.deepEqual(val.a[0].data, {})
@@ -68,11 +68,11 @@ describe("RosterGroupComponent", function () {
 
   it("does not show add if add is disabled", function () {
     const comp = this.render({ rosterGroup: this.rosterGroup, data: {} })
-    return assert(!comp.findDOMNodeByText(/add/i))
+    return assert(!comp.findDOMNodeByText(/add/i));
   })
 
   it("removes entry when remove is clicked", function (done) {
-    const onDataChange = (val) => {
+    const onDataChange = (val: any) => {
       // Removes first one
       compare(val, { a: [{ _id: "2", data: { x: { value: 2 } } }] })
       return done()
@@ -103,7 +103,7 @@ describe("RosterGroupComponent", function () {
   })
 
   it("puts answers from inner components in correct position in array", function (done) {
-    const onDataChange = (val) => {
+    const onDataChange = (val: any) => {
       compare(val, {
         a: [
           { _id: "1", data: {} },
@@ -132,7 +132,7 @@ describe("RosterGroupComponent", function () {
   })
 
   it("uses alternate rosterId if specified", function (done) {
-    const onDataChange = (val) => {
+    const onDataChange = (val: any) => {
       assert.equal(val.b.length, 1)
       assert(val.b[0]._id)
       assert.deepEqual(val.b[0].data, {})
@@ -147,7 +147,7 @@ describe("RosterGroupComponent", function () {
 
   it("displays prompt", function () {
     const comp = this.render({ rosterGroup: this.rosterGroup, data: {} })
-    return assert(comp.findDOMNodeByText(/Name/))
+    return assert(comp.findDOMNodeByText(/Name/));
   })
 
   it("displays default entry header of n.", function () {
@@ -162,12 +162,12 @@ describe("RosterGroupComponent", function () {
       }
     })
     assert(comp.findDOMNodeByText(/1\./))
-    return assert(comp.findDOMNodeByText(/2\./))
+    return assert(comp.findDOMNodeByText(/2\./));
   })
 
   return it("hides sub-items if isVisible for <id/rosterId>.<n>.<questionId> is false", function () {
     // Hide first
-    let isVisible = (id) => !["a.0.text"].includes(id)
+    let isVisible = (id: any) => !["a.0.text"].includes(id)
     let comp = this.render({
       rosterGroup: this.rosterGroup,
       data: {
@@ -208,5 +208,5 @@ describe("RosterGroupComponent", function () {
       isVisible
     })
     return assert.equal(ReactTestUtils.scryRenderedDOMComponentsWithTag(comp.getComponent(), "input").length, 0)
-  })
+  });
 })

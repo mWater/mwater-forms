@@ -13,7 +13,7 @@ const goodAcc = 10
 const fairAcc = 50
 const recentThreshold = 90000
 
-function createPos(accuracy, timeago = 0) {
+function createPos(accuracy: any, timeago = 0) {
   return {
     coords: {
       latitude: 1,
@@ -33,12 +33,12 @@ describe("CurrentPositionFinder", function () {
     this.posFinder = new CurrentPositionFinder({ locationFinder: this.locationFinder })
 
     this.pos = null
-    this.posFinder.on("found", (pos) => {
+    this.posFinder.on("found", (pos: any) => {
       return (this.pos = pos)
     })
 
     this.status = null
-    this.posFinder.on("status", (status) => {
+    this.posFinder.on("status", (status: any) => {
       return (this.status = status)
     })
 
@@ -190,7 +190,7 @@ describe("CurrentPositionFinder", function () {
 
   it("fires error if location finder reports error", function () {
     let error = ""
-    this.posFinder.on("error", (err) => (error = err))
+    this.posFinder.on("error", (err: any) => error = err)
 
     this.locationFinder.trigger("error", "some error")
     assert.equal(error, "some error")
@@ -208,7 +208,7 @@ class MockLocationFinder {
     _.extend(this, Backbone.Events)
   }
 
-  getLocation(success, error) {}
+  getLocation(success: any, error: any) {}
   startWatch() {
     return (this.watching = true)
   }
@@ -216,7 +216,7 @@ class MockLocationFinder {
     return (this.watching = false)
   }
 
-  fire(loc) {
+  fire(loc: any) {
     return this.trigger("found", loc)
   }
 }

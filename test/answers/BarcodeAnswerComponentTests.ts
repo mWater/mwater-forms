@@ -19,13 +19,13 @@ class BarcodeContext extends React.Component {
 
   getChildContext() {
     const ctx = {
-      T(str) {
+      T(str: any) {
         return str
       }
     }
 
     if (this.props.enableScanBarcode) {
-      ctx.scanBarcode = function (callback) {
+      ctx.scanBarcode = function (callback: any) {
         const f = () => callback.success("0123456789")
         return setTimeout(f, 30)
       }
@@ -54,7 +54,7 @@ describe("BarcodeAnswerComponent", function () {
     })
 
     afterEach(function () {
-      return this.toDestroy.map((comp) => comp.destroy())
+      return this.toDestroy.map((comp: any) => comp.destroy());
     })
 
     return it("shows text if not supported", function () {
@@ -66,7 +66,7 @@ describe("BarcodeAnswerComponent", function () {
       })
       const component = comp.findDOMNodeByText(/not supported/i)
       return assert(component != null, "Not showing not supported text")
-    })
+    });
   })
 
   return describe("Works with scanBarcode", function () {
@@ -83,7 +83,7 @@ describe("BarcodeAnswerComponent", function () {
     })
 
     afterEach(function () {
-      return this.toDestroy.map((comp) => comp.destroy())
+      return this.toDestroy.map((comp: any) => comp.destroy());
     })
 
     it("shows scan button", function () {
@@ -110,7 +110,7 @@ describe("BarcodeAnswerComponent", function () {
 
     it("shows scan button", function (done) {
       const comp = this.render({
-        onValueChange(value) {
+        onValueChange(value: any) {
           assert.equal(value, "0123456789")
           return done()
         }
@@ -122,13 +122,13 @@ describe("BarcodeAnswerComponent", function () {
     return it("clears when clear pressed", function (done) {
       const comp = this.render({
         value: "sometext",
-        onValueChange(value) {
+        onValueChange(value: any) {
           assert.equal(value, null)
           return done()
         }
       })
       const button = ReactTestUtils.findRenderedDOMComponentWithClass(comp.getComponent(), "btn")
       return TestComponent.click(button)
-    })
-  })
+    });
+  });
 })

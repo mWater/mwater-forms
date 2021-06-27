@@ -5,7 +5,7 @@ import { assert } from "chai"
 import ConditionsExprCompiler from "../src/ConditionsExprCompiler"
 import canonical from "canonical-json"
 
-function compare(actual, expected) {
+function compare(actual: any, expected: any) {
   return assert.equal(
     canonical(actual),
     canonical(expected),
@@ -20,7 +20,7 @@ describe("ConditionsExprCompiler", function () {
     this.tableId = "responses:f1"
     this.valueField = { type: "field", table: this.tableId, column: "data:q1:value" }
 
-    return (this.checkCondition = function (questionType, questionOptions, op, rhs, expected) {
+    return this.checkCondition = function (questionType: any, questionOptions: any, op: any, rhs: any, expected: any) {
       const formDesign = {
         _type: "Form",
         contents: [_.extend({ _id: "q1", _type: questionType, conditions: [] }, questionOptions)]
@@ -31,7 +31,7 @@ describe("ConditionsExprCompiler", function () {
       const compiler = new ConditionsExprCompiler(formDesign)
       const results = compiler.compileConditions(conditions, this.tableId)
       return compare(results, expected)
-    })
+    };
   })
 
   describe("present", function () {

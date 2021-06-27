@@ -27,7 +27,7 @@ describe("RosterMatrixComponent", function () {
   beforeEach(function () {
     this.toDestroy = []
 
-    this.render = (options) => {
+    this.render = (options: any) => {
       const elem = R(
         Wrapper,
         null,
@@ -82,11 +82,11 @@ describe("RosterMatrixComponent", function () {
   })
 
   afterEach(function () {
-    return this.toDestroy.map((comp) => comp.destroy())
+    return this.toDestroy.map((comp: any) => comp.destroy());
   })
 
   it("adds entry when add is clicked", function (done) {
-    const onDataChange = (val) => {
+    const onDataChange = (val: any) => {
       assert.equal(val.a.length, 1)
       assert(val.a[0]._id)
       assert.deepEqual(val.a[0].data, {})
@@ -101,11 +101,11 @@ describe("RosterMatrixComponent", function () {
 
   it("does not show add if add is disabled", function () {
     const comp = this.render({ rosterMatrix: this.rosterMatrix, data: {} })
-    return assert(!comp.findDOMNodeByText(/add/i))
+    return assert(!comp.findDOMNodeByText(/add/i));
   })
 
   it("removes entry when remove is clicked", function (done) {
-    const onDataChange = (val) => {
+    const onDataChange = (val: any) => {
       // Removes first one
       compare(val, { a: [{ _id: "2", data: { x: { value: 2 } } }] })
       return done()
@@ -136,7 +136,7 @@ describe("RosterMatrixComponent", function () {
   })
 
   it("puts answers from column components in correct position in array", function (done) {
-    const onDataChange = (val) => {
+    const onDataChange = (val: any) => {
       compare(val, {
         a: [
           { _id: "1", data: {} },
@@ -164,7 +164,7 @@ describe("RosterMatrixComponent", function () {
   })
 
   it("uses alternate rosterId if specified", function (done) {
-    const onDataChange = (val) => {
+    const onDataChange = (val: any) => {
       assert.equal(val.b.length, 1)
       assert(val.b[0]._id)
       assert.deepEqual(val.b[0].data, {})
@@ -179,11 +179,11 @@ describe("RosterMatrixComponent", function () {
 
   it("displays prompt", function () {
     const comp = this.render({ rosterMatrix: this.rosterMatrix, data: {} })
-    return assert(comp.findDOMNodeByText(/Name/))
+    return assert(comp.findDOMNodeByText(/Name/));
   })
 
   it("records text", function (done) {
-    const onDataChange = (val) => {
+    const onDataChange = (val: any) => {
       compare(val.a[0].data, { text: { value: "x" } })
       return done()
     }
@@ -196,7 +196,7 @@ describe("RosterMatrixComponent", function () {
   })
 
   it("records number", function (done) {
-    const onDataChange = (val) => {
+    const onDataChange = (val: any) => {
       compare(val.a[0].data, { number: { value: 1 } })
       return done()
     }
@@ -210,7 +210,7 @@ describe("RosterMatrixComponent", function () {
   }) // Have to leave to set it
 
   it("records check", function (done) {
-    const onDataChange = (val) => {
+    const onDataChange = (val: any) => {
       compare(val.a[0].data, { check: { value: true } })
       return done()
     }
@@ -222,7 +222,7 @@ describe("RosterMatrixComponent", function () {
   })
 
   it("records dropdown", function (done) {
-    const onDataChange = (val) => {
+    const onDataChange = (val: any) => {
       compare(val.a[0].data, { dropdown: { value: "y" } })
       return done()
     }

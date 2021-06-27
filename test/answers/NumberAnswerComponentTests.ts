@@ -30,7 +30,7 @@ describe("NumberAnswerComponent", function () {
   it("records decimal number", function (done) {
     const comp = this.render({
       decimal: true,
-      onChange(value) {
+      onChange(value: any) {
         assert.equal(value, 123.4)
         return done()
       }
@@ -43,7 +43,7 @@ describe("NumberAnswerComponent", function () {
   it("records whole number", function (done) {
     const comp = this.render({
       decimal: false,
-      onChange(value) {
+      onChange(value: any) {
         assert.equal(value, 123)
         return done()
       }
@@ -56,7 +56,7 @@ describe("NumberAnswerComponent", function () {
   it("enforces decimal number", function (done) {
     const comp = this.render({
       decimal: true,
-      onChange(value) {
+      onChange(value: any) {
         assert.equal(value, null)
         return done()
       }
@@ -69,7 +69,7 @@ describe("NumberAnswerComponent", function () {
   it("enforces whole number", function (done) {
     const comp = this.render({
       decimal: false,
-      onChange(value) {
+      onChange(value: any) {
         return assert.fail()
       }
     })

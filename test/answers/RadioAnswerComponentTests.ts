@@ -65,7 +65,7 @@ describe("RadioAnswerComponent", function () {
 
   it("records selected choice", function (done) {
     const testComponent = this.render({
-      onAnswerChange(answer) {
+      onAnswerChange(answer: any) {
         assert.equal(answer.value, "a")
         return done()
       }
@@ -80,7 +80,7 @@ describe("RadioAnswerComponent", function () {
   it("allows unselecting choice by clicking twice", function (done) {
     const testComponent = this.render({
       answer: { value: "b" },
-      onAnswerChange(answer) {
+      onAnswerChange(answer: any) {
         assert.deepEqual(answer.value, null)
         return done()
       }
@@ -115,7 +115,7 @@ describe("RadioAnswerComponent", function () {
 
   it("records specify value", function (done) {
     const testComponent = this.render({
-      onAnswerChange(answer) {
+      onAnswerChange(answer: any) {
         assert.deepEqual(answer.specify, { c: "specify" })
         return done()
       },
@@ -128,7 +128,7 @@ describe("RadioAnswerComponent", function () {
 
   return it("removes specify value on other selection", function (done) {
     const testComponent = this.render({
-      onAnswerChange(answer) {
+      onAnswerChange(answer: any) {
         assert.equal(answer.specify, null)
         return done()
       },
@@ -139,5 +139,5 @@ describe("RadioAnswerComponent", function () {
     const choiceC = testComponent.findComponentById("c")
     assert(choiceC != null, "could not find choice C")
     return TestComponent.click(choiceC)
-  })
+  });
 })

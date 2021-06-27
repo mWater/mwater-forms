@@ -17,7 +17,7 @@ describe("DefaultValueApplier", function () {
     }
 
     this.stickyStorage = {
-      get(questionId) {
+      get(questionId: any) {
         assert.equal(questionId, "testId")
         return "data"
       }
@@ -84,7 +84,7 @@ describe("DefaultValueApplier", function () {
     this.design.contents[0].defaultValue = "default value"
     // No entry in sticky storage
     this.defaultValueApplier.stickyStorage = {
-      get(questionId) {
+      get(questionId: any) {
         assert.equal(questionId, "testId")
         return null
       }

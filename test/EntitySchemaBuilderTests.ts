@@ -6,7 +6,7 @@ import { Schema } from "mwater-expressions"
 import EntitySchemaBuilder from "../src/EntitySchemaBuilder"
 import canonical from "canonical-json"
 
-function compare(actual, expected) {
+function compare(actual: any, expected: any) {
   return assert.equal(
     canonical(actual),
     canonical(expected),

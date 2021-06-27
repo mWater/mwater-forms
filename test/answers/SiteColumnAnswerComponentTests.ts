@@ -24,10 +24,10 @@ class SiteContext extends React.Component {
 
   getChildContext() {
     return {
-      selectEntity(options) {
+      selectEntity(options: any) {
         return options.callback("testid")
       },
-      getEntityById(entityType, entityId, callback) {
+      getEntityById(entityType: any, entityId: any, callback: any) {
         if (entityId === "testid") {
           return callback({
             _id: "testid",
@@ -35,7 +35,7 @@ class SiteContext extends React.Component {
           })
         }
       },
-      getEntityByCode(entityType, entityCode, callback) {
+      getEntityByCode(entityType: any, entityCode: any, callback: any) {
         if (entityCode === "10007") {
           return callback({
             _id: "testid",
@@ -43,13 +43,13 @@ class SiteContext extends React.Component {
           })
         }
       },
-      renderEntityListItemView(entityType, entity) {
+      renderEntityListItemView(entityType: any, entity: any) {
         return R("div", null, entity.code)
       },
-      T(str) {
+      T(str: any) {
         return str
       }
-    }
+    };
   }
 
   render() {
@@ -71,13 +71,13 @@ describe("SiteColumnAnswerComponent", function () {
   })
 
   afterEach(function () {
-    return this.toDestroy.map((comp) => comp.destroy())
+    return this.toDestroy.map((comp: any) => comp.destroy());
   })
 
   it("selects entity", function (done) {
     const testComponent = this.render({
       siteType: "water_point",
-      async onValueChange(value) {
+      async onValueChange(value: any) {
         assert.equal(value.code, "10007")
 
         // Validate answer
@@ -90,28 +90,28 @@ describe("SiteColumnAnswerComponent", function () {
         return done()
       }
     })
-    return TestComponent.click(testComponent.findDOMNodeByText(/Select/))
+    return TestComponent.click(testComponent.findDOMNodeByText(/Select/));
   })
 
   it("displays entity", function (done) {
     const testComponent = this.render({
       siteType: "water_point",
       value: { code: "10007" },
-      onValueChange(value) {}
+      onValueChange(value: any) {}
     })
 
     return _.defer(() => {
       // Check for display
       assert(testComponent.findDOMNodeByText(/10007/), "Should display code")
       return done()
-    })
+    });
   })
 
   return it("clears entity", function (done) {
     const testComponent = this.render({
       siteType: "water_point",
       value: { code: "10007" },
-      onValueChange(value) {
+      onValueChange(value: any) {
         assert(!value)
         return done()
       }
@@ -120,5 +120,5 @@ describe("SiteColumnAnswerComponent", function () {
     const clearButton = ReactTestUtils.findRenderedDOMComponentWithTag(testComponent.getComponent(), "button")
     assert(clearButton)
     return TestComponent.click(clearButton)
-  })
+  });
 })
