@@ -1,13 +1,13 @@
-import React from 'react'
-import { assert } from 'chai'
-import { render, fireEvent, waitForElement, getByDisplayValue } from '@testing-library/react'
-import { CascadingRefAnswerComponent } from '../../src/answers/CascadingRefAnswerComponent'
+import React from "react"
+import { assert } from "chai"
+import { render, fireEvent, waitForElement, getByDisplayValue } from "@testing-library/react"
+import { CascadingRefAnswerComponent } from "../../src/answers/CascadingRefAnswerComponent"
 
-import { defaultT } from 'ez-localize'
-import { spy } from 'sinon'
-import { CascadingRefQuestion } from '../../src/formDesign'
-import { CustomTablesetSchemaBuilder } from '../../lib/CustomTablesetSchemaBuilder'
-import { Schema, Row } from 'mwater-expressions'
+import { defaultT } from "ez-localize"
+import { spy } from "sinon"
+import { CascadingRefQuestion } from "../../src/formDesign"
+import { CustomTablesetSchemaBuilder } from "../../lib/CustomTablesetSchemaBuilder"
+import { Schema, Row } from "mwater-expressions"
 
 describe("CascadingRefAnswer", () => {
   const rows: Row[] = [
@@ -31,8 +31,8 @@ describe("CascadingRefAnswer", () => {
               name: { en: "Province" },
               type: "enum",
               enumValues: [
-                { id: "manitoba", name: { en: "Manitoba" }},
-                { id: "ontario", name: { en: "Ontario" }}
+                { id: "manitoba", name: { en: "Manitoba" } },
+                { id: "ontario", name: { en: "Ontario" } }
               ]
             },
             {
@@ -40,16 +40,16 @@ describe("CascadingRefAnswer", () => {
               name: { en: "City" },
               type: "enum",
               enumValues: [
-                { id: "winnipeg", name: { en: "Winnipeg" }},
-                { id: "toronto", name: { en: "Toronto" }},
-                { id: "waterloo", name: { en: "Waterloo" }}
+                { id: "winnipeg", name: { en: "Winnipeg" } },
+                { id: "toronto", name: { en: "Toronto" } },
+                { id: "waterloo", name: { en: "Waterloo" } }
               ]
             }
           ]
         }
       ]
     }
-  }  
+  }
 
   const schema = new CustomTablesetSchemaBuilder().addTableset(new Schema(), tableSet)
 
@@ -65,11 +65,11 @@ describe("CascadingRefAnswer", () => {
     dropdowns: [
       {
         columnId: "c0",
-        name: { _base: "en", en: "Province" },
+        name: { _base: "en", en: "Province" }
       },
       {
         columnId: "c1",
-        name: { _base: "en", en: "City" },
+        name: { _base: "en", en: "City" }
       }
     ]
   }
@@ -77,38 +77,42 @@ describe("CascadingRefAnswer", () => {
   it("selects simple item", async () => {
     const onValueChange = spy()
 
-    const { getByDisplayValue } = render(<CascadingRefAnswerComponent
-      question={question}
-      T={defaultT}
-      locale="en"
-      onValueChange={onValueChange}
-      schema={schema}
-      getCustomTableRows={getCustomTableRows}
-    />)
-    const level0 = await waitForElement(() => getByDisplayValue("Select...")) as HTMLSelectElement
-    fireEvent.change(level0, { target: { value: '"manitoba"'}})
+    const { getByDisplayValue } = render(
+      <CascadingRefAnswerComponent
+        question={question}
+        T={defaultT}
+        locale="en"
+        onValueChange={onValueChange}
+        schema={schema}
+        getCustomTableRows={getCustomTableRows}
+      />
+    )
+    const level0 = (await waitForElement(() => getByDisplayValue("Select..."))) as HTMLSelectElement
+    fireEvent.change(level0, { target: { value: '"manitoba"' } })
     assert.equal(onValueChange.firstCall.args[0], "wpg")
   })
 
   it("selects cascading item", async () => {
     const onValueChange = spy()
 
-    const { getByDisplayValue } = render(<CascadingRefAnswerComponent
-      question={question}
-      T={defaultT}
-      locale="en"
-      onValueChange={onValueChange}
-      schema={schema}
-      getCustomTableRows={getCustomTableRows}
-    />)
+    const { getByDisplayValue } = render(
+      <CascadingRefAnswerComponent
+        question={question}
+        T={defaultT}
+        locale="en"
+        onValueChange={onValueChange}
+        schema={schema}
+        getCustomTableRows={getCustomTableRows}
+      />
+    )
 
-    const level0 = await waitForElement(() => getByDisplayValue("Select...")) as HTMLSelectElement
-    fireEvent.change(level0, { target: { value: '"ontario"'}})
+    const level0 = (await waitForElement(() => getByDisplayValue("Select..."))) as HTMLSelectElement
+    fireEvent.change(level0, { target: { value: '"ontario"' } })
 
     assert.isTrue(onValueChange.notCalled)
 
-    const level1 = await waitForElement(() => getByDisplayValue("Select...")) as HTMLSelectElement
-    fireEvent.change(level1, { target: { value: '"toronto"'}})
+    const level1 = (await waitForElement(() => getByDisplayValue("Select..."))) as HTMLSelectElement
+    fireEvent.change(level1, { target: { value: '"toronto"' } })
 
     assert.equal(onValueChange.firstCall.args[0], "tor")
   })
@@ -116,21 +120,22 @@ describe("CascadingRefAnswer", () => {
   it("resets item", async () => {
     const onValueChange = spy()
 
-    const { getByDisplayValue } = render(<CascadingRefAnswerComponent
-      question={question}
-      T={defaultT}
-      locale="en"
-      onValueChange={onValueChange}
-      schema={schema}
-      getCustomTableRows={getCustomTableRows}
-    />)
+    const { getByDisplayValue } = render(
+      <CascadingRefAnswerComponent
+        question={question}
+        T={defaultT}
+        locale="en"
+        onValueChange={onValueChange}
+        schema={schema}
+        getCustomTableRows={getCustomTableRows}
+      />
+    )
 
-    const level0 = await waitForElement(() => getByDisplayValue("Select...")) as HTMLSelectElement
-    fireEvent.change(level0, { target: { value: '"manitoba"'}})
+    const level0 = (await waitForElement(() => getByDisplayValue("Select..."))) as HTMLSelectElement
+    fireEvent.change(level0, { target: { value: '"manitoba"' } })
 
-    fireEvent.change(level0, { target: { value: 'null'}})
+    fireEvent.change(level0, { target: { value: "null" } })
 
     assert.equal(onValueChange.secondCall.args[0], null)
   })
-
 })

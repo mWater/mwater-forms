@@ -41,7 +41,7 @@
 //       elem = React.createElement(AdminRegionSelectComponent, _.extend(props, options))
 //       @testComp = new TestComponent(elem)
 //       @comp = @testComp.comp
-     
+
 //     @value = "NOT SET"
 //     @onChange = (value) => @value = value
 
@@ -140,4 +140,3 @@
 
 //       assert.equal selects.length, 2
 //       done()
-

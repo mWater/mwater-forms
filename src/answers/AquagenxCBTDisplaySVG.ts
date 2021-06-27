@@ -215,5 +215,4 @@ export default `\
          y="1042.3621">4</tspan></text>
   </g>
 </svg>\
-`;
-
+`

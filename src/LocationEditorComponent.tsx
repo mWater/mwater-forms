@@ -1,15 +1,15 @@
-import CurrentPositionFinder, { PositionStatus } from "./CurrentPositionFinder";
-import React from "react";
-import LocationFinder from "./LocationFinder";
-import { NumberInput } from 'react-library/lib/bootstrap'
-import PopupHelpComponent from 'react-library/lib/PopupHelpComponent'
+import CurrentPositionFinder, { PositionStatus } from "./CurrentPositionFinder"
+import React from "react"
+import LocationFinder from "./LocationFinder"
+import { NumberInput } from "react-library/lib/bootstrap"
+import PopupHelpComponent from "react-library/lib/PopupHelpComponent"
 
 export interface Location {
   latitude: number
   longitude: number
   /** Elevation, taking into account mastHeight and depth if present */
-  altitude?: number 
-  accuracy?: number 
+  altitude?: number
+  accuracy?: number
   altitudeAccuracy?: number
   /** Height of mast of GPS device (altitude is GPS altitude - mast height - depth) */
   mastHeight?: number
@@ -45,7 +45,7 @@ interface State {
   manualLng: number | null
   /** Manual entered Alt (only if enteringManual) */
   manualAlt: number | null
-  
+
   /** True when setting via GPS */
   settingUsingGPS: boolean
 
@@ -75,14 +75,13 @@ function getLocalStorageNumber(key: string): number | null {
 function setLocalStorageNumber(key: string, value: number | null) {
   if (value == null) {
     window.localStorage.removeItem(key)
-  }
-  else {
+  } else {
     window.localStorage.setItem(key, value + "")
   }
 }
 
 /** Component that allows setting of location. Allows either setting from GPS, map or manually entering coordinates
- * Stores mast height and depth in local storage and allows it to be updated. 
+ * Stores mast height and depth in local storage and allows it to be updated.
  */
 export default class LocationEditorComponent extends React.Component<Props, State> {
   currentPositionFinder: CurrentPositionFinder
@@ -105,7 +104,7 @@ export default class LocationEditorComponent extends React.Component<Props, Stat
       manualAlt: null,
       settingUsingGPS: false,
       positionStatus: null,
-      mastHeight: getLocalStorageNumber("LocationEditorComponent.mastHeight"), 
+      mastHeight: getLocalStorageNumber("LocationEditorComponent.mastHeight"),
       depth: getLocalStorageNumber("LocationEditorComponent.depth"),
       displayingSuccess: false,
       displayingError: false
@@ -117,24 +116,36 @@ export default class LocationEditorComponent extends React.Component<Props, Stat
     this.unmounted = true
   }
 
-  handleClear = () => { 
-    this.props.onLocationChange(null) 
+  handleClear = () => {
+    this.props.onLocationChange(null)
     this.setState({ displayingError: false, displayingSuccess: false })
   }
-  handleOpenAdvanced = () => { this.setState({ displayingAdvanced: true }) }
-  handleCloseAdvanced = () => { this.setState({ displayingAdvanced: false, enteringManual: false }) }
-  handleEnterManually = () => { this.setState({ enteringManual: true, manualLat: null, manualLng: null, manualAlt: null }) }
-  handleManualLatChange = (value: number | null) => { this.setState({ manualLat: value })}
-  handleManualLngChange = (value: number | null) => { this.setState({ manualLng: value })}
-  handleManualAltChange = (value: number | null) => { this.setState({ manualAlt: value })}
-  
-  handleSaveManual = () => { 
-    if (this.state.manualLat! >= 85 || this.state.manualLat! <= -85)  {
+  handleOpenAdvanced = () => {
+    this.setState({ displayingAdvanced: true })
+  }
+  handleCloseAdvanced = () => {
+    this.setState({ displayingAdvanced: false, enteringManual: false })
+  }
+  handleEnterManually = () => {
+    this.setState({ enteringManual: true, manualLat: null, manualLng: null, manualAlt: null })
+  }
+  handleManualLatChange = (value: number | null) => {
+    this.setState({ manualLat: value })
+  }
+  handleManualLngChange = (value: number | null) => {
+    this.setState({ manualLng: value })
+  }
+  handleManualAltChange = (value: number | null) => {
+    this.setState({ manualAlt: value })
+  }
+
+  handleSaveManual = () => {
+    if (this.state.manualLat! >= 85 || this.state.manualLat! <= -85) {
       alert(this.props.T("Latitude out of range"))
       return
     }
 
-    if (this.state.manualLng! >= 180 || this.state.manualLng! <= -180)  {
+    if (this.state.manualLng! >= 180 || this.state.manualLng! <= -180) {
       alert(this.props.T("Longitude out of range"))
       return
     }
@@ -151,14 +162,16 @@ export default class LocationEditorComponent extends React.Component<Props, Stat
     this.setState({ enteringManual: false })
   }
 
-  handleCancelManual = () => { this.setState({ enteringManual: false })}
+  handleCancelManual = () => {
+    this.setState({ enteringManual: false })
+  }
 
-  handleMastHeightChange = (value: number | null) => { 
+  handleMastHeightChange = (value: number | null) => {
     this.setState({ mastHeight: value })
     setLocalStorageNumber("LocationEditorComponent.mastHeight", value)
   }
 
-  handleDepthChange = (value: number | null) => { 
+  handleDepthChange = (value: number | null) => {
     this.setState({ depth: value })
     setLocalStorageNumber("LocationEditorComponent.depth", value)
   }
@@ -177,11 +190,15 @@ export default class LocationEditorComponent extends React.Component<Props, Stat
 
   handleUseAnyway = () => {
     if (this.state.positionStatus!.strength == "poor") {
-      if (!confirm(this.props.T("Use location with very low accuracy (±{0}m)?", this.state.positionStatus!.accuracy!.toFixed(0)))) {
+      if (
+        !confirm(
+          this.props.T("Use location with very low accuracy (±{0}m)?", this.state.positionStatus!.accuracy!.toFixed(0))
+        )
+      ) {
         return
       }
     }
-    
+
     this.handlePositionFound(this.state.positionStatus!.pos!)
   }
 
@@ -237,18 +254,26 @@ export default class LocationEditorComponent extends React.Component<Props, Stat
 
   renderLocation() {
     if (!this.props.location) {
-      return <div style={{ fontStyle: "italic", marginLeft: 10 }}>
-        <div>{this.props.T("No Location Set")}</div>
-        <br/>
-        { this.state.mastHeight != null ? 
-          <div>
-            <span className="text-muted">{this.props.T("Mast height")}: {this.state.mastHeight} m</span>
-          </div> : null }
-        { this.state.depth != null ? 
-          <div>
-            <span className="text-muted">{this.props.T("Depth")}: {this.state.depth} m</span>
-          </div> : null }
-      </div>
+      return (
+        <div style={{ fontStyle: "italic", marginLeft: 10 }}>
+          <div>{this.props.T("No Location Set")}</div>
+          <br />
+          {this.state.mastHeight != null ? (
+            <div>
+              <span className="text-muted">
+                {this.props.T("Mast height")}: {this.state.mastHeight} m
+              </span>
+            </div>
+          ) : null}
+          {this.state.depth != null ? (
+            <div>
+              <span className="text-muted">
+                {this.props.T("Depth")}: {this.state.depth} m
+              </span>
+            </div>
+          ) : null}
+        </div>
+      )
     }
 
     return (
@@ -259,26 +284,33 @@ export default class LocationEditorComponent extends React.Component<Props, Stat
         <div>
           <span className="text-muted">{this.props.T("Longitude")}:</span> {this.props.location.longitude.toFixed(6)}
         </div>
-        { this.props.location.altitude != null ? 
+        {this.props.location.altitude != null ? (
           <div>
             <span className="text-muted">{this.props.T("Altitude")}:</span> {this.props.location.altitude.toFixed(1)} m
-          </div> : null }
-        { this.props.location.accuracy != null ? 
+          </div>
+        ) : null}
+        {this.props.location.accuracy != null ? (
           <div>
-            <span className="text-muted">{this.props.T("Accuracy")}:</span> +/- {this.props.location.accuracy.toFixed(1)} m
-          </div> : null }
-        { this.props.location.altitudeAccuracy != null ? 
+            <span className="text-muted">{this.props.T("Accuracy")}:</span> +/-{" "}
+            {this.props.location.accuracy.toFixed(1)} m
+          </div>
+        ) : null}
+        {this.props.location.altitudeAccuracy != null ? (
           <div>
-            <span className="text-muted">{this.props.T("Altitude Accuracy")}:</span> +/- {this.props.location.altitudeAccuracy.toFixed(1)} m
-          </div> : null }
-        { this.props.location.mastHeight != null ? 
+            <span className="text-muted">{this.props.T("Altitude Accuracy")}:</span> +/-{" "}
+            {this.props.location.altitudeAccuracy.toFixed(1)} m
+          </div>
+        ) : null}
+        {this.props.location.mastHeight != null ? (
           <div>
             <span className="text-muted">{this.props.T("Mast height")}:</span> {this.props.location.mastHeight} m
-          </div> : null }
-        { this.props.location.depth != null ? 
+          </div>
+        ) : null}
+        {this.props.location.depth != null ? (
           <div>
             <span className="text-muted">{this.props.T("Depth")}:</span> {this.props.location.depth} m
-          </div> : null }
+          </div>
+        ) : null}
       </div>
     )
   }
@@ -289,29 +321,57 @@ export default class LocationEditorComponent extends React.Component<Props, Stat
     }
 
     if (!this.state.enteringManual) {
-      return <div>
-        <button className="btn btn-sm btn-link" onClick={this.handleEnterManually}>{this.props.T("Enter Coordinates Manually...")}</button>
-      </div>
+      return (
+        <div>
+          <button className="btn btn-sm btn-link" onClick={this.handleEnterManually}>
+            {this.props.T("Enter Coordinates Manually...")}
+          </button>
+        </div>
+      )
     }
 
     return (
       <div style={{ marginTop: 20, marginLeft: 10 }}>
         <div style={{ marginBottom: 5 }} data-test-id="latitude">
           {this.props.T("Latitude")}:
-          <NumberInput decimal={true} style={{ display: "inline-block", marginLeft: 10, width: 200 }} value={this.state.manualLat} onChange={this.handleManualLatChange} />
+          <NumberInput
+            decimal={true}
+            style={{ display: "inline-block", marginLeft: 10, width: 200 }}
+            value={this.state.manualLat}
+            onChange={this.handleManualLatChange}
+          />
         </div>
         <div style={{ marginBottom: 5 }} data-test-id="longitude">
           {this.props.T("Longitude")}:
-          <NumberInput decimal={true} style={{ display: "inline-block", marginLeft: 10, width: 200 }} value={this.state.manualLng} onChange={this.handleManualLngChange} />
+          <NumberInput
+            decimal={true}
+            style={{ display: "inline-block", marginLeft: 10, width: 200 }}
+            value={this.state.manualLng}
+            onChange={this.handleManualLngChange}
+          />
         </div>
         <div style={{ marginBottom: 5 }} data-test-id="altitude">
           {this.props.T("Altitude (m)")}:
-          <NumberInput decimal={true} style={{ display: "inline-block", marginLeft: 10, width: 200 }} value={this.state.manualAlt} onChange={this.handleManualAltChange} />
+          <NumberInput
+            decimal={true}
+            style={{ display: "inline-block", marginLeft: 10, width: 200 }}
+            value={this.state.manualAlt}
+            onChange={this.handleManualAltChange}
+          />
         </div>
         <div style={{ marginBottom: 5 }}>
-          <button className="btn btn-primary" onClick={this.handleSaveManual} disabled={this.state.manualLat == null || this.state.manualLng == null} data-test-id="save">{this.props.T("Save")}</button>
+          <button
+            className="btn btn-primary"
+            onClick={this.handleSaveManual}
+            disabled={this.state.manualLat == null || this.state.manualLng == null}
+            data-test-id="save"
+          >
+            {this.props.T("Save")}
+          </button>
           &nbsp;
-          <button className="btn btn-default" onClick={this.handleCancelManual}>{this.props.T("Cancel")}</button>
+          <button className="btn btn-default" onClick={this.handleCancelManual}>
+            {this.props.T("Cancel")}
+          </button>
         </div>
       </div>
     )
@@ -327,11 +387,21 @@ export default class LocationEditorComponent extends React.Component<Props, Stat
       <div style={{ marginLeft: 10 }}>
         <div style={{ marginBottom: 5 }}>
           {this.props.T("Mast height (m)")}:
-          <NumberInput decimal={true} style={{ display: "inline-block", marginLeft: 10, width: 200 }} value={this.state.mastHeight} onChange={this.handleMastHeightChange} />
+          <NumberInput
+            decimal={true}
+            style={{ display: "inline-block", marginLeft: 10, width: 200 }}
+            value={this.state.mastHeight}
+            onChange={this.handleMastHeightChange}
+          />
         </div>
         <div style={{ marginBottom: 5 }}>
           {this.props.T("Depth (m)")}:
-          <NumberInput decimal={true} style={{ display: "inline-block", marginLeft: 10, width: 200 }} value={this.state.depth} onChange={this.handleDepthChange} />
+          <NumberInput
+            decimal={true}
+            style={{ display: "inline-block", marginLeft: 10, width: 200 }}
+            value={this.state.depth}
+            onChange={this.handleDepthChange}
+          />
         </div>
       </div>
     )
@@ -344,15 +414,21 @@ export default class LocationEditorComponent extends React.Component<Props, Stat
     }
 
     if (!this.state.displayingAdvanced) {
-      return <div style={{ marginTop: 20 }}>
-        <button className="btn btn-sm btn-link" onClick={this.handleOpenAdvanced}>{this.props.T("Advanced Location Settings...")}</button>
-      </div>
+      return (
+        <div style={{ marginTop: 20 }}>
+          <button className="btn btn-sm btn-link" onClick={this.handleOpenAdvanced}>
+            {this.props.T("Advanced Location Settings...")}
+          </button>
+        </div>
+      )
     }
     return (
       <div style={{ marginTop: 20 }}>
         {this.renderEnterManually()}
         {this.renderMastAndDepth()}
-        <button className="btn btn-sm btn-link" onClick={this.handleCloseAdvanced}>{this.props.T("Hide Advanced Settings")}</button>
+        <button className="btn btn-sm btn-link" onClick={this.handleCloseAdvanced}>
+          {this.props.T("Hide Advanced Settings")}
+        </button>
       </div>
     )
   }
@@ -367,34 +443,44 @@ export default class LocationEditorComponent extends React.Component<Props, Stat
     let msg: string = ""
     switch (this.state.positionStatus.strength) {
       case "none":
-        msg = this.props.T('Waiting for GPS...')
+        msg = this.props.T("Waiting for GPS...")
         break
       case "poor":
-        msg = this.props.T('Very weak GPS signal (±{0}m)...', this.state.positionStatus.accuracy!.toFixed(0))
+        msg = this.props.T("Very weak GPS signal (±{0}m)...", this.state.positionStatus.accuracy!.toFixed(0))
         break
       case "fair":
-        msg = this.props.T('Weak GPS signal (±{0}m)...', this.state.positionStatus.accuracy!.toFixed(0))
+        msg = this.props.T("Weak GPS signal (±{0}m)...", this.state.positionStatus.accuracy!.toFixed(0))
         break
       case "good":
-        msg = this.props.T('Setting location in {0}s...', this.state.positionStatus.goodDelayLeft)
+        msg = this.props.T("Setting location in {0}s...", this.state.positionStatus.goodDelayLeft)
         break
     }
 
     return (
       <div id="location_setter" className="alert alert-warning">
-        <div><i className="fa fa-spinner fa-spin"/>&nbsp;<b>{msg}</b> &nbsp;
-          { this.state.positionStatus.strength != "none" && this.state.positionStatus.strength != "good" ?
-          <button 
-            type="button" 
-            className="btn btn-sm btn-default" 
-            style={{ marginLeft: 5 }} 
-            disabled={!this.state.positionStatus.useable}
-            onClick={this.handleUseAnyway}>
+        <div>
+          <i className="fa fa-spinner fa-spin" />
+          &nbsp;<b>{msg}</b> &nbsp;
+          {this.state.positionStatus.strength != "none" && this.state.positionStatus.strength != "good" ? (
+            <button
+              type="button"
+              className="btn btn-sm btn-default"
+              style={{ marginLeft: 5 }}
+              disabled={!this.state.positionStatus.useable}
+              onClick={this.handleUseAnyway}
+            >
               {this.props.T("Use Anyway")}
-              { this.state.positionStatus.initialDelayLeft ? ` (${this.state.positionStatus.initialDelayLeft}s)` : null }
+              {this.state.positionStatus.initialDelayLeft ? ` (${this.state.positionStatus.initialDelayLeft}s)` : null}
             </button>
-          : null }
-          <button type="button" className="btn btn-sm btn-default" style={{ marginLeft: 5 }} onClick={this.handleCancelGPS}>{this.props.T("Cancel")}</button>
+          ) : null}
+          <button
+            type="button"
+            className="btn btn-sm btn-default"
+            style={{ marginLeft: 5 }}
+            onClick={this.handleCancelGPS}
+          >
+            {this.props.T("Cancel")}
+          </button>
         </div>
       </div>
     )
@@ -402,17 +488,13 @@ export default class LocationEditorComponent extends React.Component<Props, Stat
 
   renderMessages() {
     if (this.state.displayingSuccess) {
-      return <div className="alert alert-success">
-        {this.props.T("Location Set Successfully")}
-      </div>
+      return <div className="alert alert-success">{this.props.T("Location Set Successfully")}</div>
     }
 
     if (this.state.displayingError) {
-      return <div className="alert alert-danger">
-        {this.props.T("Cannot set location")}
-      </div>
+      return <div className="alert alert-danger">{this.props.T("Cannot set location")}</div>
     }
-    return 
+    return
   }
 
   /** Render left pane with the buttons */
@@ -421,13 +503,28 @@ export default class LocationEditorComponent extends React.Component<Props, Stat
       <div>
         <div>{this.props.T("Set location using")}:</div>
         <div style={{ padding: 10 }}>
-          <button type="button" className="btn btn-default btn-block" onClick={this.handleSetUsingGPS} disabled={this.state.settingUsingGPS}>
+          <button
+            type="button"
+            className="btn btn-default btn-block"
+            onClick={this.handleSetUsingGPS}
+            disabled={this.state.settingUsingGPS}
+          >
             <span className="glyphicon glyphicon-screenshot"></span> {this.props.T("Current Location")}
           </button>
-          <button type="button" className="btn btn-default btn-block" disabled={this.props.onUseMap == null} onClick={this.props.onUseMap}>
+          <button
+            type="button"
+            className="btn btn-default btn-block"
+            disabled={this.props.onUseMap == null}
+            onClick={this.props.onUseMap}
+          >
             <span className="glyphicon glyphicon-map-marker"></span> {this.props.T("Use Map")}
           </button>
-          <button type="button" className="btn btn-default btn-block" disabled={this.props.location == null} onClick={this.handleClear}>
+          <button
+            type="button"
+            className="btn btn-default btn-block"
+            disabled={this.props.location == null}
+            onClick={this.handleClear}
+          >
             <span className="glyphicon glyphicon-remove"></span> {this.props.T("Clear")}
           </button>
         </div>
@@ -438,9 +535,9 @@ export default class LocationEditorComponent extends React.Component<Props, Stat
   renderRightPane() {
     return (
       <div>
-        <div style={{float: "right"}}>
+        <div style={{ float: "right" }}>
           <PopupHelpComponent>
-            <div style={{ whiteSpace: "pre-line"}}>
+            <div style={{ whiteSpace: "pre-line" }}>
               {this.props.T(`SETTING LOCATIONS:
 
 There are three ways to set a location:
@@ -486,18 +583,14 @@ ENTER COORDINATES MANUALLY: Click on this option to manually type in the GPS coo
         <table style={{ width: "100%" }}>
           <tbody>
             <tr>
-              <td style={{ width: 250, verticalAlign: "top"  }}>
-                {this.renderLeftPane()}
-              </td>
-              <td style={{ verticalAlign: "top", paddingTop: 30 }}>
-                {this.renderRightPane()}
-              </td>
+              <td style={{ width: 250, verticalAlign: "top" }}>{this.renderLeftPane()}</td>
+              <td style={{ verticalAlign: "top", paddingTop: 30 }}>{this.renderRightPane()}</td>
             </tr>
           </tbody>
-        </table>  
+        </table>
         {this.renderSetByGPS()}
         {this.renderMessages()}
-      </div>  
+      </div>
     )
   }
 }

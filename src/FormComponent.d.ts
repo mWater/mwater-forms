@@ -40,7 +40,7 @@ export default class FormComponent extends React.Component<{
   submitLabel?: string
 
   /** To override Save For Later label */
-  saveLaterLabel?: string         
+  saveLaterLabel?: string
 
   /** To override Discard label */
   discardLabel?: string

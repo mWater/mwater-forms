@@ -1,4 +1,4 @@
-import React from "react";
+import React from "react"
 
 /** Based on http://www.matlus.com/html5-file-upload-with-progress/ */
 export default class ImageUploaderModalComponent extends React.Component<{
@@ -13,5 +13,11 @@ export default class ImageUploaderModalComponent extends React.Component<{
   forceCamera?: boolean
 }> {
   /** Static function to show modal easily */
-  static show(apiUrl: string, client: string | null, T: (str: string, ...args: any[]) => string, success: (id: string) => void, forceCamera?: boolean): void
+  static show(
+    apiUrl: string,
+    client: string | null,
+    T: (str: string, ...args: any[]) => string,
+    success: (id: string) => void,
+    forceCamera?: boolean
+  ): void
 }

@@ -1,31 +1,32 @@
 // TODO: This file was created by bulk-decaffeinate.
 // Sanity-check the conversion and remove this comment.
-import { assert } from 'chai';
-import TestComponent from 'react-library/lib/TestComponent';
-import ReactTestUtils from 'react-dom/test-utils';
-import EntityAnswerComponent from '../../src/answers/EntityAnswerComponent';
-import React from 'react';
-import ReactDOM from 'react-dom';
-const R = React.createElement;
+import { assert } from "chai"
+import TestComponent from "react-library/lib/TestComponent"
+import ReactTestUtils from "react-dom/test-utils"
+import EntityAnswerComponent from "../../src/answers/EntityAnswerComponent"
+import React from "react"
+import ReactDOM from "react-dom"
+const R = React.createElement
 
-describe('EntityAnswerComponent', function() {
-  before(function() {
-    this.toDestroy = [];
+describe("EntityAnswerComponent", function () {
+  before(function () {
+    this.toDestroy = []
 
-    return this.render = (options = {}) => {
-      const elem = R(EntityAnswerComponent, options);
-      const comp = new TestComponent(elem);
-      this.toDestroy.push(comp);
-      return comp;
-    };
-  });
+    return (this.render = (options = {}) => {
+      const elem = R(EntityAnswerComponent, options)
+      const comp = new TestComponent(elem)
+      this.toDestroy.push(comp)
+      return comp
+    })
+  })
 
-  return afterEach(function() {
+  return afterEach(function () {
     for (let comp of this.toDestroy) {
-      comp.destroy();
+      comp.destroy()
     }
-    return this.toDestroy = [];});
-});
+    return (this.toDestroy = [])
+  })
+})
 
 // NOTE: All of this was already commented before we switched from EntityQuestion to EntityAnswerComponent
 /*

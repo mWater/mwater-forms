@@ -1,40 +1,40 @@
 // TODO: This file was created by bulk-decaffeinate.
 // Sanity-check the conversion and remove this comment.
-let ResponseDisplayComponent;
-import PropTypes from 'prop-types';
-import _ from 'lodash';
-import React from 'react';
-const R = React.createElement;
-import $ from 'jquery';
-import moment from 'moment';
-import ezlocalize from 'ez-localize';
-import ResponseAnswersComponent from './ResponseAnswersComponent';
-import ResponseArchivesComponent from './ResponseArchivesComponent';
-import ModalPopupComponent from 'react-library/lib/ModalPopupComponent';
+let ResponseDisplayComponent
+import PropTypes from "prop-types"
+import _ from "lodash"
+import React from "react"
+const R = React.createElement
+import $ from "jquery"
+import moment from "moment"
+import ezlocalize from "ez-localize"
+import ResponseAnswersComponent from "./ResponseAnswersComponent"
+import ResponseArchivesComponent from "./ResponseArchivesComponent"
+import ModalPopupComponent from "react-library/lib/ModalPopupComponent"
 
 // Static view of a response
-export default ResponseDisplayComponent = (function() {
+export default ResponseDisplayComponent = (function () {
   ResponseDisplayComponent = class ResponseDisplayComponent extends React.Component {
     static initClass() {
       this.propTypes = {
         form: PropTypes.object.isRequired,
         response: PropTypes.object.isRequired,
-        schema: PropTypes.object.isRequired,  // Schema including the form
+        schema: PropTypes.object.isRequired, // Schema including the form
         formCtx: PropTypes.object.isRequired,
         apiUrl: PropTypes.string,
         locale: PropTypes.string, // Defaults to english
-        login: PropTypes.object,  // Current login (contains user, username, groups)
-        forceCompleteHistory: PropTypes.bool  // True to display complete history always
-      };
-  
-      this.childContextTypes = _.extend({}, require('./formContextTypes'), {
+        login: PropTypes.object, // Current login (contains user, username, groups)
+        forceCompleteHistory: PropTypes.bool // True to display complete history always
+      }
+
+      this.childContextTypes = _.extend({}, require("./formContextTypes"), {
         T: PropTypes.func.isRequired,
-        locale: PropTypes.string          // e.g. "fr"
-      });
+        locale: PropTypes.string // e.g. "fr"
+      })
     }
 
     constructor(props) {
-      super(props);
+      super(props)
 
       this.state = {
         eventsUsernames: null,
@@ -45,126 +45,130 @@ export default ResponseDisplayComponent = (function() {
         loadingHistory: false,
         showArchive: false,
         showPrevAnswers: false
-      };
+      }
     }
 
     componentWillMount() {
-      return this.loadEventUsernames(this.props.response.events);
+      return this.loadEventUsernames(this.props.response.events)
     }
 
     componentDidMount() {
-      return this.loadHistory(this.props);
+      return this.loadHistory(this.props)
     }
 
     loadHistory(props) {
-      const url = props.apiUrl + 'archives/responses/' + props.response._id + '?client=' + (props.login?.client || "");
-      this.setState({loadingHistory: true});
+      const url = props.apiUrl + "archives/responses/" + props.response._id + "?client=" + (props.login?.client || "")
+      this.setState({ loadingHistory: true })
       return $.ajax({ dataType: "json", url })
-        .done(history => {
+        .done((history) => {
           // Get only ones since first submission
-          const index = _.findIndex(history, rev => ['pending', 'final'].includes(rev.status));
-          history = history.slice(0, index + 1);
+          const index = _.findIndex(history, (rev) => ["pending", "final"].includes(rev.status))
+          history = history.slice(0, index + 1)
 
           // Remove history where there was no change to data
-          const compactHistory = [];
+          const compactHistory = []
           for (let i = 0; i < history.length; i++) {
-            const entry = history[i];
-            const prevEntry = i === 0 ? this.props.response : history[i - 1];
+            const entry = history[i]
+            const prevEntry = i === 0 ? this.props.response : history[i - 1]
             if (!_.isEqual(entry.data, prevEntry.data)) {
-              compactHistory.push(entry);
+              compactHistory.push(entry)
             }
           }
 
-          return this.setState({loadingHistory: false, history: compactHistory});
-      }).fail(xhr => {
-          return this.setState({loadingHistory: false, history: null});
-      });
+          return this.setState({ loadingHistory: false, history: compactHistory })
+        })
+        .fail((xhr) => {
+          return this.setState({ loadingHistory: false, history: null })
+        })
     }
 
     // Load user names related to events
     loadEventUsernames(events) {
-      events = this.props.response.events || [];
-    
-      const byArray = _.compact(_.pluck(events, "by"));
-      if ((byArray.length > 0) && (this.props.apiUrl != null)) {
-        const filter = { _id: { $in: byArray } };
-        const url = this.props.apiUrl + 'users_public_data?filter=' + JSON.stringify(filter);
-        this.setState({loadingUsernames: true});
+      events = this.props.response.events || []
+
+      const byArray = _.compact(_.pluck(events, "by"))
+      if (byArray.length > 0 && this.props.apiUrl != null) {
+        const filter = { _id: { $in: byArray } }
+        const url = this.props.apiUrl + "users_public_data?filter=" + JSON.stringify(filter)
+        this.setState({ loadingUsernames: true })
         return $.ajax({ dataType: "json", url })
-        .done(rows => {
-          // eventsUsernames is an object with a key for each _id value
-          return this.setState({loadingUsernames: false, eventsUsernames: _.indexBy(rows, '_id')});
-      }).fail(xhr => {
-          return this.setState({loadingUsernames: false, eventsUsernames: null});
-        });
+          .done((rows) => {
+            // eventsUsernames is an object with a key for each _id value
+            return this.setState({ loadingUsernames: false, eventsUsernames: _.indexBy(rows, "_id") })
+          })
+          .fail((xhr) => {
+            return this.setState({ loadingUsernames: false, eventsUsernames: null })
+          })
       }
     }
 
     componentWillReceiveProps(nextProps) {
-      let events;
-      if ((this.props.form.design !== nextProps.form.design) || (this.props.locale !== nextProps.locale)) {
-        this.setState({T: this.createLocalizer(nextProps.form.design, nextProps.locale)});
+      let events
+      if (this.props.form.design !== nextProps.form.design || this.props.locale !== nextProps.locale) {
+        this.setState({ T: this.createLocalizer(nextProps.form.design, nextProps.locale) })
       }
 
       if (!_.isEqual(this.props.response.response, nextProps.response.response)) {
-        this.loadHistory(nextProps);
+        this.loadHistory(nextProps)
       }
 
       if (!_.isEqual(this.props.response.events, nextProps.response.events)) {
-        this.loadEventUsernames(nextProps.response.events);
+        this.loadEventUsernames(nextProps.response.events)
       }
 
-      return events = this.props.response.events || [];
+      return (events = this.props.response.events || [])
     }
 
     getChildContext() {
       return _.extend({}, this.props.formCtx, {
         T: this.state.T,
         locale: this.props.locale
-      });
+      })
     }
 
     // Creates a localizer for the form design
     createLocalizer(design, locale) {
       // Create localizer
-      const localizedStrings = design.localizedStrings || [];
+      const localizedStrings = design.localizedStrings || []
       const localizerData = {
         locales: design.locales,
         strings: localizedStrings
-      };
-      const {
-        T
-      } = new ezlocalize.Localizer(localizerData, locale);
-      return T;
+      }
+      const { T } = new ezlocalize.Localizer(localizerData, locale)
+      return T
     }
 
     handleHideHistory = () => {
-      return this.setState({showCompleteHistory: false});
-    };
+      return this.setState({ showCompleteHistory: false })
+    }
 
     handleShowHistory = () => {
-      return this.setState({showCompleteHistory: true});
-    };
+      return this.setState({ showCompleteHistory: true })
+    }
 
     renderEvent(ev) {
-      if ((this.state.eventsUsernames == null)) {
-        return null;
+      if (this.state.eventsUsernames == null) {
+        return null
       }
 
-      const eventType = (() => { switch (ev.type) {
-        case "draft":
-          return this.state.T("Drafted");
-        case "submit":
-          return this.state.T("Submitted");
-        case "approve":
-          return this.state.T("Approved");
-        case "reject":
-          return this.state.T("Rejected");
-        case "edit":
-          return this.state.T("Edited");
-      } })();
+      const eventType = (() => {
+        switch (ev.type) {
+          case "draft":
+            return this.state.T("Drafted")
+          case "submit":
+            return this.state.T("Submitted")
+          case "approve":
+            return this.state.T("Approved")
+          case "reject":
+            return this.state.T("Rejected")
+          case "edit":
+            return this.state.T("Edited")
+        }
+      })()
 
-      return R('div', null,
+      return R(
+        "div",
+        null,
         eventType,
         " ",
         this.state.T("by"),
@@ -173,108 +177,150 @@ export default ResponseDisplayComponent = (function() {
         " ",
         this.state.T("on"),
         " ",
-        moment(ev.on).format('lll'),
-        ev.message ?
-          [": ", R('i', null, ev.message)] : undefined,
-        ev.override ?
-          R('span', {className: "label label-warning"}, this.state.T("Admin Override")) : undefined
-      );
+        moment(ev.on).format("lll"),
+        ev.message ? [": ", R("i", null, ev.message)] : undefined,
+        ev.override ? R("span", { className: "label label-warning" }, this.state.T("Admin Override")) : undefined
+      )
     }
 
     // History of events
     renderHistory() {
       if (this.state.loadingUsernames) {
-        return R('div', {key: "history"},
-          R('label', null, this.state.T("Loading History...")));
+        return R("div", { key: "history" }, R("label", null, this.state.T("Loading History...")))
       }
 
-      const contents = [];
+      const contents = []
 
-      const events = this.props.response.events || [];
+      const events = this.props.response.events || []
 
       if (this.state.showCompleteHistory) {
         for (let ev of _.initial(events)) {
-          contents.push(this.renderEvent(ev));
+          contents.push(this.renderEvent(ev))
         }
       }
 
-      const lastEvent = _.last(events);
+      const lastEvent = _.last(events)
       if (lastEvent) {
-        contents.push(this.renderEvent(lastEvent));
+        contents.push(this.renderEvent(lastEvent))
       }
 
-      if ((events.length > 1) && !this.props.forceCompleteHistory) {
+      if (events.length > 1 && !this.props.forceCompleteHistory) {
         if (this.state.showCompleteHistory) {
-          contents.push(R('div', null, R('a', {style: { cursor: "pointer" }, onClick: this.handleHideHistory}, this.state.T("Hide History"))));
-          contents.push(R('div', null, R('a', {style: { cursor: "pointer" }, onClick: (() => this.setState({showArchive: true}))}, this.state.T("Show Complete History of Changes"))));
+          contents.push(
+            R(
+              "div",
+              null,
+              R("a", { style: { cursor: "pointer" }, onClick: this.handleHideHistory }, this.state.T("Hide History"))
+            )
+          )
+          contents.push(
+            R(
+              "div",
+              null,
+              R(
+                "a",
+                { style: { cursor: "pointer" }, onClick: () => this.setState({ showArchive: true }) },
+                this.state.T("Show Complete History of Changes")
+              )
+            )
+          )
         } else {
-          contents.push(R('div', null, R('a', {style: { cursor: "pointer" }, onClick: this.handleShowHistory}, this.state.T("Show History"))));
+          contents.push(
+            R(
+              "div",
+              null,
+              R("a", { style: { cursor: "pointer" }, onClick: this.handleShowHistory }, this.state.T("Show History"))
+            )
+          )
         }
       }
 
-      return R('div', {key: "history"}, contents);
+      return R("div", { key: "history" }, contents)
     }
 
     renderStatus() {
-      const status = (() => { switch (this.props.response.status) {
-        case "draft":
-          return this.state.T("Draft");
-        case "rejected":
-          return this.state.T("Rejected");
-        case "pending":
-          return this.state.T("Pending");
-        case "final":
-          return this.state.T("Final");
-      } })();
+      const status = (() => {
+        switch (this.props.response.status) {
+          case "draft":
+            return this.state.T("Draft")
+          case "rejected":
+            return this.state.T("Rejected")
+          case "pending":
+            return this.state.T("Pending")
+          case "final":
+            return this.state.T("Final")
+        }
+      })()
 
-      return R('div', {key: "status"}, 
-        this.state.T('Status'), ": ", R('b', null, status));
+      return R("div", { key: "status" }, this.state.T("Status"), ": ", R("b", null, status))
     }
 
     renderArchives() {
       if (!this.state.history || !this.state.showArchive) {
-        return null;
+        return null
       }
-    
-      return R(ModalPopupComponent, {
-        header: "Change history",
-        size: "large",
-        showCloseX: true,
-        onClose: (() => this.setState({showArchive: false}))
-      },
-          R(ResponseArchivesComponent, {
-            formDesign: this.props.form.design,
-            response: this.props.response,
-            schema: this.props.schema,
-            locale: this.props.locale,
-            T: this.state.T,
-            formCtx: this.props.formCtx,
-            history: this.state.history,
-            eventsUsernames: this.state.eventsUsernames
-          }
-          )
-      );
+
+      return R(
+        ModalPopupComponent,
+        {
+          header: "Change history",
+          size: "large",
+          showCloseX: true,
+          onClose: () => this.setState({ showArchive: false })
+        },
+        R(ResponseArchivesComponent, {
+          formDesign: this.props.form.design,
+          response: this.props.response,
+          schema: this.props.schema,
+          locale: this.props.locale,
+          T: this.state.T,
+          formCtx: this.props.formCtx,
+          history: this.state.history,
+          eventsUsernames: this.state.eventsUsernames
+        })
+      )
     }
 
     // Header which includes basics
     renderHeader() {
-      return R('div', {style: { paddingBottom: 10 }},
-        R('div', {key: "user"}, 
-          this.state.T('User'), ": ", R('b', null, this.props.response.username || "Anonymous")),
-        R('div', {key: "code"}, 
-          this.state.T('Response Id'), ": ", R('b', null, this.props.response.code)),
-        this.props.response && this.props.response.submittedOn ?
-          R('div', {key: "submittedOn"}, 
-            this.state.T('Submitted'), ": ", R('b', null, moment(this.props.response.submittedOn).format('lll'))) : undefined,
-        this.props.response.ipAddress ?
-          R('div', {key: "ipAddress"}, 
-            this.state.T('IP Address'), ": ", R('b', null, this.props.response.ipAddress)) : undefined,
+      return R(
+        "div",
+        { style: { paddingBottom: 10 } },
+        R(
+          "div",
+          { key: "user" },
+          this.state.T("User"),
+          ": ",
+          R("b", null, this.props.response.username || "Anonymous")
+        ),
+        R("div", { key: "code" }, this.state.T("Response Id"), ": ", R("b", null, this.props.response.code)),
+        this.props.response && this.props.response.submittedOn
+          ? R(
+              "div",
+              { key: "submittedOn" },
+              this.state.T("Submitted"),
+              ": ",
+              R("b", null, moment(this.props.response.submittedOn).format("lll"))
+            )
+          : undefined,
+        this.props.response.ipAddress
+          ? R(
+              "div",
+              { key: "ipAddress" },
+              this.state.T("IP Address"),
+              ": ",
+              R("b", null, this.props.response.ipAddress)
+            )
+          : undefined,
         this.renderStatus(),
         this.renderHistory(),
-        this.renderArchives());
+        this.renderArchives()
+      )
     }
     render() {
-      return R('div', null,
+      return R(
+        "div",
+        null,
         this.renderHeader(),
         React.createElement(ResponseAnswersComponent, {
           formDesign: this.props.form.design,
@@ -285,19 +331,19 @@ export default ResponseDisplayComponent = (function() {
           T: this.state.T,
           formCtx: this.props.formCtx,
           prevData: this.state.history ? _.last(this.state.history) : null,
-          showPrevAnswers: (this.state.history != null) && this.state.showPrevAnswers,
+          showPrevAnswers: this.state.history != null && this.state.showPrevAnswers,
           highlightChanges: this.state.showPrevAnswers,
-          showChangedLink: (this.state.history != null),
-          onChangedLinkClick: () => { 
-            return this.setState({showPrevAnswers: !this.state.showPrevAnswers});
+          showChangedLink: this.state.history != null,
+          onChangedLinkClick: () => {
+            return this.setState({ showPrevAnswers: !this.state.showPrevAnswers })
           },
           onCompleteHistoryLinkClick: () => {
-            return this.setState({showArchive: true});
+            return this.setState({ showArchive: true })
           }
         })
-      );
+      )
     }
-  };
-  ResponseDisplayComponent.initClass();
-  return ResponseDisplayComponent;
-})();
+  }
+  ResponseDisplayComponent.initClass()
+  return ResponseDisplayComponent
+})()

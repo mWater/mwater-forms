@@ -1,9 +1,9 @@
-import { Form } from "./form";
-import { FormContext } from "./formContext";
-import { Response } from "./response";
-import { Schema } from "mwater-expressions";
-import { LocalizeString } from 'ez-localize'
-import React from "react";
+import { Form } from "./form"
+import { FormContext } from "./formContext"
+import { Response } from "./response"
+import { Schema } from "mwater-expressions"
+import { LocalizeString } from "ez-localize"
+import React from "react"
 
 /** Displays a view of a response that can be edited, rejected, etc. 
   When editing, shows in single-page mode. */

@@ -1,19 +1,19 @@
 // TODO: This file was created by bulk-decaffeinate.
 // Sanity-check the conversion and remove this comment.
-let AnswerValidator;
-import _ from 'lodash';
-import * as siteCodes from '../siteCodes';
-import { PromiseExprEvaluator } from 'mwater-expressions';
-import ValidationCompiler from './ValidationCompiler';
-import * as formUtils from '../formUtils';
+let AnswerValidator
+import _ from "lodash"
+import * as siteCodes from "../siteCodes"
+import { PromiseExprEvaluator } from "mwater-expressions"
+import ValidationCompiler from "./ValidationCompiler"
+import * as formUtils from "../formUtils"
 
 // AnswerValidator gets called when a form is submitted (or on next)
 // Only the validate method is not internal
 export default AnswerValidator = class AnswerValidator {
   constructor(schema, responseRow, locale) {
-    this.schema = schema;
-    this.responseRow = responseRow;
-    this.locale = locale;
+    this.schema = schema
+    this.responseRow = responseRow
+    this.locale = locale
   }
 
   // It returns null if everything is fine
@@ -23,112 +23,112 @@ export default AnswerValidator = class AnswerValidator {
   async validate(question, answer) {
     // If it has an alternate value, it cannot be invalid
     if (answer.alternate) {
-      return null;
+      return null
     }
 
     if (question.disabled) {
-      return null;
+      return null
     }
 
     // Check required and answered
     if (question.required) {
-      if ((answer.value == null) || (answer.value === '')) {
-        return true;
+      if (answer.value == null || answer.value === "") {
+        return true
       }
 
       // Handle specify
       if (question.choices) {
         // MulticheckQuestion
         if (_.isArray(answer.value)) {
-          const specifyChoices = question.choices.filter(c => c.specify).map(c => c.id);
-          const selectedSpecifyChoicecs = _.intersection(specifyChoices, answer.value);
+          const specifyChoices = question.choices.filter((c) => c.specify).map((c) => c.id)
+          const selectedSpecifyChoicecs = _.intersection(specifyChoices, answer.value)
 
           if (selectedSpecifyChoicecs.length > 0) {
             for (let selectedChoice of selectedSpecifyChoicecs) {
               if (!answer.specify?.[selectedChoice]) {
-                return true;
+                return true
               }
             }
           }
         } else {
           // RadioQuestion
-          const choiceOption = _.find(question.choices, {specify: true});
-          if (choiceOption && (answer.value === choiceOption.id) && !answer.specify) {
-            return true;
+          const choiceOption = _.find(question.choices, { specify: true })
+          if (choiceOption && answer.value === choiceOption.id && !answer.specify) {
+            return true
           }
         }
       }
 
       // Handling empty string for Units values
-      if ((answer.value != null) && (answer.value.quantity != null) && (answer.value.quantity === '')) {
-        return true;
+      if (answer.value != null && answer.value.quantity != null && answer.value.quantity === "") {
+        return true
       }
       // A required LikertQuestion needs an answer for all items
-      if (question._type === 'LikertQuestion') {
+      if (question._type === "LikertQuestion") {
         for (let item of question.items) {
-          if ((answer.value[item.id] == null)) {
-            return true;
+          if (answer.value[item.id] == null) {
+            return true
           }
         }
       }
-      if (question._type === 'AquagenxCBTQuestion') {
-        if ((answer.value.cbt == null)) {
-          return true;
+      if (question._type === "AquagenxCBTQuestion") {
+        if (answer.value.cbt == null) {
+          return true
         }
       }
     }
 
     // Check internal validation
-    const specificValidation = this.validateSpecificAnswerType(question, answer);
+    const specificValidation = this.validateSpecificAnswerType(question, answer)
     if (specificValidation != null) {
-      return specificValidation;
+      return specificValidation
     }
 
     // Skip validation if value is not set
-    if ((answer.value == null) || (answer.value === '')) {
-      return null;
+    if (answer.value == null || answer.value === "") {
+      return null
     }
 
     // Check custom validation
     if (question.validations != null) {
-      const result = new ValidationCompiler(this.locale).compileValidations(question.validations)(answer);
+      const result = new ValidationCompiler(this.locale).compileValidations(question.validations)(answer)
       if (result) {
-        return result;
+        return result
       }
     }
 
-    if ((question.advancedValidations != null) && this.responseRow) {
+    if (question.advancedValidations != null && this.responseRow) {
       for (let { expr, message } of question.advancedValidations) {
         if (expr) {
           // Evaluate expression
-          const exprEvaluator = new PromiseExprEvaluator({ schema: this.schema });
-          const value = await exprEvaluator.evaluate(expr, { row: this.responseRow });
+          const exprEvaluator = new PromiseExprEvaluator({ schema: this.schema })
+          const value = await exprEvaluator.evaluate(expr, { row: this.responseRow })
           if (value !== true) {
-            return formUtils.localizeString(message, this.locale) || true;
+            return formUtils.localizeString(message, this.locale) || true
           }
         }
       }
     }
 
-    return null;
+    return null
   }
 
   validateSpecificAnswerType(question, answer) {
     switch (question._type) {
       case "TextQuestion":
-        return this.validateTextQuestion(question, answer);
+        return this.validateTextQuestion(question, answer)
       case "UnitsQuestion":
-        return this.validateUnitsQuestion(question, answer);
+        return this.validateUnitsQuestion(question, answer)
       case "NumbersQuestion":
-        return this.validateNumberQuestion(question, answer);
+        return this.validateNumberQuestion(question, answer)
       case "SiteQuestion":
-        return this.validateSiteQuestion(question, answer);
+        return this.validateSiteQuestion(question, answer)
       case "LikertQuestion":
-        return this.validateLikertQuestion(question, answer);
+        return this.validateLikertQuestion(question, answer)
       case "MatrixQuestion":
-        return this.validateMatrixQuestion(question, answer);
+        return this.validateMatrixQuestion(question, answer)
       default:
-        return null;
+        return null
     }
   }
 
@@ -136,17 +136,17 @@ export default AnswerValidator = class AnswerValidator {
   // Valid if code is valid (checksum)
   validateSiteQuestion(question, answer) {
     if (!answer.value) {
-      return null;
+      return null
     }
 
     if (!answer.value?.code) {
-      return true;
+      return true
     }
 
     if (siteCodes.isValid(answer.value.code)) {
-      return null;
+      return null
     } else {
-      return "Invalid code";
+      return "Invalid code"
     }
   }
 
@@ -154,97 +154,105 @@ export default AnswerValidator = class AnswerValidator {
   // Valid if not email or url format
   // Else a match is performed on the anser value
   validateTextQuestion(question, answer) {
-    if ((answer.value == null) || (answer.value === '')) {
-      return null;
+    if (answer.value == null || answer.value === "") {
+      return null
     }
 
     if (question.format === "email") {
-      if (answer.value.match(/[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/)) {
-        return null;
+      if (
+        answer.value.match(
+          /[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/
+        )
+      ) {
+        return null
       } else {
-        return "Invalid format";
+        return "Invalid format"
       }
     } else if (question.format === "url") {
-      if (answer.value.match(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)/)) {
-        return null;
+      if (
+        answer.value.match(
+          /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)/
+        )
+      ) {
+        return null
       } else {
-        return "Invalid format";
+        return "Invalid format"
       }
     }
 
-    return null;
+    return null
   }
 
   // Valid if null or empty
   // Valid if quantity is not set
   // Invalid if quantity is set but not units
   validateUnitsQuestion(question, answer) {
-    if ((answer.value == null) || (answer.value === '')) {
-      return null;
+    if (answer.value == null || answer.value === "") {
+      return null
     }
 
-    if ((answer.value.quantity != null) && (answer.value.quantity !== '')) {
-      if ((answer.value.units == null) || (answer.value.units === '')) {
-        return 'units field is required when a quantity is set';
+    if (answer.value.quantity != null && answer.value.quantity !== "") {
+      if (answer.value.units == null || answer.value.units === "") {
+        return "units field is required when a quantity is set"
       }
     }
 
-    return null;
+    return null
   }
 
   // Valid if null or empty
   // Valid if quantity is not set
   // Invalid if quantity is set but not units
   validateLikertQuestion(question, answer) {
-    if ((answer.value == null) || (answer.value === '')) {
-      return null;
+    if (answer.value == null || answer.value === "") {
+      return null
     }
 
     for (let item in answer.value) {
-      const choiceId = answer.value[item];
-      if ((_.findWhere(question.choices, {id: choiceId}) == null)) {
-        return 'Invalid choice';
+      const choiceId = answer.value[item]
+      if (_.findWhere(question.choices, { id: choiceId }) == null) {
+        return "Invalid choice"
       }
     }
 
-    return null;
+    return null
   }
 
   // Valid if null or empty
   validateNumberQuestion(question, answer) {
-    if ((answer.value == null) || (answer.value === '')) {
-      return null;
+    if (answer.value == null || answer.value === "") {
+      return null
     }
 
-    return null;
+    return null
   }
 
   validateMatrixQuestion(question, answer) {
-    const validationErrors = {};
+    const validationErrors = {}
 
     // For each entry
     for (let rowIndex = 0; rowIndex < question.items.length; rowIndex++) {
       // For each column
-      const item = question.items[rowIndex];
+      const item = question.items[rowIndex]
       for (let columnIndex = 0; columnIndex < question.columns.length; columnIndex++) {
-        const column = question.columns[columnIndex];
-        const key = `${item.id}_${column._id}`;
+        const column = question.columns[columnIndex]
+        const key = `${item.id}_${column._id}`
 
-        const data = answer.value?.[item.id]?.[column._id];
+        const data = answer.value?.[item.id]?.[column._id]
 
-        if (column.required && ((data?.value == null) || (data?.value === ''))) {
-          return true;
+        if (column.required && (data?.value == null || data?.value === "")) {
+          return true
         }
 
-        if (column.validations && (column.validations.length > 0)) {
-          const validationError = new ValidationCompiler(this.locale).compileValidations(column.validations)(data);
+        if (column.validations && column.validations.length > 0) {
+          const validationError = new ValidationCompiler(this.locale).compileValidations(column.validations)(data)
           if (validationError) {
-            return validationError;
+            return validationError
           }
         }
       }
     }
 
-    return null;
+    return null
   }
-};
+}

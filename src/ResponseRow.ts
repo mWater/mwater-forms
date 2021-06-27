@@ -1,11 +1,18 @@
-import _  from 'lodash'
-import formUtils from './formUtils'
-import VisibilityCalculator, { VisibilityStructure } from './VisibilityCalculator'
-import EntityRow from './EntityRow'
-import { PromiseExprEvaluatorRow, Schema, Row } from 'mwater-expressions'
-import { ResponseData, RosterData, Answer, SiteAnswerValue, LocationAnswerValue } from './response'
-import { FormDesign, QuestionBase, DateQuestion, SiteQuestion, EntityQuestion, CascadingRefQuestion } from './formDesign'
-import { CustomRow } from './CustomRow'
+import _ from "lodash"
+import formUtils from "./formUtils"
+import VisibilityCalculator, { VisibilityStructure } from "./VisibilityCalculator"
+import EntityRow from "./EntityRow"
+import { PromiseExprEvaluatorRow, Schema, Row } from "mwater-expressions"
+import { ResponseData, RosterData, Answer, SiteAnswerValue, LocationAnswerValue } from "./response"
+import {
+  FormDesign,
+  QuestionBase,
+  DateQuestion,
+  SiteQuestion,
+  EntityQuestion,
+  CascadingRefQuestion
+} from "./formDesign"
+import { CustomRow } from "./CustomRow"
 
 /*
   Implements the type of row object required by mwater-expressions' PromiseExprEvaluator. Allows expressions to be evaluated
@@ -27,14 +34,14 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
   /** index of roster row */
   rosterEntryIndex?: number
 
-  /** looks up entity. Any callbacks after first one will be ignored. 
-   * called with an entity e.g. { _id: some id, a: "abc", b: 123 } or callback null if entity not found 
+  /** looks up entity. Any callbacks after first one will be ignored.
+   * called with an entity e.g. { _id: some id, a: "abc", b: 123 } or callback null if entity not found
    */
   getEntityById: (entityType: string, entityId: string, callback: (entity: any) => void) => void
 
-  /** looks up an entity. Any callbacks after first one will be ignored. 
-   * called with an entity e.g. { _id: some id, a: "abc", b: 123 } or callback null if entity not found 
-    */
+  /** looks up an entity. Any callbacks after first one will be ignored.
+   * called with an entity e.g. { _id: some id, a: "abc", b: 123 } or callback null if entity not found
+   */
   getEntityByCode: (entityType: string, entityCode: string, callback: (entity: any) => void) => void
 
   /** Get a specific row of a custom table */
@@ -76,14 +83,14 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
     /** index of roster row */
     rosterEntryIndex?: number
 
-    /** looks up entity. Any callbacks after first one will be ignored. 
-     * called with an entity e.g. { _id: some id, a: "abc", b: 123 } or callback null if entity not found 
+    /** looks up entity. Any callbacks after first one will be ignored.
+     * called with an entity e.g. { _id: some id, a: "abc", b: 123 } or callback null if entity not found
      */
     getEntityById: (entityType: string, entityId: string, callback: (entity: any) => void) => void
 
-    /** looks up an entity. Any callbacks after first one will be ignored. 
-     * called with an entity e.g. { _id: some id, a: "abc", b: 123 } or callback null if entity not found 
-      */
+    /** looks up an entity. Any callbacks after first one will be ignored.
+     * called with an entity e.g. { _id: some id, a: "abc", b: 123 } or callback null if entity not found
+     */
     getEntityByCode: (entityType: string, entityCode: string, callback: (entity: any) => void) => void
 
     /** Get a specific row of a custom table */
@@ -139,9 +146,9 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
   // Gets the value of a column
   async getField(columnId: string) {
     var siteType, value
-    
+
     let data = this.responseData
-    
+
     // Go into roster
     if (this.rosterId) {
       data = this.responseData[this.rosterId][this.rosterEntryIndex!].data
@@ -173,7 +180,7 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
     // Handle data
     if (columnId.match(/^data:/)) {
       const parts = columnId.split(":")
-    
+
       // Roster
       if (parts.length === 2) {
         if (_.isArray(this.responseData[parts[1]])) {
@@ -189,8 +196,7 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
           visibilityCalculator.createVisibilityStructure(this.responseData, this, (error, visibilityStructure) => {
             if (error) {
               reject(error)
-            }
-            else {
+            } else {
               resolve(visibilityStructure)
             }
           })
@@ -233,19 +239,24 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
 
         if (answerType === "site") {
           // Create site entity row
-          siteType = ((question as SiteQuestion).siteTypes ? (question as SiteQuestion).siteTypes![0] : null) || "water_point"
-          const entityType = siteType.toLowerCase().replace(new RegExp(' ', 'g'), "_")
+          siteType =
+            ((question as SiteQuestion).siteTypes ? (question as SiteQuestion).siteTypes![0] : null) || "water_point"
+          const entityType = siteType.toLowerCase().replace(new RegExp(" ", "g"), "_")
           const code = (value as SiteAnswerValue).code
           if (code) {
             const entity: any = await new Promise((resolve) => {
-              this.getEntityByCode(entityType, code, _.once((entity) => {
-                if (entity) {
-                  return resolve(entity)
-                } else {
-                  console.log(`Warning: Site ${code} not found in ResponseRow`)
-                  return resolve(null)
-                }
-              }))
+              this.getEntityByCode(
+                entityType,
+                code,
+                _.once((entity) => {
+                  if (entity) {
+                    return resolve(entity)
+                  } else {
+                    console.log(`Warning: Site ${code} not found in ResponseRow`)
+                    return resolve(null)
+                  }
+                })
+              )
             })
             if (entity) {
               return entity._id
@@ -263,13 +274,13 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
         }
 
         // Location
-        if (value && ((value as LocationAnswerValue).latitude != null)) {
+        if (value && (value as LocationAnswerValue).latitude != null) {
           return {
             type: "Point",
             coordinates: [(value as LocationAnswerValue).longitude, (value as LocationAnswerValue).latitude]
           }
         }
-      
+
         return nullify(value)
       }
 
@@ -283,14 +294,20 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
       }
       // Specify
       if (parts[2] === "specify") {
-        return nullify(data[parts[1]] && (data[parts[1]] as Answer).specify != null && (data[parts[1]] as Answer).specify![parts[3]] != null ? (data[parts[1]] as Answer).specify![parts[3]] : null)
+        return nullify(
+          data[parts[1]] &&
+            (data[parts[1]] as Answer).specify != null &&
+            (data[parts[1]] as Answer).specify![parts[3]] != null
+            ? (data[parts[1]] as Answer).specify![parts[3]]
+            : null
+        )
       }
-      
+
       // Comments
       if (parts[2] === "comments") {
         return nullify(data[parts[1]] ? (data[parts[1]] as Answer).comments : null)
       }
-      
+
       // # Altitude and accuracy
       // if parts[2] == "value" and parts[3] in ["altitude", "accuracy"]
       //   return callback(null, data[parts[1]]?.value?[parts[3]])
@@ -307,7 +324,7 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
       //   return callback(null, data[parts[1]]?.value?[parts[3]])
 
       // Alternates
-      if (parts.length === 3 && (parts[2] === 'na' || parts[2] === 'dontknow')) {
+      if (parts.length === 3 && (parts[2] === "na" || parts[2] === "dontknow")) {
         return data[parts[1]] ? (data[parts[1]] as Answer).alternate == parts[2] || null : null
       }
       // Timestamp
@@ -322,7 +339,7 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
             type: "Point",
             coordinates: [location.longitude, location.latitude]
           }
-        } 
+        }
         return null
       }
       if (parts.length === 4 && parts[2] === "location" && parts[3] === "accuracy") {
@@ -345,9 +362,9 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
 
   /** Follows a join to get row or rows */
   async followJoin(columnId: string) {
-    var siteType, value    
+    var siteType, value
     let data = this.responseData
-    
+
     // Go into roster
     if (this.rosterId) {
       data = this.responseData[this.rosterId][this.rosterEntryIndex!].data
@@ -369,12 +386,13 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
     // Handle data
     if (columnId.match(/^data:/)) {
       const parts = columnId.split(":")
-    
+
       // Roster
       if (parts.length === 2) {
         if (_.isArray(this.responseData[parts[1]])) {
-          return _.map(this.responseData[parts[1]] as RosterData, (entry, index) => 
-            this.getRosterResponseRow(parts[1], index))
+          return _.map(this.responseData[parts[1]] as RosterData, (entry, index) =>
+            this.getRosterResponseRow(parts[1], index)
+          )
         }
       }
 
@@ -396,19 +414,24 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
 
         if (answerType === "site") {
           // Create site entity row
-          siteType = ((question as SiteQuestion).siteTypes ? (question as SiteQuestion).siteTypes![0] : null) || "water_point"
-          const entityType = siteType.toLowerCase().replace(new RegExp(' ', 'g'), "_")
+          siteType =
+            ((question as SiteQuestion).siteTypes ? (question as SiteQuestion).siteTypes![0] : null) || "water_point"
+          const entityType = siteType.toLowerCase().replace(new RegExp(" ", "g"), "_")
           const code = (value as SiteAnswerValue).code
           if (code) {
             const entity = await new Promise((resolve) => {
-              this.getEntityByCode(entityType, code, _.once((entity) => {
-                if (entity) {
-                  return resolve(entity)
-                } else {
-                  console.log(`Warning: Site ${code} not found in ResponseRow`)
-                  return resolve(null)
-                }
-              }))
+              this.getEntityByCode(
+                entityType,
+                code,
+                _.once((entity) => {
+                  if (entity) {
+                    return resolve(entity)
+                  } else {
+                    console.log(`Warning: Site ${code} not found in ResponseRow`)
+                    return resolve(null)
+                  }
+                })
+              )
             })
             if (entity) {
               return new EntityRow({
@@ -416,7 +439,7 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
                 entity: entity,
                 schema: this.schema,
                 getEntityById: this.getEntityById
-              })              
+              })
             }
           }
           return null
@@ -426,14 +449,18 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
           // Create site entity row
           if (value) {
             const entity = await new Promise((resolve) => {
-              this.getEntityById((question as EntityQuestion).entityType, value as string, _.once((entity) => {
-                if (entity) {
-                  resolve(entity)
-                } else {
-                  console.log(`Warning: Entity ${value} not found in ResponseRow`)
-                  resolve(null)
-                }
-              }))
+              this.getEntityById(
+                (question as EntityQuestion).entityType,
+                value as string,
+                _.once((entity) => {
+                  if (entity) {
+                    resolve(entity)
+                  } else {
+                    console.log(`Warning: Entity ${value} not found in ResponseRow`)
+                    resolve(null)
+                  }
+                })
+              )
             })
             if (entity) {
               return new EntityRow({

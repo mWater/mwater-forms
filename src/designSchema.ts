@@ -4,26 +4,44 @@
 DEPRECATED!! Use the typescript definition files!
 */
 
-import _ from 'lodash';
+import _ from "lodash"
 
 // Because of extend limitations in JSON schema, this allows us to include
 // all basic properties but still use additionalProperties: false
 function extendQuestionProperties(properties) {
   return _.defaults(properties, {
-    _id: {}, code: {}, text: {}, textExprs: {}, required: {}, disabled: {}, conditions: {}, conditionExpr: {}, hint: {}, help: {}, sticky: {},
-    alternates: {}, commentsField: {}, recordTimestamp: {}, recordLocation: {}, sensor: {}, _basedOn: {}, exportId: {}, contents: {}, items: {}
-  });
+    _id: {},
+    code: {},
+    text: {},
+    textExprs: {},
+    required: {},
+    disabled: {},
+    conditions: {},
+    conditionExpr: {},
+    hint: {},
+    help: {},
+    sticky: {},
+    alternates: {},
+    commentsField: {},
+    recordTimestamp: {},
+    recordLocation: {},
+    sensor: {},
+    _basedOn: {},
+    exportId: {},
+    contents: {},
+    items: {}
+  })
 }
 
 // This is the design of a form which is stored in the "design" field of forms in mWater
 export default {
-  "$schema": "http://json-schema.org/draft-04/schema#",
+  $schema: "http://json-schema.org/draft-04/schema#",
   type: "object",
   properties: {
     // Specifies that this is the root Form element
     _type: { enum: ["Form"] },
 
-    // Version of the schema of this form design 
+    // Version of the schema of this form design
     // Schema 2 just added siteTypes to SiteQuestion and exportId to questions and consentPrompt to image questions
     // Schema 3 added moment formats for date questions. Label for checkbox is deprecated and no longer used.
     // Schema 4 added isoneof and isntoneof conditions
@@ -48,10 +66,10 @@ export default {
     draftNameRequired: { type: "boolean" },
 
     // When set to true, users will be able to add questions with confidential answers
-    confidentialMode: { type: "boolean"},
+    confidentialMode: { type: "boolean" },
 
     // Contents of the form
-    contents: { 
+    contents: {
       oneOf: [
         // Can be empty
         { type: "array", maxItems: 0 },
@@ -68,9 +86,9 @@ export default {
     locales: { $ref: "#/definitions/locales" },
 
     // Form-level localized strings, such as "Discard", "Clear", etc.
-    localizedStrings: { 
-      type: "array", 
-      items: { $ref: "#/definitions/localizedString" } 
+    localizedStrings: {
+      type: "array",
+      items: { $ref: "#/definitions/localizedString" }
     },
 
     // Calculated values
@@ -78,14 +96,14 @@ export default {
       type: "array",
       items: {
         type: "object",
-        properties: { 
+        properties: {
           _id: { type: "string" }, // Unique id of calculation
 
           // Name of the calculation
-          name: { $ref: "#/definitions/localizedString" }, 
+          name: { $ref: "#/definitions/localizedString" },
 
           // Description of the calculation (optional)
-          desc: { $ref: "#/definitions/localizedString" }, 
+          desc: { $ref: "#/definitions/localizedString" },
 
           roster: { type: "string" }, // Id of roster if from a roster
 
@@ -105,7 +123,7 @@ export default {
         entityType: { type: "string" },
 
         // Property links that connect questions to properties
-        propertyLinks: { 
+        propertyLinks: {
           type: "array",
           items: { $ref: "#/definitions/propertyLink" }
         }
@@ -127,7 +145,7 @@ export default {
       properties: {
         // Base language code of localized string
         _base: { type: "string" },
-        
+
         // True if no longer used
         _unused: { type: "boolean" }
       },
@@ -143,7 +161,7 @@ export default {
       type: "array",
       // TODO fill in empty locales
       // minItems: 1
-      items: { 
+      items: {
         type: "object",
         properties: {
           // Language code (2 character)
@@ -175,7 +193,7 @@ export default {
         propertyId: { type: "string" },
         direction: { enum: ["load", "save", "both"] },
         questionId: { type: "string" },
-        mappings: { }, 
+        mappings: {},
         alternate: { type: "string" },
         choice: { type: "string" },
         randomRadius: { type: "number" },
@@ -189,7 +207,7 @@ export default {
       // TODO document. Used to be object, now string
     },
 
-    // A section of a form has a name and a series of items (questions, etc.) that validate as a group. Forms are 
+    // A section of a form has a name and a series of items (questions, etc.) that validate as a group. Forms are
     // either made only of sections or not at all.
     section: {
       type: "object",
@@ -200,7 +218,7 @@ export default {
         _type: { enum: ["Section"] },
 
         // Name of the section
-        name: { $ref: "#/definitions/localizedString" }, 
+        name: { $ref: "#/definitions/localizedString" },
 
         // Contains a list of items
         contents: {
@@ -215,21 +233,21 @@ export default {
         conditionExpr: { type: "object" },
 
         // _id of the section that this section is a duplicate of.
-        _basedOn : { $ref: "#/definitions/uuid" }
+        _basedOn: { $ref: "#/definitions/uuid" }
       },
       required: ["_id", "_type", "name", "contents"],
       additionalProperties: false
     },
-    
+
     // Item such as a question or instruction that make up the basic building block of a form
     item: {
       type: "object",
       anyOf: [
-        { $ref: "#/definitions/question" }, 
-        { $ref: "#/definitions/instructions" }, 
-        { $ref: "#/definitions/rosterGroup" }, 
-        { $ref: "#/definitions/rosterMatrix" }, 
-        { $ref: "#/definitions/group" } 
+        { $ref: "#/definitions/question" },
+        { $ref: "#/definitions/instructions" },
+        { $ref: "#/definitions/rosterGroup" },
+        { $ref: "#/definitions/rosterMatrix" },
+        { $ref: "#/definitions/group" }
       ]
     },
 
@@ -247,10 +265,10 @@ export default {
         code: { type: "string" },
 
         // Text (prompt of the question)
-        text: { $ref: "#/definitions/localizedString" }, 
+        text: { $ref: "#/definitions/localizedString" },
 
         // Array of mWater expressions to substitute into text field for {0}, {1}, etc.
-        textExprs: { type: "array", items: { type: "object" }},
+        textExprs: { type: "array", items: { type: "object" } },
 
         // True if the question is required to be answered
         required: { type: "boolean" },
@@ -265,10 +283,10 @@ export default {
         conditionExpr: { type: "object" },
 
         // Localized hint which is displayed with question text
-        hint: { $ref: "#/definitions/localizedString" }, 
+        hint: { $ref: "#/definitions/localizedString" },
 
         // Localized markdown help which can be opened
-        help: { $ref: "#/definitions/localizedString" }, 
+        help: { $ref: "#/definitions/localizedString" },
 
         // True to copy answer from previous time form was filled
         sticky: { type: "boolean" },
@@ -299,7 +317,7 @@ export default {
         alternates: {
           type: "object",
           properties: {
-            na: { type: "boolean" },  // True to display Not Applicable option
+            na: { type: "boolean" }, // True to display Not Applicable option
             dontknow: { type: "boolean" } // True to display Don't Know option
           },
           additionalProperties: false
@@ -313,11 +331,11 @@ export default {
 
         advancedValidations: {
           type: "array",
-          items: { $ref: "#/definitions/advancedValidation"}
+          items: { $ref: "#/definitions/advancedValidation" }
         },
 
         // _id of the item that this item is a duplicate of
-        _basedOn : { $ref: "#/definitions/uuid" },
+        _basedOn: { $ref: "#/definitions/uuid" },
 
         // If present, only ask with this probability, hide otherwise. 0-1
         randomAskProbability: { type: "number" }
@@ -356,10 +374,10 @@ export default {
         _type: { enum: ["Instructions"] },
 
         // Markdown text on a per-language basis
-        text: { $ref: "#/definitions/localizedString" }, 
+        text: { $ref: "#/definitions/localizedString" },
 
         // Array of mWater expressions to substitute into text field for {0}, {1}, etc.
-        textExprs: { type: "array", items: { type: "object" }},
+        textExprs: { type: "array", items: { type: "object" } },
 
         // Conditions for visibility of the instructions
         conditions: { $ref: "#/definitions/conditions" },
@@ -384,7 +402,7 @@ export default {
         text: { $ref: "#/definitions/localizedString" },
 
         // Initial time, stored in ms
-        duration: {type: "number"},
+        duration: { type: "number" },
 
         // Localized hint which is displayed with question text
         hint: { $ref: "#/definitions/localizedString" },
@@ -409,10 +427,10 @@ export default {
         rosterId: { $ref: "#/definitions/uuid" },
 
         // Name of roster group (displayed above list)
-        name: { $ref: "#/definitions/localizedString" }, 
+        name: { $ref: "#/definitions/localizedString" },
 
         // Hint of roster group (displayed below list)
-        hint: { $ref: "#/definitions/localizedString" }, 
+        hint: { $ref: "#/definitions/localizedString" },
 
         // Conditions for visibility of the group
         conditions: { $ref: "#/definitions/conditions" },
@@ -430,13 +448,13 @@ export default {
         allowRemove: { type: "boolean" },
 
         // Prompt below when empty (defaults to "Click +Add to add an item")
-        emptyPrompt: { $ref: "#/definitions/localizedString" }, 
+        emptyPrompt: { $ref: "#/definitions/localizedString" },
 
         // Title of each entry
         entryTitle: { $ref: "#/definitions/localizedString" },
 
         // Array of mWater expressions to substitute into entry title field for {0}, {1}, etc.
-        entryTitleExprs: { type: "array", items: { type: "object" }},
+        entryTitleExprs: { type: "array", items: { type: "object" } },
 
         // Contains a list of items
         contents: {
@@ -458,10 +476,10 @@ export default {
         rosterId: { $ref: "#/definitions/uuid" },
 
         // Name of roster group (displayed above matrix)
-        name: { $ref: "#/definitions/localizedString" }, 
+        name: { $ref: "#/definitions/localizedString" },
 
         // Hint of roster matrix (displayed below list)
-        hint: { $ref: "#/definitions/localizedString" }, 
+        hint: { $ref: "#/definitions/localizedString" },
 
         // Conditions for visibility of the matrix
         conditions: { $ref: "#/definitions/conditions" },
@@ -479,7 +497,7 @@ export default {
         allowRemove: { type: "boolean" },
 
         // Prompt below matrix when empty (defaults to "Click +Add to add an item")
-        emptyPrompt: { $ref: "#/definitions/localizedString" }, 
+        emptyPrompt: { $ref: "#/definitions/localizedString" },
 
         // Contains a list of columns
         contents: {
@@ -495,10 +513,21 @@ export default {
       type: "object",
       properties: {
         _id: { $ref: "#/definitions/uuid" },
-        _type: { enum: ["TextColumnQuestion", "NumberColumnQuestion", "CheckColumnQuestion", "DropdownColumnQuestion", "UnitsColumnQuestion", "TextColumn", "SiteColumnQuestion", "DateColumnQuestion"] },
+        _type: {
+          enum: [
+            "TextColumnQuestion",
+            "NumberColumnQuestion",
+            "CheckColumnQuestion",
+            "DropdownColumnQuestion",
+            "UnitsColumnQuestion",
+            "TextColumn",
+            "SiteColumnQuestion",
+            "DateColumnQuestion"
+          ]
+        },
 
         // Header of roster column
-        text: { $ref: "#/definitions/localizedString" }, 
+        text: { $ref: "#/definitions/localizedString" },
 
         // Code, unique within the question that should be used for exporting
         code: { type: "string" },
@@ -506,7 +535,7 @@ export default {
         // True if the column is required to be answered
         required: { type: "boolean" },
 
-        // For number columns 
+        // For number columns
         decimal: { type: "boolean" },
 
         // List of units displayed for unit questions
@@ -545,7 +574,7 @@ export default {
             ]
           }
         }
-       },
+      },
       required: ["_id", "_type", "text"]
     },
 
@@ -557,7 +586,7 @@ export default {
         _type: { enum: ["Group"] },
 
         // Name of group (displayed above list). Can be blank
-        name: { $ref: "#/definitions/localizedString" }, 
+        name: { $ref: "#/definitions/localizedString" },
 
         // Conditions for visibility of the group
         conditions: { $ref: "#/definitions/conditions" },
@@ -603,7 +632,7 @@ export default {
         op: { type: "string" },
 
         // Optional right-hand side of the inequality. Unary operators will not have one
-        rhs: { 
+        rhs: {
           type: "object",
           properties: {
             // Literal value of the right hand side. See individual conditions
@@ -631,12 +660,14 @@ export default {
       unary: {
         type: "object",
         properties: {
-          op: { enum: [
-            "present",   // If question was answered
-            "!present",  // If question was not answered
-            "true",      // If answer is true
-            "false"     // If answer is false
-          ]},
+          op: {
+            enum: [
+              "present", // If question was answered
+              "!present", // If question was not answered
+              "true", // If answer is true
+              "false" // If answer is false
+            ]
+          },
           lhs: {}
         },
         additionalProperties: false
@@ -646,16 +677,18 @@ export default {
       text: {
         type: "object",
         properties: {
-          op: { enum: [
-            "contains",    // If answer contains text in RHS
-            "!contains"   // If answer does not contain text in RHS
-          ]},
+          op: {
+            enum: [
+              "contains", // If answer contains text in RHS
+              "!contains" // If answer does not contain text in RHS
+            ]
+          },
           rhs: {
             type: "object",
             properties: {
               literal: { type: "string" }
             }
-          } 
+          }
         },
         required: ["rhs"]
       },
@@ -664,19 +697,21 @@ export default {
       number: {
         type: "object",
         properties: {
-          op: { enum: [
-            "=",    // If answer equals a value
-            "!=",   // If answer does not equal a value
-            ">",    // If answer is greater than
-            "<"    // If answer is less than
-          ]},
+          op: {
+            enum: [
+              "=", // If answer equals a value
+              "!=", // If answer does not equal a value
+              ">", // If answer is greater than
+              "<" // If answer is less than
+            ]
+          },
 
           rhs: {
             type: "object",
             properties: {
               literal: { type: "integer" }
             }
-          } 
+          }
         },
         required: ["rhs"]
       },
@@ -685,12 +720,14 @@ export default {
       choice: {
         type: "object",
         properties: {
-          op: { enum: [
-            "is",        // If answer is a certain choice
-            "isnt",      // If answer is not a choice
-            "includes",  // If answer is includes a choice (multi-check)
-            "!includes" // If answer doesn't include a choice (multi-check)  
-          ]},
+          op: {
+            enum: [
+              "is", // If answer is a certain choice
+              "isnt", // If answer is not a choice
+              "includes", // If answer is includes a choice (multi-check)
+              "!includes" // If answer doesn't include a choice (multi-check)
+            ]
+          },
 
           rhs: {
             type: "object",
@@ -698,7 +735,7 @@ export default {
               // Id of the choice
               literal: { type: "string" }
             }
-          } 
+          }
         },
         required: ["rhs"]
       },
@@ -707,10 +744,12 @@ export default {
       choices: {
         type: "object",
         properties: {
-          op: { enum: [
-            "isoneof",   // If answer is in a list of choices
-            "isntoneof" // If answer is not in a list of choice
-          ]},
+          op: {
+            enum: [
+              "isoneof", // If answer is in a list of choices
+              "isntoneof" // If answer is not in a list of choice
+            ]
+          },
 
           rhs: {
             type: "object",
@@ -718,7 +757,7 @@ export default {
               // Ids of the choices
               literal: { type: "array", items: { type: "string" } }
             }
-          } 
+          }
         },
         required: ["rhs"]
       },
@@ -727,10 +766,12 @@ export default {
       date: {
         type: "object",
         properties: {
-          op: { enum: [
-            "before",     // If answer is before a date
-            "after"      // If answer is after a date
-          ]},
+          op: {
+            enum: [
+              "before", // If answer is before a date
+              "after" // If answer is after a date
+            ]
+          },
 
           rhs: {
             type: "object",
@@ -738,7 +779,7 @@ export default {
               // Date in YYYY-MM-DD
               literal: { type: "date" }
             }
-          } 
+          }
         },
         required: ["rhs"]
       }
@@ -746,7 +787,7 @@ export default {
 
     validations: {
       // Validations are a condition that the answer must pass
-      // The type is specific to the question type, but have a 
+      // The type is specific to the question type, but have a
       // common structure
       common: {
         type: "object",
@@ -768,7 +809,7 @@ export default {
           },
 
           // Message to be displayed when the validation fails
-          message: { $ref: "#/definitions/localizedString" } 
+          message: { $ref: "#/definitions/localizedString" }
         },
         additionalProperties: false,
         required: ["op", "message"]
@@ -835,7 +876,7 @@ export default {
             required: ["literal"]
           }
         }
-      }        
+      }
     },
 
     // Simple text question, single or multi-line
@@ -844,20 +885,19 @@ export default {
         _type: { enum: ["TextQuestion"] },
 
         // Format of the text field
-        format: { enum: [
-          "singleline", // single line of text
-          "multiline", // paragraph of text
-          "email", // valid email address
-          "url" // valid URL
-        ] },
+        format: {
+          enum: [
+            "singleline", // single line of text
+            "multiline", // paragraph of text
+            "email", // valid email address
+            "url" // valid URL
+          ]
+        },
 
         validations: {
           type: "array",
           items: {
-            oneOf: [
-              { $ref: "#/definitions/validations/lengthRange" },
-              { $ref: "#/definitions/validations/regex" }
-            ]
+            oneOf: [{ $ref: "#/definitions/validations/lengthRange" }, { $ref: "#/definitions/validations/regex" }]
           }
         }
       }),
@@ -903,9 +943,9 @@ export default {
         choices: { $ref: "#/definitions/choices" },
 
         // No validation available
-        validations: { type: "array", maxItems: 0 } 
+        validations: { type: "array", maxItems: 0 }
       }),
-      required: ['choices'],
+      required: ["choices"],
       additionalProperties: false
     },
 
@@ -919,9 +959,9 @@ export default {
         choices: { $ref: "#/definitions/choices" },
 
         // No validation available
-        validations: { type: "array", maxItems: 0 } 
+        validations: { type: "array", maxItems: 0 }
       }),
-      required: ['choices'],
+      required: ["choices"],
       additionalProperties: false
     },
 
@@ -940,7 +980,7 @@ export default {
         // No validation available
         validations: { type: "array", maxItems: 0 }
       }),
-      required: ['choices'],
+      required: ["choices"],
       additionalProperties: false
     },
 
@@ -953,9 +993,9 @@ export default {
         choices: { $ref: "#/definitions/choices" },
 
         // No validation available
-        validations: { type: "array", maxItems: 0 } 
+        validations: { type: "array", maxItems: 0 }
       }),
-      required: ['choices'],
+      required: ["choices"],
       additionalProperties: false
     },
 
@@ -968,9 +1008,9 @@ export default {
         format: { type: "string" },
 
         // No validation available
-        validations: { type: "array", maxItems: 0 } 
+        validations: { type: "array", maxItems: 0 }
       }),
-      required: ['format'],
+      required: ["format"],
       additionalProperties: false
     },
 
@@ -996,7 +1036,7 @@ export default {
           items: { $ref: "#/definitions/validations/range" }
         }
       }),
-      required: ['decimal', 'units', 'unitsPosition'],
+      required: ["decimal", "units", "unitsPosition"],
       additionalProperties: false
     },
 
@@ -1007,10 +1047,10 @@ export default {
 
         // Label to display next to checkbox. DEPRECATED AND NOT DISPLAYED
         // TODO: remove
-        label: { $ref: "#/definitions/localizedString" }, 
+        label: { $ref: "#/definitions/localizedString" },
 
         // No validation available
-        validations: { type: "array", maxItems: 0 } 
+        validations: { type: "array", maxItems: 0 }
       }),
       additionalProperties: false
     },
@@ -1024,7 +1064,7 @@ export default {
         calculateAdminRegion: { type: "boolean" },
 
         // No validation available
-        validations: { type: "array", maxItems: 0 } 
+        validations: { type: "array", maxItems: 0 }
       }),
       additionalProperties: false
     },
@@ -1039,7 +1079,7 @@ export default {
         consentPrompt: { $ref: "#/definitions/localizedString" },
 
         // No validation available
-        validations: { type: "array", maxItems: 0 } 
+        validations: { type: "array", maxItems: 0 }
       }),
       additionalProperties: false
     },
@@ -1054,7 +1094,7 @@ export default {
         consentPrompt: { $ref: "#/definitions/localizedString" },
 
         // No validation available
-        validations: { type: "array", maxItems: 0 } 
+        validations: { type: "array", maxItems: 0 }
       }),
       additionalProperties: false
     },
@@ -1065,7 +1105,7 @@ export default {
         _type: { enum: ["TextListQuestion"] },
 
         // No validation available
-        validations: { type: "array", maxItems: 0 } 
+        validations: { type: "array", maxItems: 0 }
       }),
       additionalProperties: false
     },
@@ -1077,13 +1117,13 @@ export default {
 
         // Optional list of site types to include. e.g. "Water point", "Community". Should only be one in array. NOTE: NOW SHOULD BE "water_point", not "Water point"
         // If none, defaults to "water_point"
-        siteTypes : {
+        siteTypes: {
           type: "array",
           items: { type: "string" }
-        },                        
+        },
 
         // No validation available
-        validations: { type: "array", maxItems: 0 } 
+        validations: { type: "array", maxItems: 0 }
       }),
       additionalProperties: false
     },
@@ -1094,7 +1134,7 @@ export default {
         _type: { enum: ["BarcodeQuestion"] },
 
         // No validation available
-        validations: { type: "array", maxItems: 0 } 
+        validations: { type: "array", maxItems: 0 }
       }),
       additionalProperties: false
     },
@@ -1105,13 +1145,13 @@ export default {
         _type: { enum: ["EntityQuestion"] },
 
         // Entity type that can be selected
-        entityType:  { type: "string" },
+        entityType: { type: "string" },
 
         // Filter for the entities that can be chosen. MongoDb-style
         entityFilter: { type: "object" },
 
         // Properties that should be displayed when an entity is chosen DEPRECATED
-        displayProperties: { 
+        displayProperties: {
           type: "array",
           items: { $ref: "#/definitions/propertyId" }
         },
@@ -1123,20 +1163,20 @@ export default {
         },
 
         // Geometry property (optional) that should be displayed on a map for choosing an entity. DEPRECATED
-        mapProperty: { $ref: "#/definitions/propertyId" }, 
-        
+        mapProperty: { $ref: "#/definitions/propertyId" },
+
         // Text of select button
-        selectText: { $ref: "#/definitions/localizedString" }, 
-        
+        selectText: { $ref: "#/definitions/localizedString" },
+
         // Property links that connect questions to properties
         // DEPRECATED
-        propertyLinks: { 
+        propertyLinks: {
           type: "array",
           items: { $ref: "#/definitions/propertyLink" }
         },
 
         // How selection is made
-        selectionMode: { $enum: ['external'] },
+        selectionMode: { $enum: ["external"] },
 
         // True if hidden always DEPRECATED
         hidden: { type: "boolean" },
@@ -1145,7 +1185,7 @@ export default {
         createEntity: { type: "boolean" },
 
         // No validation available
-        validations: { type: "array", maxItems: 0 } 
+        validations: { type: "array", maxItems: 0 }
       }),
       required: ["entityType"],
       additionalProperties: false
@@ -1157,10 +1197,10 @@ export default {
         _type: { enum: ["AdminRegionQuestion"] },
 
         // Default value (id of admin region)
-        defaultValue:  { type: "string" },
+        defaultValue: { type: "string" },
 
         // No validation available
-        validations: { type: "array", maxItems: 0 } 
+        validations: { type: "array", maxItems: 0 }
       }),
       additionalProperties: false
     },
@@ -1171,7 +1211,7 @@ export default {
         _type: { enum: ["MatrixQuestion"] },
 
         // Items, each representing a row
-        items: { $ref: "#/definitions/choices"},
+        items: { $ref: "#/definitions/choices" },
 
         // Contains a list of columns
         columns: {
@@ -1180,7 +1220,7 @@ export default {
         },
 
         // No validation available
-        validations: { type: "array", maxItems: 0 } 
+        validations: { type: "array", maxItems: 0 }
       }),
       required: ["items", "columns"],
       additionalProperties: false
@@ -1210,10 +1250,10 @@ export default {
           code: { type: "string" },
 
           // Label of the choice, localized
-          label: { $ref: "#/definitions/localizedString" }, 
+          label: { $ref: "#/definitions/localizedString" },
 
           // Hint associated with a choice
-          hint: { $ref: "#/definitions/localizedString" }, 
+          hint: { $ref: "#/definitions/localizedString" },
 
           // True to require a text field to specify the value when selected
           // Usually used for "Other" options.
@@ -1252,7 +1292,7 @@ export default {
           additionalProperties: false
         }
       }
-    }, 
+    },
 
     // Expression-based validation
     advancedValidation: {
@@ -1260,7 +1300,7 @@ export default {
       expr: { type: "object" },
 
       // Message that is shown if expr is not true
-      message: { $ref: "#/definitions/localizedString" } 
+      message: { $ref: "#/definitions/localizedString" }
     }
   }
-};
+}

@@ -157,4 +157,3 @@ describe 'ImagesQuestion', ->
       window.confirm = _oldConfirm
 
 */
-        

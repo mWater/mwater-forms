@@ -1,7 +1,7 @@
-import _ from 'lodash'
-import { EventEmitter } from 'events'
-import LocationFinder from './LocationFinder'
-import { calculateGPSStrength, PositionStrength } from './utils'
+import _ from "lodash"
+import { EventEmitter } from "events"
+import LocationFinder from "./LocationFinder"
+import { calculateGPSStrength, PositionStrength } from "./utils"
 
 const initialDelay = 10
 const goodDelay = 5
@@ -27,7 +27,7 @@ export interface PositionStatus {
   goodDelayLeft: number | null
 }
 
-/** Uses an algorithm to accurately find current position (coords + timestamp). Fires status events and found event. 
+/** Uses an algorithm to accurately find current position (coords + timestamp). Fires status events and found event.
  * Only call start once and be sure to call stop after */
 export default class CurrentPositionFinder {
   eventEmitter: EventEmitter
@@ -56,7 +56,7 @@ export default class CurrentPositionFinder {
     this.eventEmitter = new EventEmitter()
 
     // "error" messages are handled specially and will crash if not handled!
-    this.eventEmitter.on('error', () => {})
+    this.eventEmitter.on("error", () => {})
 
     this.locationFinder = options.locationFinder
     this._reset()
@@ -118,9 +118,9 @@ export default class CurrentPositionFinder {
     this.eventEmitter.on(event, callback)
   }
 
-  off(event: "error", callback: () => void): void;
-  off(event: "found", callback: (position: Position) => void): void;
-  off(event: "status", callback: (status: PositionStatus) => void): void;
+  off(event: "error", callback: () => void): void
+  off(event: "found", callback: (position: Position) => void): void
+  off(event: "status", callback: (status: PositionStatus) => void): void
   off(event: string, callback: (args: any) => void) {
     this.eventEmitter.removeListener(event, callback)
   }
@@ -130,7 +130,7 @@ export default class CurrentPositionFinder {
     this.initialDelayLeft = initialDelay
     this.goodDelayLeft = null
 
-    this.strength = 'none'
+    this.strength = "none"
     this.pos = null
   }
 
@@ -144,12 +144,12 @@ export default class CurrentPositionFinder {
     }
 
     // Replace position if better
-    if (!this.pos || (pos.coords.accuracy <= this.pos.coords.accuracy)) {
+    if (!this.pos || pos.coords.accuracy <= this.pos.coords.accuracy) {
       this.pos = pos
     }
 
     // Start good delay if needed
-    if (!this.goodDelayInterval && (calculateGPSStrength(this.pos) === "good")) {
+    if (!this.goodDelayInterval && calculateGPSStrength(this.pos) === "good") {
       this.goodDelayLeft = goodDelay
 
       // Start good delay countdown
@@ -163,38 +163,38 @@ export default class CurrentPositionFinder {
         if (this.goodDelayLeft <= 0) {
           if (this.running) {
             this.stop()
-            this.eventEmitter.emit('found', this.pos)
+            this.eventEmitter.emit("found", this.pos)
           }
         }
       }, 1000)
     }
- 
+
     // Update status
     this.updateStatus()
 
     // Set position if excellent
     if (this.strength === "excellent") {
       this.stop()
-      this.eventEmitter.emit('found', this.pos)
+      this.eventEmitter.emit("found", this.pos)
     }
   }
 
   locationFinderError = (err: string) => {
     this.stop()
     this.error = err
-    return this.eventEmitter.emit('error', err)
+    return this.eventEmitter.emit("error", err)
   }
 
   updateStatus() {
     this.strength = calculateGPSStrength(this.pos)
-    const useable = (this.initialDelayLeft <= 0 && ["fair", "poor"].includes(this.strength)) || (this.strength === "good")
-    
+    const useable = (this.initialDelayLeft <= 0 && ["fair", "poor"].includes(this.strength)) || this.strength === "good"
+
     // Trigger status
-    this.eventEmitter.emit('status', { 
-      strength: this.strength, 
-      pos: this.pos, 
-      useable: useable, 
-      accuracy: (this.pos != null ? this.pos.coords.accuracy : undefined),
+    this.eventEmitter.emit("status", {
+      strength: this.strength,
+      pos: this.pos,
+      useable: useable,
+      accuracy: this.pos != null ? this.pos.coords.accuracy : undefined,
       initialDelayLeft: this.initialDelayLeft,
       goodDelayLeft: this.goodDelayLeft
     })

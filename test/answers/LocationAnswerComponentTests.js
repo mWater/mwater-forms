@@ -1,31 +1,32 @@
 // TODO: This file was created by bulk-decaffeinate.
 // Sanity-check the conversion and remove this comment.
-import { assert } from 'chai';
-import TestComponent from 'react-library/lib/TestComponent';
-import ReactTestUtils from 'react-dom/test-utils';
-import LocationAnswerComponent from '../../src/answers/LocationAnswerComponent';
-import React from 'react';
-import ReactDOM from 'react-dom';
-const R = React.createElement;
+import { assert } from "chai"
+import TestComponent from "react-library/lib/TestComponent"
+import ReactTestUtils from "react-dom/test-utils"
+import LocationAnswerComponent from "../../src/answers/LocationAnswerComponent"
+import React from "react"
+import ReactDOM from "react-dom"
+const R = React.createElement
 
-describe('LocationAnswerComponent', function() {
-  before(function() {
-    this.toDestroy = [];
+describe("LocationAnswerComponent", function () {
+  before(function () {
+    this.toDestroy = []
 
-    return this.render = (options = {}) => {
-      const elem = R(LocationAnswerComponent, options);
-      const comp = new TestComponent(elem);
-      this.toDestroy.push(comp);
-      return comp;
-    };
-  });
+    return (this.render = (options = {}) => {
+      const elem = R(LocationAnswerComponent, options)
+      const comp = new TestComponent(elem)
+      this.toDestroy.push(comp)
+      return comp
+    })
+  })
 
-  return afterEach(function() {
+  return afterEach(function () {
     for (let comp of this.toDestroy) {
-      comp.destroy();
+      comp.destroy()
     }
-    return this.toDestroy = [];});
-});
+    return (this.toDestroy = [])
+  })
+})
 
 // NOTE: All of this was already commented before we switched from LocationQuestion to LocationAnswerComponent
 /*

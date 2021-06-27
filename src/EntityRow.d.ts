@@ -14,7 +14,7 @@ export default class EntityRow implements PromiseExprEvaluatorRow {
     schema: Schema
     /** looks up entity. callback: called with an entity e.g. { _id: some id, a: "abc", b: 123 } or callback null if entity not found */
     getEntityById(entityType: string, entityId: string, callback: (entity: any) => void): void
-  }) 
+  })
 
   getPrimaryKey(): Promise<any>
 

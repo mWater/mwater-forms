@@ -1,5 +1,5 @@
-import { Schema } from "mwater-expressions";
-import { Form } from "./form";
+import { Schema } from "mwater-expressions"
+import { Form } from "./form"
 
 /** Adds a form to a mwater-expressions schema */
 export default class FormSchemaBuilder {

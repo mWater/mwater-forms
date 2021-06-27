@@ -5,8 +5,26 @@ import { LocalizedString } from "mwater-expressions"
 // function changeQuestionType(question: any, newType: any): any;
 // function createBase32TimeCode(date: any): any;
 
-export type AnswerType = "text" | "number" | "choice" | "choices" | "date" | "units" | "boolean" | "location" | "image" | "images" 
-  | "texts" | "site" | "entity" | "admin_region" | "items_choices" | "matrix" | "aquagenx_cbt" | "cascading_list" | "cascading_ref"
+export type AnswerType =
+  | "text"
+  | "number"
+  | "choice"
+  | "choices"
+  | "date"
+  | "units"
+  | "boolean"
+  | "location"
+  | "image"
+  | "images"
+  | "texts"
+  | "site"
+  | "entity"
+  | "admin_region"
+  | "items_choices"
+  | "matrix"
+  | "aquagenx_cbt"
+  | "cascading_list"
+  | "cascading_ref"
 
 /** Create short unique id, with ~42 bits randomness to keep unique amoung a few choices */
 export function createShortUid(): string
@@ -15,7 +33,7 @@ export function createShortUid(): string
 export function createMediumUid(): string
 
 /** Create ~ 128-bit uid without dashes */
-export function createUid(): string;
+export function createUid(): string
 
 // function duplicateItem(item: any, idMap: any): any;
 // function extractEntityReferences(formDesign: any, responseData: any): any;

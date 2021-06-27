@@ -1,35 +1,35 @@
 // TODO: This file was created by bulk-decaffeinate.
 // Sanity-check the conversion and remove this comment.
-let FormSchemaBuilder;
-import _ from 'lodash';
-import * as formUtils from './formUtils';
-import { ExprUtils } from 'mwater-expressions';
-import { ExprCompiler } from 'mwater-expressions';
-import update from 'update-object';
-import { ColumnNotFoundException } from 'mwater-expressions';
-import TopoSort from 'topo-sort';
-import ConditionsExprCompiler from './ConditionsExprCompiler';
-import { healthRiskEnum } from './answers/aquagenxCBTUtils';
+let FormSchemaBuilder
+import _ from "lodash"
+import * as formUtils from "./formUtils"
+import { ExprUtils } from "mwater-expressions"
+import { ExprCompiler } from "mwater-expressions"
+import update from "update-object"
+import { ColumnNotFoundException } from "mwater-expressions"
+import TopoSort from "topo-sort"
+import ConditionsExprCompiler from "./ConditionsExprCompiler"
+import { healthRiskEnum } from "./answers/aquagenxCBTUtils"
 
 // Adds a form to a mwater-expressions schema
 export default FormSchemaBuilder = class FormSchemaBuilder {
   // indicators is at least all indicators referenced in indicator calculations. Can be empty and indicator calculations will be omitted
   addForm(schema, form, cloneFormsDeprecated, isAdmin = true, indicators) {
-    const contents = [];
-    
-    const metadata = [];
+    const contents = []
+
+    const metadata = []
 
     // Get deployments
-    const deploymentValues = _.map(form.deployments, dep => ({
+    const deploymentValues = _.map(form.deployments, (dep) => ({
       id: dep._id,
       name: { en: dep.name }
-    }));
-    metadata.push({ id: "deployment", type: "enum", name: { en: "Deployment" }, enumValues: deploymentValues });
+    }))
+    metadata.push({ id: "deployment", type: "enum", name: { en: "Deployment" }, enumValues: deploymentValues })
 
     // Add user
-    metadata.push({ 
+    metadata.push({
       id: "user",
-      name: { en: "Enumerator" }, 
+      name: { en: "Enumerator" },
       type: "join",
       join: {
         type: "n-1",
@@ -37,97 +37,135 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
         fromColumn: "user",
         toColumn: "_id"
       }
-    });
+    })
 
     // Add status
-    metadata.push({ id: "status", type: "enum", name: { en: "Status" }, enumValues: [
-      { id: "draft", name: { en: "Draft" } },
-      { id: "pending", name: { en: "Pending" } },
-      { id: "final", name: { en: "Final" } },
-      { id: "rejected", name: { en: "Rejected" } }
-    ]});
+    metadata.push({
+      id: "status",
+      type: "enum",
+      name: { en: "Status" },
+      enumValues: [
+        { id: "draft", name: { en: "Draft" } },
+        { id: "pending", name: { en: "Pending" } },
+        { id: "final", name: { en: "Final" } },
+        { id: "rejected", name: { en: "Rejected" } }
+      ]
+    })
 
     // Add code
-    metadata.push({ id: "code", type: "text", name: { en: "Response Code" } });
+    metadata.push({ id: "code", type: "text", name: { en: "Response Code" } })
 
     // Add startedOn
-    metadata.push({ id: "startedOn", type: "datetime", name: { en: "Drafted On" } });
+    metadata.push({ id: "startedOn", type: "datetime", name: { en: "Drafted On" } })
 
     // Add submitted on
-    metadata.push({ id: "submittedOn", type: "datetime", name: { en: "Submitted On" } });
+    metadata.push({ id: "submittedOn", type: "datetime", name: { en: "Submitted On" } })
 
     // Add approvalLevel. Only has value if pending
     let jsonql = {
       type: "case",
-      cases: [{
-        when: { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "{alias}", column: "status" }, { type: "literal", value: "pending" }] },
-        then: { type: "op", op: "::text", exprs: [{ type: "op", op: "jsonb_array_length", exprs: [{ type: "field", tableAlias: "{alias}", column: "approvals" }] }] }
-      }]
-    };
+      cases: [
+        {
+          when: {
+            type: "op",
+            op: "=",
+            exprs: [
+              { type: "field", tableAlias: "{alias}", column: "status" },
+              { type: "literal", value: "pending" }
+            ]
+          },
+          then: {
+            type: "op",
+            op: "::text",
+            exprs: [
+              {
+                type: "op",
+                op: "jsonb_array_length",
+                exprs: [{ type: "field", tableAlias: "{alias}", column: "approvals" }]
+              }
+            ]
+          }
+        }
+      ]
+    }
 
-    metadata.push({ id: "approvalLevel", type: "enum", name: { en: "Approval Level" }, jsonql, enumValues:[
-      { id: "0", name: { en: "Pending Level 1" } },
-      { id: "1", name: { en: "Pending Level 2" } },
-      { id: "2", name: { en: "Pending Level 3" } },
-      { id: "3", name: { en: "Pending Level 4" } }
-    ]});
-    
+    metadata.push({
+      id: "approvalLevel",
+      type: "enum",
+      name: { en: "Approval Level" },
+      jsonql,
+      enumValues: [
+        { id: "0", name: { en: "Pending Level 1" } },
+        { id: "1", name: { en: "Pending Level 2" } },
+        { id: "2", name: { en: "Pending Level 3" } },
+        { id: "3", name: { en: "Pending Level 4" } }
+      ]
+    })
+
     // Add number of rejections
     jsonql = {
       type: "scalar",
       expr: { type: "op", op: "count", exprs: [] },
-      from: { 
-        type: "subexpr", 
-        expr: { type: "op", op: "jsonb_array_elements", exprs: [{ type: "field", tableAlias: "{alias}", column: "events" }] }, 
-        alias: "events_subexpr" 
+      from: {
+        type: "subexpr",
+        expr: {
+          type: "op",
+          op: "jsonb_array_elements",
+          exprs: [{ type: "field", tableAlias: "{alias}", column: "events" }]
+        },
+        alias: "events_subexpr"
       },
       where: {
         type: "op",
         op: "=",
-        exprs: [
-          { type: "op", op: "->>", exprs: [{ type: "field", tableAlias: "events_subexpr" }, "type"]},
-          "reject"
-        ]
+        exprs: [{ type: "op", op: "->>", exprs: [{ type: "field", tableAlias: "events_subexpr" }, "type"] }, "reject"]
       }
-    };
-    metadata.push({ id: "numRejections", type: "number", name: { _base: "en", en: "Number of Rejections" }, jsonql });
+    }
+    metadata.push({ id: "numRejections", type: "number", name: { _base: "en", en: "Number of Rejections" }, jsonql })
 
     // Add number of edits
     jsonql = {
       type: "scalar",
       expr: { type: "op", op: "count", exprs: [] },
-      from: { 
-        type: "subexpr", 
-        expr: { type: "op", op: "jsonb_array_elements", exprs: [{ type: "field", tableAlias: "{alias}", column: "events" }] }, 
-        alias: "events_subexpr" 
+      from: {
+        type: "subexpr",
+        expr: {
+          type: "op",
+          op: "jsonb_array_elements",
+          exprs: [{ type: "field", tableAlias: "{alias}", column: "events" }]
+        },
+        alias: "events_subexpr"
       },
       where: {
         type: "op",
         op: "=",
-        exprs: [
-          { type: "op", op: "->>", exprs: [{ type: "field", tableAlias: "events_subexpr" }, "type"]},
-          "edit"
-        ]
+        exprs: [{ type: "op", op: "->>", exprs: [{ type: "field", tableAlias: "events_subexpr" }, "type"] }, "edit"]
       }
-    };
-    metadata.push({ 
-      id: "numEdits", 
-      type: "number", 
-      name: { _base: "en", en: "Number of Edits" }, 
-      desc: { _base: "en", en: "Number of times survey was edited outside of normal submissions"}, 
-      jsonql 
-    });
+    }
+    metadata.push({
+      id: "numEdits",
+      type: "number",
+      name: { _base: "en", en: "Number of Edits" },
+      desc: { _base: "en", en: "Number of times survey was edited outside of normal submissions" },
+      jsonql
+    })
 
     // Add IpAddress
-    metadata.push({ id: "ipAddress", type: "text", name: { en: "IP Address" } });
+    metadata.push({ id: "ipAddress", type: "text", name: { en: "IP Address" } })
 
-    contents.push({ id: "metadata", type: "section", name: { en: "Response Metadata"}, desc: { en: "Information about the response such as status, date, and IP Address" }, contents: metadata });
+    contents.push({
+      id: "metadata",
+      type: "section",
+      name: { en: "Response Metadata" },
+      desc: { en: "Information about the response such as status, date, and IP Address" },
+      contents: metadata
+    })
 
-    const conditionsExprCompiler = new ConditionsExprCompiler(form.design);
+    const conditionsExprCompiler = new ConditionsExprCompiler(form.design)
 
     // List of joins in format: { table: destination table, column: join column to add }
-    const reverseJoins = [];
-    this.addFormItem(form.design, contents, `responses:${form._id}`, conditionsExprCompiler, null, reverseJoins);
+    const reverseJoins = []
+    this.addFormItem(form.design, contents, `responses:${form._id}`, conditionsExprCompiler, null, reverseJoins)
 
     // Add to schema
     schema = schema.addTable({
@@ -137,49 +175,49 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
       contents,
       ordering: "submittedOn",
       label: "code"
-    });
+    })
 
     // Add any roster tables
-    schema = this.addRosterTables(schema, form.design, conditionsExprCompiler, reverseJoins, `responses:${form._id}`);
+    schema = this.addRosterTables(schema, form.design, conditionsExprCompiler, reverseJoins, `responses:${form._id}`)
 
     // Add reverse joins from entity and site questions
-    schema = this.addReverseJoins(schema, form, reverseJoins);
+    schema = this.addReverseJoins(schema, form, reverseJoins)
 
     if (isAdmin) {
-      schema = this.addConfidentialData(schema, form, conditionsExprCompiler);
-      schema = this.addConfidentialDataForRosters(schema, form, conditionsExprCompiler);
+      schema = this.addConfidentialData(schema, form, conditionsExprCompiler)
+      schema = this.addConfidentialDataForRosters(schema, form, conditionsExprCompiler)
     }
 
-    schema = this.addCalculations(schema, form);
+    schema = this.addCalculations(schema, form)
 
-    schema = this.addIndicatorCalculations(schema, form, indicators, false);
+    schema = this.addIndicatorCalculations(schema, form, indicators, false)
 
     // Create table
-    return schema;
+    return schema
   }
-  
+
   // Add joins back from entities to site and entity questions
   // reverseJoins: list of joins in format: { table: destination table, column: join column to add }
   // Adds to section with id "!related_forms" with name "Related Forms"
   addReverseJoins(schema, form, reverseJoins) {
     for (let reverseJoin of reverseJoins) {
-      const column = _.clone(reverseJoin.column);
+      const column = _.clone(reverseJoin.column)
 
       // Determine if is the only join to a table, in which case use the form name to be less confusing
       if (_.where(reverseJoins, { table: reverseJoin.table }).length === 1) {
-        column.name = form.design.name;
-      } else {  
+        column.name = form.design.name
+      } else {
         // Prefix form name, since it was not available when join was created
-        column.name = appendStr(appendStr(form.design.name, ": "), column.name);
+        column.name = appendStr(appendStr(form.design.name, ": "), column.name)
       }
 
       // Add to entities table if it exists
       if (schema.getTable(reverseJoin.table)) {
-        var section;
-        let table = schema.getTable(reverseJoin.table);
+        var section
+        let table = schema.getTable(reverseJoin.table)
 
         // Create related forms section
-        let sectionIndex = _.findIndex(table.contents, item => item.id === "!related_forms");
+        let sectionIndex = _.findIndex(table.contents, (item) => item.id === "!related_forms")
         if (sectionIndex < 0) {
           // Add section (this should already be added in for all entities. Add to be safe)
           section = {
@@ -188,21 +226,21 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
             name: { en: "Related Surveys" },
             desc: { en: `Surveys that are linked by a question to ${table.name.en}` },
             contents: []
-          };
-          table = update(table, { contents: { $push: [section] }});
-          sectionIndex = _.findIndex(table.contents, item => item.id === "!related_forms");
+          }
+          table = update(table, { contents: { $push: [section] } })
+          sectionIndex = _.findIndex(table.contents, (item) => item.id === "!related_forms")
         }
 
         // Add join
-        section = update(table.contents[sectionIndex], { contents: { $push: [column] } });
-        table = update(table, { contents: { $splice: [[sectionIndex, 1, section]] }});
+        section = update(table.contents[sectionIndex], { contents: { $push: [column] } })
+        table = update(table, { contents: { $splice: [[sectionIndex, 1, section]] } })
 
         // Replace table
-        schema = schema.addTable(table);
+        schema = schema.addTable(table)
       }
     }
 
-    return schema;
+    return schema
   }
 
   // tableId is form table, not roster table
@@ -211,10 +249,10 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
     for (let item of formUtils.allItems(design)) {
       if (["RosterGroup", "RosterMatrix"].includes(item._type)) {
         // If new, create table with single join back to responses
-        var contents, name;
+        var contents, name
         if (!item.rosterId) {
           contents = [
-            { 
+            {
               id: "response",
               type: "join",
               name: { en: "Response" },
@@ -225,56 +263,61 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
                 toColumn: "_id"
               }
             },
-            { 
+            {
               id: "index",
               type: "number",
               name: { en: "Index" }
             }
-          ];
-          name = appendStr(appendStr(schema.getTable(tableId).name, ": "), item.name);
+          ]
+          name = appendStr(appendStr(schema.getTable(tableId).name, ": "), item.name)
         } else {
           // Use existing contents
-          contents = schema.getTable(`${tableId}:roster:${item.rosterId}`).contents.slice();
-          ({
-            name
-          } = schema.getTable(`${tableId}:roster:${item.rosterId}`));
+          contents = schema.getTable(`${tableId}:roster:${item.rosterId}`).contents.slice()
+          ;({ name } = schema.getTable(`${tableId}:roster:${item.rosterId}`))
         }
 
         // Add contents
         for (let rosterItem of item.contents) {
-          this.addFormItem(rosterItem, contents, `${tableId}:roster:${item.rosterId || item._id}`, conditionsExprCompiler, null, reverseJoins);
+          this.addFormItem(
+            rosterItem,
+            contents,
+            `${tableId}:roster:${item.rosterId || item._id}`,
+            conditionsExprCompiler,
+            null,
+            reverseJoins
+          )
         }
-          
+
         schema = schema.addTable({
           id: `${tableId}:roster:${item.rosterId || item._id}`,
           name,
           primaryKey: "_id",
           ordering: "index",
           contents
-        });
+        })
       }
     }
 
-    return schema;
+    return schema
   }
 
   // Create a section in schema called Indicators with one subsection for each indicator calculated
   addIndicatorCalculations(schema, form, indicators) {
     // If not calculations, don't add indicators section
-    if (!form.indicatorCalculations || (form.indicatorCalculations.length === 0)) {
-      return schema;
+    if (!form.indicatorCalculations || form.indicatorCalculations.length === 0) {
+      return schema
     }
 
-    // Process indicator calculations 
+    // Process indicator calculations
     for (let indicatorCalculation of form.indicatorCalculations) {
-      let tableId = `responses:${form._id}`;
+      let tableId = `responses:${form._id}`
 
       if (indicatorCalculation.roster) {
-        tableId += `:roster:${indicatorCalculation.roster}`;
+        tableId += `:roster:${indicatorCalculation.roster}`
       }
 
       // Add indicator section
-      let indicatorsSection = _.last(schema.getTable(tableId).contents);
+      let indicatorsSection = _.last(schema.getTable(tableId).contents)
       if (indicatorsSection.id !== "indicators") {
         // Add indicator section
         indicatorsSection = {
@@ -282,117 +325,132 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
           type: "section",
           name: { _base: "en", en: "Indicators" },
           contents: []
-        };
-        schema = schema.addTable(update(schema.getTable(tableId), { contents: { $push: [indicatorsSection] } }));
+        }
+        schema = schema.addTable(update(schema.getTable(tableId), { contents: { $push: [indicatorsSection] } }))
       }
 
       // Add to indicators section
-      const indicatorSectionContents = indicatorsSection.contents.slice();
-      const indicatorCalculationSection = this.createIndicatorCalculationSection(indicatorCalculation, schema, indicators, form);
+      const indicatorSectionContents = indicatorsSection.contents.slice()
+      const indicatorCalculationSection = this.createIndicatorCalculationSection(
+        indicatorCalculation,
+        schema,
+        indicators,
+        form
+      )
       if (indicatorCalculationSection) {
-        indicatorSectionContents.push(indicatorCalculationSection);
+        indicatorSectionContents.push(indicatorCalculationSection)
       }
 
       // Update in original
-      const contents = schema.getTable(tableId).contents.slice();
-      contents[contents.length - 1] = update(indicatorsSection, { contents: { $set: indicatorSectionContents } });
+      const contents = schema.getTable(tableId).contents.slice()
+      contents[contents.length - 1] = update(indicatorsSection, { contents: { $set: indicatorSectionContents } })
 
       // Re-add table
-      schema = schema.addTable(update(schema.getTable(tableId), { contents: { $set: contents } }));
+      schema = schema.addTable(update(schema.getTable(tableId), { contents: { $set: contents } }))
     }
 
-    return schema;
+    return schema
   }
 
   // Create a subsection of Indicators for an indicator calculation.
   createIndicatorCalculationSection(indicatorCalculation, schema, indicators, form) {
     // Find indicator
-    const indicator = _.findWhere(indicators, {_id: indicatorCalculation.indicator});
+    const indicator = _.findWhere(indicators, { _id: indicatorCalculation.indicator })
 
     // If not found, probably don't have permission
     if (!indicator) {
-      return null;
+      return null
     }
 
     // Create compiler
-    const exprCompiler = new ExprCompiler(schema);
+    const exprCompiler = new ExprCompiler(schema)
 
     // Map properties
-    const contents = [];
+    const contents = []
     for (let properties of _.values(indicator.design.properties)) {
       for (let property of properties) {
         // If has expression already, we need to replace the references to this indicator with the indicator calculations
-        var expression;
+        var expression
         if (property.expr) {
-          expression = formizeIndicatorPropertyExpr(property.expr, form, indicatorCalculation, indicator);
+          expression = formizeIndicatorPropertyExpr(property.expr, form, indicatorCalculation, indicator)
         } else {
-          expression = indicatorCalculation.expressions[property.id];
+          expression = indicatorCalculation.expressions[property.id]
         }
 
-        const {
-          condition
-        } = indicatorCalculation;
+        const { condition } = indicatorCalculation
 
         // Create column from property
-        const column = _.extend({}, property, {id: `indicator_calculation:${indicatorCalculation._id}:${property.id}`});
+        const column = _.extend({}, property, {
+          id: `indicator_calculation:${indicatorCalculation._id}:${property.id}`
+        })
 
         // ids are special
         if (property.type === "id") {
           // Compile to an jsonql of the id of the "to" table
-          const fromColumn = exprCompiler.compileExpr({expr: expression, tableAlias: "{alias}"});
+          const fromColumn = exprCompiler.compileExpr({ expr: expression, tableAlias: "{alias}" })
 
           // Create a join expression
-          const toColumn = schema.getTable(property.idTable).primaryKey;
+          const toColumn = schema.getTable(property.idTable).primaryKey
 
-          column.type = "join";
+          column.type = "join"
           column.join = {
             type: "n-1",
             toTable: property.idTable,
-            fromColumn, 
+            fromColumn,
             toColumn
-          };
+          }
 
-          contents.push(column);
-          continue;
+          contents.push(column)
+          continue
         }
 
         // If no expression, jsonql null should be explicit so it doesn't just think there is no jsonql specified
         if (!expression) {
           // Determine type
           switch (column.type) {
-            case "text": case "date": case "datetime":
-              column.jsonql = { type: "op", op: "::text", exprs: [{ type: "literal", value: null }] };
-              break;
+            case "text":
+            case "date":
+            case "datetime":
+              column.jsonql = { type: "op", op: "::text", exprs: [{ type: "literal", value: null }] }
+              break
             case "boolean":
-              column.jsonql = { type: "op", op: "::boolean", exprs: [{ type: "literal", value: null }] };
-              break;
+              column.jsonql = { type: "op", op: "::boolean", exprs: [{ type: "literal", value: null }] }
+              break
             case "number":
-              column.jsonql = { type: "op", op: "::numeric", exprs: [{ type: "literal", value: null }] };
-              break;
+              column.jsonql = { type: "op", op: "::numeric", exprs: [{ type: "literal", value: null }] }
+              break
             case "geometry":
-              column.jsonql = { type: "op", op: "ST_SetSRID", exprs: [{ type: "op", op: "::geometry", exprs: [{ type: "literal", value: null }] }, 3857] };
-              break;
-            case "image": case "imagelist": case "json": case "text[]": case "enumset":
-              column.jsonql = { type: "op", op: "::jsonb", exprs: [{ type: "literal", value: null }] };
-              break;
+              column.jsonql = {
+                type: "op",
+                op: "ST_SetSRID",
+                exprs: [{ type: "op", op: "::geometry", exprs: [{ type: "literal", value: null }] }, 3857]
+              }
+              break
+            case "image":
+            case "imagelist":
+            case "json":
+            case "text[]":
+            case "enumset":
+              column.jsonql = { type: "op", op: "::jsonb", exprs: [{ type: "literal", value: null }] }
+              break
             case "id":
               // admin_region has integer pk
-              if ((column.idTable === "admin_regions") || column.idTable.startsWith("regions.")) {
-                column.jsonql = { type: "op", op: "::integer", exprs: [{ type: "literal", value: null }] };
+              if (column.idTable === "admin_regions" || column.idTable.startsWith("regions.")) {
+                column.jsonql = { type: "op", op: "::integer", exprs: [{ type: "literal", value: null }] }
               } else {
-                column.jsonql = { type: "op", op: "::text", exprs: [{ type: "literal", value: null }] };
+                column.jsonql = { type: "op", op: "::text", exprs: [{ type: "literal", value: null }] }
               }
-              break;
+              break
             case "id[]":
               // admin_region has integer pk
-              if ((column.idTable === "admin_regions") || column.idTable.startsWith("regions.")) {
-                column.jsonql = { type: "op", op: "::integer[]", exprs: [{ type: "literal", value: null }] };
+              if (column.idTable === "admin_regions" || column.idTable.startsWith("regions.")) {
+                column.jsonql = { type: "op", op: "::integer[]", exprs: [{ type: "literal", value: null }] }
               } else {
-                column.jsonql = { type: "op", op: "::text[]", exprs: [{ type: "literal", value: null }] };
+                column.jsonql = { type: "op", op: "::text[]", exprs: [{ type: "literal", value: null }] }
               }
-              break;
+              break
             default:
-              column.jsonql = { type: "literal", value: null };
+              column.jsonql = { type: "literal", value: null }
           }
         } else {
           // Add condition if present
@@ -401,18 +459,19 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
             expression = {
               type: "case",
               table: expression.table,
-              cases: [{
-                when: condition,
-                then: expression
-              }
+              cases: [
+                {
+                  when: condition,
+                  then: expression
+                }
               ]
-            };
+            }
           }
 
-          column.expr = expression;
+          column.expr = expression
         }
 
-        contents.push(column);
+        contents.push(column)
       }
     }
 
@@ -421,22 +480,21 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
       type: "section",
       name: indicator.design.name,
       contents
-    };
+    }
 
-    return section;
+    return section
   }
 
   addConfidentialDataForRosters(schema, form, conditionsExprCompiler) {
     for (let item of formUtils.allItems(form.design)) {
       if (["RosterGroup", "RosterMatrix"].includes(item._type)) {
+        const tableId = `responses:${form._id}:roster:${item.rosterId || item._id}`
 
-        const tableId = `responses:${form._id}:roster:${item.rosterId || item._id}`;
-
-        let contents = schema.getTable(tableId).contents.slice();
+        let contents = schema.getTable(tableId).contents.slice()
 
         for (let rosterItem of item.contents) {
           if (rosterItem.confidential) {
-            let confidentialDataSection = _.find(contents, {id: "confidentialData"}); 
+            let confidentialDataSection = _.find(contents, { id: "confidentialData" })
 
             if (!confidentialDataSection) {
               confidentialDataSection = {
@@ -444,43 +502,43 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
                 type: "section",
                 name: { _base: "en", en: "Confidential Data" },
                 contents: []
-              };
-              schema = schema.addTable(update(schema.getTable(tableId), { contents: { $push: [confidentialDataSection] } }));
+              }
+              schema = schema.addTable(
+                update(schema.getTable(tableId), { contents: { $push: [confidentialDataSection] } })
+              )
             }
 
-
-            const confidentialDataSectionContents = confidentialDataSection.contents.slice();
+            const confidentialDataSectionContents = confidentialDataSection.contents.slice()
 
             this.addFormItem(
-              rosterItem, 
-              confidentialDataSectionContents, 
+              rosterItem,
+              confidentialDataSectionContents,
               tableId,
               conditionsExprCompiler,
               null,
               [],
               true
-            );
+            )
 
             // Update in original
-            contents = schema.getTable(tableId).contents.slice();
-            const index = _.findIndex(contents, {id: "confidentialData"});
-            contents[index] = update(confidentialDataSection, { contents: { $set: confidentialDataSectionContents } });
-            schema = schema.addTable(update(schema.getTable(tableId), { contents: { $set: contents } }));
+            contents = schema.getTable(tableId).contents.slice()
+            const index = _.findIndex(contents, { id: "confidentialData" })
+            contents[index] = update(confidentialDataSection, { contents: { $set: confidentialDataSectionContents } })
+            schema = schema.addTable(update(schema.getTable(tableId), { contents: { $set: contents } }))
           }
         }
       }
     }
 
-    return schema;
+    return schema
   }
 
-
   addConfidentialData(schema, form, conditionsExprCompiler) {
-    const tableId = `responses:${form._id}`;
+    const tableId = `responses:${form._id}`
 
-    const addData = question => {
+    const addData = (question) => {
       if (question.confidential) {
-        let confidentialDataSection = _.find(schema.getTable(tableId).contents, { id: "confidentialData" });
+        let confidentialDataSection = _.find(schema.getTable(tableId).contents, { id: "confidentialData" })
 
         if (!confidentialDataSection) {
           confidentialDataSection = {
@@ -488,90 +546,109 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
             type: "section",
             name: { _base: "en", en: "Confidential Data" },
             contents: []
-          };
-          schema = schema.addTable(update(schema.getTable(tableId), { contents: { $push: [confidentialDataSection] } }));
+          }
+          schema = schema.addTable(update(schema.getTable(tableId), { contents: { $push: [confidentialDataSection] } }))
         }
 
-        const confidentialDataSectionContents = confidentialDataSection.contents.slice();
+        const confidentialDataSectionContents = confidentialDataSection.contents.slice()
 
         this.addFormItem(
-          question, 
-          confidentialDataSectionContents, 
+          question,
+          confidentialDataSectionContents,
           `responses:${form._id}`,
           conditionsExprCompiler,
           null,
           [],
           true
-        );
+        )
 
         // Update in original
-        const contents = schema.getTable(tableId).contents.slice();
-        const index = _.findIndex(contents, {id: "confidentialData"});
-        contents[index] = update(confidentialDataSection, { contents: { $set: confidentialDataSectionContents } });
+        const contents = schema.getTable(tableId).contents.slice()
+        const index = _.findIndex(contents, { id: "confidentialData" })
+        contents[index] = update(confidentialDataSection, { contents: { $set: confidentialDataSectionContents } })
 
         // Re-add table
-        schema = schema.addTable(update(schema.getTable(tableId), { contents: { $set: contents } }));
+        schema = schema.addTable(update(schema.getTable(tableId), { contents: { $set: contents } }))
       }
-      return schema;
-    };
+      return schema
+    }
 
     for (let item of form.design.contents) {
       if (item.contents && ["Section", "Group"].includes(item._type)) {
         for (let subItem of item.contents) {
-          schema = addData(subItem);
+          schema = addData(subItem)
         }
       } else if (formUtils.isQuestion(item)) {
-        schema = addData(item);
+        schema = addData(item)
       }
     }
-      
-    return schema;
+
+    return schema
   }
 
   // Adds a form item. existingConditionExpr is any conditions that already condition visibility of the form item. This does not cross roster boundaries.
   // That is, if a roster is entirely invisible, roster items will not be conditioned on the overall visibility, as they simply won't exist
   // reverseJoins: list of reverse joins to add to. In format: { table: destination table, column: join column to add }. This list will be mutated. Pass in empty list in general.
-  addFormItem(item, contents, tableId, conditionsExprCompiler, existingConditionExpr, reverseJoins = [], confidentialData = false) {
-    const addColumn = column => {
+  addFormItem(
+    item,
+    contents,
+    tableId,
+    conditionsExprCompiler,
+    existingConditionExpr,
+    reverseJoins = [],
+    confidentialData = false
+  ) {
+    const addColumn = (column) => {
       if (formUtils.isQuestion(item) && item.confidential) {
         if (confidentialData) {
-          column.confidential = true;
-          column.name = appendStr(column.name, " (confidential)");
-        } else { 
-          column.redacted = true;
-          column.name = appendStr(column.name, " (redacted)");
+          column.confidential = true
+          column.name = appendStr(column.name, " (confidential)")
+        } else {
+          column.redacted = true
+          column.name = appendStr(column.name, " (redacted)")
         }
       }
-      return contents.push(column);
-    };
+      return contents.push(column)
+    }
 
     // Add sub-items
     if (item.contents) {
       if (item._type === "Form") {
         return (() => {
-          const result = [];
+          const result = []
           for (let subitem of item.contents) {
-            result.push(this.addFormItem(subitem, contents, tableId, conditionsExprCompiler, existingConditionExpr, reverseJoins));
+            result.push(
+              this.addFormItem(subitem, contents, tableId, conditionsExprCompiler, existingConditionExpr, reverseJoins)
+            )
           }
-          return result;
-        })();
-
+          return result
+        })()
       } else if (["Section", "Group"].includes(item._type)) {
         // Create section contents
-        let sectionConditionExpr;
-        const sectionContents = [];
-        if (conditionsExprCompiler) { 
-          sectionConditionExpr = ExprUtils.andExprs(tableId, existingConditionExpr, conditionsExprCompiler.compileConditions(item.conditions, tableId));
+        let sectionConditionExpr
+        const sectionContents = []
+        if (conditionsExprCompiler) {
+          sectionConditionExpr = ExprUtils.andExprs(
+            tableId,
+            existingConditionExpr,
+            conditionsExprCompiler.compileConditions(item.conditions, tableId)
+          )
         } else {
-          sectionConditionExpr = existingConditionExpr;
+          sectionConditionExpr = existingConditionExpr
         }
-          
+
         for (let subitem of item.contents) {
           // TODO add conditions of section/group
-          this.addFormItem(subitem, sectionContents, tableId, conditionsExprCompiler, sectionConditionExpr, reverseJoins);
+          this.addFormItem(
+            subitem,
+            sectionContents,
+            tableId,
+            conditionsExprCompiler,
+            sectionConditionExpr,
+            reverseJoins
+          )
         }
-        return contents.push({ type: "section", name: item.name, contents: sectionContents });
-
+        return contents.push({ type: "section", name: item.name, contents: sectionContents })
       } else if (["RosterGroup", "RosterMatrix"].includes(item._type)) {
         // Add join to roster table if original (no rosterId specified)
         if (!item.rosterId) {
@@ -585,21 +662,19 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
               fromColumn: "_id",
               toColumn: "response"
             }
-          });
+          })
         }
       }
-
     } else if (formUtils.isQuestion(item)) {
-
       // Get type of answer
-      let column, jsonql, name;
-      let formId, itemCode, itemItem, reverseJoin;
-      const answerType = formUtils.getAnswerType(item);
+      let column, jsonql, name
+      let formId, itemCode, itemItem, reverseJoin
+      const answerType = formUtils.getAnswerType(item)
 
       // Get code
-      const code = item.exportId || item.code;
-      
-      const dataColumn = confidentialData ? "confidentialData" : "data";
+      const code = item.exportId || item.code
+
+      const dataColumn = confidentialData ? "confidentialData" : "data"
 
       switch (answerType) {
         case "text":
@@ -616,17 +691,14 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
                 {
                   type: "op",
                   op: "#>>",
-                  exprs: [
-                    { type: "field", tableAlias: "{alias}", column: dataColumn },
-                    `{${item._id},value}`
-                  ]
+                  exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},value}`]
                 },
                 ""
               ]
             }
-          };
-          addColumn(column);
-          break;
+          }
+          addColumn(column)
+          break
 
         case "number":
           // Get a decimal column always as integer can run out of room
@@ -642,16 +714,13 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
                 {
                   type: "op",
                   op: "#>>",
-                  exprs: [
-                    { type: "field", tableAlias: "{alias}", column: dataColumn },
-                    `{${item._id},value}`
-                  ]
+                  exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},value}`]
                 }
               ]
             }
-          };
-          addColumn(column);
-          break;
+          }
+          addColumn(column)
+          break
 
         case "choice":
           // Get a simple text column
@@ -660,7 +729,7 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
             type: "enum",
             name: item.text,
             code,
-            enumValues: _.map(item.choices, c => ({
+            enumValues: _.map(item.choices, (c) => ({
               id: c.id,
               name: c.label,
               code: c.code
@@ -668,14 +737,11 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
             jsonql: {
               type: "op",
               op: "#>>",
-              exprs: [
-                { type: "field", tableAlias: "{alias}", column: dataColumn },
-                `{${item._id},value}`
-              ]
+              exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},value}`]
             }
-          };
-          addColumn(column);
-          break;
+          }
+          addColumn(column)
+          break
 
         case "choices":
           // Null if empty or null for simplicity
@@ -684,7 +750,7 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
             type: "enumset",
             name: item.text,
             code,
-            enumValues: _.map(item.choices, c => ({
+            enumValues: _.map(item.choices, (c) => ({
               id: c.id,
               name: c.label,
               code: c.code
@@ -700,10 +766,7 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
                     {
                       type: "op",
                       op: "#>",
-                      exprs: [
-                        { type: "field", tableAlias: "{alias}", column: dataColumn },
-                        `{${item._id},value}`
-                      ]
+                      exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},value}`]
                     },
                     { type: "op", op: "::jsonb", exprs: ["[]"] }
                   ]
@@ -711,9 +774,9 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
                 "null"
               ]
             }
-          };
-          addColumn(column);
-          break;
+          }
+          addColumn(column)
+          break
 
         case "date":
           // If date-time
@@ -727,13 +790,10 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
               jsonql: {
                 type: "op",
                 op: "#>>",
-                exprs: [
-                  { type: "field", tableAlias: "{alias}", column: dataColumn },
-                  `{${item._id},value}`
-                ]
+                exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},value}`]
               }
-            };
-            addColumn(column);
+            }
+            addColumn(column)
           } else {
             // Fill in month and year and remove timestamp
             column = {
@@ -749,27 +809,24 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
                   {
                     type: "op",
                     op: "rpad",
-                    exprs:[
+                    exprs: [
                       {
                         type: "op",
                         op: "#>>",
-                        exprs: [
-                          { type: "field", tableAlias: "{alias}", column: dataColumn },
-                          `{${item._id},value}`
-                        ]
+                        exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},value}`]
                       },
                       10,
-                      '-01-01'
+                      "-01-01"
                     ]
                   },
                   1,
                   10
                 ]
               }
-            };
-            addColumn(column);
+            }
+            addColumn(column)
           }
-          break;
+          break
 
         case "boolean":
           column = {
@@ -784,20 +841,17 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
                 {
                   type: "op",
                   op: "#>>",
-                  exprs: [
-                    { type: "field", tableAlias: "{alias}", column: dataColumn },
-                    `{${item._id},value}`
-                  ]
+                  exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},value}`]
                 }
               ]
             }
-          };
-          addColumn(column);
-          break;
+          }
+          addColumn(column)
+          break
 
         case "units":
           // Get a decimal column as integer can run out of room
-          name = appendStr(item.text, " (magnitude)");
+          name = appendStr(item.text, " (magnitude)")
 
           column = {
             id: `${dataColumn}:${item._id}:value:quantity`,
@@ -811,15 +865,12 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
                 {
                   type: "op",
                   op: "#>>",
-                  exprs: [
-                    { type: "field", tableAlias: "{alias}", column: dataColumn },
-                    `{${item._id},value,quantity}`
-                  ]
+                  exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},value,quantity}`]
                 }
               ]
             }
-          };
-          addColumn(column);
+          }
+          addColumn(column)
 
           column = {
             id: `${dataColumn}:${item._id}:value:units`,
@@ -829,18 +880,15 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
             jsonql: {
               type: "op",
               op: "#>>",
-              exprs: [
-                { type: "field", tableAlias: "{alias}", column: dataColumn },
-                `{${item._id},value,units}`
-              ]
+              exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},value,units}`]
             },
-            enumValues: _.map(item.units, c => ({
+            enumValues: _.map(item.units, (c) => ({
               id: c.id,
               name: c.label
             }))
-          };
-          addColumn(column);
-          break;
+          }
+          addColumn(column)
+          break
 
         case "aquagenx_cbt":
           // Create section
@@ -848,7 +896,7 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
             type: "section",
             name: item.text,
             contents: []
-          };
+          }
 
           section.contents.push({
             id: `${dataColumn}:${item._id}:value:cbt:mpn`,
@@ -862,14 +910,11 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
                 {
                   type: "op",
                   op: "#>>",
-                  exprs: [
-                    { type: "field", tableAlias: "{alias}", column: dataColumn },
-                    `{${item._id},value,cbt,mpn}`
-                  ]
+                  exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},value,cbt,mpn}`]
                 }
               ]
             }
-          });
+          })
 
           section.contents.push({
             id: `${dataColumn}:${item._id}:value:cbt:confidence`,
@@ -890,7 +935,7 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
                 }
               ]
             }
-          });
+          })
 
           section.contents.push({
             id: `${dataColumn}:${item._id}:value:cbt:healthRisk`,
@@ -906,7 +951,7 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
                 `{${item._id},value,cbt,healthRisk}`
               ]
             }
-          });
+          })
 
           // Get image
           section.contents.push({
@@ -917,42 +962,40 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
             jsonql: {
               type: "op",
               op: "#>",
-              exprs: [
-                { type: "field", tableAlias: "{alias}", column: dataColumn },
-                `{${item._id},value,image}`
-              ]
+              exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},value,image}`]
             }
-          });
+          })
 
-          var addCxColumn = (label, v) => section.contents.push({
-            id: `${dataColumn}:${item._id}:value:cbt:${v}`,
-            type: "boolean",
-            name: appendStr(item.text, ` (${label})`),
-            code: code ? code + ` (${v})` : undefined,
-            jsonql: {
-              type: "op",
-              op: "::boolean",
-              exprs: [
-                {
-                  type: "op",
-                  op: "#>>",
-                  exprs: [
-                    { type: "field", tableAlias: "{alias}", column: dataColumn },
-                    `{${item._id},value,cbt,${v}}`
-                  ]
-                }
-              ]
-            }
-          });
+          var addCxColumn = (label, v) =>
+            section.contents.push({
+              id: `${dataColumn}:${item._id}:value:cbt:${v}`,
+              type: "boolean",
+              name: appendStr(item.text, ` (${label})`),
+              code: code ? code + ` (${v})` : undefined,
+              jsonql: {
+                type: "op",
+                op: "::boolean",
+                exprs: [
+                  {
+                    type: "op",
+                    op: "#>>",
+                    exprs: [
+                      { type: "field", tableAlias: "{alias}", column: dataColumn },
+                      `{${item._id},value,cbt,${v}}`
+                    ]
+                  }
+                ]
+              }
+            })
 
-          addCxColumn('Compartment 1', 'c1');
-          addCxColumn('Compartment 2', 'c2');
-          addCxColumn('Compartment 3', 'c3');
-          addCxColumn('Compartment 4', 'c4');
-          addCxColumn('Compartment 5', 'c5');
+          addCxColumn("Compartment 1", "c1")
+          addCxColumn("Compartment 2", "c2")
+          addCxColumn("Compartment 3", "c3")
+          addCxColumn("Compartment 4", "c4")
+          addCxColumn("Compartment 5", "c5")
 
-          addColumn(section);
-          break;
+          addColumn(section)
+          break
 
         case "cascading_list":
           // Create section
@@ -960,7 +1003,7 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
             type: "section",
             name: item.text,
             contents: []
-          };
+          }
 
           // For each column
           for (column of item.columns) {
@@ -977,11 +1020,11 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
                   `{${item._id},value,${column.id}}`
                 ]
               }
-            });
+            })
           }
 
-          addColumn(section);
-          break;
+          addColumn(section)
+          break
 
         case "cascading_ref":
           column = {
@@ -995,17 +1038,14 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
               fromColumn: {
                 type: "op",
                 op: "#>>",
-                exprs: [
-                  { type: "field", tableAlias: "{alias}", column: dataColumn },
-                  `{${item._id},value}`
-                ]
+                exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},value}`]
               },
               toColumn: "_id"
             }
-          };
+          }
 
-          addColumn(column);
-          break;
+          addColumn(column)
+          break
 
         case "location":
           column = {
@@ -1013,10 +1053,15 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
             type: "geometry",
             name: item.text,
             code,
-            jsonql: createWebmercatorGeometry(dataColumn, `{${item._id},value,latitude}`, `{${item._id},value,longitude}`, "{alias}")
-          };
-          
-          addColumn(column);
+            jsonql: createWebmercatorGeometry(
+              dataColumn,
+              `{${item._id},value,latitude}`,
+              `{${item._id},value,longitude}`,
+              "{alias}"
+            )
+          }
+
+          addColumn(column)
 
           column = {
             id: `${dataColumn}:${item._id}:value:method`,
@@ -1028,15 +1073,24 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
               { id: "map", name: { _base: "en", en: "Map" } },
               { id: "manual", name: { _base: "en", en: "Manual" } }
             ],
-            jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},value,method}`] }
-          };
+            jsonql: {
+              type: "op",
+              op: "#>>",
+              exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},value,method}`]
+            }
+          }
 
-          addColumn(column);          
+          addColumn(column)
 
           // Add admin region
           if (item.calculateAdminRegion) {
             // ST_Transform(ST_SetSRID(ST_MakePoint(data#>>'{questionid,value,longitude}'::decimal, data#>>'{questionid,value,latitude}'::decimal),4326), 3857)
-            const webmercatorLocation = createWebmercatorGeometry(dataColumn, `{${item._id},value,latitude}`, `{${item._id},value,longitude}`, "{from}");
+            const webmercatorLocation = createWebmercatorGeometry(
+              dataColumn,
+              `{${item._id},value,latitude}`,
+              `{${item._id},value,longitude}`,
+              "{from}"
+            )
 
             column = {
               id: `${dataColumn}:${item._id}:value:admin_region`,
@@ -1052,59 +1106,61 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
                   exprs: [
                     // Make sure leaf node
                     { type: "field", tableAlias: "{to}", column: "leaf" },
-                    { type: "op", op: "&&", exprs: [
-                      webmercatorLocation,
-                      { type: "field", tableAlias: "{to}", column: "shape" }
-                    ]},
-                    { type: "op", op: "ST_Intersects", exprs: [
-                      webmercatorLocation,
-                      { type: "field", tableAlias: "{to}", column: "shape" }
-                    ]}
+                    {
+                      type: "op",
+                      op: "&&",
+                      exprs: [webmercatorLocation, { type: "field", tableAlias: "{to}", column: "shape" }]
+                    },
+                    {
+                      type: "op",
+                      op: "ST_Intersects",
+                      exprs: [webmercatorLocation, { type: "field", tableAlias: "{to}", column: "shape" }]
+                    }
                   ]
                 }
               }
-            };
+            }
 
-            addColumn(column);
+            addColumn(column)
           }
 
-            // TOO SLOW TO BE USEFUL
-            // # Add reverse join if directly from responses table
-            // if tableId.match(/^responses:[^:]+$/)
-            //   jsonql = {
-            //     type: "op"
-            //     op: "and"
-            //     exprs: [
-            //       { type: "op", op: "&&", exprs: [
-            //         # Flip from/to for reverse
-            //         JSON.parse(JSON.stringify(webmercatorLocation).replace(/\{from\}/g, "{to}"))
-            //         { type: "field", tableAlias: "{from}", column: "shape" }
-            //       ]}
-            //       { type: "op", op: "ST_Intersects", exprs: [
-            //         # Flip from/to for reverse
-            //         JSON.parse(JSON.stringify(webmercatorLocation).replace(/\{from\}/g, "{to}"))
-            //         { type: "field", tableAlias: "{from}", column: "shape" }
-            //       ]}
-            //     ]
-            //   }
+          // TOO SLOW TO BE USEFUL
+          // # Add reverse join if directly from responses table
+          // if tableId.match(/^responses:[^:]+$/)
+          //   jsonql = {
+          //     type: "op"
+          //     op: "and"
+          //     exprs: [
+          //       { type: "op", op: "&&", exprs: [
+          //         # Flip from/to for reverse
+          //         JSON.parse(JSON.stringify(webmercatorLocation).replace(/\{from\}/g, "{to}"))
+          //         { type: "field", tableAlias: "{from}", column: "shape" }
+          //       ]}
+          //       { type: "op", op: "ST_Intersects", exprs: [
+          //         # Flip from/to for reverse
+          //         JSON.parse(JSON.stringify(webmercatorLocation).replace(/\{from\}/g, "{to}"))
+          //         { type: "field", tableAlias: "{from}", column: "shape" }
+          //       ]}
+          //     ]
+          //   }
 
-            //   formId = tableId.split(":")[1]
-            //   reverseJoin = {
-            //     table: "admin_regions"
-            //     column: {
-            //       id: "!#{tableId}:data:#{item._id}:value"
-            //       # Form name is not available here. Prefix later.
-            //       name: item.text
-            //       type: "join"
-            //       join: {
-            //         type: "1-n"
-            //         toTable: tableId
-            //         inverse: column.id
-            //         jsonql: jsonql
-            //       }
-            //     }
-            //   }
-            //   reverseJoins.push(reverseJoin)
+          //   formId = tableId.split(":")[1]
+          //   reverseJoin = {
+          //     table: "admin_regions"
+          //     column: {
+          //       id: "!#{tableId}:data:#{item._id}:value"
+          //       # Form name is not available here. Prefix later.
+          //       name: item.text
+          //       type: "join"
+          //       join: {
+          //         type: "1-n"
+          //         toTable: tableId
+          //         inverse: column.id
+          //         jsonql: jsonql
+          //       }
+          //     }
+          //   }
+          //   reverseJoins.push(reverseJoin)
 
           column = {
             id: `${dataColumn}:${item._id}:value:accuracy`,
@@ -1116,12 +1172,16 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
               type: "op",
               op: "::decimal",
               exprs: [
-                { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},value,accuracy}`] }
+                {
+                  type: "op",
+                  op: "#>>",
+                  exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},value,accuracy}`]
+                }
               ]
             }
-          };
-          
-          addColumn(column);
+          }
+
+          addColumn(column)
 
           column = {
             id: `${dataColumn}:${item._id}:value:altitude`,
@@ -1133,33 +1193,34 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
               type: "op",
               op: "::decimal",
               exprs: [
-                { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},value,altitude}`] }
+                {
+                  type: "op",
+                  op: "#>>",
+                  exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},value,altitude}`]
+                }
               ]
             }
-          };
-          
-          addColumn(column);
-          break;
+          }
+
+          addColumn(column)
+          break
 
         case "site":
           // { code: "somecode" }
           var codeExpr = {
             type: "op",
             op: "#>>",
-            exprs: [
-              { type: "field", tableAlias: "{alias}", column: dataColumn },
-              `{${item._id},value,code}`
-            ]
-          };
+            exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},value,code}`]
+          }
 
-          var siteType = (item.siteTypes ? item.siteTypes[0] : undefined) || "water_point";
+          var siteType = (item.siteTypes ? item.siteTypes[0] : undefined) || "water_point"
 
           // Site column question have siteType
           if (item._type === "SiteColumnQuestion") {
-            siteType = item.siteType || "water_point";
+            siteType = item.siteType || "water_point"
           }
 
-          var entityType = siteType.toLowerCase().replace(new RegExp(' ', 'g'), "_");
+          var entityType = siteType.toLowerCase().replace(new RegExp(" ", "g"), "_")
 
           column = {
             id: `${dataColumn}:${item._id}:value`,
@@ -1172,13 +1233,13 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
               fromColumn: codeExpr,
               toColumn: "code"
             }
-          };
+          }
 
-          addColumn(column);
+          addColumn(column)
 
           // Add reverse join if directly from responses table
           if (tableId.match(/^responses:[^:]+$/)) {
-            formId = tableId.split(":")[1];
+            formId = tableId.split(":")[1]
 
             // Use exists (select response from response_entities where response = {to}._id and question = 'site1' and "entityType" = 'water_point' and property = 'code' and value = {from}."code")
             // for indexed speed
@@ -1194,17 +1255,47 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
                     type: "op",
                     op: "and",
                     exprs: [
-                      { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "response" }, { type: "field", tableAlias: "{to}", column: "_id" }] },
-                      { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "question" }, item._id] },
-                      { type: "op", op: "is null", exprs: [{ type: "field", tableAlias: "response_entities", column: "roster" }] },
-                      { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "entityType" }, entityType] },
-                      { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "property" }, "code"] },
-                      { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "value" }, { type: "field", tableAlias: "{from}", column: "code" }] }
+                      {
+                        type: "op",
+                        op: "=",
+                        exprs: [
+                          { type: "field", tableAlias: "response_entities", column: "response" },
+                          { type: "field", tableAlias: "{to}", column: "_id" }
+                        ]
+                      },
+                      {
+                        type: "op",
+                        op: "=",
+                        exprs: [{ type: "field", tableAlias: "response_entities", column: "question" }, item._id]
+                      },
+                      {
+                        type: "op",
+                        op: "is null",
+                        exprs: [{ type: "field", tableAlias: "response_entities", column: "roster" }]
+                      },
+                      {
+                        type: "op",
+                        op: "=",
+                        exprs: [{ type: "field", tableAlias: "response_entities", column: "entityType" }, entityType]
+                      },
+                      {
+                        type: "op",
+                        op: "=",
+                        exprs: [{ type: "field", tableAlias: "response_entities", column: "property" }, "code"]
+                      },
+                      {
+                        type: "op",
+                        op: "=",
+                        exprs: [
+                          { type: "field", tableAlias: "response_entities", column: "value" },
+                          { type: "field", tableAlias: "{from}", column: "code" }
+                        ]
+                      }
                     ]
                   }
                 }
               ]
-            };
+            }
 
             reverseJoin = {
               table: `entities.${entityType}`,
@@ -1220,14 +1311,14 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
                   jsonql
                 }
               }
-            };
-            reverseJoins.push(reverseJoin);
+            }
+            reverseJoins.push(reverseJoin)
           }
 
           // Add reverse join if from responses roster table
           if (tableId.match(/^responses:[^:]+:roster:[^:]+$/)) {
-            formId = tableId.split(":")[1];
-            const rosterId = tableId.split(":")[3];
+            formId = tableId.split(":")[1]
+            const rosterId = tableId.split(":")[3]
 
             // Use exists (select null from response_entities where roster = {to}._id and question = 'site1' and "entityType" = 'water_point' and property = 'code' and value = {from}."code")
             // for indexed speed
@@ -1237,22 +1328,48 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
               exprs: [
                 {
                   type: "scalar",
-                  expr: null, 
+                  expr: null,
                   from: { type: "table", table: "response_entities", alias: "response_entities" },
                   where: {
                     type: "op",
                     op: "and",
                     exprs: [
-                      { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "roster" }, { type: "field", tableAlias: "{to}", column: "_id" }]},
-                      { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "question" }, item._id] },
-                      { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "entityType" }, entityType] },
-                      { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "property" }, "code"] },
-                      { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "value" }, { type: "field", tableAlias: "{from}", column: "code" }] }
+                      {
+                        type: "op",
+                        op: "=",
+                        exprs: [
+                          { type: "field", tableAlias: "response_entities", column: "roster" },
+                          { type: "field", tableAlias: "{to}", column: "_id" }
+                        ]
+                      },
+                      {
+                        type: "op",
+                        op: "=",
+                        exprs: [{ type: "field", tableAlias: "response_entities", column: "question" }, item._id]
+                      },
+                      {
+                        type: "op",
+                        op: "=",
+                        exprs: [{ type: "field", tableAlias: "response_entities", column: "entityType" }, entityType]
+                      },
+                      {
+                        type: "op",
+                        op: "=",
+                        exprs: [{ type: "field", tableAlias: "response_entities", column: "property" }, "code"]
+                      },
+                      {
+                        type: "op",
+                        op: "=",
+                        exprs: [
+                          { type: "field", tableAlias: "response_entities", column: "value" },
+                          { type: "field", tableAlias: "{from}", column: "code" }
+                        ]
+                      }
                     ]
                   }
                 }
               ]
-            };
+            }
 
             reverseJoin = {
               table: `entities.${entityType}`,
@@ -1268,11 +1385,10 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
                   jsonql
                 }
               }
-            };
-            reverseJoins.push(reverseJoin);
+            }
+            reverseJoins.push(reverseJoin)
           }
-          break;
-
+          break
 
         case "entity":
           // Do not add if no entity type
@@ -1288,20 +1404,17 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
                 fromColumn: {
                   type: "op",
                   op: "#>>",
-                  exprs: [
-                    { type: "field", tableAlias: "{alias}", column: dataColumn },
-                    `{${item._id},value}`
-                  ]
+                  exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},value}`]
                 },
                 toColumn: "_id"
               }
-            };
+            }
 
-            addColumn(column);
+            addColumn(column)
 
             // Add reverse join if directly from responses table
             if (tableId.match(/^responses:[^:]+$/)) {
-              formId = tableId.split(":")[1];
+              formId = tableId.split(":")[1]
 
               // Use exists (select null from response_entities where response = {to}._id and question = 'site1' and "entityType" = 'water_point' and property = '_id' and value = {from}."_id"))
               // for indexed speed
@@ -1317,17 +1430,50 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
                       type: "op",
                       op: "and",
                       exprs: [
-                        { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "response" }, { type: "field", tableAlias: "{to}", column: "_id" }] },
-                        { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "question" }, item._id] },
-                        { type: "op", op: "is null", exprs: [{ type: "field", tableAlias: "response_entities", column: "roster" }] },
-                        { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "entityType" }, item.entityType] },
-                        { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "property" }, "_id"] },
-                        { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "value" }, { type: "field", tableAlias: "{from}", column: "_id" }] }
+                        {
+                          type: "op",
+                          op: "=",
+                          exprs: [
+                            { type: "field", tableAlias: "response_entities", column: "response" },
+                            { type: "field", tableAlias: "{to}", column: "_id" }
+                          ]
+                        },
+                        {
+                          type: "op",
+                          op: "=",
+                          exprs: [{ type: "field", tableAlias: "response_entities", column: "question" }, item._id]
+                        },
+                        {
+                          type: "op",
+                          op: "is null",
+                          exprs: [{ type: "field", tableAlias: "response_entities", column: "roster" }]
+                        },
+                        {
+                          type: "op",
+                          op: "=",
+                          exprs: [
+                            { type: "field", tableAlias: "response_entities", column: "entityType" },
+                            item.entityType
+                          ]
+                        },
+                        {
+                          type: "op",
+                          op: "=",
+                          exprs: [{ type: "field", tableAlias: "response_entities", column: "property" }, "_id"]
+                        },
+                        {
+                          type: "op",
+                          op: "=",
+                          exprs: [
+                            { type: "field", tableAlias: "response_entities", column: "value" },
+                            { type: "field", tableAlias: "{from}", column: "_id" }
+                          ]
+                        }
                       ]
                     }
                   }
                 ]
-              };
+              }
 
               reverseJoin = {
                 table: `entities.${item.entityType}`,
@@ -1343,11 +1489,11 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
                     jsonql
                   }
                 }
-              };
-              reverseJoins.push(reverseJoin);
+              }
+              reverseJoins.push(reverseJoin)
             }
           }
-          break;
+          break
 
         case "texts":
           // Get image
@@ -1359,14 +1505,11 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
             jsonql: {
               type: "op",
               op: "#>",
-              exprs: [
-                { type: "field", tableAlias: "{alias}", column: dataColumn },
-                `{${item._id},value}`
-              ]
+              exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},value}`]
             }
-          };
-          addColumn(column);
-          break;
+          }
+          addColumn(column)
+          break
 
         case "image":
           // Get image
@@ -1378,14 +1521,11 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
             jsonql: {
               type: "op",
               op: "#>",
-              exprs: [
-                { type: "field", tableAlias: "{alias}", column: dataColumn },
-                `{${item._id},value}`
-              ]
+              exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},value}`]
             }
-          };
-          addColumn(column);
-          break;
+          }
+          addColumn(column)
+          break
 
         case "images":
           // Get images
@@ -1397,14 +1537,11 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
             jsonql: {
               type: "op",
               op: "#>",
-              exprs: [
-                { type: "field", tableAlias: "{alias}", column: dataColumn },
-                `{${item._id},value}`
-              ]
+              exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},value}`]
             }
-          };
-          addColumn(column);
-          break;
+          }
+          addColumn(column)
+          break
 
         case "admin_region":
           // Add join to admin region
@@ -1423,18 +1560,15 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
                   {
                     type: "op",
                     op: "#>>",
-                    exprs: [
-                      { type: "field", tableAlias: "{alias}", column: dataColumn },
-                      `{${item._id},value}`
-                    ]
+                    exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},value}`]
                   }
                 ]
               },
               toColumn: "_id"
             }
-          };
-          addColumn(column);
-          break;
+          }
+          addColumn(column)
+          break
 
         case "items_choices":
           // Create section
@@ -1442,17 +1576,17 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
             type: "section",
             name: item.text,
             contents: []
-          };
+          }
 
           // For each item
           for (itemItem of item.items) {
-            itemCode = code && itemItem.code ? code + " - " + itemItem.code : undefined;
+            itemCode = code && itemItem.code ? code + " - " + itemItem.code : undefined
             section.contents.push({
               id: `${dataColumn}:${item._id}:value:${itemItem.id}`,
               type: "enum",
               name: appendStr(appendStr(item.text, ": "), itemItem.label),
               code: itemCode,
-              enumValues: _.map(item.choices, c => ({
+              enumValues: _.map(item.choices, (c) => ({
                 id: c.id,
                 name: c.label,
                 code: c.code
@@ -1465,13 +1599,13 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
                   `{${item._id},value,${itemItem.id}}`
                 ]
               }
-           });
+            })
           }
-          addColumn(section);
-          break;
+          addColumn(section)
+          break
 
         case "matrix":
-          var sections = [];
+          var sections = []
           // For each item
           for (itemItem of item.items) {
             // Create section
@@ -1479,21 +1613,24 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
               type: "section",
               name: itemItem.label,
               contents: []
-            };
-            sections.push(section);
+            }
+            sections.push(section)
 
             // For each column
             for (let itemColumn of item.columns) {
-              itemCode = itemItem.exportId || itemItem.code;
-              const columnCode = itemColumn.exportId || itemColumn.code;
-              const cellCode = code && itemCode && columnCode ? code + " - " + itemCode + " - " + columnCode : undefined;
+              itemCode = itemItem.exportId || itemItem.code
+              const columnCode = itemColumn.exportId || itemColumn.code
+              const cellCode = code && itemCode && columnCode ? code + " - " + itemCode + " - " + columnCode : undefined
 
               // TextColumnQuestion
               if (itemColumn._type === "TextColumnQuestion") {
                 section.contents.push({
                   id: `${dataColumn}:${item._id}:value:${itemItem.id}:${itemColumn._id}:value`,
                   type: "text",
-                  name: appendStr(appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "), itemColumn.text),
+                  name: appendStr(
+                    appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "),
+                    itemColumn.text
+                  ),
                   code: cellCode,
                   jsonql: {
                     type: "op",
@@ -1510,7 +1647,7 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
                       ""
                     ]
                   }
-               });
+                })
               }
 
               // NumberColumnQuestion
@@ -1518,21 +1655,26 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
                 section.contents.push({
                   id: `${dataColumn}:${item._id}:value:${itemItem.id}:${itemColumn._id}:value`,
                   type: "number",
-                  name: appendStr(appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "), itemColumn.text),
+                  name: appendStr(
+                    appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "),
+                    itemColumn.text
+                  ),
                   code: cellCode,
                   jsonql: {
                     type: "op",
                     op: "convert_to_decimal",
-                    exprs: [{
-                      type: "op",
-                      op: "#>>",
-                      exprs: [
-                        { type: "field", tableAlias: "{alias}", column: dataColumn },
-                        `{${item._id},value,${itemItem.id},${itemColumn._id},value}`
-                      ]
-                    }]
+                    exprs: [
+                      {
+                        type: "op",
+                        op: "#>>",
+                        exprs: [
+                          { type: "field", tableAlias: "{alias}", column: dataColumn },
+                          `{${item._id},value,${itemItem.id},${itemColumn._id},value}`
+                        ]
+                      }
+                    ]
                   }
-               });
+                })
               }
 
               // CheckColumnQuestion
@@ -1540,21 +1682,26 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
                 section.contents.push({
                   id: `${dataColumn}:${item._id}:value:${itemItem.id}:${itemColumn._id}:value`,
                   type: "boolean",
-                  name: appendStr(appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "), itemColumn.text),
+                  name: appendStr(
+                    appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "),
+                    itemColumn.text
+                  ),
                   code: cellCode,
                   jsonql: {
                     type: "op",
                     op: "::boolean",
-                    exprs: [{
-                      type: "op",
-                      op: "#>>",
-                      exprs: [
-                        { type: "field", tableAlias: "{alias}", column: dataColumn },
-                        `{${item._id},value,${itemItem.id},${itemColumn._id},value}`
-                      ]
-                    }]
+                    exprs: [
+                      {
+                        type: "op",
+                        op: "#>>",
+                        exprs: [
+                          { type: "field", tableAlias: "{alias}", column: dataColumn },
+                          `{${item._id},value,${itemItem.id},${itemColumn._id},value}`
+                        ]
+                      }
+                    ]
                   }
-               });
+                })
               }
 
               // DropdownColumnQuestion
@@ -1562,9 +1709,12 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
                 section.contents.push({
                   id: `${dataColumn}:${item._id}:value:${itemItem.id}:${itemColumn._id}:value`,
                   type: "enum",
-                  name: appendStr(appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "), itemColumn.text),
+                  name: appendStr(
+                    appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "),
+                    itemColumn.text
+                  ),
                   code: cellCode,
-                  enumValues: _.map(itemColumn.choices, c => ({
+                  enumValues: _.map(itemColumn.choices, (c) => ({
                     id: c.id,
                     code: c.code,
                     name: c.label
@@ -1577,7 +1727,7 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
                       `{${item._id},value,${itemItem.id},${itemColumn._id},value}`
                     ]
                   }
-               });
+                })
               }
 
               // UnitsColumnQuestion
@@ -1585,28 +1735,36 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
                 section.contents.push({
                   id: `${dataColumn}:${item._id}:value:${itemItem.id}:${itemColumn._id}:value:quantity`,
                   type: "number",
-                  name: appendStr(appendStr(appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "), itemColumn.text), " (magnitude)"),
+                  name: appendStr(
+                    appendStr(appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "), itemColumn.text),
+                    " (magnitude)"
+                  ),
                   code: cellCode ? cellCode + " (magnitude)" : undefined,
                   jsonql: {
                     type: "op",
                     op: "convert_to_decimal",
-                    exprs: [{
-                      type: "op",
-                      op: "#>>",
-                      exprs: [
-                        { type: "field", tableAlias: "{alias}", column: dataColumn },
-                        `{${item._id},value,${itemItem.id},${itemColumn._id},value,quantity}`
-                      ]
-                    }]
+                    exprs: [
+                      {
+                        type: "op",
+                        op: "#>>",
+                        exprs: [
+                          { type: "field", tableAlias: "{alias}", column: dataColumn },
+                          `{${item._id},value,${itemItem.id},${itemColumn._id},value,quantity}`
+                        ]
+                      }
+                    ]
                   }
-                });
+                })
 
                 section.contents.push({
                   id: `${dataColumn}:${item._id}:value:${itemItem.id}:${itemColumn._id}:value:units`,
                   type: "enum",
                   code: cellCode ? cellCode + " (units)" : undefined,
-                  name: appendStr(appendStr(appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "), itemColumn.text), " (units)"),
-                  enumValues: _.map(itemColumn.units, c => ({
+                  name: appendStr(
+                    appendStr(appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "), itemColumn.text),
+                    " (units)"
+                  ),
+                  enumValues: _.map(itemColumn.units, (c) => ({
                     id: c.id,
                     code: c.code,
                     name: c.label
@@ -1619,7 +1777,7 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
                       `{${item._id},value,${itemItem.id},${itemColumn._id},value,units}`
                     ]
                   }
-               });
+                })
               }
 
               if (itemColumn._type === "DateColumnQuestion") {
@@ -1629,7 +1787,10 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
                   column = {
                     id: `${dataColumn}:${item._id}:value:${itemItem.id}:${itemColumn._id}:value`,
                     type: "datetime",
-                    name: appendStr(appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "), itemColumn.text),
+                    name: appendStr(
+                      appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "),
+                      itemColumn.text
+                    ),
                     code: cellCode,
                     jsonql: {
                       type: "op",
@@ -1639,14 +1800,17 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
                         `{${item._id},value,${itemItem.id},${itemColumn._id},value}`
                       ]
                     }
-                  };
-                  section.contents.push(column);
+                  }
+                  section.contents.push(column)
                 } else {
                   // Fill in month and year and remove timestamp
                   column = {
                     id: `${dataColumn}:${item._id}:value:${itemItem.id}:${itemColumn._id}:value`,
                     type: "date",
-                    name: appendStr(appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "), itemColumn.text),
+                    name: appendStr(
+                      appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "),
+                      itemColumn.text
+                    ),
                     code: cellCode,
                     // substr(rpad(data#>>'{questionid,value}',10, '-01-01'), 1, 10)
                     jsonql: {
@@ -1656,7 +1820,7 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
                         {
                           type: "op",
                           op: "rpad",
-                          exprs:[
+                          exprs: [
                             {
                               type: "op",
                               op: "#>>",
@@ -1666,15 +1830,15 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
                               ]
                             },
                             10,
-                            '-01-01'
+                            "-01-01"
                           ]
                         },
                         1,
                         10
                       ]
                     }
-                  };
-                  section.contents.push(column);
+                  }
+                  section.contents.push(column)
                 }
               }
 
@@ -1683,12 +1847,15 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
                 section.contents.push({
                   id: `${dataColumn}:${item._id}:value:${itemItem.id}:${itemColumn._id}:value`,
                   type: "join",
-                  name: appendStr(appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "), itemColumn.text),
+                  name: appendStr(
+                    appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "),
+                    itemColumn.text
+                  ),
                   code: cellCode,
                   join: {
                     type: "n-1",
                     toTable: "entities." + itemColumn.siteType,
-                    fromColumn: { 
+                    fromColumn: {
                       type: "op",
                       op: "#>>",
                       exprs: [
@@ -1698,7 +1865,7 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
                     },
                     toColumn: "code"
                   }
-               });
+                })
               }
             }
           }
@@ -1708,19 +1875,21 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
             type: "section",
             name: item.text,
             contents: sections
-            });
-          break;
+          })
+          break
       }
 
       // Add specify
-      if (['choice', 'choices'].includes(answerType)) {
+      if (["choice", "choices"].includes(answerType)) {
         for (let choice of item.choices) {
           if (choice.specify) {
             column = {
               id: `${dataColumn}:${item._id}:specify:${choice.id}`,
               type: "text",
               name: appendStr(appendStr(appendStr(item.text, " ("), choice.label), ") - specify"),
-              code: code ? code + ` (${choice.code ? choice.code : formUtils.localizeString(choice.label)})` + " - specify" : undefined,
+              code: code
+                ? code + ` (${choice.code ? choice.code : formUtils.localizeString(choice.label)})` + " - specify"
+                : undefined,
               jsonql: {
                 type: "op",
                 op: "#>>",
@@ -1729,8 +1898,8 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
                   `{${item._id},specify,${choice.id}}`
                 ]
               }
-            };
-            addColumn(column);
+            }
+            addColumn(column)
           }
         }
       }
@@ -1742,10 +1911,14 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
           type: "text",
           name: appendStr(item.text, " (Comments)"),
           code: code ? code + " (Comments)" : undefined,
-          jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},comments}`] }
-        };
+          jsonql: {
+            type: "op",
+            op: "#>>",
+            exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},comments}`]
+          }
+        }
 
-        addColumn(column);
+        addColumn(column)
       }
 
       // Add timestamp
@@ -1755,10 +1928,14 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
           type: "datetime",
           name: appendStr(item.text, " (Time Answered)"),
           code: code ? code + " (Time Answered)" : undefined,
-          jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},timestamp}`] }
-        };
+          jsonql: {
+            type: "op",
+            op: "#>>",
+            exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},timestamp}`]
+          }
+        }
 
-        addColumn(column);
+        addColumn(column)
       }
 
       // Add GPS stamp
@@ -1768,10 +1945,15 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
           type: "geometry",
           name: appendStr(item.text, " (Location Answered)"),
           code: code ? code + " (Location Answered)" : undefined,
-          jsonql: createWebmercatorGeometry("data", `{${item._id},location,latitude}`, `{${item._id},location,longitude}`, "{alias}")
-        };
+          jsonql: createWebmercatorGeometry(
+            "data",
+            `{${item._id},location,latitude}`,
+            `{${item._id},location,longitude}`,
+            "{alias}"
+          )
+        }
 
-        addColumn(column);
+        addColumn(column)
 
         column = {
           id: `${dataColumn}:${item._id}:location:accuracy`,
@@ -1783,12 +1965,16 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
             type: "op",
             op: "::decimal",
             exprs: [
-              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},location,accuracy}`] }
+              {
+                type: "op",
+                op: "#>>",
+                exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},location,accuracy}`]
+              }
             ]
           }
-        };
-        
-        addColumn(column);
+        }
+
+        addColumn(column)
 
         column = {
           id: `${dataColumn}:${item._id}:location:altitude`,
@@ -1800,12 +1986,16 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
             type: "op",
             op: "::decimal",
             exprs: [
-              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},location,altitude}`] }
+              {
+                type: "op",
+                op: "#>>",
+                exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},location,altitude}`]
+              }
             ]
           }
-        };
-        
-        addColumn(column);
+        }
+
+        addColumn(column)
       }
 
       // Add n/a
@@ -1824,16 +2014,20 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
                 type: "op",
                 op: "=",
                 exprs: [
-                  { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},alternate}`] },
+                  {
+                    type: "op",
+                    op: "#>>",
+                    exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},alternate}`]
+                  },
                   "na"
                 ]
               },
               false
             ]
           }
-        };
-        
-        addColumn(column);
+        }
+
+        addColumn(column)
       }
 
       if (item.alternates && item.alternates.dontknow) {
@@ -1851,20 +2045,24 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
                 type: "op",
                 op: "=",
                 exprs: [
-                  { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},alternate}`] },
+                  {
+                    type: "op",
+                    op: "#>>",
+                    exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},alternate}`]
+                  },
                   "dontknow"
                 ]
               },
               false
             ]
           }
-        };
-        
-        addColumn(column);
+        }
+
+        addColumn(column)
       }
 
       // Add randomAsked if randomAsked
-      if (item.randomAskProbability != null) { 
+      if (item.randomAskProbability != null) {
         column = {
           id: `${dataColumn}:${item._id}:randomAsked`,
           type: "boolean",
@@ -1874,28 +2072,37 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
             type: "op",
             op: "::boolean",
             exprs: [
-              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},randomAsked}`] }
+              {
+                type: "op",
+                op: "#>>",
+                exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},randomAsked}`]
+              }
             ]
           }
-        };
-        
-        addColumn(column);
+        }
+
+        addColumn(column)
       }
 
       // Add visible if has conditions and not randomly asked
-      if ((item.randomAskProbability == null) && (conditionsExprCompiler && ((item.conditions && (item.conditions.length > 0)) || existingConditionExpr))) {
+      if (
+        item.randomAskProbability == null &&
+        conditionsExprCompiler &&
+        ((item.conditions && item.conditions.length > 0) || existingConditionExpr)
+      ) {
         // Guard against null
-        let conditionExpr = ExprUtils.andExprs(tableId, existingConditionExpr, conditionsExprCompiler.compileConditions(item.conditions, tableId));
+        let conditionExpr = ExprUtils.andExprs(
+          tableId,
+          existingConditionExpr,
+          conditionsExprCompiler.compileConditions(item.conditions, tableId)
+        )
         if (conditionExpr) {
           conditionExpr = {
             type: "op",
             op: "and",
             table: tableId,
-            exprs: [
-              { type: "op", table: tableId, op: "is not null", exprs: [conditionExpr] },
-              conditionExpr
-            ]
-          };
+            exprs: [{ type: "op", table: tableId, op: "is not null", exprs: [conditionExpr] }, conditionExpr]
+          }
 
           column = {
             id: `${dataColumn}:${item._id}:visible`,
@@ -1903,9 +2110,9 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
             name: appendStr(item.text, " (Asked)"),
             code: code ? code + " (Asked)" : undefined,
             expr: conditionExpr
-          };
-          
-          return addColumn(column);
+          }
+
+          return addColumn(column)
         }
       }
     }
@@ -1913,20 +2120,20 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
 
   addCalculations(schema, form) {
     // If not calculations, don't add  section
-    if (!form.design.calculations || (form.design.calculations.length === 0)) {
-      return schema;
+    if (!form.design.calculations || form.design.calculations.length === 0) {
+      return schema
     }
 
-    // Process indicator calculations 
+    // Process indicator calculations
     for (let calculation of form.design.calculations) {
-      let tableId = `responses:${form._id}`;
+      let tableId = `responses:${form._id}`
 
       if (calculation.roster) {
-        tableId += `:roster:${calculation.roster}`;
+        tableId += `:roster:${calculation.roster}`
       }
 
       // Add calculations section
-      let calculationsSection = _.last(schema.getTable(tableId).contents);
+      let calculationsSection = _.last(schema.getTable(tableId).contents)
       if (calculationsSection.id !== "calculations") {
         // Add calculations section
         calculationsSection = {
@@ -1934,71 +2141,71 @@ export default FormSchemaBuilder = class FormSchemaBuilder {
           type: "section",
           name: { _base: "en", en: "Calculations" },
           contents: []
-        };
-        schema = schema.addTable(update(schema.getTable(tableId), { contents: { $push: [calculationsSection] } }));
+        }
+        schema = schema.addTable(update(schema.getTable(tableId), { contents: { $push: [calculationsSection] } }))
       }
 
       // Add to calculations section
-      const calculationsSectionContents = calculationsSection.contents.slice();
+      const calculationsSectionContents = calculationsSection.contents.slice()
       calculationsSectionContents.push({
         id: `calculation:${calculation._id}`,
         type: "number",
         name: calculation.name,
         desc: calculation.desc,
         expr: calculation.expr,
-        jsonql: !calculation.expr ? { type: "literal", value: null } : undefined  // Force null if no expression so it doesn't appear to be a normal column
-      });
+        jsonql: !calculation.expr ? { type: "literal", value: null } : undefined // Force null if no expression so it doesn't appear to be a normal column
+      })
 
       // Update in original
-      const contents = schema.getTable(tableId).contents.slice();
-      contents[contents.length - 1] = update(calculationsSection, { contents: { $set: calculationsSectionContents } });
+      const contents = schema.getTable(tableId).contents.slice()
+      contents[contents.length - 1] = update(calculationsSection, { contents: { $set: calculationsSectionContents } })
 
       // Re-add table
-      schema = schema.addTable(update(schema.getTable(tableId), { contents: { $set: contents } }));
+      schema = schema.addTable(update(schema.getTable(tableId), { contents: { $set: contents } }))
     }
 
-    return schema;
+    return schema
   }
-};
+}
 
 // Append a string to each language
 function appendStr(str, suffix) {
-  const output = {};
+  const output = {}
   for (let key in str) {
-    const value = str[key];
+    const value = str[key]
     if (key === "_base") {
-      output._base = value;
+      output._base = value
     } else {
       // If it's a simple string
       if (_.isString(suffix)) {
-        output[key] = value + suffix;
+        output[key] = value + suffix
       } else {
-        output[key] = value + (suffix[key] || suffix[suffix._base] || suffix.en);
+        output[key] = value + (suffix[key] || suffix[suffix._base] || suffix.en)
       }
     }
   }
-  return output;
+  return output
 }
 
 // Map a tree that consists of items with optional 'contents' array. null means to discard item
 function mapTree(tree, func) {
   if (!tree) {
-    return tree;
+    return tree
   }
 
   if (_.isArray(tree)) {
-    return _.map(tree, item => mapTree(item, func));
+    return _.map(tree, (item) => mapTree(item, func))
   }
 
   // Map item
-  const output = func(tree);
+  const output = func(tree)
 
   // Map contents
   if (tree.contents) {
-    output.contents = _.compact(_.map(tree.contents, item => func(item)));
+    output.contents = _.compact(_.map(tree.contents, (item) => func(item)))
   }
 
-  return output;
+  return output
 }
 
 // Convert an expression that is the expr of an indicator property into an expression
@@ -2006,31 +2213,35 @@ function mapTree(tree, func) {
 // properties that are calculations (have an expr) from the form
 function formizeIndicatorPropertyExpr(expr, form, indicatorCalculation, indicator) {
   if (!expr) {
-    return expr;
+    return expr
   }
 
   if (!_.isObject(expr)) {
-    return expr;
+    return expr
   }
 
   // If it is a field, change table and column
-  if ((expr.type === "field") && (expr.table === `indicator_values:${indicator._id}`)) {
-    return { type: "field", table: `responses:${form._id}`, column: `indicator_calculation:${indicatorCalculation._id}:${expr.column}` };
+  if (expr.type === "field" && expr.table === `indicator_values:${indicator._id}`) {
+    return {
+      type: "field",
+      table: `responses:${form._id}`,
+      column: `indicator_calculation:${indicatorCalculation._id}:${expr.column}`
+    }
   }
 
   // If it has a table, change that
   if (expr.table === `indicator_values:${indicator._id}`) {
-    expr = _.extend({}, expr, {table: `responses:${form._id}`});
+    expr = _.extend({}, expr, { table: `responses:${form._id}` })
   }
 
   // Otherwise replace recursively
-  return _.mapValues(expr, function(value, key) {
+  return _.mapValues(expr, function (value, key) {
     if (_.isArray(value)) {
-      return _.map(value, v => formizeIndicatorPropertyExpr(v, form, indicatorCalculation, indicator));
+      return _.map(value, (v) => formizeIndicatorPropertyExpr(v, form, indicatorCalculation, indicator))
     } else {
-      return formizeIndicatorPropertyExpr(value, form, indicatorCalculation, indicator);
+      return formizeIndicatorPropertyExpr(value, form, indicatorCalculation, indicator)
     }
-  });
+  })
 }
 
 // Create a webmercator geometry from a lat/lng
@@ -2082,6 +2293,5 @@ function createWebmercatorGeometry(
       },
       3857
     ]
-  };
+  }
 }
-

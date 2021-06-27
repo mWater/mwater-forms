@@ -14,7 +14,19 @@ export class CustomTablesetSchemaBuilder {
           return prop
         }
 
-        const column: Column = _.pick(prop, "id", "name", "code", "desc", "type", "idTable", "enumValues", "deprecated", "expr", "join")
+        const column: Column = _.pick(
+          prop,
+          "id",
+          "name",
+          "code",
+          "desc",
+          "type",
+          "idTable",
+          "enumValues",
+          "deprecated",
+          "expr",
+          "join"
+        )
 
         return column
       })
@@ -107,9 +119,11 @@ export class CustomTablesetSchemaBuilder {
                 toColumn: column.id
               }
             }
-            schema = schema.addTable(produce(otherTable, draft => {
-              draft.contents.push(reverseColumn)
-            }))
+            schema = schema.addTable(
+              produce(otherTable, (draft) => {
+                draft.contents.push(reverseColumn)
+              })
+            )
           }
         }
       }
@@ -124,14 +138,16 @@ const mapTree = (tree: any, func: any) => {
   if (!tree) {
     return tree
   }
-  return _.compact(_.map(tree, function(item) {
-    var newItem
-    newItem = func(item)
-    if (newItem && newItem.contents) {
-      newItem.contents = mapTree(newItem.contents, func)
-    }
-    return newItem
-  }))
+  return _.compact(
+    _.map(tree, function (item) {
+      var newItem
+      newItem = func(item)
+      if (newItem && newItem.contents) {
+        newItem.contents = mapTree(newItem.contents, func)
+      }
+      return newItem
+    })
+  )
 }
 
 /** Concatinate two localized string with a joiner in-between */

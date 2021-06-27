@@ -17,10 +17,10 @@ export { default as FormComponent } from "./FormComponent"
 export { default as ResponseModel } from "./ResponseModel"
 export { default as ResponseViewEditComponent } from "./ResponseViewEditComponent"
 export { default as ImageUploaderModalComponent } from "./ImageUploaderModalComponent"
-export { CustomTablesetSchemaBuilder } from './CustomTablesetSchemaBuilder'
-export { default as RotationAwareImageComponent } from './RotationAwareImageComponent'
-export { default as FormSchemaBuilder } from './FormSchemaBuilder'
-export { default as ResponseDataExprValueUpdater } from './ResponseDataExprValueUpdater'
+export { CustomTablesetSchemaBuilder } from "./CustomTablesetSchemaBuilder"
+export { default as RotationAwareImageComponent } from "./RotationAwareImageComponent"
+export { default as FormSchemaBuilder } from "./FormSchemaBuilder"
+export { default as ResponseDataExprValueUpdater } from "./ResponseDataExprValueUpdater"
 
 // export class AdminRegionDataSource {
 //   constructor(apiUrl: any);

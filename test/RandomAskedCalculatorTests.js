@@ -1,80 +1,80 @@
 // TODO: This file was created by bulk-decaffeinate.
 // Sanity-check the conversion and remove this comment.
-import { assert } from 'chai';
-import sinon from 'sinon';
-import RandomAskedCalculator from '../src/RandomAskedCalculator';
+import { assert } from "chai"
+import sinon from "sinon"
+import RandomAskedCalculator from "../src/RandomAskedCalculator"
 
-describe('RandomAskedCalculator', function() {
-  it("sets randomAsked for a visible question", function() {
+describe("RandomAskedCalculator", function () {
+  it("sets randomAsked for a visible question", function () {
     const design = {
       contents: [
         {
-          _id: 'testid',
-          _type: 'TextQuestion',
+          _id: "testid",
+          _type: "TextQuestion",
           randomAskProbability: 0.4
         }
       ]
-    };
+    }
 
-    const randomAskedCalculator = new RandomAskedCalculator(design);
-    const generateRandomValue = sinon.stub(randomAskedCalculator, "generateRandomValue").returns(true);
-    const visibilityStructure = { testid: true };
+    const randomAskedCalculator = new RandomAskedCalculator(design)
+    const generateRandomValue = sinon.stub(randomAskedCalculator, "generateRandomValue").returns(true)
+    const visibilityStructure = { testid: true }
 
-    const newData = randomAskedCalculator.calculateRandomAsked({}, visibilityStructure);
-    assert.deepEqual(newData, { testid: { randomAsked: true }});
+    const newData = randomAskedCalculator.calculateRandomAsked({}, visibilityStructure)
+    assert.deepEqual(newData, { testid: { randomAsked: true } })
 
-    return assert.isTrue(generateRandomValue.calledWith(0.4));
-  });
+    return assert.isTrue(generateRandomValue.calledWith(0.4))
+  })
 
-  it("doesn't set randomAsked for an invisible question", function() {
-    let visibilityStructure = { 'testid': false };
+  it("doesn't set randomAsked for an invisible question", function () {
+    let visibilityStructure = { testid: false }
 
     const design = {
       contents: [
         {
-          _id: 'testid',
-          _type: 'TextQuestion',
+          _id: "testid",
+          _type: "TextQuestion",
           randomAskProbability: 0.4
         }
       ]
-    };
+    }
 
-    const randomAskedCalculator = new RandomAskedCalculator(design);
-    const generateRandomValue = sinon.stub(randomAskedCalculator, "generateRandomValue").returns(true);
-    visibilityStructure = { testid: false };
+    const randomAskedCalculator = new RandomAskedCalculator(design)
+    const generateRandomValue = sinon.stub(randomAskedCalculator, "generateRandomValue").returns(true)
+    visibilityStructure = { testid: false }
 
-    const newData = randomAskedCalculator.calculateRandomAsked({}, visibilityStructure);
-    return assert.deepEqual(newData, {});
-});
+    const newData = randomAskedCalculator.calculateRandomAsked({}, visibilityStructure)
+    return assert.deepEqual(newData, {})
+  })
 
-  return it("sets randomAsked independently for roster entries", function() {
+  return it("sets randomAsked independently for roster entries", function () {
     const design = {
       contents: [
         {
-          _id: 'rosterid',
-          _type: 'RosterGroup',
+          _id: "rosterid",
+          _type: "RosterGroup",
           contents: [
             {
-              _id: 'testid',
-              _type: 'TextQuestion',
+              _id: "testid",
+              _type: "TextQuestion",
               randomAskProbability: 0.4
             }
           ]
         }
       ]
-    };
+    }
 
-    const randomAskedCalculator = new RandomAskedCalculator(design);
-    const generateRandomValue = sinon.stub(randomAskedCalculator, "generateRandomValue");
+    const randomAskedCalculator = new RandomAskedCalculator(design)
+    const generateRandomValue = sinon.stub(randomAskedCalculator, "generateRandomValue")
 
     // Only second one returned true
-    generateRandomValue.onFirstCall().returns(false);
-    generateRandomValue.onSecondCall().returns(true);
+    generateRandomValue.onFirstCall().returns(false)
+    generateRandomValue.onSecondCall().returns(true)
 
-    const visibilityStructure = { 
+    const visibilityStructure = {
       "rosterid.0.testid": true,
-      "rosterid.1.testid": true 
-    };
+      "rosterid.1.testid": true
+    }
 
     // Data is present for roster
     const data = {
@@ -82,15 +82,19 @@ describe('RandomAskedCalculator', function() {
         { _id: "e0", data: {} },
         { _id: "e1", data: {} }
       ]
-    };
+    }
 
-    const newData = randomAskedCalculator.calculateRandomAsked(data, visibilityStructure);
+    const newData = randomAskedCalculator.calculateRandomAsked(data, visibilityStructure)
 
-    return assert.deepEqual(newData, {
-      rosterid: [
-        { _id: "e0", data: { testid: { randomAsked: false }}},
-        { _id: "e1", data: { testid: { randomAsked: true }}}
-      ]
-    }, JSON.stringify(newData, null, 2));
-  });
-});
+    return assert.deepEqual(
+      newData,
+      {
+        rosterid: [
+          { _id: "e0", data: { testid: { randomAsked: false } } },
+          { _id: "e1", data: { testid: { randomAsked: true } } }
+        ]
+      },
+      JSON.stringify(newData, null, 2)
+    )
+  })
+})

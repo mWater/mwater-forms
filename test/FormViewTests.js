@@ -1,16 +1,22 @@
 // TODO: This file was created by bulk-decaffeinate.
 // Sanity-check the conversion and remove this comment.
-import Backbone from 'backbone';
-import { assert } from 'chai';
+import Backbone from "backbone"
+import { assert } from "chai"
 
 // Tests related to the FormView component
-describe("FormView", () => beforeEach(function() {
-  // Create sample properties
-  this.propText = { _id: "1", code: "text", type: "text", name: { en: "Text" } };
+describe("FormView", () =>
+  beforeEach(function () {
+    // Create sample properties
+    this.propText = { _id: "1", code: "text", type: "text", name: { en: "Text" } }
 
-  return this.ctx = {
-    getProperty: id => { if (id === "1") { return this.propText; } }
-  };}));
+    return (this.ctx = {
+      getProperty: (id) => {
+        if (id === "1") {
+          return this.propText
+        }
+      }
+    })
+  }))
 
 // describe "setEntity of form-level entity (deprecated)", ->
 //   beforeEach ->
@@ -62,7 +68,7 @@ describe("FormView", () => beforeEach(function() {
 //           propertyLinks: [
 //             { propertyId: @propText._id, direction: "both", questionId: "q1", type: "direct" }
 //           ]
-//         }          
+//         }
 //       ]
 //     }
 
@@ -80,7 +86,7 @@ describe("FormView", () => beforeEach(function() {
 //           _type: "SiteQuestion"
 //           text: { _base: "en", en: "English" }
 //           siteTypes: ["Water point"]
-//         }          
+//         }
 //       ]
 //     }
 
@@ -88,5 +94,3 @@ describe("FormView", () => beforeEach(function() {
 //     @compiler = new FormCompiler(ctx: @ctx, model: @model)
 //     @formView = @compiler.compileForm(@form, { entity: { _id: "1234", code: "abc", text: "sometext"}, entityType: "water_point" })
 //     assert.deepEqual @model.get('q2').value, { code: "abc" }
-
-

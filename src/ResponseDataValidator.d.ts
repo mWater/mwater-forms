@@ -27,5 +27,11 @@ export default class ResponseDataValidator {
    *     RosterGroup   -> rosterGroupId.index.questionId
    *     QuestionMatrix -> matrixId.itemId.columnId
    */
-  validate(formDesign: FormDesign, visibilityStructure: VisibilityStructure, data: ResponseData, schema: Schema, responseRow: ResponseRow): Promise<ResponseDataValidatorError | null>
+  validate(
+    formDesign: FormDesign,
+    visibilityStructure: VisibilityStructure,
+    data: ResponseData,
+    schema: Schema,
+    responseRow: ResponseRow
+  ): Promise<ResponseDataValidatorError | null>
 }

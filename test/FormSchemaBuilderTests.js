@@ -1,23 +1,23 @@
 // TODO: This file was created by bulk-decaffeinate.
 // Sanity-check the conversion and remove this comment.
-import _ from 'lodash';
-import { assert } from 'chai';
-import { Schema } from 'mwater-expressions';
-import FormSchemaBuilder from '../src/FormSchemaBuilder';
-import canonical from 'canonical-json';
-import * as formUtils from '../src/formUtils';
-import confidentialDataForm from './confidentialDataForm';
+import _ from "lodash"
+import { assert } from "chai"
+import { Schema } from "mwater-expressions"
+import FormSchemaBuilder from "../src/FormSchemaBuilder"
+import canonical from "canonical-json"
+import * as formUtils from "../src/formUtils"
+import confidentialDataForm from "./confidentialDataForm"
 
 function compare(actual, expected) {
   return assert.equal(
     canonical(actual),
     canonical(expected),
     "\nGOT:" + canonical(actual) + "\nEXP:" + canonical(expected) + "\n"
-  );
+  )
 }
 
-describe("FormSchemaBuilder addForm", function() {
-  it("adds form as table", function() {
+describe("FormSchemaBuilder addForm", function () {
+  it("adds form as table", function () {
     // Create form
     const form = {
       _id: "formid",
@@ -26,27 +26,25 @@ describe("FormSchemaBuilder addForm", function() {
         name: { en: "Form" },
         contents: []
       }
-    };
+    }
 
     // Add to blank schema
-    const schema = new FormSchemaBuilder().addForm(new Schema(), form);
+    const schema = new FormSchemaBuilder().addForm(new Schema(), form)
 
-    const table = schema.getTable("responses:formid");
+    const table = schema.getTable("responses:formid")
 
-    compare(table.id, "responses:formid");
-    return compare(table.name, { en: "Form" });
-  });
+    compare(table.id, "responses:formid")
+    return compare(table.name, { en: "Form" })
+  })
 
-  it("adds form join to entity for site question", function() {
+  it("adds form join to entity for site question", function () {
     // Add water point table
-    let schema = new Schema();
+    let schema = new Schema()
     schema = schema.addTable({
       id: "entities.water_point",
       name: { en: "Water Points" },
-      contents: [
-        { id: "name", name: { en: "Name" }, type: "text" }
-      ]
-    });
+      contents: [{ id: "name", name: { en: "Name" }, type: "text" }]
+    })
 
     // Add form with one site question
     const form = {
@@ -55,31 +53,31 @@ describe("FormSchemaBuilder addForm", function() {
         _type: "Form",
         name: { en: "Form" },
         contents: [
-          { 
+          {
             _id: "site1",
-            _type: "SiteQuestion", 
+            _type: "SiteQuestion",
             text: { en: "Site1" },
             siteTypes: ["Water point"]
-          } 
+          }
         ]
       }
-    };
+    }
 
-    schema = new FormSchemaBuilder().addForm(schema, form);
+    schema = new FormSchemaBuilder().addForm(schema, form)
 
     // Check that section exists
-    const section = _.findWhere(schema.getTable("entities.water_point").contents, { id: "!related_forms" });
-    assert(section);
-    assert.equal(section.contents.length, 1);
+    const section = _.findWhere(schema.getTable("entities.water_point").contents, { id: "!related_forms" })
+    assert(section)
+    assert.equal(section.contents.length, 1)
 
     // Check that join to form is present
-    const column = schema.getColumn("entities.water_point", "responses:formid:data:site1:value");
-    assert(column, "Column should exist");
-    assert.equal(column.name.en, "Form"); // "Form: Site1" Use only form name since one link only
-    assert.equal(column.type, "join");
-    assert.equal(column.join.type, "1-n");
-    assert.equal(column.join.toTable, "responses:formid");
-    assert.equal(column.join.inverse, "data:site1:value");
+    const column = schema.getColumn("entities.water_point", "responses:formid:data:site1:value")
+    assert(column, "Column should exist")
+    assert.equal(column.name.en, "Form") // "Form: Site1" Use only form name since one link only
+    assert.equal(column.type, "join")
+    assert.equal(column.join.type, "1-n")
+    assert.equal(column.join.toTable, "responses:formid")
+    assert.equal(column.join.inverse, "data:site1:value")
     // Use exists (select null from response_entities where response = {to}._id and question = 'site1' and "entityType" = 'water_point' and property = 'code' and value = {from}."code"))
     return compare(column.join.jsonql, {
       type: "op",
@@ -93,29 +91,57 @@ describe("FormSchemaBuilder addForm", function() {
             type: "op",
             op: "and",
             exprs: [
-              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "response" }, { type: "field", tableAlias: "{to}", column: "_id" }] },
-              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "question" }, "site1"] },
-              { type: "op", op: "is null", exprs: [{ type: "field", tableAlias: "response_entities", column: "roster" }] },
-              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "entityType" }, "water_point"] },
-              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "property" }, "code"] },
-              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "value" }, { type: "field", tableAlias: "{from}", column: "code" }] }
+              {
+                type: "op",
+                op: "=",
+                exprs: [
+                  { type: "field", tableAlias: "response_entities", column: "response" },
+                  { type: "field", tableAlias: "{to}", column: "_id" }
+                ]
+              },
+              {
+                type: "op",
+                op: "=",
+                exprs: [{ type: "field", tableAlias: "response_entities", column: "question" }, "site1"]
+              },
+              {
+                type: "op",
+                op: "is null",
+                exprs: [{ type: "field", tableAlias: "response_entities", column: "roster" }]
+              },
+              {
+                type: "op",
+                op: "=",
+                exprs: [{ type: "field", tableAlias: "response_entities", column: "entityType" }, "water_point"]
+              },
+              {
+                type: "op",
+                op: "=",
+                exprs: [{ type: "field", tableAlias: "response_entities", column: "property" }, "code"]
+              },
+              {
+                type: "op",
+                op: "=",
+                exprs: [
+                  { type: "field", tableAlias: "response_entities", column: "value" },
+                  { type: "field", tableAlias: "{from}", column: "code" }
+                ]
+              }
             ]
           }
         }
       ]
-    });
-});
+    })
+  })
 
-  it("adds form join to entity for site question in roster", function() {
+  it("adds form join to entity for site question in roster", function () {
     // Add water point table
-    let schema = new Schema();
+    let schema = new Schema()
     schema = schema.addTable({
       id: "entities.water_point",
       name: { en: "Water Points" },
-      contents: [
-        { id: "name", name: { en: "Name" }, type: "text" }
-      ]
-    });
+      contents: [{ id: "name", name: { en: "Name" }, type: "text" }]
+    })
 
     // Add form with one site question
     const form = {
@@ -123,36 +149,38 @@ describe("FormSchemaBuilder addForm", function() {
       design: {
         _type: "Form",
         name: { en: "Form" },
-        contents: [{
-          _id: "roster1",
-          _type: "RosterGroup",
-          name: { en: "Roster1" },
-          contents: [
-            { 
-              _id: "site1",
-              _type: "SiteQuestion", 
-              text: { en: "Site1" },
-              siteTypes: ["Water point"]
-            } 
-          ]
-        }]
+        contents: [
+          {
+            _id: "roster1",
+            _type: "RosterGroup",
+            name: { en: "Roster1" },
+            contents: [
+              {
+                _id: "site1",
+                _type: "SiteQuestion",
+                text: { en: "Site1" },
+                siteTypes: ["Water point"]
+              }
+            ]
+          }
+        ]
       }
-    };
+    }
 
-    schema = new FormSchemaBuilder().addForm(schema, form);
+    schema = new FormSchemaBuilder().addForm(schema, form)
 
     // Check that section exists
-    const section = _.findWhere(schema.getTable("entities.water_point").contents, { id: "!related_forms" });
-    assert(section);
-    assert.equal(section.contents.length, 1);
+    const section = _.findWhere(schema.getTable("entities.water_point").contents, { id: "!related_forms" })
+    assert(section)
+    assert.equal(section.contents.length, 1)
 
     // Check that join to form is present
-    const column = schema.getColumn("entities.water_point", "responses:formid:roster:roster1:data:site1:value");
-    assert(column, "Column should exist");
-    assert.equal(column.name.en, "Form"); // "Form: Site1" Use only form name since one link only
-    assert.equal(column.type, "join");
-    assert.equal(column.join.type, "1-n");
-    assert.equal(column.join.toTable, "responses:formid:roster:roster1");
+    const column = schema.getColumn("entities.water_point", "responses:formid:roster:roster1:data:site1:value")
+    assert(column, "Column should exist")
+    assert.equal(column.name.en, "Form") // "Form: Site1" Use only form name since one link only
+    assert.equal(column.type, "join")
+    assert.equal(column.join.type, "1-n")
+    assert.equal(column.join.toTable, "responses:formid:roster:roster1")
     // Use exists (select null from response_entities where roster = {to}._id and question = 'site1' and "entityType" = 'water_point' and property = 'code' and value = {from}."code"))
     return compare(column.join.jsonql, {
       type: "op",
@@ -166,28 +194,52 @@ describe("FormSchemaBuilder addForm", function() {
             type: "op",
             op: "and",
             exprs: [
-              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "roster" }, { type: "field", tableAlias: "{to}", column: "_id" }] },
-              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "question" }, "site1"] },
-              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "entityType" }, "water_point"] },
-              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "property" }, "code"] },
-              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "value" }, { type: "field", tableAlias: "{from}", column: "code" }] }
+              {
+                type: "op",
+                op: "=",
+                exprs: [
+                  { type: "field", tableAlias: "response_entities", column: "roster" },
+                  { type: "field", tableAlias: "{to}", column: "_id" }
+                ]
+              },
+              {
+                type: "op",
+                op: "=",
+                exprs: [{ type: "field", tableAlias: "response_entities", column: "question" }, "site1"]
+              },
+              {
+                type: "op",
+                op: "=",
+                exprs: [{ type: "field", tableAlias: "response_entities", column: "entityType" }, "water_point"]
+              },
+              {
+                type: "op",
+                op: "=",
+                exprs: [{ type: "field", tableAlias: "response_entities", column: "property" }, "code"]
+              },
+              {
+                type: "op",
+                op: "=",
+                exprs: [
+                  { type: "field", tableAlias: "response_entities", column: "value" },
+                  { type: "field", tableAlias: "{from}", column: "code" }
+                ]
+              }
             ]
           }
         }
       ]
-    });
-});
+    })
+  })
 
-  it("adds form join to entity for entity question", function() {
+  it("adds form join to entity for entity question", function () {
     // Add water point table
-    let schema = new Schema();
+    let schema = new Schema()
     schema = schema.addTable({
       id: "entities.water_point",
       name: { en: "Water Points" },
-      contents: [
-        { id: "name", name: { en: "Name" }, type: "text" }
-      ]
-    });
+      contents: [{ id: "name", name: { en: "Name" }, type: "text" }]
+    })
 
     // Add form with one site question
     const form = {
@@ -196,25 +248,25 @@ describe("FormSchemaBuilder addForm", function() {
         _type: "Form",
         name: { en: "Form" },
         contents: [
-          { 
+          {
             _id: "entity1",
-            _type: "EntityQuestion", 
+            _type: "EntityQuestion",
             text: { en: "Entity1" },
             entityType: "water_point"
-          } 
+          }
         ]
       }
-    };
+    }
 
-    schema = new FormSchemaBuilder().addForm(schema, form);
+    schema = new FormSchemaBuilder().addForm(schema, form)
 
     // Check that join to form is present
-    const column = schema.getColumn("entities.water_point", "responses:formid:data:entity1:value");
-    assert(column, "Column should exist");
-    assert.equal(column.name.en, "Form"); // "Form: Entity1" Uses only form name since only one join
-    assert.equal(column.type, "join");
-    assert.equal(column.join.type, "1-n");
-    assert.equal(column.join.toTable, "responses:formid");
+    const column = schema.getColumn("entities.water_point", "responses:formid:data:entity1:value")
+    assert(column, "Column should exist")
+    assert.equal(column.name.en, "Form") // "Form: Entity1" Uses only form name since only one join
+    assert.equal(column.type, "join")
+    assert.equal(column.join.type, "1-n")
+    assert.equal(column.join.toTable, "responses:formid")
     // Use exists (select null from response_entities where response = {to}._id and question = 'site1' and "entityType" = 'water_point' and property = '_id' and value = {from}."_id"))
     return compare(column.join.jsonql, {
       type: "op",
@@ -228,20 +280,50 @@ describe("FormSchemaBuilder addForm", function() {
             type: "op",
             op: "and",
             exprs: [
-              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "response" }, { type: "field", tableAlias: "{to}", column: "_id" }] },
-              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "question" }, "entity1"] },
-              { type: "op", op: "is null", exprs: [{ type: "field", tableAlias: "response_entities", column: "roster" }] },
-              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "entityType" }, "water_point"] },
-              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "property" }, "_id"] },
-              { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "response_entities", column: "value" }, { type: "field", tableAlias: "{from}", column: "_id" }] }
+              {
+                type: "op",
+                op: "=",
+                exprs: [
+                  { type: "field", tableAlias: "response_entities", column: "response" },
+                  { type: "field", tableAlias: "{to}", column: "_id" }
+                ]
+              },
+              {
+                type: "op",
+                op: "=",
+                exprs: [{ type: "field", tableAlias: "response_entities", column: "question" }, "entity1"]
+              },
+              {
+                type: "op",
+                op: "is null",
+                exprs: [{ type: "field", tableAlias: "response_entities", column: "roster" }]
+              },
+              {
+                type: "op",
+                op: "=",
+                exprs: [{ type: "field", tableAlias: "response_entities", column: "entityType" }, "water_point"]
+              },
+              {
+                type: "op",
+                op: "=",
+                exprs: [{ type: "field", tableAlias: "response_entities", column: "property" }, "_id"]
+              },
+              {
+                type: "op",
+                op: "=",
+                exprs: [
+                  { type: "field", tableAlias: "response_entities", column: "value" },
+                  { type: "field", tableAlias: "{from}", column: "_id" }
+                ]
+              }
             ]
           }
         }
       ]
-    });
-});
+    })
+  })
 
-  it("adds structure", function() {
+  it("adds structure", function () {
     // Create form
     const form = {
       _id: "formid",
@@ -256,24 +338,27 @@ describe("FormSchemaBuilder addForm", function() {
               {
                 _id: "questionid",
                 _type: "TextQuestion",
-                text: { _base: "en", en: "Question" }, 
+                text: { _base: "en", en: "Question" },
                 conditions: []
-              }              
+              }
             ]
           }
         ]
       }
-    };
+    }
 
     // Add to blank schema
-    const schema = new FormSchemaBuilder().addForm(new Schema(), form);
+    const schema = new FormSchemaBuilder().addForm(new Schema(), form)
 
     // Adds section
-    const section = _.find(schema.getTable("responses:formid").contents, item => (item.type === "section") && (item.name.en === "Section X"));
-    return assert.equal(section.contents.length, 1);
-  });
+    const section = _.find(
+      schema.getTable("responses:formid").contents,
+      (item) => item.type === "section" && item.name.en === "Section X"
+    )
+    return assert.equal(section.contents.length, 1)
+  })
 
-  it("adds metadata fields", function() {
+  it("adds metadata fields", function () {
     // Create form
     const form = {
       _id: "formid",
@@ -282,124 +367,132 @@ describe("FormSchemaBuilder addForm", function() {
         name: { en: "Form" },
         contents: []
       }
-    };
+    }
 
     // Add to blank schema
-    const schema = new FormSchemaBuilder().addForm(new Schema(), form);
+    const schema = new FormSchemaBuilder().addForm(new Schema(), form)
 
-    assert(schema.getColumn("responses:formid", "user"));
-    assert(schema.getColumn("responses:formid", "submittedOn"));
-    return assert(schema.getColumn("responses:formid", "deployment"));
-  });
+    assert(schema.getColumn("responses:formid", "user"))
+    assert(schema.getColumn("responses:formid", "submittedOn"))
+    return assert(schema.getColumn("responses:formid", "deployment"))
+  })
 
-  it("adds calculations", function() {
+  it("adds calculations", function () {
     // Create form
     const form = {
       _id: "formid",
       design: {
         _type: "Form",
         name: { en: "Form" },
-        contents: [
-          { _id: "questionid", _type: "TextQuestion", text: { _base: "en", en: "Question" }, conditions: [] }
-        ],
+        contents: [{ _id: "questionid", _type: "TextQuestion", text: { _base: "en", en: "Question" }, conditions: [] }],
         calculations: [
-          { 
+          {
             _id: "calc1",
             name: { _base: "en", en: "Calc1" },
             desc: { _base: "en", en: "desc1" },
-            expr: { type: "op", table: "responses:formid", op: "is not null", exprs: [{ type: "field", table: "responses:formid", column: "data:questionid:value" }]} 
+            expr: {
+              type: "op",
+              table: "responses:formid",
+              op: "is not null",
+              exprs: [{ type: "field", table: "responses:formid", column: "data:questionid:value" }]
+            }
           }
         ]
       }
-    };
+    }
 
     // Add to blank schema
-    const schema = new FormSchemaBuilder().addForm(new Schema(), form);
+    const schema = new FormSchemaBuilder().addForm(new Schema(), form)
 
-    const column = schema.getColumn("responses:formid", "calculation:calc1");
-    assert.deepEqual(column.name.en, "Calc1");
-    assert.deepEqual(column.desc.en, "desc1");
-    assert.deepEqual(column.type, "number");
-    return assert.deepEqual(column.expr, form.design.calculations[0].expr);
-  });
+    const column = schema.getColumn("responses:formid", "calculation:calc1")
+    assert.deepEqual(column.name.en, "Calc1")
+    assert.deepEqual(column.desc.en, "desc1")
+    assert.deepEqual(column.type, "number")
+    return assert.deepEqual(column.expr, form.design.calculations[0].expr)
+  })
 
-  it("adds calculations in rosters", function() {
+  it("adds calculations in rosters", function () {
     const form = {
       _id: "formid",
       design: {
         _type: "Form",
         name: { en: "Form" },
-        contents: [{
-          _id: "roster1",
-          _type: "RosterGroup",
-          name: { en: "Roster1" },
-          contents: [
-            { _id: "q1", _type: "TextQuestion", text: { en: "Q1" }},
-            { _id: "q2", _type: "NumberQuestion", text: { en: "Q2" }}
-          ]
-        }],
+        contents: [
+          {
+            _id: "roster1",
+            _type: "RosterGroup",
+            name: { en: "Roster1" },
+            contents: [
+              { _id: "q1", _type: "TextQuestion", text: { en: "Q1" } },
+              { _id: "q2", _type: "NumberQuestion", text: { en: "Q2" } }
+            ]
+          }
+        ],
         calculations: [
-          { 
+          {
             _id: "calc1",
             name: { _base: "en", en: "Calc1" },
             desc: { _base: "en", en: "desc1" },
             roster: "roster1",
-            expr: { type: "op", table: "responses:formid:roster:roster1", op: "is not null", exprs: [
-              { type: "field", table: "responses:formid:roster:roster1", column: "data:q1:value" }
-            ]}
+            expr: {
+              type: "op",
+              table: "responses:formid:roster:roster1",
+              op: "is not null",
+              exprs: [{ type: "field", table: "responses:formid:roster:roster1", column: "data:q1:value" }]
+            }
           }
         ]
       }
-    };
+    }
 
     // Add to blank schema
-    const schema = new FormSchemaBuilder().addForm(new Schema(), form);
+    const schema = new FormSchemaBuilder().addForm(new Schema(), form)
 
-    const column = schema.getColumn("responses:formid:roster:roster1", "calculation:calc1");
-    assert.deepEqual(column.name.en, "Calc1");
-    assert.deepEqual(column.desc.en, "desc1");
-    assert.deepEqual(column.type, "number");
-    return assert.deepEqual(column.expr, form.design.calculations[0].expr);
-  });
+    const column = schema.getColumn("responses:formid:roster:roster1", "calculation:calc1")
+    assert.deepEqual(column.name.en, "Calc1")
+    assert.deepEqual(column.desc.en, "desc1")
+    assert.deepEqual(column.type, "number")
+    return assert.deepEqual(column.expr, form.design.calculations[0].expr)
+  })
 
-  describe("ConfidentialData", function() {
-    it("adds confidential data section when the user is admin", function() {
+  describe("ConfidentialData", function () {
+    it("adds confidential data section when the user is admin", function () {
       // Create form
-      const form = confidentialDataForm();
+      const form = confidentialDataForm()
 
       // Add to blank schema
-      const schema = new FormSchemaBuilder().addForm(new Schema(), form, null, true);
+      const schema = new FormSchemaBuilder().addForm(new Schema(), form, null, true)
 
-      assert(_.find(schema.getTable('responses:abc123').contents, {id: "confidentialData"}));
+      assert(_.find(schema.getTable("responses:abc123").contents, { id: "confidentialData" }))
 
-      assert(schema.getColumn("responses:abc123", "confidentialData:a1:value"));
+      assert(schema.getColumn("responses:abc123", "confidentialData:a1:value"))
 
-      assert.isTrue(schema.getColumn("responses:abc123", "confidentialData:a1:value").confidential);
-      return assert(_.find(schema.getTable('responses:abc123:roster:r1').contents, {id: "confidentialData"}));
-    });
+      assert.isTrue(schema.getColumn("responses:abc123", "confidentialData:a1:value").confidential)
+      return assert(_.find(schema.getTable("responses:abc123:roster:r1").contents, { id: "confidentialData" }))
+    })
 
-    return it("does not add confidential data section when the user is not admin", function() {
+    return it("does not add confidential data section when the user is not admin", function () {
       // Create form
-      const form = confidentialDataForm();
+      const form = confidentialDataForm()
 
       // Add to blank schema
-      const schema = new FormSchemaBuilder().addForm(new Schema(), form, null, false);
-      
-      assert.isUndefined(_.find(schema.getTable('responses:abc123').contents, {id: 'confidentialdata'}));
-      return assert.isNull(schema.getColumn("responses:abc123", "confidentialData:a1:value"));
-    });
-  });
+      const schema = new FormSchemaBuilder().addForm(new Schema(), form, null, false)
 
-  describe("Answer types", function() {
-    before(function() {
-      return this.testQuestion = function(questionOptions, expectedColumns) {
+      assert.isUndefined(_.find(schema.getTable("responses:abc123").contents, { id: "confidentialdata" }))
+      return assert.isNull(schema.getColumn("responses:abc123", "confidentialData:a1:value"))
+    })
+  })
+
+  describe("Answer types", function () {
+    before(function () {
+      return (this.testQuestion = function (questionOptions, expectedColumns) {
         // Create question
         const question = {
           _id: "questionid",
-          text: { _base: "en", en: "Question" }, 
+          text: { _base: "en", en: "Question" },
           conditions: []
-        };
-        _.extend(question, questionOptions);
+        }
+        _.extend(question, questionOptions)
 
         // Create form
         const form = {
@@ -409,354 +502,474 @@ describe("FormSchemaBuilder addForm", function() {
             name: { en: "Form" },
             contents: [question]
           }
-        };
+        }
 
         // Add to blank schema
-        const schema = new FormSchemaBuilder().addForm(new Schema(), form);
+        const schema = new FormSchemaBuilder().addForm(new Schema(), form)
 
         // Get column
         return (() => {
-          const result = [];
+          const result = []
           for (var expectedColumn of expectedColumns) {
-            var column = schema.getColumn("responses:formid", expectedColumn.id);
+            var column = schema.getColumn("responses:formid", expectedColumn.id)
             if (!column) {
-              throw new Error(`Column ${expectedColumn.id} missing`);
+              throw new Error(`Column ${expectedColumn.id} missing`)
             }
 
             // Compare specified keys to expected
-            result.push((() => {
-              const result1 = [];
-              for (let key in expectedColumn) {
-                const value = expectedColumn[key];
-                result1.push(compare(column[key], value));
-              }
-              return result1;
-            })());
+            result.push(
+              (() => {
+                const result1 = []
+                for (let key in expectedColumn) {
+                  const value = expectedColumn[key]
+                  result1.push(compare(column[key], value))
+                }
+                return result1
+              })()
+            )
           }
-          return result;
-        })();
-      };
-    });
+          return result
+        })()
+      })
+    })
 
-    it("text", function() {
+    it("text", function () {
       return this.testQuestion({ _type: "TextQuestion" }, [
-        { 
-          id: "data:questionid:value", 
+        {
+          id: "data:questionid:value",
           type: "text",
-          name: { _base: "en", en: "Question" }, 
+          name: { _base: "en", en: "Question" },
           // nullif(data#>>'{questionid,value}','')
-          jsonql: { type: "op", op: "nullif", exprs: [{ type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }, ''] }
+          jsonql: {
+            type: "op",
+            op: "nullif",
+            exprs: [
+              {
+                type: "op",
+                op: "#>>",
+                exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"]
+              },
+              ""
+            ]
+          }
         }
-      ]);
-    });
+      ])
+    })
 
-    it("text with code", function() {
+    it("text with code", function () {
       return this.testQuestion({ _type: "TextQuestion", code: "x" }, [
-        { 
-          id: "data:questionid:value", 
+        {
+          id: "data:questionid:value",
           type: "text",
-          name: { _base: "en", en: "Question" }, 
+          name: { _base: "en", en: "Question" },
           code: "x",
           // nullif(data#>>'{questionid,value}','')
-          jsonql: { type: "op", op: "nullif", exprs: [{ type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }, ''] }
+          jsonql: {
+            type: "op",
+            op: "nullif",
+            exprs: [
+              {
+                type: "op",
+                op: "#>>",
+                exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"]
+              },
+              ""
+            ]
+          }
         }
-      ]);
-    });
+      ])
+    })
 
-    it("text with code and exportId", function() {
+    it("text with code and exportId", function () {
       return this.testQuestion({ _type: "TextQuestion", code: "x", exportId: "y" }, [
-        { 
-          id: "data:questionid:value", 
+        {
+          id: "data:questionid:value",
           type: "text",
-          name: { _base: "en", en: "Question" }, 
+          name: { _base: "en", en: "Question" },
           code: "y",
           // nullif(data#>>'{questionid,value}','')
-          jsonql: { type: "op", op: "nullif", exprs: [{ type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }, ''] }
+          jsonql: {
+            type: "op",
+            op: "nullif",
+            exprs: [
+              {
+                type: "op",
+                op: "#>>",
+                exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"]
+              },
+              ""
+            ]
+          }
         }
-      ]);
-    });
+      ])
+    })
 
-    it("number", function() {
+    it("number", function () {
       this.testQuestion({ _type: "NumberQuestion", decimal: false }, [
-        { 
-          id: "data:questionid:value", 
+        {
+          id: "data:questionid:value",
           type: "number",
           // convert_to_decimal(data#>>'{questionid,value}')
           jsonql: {
             type: "op",
             op: "convert_to_decimal",
             exprs: [
-              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }
+              {
+                type: "op",
+                op: "#>>",
+                exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"]
+              }
             ]
           }
         }
-      ]);
+      ])
 
       return this.testQuestion({ _type: "NumberQuestion", decimal: true }, [
-        { 
-          id: "data:questionid:value", 
+        {
+          id: "data:questionid:value",
           type: "number",
           // convert_to_decimal(data#>>'{questionid,value}')'
           jsonql: {
             type: "op",
             op: "convert_to_decimal",
             exprs: [
-              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }
+              {
+                type: "op",
+                op: "#>>",
+                exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"]
+              }
             ]
           }
         }
-      ]);
-    });
+      ])
+    })
 
-    it("choice", function() {
-      return this.testQuestion({ 
-        _type: "RadioQuestion",  
-        choices: [
-          { id: "yes", label: { _base:"en", en: "Yes"}},
-          { id: "no", label: { _base:"en", en: "No"}}
-        ]
-       }, [
-        { 
-          id: "data:questionid:value",
-          type: "enum",
-          // data#>>'{questionid,value}''
-          jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] },
-          enumValues: [
-            { id: "yes", name: { _base:"en", en: "Yes"} },
-            { id: "no", name: { _base:"en", en: "No"} }
+    it("choice", function () {
+      return this.testQuestion(
+        {
+          _type: "RadioQuestion",
+          choices: [
+            { id: "yes", label: { _base: "en", en: "Yes" } },
+            { id: "no", label: { _base: "en", en: "No" } }
           ]
-        }
-      ]);
-    });
-
-    it("choice specify", function() {
-      return this.testQuestion({ 
-        _type: "RadioQuestion",  
-        choices: [
-          { id: "yes", label: { _base:"en", en: "Yes"}, specify: true},
-          { id: "no", label: { _base:"en", en: "No"}}
+        },
+        [
+          {
+            id: "data:questionid:value",
+            type: "enum",
+            // data#>>'{questionid,value}''
+            jsonql: {
+              type: "op",
+              op: "#>>",
+              exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"]
+            },
+            enumValues: [
+              { id: "yes", name: { _base: "en", en: "Yes" } },
+              { id: "no", name: { _base: "en", en: "No" } }
+            ]
+          }
         ]
-       }, [
-        { 
-          id: "data:questionid:specify:yes",
-          type: "text",
-          name: { _base: "en", en: "Question (Yes) - specify" }, 
-          // data#>>'{questionid,specify,yes}''
-          jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,specify,yes}"] }
-        }
-      ]);
-    });
+      )
+    })
 
-    it("choices", function() {
-      return this.testQuestion({ 
-        _type: "MulticheckQuestion",  
-        choices: [
-          { id: "yes", label: { _base:"en", en: "Yes"}},
-          { id: "no", label: { _base:"en", en: "No"}}
+    it("choice specify", function () {
+      return this.testQuestion(
+        {
+          _type: "RadioQuestion",
+          choices: [
+            { id: "yes", label: { _base: "en", en: "Yes" }, specify: true },
+            { id: "no", label: { _base: "en", en: "No" } }
+          ]
+        },
+        [
+          {
+            id: "data:questionid:specify:yes",
+            type: "text",
+            name: { _base: "en", en: "Question (Yes) - specify" },
+            // data#>>'{questionid,specify,yes}''
+            jsonql: {
+              type: "op",
+              op: "#>>",
+              exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,specify,yes}"]
+            }
+          }
         ]
-       }, [
-        { 
-          id: "data:questionid:value",
-          type: "enumset",
-          // nullif(nullif(data#>'{questionid,value}', '[]'::jsonb), 'null')
-          jsonql: { type: "op", op: "nullif", exprs: [
-            { type: "op", op: "nullif", exprs: [
-              { type: "op", op: "#>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] },
-              { type: "op", op: "::jsonb", exprs: ["[]"] }
-            ] },
-            "null"
-          ]}
-        }
-      ]);
-    });
+      )
+    })
 
-    it("choices specify", function() {
-      return this.testQuestion({ 
-        _type: "MulticheckQuestion",  
-        choices: [
-          { id: "yes", label: { _base:"en", en: "Yes"}, specify: true},
-          { id: "no", label: { _base:"en", en: "No"}}
+    it("choices", function () {
+      return this.testQuestion(
+        {
+          _type: "MulticheckQuestion",
+          choices: [
+            { id: "yes", label: { _base: "en", en: "Yes" } },
+            { id: "no", label: { _base: "en", en: "No" } }
+          ]
+        },
+        [
+          {
+            id: "data:questionid:value",
+            type: "enumset",
+            // nullif(nullif(data#>'{questionid,value}', '[]'::jsonb), 'null')
+            jsonql: {
+              type: "op",
+              op: "nullif",
+              exprs: [
+                {
+                  type: "op",
+                  op: "nullif",
+                  exprs: [
+                    {
+                      type: "op",
+                      op: "#>",
+                      exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"]
+                    },
+                    { type: "op", op: "::jsonb", exprs: ["[]"] }
+                  ]
+                },
+                "null"
+              ]
+            }
+          }
         ]
-       }, [
-        { 
-          id: "data:questionid:specify:yes",
-          type: "text",
-          name: { _base: "en", en: "Question (Yes) - specify" }, 
-          // data#>>'{questionid,specify,yes}''
-          jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,specify,yes}"] }
-        }
-      ]);
-    });
+      )
+    })
 
-    it("date", function() {
+    it("choices specify", function () {
+      return this.testQuestion(
+        {
+          _type: "MulticheckQuestion",
+          choices: [
+            { id: "yes", label: { _base: "en", en: "Yes" }, specify: true },
+            { id: "no", label: { _base: "en", en: "No" } }
+          ]
+        },
+        [
+          {
+            id: "data:questionid:specify:yes",
+            type: "text",
+            name: { _base: "en", en: "Question (Yes) - specify" },
+            // data#>>'{questionid,specify,yes}''
+            jsonql: {
+              type: "op",
+              op: "#>>",
+              exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,specify,yes}"]
+            }
+          }
+        ]
+      )
+    })
+
+    it("date", function () {
       // Take as datetime, padding out to date minimum
-      return this.testQuestion({ 
-        _type: "DateQuestion",  
-        format: "YYYY-MM"
-       }, [
-        { 
-          id: "data:questionid:value",
-          type: "date",
-          // substr(rpad(data#>>'{questionid,value}',10, '-01-01'), 1, 10)
-          jsonql: {
-            type: "op",
-            op: "substr",
-            exprs: [
-              {
-                type: "op",
-                op: "rpad",
-                exprs: [
-                  { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] },
-                  10,
-                  "-01-01"
-                ]
-              },
-              1,
-              10
-            ]
+      return this.testQuestion(
+        {
+          _type: "DateQuestion",
+          format: "YYYY-MM"
+        },
+        [
+          {
+            id: "data:questionid:value",
+            type: "date",
+            // substr(rpad(data#>>'{questionid,value}',10, '-01-01'), 1, 10)
+            jsonql: {
+              type: "op",
+              op: "substr",
+              exprs: [
+                {
+                  type: "op",
+                  op: "rpad",
+                  exprs: [
+                    {
+                      type: "op",
+                      op: "#>>",
+                      exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"]
+                    },
+                    10,
+                    "-01-01"
+                  ]
+                },
+                1,
+                10
+              ]
+            }
           }
-        }
-      ]);
-    });
+        ]
+      )
+    })
 
-    it("datetime", function() {
+    it("datetime", function () {
       // Take as datetime, padding out to date minimum
-      return this.testQuestion({ 
-        _type: "DateQuestion",  
-        format: "YYYY-MM-DD hh:mm"
-       }, [
-        { 
-          id: "data:questionid:value",
-          type: "datetime",
-          // data#>>'{questionid,value}'
-          jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }
-        }
-      ]);
-    });
+      return this.testQuestion(
+        {
+          _type: "DateQuestion",
+          format: "YYYY-MM-DD hh:mm"
+        },
+        [
+          {
+            id: "data:questionid:value",
+            type: "datetime",
+            // data#>>'{questionid,value}'
+            jsonql: {
+              type: "op",
+              op: "#>>",
+              exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"]
+            }
+          }
+        ]
+      )
+    })
 
-    it("aquagenx CBT", function() {
-      return this.testQuestion({
-        _type: "AquagenxCBTQuestion"
-      }, [
+    it("aquagenx CBT", function () {
+      return this.testQuestion(
         {
-          id: "data:questionid:value:cbt:mpn",
-          type: "number",
-          name: { _base: "en", en: "Question (MPN/100ml)" },
-          jsonql: {
-            type: "op",
-            op: "::decimal",
-            exprs: [
-              {
-                type: "op",
-                op: "#>>",
-                exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,cbt,mpn}"]
-              }
-            ]
-          }
+          _type: "AquagenxCBTQuestion"
         },
-        {
-          id: "data:questionid:value:cbt:confidence",
-          type: "number",
-          name: { _base: "en", en: "Question (Upper 95% Confidence Interval/100ml)" },
-          jsonql: {
-            type: "op",
-            op: "::decimal",
-            exprs: [
-              {
-                type: "op",
-                op: "#>>",
-                exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,cbt,confidence}"]
-              }
-            ]
+        [
+          {
+            id: "data:questionid:value:cbt:mpn",
+            type: "number",
+            name: { _base: "en", en: "Question (MPN/100ml)" },
+            jsonql: {
+              type: "op",
+              op: "::decimal",
+              exprs: [
+                {
+                  type: "op",
+                  op: "#>>",
+                  exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,cbt,mpn}"]
+                }
+              ]
+            }
+          },
+          {
+            id: "data:questionid:value:cbt:confidence",
+            type: "number",
+            name: { _base: "en", en: "Question (Upper 95% Confidence Interval/100ml)" },
+            jsonql: {
+              type: "op",
+              op: "::decimal",
+              exprs: [
+                {
+                  type: "op",
+                  op: "#>>",
+                  exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,cbt,confidence}"]
+                }
+              ]
+            }
+          },
+          {
+            id: "data:questionid:value:cbt:healthRisk",
+            type: "enum",
+            name: { _base: "en", en: "Question (Health Risk Category)" },
+            jsonql: {
+              type: "op",
+              op: "#>>",
+              exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,cbt,healthRisk}"]
+            }
+          },
+          {
+            id: "data:questionid:value:image",
+            type: "image",
+            jsonql: {
+              type: "op",
+              op: "#>",
+              exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,image}"]
+            }
+          },
+          {
+            id: "data:questionid:value:cbt:c1",
+            type: "boolean",
+            name: { _base: "en", en: "Question (Compartment 1)" },
+            jsonql: {
+              type: "op",
+              op: "::boolean",
+              exprs: [
+                {
+                  type: "op",
+                  op: "#>>",
+                  exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,cbt,c1}"]
+                }
+              ]
+            }
+          },
+          {
+            id: "data:questionid:value:cbt:c2",
+            type: "boolean",
+            name: { _base: "en", en: "Question (Compartment 2)" },
+            jsonql: {
+              type: "op",
+              op: "::boolean",
+              exprs: [
+                {
+                  type: "op",
+                  op: "#>>",
+                  exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,cbt,c2}"]
+                }
+              ]
+            }
+          },
+          {
+            id: "data:questionid:value:cbt:c3",
+            type: "boolean",
+            name: { _base: "en", en: "Question (Compartment 3)" },
+            jsonql: {
+              type: "op",
+              op: "::boolean",
+              exprs: [
+                {
+                  type: "op",
+                  op: "#>>",
+                  exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,cbt,c3}"]
+                }
+              ]
+            }
+          },
+          {
+            id: "data:questionid:value:cbt:c4",
+            type: "boolean",
+            name: { _base: "en", en: "Question (Compartment 4)" },
+            jsonql: {
+              type: "op",
+              op: "::boolean",
+              exprs: [
+                {
+                  type: "op",
+                  op: "#>>",
+                  exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,cbt,c4}"]
+                }
+              ]
+            }
+          },
+          {
+            id: "data:questionid:value:cbt:c5",
+            type: "boolean",
+            name: { _base: "en", en: "Question (Compartment 5)" },
+            jsonql: {
+              type: "op",
+              op: "::boolean",
+              exprs: [
+                {
+                  type: "op",
+                  op: "#>>",
+                  exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,cbt,c5}"]
+                }
+              ]
+            }
           }
-        },
-        {
-          id: "data:questionid:value:cbt:healthRisk",
-          type: "enum",
-          name: { _base: "en", en: "Question (Health Risk Category)" },
-          jsonql: {
-            type: "op",
-            op: "#>>",
-            exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,cbt,healthRisk}"]
-          }
-        },
-        {
-          id: "data:questionid:value:image",
-          type: "image",
-          jsonql: { type: "op", op: "#>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,image}"] }
-        },
-        {
-          id: "data:questionid:value:cbt:c1",
-          type: "boolean",
-          name: { _base: "en", en: "Question (Compartment 1)" },
-          jsonql: {
-            type: "op",
-            op: "::boolean",
-            exprs: [
-              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,cbt,c1}"] }
-            ]
-          }
-        },
-        {
-          id: "data:questionid:value:cbt:c2",
-          type: "boolean",
-          name: { _base: "en", en: "Question (Compartment 2)" },
-          jsonql: {
-            type: "op",
-            op: "::boolean",
-            exprs: [
-              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,cbt,c2}"] }
-            ]
-          }
-        },
-        {
-          id: "data:questionid:value:cbt:c3",
-          type: "boolean",
-          name: { _base: "en", en: "Question (Compartment 3)" },
-          jsonql: {
-            type: "op",
-            op: "::boolean",
-            exprs: [
-              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,cbt,c3}"] }
-            ]
-          }
-        },
-        {
-          id: "data:questionid:value:cbt:c4",
-          type: "boolean",
-          name: { _base: "en", en: "Question (Compartment 4)" },
-          jsonql: {
-            type: "op",
-            op: "::boolean",
-            exprs: [
-              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,cbt,c4}"] }
-            ]
-          }
-        },
-        {
-          id: "data:questionid:value:cbt:c5",
-          type: "boolean",
-          name: { _base: "en", en: "Question (Compartment 5)" },
-          jsonql: {
-            type: "op",
-            op: "::boolean",
-            exprs: [
-              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,cbt,c5}"] }
-            ]
-          }
-        }
-      ]);
-    });
+        ]
+      )
+    })
 
-    it("Cascading list", function() {
+    it("Cascading list", function () {
       const columns = [
         {
           id: "c0",
           name: { en: "Province" },
           type: "enum",
           enumValues: [
-            { id: "manitoba", name: { en: "Manitoba" }},
-            { id: "ontario", name: { en: "Ontario" }}
+            { id: "manitoba", name: { en: "Manitoba" } },
+            { id: "ontario", name: { en: "Ontario" } }
           ]
         },
         {
@@ -764,134 +977,159 @@ describe("FormSchemaBuilder addForm", function() {
           name: { en: "City" },
           type: "enum",
           enumValues: [
-            { id: "winnipeg", name: { en: "Winnipeg" }},
-            { id: "toronto", name: { en: "Toronto" }},
-            { id: "waterloo", name: { en: "Waterloo" }}
+            { id: "winnipeg", name: { en: "Winnipeg" } },
+            { id: "toronto", name: { en: "Toronto" } },
+            { id: "waterloo", name: { en: "Waterloo" } }
           ]
         }
-      ];
+      ]
 
-      return this.testQuestion({
-        _type: "CascadingListQuestion",
-        columns,
-        rows: []
-      }, [
+      return this.testQuestion(
         {
-          id: "data:questionid:value:c0",
-          type: "enum",
-          name: columns[0].name,
-          enumValues: columns[0].enumValues,
-          jsonql: {
-            type: "op",
-            op: "#>>",
-            exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,c0}"]
-          }
+          _type: "CascadingListQuestion",
+          columns,
+          rows: []
         },
-        {
-          id: "data:questionid:value:c1",
-          type: "enum",
-          name: columns[1].name,
-          enumValues: columns[1].enumValues,
-          jsonql: {
-            type: "op",
-            op: "#>>",
-            exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,c1}"]
+        [
+          {
+            id: "data:questionid:value:c0",
+            type: "enum",
+            name: columns[0].name,
+            enumValues: columns[0].enumValues,
+            jsonql: {
+              type: "op",
+              op: "#>>",
+              exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,c0}"]
+            }
+          },
+          {
+            id: "data:questionid:value:c1",
+            type: "enum",
+            name: columns[1].name,
+            enumValues: columns[1].enumValues,
+            jsonql: {
+              type: "op",
+              op: "#>>",
+              exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,c1}"]
+            }
           }
-        }
-      ]);
-    });
-
-    it("units integer with multiple", function() {
-      return this.testQuestion({ 
-        _type: "UnitsQuestion",  
-        decimal: false,
-        units: [
-          { id: "m", label: { _base:"en", en: "M"}},
-          { id: "ft", label: { _base:"en", en: "Ft"}}
         ]
-       }, [
-        { 
-          id: "data:questionid:value:quantity",
-          type: "number",
-          name: { _base: "en", en: "Question (magnitude)" },
-          // convert_to_decimal(data#>>'{questionid,value,quantity})
-          jsonql: {
-            type: "op",
-            op: "convert_to_decimal",
-            exprs: [
-              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,quantity}"] }
+      )
+    })
+
+    it("units integer with multiple", function () {
+      return this.testQuestion(
+        {
+          _type: "UnitsQuestion",
+          decimal: false,
+          units: [
+            { id: "m", label: { _base: "en", en: "M" } },
+            { id: "ft", label: { _base: "en", en: "Ft" } }
+          ]
+        },
+        [
+          {
+            id: "data:questionid:value:quantity",
+            type: "number",
+            name: { _base: "en", en: "Question (magnitude)" },
+            // convert_to_decimal(data#>>'{questionid,value,quantity})
+            jsonql: {
+              type: "op",
+              op: "convert_to_decimal",
+              exprs: [
+                {
+                  type: "op",
+                  op: "#>>",
+                  exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,quantity}"]
+                }
+              ]
+            }
+          },
+          {
+            id: "data:questionid:value:units",
+            type: "enum",
+            name: { _base: "en", en: "Question (units)" },
+            // data#>>'{questionid,value,units}'
+            jsonql: {
+              type: "op",
+              op: "#>>",
+              exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,units}"]
+            },
+            enumValues: [
+              { id: "m", name: { _base: "en", en: "M" } },
+              { id: "ft", name: { _base: "en", en: "Ft" } }
             ]
           }
-        },
-        { 
-          id: "data:questionid:value:units",
-          type: "enum",
-          name: { _base: "en", en: "Question (units)" },
-          // data#>>'{questionid,value,units}'
-          jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,units}"] },
-          enumValues: [
-            { id: "m", name: { _base:"en", en: "M"} },
-            { id: "ft", name: { _base:"en", en: "Ft"} }
-          ]
-        }
-      ]);
-    });
-
-    it("units decimal with single", function() {
-      return this.testQuestion({ 
-        _type: "UnitsQuestion",  
-        decimal: true,
-        units: [
-          { id: "m", label: { _base:"en", en: "M"}}
         ]
-       }, [
-        { 
-          id: "data:questionid:value:quantity",
-          type: "number",
-          name: { _base: "en", en: "Question (magnitude)" },
-          // convert_to_decimal(data#>>'{questionid,value,quantity})
-          jsonql: {
-            type: "op",
-            op: "convert_to_decimal",
-            exprs: [
-              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,quantity}"] }
-            ]
-          }
-        },
-        { 
-          id: "data:questionid:value:units",
-          type: "enum",
-          name: { _base: "en", en: "Question (units)" },
-          // data#>>'{questionid,value,units}'
-          jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,units}"] },
-          enumValues: [
-            { id: "m", name: { _base:"en", en: "M"} }
-          ]
-        }
-      ]);
-    });
+      )
+    })
 
-    it("boolean", function() {
+    it("units decimal with single", function () {
+      return this.testQuestion(
+        {
+          _type: "UnitsQuestion",
+          decimal: true,
+          units: [{ id: "m", label: { _base: "en", en: "M" } }]
+        },
+        [
+          {
+            id: "data:questionid:value:quantity",
+            type: "number",
+            name: { _base: "en", en: "Question (magnitude)" },
+            // convert_to_decimal(data#>>'{questionid,value,quantity})
+            jsonql: {
+              type: "op",
+              op: "convert_to_decimal",
+              exprs: [
+                {
+                  type: "op",
+                  op: "#>>",
+                  exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,quantity}"]
+                }
+              ]
+            }
+          },
+          {
+            id: "data:questionid:value:units",
+            type: "enum",
+            name: { _base: "en", en: "Question (units)" },
+            // data#>>'{questionid,value,units}'
+            jsonql: {
+              type: "op",
+              op: "#>>",
+              exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,units}"]
+            },
+            enumValues: [{ id: "m", name: { _base: "en", en: "M" } }]
+          }
+        ]
+      )
+    })
+
+    it("boolean", function () {
       return this.testQuestion({ _type: "CheckQuestion" }, [
-        { 
-          id: "data:questionid:value", 
+        {
+          id: "data:questionid:value",
           type: "boolean",
           // data#>>'{questionid,value}'
           jsonql: {
             type: "op",
             op: "::boolean",
             exprs: [
-              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }
+              {
+                type: "op",
+                op: "#>>",
+                exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"]
+              }
             ]
           }
         }
-      ]);
-    });
+      ])
+    })
 
-    it("location", function() {
+    it("location", function () {
       return this.testQuestion({ _type: "LocationQuestion", calculateAdminRegion: true }, [
-        { 
-          id: "data:questionid:value", 
+        {
+          id: "data:questionid:value",
           type: "geometry",
           name: { _base: "en", en: "Question" },
           // ST_Transform(ST_Intersection(ST_SetSRID(ST_MakePoint(data#>>'{questionid,value,longitude}'::decimal, data#>>'{questionid,value,latitude}'::decimal),4326), ST_MakeEnvelope(-180, -85, 180, 85, 4326)), 3857)
@@ -915,14 +1153,28 @@ describe("FormSchemaBuilder addForm", function() {
                             type: "op",
                             op: "::decimal",
                             exprs: [
-                              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,longitude}"] }
+                              {
+                                type: "op",
+                                op: "#>>",
+                                exprs: [
+                                  { type: "field", tableAlias: "{alias}", column: "data" },
+                                  "{questionid,value,longitude}"
+                                ]
+                              }
                             ]
                           },
                           {
                             type: "op",
                             op: "::decimal",
                             exprs: [
-                              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,latitude}"] }
+                              {
+                                type: "op",
+                                op: "#>>",
+                                exprs: [
+                                  { type: "field", tableAlias: "{alias}", column: "data" },
+                                  "{questionid,value,latitude}"
+                                ]
+                              }
                             ]
                           }
                         ]
@@ -937,8 +1189,8 @@ describe("FormSchemaBuilder addForm", function() {
             ]
           }
         },
-        { 
-          id: "data:questionid:value:admin_region", 
+        {
+          id: "data:questionid:value:admin_region",
           type: "join",
           name: { _base: "en", en: "Question (administrative region)" },
           join: {
@@ -950,102 +1202,138 @@ describe("FormSchemaBuilder addForm", function() {
               exprs: [
                 // Make sure leaf node
                 { type: "field", tableAlias: "{to}", column: "leaf" },
-                { type: "op", op: "&&", exprs: [
-                  // ST_Transform(ST_Intersection(ST_SetSRID(ST_MakePoint(data#>>'{questionid,value,longitude}'::decimal, data#>>'{questionid,value,latitude}'::decimal),4326), ST_MakeEnvelope(-180, -85, 180, 85, 4326) ), 3857)
-                  {
-                    type: "op",
-                    op: "ST_Transform",
-                    exprs: [
-                      {
-                        type: "op",
-                        op: "ST_Intersection",
-                        exprs: [
-                          {
-                            type: "op",
-                            op: "ST_SetSRID",
-                            exprs: [
-                              {
-                                type: "op",
-                                op: "ST_MakePoint",
-                                exprs: [
-                                  {
-                                    type: "op",
-                                    op: "::decimal",
-                                    exprs: [
-                                      { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{from}", column: "data" }, "{questionid,value,longitude}"] }
-                                    ]
-                                  },
-                                  {
-                                    type: "op",
-                                    op: "::decimal",
-                                    exprs: [
-                                      { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{from}", column: "data" }, "{questionid,value,latitude}"] }
-                                    ]
-                                  }
-                                ]
-                              },
-                              4326
-                            ] 
-                          },
-                          { type: "op", op: "ST_MakeEnvelope", exprs: [-180, -85, 180, 85, 4326] }
-                        ]
-                      },
-                      3857
-                    ]
-                  },
-                  { type: "field", tableAlias: "{to}", column: "shape" }
-                ]},
-                { type: "op", op: "ST_Intersects", exprs: [
-                  // ST_Transform(ST_SetSRID(ST_MakePoint(data#>>'{questionid,value,longitude}'::decimal, data#>>'{questionid,value,latitude}'::decimal),4326), 3857)
-                  {
-                    type: "op",
-                    op: "ST_Transform",
-                    exprs: [
-                      {
-                        type: "op",
-                        op: "ST_Intersection",
-                        exprs: [
-                          {
-                            type: "op",
-                            op: "ST_SetSRID",
-                            exprs: [
-                              {
-                                type: "op",
-                                op: "ST_MakePoint",
-                                exprs: [
-                                  {
-                                    type: "op",
-                                    op: "::decimal",
-                                    exprs: [
-                                      { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{from}", column: "data" }, "{questionid,value,longitude}"] }
-                                    ]
-                                  },
-                                  {
-                                    type: "op",
-                                    op: "::decimal",
-                                    exprs: [
-                                      { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{from}", column: "data" }, "{questionid,value,latitude}"] }
-                                    ]
-                                  }
-                                ]
-                              },
-                              4326
-                            ]
-                          },
-                          { type: "op", op: "ST_MakeEnvelope", exprs: [-180, -85, 180, 85, 4326] }
-                        ]
-                      },
-                      3857
-                    ]
-                  },
-                  { type: "field", tableAlias: "{to}", column: "shape" }
-                ]}
+                {
+                  type: "op",
+                  op: "&&",
+                  exprs: [
+                    // ST_Transform(ST_Intersection(ST_SetSRID(ST_MakePoint(data#>>'{questionid,value,longitude}'::decimal, data#>>'{questionid,value,latitude}'::decimal),4326), ST_MakeEnvelope(-180, -85, 180, 85, 4326) ), 3857)
+                    {
+                      type: "op",
+                      op: "ST_Transform",
+                      exprs: [
+                        {
+                          type: "op",
+                          op: "ST_Intersection",
+                          exprs: [
+                            {
+                              type: "op",
+                              op: "ST_SetSRID",
+                              exprs: [
+                                {
+                                  type: "op",
+                                  op: "ST_MakePoint",
+                                  exprs: [
+                                    {
+                                      type: "op",
+                                      op: "::decimal",
+                                      exprs: [
+                                        {
+                                          type: "op",
+                                          op: "#>>",
+                                          exprs: [
+                                            { type: "field", tableAlias: "{from}", column: "data" },
+                                            "{questionid,value,longitude}"
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      type: "op",
+                                      op: "::decimal",
+                                      exprs: [
+                                        {
+                                          type: "op",
+                                          op: "#>>",
+                                          exprs: [
+                                            { type: "field", tableAlias: "{from}", column: "data" },
+                                            "{questionid,value,latitude}"
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                4326
+                              ]
+                            },
+                            { type: "op", op: "ST_MakeEnvelope", exprs: [-180, -85, 180, 85, 4326] }
+                          ]
+                        },
+                        3857
+                      ]
+                    },
+                    { type: "field", tableAlias: "{to}", column: "shape" }
+                  ]
+                },
+                {
+                  type: "op",
+                  op: "ST_Intersects",
+                  exprs: [
+                    // ST_Transform(ST_SetSRID(ST_MakePoint(data#>>'{questionid,value,longitude}'::decimal, data#>>'{questionid,value,latitude}'::decimal),4326), 3857)
+                    {
+                      type: "op",
+                      op: "ST_Transform",
+                      exprs: [
+                        {
+                          type: "op",
+                          op: "ST_Intersection",
+                          exprs: [
+                            {
+                              type: "op",
+                              op: "ST_SetSRID",
+                              exprs: [
+                                {
+                                  type: "op",
+                                  op: "ST_MakePoint",
+                                  exprs: [
+                                    {
+                                      type: "op",
+                                      op: "::decimal",
+                                      exprs: [
+                                        {
+                                          type: "op",
+                                          op: "#>>",
+                                          exprs: [
+                                            { type: "field", tableAlias: "{from}", column: "data" },
+                                            "{questionid,value,longitude}"
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      type: "op",
+                                      op: "::decimal",
+                                      exprs: [
+                                        {
+                                          type: "op",
+                                          op: "#>>",
+                                          exprs: [
+                                            { type: "field", tableAlias: "{from}", column: "data" },
+                                            "{questionid,value,latitude}"
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                4326
+                              ]
+                            },
+                            { type: "op", op: "ST_MakeEnvelope", exprs: [-180, -85, 180, 85, 4326] }
+                          ]
+                        },
+                        3857
+                      ]
+                    },
+                    { type: "field", tableAlias: "{to}", column: "shape" }
+                  ]
+                }
               ]
             }
           }
         },
-        { 
-          id: "data:questionid:value:accuracy", 
+        {
+          id: "data:questionid:value:accuracy",
           type: "number",
           name: { _base: "en", en: "Question (accuracy)" },
           // data#>>'{questionid,value,accuracy}'::decimal
@@ -1053,12 +1341,16 @@ describe("FormSchemaBuilder addForm", function() {
             type: "op",
             op: "::decimal",
             exprs: [
-              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,accuracy}"] }
+              {
+                type: "op",
+                op: "#>>",
+                exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,accuracy}"]
+              }
             ]
           }
         },
-        { 
-          id: "data:questionid:value:altitude", 
+        {
+          id: "data:questionid:value:altitude",
           type: "number",
           name: { _base: "en", en: "Question (altitude)" },
           // data#>>'{questionid,value,altitude}'::decimal
@@ -1066,31 +1358,42 @@ describe("FormSchemaBuilder addForm", function() {
             type: "op",
             op: "::decimal",
             exprs: [
-              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,altitude}"] }
+              {
+                type: "op",
+                op: "#>>",
+                exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,altitude}"]
+              }
             ]
           }
         }
-      ]);
-    });
+      ])
+    })
 
-    it("entity", function() {
-      return this.testQuestion({ 
-        _type: "EntityQuestion", 
-        entityType: "water_point"
-      }, [
-        { 
-          id: "data:questionid:value", 
-          type: "join",
-          // data#>>'{questionid,value} = entities.water_point._id'
-          join: {
-            type: "n-1",
-            toTable: "entities.water_point",
-            fromColumn: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }, 
-            toColumn: "_id"
+    it("entity", function () {
+      return this.testQuestion(
+        {
+          _type: "EntityQuestion",
+          entityType: "water_point"
+        },
+        [
+          {
+            id: "data:questionid:value",
+            type: "join",
+            // data#>>'{questionid,value} = entities.water_point._id'
+            join: {
+              type: "n-1",
+              toTable: "entities.water_point",
+              fromColumn: {
+                type: "op",
+                op: "#>>",
+                exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"]
+              },
+              toColumn: "_id"
+            }
           }
-        }
-      ]);
-    });
+        ]
+      )
+    })
 
     // TODO possibly use containment
     // # But since #>> is not indexed, we need to use containment test
@@ -1108,12 +1411,12 @@ describe("FormSchemaBuilder addForm", function() {
     //         type: "op"
     //         op: "::jsonb"
     //         exprs: [
-    //           { 
+    //           {
     //             type: "op"
     //             op: "json_build_object"
     //             exprs: [
     //               "questionid"
-    //               { 
+    //               {
     //                 type: "op"
     //                 op: "json_build_object"
     //                 exprs: [
@@ -1128,278 +1431,389 @@ describe("FormSchemaBuilder addForm", function() {
     //     ]
     //   }
 
-
-    it("site", function() {
-      return this.testQuestion({ 
-        _type: "SiteQuestion", 
-        // Only takes first
-        siteTypes: ["Water point", "Sanitation facility"]
-      }, [
-        { 
-          id: "data:questionid:value", 
-          type: "join",
-          // data#>>'{questionid,value,code}'
-          join: {
-            type: "n-1",
-            toTable: "entities.water_point",
-            fromColumn: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,code}"] },
-            toColumn: "code"
-          }
-        }
-      ]);
-    });
-
-    it("items_choices", function() {
-      // items_choices (Likert) has a database column for each item, all in one section
-      // Each value is stored as follows: data:QUESTIONID:value:ITEMID, corresponding to the actual path to get data
-      return this.testQuestion({ 
-        _type: "LikertQuestion", 
-        items: [
-          { id: "item1", label: { _base:"en", en: "Item 1" } },
-          { id: "item2", label: { _base:"en", en: "Item 2" } }
-        ],
-        choices: [
-          { id: "yes", label: { _base:"en", en: "Yes"}},
-          { id: "no", label: { _base:"en", en: "No"}}
-        ]
-      }, 
-      [
-        // Item 1
-        { 
-          id: "data:questionid:value:item1", 
-          type: "enum",
-          name: { _base: "en", en: "Question: Item 1"},
-          enumValues: [
-            { id: "yes", name: { _base:"en", en: "Yes"} },
-            { id: "no", name: { _base:"en", en: "No"} }
-          ],
-          // data#>>'{questionid,value,item1}'
-          jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,item1}"] }
+    it("site", function () {
+      return this.testQuestion(
+        {
+          _type: "SiteQuestion",
+          // Only takes first
+          siteTypes: ["Water point", "Sanitation facility"]
         },
-        // Item 2
-        { 
-          id: "data:questionid:value:item2", 
-          type: "enum",
-          name: { _base: "en", en: "Question: Item 2"},
-          enumValues: [
-            { id: "yes", name: { _base:"en", en: "Yes"} },
-            { id: "no", name: { _base:"en", en: "No"} }
-          ],
-          // data#>>'{questionid,value,item2}'
-          jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,item2}"] }
-        }
-      ]);
-    });
-
-    describe("matrix", function() {
-      it("sets export id correctly", function() {
-        return this.testQuestion({ 
-          _type: "MatrixQuestion",
-          exportId: 'Q',
-          items: [
-            { id: "item1", label: { _base:"en", en: "Item 1" }, exportId: 'TEST' }
-          ],
-          columns: [
-            { _id: "col1", _type: "TextColumnQuestion", text: { _base: "en", en: "Col 1" }, exportId: 'A' },
-            { _id: "col2", _type: "NumberColumnQuestion", text: { _base: "en", en: "Col 2" }, decimal: true, exportId: 'B' }
-          ]
-        }, [
-          { 
-            id: "data:questionid:value:item1:col1:value", 
-            type: "text",
-            name: { _base: "en", en: "Question: Item 1 - Col 1"},
-            code: 'Q - TEST - A',
-            // nullif(data#>>'{questionid,value,item1,col1,value}','')
-            jsonql: { type: "op", op: "nullif", exprs: [
-              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,item1,col1,value}"] },
-              ""
-            ]}
-          },
-          // NumberColumnQuestion
-          { 
-            id: "data:questionid:value:item1:col2:value", 
-            type: "number",
-            name: { _base: "en", en: "Question: Item 1 - Col 2"},
-            // data#>>'{questionid,value,item1,col1,value}::boolean
-            code: 'Q - TEST - B',
-            jsonql: {
-              type: "op",
-              op: "convert_to_decimal",
-              exprs: [            
-                { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,item1,col2,value}"] }
-              ]
-            }
-          }
-        ]);
-      });
-      return it("adds columns", function() {
-        // Matrix has a database column for each column/item combination, sectioned by item
-        // Each value is stored as follows: data:QUESTIONID:value:ITEMID:COLUMNID:value, corresponding to the actual path to get data
-        return this.testQuestion({ 
-          _type: "MatrixQuestion", 
-          items: [
-            { id: "item1", label: { _base:"en", en: "Item 1" } },
-            { id: "item2", label: { _base:"en", en: "Item 2" } }
-          ],
-          columns: [
-            { _id: "col1", _type: "TextColumnQuestion", text: { _base: "en", en: "Col 1" } },
-            { _id: "col2", _type: "NumberColumnQuestion", text: { _base: "en", en: "Col 2" }, decimal: true },
-            { _id: "col3", _type: "CheckColumnQuestion", text: { _base: "en", en: "Col 3" } },
-            { _id: "col4", _type: "DropdownColumnQuestion", text: { _base: "en", en: "Col 4" }, choices: [
-              { id: "yes", label: { _base:"en", en: "Yes"}},
-              { id: "no", label: { _base:"en", en: "No"}}
-            ]},
-            { _id: "col5", _type: "UnitsColumnQuestion", text: { _base: "en", en: "Col 5" }, decimal: false, units: [
-              { id: "m", label: { _base:"en", en: "M"}},
-              { id: "ft", label: { _base:"en", en: "Ft"}}
-            ]},
-            { _id: "col6", _type: "SiteColumnQuestion", text: { _base: "en", en: "Col 6" }, siteType: "water_point" },
-            { _id: "col7", _type: "DateColumnQuestion", text: { _base: "en", en: "Col 7" }, format: "YYYY-MM-DD" },
-            { _id: "col8", _type: "SiteColumnQuestion", text: { _base: "en", en: "Col 8" }, siteType: "community" }
-          ]
-        }, [
-          // TextColumnQuestion
-          { 
-            id: "data:questionid:value:item1:col1:value", 
-            type: "text",
-            name: { _base: "en", en: "Question: Item 1 - Col 1"},
-            // nullif(data#>>'{questionid,value,item1,col1,value}','')
-            jsonql: { type: "op", op: "nullif", exprs: [
-              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,item1,col1,value}"] },
-              ""
-            ]}
-          },
-          // NumberColumnQuestion
-          { 
-            id: "data:questionid:value:item2:col2:value", 
-            type: "number",
-            name: { _base: "en", en: "Question: Item 2 - Col 2"},
-            // data#>>'{questionid,value,item1,col1,value}::boolean
-            jsonql: {
-              type: "op",
-              op: "convert_to_decimal",
-              exprs: [            
-                { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,item2,col2,value}"] }
-              ]
-            }
-          },
-          // Handles boolean field
-          { 
-            id: "data:questionid:value:item1:col3:value", 
-            type: "boolean",
-            name: { _base: "en", en: "Question: Item 1 - Col 3"},
-            // 
-            jsonql: {
-              type: "op",
-              op: "::boolean",
-              exprs: [            
-                { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,item1,col3,value}"] }
-              ]
-            }
-          },
-          // DropdownColumnQuestion
-          { 
-            id: "data:questionid:value:item1:col4:value", 
-            type: "enum",
-            name: { _base: "en", en: "Question: Item 1 - Col 4"},
-            enumValues: [
-              { id: "yes", name: { _base:"en", en: "Yes"} },
-              { id: "no", name: { _base:"en", en: "No"} }
-            ],
-            // data#>>'{questionid,value,item1,col4,value}'
-            jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,item1,col4,value}"] }
-          },
-          // UnitsColumnQuestion
-          { 
-            id: "data:questionid:value:item1:col5:value:quantity",
-            type: "number",
-            name: { _base: "en", en: "Question: Item 1 - Col 5 (magnitude)" },
-            // convert_to_decimal(data#>>'{questionid,value,item1,col5,value,quantity})
-            jsonql: {
-              type: "op",
-              op: "convert_to_decimal",
-              exprs: [
-                { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,item1,col5,value,quantity}"] }
-              ]
-            }
-          },
-          { 
-            id: "data:questionid:value:item1:col5:value:units",
-            type: "enum",
-            name: { _base: "en", en: "Question: Item 1 - Col 5 (units)" },
-            // data#>>'{questionid,value,item1,col1,value,units}'
-            jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,item1,col5,value,units}"] },
-            enumValues: [
-              { id: "m", name: { _base:"en", en: "M"} },
-              { id: "ft", name: { _base:"en", en: "Ft"} }
-            ]
-          },
-          // SiteColumnQuestion
-          { 
-            id: "data:questionid:value:item1:col6:value", 
+        [
+          {
+            id: "data:questionid:value",
             type: "join",
-            name: { _base: "en", en: "Question: Item 1 - Col 6"},
-            // data#>>'{questionid,value,item1,col6,value,code}'
+            // data#>>'{questionid,value,code}'
             join: {
               type: "n-1",
               toTable: "entities.water_point",
-              fromColumn: { 
+              fromColumn: {
                 type: "op",
                 op: "#>>",
-                exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,item1,col6,value,code}"] 
-              },
-              toColumn: "code"
-            }
-          },
-          // DateColumnQuestion
-          { 
-            id: "data:questionid:value:item1:col7:value", 
-            type: "date",
-            name: { _base: "en", en: "Question: Item 1 - Col 7"},
-            // substr(rpad(data#>>'{questionid,value,item1,col4,value}',10, '-01-01'), 1, 10)
-            jsonql: {
-              type: "op",
-              op: "substr",
-              exprs: [
-                {
-                  type: "op",
-                  op: "rpad",
-                  exprs: [
-                    { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,item1,col7,value}"] },
-                    10,
-                    "-01-01"
-                  ]
-                },
-                1,
-                10
-              ]
-            }
-          },
-          // SiteColumnQuestion
-          { 
-            id: "data:questionid:value:item1:col8:value", 
-            type: "join",
-            name: { _base: "en", en: "Question: Item 1 - Col 8"},
-            // data#>>'{questionid,value,item1,col6,value,code}'
-            join: {
-              type: "n-1",
-              toTable: "entities.community",
-              fromColumn: { 
-                type: "op",
-                op: "#>>",
-                exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,item1,col8,value,code}"] 
+                exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,code}"]
               },
               toColumn: "code"
             }
           }
-        ]);
-      });
-    });
+        ]
+      )
+    })
 
-    it("adds location stamp", function() {
+    it("items_choices", function () {
+      // items_choices (Likert) has a database column for each item, all in one section
+      // Each value is stored as follows: data:QUESTIONID:value:ITEMID, corresponding to the actual path to get data
+      return this.testQuestion(
+        {
+          _type: "LikertQuestion",
+          items: [
+            { id: "item1", label: { _base: "en", en: "Item 1" } },
+            { id: "item2", label: { _base: "en", en: "Item 2" } }
+          ],
+          choices: [
+            { id: "yes", label: { _base: "en", en: "Yes" } },
+            { id: "no", label: { _base: "en", en: "No" } }
+          ]
+        },
+        [
+          // Item 1
+          {
+            id: "data:questionid:value:item1",
+            type: "enum",
+            name: { _base: "en", en: "Question: Item 1" },
+            enumValues: [
+              { id: "yes", name: { _base: "en", en: "Yes" } },
+              { id: "no", name: { _base: "en", en: "No" } }
+            ],
+            // data#>>'{questionid,value,item1}'
+            jsonql: {
+              type: "op",
+              op: "#>>",
+              exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,item1}"]
+            }
+          },
+          // Item 2
+          {
+            id: "data:questionid:value:item2",
+            type: "enum",
+            name: { _base: "en", en: "Question: Item 2" },
+            enumValues: [
+              { id: "yes", name: { _base: "en", en: "Yes" } },
+              { id: "no", name: { _base: "en", en: "No" } }
+            ],
+            // data#>>'{questionid,value,item2}'
+            jsonql: {
+              type: "op",
+              op: "#>>",
+              exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,item2}"]
+            }
+          }
+        ]
+      )
+    })
+
+    describe("matrix", function () {
+      it("sets export id correctly", function () {
+        return this.testQuestion(
+          {
+            _type: "MatrixQuestion",
+            exportId: "Q",
+            items: [{ id: "item1", label: { _base: "en", en: "Item 1" }, exportId: "TEST" }],
+            columns: [
+              { _id: "col1", _type: "TextColumnQuestion", text: { _base: "en", en: "Col 1" }, exportId: "A" },
+              {
+                _id: "col2",
+                _type: "NumberColumnQuestion",
+                text: { _base: "en", en: "Col 2" },
+                decimal: true,
+                exportId: "B"
+              }
+            ]
+          },
+          [
+            {
+              id: "data:questionid:value:item1:col1:value",
+              type: "text",
+              name: { _base: "en", en: "Question: Item 1 - Col 1" },
+              code: "Q - TEST - A",
+              // nullif(data#>>'{questionid,value,item1,col1,value}','')
+              jsonql: {
+                type: "op",
+                op: "nullif",
+                exprs: [
+                  {
+                    type: "op",
+                    op: "#>>",
+                    exprs: [
+                      { type: "field", tableAlias: "{alias}", column: "data" },
+                      "{questionid,value,item1,col1,value}"
+                    ]
+                  },
+                  ""
+                ]
+              }
+            },
+            // NumberColumnQuestion
+            {
+              id: "data:questionid:value:item1:col2:value",
+              type: "number",
+              name: { _base: "en", en: "Question: Item 1 - Col 2" },
+              // data#>>'{questionid,value,item1,col1,value}::boolean
+              code: "Q - TEST - B",
+              jsonql: {
+                type: "op",
+                op: "convert_to_decimal",
+                exprs: [
+                  {
+                    type: "op",
+                    op: "#>>",
+                    exprs: [
+                      { type: "field", tableAlias: "{alias}", column: "data" },
+                      "{questionid,value,item1,col2,value}"
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        )
+      })
+      return it("adds columns", function () {
+        // Matrix has a database column for each column/item combination, sectioned by item
+        // Each value is stored as follows: data:QUESTIONID:value:ITEMID:COLUMNID:value, corresponding to the actual path to get data
+        return this.testQuestion(
+          {
+            _type: "MatrixQuestion",
+            items: [
+              { id: "item1", label: { _base: "en", en: "Item 1" } },
+              { id: "item2", label: { _base: "en", en: "Item 2" } }
+            ],
+            columns: [
+              { _id: "col1", _type: "TextColumnQuestion", text: { _base: "en", en: "Col 1" } },
+              { _id: "col2", _type: "NumberColumnQuestion", text: { _base: "en", en: "Col 2" }, decimal: true },
+              { _id: "col3", _type: "CheckColumnQuestion", text: { _base: "en", en: "Col 3" } },
+              {
+                _id: "col4",
+                _type: "DropdownColumnQuestion",
+                text: { _base: "en", en: "Col 4" },
+                choices: [
+                  { id: "yes", label: { _base: "en", en: "Yes" } },
+                  { id: "no", label: { _base: "en", en: "No" } }
+                ]
+              },
+              {
+                _id: "col5",
+                _type: "UnitsColumnQuestion",
+                text: { _base: "en", en: "Col 5" },
+                decimal: false,
+                units: [
+                  { id: "m", label: { _base: "en", en: "M" } },
+                  { id: "ft", label: { _base: "en", en: "Ft" } }
+                ]
+              },
+              { _id: "col6", _type: "SiteColumnQuestion", text: { _base: "en", en: "Col 6" }, siteType: "water_point" },
+              { _id: "col7", _type: "DateColumnQuestion", text: { _base: "en", en: "Col 7" }, format: "YYYY-MM-DD" },
+              { _id: "col8", _type: "SiteColumnQuestion", text: { _base: "en", en: "Col 8" }, siteType: "community" }
+            ]
+          },
+          [
+            // TextColumnQuestion
+            {
+              id: "data:questionid:value:item1:col1:value",
+              type: "text",
+              name: { _base: "en", en: "Question: Item 1 - Col 1" },
+              // nullif(data#>>'{questionid,value,item1,col1,value}','')
+              jsonql: {
+                type: "op",
+                op: "nullif",
+                exprs: [
+                  {
+                    type: "op",
+                    op: "#>>",
+                    exprs: [
+                      { type: "field", tableAlias: "{alias}", column: "data" },
+                      "{questionid,value,item1,col1,value}"
+                    ]
+                  },
+                  ""
+                ]
+              }
+            },
+            // NumberColumnQuestion
+            {
+              id: "data:questionid:value:item2:col2:value",
+              type: "number",
+              name: { _base: "en", en: "Question: Item 2 - Col 2" },
+              // data#>>'{questionid,value,item1,col1,value}::boolean
+              jsonql: {
+                type: "op",
+                op: "convert_to_decimal",
+                exprs: [
+                  {
+                    type: "op",
+                    op: "#>>",
+                    exprs: [
+                      { type: "field", tableAlias: "{alias}", column: "data" },
+                      "{questionid,value,item2,col2,value}"
+                    ]
+                  }
+                ]
+              }
+            },
+            // Handles boolean field
+            {
+              id: "data:questionid:value:item1:col3:value",
+              type: "boolean",
+              name: { _base: "en", en: "Question: Item 1 - Col 3" },
+              //
+              jsonql: {
+                type: "op",
+                op: "::boolean",
+                exprs: [
+                  {
+                    type: "op",
+                    op: "#>>",
+                    exprs: [
+                      { type: "field", tableAlias: "{alias}", column: "data" },
+                      "{questionid,value,item1,col3,value}"
+                    ]
+                  }
+                ]
+              }
+            },
+            // DropdownColumnQuestion
+            {
+              id: "data:questionid:value:item1:col4:value",
+              type: "enum",
+              name: { _base: "en", en: "Question: Item 1 - Col 4" },
+              enumValues: [
+                { id: "yes", name: { _base: "en", en: "Yes" } },
+                { id: "no", name: { _base: "en", en: "No" } }
+              ],
+              // data#>>'{questionid,value,item1,col4,value}'
+              jsonql: {
+                type: "op",
+                op: "#>>",
+                exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value,item1,col4,value}"]
+              }
+            },
+            // UnitsColumnQuestion
+            {
+              id: "data:questionid:value:item1:col5:value:quantity",
+              type: "number",
+              name: { _base: "en", en: "Question: Item 1 - Col 5 (magnitude)" },
+              // convert_to_decimal(data#>>'{questionid,value,item1,col5,value,quantity})
+              jsonql: {
+                type: "op",
+                op: "convert_to_decimal",
+                exprs: [
+                  {
+                    type: "op",
+                    op: "#>>",
+                    exprs: [
+                      { type: "field", tableAlias: "{alias}", column: "data" },
+                      "{questionid,value,item1,col5,value,quantity}"
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              id: "data:questionid:value:item1:col5:value:units",
+              type: "enum",
+              name: { _base: "en", en: "Question: Item 1 - Col 5 (units)" },
+              // data#>>'{questionid,value,item1,col1,value,units}'
+              jsonql: {
+                type: "op",
+                op: "#>>",
+                exprs: [
+                  { type: "field", tableAlias: "{alias}", column: "data" },
+                  "{questionid,value,item1,col5,value,units}"
+                ]
+              },
+              enumValues: [
+                { id: "m", name: { _base: "en", en: "M" } },
+                { id: "ft", name: { _base: "en", en: "Ft" } }
+              ]
+            },
+            // SiteColumnQuestion
+            {
+              id: "data:questionid:value:item1:col6:value",
+              type: "join",
+              name: { _base: "en", en: "Question: Item 1 - Col 6" },
+              // data#>>'{questionid,value,item1,col6,value,code}'
+              join: {
+                type: "n-1",
+                toTable: "entities.water_point",
+                fromColumn: {
+                  type: "op",
+                  op: "#>>",
+                  exprs: [
+                    { type: "field", tableAlias: "{alias}", column: "data" },
+                    "{questionid,value,item1,col6,value,code}"
+                  ]
+                },
+                toColumn: "code"
+              }
+            },
+            // DateColumnQuestion
+            {
+              id: "data:questionid:value:item1:col7:value",
+              type: "date",
+              name: { _base: "en", en: "Question: Item 1 - Col 7" },
+              // substr(rpad(data#>>'{questionid,value,item1,col4,value}',10, '-01-01'), 1, 10)
+              jsonql: {
+                type: "op",
+                op: "substr",
+                exprs: [
+                  {
+                    type: "op",
+                    op: "rpad",
+                    exprs: [
+                      {
+                        type: "op",
+                        op: "#>>",
+                        exprs: [
+                          { type: "field", tableAlias: "{alias}", column: "data" },
+                          "{questionid,value,item1,col7,value}"
+                        ]
+                      },
+                      10,
+                      "-01-01"
+                    ]
+                  },
+                  1,
+                  10
+                ]
+              }
+            },
+            // SiteColumnQuestion
+            {
+              id: "data:questionid:value:item1:col8:value",
+              type: "join",
+              name: { _base: "en", en: "Question: Item 1 - Col 8" },
+              // data#>>'{questionid,value,item1,col6,value,code}'
+              join: {
+                type: "n-1",
+                toTable: "entities.community",
+                fromColumn: {
+                  type: "op",
+                  op: "#>>",
+                  exprs: [
+                    { type: "field", tableAlias: "{alias}", column: "data" },
+                    "{questionid,value,item1,col8,value,code}"
+                  ]
+                },
+                toColumn: "code"
+              }
+            }
+          ]
+        )
+      })
+    })
+
+    it("adds location stamp", function () {
       return this.testQuestion({ _type: "TextQuestion", recordLocation: true }, [
-        { 
-          id: "data:questionid:location", 
+        {
+          id: "data:questionid:location",
           type: "geometry",
           name: { _base: "en", en: "Question (Location Answered)" },
           // ST_Transform(ST_Intersection(ST_SetSRID(ST_MakePoint(data#>>'{questionid,location,longitude}'::decimal, data#>>'{questionid,location,latitude}'::decimal),4326), ST_MakeEnvelope(-180, -85, 180, 85, 4326)), 3857)
@@ -1423,14 +1837,28 @@ describe("FormSchemaBuilder addForm", function() {
                             type: "op",
                             op: "::decimal",
                             exprs: [
-                              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,location,longitude}"] }
+                              {
+                                type: "op",
+                                op: "#>>",
+                                exprs: [
+                                  { type: "field", tableAlias: "{alias}", column: "data" },
+                                  "{questionid,location,longitude}"
+                                ]
+                              }
                             ]
                           },
                           {
                             type: "op",
                             op: "::decimal",
                             exprs: [
-                              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,location,latitude}"] }
+                              {
+                                type: "op",
+                                op: "#>>",
+                                exprs: [
+                                  { type: "field", tableAlias: "{alias}", column: "data" },
+                                  "{questionid,location,latitude}"
+                                ]
+                              }
                             ]
                           }
                         ]
@@ -1445,8 +1873,8 @@ describe("FormSchemaBuilder addForm", function() {
             ]
           }
         },
-        { 
-          id: "data:questionid:location:accuracy", 
+        {
+          id: "data:questionid:location:accuracy",
           type: "number",
           name: { _base: "en", en: "Question (Location Answered - accuracy)" },
           // data#>>'{questionid,location,accuracy}'::decimal
@@ -1454,12 +1882,16 @@ describe("FormSchemaBuilder addForm", function() {
             type: "op",
             op: "::decimal",
             exprs: [
-              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,location,accuracy}"] }
+              {
+                type: "op",
+                op: "#>>",
+                exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,location,accuracy}"]
+              }
             ]
           }
         },
-        { 
-          id: "data:questionid:location:altitude", 
+        {
+          id: "data:questionid:location:altitude",
           type: "number",
           name: { _base: "en", en: "Question (Location Answered - altitude)" },
           // data#>>'{questionid,location,altitude}'::decimal
@@ -1467,74 +1899,105 @@ describe("FormSchemaBuilder addForm", function() {
             type: "op",
             op: "::decimal",
             exprs: [
-              { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,location,altitude}"] }
+              {
+                type: "op",
+                op: "#>>",
+                exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,location,altitude}"]
+              }
             ]
           }
         }
-      ]);
-    });
+      ])
+    })
 
+    it("adds timestamp", function () {
+      return this.testQuestion(
+        {
+          _type: "TextQuestion",
+          recordTimestamp: true
+        },
+        [
+          {
+            id: "data:questionid:timestamp",
+            type: "datetime",
+            name: { _base: "en", en: "Question (Time Answered)" },
+            // data#>>'{questionid,timestamp}'
+            jsonql: {
+              type: "op",
+              op: "#>>",
+              exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,timestamp}"]
+            }
+          }
+        ]
+      )
+    })
 
-    it("adds timestamp", function() {
-      return this.testQuestion({ 
-        _type: "TextQuestion", 
-        recordTimestamp: true
-      }, [
-        { 
-          id: "data:questionid:timestamp", 
-          type: "datetime",
-          name: { _base: "en", en: "Question (Time Answered)" },
-          // data#>>'{questionid,timestamp}'
-          jsonql: { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,timestamp}"] }
-        }
-      ]);
-    });
+    it("image", function () {
+      return this.testQuestion(
+        {
+          _type: "ImageQuestion"
+        },
+        [
+          {
+            id: "data:questionid:value",
+            type: "image",
+            // data#>'{questionid,value}'
+            jsonql: {
+              type: "op",
+              op: "#>",
+              exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"]
+            }
+          }
+        ]
+      )
+    })
 
-    it("image", function() {
-      return this.testQuestion({ 
-        _type: "ImageQuestion" 
-      }, [
-        { 
-          id: "data:questionid:value", 
-          type: "image",
-          // data#>'{questionid,value}'
-          jsonql: { type: "op", op: "#>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }
-        }
-      ]);
-    });
+    it("images", function () {
+      return this.testQuestion(
+        {
+          _type: "ImagesQuestion"
+        },
+        [
+          {
+            id: "data:questionid:value",
+            type: "imagelist",
+            // data#>'{questionid,value}'
+            jsonql: {
+              type: "op",
+              op: "#>",
+              exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"]
+            }
+          }
+        ]
+      )
+    })
 
-    it("images", function() {
-      return this.testQuestion({ 
-        _type: "ImagesQuestion" 
-      }, [
-        { 
-          id: "data:questionid:value", 
-          type: "imagelist",
-          // data#>'{questionid,value}'
-          jsonql: { type: "op", op: "#>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }
-        }
-      ]);
-    });
+    it("texts", function () {
+      return this.testQuestion(
+        {
+          _type: "TextListQuestion"
+        },
+        [
+          {
+            id: "data:questionid:value",
+            type: "text[]",
+            // data#>>'{questionid,value}'
+            jsonql: {
+              type: "op",
+              op: "#>",
+              exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"]
+            }
+          }
+        ]
+      )
+    })
 
-    it("texts", function() {
-      return this.testQuestion({ 
-        _type: "TextListQuestion" 
-      }, [
-        { 
-          id: "data:questionid:value", 
-          type: "text[]",
-          // data#>>'{questionid,value}'
-          jsonql: { type: "op", op: "#>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"] }
-        }
-      ]);
-    });
-
-    it("adds n/a", function() {
+    it("adds n/a", function () {
       return this.testQuestion({ _type: "TextQuestion", alternates: { na: true } }, [
-        { 
-          id: "data:questionid:na", 
+        {
+          id: "data:questionid:na",
           type: "boolean",
-          name: { _base: "en", en: "Question (Not Applicable)" }, 
+          name: { _base: "en", en: "Question (Not Applicable)" },
           // nullif(data#>>'{questionid,alternate}' = 'na', false)
           jsonql: {
             type: "op",
@@ -1544,7 +2007,11 @@ describe("FormSchemaBuilder addForm", function() {
                 type: "op",
                 op: "=",
                 exprs: [
-                  { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,alternate}"] },
+                  {
+                    type: "op",
+                    op: "#>>",
+                    exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,alternate}"]
+                  },
                   "na"
                 ]
               },
@@ -1552,15 +2019,15 @@ describe("FormSchemaBuilder addForm", function() {
             ]
           }
         }
-      ]);
-    });
+      ])
+    })
 
-    it("adds don't know", function() {
+    it("adds don't know", function () {
       return this.testQuestion({ _type: "TextQuestion", alternates: { dontknow: true } }, [
-        { 
-          id: "data:questionid:dontknow", 
+        {
+          id: "data:questionid:dontknow",
           type: "boolean",
-          name: { _base: "en", en: "Question (Don't Know)" }, 
+          name: { _base: "en", en: "Question (Don't Know)" },
           // nullif(data#>>'{questionid,alternate}' = 'dontknow', false)
           jsonql: {
             type: "op",
@@ -1570,7 +2037,11 @@ describe("FormSchemaBuilder addForm", function() {
                 type: "op",
                 op: "=",
                 exprs: [
-                  { type: "op", op: "#>>", exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,alternate}"] },
+                  {
+                    type: "op",
+                    op: "#>>",
+                    exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,alternate}"]
+                  },
                   "dontknow"
                 ]
               },
@@ -1578,15 +2049,15 @@ describe("FormSchemaBuilder addForm", function() {
             ]
           }
         }
-      ]);
-    });
+      ])
+    })
 
-    return it("adds comments", function() {
+    return it("adds comments", function () {
       return this.testQuestion({ _type: "TextQuestion", commentsField: true }, [
-        { 
-          id: "data:questionid:comments", 
+        {
+          id: "data:questionid:comments",
           type: "text",
-          name: { _base: "en", en: "Question (Comments)" }, 
+          name: { _base: "en", en: "Question (Comments)" },
           // data#>>'{questionid,comments}'
           jsonql: {
             type: "op",
@@ -1594,12 +2065,12 @@ describe("FormSchemaBuilder addForm", function() {
             exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,comments}"]
           }
         }
-      ]);
-    });
-  });
+      ])
+    })
+  })
 
-  describe("indicator calculations", function() {
-    before(function() {
+  describe("indicator calculations", function () {
+    before(function () {
       // Indicator table with num1 and num2 and a calculated num3
       const indicatorWithTwoFields = {
         _id: "ind1",
@@ -1634,14 +2105,14 @@ describe("FormSchemaBuilder addForm", function() {
             ]
           }
         }
-      };
+      }
 
-      this.indicators = [indicatorWithTwoFields];
+      this.indicators = [indicatorWithTwoFields]
 
-      return this.schema = new Schema();
-    });
+      return (this.schema = new Schema())
+    })
 
-    it("adds indicator calculations to section called Indicators", function() {
+    it("adds indicator calculations to section called Indicators", function () {
       // Create form with number question and indicator calculation
       const form = {
         _id: "formid",
@@ -1652,10 +2123,10 @@ describe("FormSchemaBuilder addForm", function() {
             {
               _id: "questionid",
               _type: "NumberQuestion",
-              text: { _base: "en", en: "Question" }, 
+              text: { _base: "en", en: "Question" },
               decimal: true,
               conditions: []
-            }              
+            }
           ]
         },
         indicatorCalculations: [
@@ -1675,14 +2146,14 @@ describe("FormSchemaBuilder addForm", function() {
             }
           }
         ]
-      };
-      const schema = new FormSchemaBuilder().addForm(this.schema, form, null, true, this.indicators);
+      }
+      const schema = new FormSchemaBuilder().addForm(this.schema, form, null, true, this.indicators)
 
       // Check that indicators section exists
-      assert.equal(_.last(schema.getTable("responses:formid").contents).name.en, "Indicators");
+      assert.equal(_.last(schema.getTable("responses:formid").contents).name.en, "Indicators")
 
       // Check that indicator section exists
-      assert.equal(_.last(schema.getTable("responses:formid").contents).contents[0].name.en, "Indicator1");
+      assert.equal(_.last(schema.getTable("responses:formid").contents).contents[0].name.en, "Indicator1")
 
       // Check that indicator calculation added
       return compare(schema.getColumn("responses:formid", "indicator_calculation:ic1:num1"), {
@@ -1698,10 +2169,10 @@ describe("FormSchemaBuilder addForm", function() {
             { type: "literal", valueType: "number", value: 5 }
           ]
         }
-      });
-    });
+      })
+    })
 
-    it("adds indicator calculations with filters as case", function() {
+    it("adds indicator calculations with filters as case", function () {
       // Create form with number question and indicator calculation
       const form = {
         _id: "formid",
@@ -1712,10 +2183,10 @@ describe("FormSchemaBuilder addForm", function() {
             {
               _id: "questionid",
               _type: "NumberQuestion",
-              text: { _base: "en", en: "Question" }, 
+              text: { _base: "en", en: "Question" },
               decimal: true,
               conditions: []
-            }              
+            }
           ]
         },
         indicatorCalculations: [
@@ -1745,8 +2216,8 @@ describe("FormSchemaBuilder addForm", function() {
             }
           }
         ]
-      };
-      const schema = new FormSchemaBuilder().addForm(this.schema, form, null, true, this.indicators);
+      }
+      const schema = new FormSchemaBuilder().addForm(this.schema, form, null, true, this.indicators)
 
       // Check that indicator calculation added with condition
       return compare(schema.getColumn("responses:formid", "indicator_calculation:ic1:num1"), {
@@ -1757,7 +2228,7 @@ describe("FormSchemaBuilder addForm", function() {
           type: "case",
           table: "responses:formid",
           cases: [
-            { 
+            {
               when: {
                 type: "op",
                 op: ">",
@@ -1767,7 +2238,7 @@ describe("FormSchemaBuilder addForm", function() {
                   { type: "literal", valueType: "number", value: 3 }
                 ]
               },
-              then: { 
+              then: {
                 type: "op",
                 op: "+",
                 table: "responses:formid",
@@ -1779,10 +2250,10 @@ describe("FormSchemaBuilder addForm", function() {
             }
           ]
         }
-      });
-    });
+      })
+    })
 
-    it("adds expr indicator fields as mutated columns", function() {
+    it("adds expr indicator fields as mutated columns", function () {
       // Create form with number question and indicator calculation
       const form = {
         _id: "formid",
@@ -1793,10 +2264,10 @@ describe("FormSchemaBuilder addForm", function() {
             {
               _id: "questionid",
               _type: "NumberQuestion",
-              text: { _base: "en", en: "Question" }, 
+              text: { _base: "en", en: "Question" },
               decimal: true,
               conditions: []
-            }              
+            }
           ]
         },
         indicatorCalculations: [
@@ -1817,8 +2288,8 @@ describe("FormSchemaBuilder addForm", function() {
             }
           }
         ]
-      };
-      const schema = new FormSchemaBuilder().addForm(this.schema, form, null, true, this.indicators);
+      }
+      const schema = new FormSchemaBuilder().addForm(this.schema, form, null, true, this.indicators)
 
       // Check that indicator calculation added with condition
       return compare(schema.getColumn("responses:formid", "indicator_calculation:ic1:num3"), {
@@ -1834,10 +2305,10 @@ describe("FormSchemaBuilder addForm", function() {
             { type: "field", table: "responses:formid", column: "indicator_calculation:ic1:num2" }
           ]
         }
-      });
-    });
+      })
+    })
 
-    it("add indicators fields with no calculation as jsonql literal null", function() {
+    it("add indicators fields with no calculation as jsonql literal null", function () {
       // Create form with number question and indicator calculation
       const form = {
         _id: "formid",
@@ -1848,27 +2319,31 @@ describe("FormSchemaBuilder addForm", function() {
             {
               _id: "questionid",
               _type: "NumberQuestion",
-              text: { _base: "en", en: "Question" }, 
+              text: { _base: "en", en: "Question" },
               decimal: true,
               conditions: []
-            }              
+            }
           ]
         },
         indicatorCalculations: [
           {
             _id: "ic1",
             indicator: "ind1",
-            expressions: { } // No calculations
+            expressions: {} // No calculations
           }
         ]
-      };
-      const schema = new FormSchemaBuilder().addForm(this.schema, form, null, true, this.indicators);
+      }
+      const schema = new FormSchemaBuilder().addForm(this.schema, form, null, true, this.indicators)
 
       // Check that indicator calculation not added
-      return assert.deepEqual(schema.getColumn("responses:formid", "indicator_calculation:ic1:num1").jsonql, { type: "op", op: "::numeric", exprs: [{ type: "literal", value: null }] });
-  });
+      return assert.deepEqual(schema.getColumn("responses:formid", "indicator_calculation:ic1:num1").jsonql, {
+        type: "op",
+        op: "::numeric",
+        exprs: [{ type: "literal", value: null }]
+      })
+    })
 
-    it("adds indicators of indicators", function() {
+    it("adds indicators of indicators", function () {
       // Create form with number question and indicator calculation
       const form = {
         _id: "formid",
@@ -1879,13 +2354,14 @@ describe("FormSchemaBuilder addForm", function() {
             {
               _id: "questionid",
               _type: "NumberQuestion",
-              text: { _base: "en", en: "Question" }, 
+              text: { _base: "en", en: "Question" },
               decimal: true,
               conditions: []
-            }              
+            }
           ]
         },
-        indicatorCalculations: [ // Deliberately in opposite order to force testing dependency calculation
+        indicatorCalculations: [
+          // Deliberately in opposite order to force testing dependency calculation
           {
             _id: "ic2",
             indicator: "ind1",
@@ -1895,7 +2371,7 @@ describe("FormSchemaBuilder addForm", function() {
                 op: "-",
                 table: "responses:formid",
                 exprs: [
-                  { type: "field", table: "responses:formid", column: "indicator_calculation:ic1:num1" },  // References ic1 indicator calculation
+                  { type: "field", table: "responses:formid", column: "indicator_calculation:ic1:num1" }, // References ic1 indicator calculation
                   { type: "literal", valueType: "number", value: 3 }
                 ]
               }
@@ -1916,8 +2392,8 @@ describe("FormSchemaBuilder addForm", function() {
             }
           }
         ]
-      };
-      const schema = new FormSchemaBuilder().addForm(this.schema, form, null, true, this.indicators);
+      }
+      const schema = new FormSchemaBuilder().addForm(this.schema, form, null, true, this.indicators)
 
       // Check that indicator calculation added
       return compare(schema.getColumn("responses:formid", "indicator_calculation:ic2:num2"), {
@@ -1929,28 +2405,30 @@ describe("FormSchemaBuilder addForm", function() {
           op: "-",
           table: "responses:formid",
           exprs: [
-            { type: "field", table: "responses:formid", column: "indicator_calculation:ic1:num1" },  // References ic1 indicator calculation
+            { type: "field", table: "responses:formid", column: "indicator_calculation:ic1:num1" }, // References ic1 indicator calculation
             { type: "literal", valueType: "number", value: 3 }
           ]
         }
-      });
-    });
+      })
+    })
 
-    return it("adds roster indicator calculations", function() {
+    return it("adds roster indicator calculations", function () {
       const form = {
         _id: "formid",
         design: {
           _type: "Form",
           name: { en: "Form" },
-          contents: [{
-            _id: "roster1",
-            _type: "RosterGroup",
-            name: { en: "Roster1" },
-            contents: [
-              { _id: "q1", _type: "TextQuestion", text: { en: "Q1" }},
-              { _id: "q2", _type: "NumberQuestion", text: { en: "Q2" }}
-            ]
-          }]
+          contents: [
+            {
+              _id: "roster1",
+              _type: "RosterGroup",
+              name: { en: "Roster1" },
+              contents: [
+                { _id: "q1", _type: "TextQuestion", text: { en: "Q1" } },
+                { _id: "q2", _type: "NumberQuestion", text: { en: "Q2" } }
+              ]
+            }
+          ]
         },
         indicatorCalculations: [
           {
@@ -1970,15 +2448,18 @@ describe("FormSchemaBuilder addForm", function() {
             }
           }
         ]
-      };
+      }
 
-      const schema = new FormSchemaBuilder().addForm(this.schema, form, null, true, this.indicators);
+      const schema = new FormSchemaBuilder().addForm(this.schema, form, null, true, this.indicators)
 
       // Check that indicators section exists
-      assert.equal(_.last(schema.getTable("responses:formid:roster:roster1").contents).name.en, "Indicators");
+      assert.equal(_.last(schema.getTable("responses:formid:roster:roster1").contents).name.en, "Indicators")
 
       // Check that indicator section exists
-      assert.equal(_.last(schema.getTable("responses:formid:roster:roster1").contents).contents[0].name.en, "Indicator1");
+      assert.equal(
+        _.last(schema.getTable("responses:formid:roster:roster1").contents).contents[0].name.en,
+        "Indicator1"
+      )
 
       // Check that indicator calculation added
       return compare(schema.getColumn("responses:formid:roster:roster1", "indicator_calculation:ic1:num1"), {
@@ -1994,73 +2475,75 @@ describe("FormSchemaBuilder addForm", function() {
             { type: "literal", valueType: "number", value: 5 }
           ]
         }
-      });
-    });
-  });
+      })
+    })
+  })
 
-    // it "correctly orders indicators of indicators", ->
-    //   # Create form with number question and indicator calculation
-    //   indicatorCalculations = [ # Deliberately in opposite order to force testing dependency calculation
-    //     {
-    //       _id: "ic2"
-    //       indicator: "ind1"
-    //       expressions: {
-    //         num2: {
-    //           type: "op"
-    //           op: "-"
-    //           exprs: [
-    //             { type: "field", table: "responses:formid", column: "indicator_calculation:ic1:num1" }  # References ic1 indicator calculation
-    //             { type: "literal", valueType: "number", value: 3 }
-    //           ]
-    //         }
-    //       }
-    //     }
-    //     {
-    //       _id: "ic1"
-    //       indicator: "ind1"
-    //       expressions: {
-    //         num1: {
-    //           type: "op"
-    //           op: "+"
-    //           exprs: [
-    //             { type: "field", table: "responses:formid", column: "data:questionid:value" }
-    //             { type: "literal", valueType: "number", value: 5 }
-    //           ]
-    //         }
-    //       }
-    //     }
-    //   ]
-    //   assert.deepEqual _.pluck(new FormSchemaBuilder().orderIndicatorCalculation(indicatorCalculations), "_id"), ["ic1", "ic2"]
+  // it "correctly orders indicators of indicators", ->
+  //   # Create form with number question and indicator calculation
+  //   indicatorCalculations = [ # Deliberately in opposite order to force testing dependency calculation
+  //     {
+  //       _id: "ic2"
+  //       indicator: "ind1"
+  //       expressions: {
+  //         num2: {
+  //           type: "op"
+  //           op: "-"
+  //           exprs: [
+  //             { type: "field", table: "responses:formid", column: "indicator_calculation:ic1:num1" }  # References ic1 indicator calculation
+  //             { type: "literal", valueType: "number", value: 3 }
+  //           ]
+  //         }
+  //       }
+  //     }
+  //     {
+  //       _id: "ic1"
+  //       indicator: "ind1"
+  //       expressions: {
+  //         num1: {
+  //           type: "op"
+  //           op: "+"
+  //           exprs: [
+  //             { type: "field", table: "responses:formid", column: "data:questionid:value" }
+  //             { type: "literal", valueType: "number", value: 5 }
+  //           ]
+  //         }
+  //       }
+  //     }
+  //   ]
+  //   assert.deepEqual _.pluck(new FormSchemaBuilder().orderIndicatorCalculation(indicatorCalculations), "_id"), ["ic1", "ic2"]
 
-  describe("Roster Group", function() {
-    beforeEach(function() {
+  describe("Roster Group", function () {
+    beforeEach(function () {
       // Form with roster group
       const form = {
         _id: "formid",
         design: {
           _type: "Form",
           name: { en: "Form" },
-          contents: [{
-            _id: "roster1",
-            _type: "RosterGroup",
-            name: { en: "Roster1" },
-            contents: [
-              { _id: "q1", _type: "TextQuestion", text: { en: "Q1" }},
-              { _id: "q2", _type: "NumberQuestion", text: { en: "Q2" }}
-            ]
-          }]
+          contents: [
+            {
+              _id: "roster1",
+              _type: "RosterGroup",
+              name: { en: "Roster1" },
+              contents: [
+                { _id: "q1", _type: "TextQuestion", text: { en: "Q1" } },
+                { _id: "q2", _type: "NumberQuestion", text: { en: "Q2" } }
+              ]
+            }
+          ]
         }
-      };
+      }
 
       // Add to blank schema
-      return this.schema = new FormSchemaBuilder().addForm(new Schema(), form);
-    });
+      return (this.schema = new FormSchemaBuilder().addForm(new Schema(), form))
+    })
 
-    it("creates new table with column", function() {
-      assert.equal(this.schema.getTable("responses:formid:roster:roster1").name.en, "Form: Roster1");
+    it("creates new table with column", function () {
+      assert.equal(this.schema.getTable("responses:formid:roster:roster1").name.en, "Form: Roster1")
 
       // Check that column was added
-      assert(this.schema.getColumn("responses:formid:roster:roster1", "data:q1:value"));
+      assert(this.schema.getColumn("responses:formid:roster:roster1", "data:q1:value"))
       return compare(this.schema.getColumn("responses:formid:roster:roster1", "data:q1:value").jsonql, {
         // nullif(data#>>'{questionid,value}', '')
         type: "op",
@@ -2073,24 +2556,30 @@ describe("FormSchemaBuilder addForm", function() {
           },
           ""
         ]
-      });
-    });
+      })
+    })
 
-    it("adds index to roster table", function() {
-      return assert.equal(this.schema.getColumn("responses:formid:roster:roster1", "index").type, "number");
-    });
+    it("adds index to roster table", function () {
+      return assert.equal(this.schema.getColumn("responses:formid:roster:roster1", "index").type, "number")
+    })
 
-    it("adds join to roster table", function() {
-      assert.equal(this.schema.getColumn("responses:formid", "data:roster1").join.toTable, "responses:formid:roster:roster1");
-      return assert.equal(this.schema.getColumn("responses:formid", "data:roster1").join.type, "1-n");
-    });
+    it("adds join to roster table", function () {
+      assert.equal(
+        this.schema.getColumn("responses:formid", "data:roster1").join.toTable,
+        "responses:formid:roster:roster1"
+      )
+      return assert.equal(this.schema.getColumn("responses:formid", "data:roster1").join.type, "1-n")
+    })
 
-    it("adds join back to main table", function() {
-      assert.equal(this.schema.getColumn("responses:formid:roster:roster1", "response").join.toTable, "responses:formid");
-      return assert.equal(this.schema.getColumn("responses:formid:roster:roster1", "response").join.type, "n-1");
-    });
+    it("adds join back to main table", function () {
+      assert.equal(
+        this.schema.getColumn("responses:formid:roster:roster1", "response").join.toTable,
+        "responses:formid"
+      )
+      return assert.equal(this.schema.getColumn("responses:formid:roster:roster1", "response").join.type, "n-1")
+    })
 
-    return it("reuses existing table when rosterId specified", function() {
+    return it("reuses existing table when rosterId specified", function () {
       const form = {
         _id: "formid",
         design: {
@@ -2101,113 +2590,158 @@ describe("FormSchemaBuilder addForm", function() {
               _id: "roster1",
               _type: "RosterGroup",
               name: { en: "Roster1" },
-              contents: [
-                { _id: "q1", _type: "TextQuestion", text: { en: "Q1" }}
-              ]
+              contents: [{ _id: "q1", _type: "TextQuestion", text: { en: "Q1" } }]
             },
             {
               _id: "roster2",
               _type: "RosterGroup",
               rosterId: "roster1",
               name: { en: "Roster2" },
+              contents: [{ _id: "q2", _type: "TextQuestion", text: { en: "Q2" } }]
+            }
+          ]
+        }
+      }
+
+      // Add to blank schema
+      const schema = new FormSchemaBuilder().addForm(new Schema(), form)
+
+      // Check that was added
+      assert(schema.getColumn("responses:formid:roster:roster1", "data:q1:value"), "original should be there")
+      return assert(schema.getColumn("responses:formid:roster:roster1", "data:q2:value"), "new should be there")
+    })
+  })
+
+  describe("Roster Matrix", () =>
+    it("adds columns", function () {
+      // Form with roster group
+      const form = {
+        _id: "formid",
+        design: {
+          _type: "Form",
+          name: { en: "Form" },
+          contents: [
+            {
+              _id: "roster1",
+              _type: "RosterMatrix",
+              name: { en: "Roster1" },
               contents: [
-                { _id: "q2", _type: "TextQuestion", text: { en: "Q2" }}
+                { _id: "q1", _type: "TextColumnQuestion", text: { en: "Q1" } },
+                { _id: "q2", _type: "SiteColumnQuestion", siteType: "community", text: { en: "Q2999" } }
               ]
             }
           ]
         }
-      };
+      }
 
       // Add to blank schema
-      const schema = new FormSchemaBuilder().addForm(new Schema(), form);
+      const schema = new FormSchemaBuilder().addForm(new Schema(), form)
 
       // Check that was added
-      assert(schema.getColumn("responses:formid:roster:roster1", "data:q1:value"), "original should be there");
-      return assert(schema.getColumn("responses:formid:roster:roster1", "data:q2:value"), "new should be there");
-    });
-  });
-
-  
-  describe("Roster Matrix", () => it("adds columns", function() {
-    // Form with roster group
-    const form = {
-      _id: "formid",
-      design: {
-        _type: "Form",
-        name: { en: "Form" },
-        contents: [{
-          _id: "roster1",
-          _type: "RosterMatrix",
-          name: { en: "Roster1" },
-          contents: [
-            { _id: "q1", _type: "TextColumnQuestion", text: { en: "Q1" }},
-            { _id: "q2", _type: "SiteColumnQuestion", siteType: "community", text: { en: "Q2999" }}
-          ]
-        }]
-      }
-    };
-
-    // Add to blank schema
-    const schema = new FormSchemaBuilder().addForm(new Schema(), form);
-
-    // Check that was added
-    assert(schema.getColumn("responses:formid:roster:roster1", "data:q1:value"));
-    // nullif(data#>>'{questionid,value}', '')
-    compare(schema.getColumn("responses:formid:roster:roster1", "data:q1:value").jsonql, {
-      type: "op",
-      op: "nullif",
-      exprs: [
-        {
+      assert(schema.getColumn("responses:formid:roster:roster1", "data:q1:value"))
+      // nullif(data#>>'{questionid,value}', '')
+      compare(schema.getColumn("responses:formid:roster:roster1", "data:q1:value").jsonql, {
+        type: "op",
+        op: "nullif",
+        exprs: [
+          {
+            type: "op",
+            op: "#>>",
+            exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{q1,value}"]
+          },
+          ""
+        ]
+      })
+      return compare(schema.getColumn("responses:formid:roster:roster1", "data:q2:value").join, {
+        type: "n-1",
+        toTable: "entities.community",
+        fromColumn: {
           type: "op",
           op: "#>>",
-          exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{q1,value}"]
+          exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{q2,value,code}"]
         },
-        ""
-      ]
-    });
-    return compare(schema.getColumn("responses:formid:roster:roster1", "data:q2:value").join, {
-      type: "n-1",
-      toTable: "entities.community",
-      fromColumn: { 
-        type: "op",
-        op: "#>>",
-        exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{q2,value,code}"] 
-      },
-      toColumn: "code"
-    });
-  }));
+        toColumn: "code"
+      })
+    }))
 
-  describe(":randomAsked columns", () => it("adds column if random asked", function() {
-    // Create form
-    const form = {
-      _id: "formid",
-      design: {
-        _type: "Form",
-        name: { en: "Form" },
-        contents: [
-          { _id: "q1", _type: "NumberQuestion", text: { en: "Q1" }, conditions: [], randomAskProbability: 0.4 }
+  describe(":randomAsked columns", () =>
+    it("adds column if random asked", function () {
+      // Create form
+      const form = {
+        _id: "formid",
+        design: {
+          _type: "Form",
+          name: { en: "Form" },
+          contents: [
+            { _id: "q1", _type: "NumberQuestion", text: { en: "Q1" }, conditions: [], randomAskProbability: 0.4 }
+          ]
+        }
+      }
+
+      // Add to blank schema
+      const schema = new FormSchemaBuilder().addForm(new Schema(), form)
+
+      return compare(schema.getColumn("responses:formid", "data:q1:randomAsked").jsonql, {
+        type: "op",
+        op: "::boolean",
+        exprs: [
+          {
+            type: "op",
+            op: "#>>",
+            exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{q1,randomAsked}"]
+          }
+        ]
+      })
+    }))
+
+  return describe(":visible columns", function () {
+    it("adds visible when conditional", function () {
+      // Create form
+      const form = {
+        _id: "formid",
+        design: {
+          _type: "Form",
+          name: { en: "Form" },
+          contents: [
+            { _id: "q1", _type: "NumberQuestion", text: { en: "Q1" }, conditions: [] },
+            {
+              _id: "q2",
+              _type: "NumberQuestion",
+              text: { en: "Q2" },
+              conditions: [{ lhs: { question: "q1" }, op: ">", rhs: { literal: 3 } }]
+            }
+          ]
+        }
+      }
+
+      // Add to blank schema
+      const schema = new FormSchemaBuilder().addForm(new Schema(), form)
+
+      assert(!schema.getColumn("responses:formid", "data:q1:visible"), "Not conditional")
+
+      const col = schema.getColumn("responses:formid", "data:q2:visible")
+      assert.equal(col.type, "boolean")
+
+      const conditionExpr = {
+        type: "op",
+        op: ">",
+        table: "responses:formid",
+        exprs: [
+          { type: "field", table: "responses:formid", column: "data:q1:value" },
+          { type: "literal", valueType: "number", value: 3 }
         ]
       }
-    };
 
-    // Add to blank schema
-    const schema = new FormSchemaBuilder().addForm(new Schema(), form);
+      // Ensure that is never null
+      return compare(col.expr, {
+        type: "op",
+        op: "and",
+        table: "responses:formid",
+        exprs: [{ type: "op", table: "responses:formid", op: "is not null", exprs: [conditionExpr] }, conditionExpr]
+      })
+    })
 
-    return compare(schema.getColumn("responses:formid", "data:q1:randomAsked").jsonql, {
-      type: "op",
-      op: "::boolean",
-      exprs: [
-        {
-          type: "op",
-          op: "#>>",
-          exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{q1,randomAsked}"]
-        }
-      ]
-    });
-}));
-
-  return describe(":visible columns", function() {
-    it("adds visible when conditional", function() {
+    return it("adds propagates visibility down tree", function () {
       // Create form
       const form = {
         _id: "formid",
@@ -2216,18 +2750,22 @@ describe("FormSchemaBuilder addForm", function() {
           name: { en: "Form" },
           contents: [
             { _id: "q1", _type: "NumberQuestion", text: { en: "Q1" }, conditions: [] },
-            { _id: "q2", _type: "NumberQuestion", text: { en: "Q2" }, conditions: [{ lhs: { question: "q1" }, op: ">", rhs: { literal: 3 }}] }
+            {
+              _id: "g1",
+              _type: "Group",
+              name: { en: "G1" },
+              conditions: [{ lhs: { question: "q1" }, op: ">", rhs: { literal: 3 } }],
+              contents: [{ _id: "q2", _type: "NumberQuestion", text: { en: "Q2" } }]
+            }
           ]
         }
-      };
+      }
 
       // Add to blank schema
-      const schema = new FormSchemaBuilder().addForm(new Schema(), form);
+      const schema = new FormSchemaBuilder().addForm(new Schema(), form)
 
-      assert(!schema.getColumn("responses:formid", "data:q1:visible"), "Not conditional");
-
-      const col = schema.getColumn("responses:formid", "data:q2:visible");
-      assert.equal(col.type, "boolean");
+      const col = schema.getColumn("responses:formid", "data:q2:visible")
+      assert.equal(col.type, "boolean")
 
       const conditionExpr = {
         type: "op",
@@ -2237,62 +2775,15 @@ describe("FormSchemaBuilder addForm", function() {
           { type: "field", table: "responses:formid", column: "data:q1:value" },
           { type: "literal", valueType: "number", value: 3 }
         ]
-      };
+      }
 
       // Ensure that is never null
       return compare(col.expr, {
         type: "op",
         op: "and",
         table: "responses:formid",
-        exprs: [
-          { type: "op", table: "responses:formid", op: "is not null", exprs: [conditionExpr] },
-          conditionExpr
-        ]
-      });
-  });
-
-    return it("adds propagates visibility down tree", function() {
-      // Create form
-      const form = {
-        _id: "formid",
-        design: {
-          _type: "Form",
-          name: { en: "Form" },
-          contents: [
-            { _id: "q1", _type: "NumberQuestion", text: { en: "Q1" }, conditions: [] },
-            { _id: "g1", _type: "Group", name: { en: "G1" }, conditions: [{ lhs: { question: "q1" }, op: ">", rhs: { literal: 3 }}], contents: [
-              { _id: "q2", _type: "NumberQuestion", text: { en: "Q2" } }
-            ]}
-          ]
-        }
-      };
-
-      // Add to blank schema
-      const schema = new FormSchemaBuilder().addForm(new Schema(), form);
-
-      const col = schema.getColumn("responses:formid", "data:q2:visible");
-      assert.equal(col.type, "boolean");
-
-      const conditionExpr = {
-        type: "op",
-        op: ">",
-        table: "responses:formid",
-        exprs: [
-          { type: "field", table: "responses:formid", column: "data:q1:value" },
-          { type: "literal", valueType: "number", value: 3 }
-        ]
-      };
-
-      // Ensure that is never null
-      return compare(col.expr, {
-        type: "op",
-        op: "and",
-        table: "responses:formid",
-        exprs: [
-          { type: "op", table: "responses:formid", op: "is not null", exprs: [conditionExpr] },
-          conditionExpr
-        ]
-      });
-  });
-});
-});
+        exprs: [{ type: "op", table: "responses:formid", op: "is not null", exprs: [conditionExpr] }, conditionExpr]
+      })
+    })
+  })
+})

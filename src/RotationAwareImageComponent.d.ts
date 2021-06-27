@@ -1,5 +1,5 @@
-import React from "react";
-import { ImageManager } from "./formContext";
+import React from "react"
+import { ImageManager } from "./formContext"
 
 export interface Image {
   /** UUID of image */
@@ -28,5 +28,4 @@ export default class RotationAwareImageComponent extends React.Component<{
 
   /** Called when clicked */
   onClick?: () => void
-
 }> {}

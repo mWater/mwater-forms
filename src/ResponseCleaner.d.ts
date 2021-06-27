@@ -16,7 +16,7 @@ To further complicate it, when a question becomes visible, it may get a default 
 Therefore, it's an iterative process which is also asynchronous, as condition evaluation is asynchronous.
 */
 export default class ResponseCleaner {
-  /** 
+  /**
    * Cleans data, calling back with { data: cleaned data, visibilityStructure: final visibility structure (since expensive to compute) }
    * The old visibility structure is needed as defaulting of values requires knowledge of how visibility has changed
    * The process of computing visibility, cleaning data and applying stickyData/defaultValue can trigger more changes
@@ -26,22 +26,24 @@ export default class ResponseCleaner {
    * responseRowFactory: returns responseRow when called with data
    */
   cleanData(
-    design: FormDesign, 
-    visibilityCalculator: VisibilityCalculator, 
-    defaultValueApplier: DefaultValueApplier, 
-    randomAskedCalculator: RandomAskedCalculator | null, 
-    data: ResponseData, 
-    responseRowFactory: (data: ResponseData) => ResponseRow, 
-    oldVisibilityStructure: VisibilityStructure, 
-    callback: (err: any, result?: { data: ResponseData, visibilityStructure: VisibilityState }) => void): void
-    
+    design: FormDesign,
+    visibilityCalculator: VisibilityCalculator,
+    defaultValueApplier: DefaultValueApplier,
+    randomAskedCalculator: RandomAskedCalculator | null,
+    data: ResponseData,
+    responseRowFactory: (data: ResponseData) => ResponseRow,
+    oldVisibilityStructure: VisibilityStructure,
+    callback: (err: any, result?: { data: ResponseData; visibilityStructure: VisibilityState }) => void
+  ): void
+
   cleanData(
-    design: FormDesign, 
-    visibilityCalculator: VisibilityCalculator, 
-    defaultValueApplier: null, 
-    randomAskedCalculator: RandomAskedCalculator | null, 
-    data: ResponseData, 
-    responseRowFactory: (data: ResponseData) => ResponseRow, 
-    oldVisibilityStructure: null, 
-    callback: (err: any, result?: { data: ResponseData, visibilityStructure: VisibilityState }) => void): void
-  }
+    design: FormDesign,
+    visibilityCalculator: VisibilityCalculator,
+    defaultValueApplier: null,
+    randomAskedCalculator: RandomAskedCalculator | null,
+    data: ResponseData,
+    responseRowFactory: (data: ResponseData) => ResponseRow,
+    oldVisibilityStructure: null,
+    callback: (err: any, result?: { data: ResponseData; visibilityStructure: VisibilityState }) => void
+  ): void
+}

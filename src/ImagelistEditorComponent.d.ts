@@ -1,6 +1,6 @@
-import { ImageAnswerValue } from "./response";
-import React from "react";
-import { ImageManager, ImageAcquirer } from "./formContext";
+import { ImageAnswerValue } from "./response"
+import React from "react"
+import { ImageManager, ImageAcquirer } from "./formContext"
 
 /** Edit an image list */
 export default class ImagelistEditorComponent extends React.Component<{
@@ -13,7 +13,7 @@ export default class ImagelistEditorComponent extends React.Component<{
 
   /** Localizer to use */
   T: (str: string, ...args: any[]) => string
-       
+
   /** Question to prompt for consent */
-  consentPrompt?: string    
+  consentPrompt?: string
 }> {}

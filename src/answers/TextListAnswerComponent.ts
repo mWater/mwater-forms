@@ -1,138 +1,171 @@
 // TODO: This file was created by bulk-decaffeinate.
 // Sanity-check the conversion and remove this comment.
-let TextListAnswerComponent;
-import _ from 'lodash';
-import PropTypes from 'prop-types';
-import React from 'react';
-const R = React.createElement;
+let TextListAnswerComponent
+import _ from "lodash"
+import PropTypes from "prop-types"
+import React from "react"
+const R = React.createElement
 
-export default TextListAnswerComponent = (function() {
+export default TextListAnswerComponent = (function () {
   TextListAnswerComponent = class TextListAnswerComponent extends React.Component {
     static initClass() {
       this.propTypes = {
         value: PropTypes.array,
         onValueChange: PropTypes.func.isRequired,
         onNextOrComments: PropTypes.func
-      };
+      }
     }
 
     focus() {
-      return this.newLine?.focus();
+      return this.newLine?.focus()
     }
 
     handleChange = (index, ev) => {
-      let newValue;
+      let newValue
       if (this.props.value != null) {
-        newValue = _.clone(this.props.value);
+        newValue = _.clone(this.props.value)
       } else {
-        newValue = [];
+        newValue = []
       }
-      newValue[index] = ev.target.value;
-      return this.props.onValueChange(newValue);
-    };
+      newValue[index] = ev.target.value
+      return this.props.onValueChange(newValue)
+    }
 
-    handleNewLineChange = ev => {
-      let newValue;
+    handleNewLineChange = (ev) => {
+      let newValue
       if (this.props.value != null) {
-        newValue = _.clone(this.props.value);
+        newValue = _.clone(this.props.value)
       } else {
-        newValue = [];
+        newValue = []
       }
-      newValue.push((ev.target.value));
-      return this.props.onValueChange(newValue);
-    };
+      newValue.push(ev.target.value)
+      return this.props.onValueChange(newValue)
+    }
 
     handleKeydown = (index, ev) => {
-      let value;
+      let value
       if (this.props.value != null) {
-        value = _.clone(this.props.value);
+        value = _.clone(this.props.value)
       } else {
-        value = [];
+        value = []
       }
 
       // When pressing ENTER or TAB
-      if ((ev.keyCode === 13) || (ev.keyCode === 9)) {
+      if (ev.keyCode === 13 || ev.keyCode === 9) {
         // If the index is equal to the items length, it means that it's the last empty entry
-        let nextInput;
+        let nextInput
         if (index >= value.length) {
           if (this.props.onNextOrComments != null) {
-            this.props.onNextOrComments(ev);
+            this.props.onNextOrComments(ev)
           }
         }
         // If it equals to one less, we focus the newLine input
-        if (index === (value.length - 1)) {
-          nextInput = this.newLine;
-          nextInput.focus();
-        // If not, we focus the next input
+        if (index === value.length - 1) {
+          nextInput = this.newLine
+          nextInput.focus()
+          // If not, we focus the next input
         } else {
-          nextInput = this[`input${index+1}`];
-          nextInput.focus();
+          nextInput = this[`input${index + 1}`]
+          nextInput.focus()
         }
         // It's important to prevent the default behavior when handling tabs (or else the tab is applied after the focus change)
-        return ev.preventDefault();
+        return ev.preventDefault()
       }
-    };
+    }
 
     handleRemoveClick = (index, ev) => {
-      let newValue;
+      let newValue
       if (this.props.value != null) {
-        newValue = _.clone(this.props.value);
+        newValue = _.clone(this.props.value)
       } else {
-        newValue = [];
+        newValue = []
       }
-      newValue.splice(index, 1);
-      return this.props.onValueChange(newValue);
-    };
+      newValue.splice(index, 1)
+      return this.props.onValueChange(newValue)
+    }
 
     render() {
-      const value = this.props.value || [];
+      const value = this.props.value || []
 
-      return R('table', {style: {width: "100%"}},
-        R('tbody', null,
+      return R(
+        "table",
+        { style: { width: "100%" } },
+        R(
+          "tbody",
+          null,
           value.map((textLine, index) =>
-            R('tr', {key: index},
-              R('td', null,
-                R('b', null,
-                  `${index + 1}.\u00a0`)
-              ),
-              R('td', null,
-                R('div', {className: "input-group"},
-                  R('input', {
-                    ref: (c => { return this[`input${index}`] = c; }),
-                    type:"text",
+            R(
+              "tr",
+              { key: index },
+              R("td", null, R("b", null, `${index + 1}.\u00a0`)),
+              R(
+                "td",
+                null,
+                R(
+                  "div",
+                  { className: "input-group" },
+                  R("input", {
+                    ref: (c) => {
+                      return (this[`input${index}`] = c)
+                    },
+                    type: "text",
                     className: "form-control box",
                     value: textLine,
                     onChange: this.handleChange.bind(null, index),
                     onKeyDown: this.handleKeydown.bind(null, index),
-                    autoFocus: index === (value.length - 1),
+                    autoFocus: index === value.length - 1,
                     onFocus(ev) {
                       // Necessary or else the cursor is set before the first character after a new line is created
-                      return ev.target.setSelectionRange(textLine.length, textLine.length);
+                      return ev.target.setSelectionRange(textLine.length, textLine.length)
                     }
                   }),
-                  R('span', {className: "input-group-btn"},
-                    R('button', {className: "btn btn-link remove", "data-index": index, type:"button", onClick: this.handleRemoveClick.bind(null, index)},
-                      R('span', {className: "glyphicon glyphicon-remove"}))
+                  R(
+                    "span",
+                    { className: "input-group-btn" },
+                    R(
+                      "button",
+                      {
+                        className: "btn btn-link remove",
+                        "data-index": index,
+                        type: "button",
+                        onClick: this.handleRemoveClick.bind(null, index)
+                      },
+                      R("span", { className: "glyphicon glyphicon-remove" })
+                    )
                   )
                 )
               )
-            )),
-          R('tr', null,
-            R('td', null),
-            R('td', null,
-              R('div', {className: "input-group"},
-                R('input', {
+            )
+          ),
+          R(
+            "tr",
+            null,
+            R("td", null),
+            R(
+              "td",
+              null,
+              R(
+                "div",
+                { className: "input-group" },
+                R("input", {
                   type: "text",
                   className: "form-control box",
                   onChange: this.handleNewLineChange,
                   value: "",
-                  ref: c => { return this.newLine = c; },
-                  id: 'newLine'
+                  ref: (c) => {
+                    return (this.newLine = c)
+                  },
+                  id: "newLine"
                 }),
 
-                R('span', {className: "input-group-btn", style: {paddingRight: '39px'}}))))));
+                R("span", { className: "input-group-btn", style: { paddingRight: "39px" } })
+              )
+            )
+          )
+        )
+      )
     }
-  };
-  TextListAnswerComponent.initClass();
-  return TextListAnswerComponent;
-})();
+  }
+  TextListAnswerComponent.initClass()
+  return TextListAnswerComponent
+})()

@@ -1,9 +1,9 @@
-import _ from 'lodash'
-import { CascadingListAnswerValue } from "../response";
-import React, { ReactNode } from "react";
-import { CascadingListRow, CascadingListColumn } from "../formDesign";
-import { Select } from "react-library/lib/bootstrap";
-import { localizeString } from "../formUtils";
+import _ from "lodash"
+import { CascadingListAnswerValue } from "../response"
+import React, { ReactNode } from "react"
+import { CascadingListRow, CascadingListColumn } from "../formDesign"
+import { Select } from "react-library/lib/bootstrap"
+import { localizeString } from "../formUtils"
 
 /** Localizes strings. Must be called as T("some string") or someThing.T("some string") */
 type LocalizeString = (str: string, ...args: any[]) => string
@@ -41,7 +41,7 @@ export class CascadingListAnswerComponent extends React.Component<Props, State> 
     super(props)
 
     this.state = {
-      columnValues: props.columns.map(c => props.value ? props.value[c.id] || null : null),
+      columnValues: props.columns.map((c) => (props.value ? props.value[c.id] || null : null)),
       editing: false
     }
   }
@@ -64,24 +64,23 @@ export class CascadingListAnswerComponent extends React.Component<Props, State> 
 
     // For each afterwards, set to null
     let pos = index + 1
-    for (; pos < this.props.columns.length ; pos ++) {
+    for (; pos < this.props.columns.length; pos++) {
       columnValues[pos] = null
     }
-    
+
     // For each afterwards, set if has single value, or otherwise set to null
     pos = index + 1
-    for (; pos < this.props.columns.length ; pos ++) {
+    for (; pos < this.props.columns.length; pos++) {
       const values = this.findValues(pos, columnValues)
       if (values.length == 1) {
         columnValues[pos] = values[0]
-      }
-      else {
+      } else {
         break
       }
     }
 
     // Set rest to null
-    for (; pos < this.props.columns.length ; pos ++) {
+    for (; pos < this.props.columns.length; pos++) {
       columnValues[pos] = null
     }
 
@@ -90,7 +89,7 @@ export class CascadingListAnswerComponent extends React.Component<Props, State> 
       // Find row
       for (const row of this.props.rows) {
         let exclude = false
-        for (let colIndex = 0 ; colIndex < this.props.columns.length ; colIndex++) {
+        for (let colIndex = 0; colIndex < this.props.columns.length; colIndex++) {
           if (row[this.props.columns[colIndex].id] !== columnValues[colIndex]) {
             exclude = true
           }
@@ -109,7 +108,7 @@ export class CascadingListAnswerComponent extends React.Component<Props, State> 
 
   /** Reset control */
   handleReset = () => {
-    this.setState({ columnValues: this.props.columns.map(c => null), editing: false })
+    this.setState({ columnValues: this.props.columns.map((c) => null), editing: false })
     this.props.onValueChange()
   }
 
@@ -118,7 +117,7 @@ export class CascadingListAnswerComponent extends React.Component<Props, State> 
     let values: string[] = []
     for (const row of this.props.rows) {
       let exclude = false
-      for (let prev = 0 ; prev < index ; prev++) {
+      for (let prev = 0; prev < index; prev++) {
         if (row[this.props.columns[prev].id] !== columnValues[prev]) {
           exclude = true
         }
@@ -136,7 +135,7 @@ export class CascadingListAnswerComponent extends React.Component<Props, State> 
 
   renderDropdown(index: number) {
     // Determine available options
-    let options: { label: string, value: string }[] = []
+    let options: { label: string; value: string }[] = []
 
     // Find all possible values, filtering by all previous selections
     const values = this.findValues(index, this.state.columnValues)
@@ -150,24 +149,26 @@ export class CascadingListAnswerComponent extends React.Component<Props, State> 
 
     // Sort options if set
     if (this.props.sortOptions) {
-      options = _.sortBy(options, opt => opt.label)
+      options = _.sortBy(options, (opt) => opt.label)
     }
 
-    return <div style={{ paddingBottom: 15 }} key={index}>
-      <label className="text-muted">{localizeString(this.props.columns[index].name, this.props.locale)}</label>
-      <Select 
-        value={this.state.columnValues[index]}
-        options={options}
-        nullLabel={this.props.T("Select...")}
-        onChange={this.handleChange.bind(null, index)}
-      />
-    </div>
+    return (
+      <div style={{ paddingBottom: 15 }} key={index}>
+        <label className="text-muted">{localizeString(this.props.columns[index].name, this.props.locale)}</label>
+        <Select
+          value={this.state.columnValues[index]}
+          options={options}
+          nullLabel={this.props.T("Select...")}
+          onChange={this.handleChange.bind(null, index)}
+        />
+      </div>
+    )
   }
 
   render() {
     const dropdowns: ReactNode[] = []
 
-    for (let i = 0; i < this.props.columns.length ; i++) {
+    for (let i = 0; i < this.props.columns.length; i++) {
       dropdowns.push(this.renderDropdown(i))
       // Skip rest if not selected
       if (!this.state.columnValues[i]) {
@@ -175,11 +176,13 @@ export class CascadingListAnswerComponent extends React.Component<Props, State> 
       }
     }
 
-    return <div>
-      <button type="button" className="btn btn-link btn-xs" style={{float:"right"}} onClick={this.handleReset}>
-        {this.props.T("Reset")}
-      </button>
-      { dropdowns }
-    </div>
+    return (
+      <div>
+        <button type="button" className="btn btn-link btn-xs" style={{ float: "right" }} onClick={this.handleReset}>
+          {this.props.T("Reset")}
+        </button>
+        {dropdowns}
+      </div>
+    )
   }
 }

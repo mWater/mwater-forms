@@ -1,10 +1,10 @@
-import _  from 'lodash'
-import formUtils from './formUtils'
-import VisibilityCalculator, { VisibilityStructure } from './VisibilityCalculator'
-import EntityRow from './EntityRow'
-import { PromiseExprEvaluatorRow, Schema, Row } from 'mwater-expressions'
-import { ResponseData, RosterData, Answer, SiteAnswerValue, LocationAnswerValue } from './response'
-import { FormDesign, QuestionBase, DateQuestion, SiteQuestion, EntityQuestion } from './formDesign'
+import _ from "lodash"
+import formUtils from "./formUtils"
+import VisibilityCalculator, { VisibilityStructure } from "./VisibilityCalculator"
+import EntityRow from "./EntityRow"
+import { PromiseExprEvaluatorRow, Schema, Row } from "mwater-expressions"
+import { ResponseData, RosterData, Answer, SiteAnswerValue, LocationAnswerValue } from "./response"
+import { FormDesign, QuestionBase, DateQuestion, SiteQuestion, EntityQuestion } from "./formDesign"
 
 /*
   Implements the type of row object required by mwater-expressions' PromiseExprEvaluator. Allows expressions to be evaluated
@@ -20,8 +20,8 @@ export class CustomRow implements PromiseExprEvaluatorRow {
   /** schema to use */
   schema?: Schema
 
-  /** looks up entity. Any callbacks after first one will be ignored. 
-   * called with an entity e.g. { _id: some id, a: "abc", b: 123 } or callback null if entity not found 
+  /** looks up entity. Any callbacks after first one will be ignored.
+   * called with an entity e.g. { _id: some id, a: "abc", b: 123 } or callback null if entity not found
    */
   getEntityById: (entityType: string, entityId: string, callback: (entity: any) => void) => void
 
@@ -34,15 +34,15 @@ export class CustomRow implements PromiseExprEvaluatorRow {
   constructor(options: {
     /** Custom table id (e.g. custom.xyz.abc) */
     tableId: string
-  
+
     /** Custom table row */
     row: Row
 
     /** schema to use */
     schema?: Schema
 
-    /** looks up entity. Any callbacks after first one will be ignored. 
-     * called with an entity e.g. { _id: some id, a: "abc", b: 123 } or callback null if entity not found 
+    /** looks up entity. Any callbacks after first one will be ignored.
+     * called with an entity e.g. { _id: some id, a: "abc", b: 123 } or callback null if entity not found
      */
     getEntityById: (entityType: string, entityId: string, callback: (entity: any) => void) => void
   }) {
@@ -96,7 +96,7 @@ export class CustomRow implements PromiseExprEvaluatorRow {
     if (!column) {
       return null
     }
-    
+
     // Get value
     const value = this.row[columnId]
 
@@ -106,7 +106,7 @@ export class CustomRow implements PromiseExprEvaluatorRow {
         // Get the entity
         const entityType = column.idTable!.substr(9)
 
-        const entity = await new Promise((resolve, reject) => 
+        const entity = await new Promise((resolve, reject) =>
           this.getEntityById(entityType, value, (entity) => resolve(entity))
         )
         if (entity) {
@@ -118,20 +118,19 @@ export class CustomRow implements PromiseExprEvaluatorRow {
           })
         }
         return null
-      }
-      else {
+      } else {
         throw new Error("Following non-entity joins not supported")
       }
     }
 
     // This is legacy code, as newer will leave as type "id"
-    if (column.type == "join" && column.join!.type == 'n-1') {
+    if (column.type == "join" && column.join!.type == "n-1") {
       // If to entity, follow
       if (column.join!.toTable.match(/^entities./)) {
         // Get the entity
         const entityType = column.join!.toTable.substr(9)
 
-        const entity = await new Promise((resolve, reject) => 
+        const entity = await new Promise((resolve, reject) =>
           this.getEntityById(entityType, value, (entity) => resolve(entity))
         )
         if (entity) {
@@ -143,8 +142,7 @@ export class CustomRow implements PromiseExprEvaluatorRow {
           })
         }
         return null
-      }
-      else {
+      } else {
         throw new Error("Following non-entity joins not supported")
       }
     }

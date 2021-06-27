@@ -11,7 +11,11 @@ import { VisibilityStructure } from "./VisibilityCalculator"
  */
 export default class DefaultValueApplier {
   /** entity is entity to use */
-  constructor(formDesign: FormDesign, stickyStorage: StickyStorage, entity?: any, entityType?: string) 
+  constructor(formDesign: FormDesign, stickyStorage: StickyStorage, entity?: any, entityType?: string)
 
-  setStickyData(data: ResponseData, previousVisibilityStructure: VisibilityStructure, newVisibilityStructure: VisibilityStructure): ResponseData
+  setStickyData(
+    data: ResponseData,
+    previousVisibilityStructure: VisibilityStructure,
+    newVisibilityStructure: VisibilityStructure
+  ): ResponseData
 }

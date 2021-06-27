@@ -17,7 +17,11 @@ export default class VisibilityCalculator {
   /** Updates the visibilityStructure dictionary with one entry for each element
    * data is the data of the response
    * responseRow is a ResponseRow which represents the same row */
-  createVisibilityStructure(data: ResponseData, responseRow: PromiseExprEvaluatorRow, callback: (error: any, visibilityStructure: VisibilityStructure) => void): void
+  createVisibilityStructure(
+    data: ResponseData,
+    responseRow: PromiseExprEvaluatorRow,
+    callback: (error: any, visibilityStructure: VisibilityStructure) => void
+  ): void
 }
 
 /** Non-rosters are just referenced by id: e.g. { "somequestionid": true }

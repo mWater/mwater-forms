@@ -10,7 +10,7 @@ export default () => ({
     _schema: 3,
     name: {},
     contents: [
-      { 
+      {
         _id: "a1",
         _type: "TextQuestion",
         format: "singleline",
@@ -19,7 +19,7 @@ export default () => ({
         conditions: [],
         validations: []
       },
-      { 
+      {
         _id: "b1",
         _type: "NumberQuestion",
         decimal: true,
@@ -27,7 +27,7 @@ export default () => ({
         conditions: [],
         validations: []
       },
-      { 
+      {
         _id: "c1",
         _type: "LocationQuestion",
         text: {},
@@ -37,44 +37,42 @@ export default () => ({
         confidentialRadius: 10000
       },
       {
-        "_id": "r1",
-        "name": {
-          "en": "RosterQuestion",
-          "_base": "en"
+        _id: "r1",
+        name: {
+          en: "RosterQuestion",
+          _base: "en"
         },
-        "_type": "RosterGroup",
-        "allowAdd": true,
-        "contents": [
+        _type: "RosterGroup",
+        allowAdd: true,
+        contents: [
           {
-            "_id": "q1",
-            "text": {
-              "en": "Sample Roster text question",
-              "_base": "en"
+            _id: "q1",
+            text: {
+              en: "Sample Roster text question",
+              _base: "en"
             },
-            "_type": "TextQuestion",
-            "format": "singleline",
-            "confidential": true,
-            "textExprs": [],
-            "conditions": [],
-            "validations": []
+            _type: "TextQuestion",
+            format: "singleline",
+            confidential: true,
+            textExprs: [],
+            conditions: [],
+            validations: []
           }
         ],
-        "conditions": [],
-        "entryTitle": {
-          "en": "RosterQuestion",
-          "_base": "en"
+        conditions: [],
+        entryTitle: {
+          en: "RosterQuestion",
+          _base: "en"
         },
-        "allowRemove": true,
-        "entryTitleExprs": []
+        allowRemove: true,
+        entryTitleExprs: []
       }
     ],
-    locales: [{ code: "en", name: "English"}]
+    locales: [{ code: "en", name: "English" }]
   },
 
-  roles: [
-    { id: "user:user1", role: "admin" }
-  ],
+  roles: [{ id: "user:user1", role: "admin" }],
 
   created: { on: "2014-08-08", by: "user1" },
   modified: { on: "2014-08-08", by: "user1" }
-});
+})
