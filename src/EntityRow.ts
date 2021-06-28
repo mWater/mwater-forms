@@ -1,24 +1,30 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-let EntityRow
 import _ from "lodash"
+import { Schema } from "mwater-expressions"
 
-/*
+/**
+ * Implements the type of row object required by mwater-expressions' PromiseExprEvaluator. Allows expressions to be evaluated
+ * on an entity
+ */
+ export default class EntityRow {
+  /**  e.g. "water_point" */
+  entityType: string
+  /**  object of entity */
+  entity: any
+  /**  schema that includes entity type */
+  schema: Schema
+  /** looks up entity. callback: called with an entity e.g. { _id: some id, a: "abc", b: 123 } or callback null if entity not found */
+  getEntityById: (entityType: string, entityId: string, callback: (entity: any) => void) => void
 
-Implements the type of row object required by mwater-expressions' PromiseExprEvaluator. Allows expressions to be evaluated
-on an entity
-
-*/
-export default EntityRow = class EntityRow {
-  // Options:
-  //  entityType: e.g. "water_point"
-  //  entity: object of entity
-  //  schema: schema that includes entity type
-  //  getEntityById(entityType, entityId, callback): looks up entity
-  //    callback: called with an entity e.g. { _id: some id, a: "abc", b: 123 } or callback null if entity not found
-  constructor(options: any) {
-    this.options = options
-
+  constructor(options: {
+    /**  e.g. "water_point" */
+    entityType: string
+    /**  object of entity */
+    entity: any
+    /**  schema that includes entity type */
+    schema: Schema
+    /** looks up entity. callback: called with an entity e.g. { _id: some id, a: "abc", b: 123 } or callback null if entity not found */
+    getEntityById(entityType: string, entityId: string, callback: (entity: any) => void): void
+  }) {
     this.entityType = options.entityType
     this.entity = options.entity
     this.schema = options.schema
@@ -70,9 +76,9 @@ export default EntityRow = class EntityRow {
 
     if (column.type === "id") {
       // Can handle joins to another entity
-      if (column.idTable.match(/^entities\./)) {
+      if (column.idTable!.match(/^entities\./)) {
         // Get the entity
-        entityType = column.idTable.substr(9)
+        entityType = column.idTable!.substr(9)
         entity = await new Promise((resolve, reject) => {
           return this.getEntityById(entityType, value, (entity: any) => resolve(entity));
         })
@@ -91,14 +97,14 @@ export default EntityRow = class EntityRow {
     // This is legacy code, as newer will leave as type "id"
     if (column.type === "join") {
       // Do not support n-n, 1-n joins
-      if (["1-n", "n-n"].includes(column.join.type)) {
+      if (["1-n", "n-n"].includes(column.join!.type)) {
         return null
       }
 
       // Can handle joins to another entity
-      if (column.join.toTable.match(/^entities\./)) {
+      if (column.join!.toTable.match(/^entities\./)) {
         // Get the entity
-        entityType = column.join.toTable.substr(9)
+        entityType = column.join!.toTable.substr(9)
         entity = await new Promise((resolve, reject) => {
           return this.getEntityById(entityType, value, (entity: any) => resolve(entity));
         })
@@ -113,5 +119,6 @@ export default EntityRow = class EntityRow {
         return null
       }
     }
+    return null
   }
 }
