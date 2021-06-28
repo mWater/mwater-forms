@@ -1,8 +1,8 @@
-import EntityRow from './EntityRow';
-import { PromiseExprEvaluatorRow, Schema, Row } from 'mwater-expressions';
-import { ResponseData } from './response';
-import { FormDesign } from './formDesign';
-import { CustomRow } from './CustomRow';
+import EntityRow from "./EntityRow";
+import { PromiseExprEvaluatorRow, Schema, Row } from "mwater-expressions";
+import { ResponseData } from "./response";
+import { FormDesign } from "./formDesign";
+import { CustomRow } from "./CustomRow";
 export default class ResponseRow implements PromiseExprEvaluatorRow {
     /** data of entire response */
     responseData: ResponseData;
@@ -20,7 +20,7 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
     getEntityById: (entityType: string, entityId: string, callback: (entity: any) => void) => void;
     /** looks up an entity. Any callbacks after first one will be ignored.
      * called with an entity e.g. { _id: some id, a: "abc", b: 123 } or callback null if entity not found
-      */
+     */
     getEntityByCode: (entityType: string, entityCode: string, callback: (entity: any) => void) => void;
     /** Get a specific row of a custom table */
     getCustomTableRow: (tableId: string, rowId: string) => Promise<Row | null>;
@@ -47,7 +47,7 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
         getEntityById: (entityType: string, entityId: string, callback: (entity: any) => void) => void;
         /** looks up an entity. Any callbacks after first one will be ignored.
          * called with an entity e.g. { _id: some id, a: "abc", b: 123 } or callback null if entity not found
-          */
+         */
         getEntityByCode: (entityType: string, entityCode: string, callback: (entity: any) => void) => void;
         /** Get a specific row of a custom table */
         getCustomTableRow: (tableId: string, rowId: string) => Promise<Row | null>;

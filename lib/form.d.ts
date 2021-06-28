@@ -1,5 +1,5 @@
-import { Expr } from 'mwater-expressions'
-import { FormDesign } from './formDesign';
+import { Expr } from "mwater-expressions"
+import { FormDesign } from "./formDesign"
 
 /** Survey form */
 export interface Form {
@@ -22,21 +22,21 @@ export interface Form {
   dashboard?: any
 
   /** Indicator calculations that create indicator values from form responses */
-  indicatorCalculations?: IndicatorCalculation[] 
+  indicatorCalculations?: IndicatorCalculation[]
 
   /** True if master form (DEPRECATED) */
   isMaster?: boolean
 
   /** If clone form, then _id of master form (DEPRECATED) */
   masterForm?: boolean
-  
+
   /** Permissions on the form */
   roles: FormRole[]
 
   created: {
     /** ISO8601 datetime */
     on: string
-  
+
     /** User _id */
     by: string
   }
@@ -44,7 +44,7 @@ export interface Form {
   modified?: {
     /** ISO8601 datetime */
     on: string
-  
+
     /** User _id */
     by: string
   }
@@ -73,7 +73,7 @@ export interface IndicatorCalculation {
   expressions: { [propertyId: string]: Expr }[]
 
   /** Optional mwater-expression expression to restrict when to create indicator value */
-  condition?: Expr 
+  condition?: Expr
 
   /** Optional mwater-expression expression to select datetime of indicator value. Defaults to submittedOn */
   datetimeExpr?: Expr
@@ -119,7 +119,7 @@ export interface Deployment {
   /** Optional approval stages that responses must pass through to become final. Each stage
    * has a list of approvers who can approve/reject the response and move it along */
   approvalStages: ApprovalStage[]
-} 
+}
 
 interface FormRole {
   /** Subject (user:xyz or group:abc or "all") */

@@ -1,53 +1,35 @@
-import { Item, FormDesign, Question, QuestionBase } from "./formDesign"
-import { LocalizedString } from "mwater-expressions"
-
-// function allItems(rootItem: any): any;
-// function changeQuestionType(question: any, newType: any): any;
-// function createBase32TimeCode(date: any): any;
-
-export type AnswerType = "text" | "number" | "choice" | "choices" | "date" | "units" | "boolean" | "location" | "image" | "images" 
-  | "texts" | "site" | "entity" | "admin_region" | "items_choices" | "matrix" | "aquagenx_cbt" | "cascading_list" | "cascading_ref"
-
-/** Create short unique id, with ~42 bits randomness to keep unique amoung a few choices */
-export function createShortUid(): string
-
-/** Create medium unique id, with ~58 bits randomness to keep unique amoung a 1,000,000 choices */
-export function createMediumUid(): string
-
-/** Create ~ 128-bit uid without dashes */
-export function createUid(): string;
-
-// function duplicateItem(item: any, idMap: any): any;
-// function extractEntityReferences(formDesign: any, responseData: any): any;
-// function extractLocalizedStrings(obj: any): any;
-// function findEntityQuestion(formDesign: any, entityType: any): any;
-
-export function findItem(formDesign: FormDesign, itemId: string): Item | undefined
-
-export function allItems(formDesign: FormDesign): Item[]
-
-export function getSiteEntityType(question: Question): string
-
-export function getAnswerType(q: QuestionBase): AnswerType
-// function getRosterIds(formDesign: any): any;
-// function hasLocalizations(obj: any, locale: any): any;
-
-/** Determine if item is a question */
-export function isQuestion(item: Item): boolean
-
-/** Determine if item is an expression */
-export function isExpression(item: Item): boolean
-
-// function isSectioned(form: any): any;
-
-/** Localize a localized string */
-export function localizeString(str?: LocalizedString | null, locale?: string): string
-
-// function prepareQuestion(q: any): any;
-
-export function priorQuestions(formDesign: FormDesign, refItem?: Item, rosterId?: string | null): Question[]
-
-// function updateLocalizations(formDesign: any): any;
-
-/** Get list of custom table ids referenced by a form (cascading ref questions) */
-export function getCustomTablesReferenced(formDesign: FormDesign): string[]
+export declare function createUid(): any;
+export declare function createShortUid(): string;
+export declare function createMediumUid(): string;
+export declare function createBase32TimeCode(date: any): string;
+export declare function isQuestion(item: any): any;
+export declare function isExpression(item: any): boolean;
+export declare function localizeString(str: any, locale: any): any;
+export declare function priorQuestions(formDesign: any, refItem?: null, rosterId?: null): any;
+export declare function getRosterIds(formDesign: any): unknown[];
+export declare function findItem(formDesign: any, itemId: any): any;
+export declare function allItems(rootItem: any): any[];
+export declare function prepareQuestion(q: any): any;
+export declare function changeQuestionType(question: any, newType: any): any;
+export declare function getAnswerType(q: any): "image" | "text" | "number" | "choices" | "units" | "choice" | "date" | "boolean" | "location" | "images" | "texts" | "site" | "entity" | "admin_region" | "matrix" | "items_choices" | "aquagenx_cbt" | "cascading_list" | "cascading_ref" | "expr";
+export declare function isSectioned(form: any): boolean;
+export declare function duplicateItem(item: any, idMap: any): any;
+export declare function extractLocalizedStrings(obj: any): any;
+export declare function updateLocalizations(formDesign: any): (boolean | undefined)[];
+export declare function hasLocalizations(obj: any, locale: any): boolean;
+export declare function findEntityQuestion(formDesign: any, entityType: any): unknown;
+export declare function extractEntityReferences(formDesign: any, responseData: any): ({
+    question: any;
+    entityType: any;
+    property: string;
+    value: any;
+    roster?: undefined;
+} | {
+    question: any;
+    roster: any;
+    entityType: any;
+    property: string;
+    value: any;
+})[];
+export declare function getSiteEntityType(question: any): any;
+export declare function getCustomTablesReferenced(formDesign: any): any[];

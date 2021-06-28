@@ -1,7 +1,7 @@
 /// <reference types="node" />
-import { EventEmitter } from 'events';
-import LocationFinder from './LocationFinder';
-import { PositionStrength } from './utils';
+import { EventEmitter } from "events";
+import LocationFinder from "./LocationFinder";
+import { PositionStrength } from "./utils";
 /** Status of the position finding */
 export interface PositionStatus {
     /** Best position found */

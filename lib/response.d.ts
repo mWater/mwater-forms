@@ -8,7 +8,7 @@ export interface Response {
 
   /** String code of the response. Unique-ish and short enough for human use */
   code?: string
-  
+
   /** _id of form that this is for */
   form: string
 
@@ -20,7 +20,7 @@ export interface Response {
 
   /** Current successful approval list */
   approvals?: ResponseApproval[]
-  
+
   /** User _id who started the response */
   user?: string | null
 
@@ -56,9 +56,9 @@ export interface Response {
 
   // # Array of pending entity creates
   // pendingEntityCreates: {
-  //   type: "array" 
+  //   type: "array"
   //   items: {
-  //     type: "object" 
+  //     type: "object"
   //     properties: {
   //       questionId: { type: "string" }     # Question which is creating the entity
   //       entityType: { type: "string" }     # Type of the entity
@@ -66,14 +66,14 @@ export interface Response {
   //     }
   //     required: ["questionId", "entityType", "entity"]
   //     additionalProperties: false
-  //   }          
+  //   }
   // }
 
   // # Array of pending entity creates
   // pendingEntityUpdates: {
-  //   type: "array" 
+  //   type: "array"
   //   items: {
-  //     type: "object" 
+  //     type: "object"
   //     properties: {
   //       questionId: { type: "string" }     # Question which is creating the entity
   //       entityType: { type: "string" }     # Type of the entity
@@ -82,13 +82,13 @@ export interface Response {
   //     }
   //     required: ["questionId", "entityType", "entityId", "updates"]
   //     additionalProperties: false
-  //   }          
+  //   }
   // }
-    
+
   created?: {
     /** ISO8601 datetime */
     on: string
-  
+
     /** User _id */
     by: string
   }
@@ -104,7 +104,7 @@ export interface Response {
   removed?: {
     /** ISO8601 datetime */
     on: string
-  
+
     /** User _id */
     by: string
   }
@@ -112,7 +112,7 @@ export interface Response {
   /** Assignement _id associated to the response */
   assignment?: string
   ipAddress?: string
-    
+
   /** The confidential data if the form has confidential mode true */
   confidentialData?: ConfidentialData
 }
@@ -120,10 +120,10 @@ export interface Response {
 interface ResponseApproval {
   /** User id who did approval */
   by: string
-  
+
   /** When (ISO8601) */
   on: string
-  
+
   /** True if was done by an admin, not the normal approver */
   override?: boolean
 }
@@ -136,7 +136,7 @@ interface EntityRef {
   entityType: string
 
   /** property code (e.g "_id" or "code") of entity that is referenced in value e.g. "code" */
-  property: { type: "string" } 
+  property: { type: "string" }
 
   /** Value of entity property that is referenced */
   value: any
@@ -161,7 +161,7 @@ interface ResponseEvent {
 
   /** Can be anonymous otherwise _id of user */
   by: "string" | "null"
-  
+
   /** True if approve was done by an admin, not the normal approver */
   override?: boolean
 
@@ -186,10 +186,10 @@ export interface Answer {
   timestamp?: string
 
   /** Location-stamp (for recordLocation option) */
-  location?: { accuracy?: number, altitude?: number, altitudeAccuracy?: number, longitude: number, latitude: number }
+  location?: { accuracy?: number; altitude?: number; altitudeAccuracy?: number; longitude: number; latitude: number }
 
   /** Specify choices values */
-  specify?: { 
+  specify?: {
     [choiceId: string]: any
   }
 
@@ -238,7 +238,7 @@ export interface ConfidentialAnswer {
   alternate?: "na" | "dontknow" | null
 
   /** Specify choices values */
-  specify?: { 
+  specify?: {
     [choiceId: string]: any
   }
 }
@@ -252,16 +252,31 @@ export interface ConfidentialRosterEntry {
 }
 
 /** Confidential data for a single roster entry */
-export interface ConfidentialRosterEntryData
-{
+export interface ConfidentialRosterEntryData {
   [itemId: string]: ConfidentialAnswer
 }
 
 /** All values of answers possible */
-export type AnswerValue = TextAnswerValue | NumberAnswerValue | ChoiceAnswerValue | ChoicesAnswerValue 
-      | BooleanAnswerValue | DateAnswerValue | UnitsAnswerValue | LocationAnswerValue | ImageAnswerValue | ImagesAnswerValue
-      | TextsAnswerValue | SiteAnswerValue | EntityAnswerValue | ItemsChoicesAnswerValue | MatrixAnswerValue | AdminRegionAnswerValue 
-      | AquagenxCBTAnswerValue | CascadingListAnswerValue | CascadingRefAnswerValue
+export type AnswerValue =
+  | TextAnswerValue
+  | NumberAnswerValue
+  | ChoiceAnswerValue
+  | ChoicesAnswerValue
+  | BooleanAnswerValue
+  | DateAnswerValue
+  | UnitsAnswerValue
+  | LocationAnswerValue
+  | ImageAnswerValue
+  | ImagesAnswerValue
+  | TextsAnswerValue
+  | SiteAnswerValue
+  | EntityAnswerValue
+  | ItemsChoicesAnswerValue
+  | MatrixAnswerValue
+  | AdminRegionAnswerValue
+  | AquagenxCBTAnswerValue
+  | CascadingListAnswerValue
+  | CascadingRefAnswerValue
 
 export type TextAnswerValue = string
 
@@ -288,8 +303,8 @@ export interface LocationAnswerValue {
   latitude: number
   longitude: number
   /** Elevation, taking into account mastHeight and depth if present */
-  altitude?: number 
-  accuracy?: number 
+  altitude?: number
+  accuracy?: number
   altitudeAccuracy?: number
   /** Height of mast of GPS device (altitude is GPS altitude - mast height - depth) */
   mastHeight?: number
@@ -326,7 +341,7 @@ export interface ItemsChoicesAnswerValue {
 
 /** { ITEM1ID: { QUESTION1ID: { value: somevalue }, QUESTION2ID: { ...}}, ITEM2ID: ... } */
 export interface MatrixAnswerValue {
-  [itemId: string]: ({ [questionId: string]: any })
+  [itemId: string]: { [questionId: string]: any }
 }
 
 /** Admin region (DEPRECATED) _id of admin region */
@@ -347,8 +362,8 @@ export interface AquagenxCBTAnswerValue {
     c5: boolean
 
     /** Rating of safety */
-    healthRisk: 'safe' | 'probably_safe' | 'possibly_safe' | 'possibly_unsafe' | 'probably_unsafe' | 'unsafe'
-  
+    healthRisk: "safe" | "probably_safe" | "possibly_safe" | "possibly_unsafe" | "probably_unsafe" | "unsafe"
+
     /** Most probable number of E.Coli per 100ml */
     mpn: number
 

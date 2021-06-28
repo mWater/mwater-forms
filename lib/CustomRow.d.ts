@@ -1,5 +1,5 @@
-import EntityRow from './EntityRow';
-import { PromiseExprEvaluatorRow, Schema, Row } from 'mwater-expressions';
+import EntityRow from "./EntityRow";
+import { PromiseExprEvaluatorRow, Schema, Row } from "mwater-expressions";
 export declare class CustomRow implements PromiseExprEvaluatorRow {
     /** Custom table id (e.g. custom.xyz.abc) */
     tableId: string;

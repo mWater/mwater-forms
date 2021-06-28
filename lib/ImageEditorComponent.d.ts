@@ -1,19 +1,24 @@
-import { ImageAnswerValue } from "./response";
 import React from "react";
-import { ImageManager, ImageAcquirer } from "./formContext";
-
-/** Edit an image  */
-export default class ImageEditorComponent extends React.Component<{
-  imageManager: ImageManager
-  imageAcquirer?: ImageAcquirer
-  image?: ImageAnswerValue | null
-
-  /** Called when image changed */
-  onImageChange?: (image: ImageAnswerValue | null) => void
-
-  /** Localizer to use */
-  T: (str: string, ...args: any[]) => string
-       
-  /** Question to prompt for consent */
-  consentPrompt?: string    
-}> {}
+import ImageAnswerComponent from "./answers/ImageAnswerComponent";
+interface ImageEditorComponentProps {
+    imageManager: any;
+    imageAcquirer?: any;
+    /** e.g. { id: someid, caption: caption } */
+    image?: any;
+    /** Called when image changed */
+    onImageChange?: any;
+    /** Localizer to use */
+    T: any;
+    /** Question to prompt for consent */
+    consentPrompt?: string;
+}
+export default class ImageEditorComponent extends React.Component<ImageEditorComponentProps> {
+    static initClass(): void;
+    getChildContext(): {
+        imageManager: any;
+        imageAcquirer: any;
+        T: any;
+    };
+    render(): React.CElement<any, ImageAnswerComponent>;
+}
+export {};

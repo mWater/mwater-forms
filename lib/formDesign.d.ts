@@ -20,10 +20,10 @@ export interface FormDesign {
    * Schema 18 adds calculations
    * Schema 19 adds randomAskProbability
    * Schema 20 adds confidential data mode
-   * Schema 21 adds advancedValidations and roster hints 
+   * Schema 21 adds advancedValidations and roster hints
    * Schema 22 cascading lists
-   * Note: schema versions cause all clients to need a re-release even if not 
-   * using the new question types. It is too catastrophic for a simple new question type. 
+   * Note: schema versions cause all clients to need a re-release even if not
+   * using the new question types. It is too catastrophic for a simple new question type.
    * So leaving mwater-form-designer at 21, even though it's generating 22. */
   _schema: 1 | 2 | 3 | 4 | 5 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22
 

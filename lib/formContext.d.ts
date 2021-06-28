@@ -1,6 +1,6 @@
-import LocationFinder from "./LocationFinder";
-import { ReactNode } from "react";
-import { Row } from "mwater-expressions";
+import LocationFinder from "./LocationFinder"
+import { ReactNode } from "react"
+import { Row } from "mwater-expressions"
 
 export interface StickyStorage {
   get(keyname: string): any
@@ -36,21 +36,21 @@ export interface FormContext {
   /** Select an entity */
   selectEntity?: (options: {
     /** e.g. "water_point" */
-    entityType: string 
+    entityType: string
     /** Optional filter of entities that are acceptable */
     filter?: any
     /** called with _id of entity selected */
     callback: (entityId: string) => void
   }) => void
 
-  /** 
+  /**
    * entityType: e.g. "water_point"
    * entityId: _id of entity
    * callback: called with an entity e.g. { _id: some id, a: "abc", b: 123 } or callback null if entity not found
    */
   getEntityById?: (entityType: string, entityId: string, callback: (entity: any) => void) => void
 
-  /** 
+  /**
    * entityType: e.g. "water_point"
    * entityCode: code of entity
    * callback: called with an entity e.g. { _id: some id, a: "abc", b: 123 } or callback null if entity not found
@@ -71,9 +71,9 @@ export interface FormContext {
   /** True if current user can edit the entity specified. Required if editEntity present */
   canEditEntity?: (entityType: string, entity: any) => boolean
 
-  /** Get all rows of a custom table 
+  /** Get all rows of a custom table
    * @param tableId table id e.g. custom.abc.xyz
-  */
+   */
   getCustomTableRows: (tableId: string) => Promise<Row[]>
 
   /** Get a specific row of a custom table */
@@ -103,10 +103,10 @@ export interface FormContext {
   //getAdminRegionPath(id, callback)
   // Gets complete path (country downward) for an administrative region
   // Callback (error, [{ id:, level: e.g. 1, name: e.g. "Manitoba", full_name: e.g. "Manitoba, Canada", type: e.g. "Province" }, ...] in level ascending order)
-    
+
   /** DEPRECATED. Only used by a few legacy forms */
   // getSubAdminRegions(id, level, callback)
-  // Gets list of adminstrative regions at a level that are under a region. 
+  // Gets list of adminstrative regions at a level that are under a region.
   // Callback (error, [{ id:, level: e.g. 1, name: e.g. "Manitoba", full_name: e.g. "Manitoba, Canada", type: e.g. "Province" }, ...])
 
   /** DEPRECATED. Only used by a few legacy forms */
@@ -119,7 +119,7 @@ export interface FormContext {
 export interface ImageManager {
   /** Gets url of image  */
   getImageUrl: (id: string, success: (url: string) => void, error: () => void) => void
-  
+
   /** Gets url of thumbnail of image  */
   getImageThumbnailUrl: (id: string, success: (url: string) => void, error: () => void) => void
 }
@@ -134,7 +134,7 @@ interface Location {
   latitude: number
   longitude: number
   /** Elevation, taking into account mastHeight and depth if present */
-  altitude?: number 
-  accuracy?: number 
+  altitude?: number
+  accuracy?: number
   altitudeAccuracy?: number
 }
