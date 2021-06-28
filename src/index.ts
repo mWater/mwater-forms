@@ -1,80 +1,46 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-import $ from "jquery"
 import _ from "lodash"
 import "./index.css"
-export let ImageEditorComponent = require("./ImageEditorComponent")
-export let ImagelistEditorComponent = require("./ImagelistEditorComponent")
-export let ResponseAnswersComponent = require("./ResponseAnswersComponent")
-export let formUtils = require("./formUtils")
-export let conditionUtils = require("./conditionUtils")
-export let AnswerValidator = require("./answers/AnswerValidator")
-export let formRenderUtils = require("./formRenderUtils")
-export let ECPlates = require("./ECPlates")
-export let utils = require("./utils")
-export let LocationFinder = require("./LocationFinder")
-export let LocationEditorComponent = require("./LocationEditorComponent").default
-export let AdminRegionDataSource = require("./AdminRegionDataSource")
-export let AdminRegionSelectComponent = require("./AdminRegionSelectComponent")
-export let AdminRegionDisplayComponent = require("./AdminRegionDisplayComponent")
-export let DateTimePickerComponent = require("./DateTimePickerComponent")
-export let FormModel = require("./FormModel")
-export let ResponseModel = require("./ResponseModel")
-export let ResponseDisplayComponent = require("./ResponseDisplayComponent")
-export let ResponseViewEditComponent = require("./ResponseViewEditComponent")
-export let FormComponent = require("./FormComponent")
-export let formContextTypes = require("./formContextTypes")
-export let FormSchemaBuilder = require("./FormSchemaBuilder")
-export let EntitySchemaBuilder = require("./EntitySchemaBuilder")
-export let AssignmentModel = require("./AssignmentModel")
 
-export let { CustomTablesetSchemaBuilder } = require("./CustomTablesetSchemaBuilder")
+export * as formUtils from "./formUtils"
+export * as formRenderUtils from "./formRenderUtils"
 
-export let ResponseDataExprValueUpdater = require("./ResponseDataExprValueUpdater").default
-export let ResponseRow = require("./ResponseRow").default
-export let RotationAwareImageComponent = require("./RotationAwareImageComponent")
-export let ImageUploaderModalComponent = require("./ImageUploaderModalComponent")
+export * from "./form"
+export * from "./formDesign"
+export * from "./response"
+
+export * from "./formContext"
+
+export { default as LocationEditorComponent, Location } from "./LocationEditorComponent"
+export { default as LocationFinder } from "./LocationFinder"
+export { default as ResponseRow } from "./ResponseRow"
+export { default as ImageEditorComponent } from "./ImageEditorComponent"
+export { default as ImagelistEditorComponent } from "./ImagelistEditorComponent"
+export { default as DateTimePickerComponent } from "./DateTimePickerComponent"
+export { default as FormComponent } from "./FormComponent"
+export { default as ResponseModel } from "./ResponseModel"
+export { default as ResponseViewEditComponent } from "./ResponseViewEditComponent"
+export { default as ImageUploaderModalComponent } from "./ImageUploaderModalComponent"
+export { CustomTablesetSchemaBuilder } from "./CustomTablesetSchemaBuilder"
+export { default as RotationAwareImageComponent } from "./RotationAwareImageComponent"
+export { default as FormSchemaBuilder } from "./FormSchemaBuilder"
+export { default as ResponseDataExprValueUpdater } from "./ResponseDataExprValueUpdater"
+
+export * as conditionUtils from "./conditionUtils"
+export * as utils from "./utils"
+export { default as ResponseAnswersComponent } from "./ResponseAnswersComponent"
+export { default as AnswerValidator } from "./answers/AnswerValidator"
+export * as ECPlates from "./ECPlates"
+export { default as AdminRegionDataSource } from "./AdminRegionDataSource"
+export { default as AdminRegionSelectComponent } from "./AdminRegionSelectComponent"
+export { default as AdminRegionDisplayComponent } from "./AdminRegionDisplayComponent"
+export { default as FormModel } from "./FormModel"
+export { default as ResponseDisplayComponent } from "./ResponseDisplayComponent"
+export * as formContextTypes from "./formContextTypes"
+export { default as EntitySchemaBuilder } from "./EntitySchemaBuilder"
+export { default as AssignmentModel } from "./AssignmentModel"
+
 export let schemaVersion = 22 // Version of the schema that this package supports (cannot compile if higher)
 export let minSchemaVersion = 1 // Minimum version of forms schema that can be compiled
 
 // JSON schema of form. Note: Not the mwater-expressions schema of the form, but rather the Json schema of the form design
-export let schema = require("./schema")
-
-// Simple form that displays a template based on loaded data
-export function templateView(template: any) {
-  return {
-    el: $("<div></div>"),
-    load(data: any) {
-      return $(this.el).html(template(data))
-    }
-  };
-}
-
-// Creates a form view from a string
-export let instantiateView = (viewStr: any, options: any) => {
-  const viewFunc = new Function("options", viewStr)
-  return viewFunc(options)
-}
-
-// Create a base32 time code to write on forms
-export function createBase32TimeCode(date: any) {
-  // Characters to use (skip 1, I, 0, O)
-  const chars = "23456789ABCDEFGHJLKMNPQRSTUVWXYZ"
-
-  // Subtract date from July 1, 2013
-  const base = new Date(2013, 6, 1, 0, 0, 0, 0)
-
-  // Get seconds since
-  let diff = Math.floor((date.getTime() - base.getTime()) / 1000)
-
-  // Convert to array of base 32 characters
-  let code = ""
-
-  while (diff >= 1) {
-    const num = diff % 32
-    diff = Math.floor(diff / 32)
-    code = chars[num] + code
-  }
-
-  return code
-}
+export * as schema from "./schema"
