@@ -8,6 +8,7 @@ import ezlocalize from "ez-localize"
 import ResponseAnswersComponent from "./ResponseAnswersComponent"
 import ResponseArchivesComponent from "./ResponseArchivesComponent"
 import ModalPopupComponent from "react-library/lib/ModalPopupComponent"
+import * as formContextTypes from './formContextTypes'
 
 interface ResponseDisplayComponentProps {
   form: any,
@@ -37,7 +38,7 @@ showPrevAnswers: any
 // Static view of a response
 export default class ResponseDisplayComponent extends React.Component<ResponseDisplayComponentProps, ResponseDisplayComponentState> {
   static initClass() {
-    this.childContextTypes = _.extend({}, require("./formContextTypes"), {
+    this.childContextTypes = _.extend({}, formContextTypes, {
       T: PropTypes.func.isRequired,
       locale: PropTypes.string // e.g. "fr"
     })

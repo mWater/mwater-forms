@@ -11,6 +11,7 @@ import { default as ResponseRow } from "./ResponseRow"
 import DefaultValueApplier from "./DefaultValueApplier"
 import VisibilityCalculator from "./VisibilityCalculator"
 import RandomAskedCalculator from "./RandomAskedCalculator"
+import * as formContextTypes from './formContextTypes'
 
 interface FormComponentProps {
   /** Context to use for form. See docs/FormsContext.md */
@@ -59,7 +60,7 @@ visibilityStructure: any
 // Displays a form that can be filled out
 export default class FormComponent extends React.Component<FormComponentProps, FormComponentState> {
   static initClass() {
-    this.childContextTypes = _.extend({}, require("./formContextTypes"), {
+    this.childContextTypes = _.extend({}, formContextTypes, {
       T: PropTypes.func.isRequired,
       locale: PropTypes.string, // e.g. "fr"
       disableConfidentialFields: PropTypes.bool

@@ -80,7 +80,7 @@ export default class MatrixColumnCellComponent extends React.Component<MatrixCol
         )
         break
       case "UnitsColumnQuestion":
-        var answer = data?.[column._id]
+        var answer = value ? value[column._id] : null
         elem = R(UnitsAnswerComponent, {
           small: true,
           decimal: column.decimal,

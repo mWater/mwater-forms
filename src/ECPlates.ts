@@ -17,7 +17,7 @@ export function isAvailable(success: any, error: any) {
   }
 }
 
-export function processImage(this: any, imgUrl: any, success: any, error: any) {
+export function processImage(imgUrl: any, success: any, error: any) {
   console.log(`Processing image url: ${imgUrl}`)
   return window.resolveLocalFileSystemURI(
     imgUrl,
@@ -30,8 +30,8 @@ export function processImage(this: any, imgUrl: any, success: any, error: any) {
       }
 
       console.log(`Got image fullPath: ${fullPath}`)
-      return OpenCVActivity.process("ec-plate", [fullPath], "EC Compact Dry Plate Counter", (args: any) => success(args));
+      return OpenCVActivity.process("ec-plate", [fullPath], "EC Compact Dry Plate Counter", (args: any) => success(args))
     },
-    this.error
+    error
   );
 }

@@ -1,5 +1,5 @@
-export { default as formUtils } from "./formUtils"
-export { default as formRenderUtils } from "./formRenderUtils"
+export * as formUtils from "./formUtils"
+export * as formRenderUtils from "./formRenderUtils"
 
 export * from "./form"
 export * from "./formDesign"

@@ -4,6 +4,7 @@ import React from "react"
 const R = React.createElement
 
 import * as formUtils from "./formUtils"
+import ItemListComponent from "./ItemListComponent"
 
 interface GroupComponentProps {
   /** Design of group. See schema */
@@ -32,9 +33,6 @@ export default class GroupComponent extends React.Component<GroupComponentProps>
   }
 
   render() {
-    // To avoid circularity
-    const ItemListComponent = require("./ItemListComponent")
-
     return R(
       "div",
       { className: "panel panel-default" },

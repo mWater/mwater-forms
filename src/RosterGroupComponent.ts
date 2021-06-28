@@ -5,6 +5,7 @@ const R = React.createElement
 
 import * as formUtils from "./formUtils"
 import TextExprsComponent from "./TextExprsComponent"
+import ItemListComponent from "./ItemListComponent"
 
 interface RosterGroupComponentProps {
   /** Design of roster group. See schema */
@@ -103,9 +104,6 @@ export default class RosterGroupComponent extends React.Component<RosterGroupCom
   }
 
   renderEntry(entry: any, index: any) {
-    // To avoid circularity
-    const ItemListComponent = require("./ItemListComponent")
-
     return R(
       "div",
       { key: index, className: "panel panel-default" },

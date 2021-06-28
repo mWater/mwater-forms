@@ -5,6 +5,8 @@ DEPRECATED!! Use the typescript definition files!
 
 */
 
+import designSchema from './designSchema'
+
 // A deployment is a grouping of people who can answer a form and an optional approval chain and viewers.
 const deployments = {
   type: "array",
@@ -140,7 +142,7 @@ export let properties = {
   state: { enum: ["active", "deleted"] },
 
   // See mwater-forms for the schema
-  design: require("./designSchema"),
+  design: designSchema,
 
   // Current mwater-visualization dashboard
   dashboard: { type: "object" },
