@@ -10,7 +10,9 @@ interface TextAnswerComponentState {
     text: any;
 }
 export default class TextAnswerComponent extends React.Component<TextAnswerComponentProps, TextAnswerComponentState> {
-    static initClass(): void;
+    static defaultProps: {
+        readOnly: boolean;
+    };
     constructor(props: any);
     componentWillReceiveProps(nextProps: any): void;
     focus(): any;

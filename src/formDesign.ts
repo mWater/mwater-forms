@@ -187,7 +187,7 @@ export interface QuestionBase {
   randomAskProbability?: number
 }
 
-type Question =
+export type Question =
   | TextQuestion
   | NumberQuestion
   | DropdownQuestion

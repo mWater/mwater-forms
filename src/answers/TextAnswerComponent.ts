@@ -15,9 +15,7 @@ text: any
 }
 
 export default class TextAnswerComponent extends React.Component<TextAnswerComponentProps, TextAnswerComponentState> {
-  static initClass() {
-    this.defaultProps = { readOnly: false }
-  }
+  static defaultProps = { readOnly: false }
 
   constructor(props: any) {
     super(props)
@@ -82,6 +80,3 @@ export default class TextAnswerComponent extends React.Component<TextAnswerCompo
     }
   }
 }
-
-
-TextAnswerComponent.initClass()

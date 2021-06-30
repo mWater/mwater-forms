@@ -21,9 +21,7 @@ placeholder: any
 }
 
 export default class DateAnswerComponent extends React.Component<DateAnswerComponentProps, DateAnswerComponentState> {
-  static initClass() {
-    this.defaultProps = { format: "YYYY-MM-DD" }
-  }
+  static defaultProps = { format: "YYYY-MM-DD" }
 
   constructor(props: any) {
     super(props)
@@ -162,5 +160,3 @@ export default class DateAnswerComponent extends React.Component<DateAnswerCompo
   }
 }
 
-
-DateAnswerComponent.initClass()

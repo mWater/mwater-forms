@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import React from "react";
 interface AquagenxCBTAnswerComponentProps {
     /** Value contains two entries: image and cbt */
@@ -10,7 +11,17 @@ interface AquagenxCBTAnswerComponentState {
     aquagenxModal: any;
 }
 export default class AquagenxCBTAnswerComponent extends React.Component<AquagenxCBTAnswerComponentProps, AquagenxCBTAnswerComponentState> {
-    static initClass(): void;
+    static contextTypes: {
+        imageManager: PropTypes.Validator<object>;
+        imageAcquirer: PropTypes.Requireable<object>;
+        T: PropTypes.Validator<(...args: any[]) => any>;
+    };
+    static defaultProps: {
+        value: {
+            image: null;
+            cbt: null;
+        };
+    };
     constructor(props: any);
     focus(): null;
     handleClickImage: () => void;

@@ -14,9 +14,7 @@ interface CheckAnswerComponentProps {
 // TODO: SurveyorPro: Fix checkbox title size
 
 export default class CheckAnswerComponent extends React.Component<CheckAnswerComponentProps> {
-  static initClass() {
-    this.defaultProps = { value: false }
-  }
+  static defaultProps = { value: false }
 
   focus() {
     return this.checkbox.focus()
@@ -39,7 +37,4 @@ export default class CheckAnswerComponent extends React.Component<CheckAnswerCom
       this.props.children
     )
   }
-};
-
-
-CheckAnswerComponent.initClass()
+}

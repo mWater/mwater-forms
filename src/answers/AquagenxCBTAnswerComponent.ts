@@ -23,15 +23,13 @@ aquagenxModal: any
 
 // Based on https://www.aquagenx.com/wp-content/uploads/2013/12/Aquagenx-CBT-Instructions-v3.pdf
 export default class AquagenxCBTAnswerComponent extends React.Component<AquagenxCBTAnswerComponentProps, AquagenxCBTAnswerComponentState> {
-  static initClass() {
-    this.contextTypes = {
-      imageManager: PropTypes.object.isRequired,
-      imageAcquirer: PropTypes.object,
-      T: PropTypes.func.isRequired // Localizer to use
-    }
-
-    this.defaultProps = { value: { image: null, cbt: null } }
+  static contextTypes = {
+    imageManager: PropTypes.object.isRequired,
+    imageAcquirer: PropTypes.object,
+    T: PropTypes.func.isRequired // Localizer to use
   }
+
+  static defaultProps = { value: { image: null, cbt: null } }
 
   constructor(props: any) {
     super(props)
@@ -173,6 +171,3 @@ export default class AquagenxCBTAnswerComponent extends React.Component<Aquagenx
     return R("div", null, this.renderAquagenxCBT(), R("br"), this.renderImage())
   }
 }
-
-
-AquagenxCBTAnswerComponent.initClass()

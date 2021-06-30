@@ -28,9 +28,7 @@ defaultDate?: any
 }
 
 export default class DateTimePickerComponent extends React.Component<DateTimePickerComponentProps> {
-  static initClass() {
-    this.defaultProps = { timepicker: false }
-  }
+  static defaultProps = { timepicker: false }
 
   onChange = (event: any) => {
     return this.props.onChange?.(event.date)
@@ -131,7 +129,4 @@ export default class DateTimePickerComponent extends React.Component<DateTimePic
       )
     )
   }
-};
-
-
-DateTimePickerComponent.initClass()
+}

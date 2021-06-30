@@ -5,7 +5,9 @@ interface CheckAnswerComponentProps {
     label: any;
 }
 export default class CheckAnswerComponent extends React.Component<CheckAnswerComponentProps> {
-    static initClass(): void;
+    static defaultProps: {
+        value: boolean;
+    };
     focus(): any;
     handleValueChange: () => any;
     render(): React.DetailedReactHTMLElement<{

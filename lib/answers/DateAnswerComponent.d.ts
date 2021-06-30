@@ -12,7 +12,9 @@ interface DateAnswerComponentState {
     placeholder: any;
 }
 export default class DateAnswerComponent extends React.Component<DateAnswerComponentProps, DateAnswerComponentState> {
-    static initClass(): void;
+    static defaultProps: {
+        format: string;
+    };
     constructor(props: any);
     componentWillReceiveProps: (nextProps: any) => void | {
         detailLevel: number;

@@ -18,7 +18,9 @@ interface DateTimePickerComponentProps {
     defaultDate?: any;
 }
 export default class DateTimePickerComponent extends React.Component<DateTimePickerComponentProps> {
-    static initClass(): void;
+    static defaultProps: {
+        timepicker: boolean;
+    };
     onChange: (event: any) => any;
     componentDidMount(): any;
     componentWillUnmount(): any;

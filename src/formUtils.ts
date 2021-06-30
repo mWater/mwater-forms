@@ -1,8 +1,34 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
 import _ from "lodash"
 import localizations from "../localizations.json"
 import uuid from "uuid"
+
+import { Item, FormDesign, Question, QuestionBase } from "./formDesign"
+import { LocalizedString } from "mwater-expressions"
+
+// function allItems(rootItem: any): any;
+// function changeQuestionType(question: any, newType: any): any;
+// function createBase32TimeCode(date: any): any;
+
+export type AnswerType =
+  | "text"
+  | "number"
+  | "choice"
+  | "choices"
+  | "date"
+  | "units"
+  | "boolean"
+  | "location"
+  | "image"
+  | "images"
+  | "texts"
+  | "site"
+  | "entity"
+  | "admin_region"
+  | "items_choices"
+  | "matrix"
+  | "aquagenx_cbt"
+  | "cascading_list"
+  | "cascading_ref"
 
 // Create ~ 128-bit uid without dashes
 export function createUid() {
@@ -60,7 +86,7 @@ export function isExpression(item: any) {
   return item._type != null && ["TextColumn", "Calculation"].includes(item._type)
 }
 
-export function localizeString(str: any, locale: any) {
+export function localizeString(str: LocalizedString | null | undefined, locale?: string) {
   // If null, return empty string
   if (str == null) {
     return ""

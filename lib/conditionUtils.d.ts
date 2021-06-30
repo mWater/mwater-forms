@@ -5,9 +5,9 @@ export declare function applicableOps(lhsQuestion: any): {
     id: string;
     text: string;
 }[];
-declare function _rhsType(lhsQuestion: any, op: any): "text" | "number" | "choices" | "choice" | "date" | null;
+declare function _rhsType(lhsQuestion: any, op: any): "text" | "number" | "date" | "choices" | "choice" | null;
 export { _rhsType as rhsType };
 export declare function rhsChoices(lhsQuestion: any, op: any): any;
 export declare function validateCondition(cond: any, formDesign: any): boolean;
 export declare function summarizeConditions(conditions: never[] | undefined, formDesign: any, locale: any): string;
-export declare function summarizeCondition(cond: any, formDesign: any, locale: any): any;
+export declare function summarizeCondition(cond: any, formDesign: any, locale: any): string;
