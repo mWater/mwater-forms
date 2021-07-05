@@ -11,61 +11,59 @@ import { default as ResponseRow } from "./ResponseRow"
 import DefaultValueApplier from "./DefaultValueApplier"
 import VisibilityCalculator from "./VisibilityCalculator"
 import RandomAskedCalculator from "./RandomAskedCalculator"
-import * as formContextTypes from './formContextTypes'
+import * as formContextTypes from "./formContextTypes"
 
 interface FormComponentProps {
   /** Context to use for form. See docs/FormsContext.md */
-formCtx: any,
+  formCtx: any
   /** Form design. See schema.coffee */
-design: any,
+  design: any
   /** Form response data. See docs/Answer Formats.md */
-data: any,
+  data: any
   /** Called when response data changes */
-onDataChange: any,
+  onDataChange: any
   /** Schema to use, including form */
-schema: any,
+  schema: any
   /** The current deployment */
-deployment: string,
+  deployment: string
   /** e.g. "fr" */
-locale?: string,
+  locale?: string
   /** Called when submit is pressed */
-onSubmit?: any,
+  onSubmit?: any
   /** Optional save for later */
-onSaveLater?: any,
+  onSaveLater?: any
   /** Called when discard is pressed */
-onDiscard?: any,
+  onDiscard?: any
   /** To override submit label */
-submitLabel?: string,
+  submitLabel?: string
   /** To override Save For Later label */
-saveLaterLabel?: string,
+  saveLaterLabel?: string
   /** To override Discard label */
-discardLabel?: string,
+  discardLabel?: string
   /** Form-level entity to load */
-entity?: any,
+  entity?: any
   /** Type of form-level entity to load */
-entityType?: string,
+  entityType?: string
   /** True to render as a single page, not divided into sections */
-singlePageMode?: boolean,
+  singlePageMode?: boolean
   /** True to disable the confidential fields, used during editing responses with confidential data */
-disableConfidentialFields?: boolean,
+  disableConfidentialFields?: boolean
   /** Force all questions to be visible */
-forceAllVisible?: boolean
+  forceAllVisible?: boolean
 }
 
 interface FormComponentState {
-T: any,
-visibilityStructure: any
+  T: any
+  visibilityStructure: any
 }
 
 // Displays a form that can be filled out
 export default class FormComponent extends React.Component<FormComponentProps, FormComponentState> {
-  static initClass() {
-    this.childContextTypes = _.extend({}, formContextTypes, {
-      T: PropTypes.func.isRequired,
-      locale: PropTypes.string, // e.g. "fr"
-      disableConfidentialFields: PropTypes.bool
-    })
-  }
+  static childContextTypes = _.extend({}, formContextTypes, {
+    T: PropTypes.func.isRequired,
+    locale: PropTypes.string, // e.g. "fr"
+    disableConfidentialFields: PropTypes.bool
+  })
 
   constructor(props: any) {
     super(props)
@@ -188,7 +186,7 @@ export default class FormComponent extends React.Component<FormComponentProps, F
           return this.props.onDataChange(results.data)
         }
       }
-    );
+    )
   }
 
   handleNext = () => {
@@ -272,10 +270,7 @@ export default class FormComponent extends React.Component<FormComponentProps, F
                 : [R("span", { className: "glyphicon glyphicon-trash" }), " " + this.state.T("Discard")]
             )
           : undefined
-      );
+      )
     }
   }
 }
-
-
-FormComponent.initClass()

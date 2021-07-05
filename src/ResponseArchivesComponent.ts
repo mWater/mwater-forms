@@ -6,18 +6,18 @@ import ResponseAnswersComponent from "./ResponseAnswersComponent"
 import moment from "moment"
 
 interface ResponseArchivesComponentProps {
-  formDesign: any,
-  response: any,
+  formDesign: any
+  response: any
   /** Schema of the */
-schema: any,
+  schema: any
   /** Defaults to english */
-locale?: string,
+  locale?: string
   /** Localizer to use */
-T: any,
+  T: any
   /** Form context to use */
-formCtx: any,
+  formCtx: any
   /** The archives */
-history: any,
+  history: any
   eventsUsernames: any
 }
 
@@ -73,4 +73,4 @@ export default class ResponseArchivesComponent extends React.Component<ResponseA
       })
     )
   }
-};
+}

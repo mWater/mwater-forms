@@ -7,17 +7,15 @@ import * as formUtils from "../formUtils"
 import * as conditionUtils from "../conditionUtils"
 
 interface RadioAnswerComponentProps {
-  choices: any,
-  onAnswerChange: any,
+  choices: any
+  onAnswerChange: any
   /** See answer format */
-answer: any,
+  answer: any
   data: any
 }
 
 export default class RadioAnswerComponent extends React.Component<RadioAnswerComponentProps> {
-  static initClass() {
-    this.contextTypes = { locale: PropTypes.string } // Current locale (e.g. "en")
-  }
+  static contextTypes = { locale: PropTypes.string }
 
   focus() {
     // Nothing to focus
@@ -161,7 +159,4 @@ export default class RadioAnswerComponent extends React.Component<RadioAnswerCom
     }
     return null
   }
-};
-
-
-RadioAnswerComponent.initClass()
+}

@@ -6,18 +6,16 @@ const R = React.createElement
 import * as formUtils from "../formUtils"
 
 interface LikertAnswerComponentProps {
-  choices: any,
-  choices: any,
-  onAnswerChange: any,
+  choices: any
+  choices: any
+  onAnswerChange: any
   /** See answer format */
-answer: any,
+  answer: any
   data: any
 }
 
 export default class LikertAnswerComponent extends React.Component<LikertAnswerComponentProps> {
-  static initClass() {
-    this.contextTypes = { locale: PropTypes.string } // Current locale (e.g. "en")
-  }
+  static contextTypes = { locale: PropTypes.string }
 
   focus() {
     // Nothing to focus
@@ -110,7 +108,4 @@ export default class LikertAnswerComponent extends React.Component<LikertAnswerC
       )
     )
   }
-};
-
-
-LikertAnswerComponent.initClass()
+}

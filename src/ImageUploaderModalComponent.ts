@@ -9,42 +9,41 @@ import * as formUtils from "./formUtils"
 import ModalPopupComponent from "react-library/lib/ModalPopupComponent"
 
 interface ImageUploaderModalComponentProps {
-  apiUrl: string,
-  client?: string,
-  onCancel: any,
+  apiUrl: string
+  client?: string
+  onCancel: any
   /** Called with id of image */
-onSuccess: any,
+  onSuccess: any
   /** Localizer to use */
-T: any,
+  T: any
   forceCamera?: boolean
 }
 
 interface ImageUploaderModalComponentState {
-id: any,
-xhr: any,
-percentComplete: any
+  id: any
+  xhr: any
+  percentComplete: any
 }
 
 // Based on http://www.matlus.com/html5-file-upload-with-progress/
-export default class ImageUploaderModalComponent extends React.Component<ImageUploaderModalComponentProps, ImageUploaderModalComponentState> {
-  static initClass() {
-    // Static function to show modal easily
-    this.show = (apiUrl: any, client: any, T: any, success: any, forceCamera: any) => {
-      return ModalPopupComponent.show((onClose: any) => {
-        return R(ImageUploaderModalComponent, {
-          apiUrl,
-          client,
-          T,
-          forceCamera,
-          onCancel: onClose,
-          onSuccess: (id: any) => {
-            onClose()
-            return success(id)
-          }
-        });
-      });
-    }
-    // True to force use of camera
+export default class ImageUploaderModalComponent extends React.Component<
+  ImageUploaderModalComponentProps,
+  ImageUploaderModalComponentState
+> {
+  static show = (apiUrl: any, client: any, T: any, success: any, forceCamera: any) => {
+    return ModalPopupComponent.show((onClose: any) => {
+      return R(ImageUploaderModalComponent, {
+        apiUrl,
+        client,
+        T,
+        forceCamera,
+        onCancel: onClose,
+        onSuccess: (id: any) => {
+          onClose()
+          return success(id)
+        }
+      })
+    })
   }
 
   constructor(props: any) {
@@ -190,6 +189,3 @@ export default class ImageUploaderModalComponent extends React.Component<ImageUp
     )
   }
 }
-
-
-ImageUploaderModalComponent.initClass()

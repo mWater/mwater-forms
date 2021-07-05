@@ -7,13 +7,13 @@ import AsyncLoadComponent from "react-library/lib/AsyncLoadComponent"
 import RotationAwareImageComponent from "./RotationAwareImageComponent"
 
 interface ImagePopupComponentProps {
-  imageManager: any,
+  imageManager: any
   /** The image object */
-image: any,
-  onRemove?: any,
-  onSetCover?: any,
-  onRotate?: any,
-  onClose: any,
+  image: any
+  onRemove?: any
+  onSetCover?: any
+  onRotate?: any
+  onClose: any
   T: any
 }
 
@@ -32,7 +32,7 @@ export default class ImagePopupComponent extends AsyncLoadComponent<ImagePopupCo
         return callback({ url, error: false })
       },
       () => callback({ error: true })
-    );
+    )
   }
 
   render() {
@@ -97,4 +97,4 @@ export default class ImagePopupComponent extends AsyncLoadComponent<ImagePopupCo
       )
     )
   }
-};
+}

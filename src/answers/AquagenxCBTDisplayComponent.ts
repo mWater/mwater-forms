@@ -8,16 +8,14 @@ import { getHealthRiskString } from "./aquagenxCBTUtils"
 import ImageDisplayComponent from "../ImageDisplayComponent"
 
 interface AquagenxCBTDisplayComponentProps {
-  value?: any,
-  questionId: string,
-  onEdit?: any,
+  value?: any
+  questionId: string
+  onEdit?: any
   imageManager?: any
 }
 
 export default class AquagenxCBTDisplayComponent extends React.Component<AquagenxCBTDisplayComponentProps> {
-  static initClass() {
-    this.contextTypes = { T: PropTypes.func.isRequired } // Localizer to use
-  }
+  static contextTypes = { T: PropTypes.func.isRequired }
 
   handleClick = () => {
     if (this.props.onEdit) {
@@ -69,12 +67,7 @@ fill: ${compartmentColors[4]}; \
       "div",
       null,
       R("div", null, this.context.T("MPN/100ml") + ": ", R("b", null, mpn)),
-      R(
-        "div",
-        null,
-        this.context.T("Upper 95% Confidence Interval/100ml") + ": ",
-        R("b", null, cbtValues.confidence)
-      ),
+      R("div", null, this.context.T("Upper 95% Confidence Interval/100ml") + ": ", R("b", null, cbtValues.confidence)),
       R(
         "div",
         null,
@@ -114,7 +107,4 @@ fill: ${compartmentColors[4]}; \
       this.renderPhoto()
     )
   }
-};
-
-
-AquagenxCBTDisplayComponent.initClass()
+}

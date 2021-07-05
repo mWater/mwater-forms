@@ -7,18 +7,16 @@ import * as formUtils from "../formUtils"
 import * as conditionUtils from "../conditionUtils"
 
 interface MulticheckAnswerComponentProps {
-  choices: any,
+  choices: any
   /** See answer format */
-answer: any,
-  onAnswerChange: any,
+  answer: any
+  onAnswerChange: any
   data: any
 }
 
 // Multiple checkboxes where more than one can be checked
 export default class MulticheckAnswerComponent extends React.Component<MulticheckAnswerComponentProps> {
-  static initClass() {
-    this.contextTypes = { locale: PropTypes.string } // Current locale (e.g. "en")
-  }
+  static contextTypes = { locale: PropTypes.string }
 
   focus() {
     // Nothing to focus
@@ -93,11 +91,7 @@ export default class MulticheckAnswerComponent extends React.Component<Multichec
         },
         formUtils.localizeString(choice.label, this.context.locale),
         choice.hint
-          ? R(
-              "span",
-              { className: "checkbox-choice-hint" },
-              formUtils.localizeString(choice.hint, this.context.locale)
-            )
+          ? R("span", { className: "checkbox-choice-hint" }, formUtils.localizeString(choice.hint, this.context.locale))
           : undefined
       ),
 
@@ -112,7 +106,4 @@ export default class MulticheckAnswerComponent extends React.Component<Multichec
       _.map(this.props.choices, (choice) => this.renderChoice(choice))
     )
   }
-};
-
-
-MulticheckAnswerComponent.initClass()
+}

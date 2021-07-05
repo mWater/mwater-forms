@@ -27,7 +27,7 @@ export default AdminRegionSelectComponent = (function () {
       // Get countries initially
       return this.props.getSubAdminRegions(null, 0, (error: any, level0s: any) => {
         return this.setState({ level0s })
-      });
+      })
     }
 
     // Override to determine if a load is needed. Not called on mounting
@@ -59,20 +59,21 @@ export default AdminRegionSelectComponent = (function () {
           })
 
           // Get subadmins
-          return path.map((pathElem: any) => ((pathElem) => {
-            return props.getSubAdminRegions(pathElem.id, pathElem.level + 1, (error: any, subRegions: any) => {
-              if (error) {
-                return callback({ error })
-              }
+          return path.map((pathElem: any) =>
+            ((pathElem) => {
+              return props.getSubAdminRegions(pathElem.id, pathElem.level + 1, (error: any, subRegions: any) => {
+                if (error) {
+                  return callback({ error })
+                }
 
-              // Set levelNs to be list of values
-              const val = {}
-              val[`level${pathElem.level + 1}s`] = subRegions
-              return callback(val)
-            });
-          })(pathElem)
-          );
-        });
+                // Set levelNs to be list of values
+                const val = {}
+                val[`level${pathElem.level + 1}s`] = subRegions
+                return callback(val)
+              })
+            })(pathElem)
+          )
+        })
       } else {
         return callback({ error: null, path: [], busy: false })
       }

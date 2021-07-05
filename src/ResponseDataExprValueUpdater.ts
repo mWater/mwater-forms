@@ -133,7 +133,7 @@ export default class ResponseDataExprValueUpdater {
           }
         }
       )
-    });
+    })
   }
 
   /** Validates the data. Clean first. */
@@ -170,7 +170,7 @@ export default class ResponseDataExprValueUpdater {
           .then(resolve)
           .catch(reject)
       })
-    });
+    })
   }
 
   /** Updates the data of a response, given multiple expressions and their values.

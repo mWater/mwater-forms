@@ -13,26 +13,24 @@ import TextExprsComponent from "./TextExprsComponent"
 
 interface MatrixColumnCellComponentProps {
   /** Column. See designSchema */
-column: any,
+  column: any
   /** Current data of response (for roster entry if in roster) */
-data?: any,
+  data?: any
   /** ResponseRow object (for roster entry if in roster) */
-responseRow?: any,
+  responseRow?: any
   /** Answer of the cell */
-answer?: any,
+  answer?: any
   /** Called with new answer of cell */
-onAnswerChange: any,
+  onAnswerChange: any
   /** True if invalid */
-invalid?: boolean,
+  invalid?: boolean
   /** Schema to use, including form */
-schema: any
+  schema: any
 }
 
 // Cell of a matrix column
 export default class MatrixColumnCellComponent extends React.Component<MatrixColumnCellComponentProps> {
-  static initClass() {
-    this.contextTypes = { locale: PropTypes.string }
-  }
+  static contextTypes = { locale: PropTypes.string }
 
   handleValueChange = (value: any) => {
     return this.props.onAnswerChange(_.extend({}, this.props.answer, { value }))
@@ -164,7 +162,4 @@ export default class MatrixColumnCellComponent extends React.Component<MatrixCol
 
     return R("td", { className }, elem)
   }
-};
-
-
-MatrixColumnCellComponent.initClass()
+}

@@ -6,19 +6,17 @@ import { default as LocationEditorComponent } from "../LocationEditorComponent"
 import LocationFinder from "../LocationFinder"
 
 interface LocationAnswerComponentProps {
-  value?: any,
-  onValueChange: any,
-  disableSetByMap?: boolean,
+  value?: any
+  onValueChange: any
+  disableSetByMap?: boolean
   disableManualLatLng?: boolean
 }
 
 export default class LocationAnswerComponent extends React.Component<LocationAnswerComponentProps> {
-  static initClass() {
-    this.contextTypes = {
-      displayMap: PropTypes.func,
-      T: PropTypes.func.isRequired, // Localizer to use
-      locationFinder: PropTypes.object
-    }
+  static contextTypes = {
+    displayMap: PropTypes.func,
+    T: PropTypes.func.isRequired, // Localizer to use
+    locationFinder: PropTypes.object
   }
 
   focus() {
@@ -49,7 +47,7 @@ export default class LocationAnswerComponent extends React.Component<LocationAns
         newLoc.method = "map"
 
         return this.props.onValueChange(newLoc)
-      });
+      })
     }
   }
 
@@ -63,7 +61,4 @@ export default class LocationAnswerComponent extends React.Component<LocationAns
       T: this.context.T
     })
   }
-};
-
-
-LocationAnswerComponent.initClass()
+}

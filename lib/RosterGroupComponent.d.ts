@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import React from "react";
 interface RosterGroupComponentProps {
     /** Design of roster group. See schema */
@@ -13,7 +14,10 @@ interface RosterGroupComponentProps {
     schema: any;
 }
 export default class RosterGroupComponent extends React.Component<RosterGroupComponentProps> {
-    static initClass(): void;
+    static contextTypes: {
+        locale: PropTypes.Requireable<string>;
+        T: PropTypes.Validator<(...args: any[]) => any>;
+    };
     getAnswerId(): any;
     getAnswer(): any;
     handleAnswerChange: (answer: any) => any;

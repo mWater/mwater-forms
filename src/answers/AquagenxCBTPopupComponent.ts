@@ -50,20 +50,21 @@ const possibleCombinations = {
 }
 
 interface AquagenxCBTPopupComponentProps {
-  value?: any,
-  questionId: string,
-  onSave: any,
+  value?: any
+  questionId: string
+  onSave: any
   onClose: any
 }
 
 interface AquagenxCBTPopupComponentState {
-value: any
+  value: any
 }
 
-export default class AquagenxCBTPopupComponent extends React.Component<AquagenxCBTPopupComponentProps, AquagenxCBTPopupComponentState> {
-  static initClass() {
-    this.contextTypes = { T: PropTypes.func.isRequired } // Localizer to use
-  }
+export default class AquagenxCBTPopupComponent extends React.Component<
+  AquagenxCBTPopupComponentProps,
+  AquagenxCBTPopupComponentState
+> {
+  static contextTypes = { T: PropTypes.func.isRequired }
 
   constructor(props: any) {
     super(props)
@@ -104,7 +105,7 @@ export default class AquagenxCBTPopupComponent extends React.Component<AquagenxC
       .find("#compartment5")
       .click((ev: any) => {
         return this.handleCompartmentClick("c5")
-      });
+      })
   }
 
   handleCompartmentClick(compartmentField: any) {
@@ -194,12 +195,7 @@ fill: ${hoverColors[4]}; \
       "div",
       null,
       R("div", null, this.context.T("MPN/100ml") + ": ", R("b", null, mpn)),
-      R(
-        "div",
-        null,
-        this.context.T("Upper 95% Confidence Interval/100ml") + ": ",
-        R("b", null, cbtValues.confidence)
-      ),
+      R("div", null, this.context.T("Upper 95% Confidence Interval/100ml") + ": ", R("b", null, cbtValues.confidence)),
       R(
         "div",
         null,
@@ -241,9 +237,6 @@ fill: ${hoverColors[4]}; \
         R("div", { dangerouslySetInnerHTML: { __html: aquagenxCBTSVGString } }),
         this.renderInfo()
       )
-    );
+    )
   }
 }
-
-
-AquagenxCBTPopupComponent.initClass()

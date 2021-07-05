@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import React from "react";
 interface UnitsAnswerComponentProps {
     answer: any;
@@ -13,7 +14,9 @@ interface UnitsAnswerComponentState {
     quantity: any;
 }
 export default class UnitsAnswerComponent extends React.Component<UnitsAnswerComponentProps, UnitsAnswerComponentState> {
-    static initClass(): void;
+    static contextTypes: {
+        locale: PropTypes.Requireable<string>;
+    };
     constructor(props: any);
     componentWillReceiveProps(nextProps: any): void;
     focus(): any;

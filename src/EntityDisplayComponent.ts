@@ -5,18 +5,18 @@ import AsyncLoadComponent from "react-library/lib/AsyncLoadComponent"
 
 interface EntityDisplayComponentProps {
   /** _id of entity */
-entityType: string,
+  entityType: string
   /** _id of entity */
-entityId?: string,
+  entityId?: string
   /** code of entity if _id not present */
-entityCode?: string,
+  entityCode?: string
   /** True to render in well if present */
-displayInWell?: boolean,
+  displayInWell?: boolean
   /** Gets an entity by id (entityType, entityId, callback). Required if entityId */
-getEntityById?: any,
+  getEntityById?: any
   /** Gets an entity by code (entityType, entityCode, callback). Required if entityCode */
-getEntityByCode?: any,
-  renderEntityView: any,
+  getEntityByCode?: any
+  renderEntityView: any
   T: any
 }
 
@@ -41,11 +41,11 @@ export default class EntityDisplayComponent extends AsyncLoadComponent<EntityDis
     if (props.entityId) {
       return this.props.getEntityById(props.entityType, props.entityId, (entity: any) => {
         return callback({ entity })
-      });
+      })
     } else {
       return this.props.getEntityByCode(props.entityType, props.entityCode, (entity: any) => {
         return callback({ entity })
-      });
+      })
     }
   }
 
@@ -72,4 +72,4 @@ export default class EntityDisplayComponent extends AsyncLoadComponent<EntityDis
       this.props.renderEntityView(this.props.entityType, this.state.entity)
     )
   }
-};
+}

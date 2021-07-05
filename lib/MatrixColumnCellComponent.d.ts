@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import React from "react";
 interface MatrixColumnCellComponentProps {
     /** Column. See designSchema */
@@ -16,7 +17,9 @@ interface MatrixColumnCellComponentProps {
     schema: any;
 }
 export default class MatrixColumnCellComponent extends React.Component<MatrixColumnCellComponentProps> {
-    static initClass(): void;
+    static contextTypes: {
+        locale: PropTypes.Requireable<string>;
+    };
     handleValueChange: (value: any) => any;
     areConditionsValid(choice: any): boolean;
     render(): React.DetailedReactHTMLElement<{

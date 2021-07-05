@@ -8,24 +8,25 @@ import RotationAwareImageComponent from "../RotationAwareImageComponent"
 
 interface ImageAnswerComponentProps {
   /** e.g. { id: someid, caption: caption } */
-image?: any,
+  image?: any
   /** Called when image changed */
-onImageChange?: any,
+  onImageChange?: any
   consentPrompt?: string
 }
 
 interface ImageAnswerComponentState {
-modalOpen: any
+  modalOpen: any
 }
 
 // Edit an image
-export default class ImageAnswerComponent extends React.Component<ImageAnswerComponentProps, ImageAnswerComponentState> {
-  static initClass() {
-    this.contextTypes = {
-      imageManager: PropTypes.object.isRequired,
-      imageAcquirer: PropTypes.object,
-      T: PropTypes.func.isRequired // Localizer to use
-    }
+export default class ImageAnswerComponent extends React.Component<
+  ImageAnswerComponentProps,
+  ImageAnswerComponentState
+> {
+  static contextTypes = {
+    imageManager: PropTypes.object.isRequired,
+    imageAcquirer: PropTypes.object,
+    T: PropTypes.func.isRequired // Localizer to use
   }
 
   constructor(props: any) {
@@ -58,7 +59,7 @@ export default class ImageAnswerComponent extends React.Component<ImageAnswerCom
         return this.props.onImageChange({ id, rotation })
       },
       (err: any) => alert(err)
-    );
+    )
   }
 
   renderModal() {
@@ -117,6 +118,3 @@ export default class ImageAnswerComponent extends React.Component<ImageAnswerCom
     )
   }
 }
-
-
-ImageAnswerComponent.initClass()

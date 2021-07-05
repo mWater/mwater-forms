@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import React from "react";
 interface SiteAnswerComponentProps {
     value?: any;
@@ -8,7 +9,13 @@ interface SiteAnswerComponentState {
     text: any;
 }
 export default class SiteAnswerComponent extends React.Component<SiteAnswerComponentProps, SiteAnswerComponentState> {
-    static initClass(): void;
+    static contextTypes: {
+        selectEntity: PropTypes.Requireable<(...args: any[]) => any>;
+        getEntityById: PropTypes.Validator<(...args: any[]) => any>;
+        getEntityByCode: PropTypes.Validator<(...args: any[]) => any>;
+        renderEntitySummaryView: PropTypes.Validator<(...args: any[]) => any>;
+        T: PropTypes.Validator<(...args: any[]) => any>;
+    };
     constructor(props: any);
     componentWillReceiveProps(nextProps: any): void;
     focus(): any;

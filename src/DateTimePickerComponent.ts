@@ -12,19 +12,19 @@ import "eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min
 
 interface DateTimePickerComponentProps {
   /** date format */
-format?: string,
+  format?: string
   /** do we need time picker?  (Only useful if format is not set) */
-timepicker?: boolean,
+  timepicker?: boolean
   /** Show the today button */
-showTodayButton?: boolean,
+  showTodayButton?: boolean
   /** Show the clear button */
-showClear?: boolean,
+  showClear?: boolean
   /** callback on date change (argument: moment date) */
-onChange?: any,
+  onChange?: any
   /** date as moment */
-date?: any,
+  date?: any
   /** default date as moment */
-defaultDate?: any
+  defaultDate?: any
 }
 
 export default class DateTimePickerComponent extends React.Component<DateTimePickerComponentProps> {

@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import React from "react";
 interface RadioAnswerComponentProps {
     choices: any;
@@ -7,7 +8,9 @@ interface RadioAnswerComponentProps {
     data: any;
 }
 export default class RadioAnswerComponent extends React.Component<RadioAnswerComponentProps> {
-    static initClass(): void;
+    static contextTypes: {
+        locale: PropTypes.Requireable<string>;
+    };
     focus(): null;
     handleValueChange: (choice: any) => any;
     handleSpecifyChange: (id: any, ev: any) => any;

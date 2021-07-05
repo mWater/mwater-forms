@@ -45,7 +45,7 @@ export default ValidationCompiler = class ValidationCompiler {
             return this.compileValidationMessage(val)
           }
           return null
-        };
+        }
       case "regex":
         return (answer: any) => {
           const value = answer != null && answer.value != null ? answer.value : ""
@@ -53,7 +53,7 @@ export default ValidationCompiler = class ValidationCompiler {
             return null
           }
           return this.compileValidationMessage(val)
-        };
+        }
       case "range":
         return (answer: any) => {
           let value = answer != null && answer.value != null ? answer.value : 0
@@ -69,7 +69,7 @@ export default ValidationCompiler = class ValidationCompiler {
             return this.compileValidationMessage(val)
           }
           return null
-        };
+        }
       default:
         throw new Error("Unknown validation op " + val.op)
     }
@@ -86,6 +86,6 @@ export default ValidationCompiler = class ValidationCompiler {
       }
 
       return null
-    };
+    }
   }
 }

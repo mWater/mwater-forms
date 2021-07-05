@@ -6,24 +6,22 @@ import * as formUtils from "../formUtils"
 import EntityDisplayComponent from "../EntityDisplayComponent"
 
 interface SiteAnswerComponentProps {
-  value?: any,
-  onValueChange: any,
+  value?: any
+  onValueChange: any
   siteTypes?: any
 }
 
 interface SiteAnswerComponentState {
-text: any
+  text: any
 }
 
 export default class SiteAnswerComponent extends React.Component<SiteAnswerComponentProps, SiteAnswerComponentState> {
-  static initClass() {
-    this.contextTypes = {
-      selectEntity: PropTypes.func,
-      getEntityById: PropTypes.func.isRequired,
-      getEntityByCode: PropTypes.func.isRequired,
-      renderEntitySummaryView: PropTypes.func.isRequired,
-      T: PropTypes.func.isRequired // Localizer to use
-    }
+  static contextTypes = {
+    selectEntity: PropTypes.func,
+    getEntityById: PropTypes.func.isRequired,
+    getEntityByCode: PropTypes.func.isRequired,
+    renderEntitySummaryView: PropTypes.func.isRequired,
+    T: PropTypes.func.isRequired // Localizer to use
   }
 
   constructor(props: any) {
@@ -88,9 +86,9 @@ export default class SiteAnswerComponent extends React.Component<SiteAnswerCompo
             return
           }
           return this.props.onValueChange({ code: entity.code })
-        });
+        })
       }
-    });
+    })
   }
 
   handleChange = (ev: any) => {
@@ -151,9 +149,6 @@ export default class SiteAnswerComponent extends React.Component<SiteAnswerCompo
         renderEntityView: this.context.renderEntitySummaryView,
         T: this.context.T
       })
-    );
+    )
   }
 }
-
-
-SiteAnswerComponent.initClass()

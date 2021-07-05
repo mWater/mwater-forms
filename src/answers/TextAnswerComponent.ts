@@ -3,15 +3,15 @@ import React from "react"
 const R = React.createElement
 
 interface TextAnswerComponentProps {
-  value?: string,
-  format: string,
-  readOnly?: boolean,
-  onValueChange: any,
+  value?: string
+  format: string
+  readOnly?: boolean
+  onValueChange: any
   onNextOrComments?: any
 }
 
 interface TextAnswerComponentState {
-text: any
+  text: any
 }
 
 export default class TextAnswerComponent extends React.Component<TextAnswerComponentProps, TextAnswerComponentState> {

@@ -5,7 +5,7 @@ import { Schema } from "mwater-expressions"
  * Implements the type of row object required by mwater-expressions' PromiseExprEvaluator. Allows expressions to be evaluated
  * on an entity
  */
- export default class EntityRow {
+export default class EntityRow {
   /**  e.g. "water_point" */
   entityType: string
   /**  object of entity */
@@ -80,7 +80,7 @@ import { Schema } from "mwater-expressions"
         // Get the entity
         entityType = column.idTable!.substr(9)
         entity = await new Promise((resolve, reject) => {
-          return this.getEntityById(entityType, value, (entity: any) => resolve(entity));
+          return this.getEntityById(entityType, value, (entity: any) => resolve(entity))
         })
         if (entity) {
           return new EntityRow({
@@ -106,7 +106,7 @@ import { Schema } from "mwater-expressions"
         // Get the entity
         entityType = column.join!.toTable.substr(9)
         entity = await new Promise((resolve, reject) => {
-          return this.getEntityById(entityType, value, (entity: any) => resolve(entity));
+          return this.getEntityById(entityType, value, (entity: any) => resolve(entity))
         })
         if (entity) {
           return new EntityRow({

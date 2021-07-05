@@ -11,18 +11,21 @@ import AquagenxCBTDisplayComponent from "./AquagenxCBTDisplayComponent"
 
 interface AquagenxCBTAnswerComponentProps {
   /** Value contains two entries: image and cbt */
-value?: any,
-  onValueChange: any,
+  value?: any
+  onValueChange: any
   questionId: string
 }
 
 interface AquagenxCBTAnswerComponentState {
-imageModal: any,
-aquagenxModal: any
+  imageModal: any
+  aquagenxModal: any
 }
 
 // Based on https://www.aquagenx.com/wp-content/uploads/2013/12/Aquagenx-CBT-Instructions-v3.pdf
-export default class AquagenxCBTAnswerComponent extends React.Component<AquagenxCBTAnswerComponentProps, AquagenxCBTAnswerComponentState> {
+export default class AquagenxCBTAnswerComponent extends React.Component<
+  AquagenxCBTAnswerComponentProps,
+  AquagenxCBTAnswerComponentState
+> {
   static contextTypes = {
     imageManager: PropTypes.object.isRequired,
     imageAcquirer: PropTypes.object,
@@ -77,7 +80,7 @@ export default class AquagenxCBTAnswerComponent extends React.Component<Aquagenx
       (err: any) => {
         throw err
       }
-    );
+    )
   }
 
   handleEditClick = () => {

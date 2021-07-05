@@ -8,41 +8,42 @@ import ezlocalize from "ez-localize"
 import ResponseAnswersComponent from "./ResponseAnswersComponent"
 import ResponseArchivesComponent from "./ResponseArchivesComponent"
 import ModalPopupComponent from "react-library/lib/ModalPopupComponent"
-import * as formContextTypes from './formContextTypes'
+import * as formContextTypes from "./formContextTypes"
 
 interface ResponseDisplayComponentProps {
-  form: any,
-  response: any,
+  form: any
+  response: any
   /** Schema including the form */
-schema: any,
-  formCtx: any,
-  apiUrl?: string,
+  schema: any
+  formCtx: any
+  apiUrl?: string
   /** Defaults to english */
-locale?: string,
+  locale?: string
   /** Current login (contains user, username, groups) */
-login?: any,
+  login?: any
   /** True to display complete history always */
-forceCompleteHistory?: boolean
+  forceCompleteHistory?: boolean
 }
 
 interface ResponseDisplayComponentState {
-T: any,
-eventsUsernames: any,
-loadingUsernames: any,
-showCompleteHistory: any,
-history: any,
-showArchive: any,
-showPrevAnswers: any
+  T: any
+  eventsUsernames: any
+  loadingUsernames: any
+  showCompleteHistory: any
+  history: any
+  showArchive: any
+  showPrevAnswers: any
 }
 
 // Static view of a response
-export default class ResponseDisplayComponent extends React.Component<ResponseDisplayComponentProps, ResponseDisplayComponentState> {
-  static initClass() {
-    this.childContextTypes = _.extend({}, formContextTypes, {
-      T: PropTypes.func.isRequired,
-      locale: PropTypes.string // e.g. "fr"
-    })
-  }
+export default class ResponseDisplayComponent extends React.Component<
+  ResponseDisplayComponentProps,
+  ResponseDisplayComponentState
+> {
+  static childContextTypes = _.extend({}, formContextTypes, {
+    T: PropTypes.func.isRequired,
+    locale: PropTypes.string // e.g. "fr"
+  })
 
   constructor(props: any) {
     super(props)
@@ -90,7 +91,7 @@ export default class ResponseDisplayComponent extends React.Component<ResponseDi
       })
       .fail((xhr: any) => {
         return this.setState({ loadingHistory: false, history: null })
-      });
+      })
   }
 
   // Load user names related to events
@@ -109,7 +110,7 @@ export default class ResponseDisplayComponent extends React.Component<ResponseDi
         })
         .fail((xhr: any) => {
           return this.setState({ loadingUsernames: false, eventsUsernames: null })
-        });
+        })
     }
   }
 
@@ -297,13 +298,7 @@ export default class ResponseDisplayComponent extends React.Component<ResponseDi
     return R(
       "div",
       { style: { paddingBottom: 10 } },
-      R(
-        "div",
-        { key: "user" },
-        this.state.T("User"),
-        ": ",
-        R("b", null, this.props.response.username || "Anonymous")
-      ),
+      R("div", { key: "user" }, this.state.T("User"), ": ", R("b", null, this.props.response.username || "Anonymous")),
       R("div", { key: "code" }, this.state.T("Response Id"), ": ", R("b", null, this.props.response.code)),
       this.props.response && this.props.response.submittedOn
         ? R(
@@ -315,13 +310,7 @@ export default class ResponseDisplayComponent extends React.Component<ResponseDi
           )
         : undefined,
       this.props.response.ipAddress
-        ? R(
-            "div",
-            { key: "ipAddress" },
-            this.state.T("IP Address"),
-            ": ",
-            R("b", null, this.props.response.ipAddress)
-          )
+        ? R("div", { key: "ipAddress" }, this.state.T("IP Address"), ": ", R("b", null, this.props.response.ipAddress))
         : undefined,
       this.renderStatus(),
       this.renderHistory(),
@@ -355,6 +344,3 @@ export default class ResponseDisplayComponent extends React.Component<ResponseDi
     )
   }
 }
-
-
-ResponseDisplayComponent.initClass()

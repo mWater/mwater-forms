@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import React from "react";
 interface SiteColumnAnswerComponentProps {
     value?: any;
@@ -5,7 +6,13 @@ interface SiteColumnAnswerComponentProps {
     siteType: string;
 }
 export default class SiteColumnAnswerComponent extends React.Component<SiteColumnAnswerComponentProps> {
-    static initClass(): void;
+    static contextTypes: {
+        selectEntity: PropTypes.Requireable<(...args: any[]) => any>;
+        getEntityById: PropTypes.Validator<(...args: any[]) => any>;
+        getEntityByCode: PropTypes.Validator<(...args: any[]) => any>;
+        renderEntityListItemView: PropTypes.Validator<(...args: any[]) => any>;
+        T: PropTypes.Validator<(...args: any[]) => any>;
+    };
     handleSelectClick: () => any;
     handleClearClick: () => any;
     render(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement> | React.DetailedReactHTMLElement<{

@@ -4,8 +4,8 @@ import React from "react"
 const R = React.createElement
 
 interface TextListAnswerComponentProps {
-  value?: any,
-  onValueChange: any,
+  value?: any
+  onValueChange: any
   onNextOrComments?: any
 }
 
@@ -157,6 +157,6 @@ export default class TextListAnswerComponent extends React.Component<TextListAns
           )
         )
       )
-    );
+    )
   }
-};
+}

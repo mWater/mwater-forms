@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import React from "react";
 interface InstructionsComponentProps {
     /** Design of instructions. See schema */
@@ -9,7 +10,9 @@ interface InstructionsComponentProps {
     schema: any;
 }
 export default class InstructionsComponent extends React.Component<InstructionsComponentProps> {
-    static initClass(): void;
+    static contextTypes: {
+        locale: PropTypes.Requireable<string>;
+    };
     shouldComponentUpdate(nextProps: any, nextState: any, nextContext: any): boolean;
     render(): React.DetailedReactHTMLElement<{
         className: string;

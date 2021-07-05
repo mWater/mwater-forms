@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import React from "react";
 interface AquagenxCBTDisplayComponentProps {
     value?: any;
@@ -6,7 +7,9 @@ interface AquagenxCBTDisplayComponentProps {
     imageManager?: any;
 }
 export default class AquagenxCBTDisplayComponent extends React.Component<AquagenxCBTDisplayComponentProps> {
-    static initClass(): void;
+    static contextTypes: {
+        T: PropTypes.Validator<(...args: any[]) => any>;
+    };
     handleClick: () => any;
     renderStyle(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>;
     renderInfo(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>;

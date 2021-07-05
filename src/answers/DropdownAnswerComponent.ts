@@ -7,17 +7,15 @@ import * as formUtils from "../formUtils"
 import * as conditionUtils from "../conditionUtils"
 
 interface DropdownAnswerComponentProps {
-  choices: any,
-  onAnswerChange: any,
+  choices: any
+  onAnswerChange: any
   /** See answer format */
-answer: any,
+  answer: any
   data: any
 }
 
 export default class DropdownAnswerComponent extends React.Component<DropdownAnswerComponentProps> {
-  static initClass() {
-    this.contextTypes = { locale: PropTypes.string } // Current locale (e.g. "en")
-  }
+  static contextTypes = { locale: PropTypes.string }
 
   focus() {
     return this.select?.focus()
@@ -92,9 +90,6 @@ export default class DropdownAnswerComponent extends React.Component<DropdownAns
       ),
 
       this.renderSpecify()
-    );
+    )
   }
-};
-
-
-DropdownAnswerComponent.initClass()
+}

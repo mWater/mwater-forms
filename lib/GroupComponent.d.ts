@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import React from "react";
 interface GroupComponentProps {
     /** Design of group. See schema */
@@ -15,7 +16,9 @@ interface GroupComponentProps {
     schema: any;
 }
 export default class GroupComponent extends React.Component<GroupComponentProps> {
-    static initClass(): void;
+    static contextTypes: {
+        locale: PropTypes.Requireable<string>;
+    };
     validate(scrollToFirstInvalid: any): any;
     render(): any;
 }

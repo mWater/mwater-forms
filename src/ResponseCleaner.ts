@@ -80,7 +80,7 @@ export default ResponseCleaner = class ResponseCleaner {
 
             return cb(null)
           }
-        );
+        )
       },
       (error) => {
         if (error) {
@@ -89,7 +89,7 @@ export default ResponseCleaner = class ResponseCleaner {
 
         return callback(null, { data: newData, visibilityStructure: newVisibilityStructure })
       }
-    );
+    )
   }
 
   // Remove data entries for all the invisible questions

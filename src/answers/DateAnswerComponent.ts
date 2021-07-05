@@ -7,17 +7,17 @@ import moment from "moment"
 import DateTimePickerComponent from "../DateTimePickerComponent"
 
 interface DateAnswerComponentProps {
-  value?: string,
-  onValueChange: any,
-  format?: string,
-  placeholder?: string,
+  value?: string
+  onValueChange: any
+  format?: string
+  placeholder?: string
   onNextOrComments?: any
 }
 
 interface DateAnswerComponentState {
-isoFormat: any,
-detailLevel: any,
-placeholder: any
+  isoFormat: any
+  detailLevel: any
+  placeholder: any
 }
 
 export default class DateAnswerComponent extends React.Component<DateAnswerComponentProps, DateAnswerComponentState> {
@@ -159,4 +159,3 @@ export default class DateAnswerComponent extends React.Component<DateAnswerCompo
     })
   }
 }
-

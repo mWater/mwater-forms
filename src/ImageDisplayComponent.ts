@@ -6,19 +6,22 @@ import RotationAwareImageComponent from "./RotationAwareImageComponent"
 
 interface ImageDisplayComponentProps {
   /** Image object to display */
-image: any,
-  imageManager: any,
+  image: any
+  imageManager: any
   T: any
 }
 
 interface ImageDisplayComponentState {
-error: any,
-url: any,
-popup: any
+  error: any
+  url: any
+  popup: any
 }
 
 // Displays an image
-export default class ImageDisplayComponent extends React.Component<ImageDisplayComponentProps, ImageDisplayComponentState> {
+export default class ImageDisplayComponent extends React.Component<
+  ImageDisplayComponentProps,
+  ImageDisplayComponentState
+> {
   constructor(props: any) {
     super(props)
     this.state = { error: false, url: null, popup: false }
@@ -39,7 +42,7 @@ export default class ImageDisplayComponent extends React.Component<ImageDisplayC
         return this.setState({ url, error: false })
       },
       () => this.setState({ error: true })
-    );
+    )
   }
 
   handleImgError = () => {

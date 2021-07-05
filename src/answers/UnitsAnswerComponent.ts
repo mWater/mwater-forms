@@ -6,25 +6,26 @@ import * as formUtils from "../formUtils"
 import ui from "react-library/lib/bootstrap"
 
 interface UnitsAnswerComponentProps {
-  answer: any,
-  onValueChange: any,
-  units: any,
-  defaultUnits?: string,
-  prefix: boolean,
-  decimal: boolean,
+  answer: any
+  onValueChange: any
+  units: any
+  defaultUnits?: string
+  prefix: boolean
+  decimal: boolean
   onNextOrComments?: any
 }
 
 interface UnitsAnswerComponentState {
-selectedUnits: any,
-quantity: any
+  selectedUnits: any
+  quantity: any
 }
 
 // Not tested
-export default class UnitsAnswerComponent extends React.Component<UnitsAnswerComponentProps, UnitsAnswerComponentState> {
-  static initClass() {
-    this.contextTypes = { locale: PropTypes.string } // Current locale (e.g. "en")
-  }
+export default class UnitsAnswerComponent extends React.Component<
+  UnitsAnswerComponentProps,
+  UnitsAnswerComponentState
+> {
+  static contextTypes = { locale: PropTypes.string }
 
   constructor(props: any) {
     super(props)
@@ -149,20 +150,14 @@ export default class UnitsAnswerComponent extends React.Component<UnitsAnswerCom
                 value: this.state.selectedUnits === null ? "" : this.state.selectedUnits
               },
               !this.props.defaultUnits ? R("option", { value: "" }, "Select units") : undefined,
-              this.props.units.map((unit: any) => R(
-                "option",
-                { key: unit.id, value: unit.id },
-                formUtils.localizeString(unit.label, this.context.locale)
-              )
+              this.props.units.map((unit: any) =>
+                R("option", { key: unit.id, value: unit.id }, formUtils.localizeString(unit.label, this.context.locale))
               )
             )
           ),
           this.props.prefix ? this.createNumberInput() : undefined
         )
       )
-    );
+    )
   }
 }
-
-
-UnitsAnswerComponent.initClass()

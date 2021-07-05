@@ -7,15 +7,15 @@ import * as formUtils from "./formUtils"
 import * as formRenderUtils from "./formRenderUtils"
 
 interface ItemListComponentProps {
-  contents: any,
+  contents: any
   /** Current data of response (for roster entry if in roster) */
-data?: any,
+  data?: any
   /** ResponseRow object (for roster entry if in roster) */
-responseRow: any,
-  onDataChange: any,
-  onNext?: any,
+  responseRow: any
+  onDataChange: any
+  onNext?: any
   /** (id) tells if an item is visible or not */
-isVisible: any,
+  isVisible: any
   schema: any
 }
 
@@ -66,11 +66,11 @@ export default class ItemListComponent extends React.Component<ItemListComponent
         (c: any) => {
           return (this.itemRefs[item._id] = c)
         }
-      );
+      )
     }
   }
 
   render() {
     return R("div", null, _.map(this.props.contents, this.renderItem))
   }
-};
+}

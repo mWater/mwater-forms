@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import React from "react";
 interface LikertAnswerComponentProps {
     choices: any;
@@ -8,7 +9,9 @@ interface LikertAnswerComponentProps {
     data: any;
 }
 export default class LikertAnswerComponent extends React.Component<LikertAnswerComponentProps> {
-    static initClass(): void;
+    static contextTypes: {
+        locale: PropTypes.Requireable<string>;
+    };
     focus(): null;
     handleValueChange: (choice: any, item: any) => any;
     renderChoice(item: any, choice: any): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>;

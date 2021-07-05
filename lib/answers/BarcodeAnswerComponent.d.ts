@@ -1,10 +1,14 @@
+import PropTypes from "prop-types";
 import React from "react";
 interface BarcodeAnswerComponentProps {
     value?: string;
     onValueChange: any;
 }
 export default class BarcodeAnswerComponent extends React.Component<BarcodeAnswerComponentProps> {
-    static initClass(): void;
+    static contextTypes: {
+        scanBarcode: PropTypes.Requireable<(...args: any[]) => any>;
+        T: PropTypes.Validator<(...args: any[]) => any>;
+    };
     focus(): null;
     handleValueChange: () => any;
     handleScanClick: () => any;

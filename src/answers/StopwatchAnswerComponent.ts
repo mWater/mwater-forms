@@ -49,18 +49,21 @@ function getDisplayValue(ticks: any) {
 }
 
 interface StopwatchAnswerComponentProps {
-  onValueChange: any,
-  value?: number,
+  onValueChange: any
+  value?: number
   T: any
 }
 
 interface StopwatchAnswerComponentState {
-timerId: any,
-elapsedTicks: any
+  timerId: any
+  elapsedTicks: any
 }
 
 // Creates a stopwatch timer component on the form, can be start/stop/reset
-export default class StopwatchAnswerComponent extends React.Component<StopwatchAnswerComponentProps, StopwatchAnswerComponentState> {
+export default class StopwatchAnswerComponent extends React.Component<
+  StopwatchAnswerComponentProps,
+  StopwatchAnswerComponentState
+> {
   constructor(props: any) {
     super(props)
     const ticks = toTicks(props.value)

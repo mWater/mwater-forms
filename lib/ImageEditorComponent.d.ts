@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import React from "react";
 import ImageAnswerComponent from "./answers/ImageAnswerComponent";
 interface ImageEditorComponentProps {
@@ -13,7 +14,11 @@ interface ImageEditorComponentProps {
     consentPrompt?: string;
 }
 export default class ImageEditorComponent extends React.Component<ImageEditorComponentProps> {
-    static initClass(): void;
+    static childContextTypes: {
+        imageManager: PropTypes.Validator<object>;
+        imageAcquirer: PropTypes.Requireable<object>;
+        T: PropTypes.Validator<(...args: any[]) => any>;
+    };
     getChildContext(): {
         imageManager: any;
         imageAcquirer: any;

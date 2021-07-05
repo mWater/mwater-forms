@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import React from "react";
 interface TimerComponentProps {
     timer: any;
@@ -7,7 +8,10 @@ interface TimerComponentState {
     elapsedTicks: any;
 }
 export default class TimerComponent extends React.Component<TimerComponentProps, TimerComponentState> {
-    static initClass(): void;
+    static contextTypes: {
+        T: PropTypes.Validator<(...args: any[]) => any>;
+        locale: PropTypes.Requireable<string>;
+    };
     constructor(props: any);
     componentWillReceiveProps(nextProps: any): void;
     handleStartClick: () => void;

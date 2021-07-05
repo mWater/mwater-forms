@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import React from "react";
 interface ImageAnswerComponentProps {
     /** e.g. { id: someid, caption: caption } */
@@ -10,7 +11,11 @@ interface ImageAnswerComponentState {
     modalOpen: any;
 }
 export default class ImageAnswerComponent extends React.Component<ImageAnswerComponentProps, ImageAnswerComponentState> {
-    static initClass(): void;
+    static contextTypes: {
+        imageManager: PropTypes.Validator<object>;
+        imageAcquirer: PropTypes.Requireable<object>;
+        T: PropTypes.Validator<(...args: any[]) => any>;
+    };
     constructor(props: any);
     focus(): null;
     handleClickImage: () => void;

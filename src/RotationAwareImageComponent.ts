@@ -5,10 +5,10 @@ import AsyncLoadComponent from "react-library/lib/AsyncLoadComponent"
 import classNames from "classnames"
 
 interface RotationAwareImageComponentProps {
-  image: any,
-  imageManager: any,
-  thumbnail?: boolean,
-  height?: number,
+  image: any
+  imageManager: any
+  thumbnail?: boolean
+  height?: number
   onClick?: any
 }
 
@@ -27,7 +27,7 @@ export default class RotationAwareImageComponent extends AsyncLoadComponent<Rota
           return callback({ url, error: false })
         },
         () => callback({ error: true })
-      );
+      )
     } else {
       return props.imageManager.getImageUrl(
         props.image.id,
@@ -35,7 +35,7 @@ export default class RotationAwareImageComponent extends AsyncLoadComponent<Rota
           return callback({ url, error: false })
         },
         () => callback({ error: true })
-      );
+      )
     }
   }
 
@@ -89,9 +89,9 @@ export default class RotationAwareImageComponent extends AsyncLoadComponent<Rota
           onClick: this.props.onClick,
           alt: this.props.image.caption || ""
         })
-      );
+      )
     } else {
       return null
     }
   }
-};
+}

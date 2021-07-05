@@ -22,7 +22,14 @@ export default ResponseDataValidator = class ResponseDataValidator {
 
   // Validates an parent row
   //   keyPrefix: the part before the row id in the visibility structure. For rosters
-  async validateParentItem(parentItem: any, visibilityStructure: any, data: any, schema: any, responseRow: any, keyPrefix: any) {
+  async validateParentItem(
+    parentItem: any,
+    visibilityStructure: any,
+    data: any,
+    schema: any,
+    responseRow: any,
+    keyPrefix: any
+  ) {
     // Create validator
     const answerValidator = new AnswerValidator(schema, responseRow)
 

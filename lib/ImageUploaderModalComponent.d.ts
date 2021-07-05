@@ -16,7 +16,7 @@ interface ImageUploaderModalComponentState {
     percentComplete: any;
 }
 export default class ImageUploaderModalComponent extends React.Component<ImageUploaderModalComponentProps, ImageUploaderModalComponentState> {
-    static initClass(): void;
+    static show: (apiUrl: any, client: any, T: any, success: any, forceCamera: any) => any;
     constructor(props: any);
     handleUploadProgress: (evt: any) => void;
     handleUploadComplete: (evt: any) => any;

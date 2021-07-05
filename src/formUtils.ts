@@ -32,7 +32,7 @@ export type AnswerType =
 
 // Create ~ 128-bit uid without dashes
 export function createUid() {
-  return uuid().replace(/-/g, "");
+  return uuid().replace(/-/g, "")
 }
 
 // Create short unique id, with ~42 bits randomness to keep unique amoung a few choices
@@ -79,7 +79,7 @@ export function createBase32TimeCode(date: any) {
 }
 
 export function isQuestion(item: any) {
-  return item._type != null && item._type.match(/Question$/);
+  return item._type != null && item._type.match(/Question$/)
 }
 
 export function isExpression(item: any) {
@@ -156,7 +156,7 @@ export function getRosterIds(formDesign: any) {
       rosterIds.push(item.rosterId || item._id)
     }
     if (item.contents) {
-      return item.contents.map((subitem: any) => recurse(subitem));
+      return item.contents.map((subitem: any) => recurse(subitem))
     }
   }
 

@@ -8,25 +8,23 @@ import ItemListComponent from "./ItemListComponent"
 
 interface GroupComponentProps {
   /** Design of group. See schema */
-group: any,
+  group: any
   /** Current data of response (for roster entry if in roster) */
-data?: any,
+  data?: any
   /** ResponseRow object (for roster entry if in roster) */
-responseRow?: any,
+  responseRow?: any
   /** Called when data changes */
-onDataChange: any,
+  onDataChange: any
   /** (id) tells if an item is visible or not */
-isVisible: any,
+  isVisible: any
   /** Called when moving out of the GroupComponent questions */
-onNext: any,
+  onNext: any
   schema: any
 }
 
 // A group is a list of questions/other items that can have a common condition and a header
 export default class GroupComponent extends React.Component<GroupComponentProps> {
-  static initClass() {
-    this.contextTypes = { locale: PropTypes.string }
-  }
+  static contextTypes = { locale: PropTypes.string }
 
   validate(scrollToFirstInvalid: any) {
     return this.itemlist.validate(scrollToFirstInvalid)
@@ -58,9 +56,6 @@ export default class GroupComponent extends React.Component<GroupComponentProps>
           schema: this.props.schema
         })
       )
-    );
+    )
   }
-};
-
-
-GroupComponent.initClass()
+}

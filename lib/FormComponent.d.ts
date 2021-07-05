@@ -45,7 +45,7 @@ interface FormComponentState {
     visibilityStructure: any;
 }
 export default class FormComponent extends React.Component<FormComponentProps, FormComponentState> {
-    static initClass(): void;
+    static childContextTypes: {};
     constructor(props: any);
     getChildContext(): {};
     componentWillReceiveProps(nextProps: any): void;

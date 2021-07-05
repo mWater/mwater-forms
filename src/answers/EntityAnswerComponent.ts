@@ -6,23 +6,21 @@ import EntityDisplayComponent from "../EntityDisplayComponent"
 import AsyncLoadComponent from "react-library/lib/AsyncLoadComponent"
 
 interface EntityAnswerComponentProps {
-  value?: string,
-  entityType: string,
+  value?: string
+  entityType: string
   onValueChange: any
 }
 
 // Allows user to select an entity
 // State is needed for canEditEntity which requires entire entity
 export default class EntityAnswerComponent extends AsyncLoadComponent<EntityAnswerComponentProps> {
-  static initClass() {
-    this.contextTypes = {
-      selectEntity: PropTypes.func,
-      editEntity: PropTypes.func,
-      renderEntitySummaryView: PropTypes.func.isRequired,
-      getEntityById: PropTypes.func.isRequired, // Gets an entity by id (entityType, entityId, callback)
-      canEditEntity: PropTypes.func,
-      T: PropTypes.func.isRequired // Localizer to use
-    }
+  static contextTypes = {
+    selectEntity: PropTypes.func,
+    editEntity: PropTypes.func,
+    renderEntitySummaryView: PropTypes.func.isRequired,
+    getEntityById: PropTypes.func.isRequired, // Gets an entity by id (entityType, entityId, callback)
+    canEditEntity: PropTypes.func,
+    T: PropTypes.func.isRequired // Localizer to use
   }
 
   focus() {
@@ -44,7 +42,7 @@ export default class EntityAnswerComponent extends AsyncLoadComponent<EntityAnsw
 
     return this.context.getEntityById(props.entityType, props.value, (entity: any) => {
       return callback({ entity })
-    });
+    })
   }
 
   // Called to select an entity using an external mechanism (calls @ctx.selectEntity)
@@ -58,7 +56,7 @@ export default class EntityAnswerComponent extends AsyncLoadComponent<EntityAnsw
       callback: (value: any) => {
         return this.props.onValueChange(value)
       }
-    });
+    })
   }
 
   handleClearEntity = () => {
@@ -140,7 +138,4 @@ export default class EntityAnswerComponent extends AsyncLoadComponent<EntityAnsw
       })
     )
   }
-};
-
-
-EntityAnswerComponent.initClass()
+}

@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import React from "react";
 interface ImagesAnswerComponentProps {
     /** array of { id: someid, caption: caption, cover: true/false } */
@@ -10,7 +11,11 @@ interface ImagesAnswerComponentState {
     modalImageId: any;
 }
 export default class ImagesAnswerComponent extends React.Component<ImagesAnswerComponentProps, ImagesAnswerComponentState> {
-    static initClass(): void;
+    static contextTypes: {
+        imageManager: PropTypes.Validator<object>;
+        imageAcquirer: PropTypes.Requireable<object>;
+        T: PropTypes.Validator<(...args: any[]) => any>;
+    };
     constructor(props: any);
     focus(): null;
     handleAdd: () => any;

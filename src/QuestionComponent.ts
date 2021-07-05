@@ -34,22 +34,22 @@ import { CascadingRefAnswerComponent } from "./answers/CascadingRefAnswerCompone
 
 interface QuestionComponentProps {
   /** Design of question. See schema */
-question: any,
+  question: any
   /** Current data of response (for roster entry if in roster) */
-data?: any,
+  data?: any
   /** ResponseRow object (for roster entry if in roster) */
-responseRow?: any,
-  onAnswerChange: any,
-  displayMissingRequired?: boolean,
-  onNext?: any,
+  responseRow?: any
+  onAnswerChange: any
+  displayMissingRequired?: boolean
+  onNext?: any
   schema: any
 }
 
 interface QuestionComponentState {
-helpVisible: any,
-savedValue: any,
-savedSpecify: any,
-validationError: any
+  helpVisible: any
+  savedValue: any
+  savedSpecify: any
+  validationError: any
 }
 
 // Question component that displays a question of any type.
@@ -62,15 +62,13 @@ validationError: any
 // Does NOT check conditions and make self invisible. This is done by parent (ItemListComponent)
 // Displays alternates and makes exclusive with answer
 export default class QuestionComponent extends React.Component<QuestionComponentProps, QuestionComponentState> {
-  static initClass() {
-    this.contextTypes = {
-      locale: PropTypes.string,
-      stickyStorage: PropTypes.object, // Storage for sticky values
-      locationFinder: PropTypes.object,
-      T: PropTypes.func.isRequired, // Localizer to use
-      disableConfidentialFields: PropTypes.bool,
-      getCustomTableRows: PropTypes.func.isRequired
-    }
+  static contextTypes = {
+    locale: PropTypes.string,
+    stickyStorage: PropTypes.object, // Storage for sticky values
+    locationFinder: PropTypes.object,
+    T: PropTypes.func.isRequired, // Localizer to use
+    disableConfidentialFields: PropTypes.bool,
+    getCustomTableRows: PropTypes.func.isRequired
   }
 
   constructor(props: any) {
@@ -303,9 +301,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           return (this.prompt = c)
         }
       },
-      this.props.question.code
-        ? R("span", { className: "question-code" }, this.props.question.code + ": ")
-        : undefined,
+      this.props.question.code ? R("span", { className: "question-code" }, this.props.question.code + ": ") : undefined,
 
       R(TextExprsComponent, {
         localizedStr: this.props.question.text,
@@ -353,11 +349,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
       "div",
       null,
       this.props.question.hint
-        ? R(
-            "div",
-            { className: "text-muted" },
-            formUtils.localizeString(this.props.question.hint, this.context.locale)
-          )
+        ? R("div", { className: "text-muted" }, formUtils.localizeString(this.props.question.hint, this.context.locale))
         : undefined,
       this.context.disableConfidentialFields && this.props.question.confidential
         ? R("div", { className: "text-muted" }, this.context.T("Confidential answers may not be edited."))
@@ -449,7 +441,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           readOnly: readonly,
           onValueChange: this.handleValueChange,
           onNextOrComments: this.handleNextOrComments
-        });
+        })
         break
 
       case "NumberQuestion":
@@ -524,7 +516,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           format: this.props.question.format,
           placeholder: this.props.question.placeholder,
           onNextOrComments: this.handleNextOrComments
-        });
+        })
         break
 
       case "UnitsQuestion":
@@ -539,7 +531,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           prefix: this.props.question.unitsPosition === "prefix",
           decimal: this.props.question.decimal,
           onNextOrComments: this.handleNextOrComments
-        });
+        })
         break
 
       case "CheckQuestion":
@@ -569,7 +561,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           consentPrompt: this.props.question.consentPrompt
             ? formUtils.localizeString(this.props.question.consentPrompt, this.context.locale)
             : undefined
-        });
+        })
         break
 
       case "ImagesQuestion":
@@ -582,7 +574,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           consentPrompt: this.props.question.consentPrompt
             ? formUtils.localizeString(this.props.question.consentPrompt, this.context.locale)
             : undefined
-        });
+        })
         break
 
       case "TextListQuestion":
@@ -605,7 +597,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           onValueChange: this.handleValueChange,
           siteTypes: this.props.question.siteTypes,
           T: this.context.T
-        });
+        })
         break
 
       case "BarcodeQuestion":
@@ -636,7 +628,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           },
           value: answer.value,
           onChange: this.handleValueChange
-        });
+        })
         break
 
       case "StopwatchQuestion":
@@ -647,7 +639,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           value: answer.value,
           onValueChange: this.handleValueChange,
           T: this.context.T
-        });
+        })
         break
 
       case "MatrixQuestion":
@@ -663,7 +655,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           data: this.props.data,
           responseRow: this.props.responseRow,
           schema: this.props.schema
-        });
+        })
         break
 
       case "AquagenxCBTQuestion":
@@ -674,7 +666,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           value: answer.value,
           onValueChange: this.handleValueChange,
           questionId: this.props.question._id
-        });
+        })
         break
 
       case "CascadingListQuestion":
@@ -739,6 +731,3 @@ export default class QuestionComponent extends React.Component<QuestionComponent
     )
   }
 }
-
-
-QuestionComponent.initClass()

@@ -10,35 +10,38 @@ import ui from "react-library/lib/bootstrap"
 
 interface ResponseViewEditComponentProps {
   /** Form to use */
-form: any,
+  form: any
   /** FormContext */
-formCtx: any,
+  formCtx: any
   /** Response object */
-response: any,
+  response: any
   /** Current login (contains user, username, groups) */
-login?: any,
+  login?: any
   /** api url to use e.g. https://api.mwater.co/v3/ */
-apiUrl: string,
+  apiUrl: string
   /** Called when response is updated with new response */
-onUpdateResponse: any,
+  onUpdateResponse: any
   /** Called when response is removed */
-onDeleteResponse: any,
+  onDeleteResponse: any
   /** Schema, including the form */
-schema: any,
+  schema: any
   /** The locale to display the response in */
-locale?: string,
+  locale?: string
   T: any
 }
 
 interface ResponseViewEditComponentState {
-locale: any,
-unsavedData: any,
-editMode: any
+  locale: any
+  unsavedData: any
+  editMode: any
 }
 
 // Displays a view of a response that can be edited, rejected, etc.
 // When editing, shows in single-page mode.
-export default class ResponseViewEditComponent extends React.Component<ResponseViewEditComponentProps, ResponseViewEditComponentState> {
+export default class ResponseViewEditComponent extends React.Component<
+  ResponseViewEditComponentProps,
+  ResponseViewEditComponentState
+> {
   constructor(props: any) {
     super(props)
     this.state = {

@@ -25,7 +25,7 @@ interface ResponseDisplayComponentState {
     showPrevAnswers: any;
 }
 export default class ResponseDisplayComponent extends React.Component<ResponseDisplayComponentProps, ResponseDisplayComponentState> {
-    static initClass(): void;
+    static childContextTypes: {};
     constructor(props: any);
     componentWillMount(): any;
     componentDidMount(): any;

@@ -6,13 +6,13 @@ const R = React.createElement
 import ui from "react-library/lib/bootstrap"
 
 interface NumberAnswerComponentProps {
-  decimal: boolean,
-  value?: number,
-  onChange?: any,
+  decimal: boolean
+  value?: number
+  onChange?: any
   /** Will be merged with style of input box */
-style?: any,
+  style?: any
   /** True to render with input-sm */
-small?: boolean,
+  small?: boolean
   onNextOrComments?: any
 }
 
@@ -42,4 +42,4 @@ export default class NumberAnswerComponent extends React.Component<NumberAnswerC
       onEnter: this.props.onNextOrComments
     })
   }
-};
+}

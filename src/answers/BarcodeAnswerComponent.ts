@@ -5,7 +5,7 @@ const R = React.createElement
 import * as formUtils from "../formUtils"
 
 interface BarcodeAnswerComponentProps {
-  value?: string,
+  value?: string
   onValueChange: any
 }
 
@@ -13,11 +13,9 @@ interface BarcodeAnswerComponentProps {
 // Not tested
 
 export default class BarcodeAnswerComponent extends React.Component<BarcodeAnswerComponentProps> {
-  static initClass() {
-    this.contextTypes = {
-      scanBarcode: PropTypes.func,
-      T: PropTypes.func.isRequired // Localizer to use
-    }
+  static contextTypes = {
+    scanBarcode: PropTypes.func,
+    T: PropTypes.func.isRequired // Localizer to use
   }
 
   focus() {
@@ -34,7 +32,7 @@ export default class BarcodeAnswerComponent extends React.Component<BarcodeAnswe
       success: (text: any) => {
         return this.props.onValueChange(text)
       }
-    });
+    })
   }
 
   handleClearClick = () => {
@@ -80,7 +78,4 @@ export default class BarcodeAnswerComponent extends React.Component<BarcodeAnswe
       }
     }
   }
-};
-
-
-BarcodeAnswerComponent.initClass()
+}

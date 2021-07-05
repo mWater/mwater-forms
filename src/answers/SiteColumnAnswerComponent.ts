@@ -6,21 +6,19 @@ import EntityDisplayComponent from "../EntityDisplayComponent"
 import * as formUtils from "../formUtils"
 
 interface SiteColumnAnswerComponentProps {
-  value?: any,
-  onValueChange: any,
+  value?: any
+  onValueChange: any
   siteType: string
 }
 
 // Displays a site answer in a cell. No direct code entering, but stores answer as a code.
 export default class SiteColumnAnswerComponent extends React.Component<SiteColumnAnswerComponentProps> {
-  static initClass() {
-    this.contextTypes = {
-      selectEntity: PropTypes.func,
-      getEntityById: PropTypes.func.isRequired,
-      getEntityByCode: PropTypes.func.isRequired,
-      renderEntityListItemView: PropTypes.func.isRequired,
-      T: PropTypes.func.isRequired // Localizer to use
-    }
+  static contextTypes = {
+    selectEntity: PropTypes.func,
+    getEntityById: PropTypes.func.isRequired,
+    getEntityByCode: PropTypes.func.isRequired,
+    renderEntityListItemView: PropTypes.func.isRequired,
+    T: PropTypes.func.isRequired // Localizer to use
   }
 
   handleSelectClick = () => {
@@ -30,9 +28,9 @@ export default class SiteColumnAnswerComponent extends React.Component<SiteColum
         // Get entity
         return this.context.getEntityById(this.props.siteType, entityId, (entity: any) => {
           return this.props.onValueChange({ code: entity.code })
-        });
+        })
       }
-    });
+    })
   }
 
   handleClearClick = () => {
@@ -62,7 +60,4 @@ export default class SiteColumnAnswerComponent extends React.Component<SiteColum
       return R("button", { className: "btn btn-link", onClick: this.handleSelectClick }, this.context.T("Select..."))
     }
   }
-};
-
-
-SiteColumnAnswerComponent.initClass()
+}

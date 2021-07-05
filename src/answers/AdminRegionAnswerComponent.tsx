@@ -63,7 +63,7 @@ export default AdminRegionAnswerComponent = (function () {
                 this.setState({ waiting: false })
                 return this.props.onChange(id)
               }
-            );
+            )
           },
           (error: any) => {
             // If no longer waiting, ignore
@@ -73,8 +73,8 @@ export default AdminRegionAnswerComponent = (function () {
 
             return this.setState({ error: this.context.T("Unable to get location"), waiting: false })
           }
-        );
-      });
+        )
+      })
     }
 
     handleCancelUseGPS = () => {
@@ -98,8 +98,8 @@ export default AdminRegionAnswerComponent = (function () {
           }
 
           return this.props.onChange(id)
-        });
-      });
+        })
+      })
     }
 
     handleChange = (id: any) => {

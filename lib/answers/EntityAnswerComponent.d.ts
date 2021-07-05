@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import React from "react";
 import AsyncLoadComponent from "react-library/lib/AsyncLoadComponent";
 interface EntityAnswerComponentProps {
@@ -6,7 +7,14 @@ interface EntityAnswerComponentProps {
     onValueChange: any;
 }
 export default class EntityAnswerComponent extends AsyncLoadComponent<EntityAnswerComponentProps> {
-    static initClass(): void;
+    static contextTypes: {
+        selectEntity: PropTypes.Requireable<(...args: any[]) => any>;
+        editEntity: PropTypes.Requireable<(...args: any[]) => any>;
+        renderEntitySummaryView: PropTypes.Validator<(...args: any[]) => any>;
+        getEntityById: PropTypes.Validator<(...args: any[]) => any>;
+        canEditEntity: PropTypes.Requireable<(...args: any[]) => any>;
+        T: PropTypes.Validator<(...args: any[]) => any>;
+    };
     focus(): boolean;
     isLoadNeeded(newProps: any, oldProps: any): boolean;
     load(props: any, prevProps: any, callback: any): any;

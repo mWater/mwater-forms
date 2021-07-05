@@ -8,18 +8,16 @@ import TextExprsComponent from "./TextExprsComponent"
 
 interface InstructionsComponentProps {
   /** Design of instructions. See schema */
-instructions: any,
+  instructions: any
   /** Current data of response (for roster entry if in roster) */
-data?: any,
+  data?: any
   /** ResponseRow object (for roster entry if in roster) */
-responseRow?: any,
+  responseRow?: any
   schema: any
 }
 
 export default class InstructionsComponent extends React.Component<InstructionsComponentProps> {
-  static initClass() {
-    this.contextTypes = { locale: PropTypes.string }
-  }
+  static contextTypes = { locale: PropTypes.string }
 
   shouldComponentUpdate(nextProps: any, nextState: any, nextContext: any) {
     if (this.context.locale !== nextContext.locale) {
@@ -49,7 +47,4 @@ export default class InstructionsComponent extends React.Component<InstructionsC
       })
     )
   }
-};
-
-
-InstructionsComponent.initClass()
+}

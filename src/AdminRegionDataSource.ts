@@ -134,7 +134,7 @@ export default AdminRegionDataSource = class AdminRegionDataSource {
       }
 
       return callback(null, null)
-    });
+    })
   }
 
   _executeQuery(query: any, callback: any) {
@@ -145,6 +145,6 @@ export default AdminRegionDataSource = class AdminRegionDataSource {
       })
       .fail((xhr: any) => {
         return callback(new Error(xhr.responseText))
-      });
+      })
   }
 }

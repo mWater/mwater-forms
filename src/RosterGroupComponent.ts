@@ -9,15 +9,15 @@ import ItemListComponent from "./ItemListComponent"
 
 interface RosterGroupComponentProps {
   /** Design of roster group. See schema */
-rosterGroup: any,
+  rosterGroup: any
   /** Current data of response. */
-data?: any,
+  data?: any
   /** Called when data changes */
-onDataChange: any,
+  onDataChange: any
   /** (id) tells if an item is visible or not */
-isVisible: any,
+  isVisible: any
   /** ResponseRow object (for roster entry if in roster) */
-responseRow?: any,
+  responseRow?: any
   schema: any
 }
 
@@ -26,11 +26,9 @@ responseRow?: any,
 // Rosters are repeated information, such as asking questions about household members N times.
 // A roster group is a group of questions that is asked once for each roster entry
 export default class RosterGroupComponent extends React.Component<RosterGroupComponentProps> {
-  static initClass() {
-    this.contextTypes = {
-      locale: PropTypes.string,
-      T: PropTypes.func.isRequired // Localizer to use
-    }
+  static contextTypes = {
+    locale: PropTypes.string,
+    T: PropTypes.func.isRequired // Localizer to use
   }
 
   // Gets the id that the answer is stored under
@@ -141,7 +139,7 @@ export default class RosterGroupComponent extends React.Component<RosterGroupCom
           schema: this.props.schema
         })
       )
-    );
+    )
   }
 
   renderAdd() {
@@ -181,7 +179,4 @@ export default class RosterGroupComponent extends React.Component<RosterGroupCom
       this.renderAdd()
     )
   }
-};
-
-
-RosterGroupComponent.initClass()
+}

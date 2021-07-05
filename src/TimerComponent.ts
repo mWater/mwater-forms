@@ -56,16 +56,14 @@ interface TimerComponentProps {
 }
 
 interface TimerComponentState {
-timerId: any,
-elapsedTicks: any
+  timerId: any
+  elapsedTicks: any
 }
 
 export default class TimerComponent extends React.Component<TimerComponentProps, TimerComponentState> {
-  static initClass() {
-    this.contextTypes = {
-      T: PropTypes.func.isRequired, // Localizer to use
-      locale: PropTypes.string
-    }
+  static contextTypes = {
+    T: PropTypes.func.isRequired, // Localizer to use
+    locale: PropTypes.string
   }
 
   constructor(props: any) {
@@ -143,6 +141,3 @@ export default class TimerComponent extends React.Component<TimerComponentProps,
     )
   }
 }
-
-
-TimerComponent.initClass()

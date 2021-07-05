@@ -33,7 +33,7 @@ export default AdminRegionDisplayComponent = (function () {
 
       return props.getAdminRegionPath(props.value, (error: any, path: any) => {
         return callback({ error, path })
-      });
+      })
     }
 
     render() {

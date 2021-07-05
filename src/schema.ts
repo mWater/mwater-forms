@@ -5,7 +5,7 @@ DEPRECATED!! Use the typescript definition files!
 
 */
 
-import designSchema from './designSchema'
+import designSchema from "./designSchema"
 
 // A deployment is a grouping of people who can answer a form and an optional approval chain and viewers.
 const deployments = {

@@ -11,7 +11,7 @@ export function isAvailable(success: any, error: any) {
       } else {
         return success(false)
       }
-    });
+    })
   } else {
     return success(false)
   }
@@ -30,8 +30,10 @@ export function processImage(imgUrl: any, success: any, error: any) {
       }
 
       console.log(`Got image fullPath: ${fullPath}`)
-      return OpenCVActivity.process("ec-plate", [fullPath], "EC Compact Dry Plate Counter", (args: any) => success(args))
+      return OpenCVActivity.process("ec-plate", [fullPath], "EC Compact Dry Plate Counter", (args: any) =>
+        success(args)
+      )
     },
     error
-  );
+  )
 }

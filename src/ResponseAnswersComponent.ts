@@ -20,28 +20,28 @@ import { CascadingRefDisplayComponent } from "./answers/CascadingRefDisplayCompo
 import { CalculationsDisplayComponent } from "./CalculationsDisplayComponent"
 
 interface ResponseAnswersComponentProps {
-  formDesign: any,
-  data: any,
+  formDesign: any
+  data: any
   /** Schema of the */
-schema: any,
+  schema: any
   /** Deployment id of the response */
-deployment?: string,
+  deployment?: string
   /** True to hide empty answers */
-hideEmptyAnswers?: boolean,
+  hideEmptyAnswers?: boolean
   /** Defaults to english */
-locale?: string,
+  locale?: string
   /** Localizer to use */
-T: any,
+  T: any
   /** Form context to use */
-formCtx: any,
+  formCtx: any
   /** Previous data */
-prevData?: any,
-  showPrevAnswers?: boolean,
-  highlightChanges?: boolean,
-  hideUnchangedAnswers?: boolean,
-  showChangedLink?: boolean,
-  onChangedLinkClick?: any,
-  onCompleteHistoryLinkClick?: any,
+  prevData?: any
+  showPrevAnswers?: boolean
+  highlightChanges?: boolean
+  hideUnchangedAnswers?: boolean
+  showChangedLink?: boolean
+  onChangedLinkClick?: any
+  onCompleteHistoryLinkClick?: any
   hideCalculations?: boolean
 }
 
@@ -70,7 +70,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<Respons
       (error: any, visibilityStructure: any) => {
         return callback({ error, visibilityStructure, responseRow })
       }
-    );
+    )
   }
 
   handleLocationClick(location: any) {
@@ -366,12 +366,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<Respons
                 )
               } else {
                 contents.push(
-                  R(
-                    "tr",
-                    null,
-                    itemTd,
-                    R("td", null, R("span", { className: "label label-danger" }, "Invalid Choice"))
-                  )
+                  R("tr", null, itemTd, R("td", null, R("span", { className: "label label-danger" }, "Invalid Choice")))
                 )
               }
             }
@@ -484,9 +479,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<Respons
           ? R(
               "td",
               { key: "prevValue" },
-              prevAnswer != null &&
-                !_.isEqual(prevAnswer.value, answer?.value) &&
-                this.props.onCompleteHistoryLinkClick
+              prevAnswer != null && !_.isEqual(prevAnswer.value, answer?.value) && this.props.onCompleteHistoryLinkClick
                 ? R(
                     "a",
                     {
@@ -601,10 +594,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<Respons
             R(
               "span",
               { style: { fontStyle: "italic" } },
-              this.props.T(
-                "Data is stored in {0}",
-                formUtils.localizeString(referencedRoster.name, this.props.locale)
-              )
+              this.props.T("Data is stored in {0}", formUtils.localizeString(referencedRoster.name, this.props.locale))
             )
           )
         )
@@ -808,4 +798,4 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<Respons
         : undefined
     )
   }
-};
+}

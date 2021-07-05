@@ -60,7 +60,7 @@ let _compileCondition = (compileCondition = (cond: any) => {
             return true
           }
         }
-      };
+      }
     case "!present":
       return (data: any) => {
         const value = getValue(data)
@@ -82,49 +82,49 @@ let _compileCondition = (compileCondition = (cond: any) => {
             return false
           }
         }
-      };
+      }
     case "contains":
       return (data: any) => {
         return (getValue(data) || "").indexOf(cond.rhs.literal) !== -1
-      };
+      }
     case "!contains":
       return (data: any) => {
         return (getValue(data) || "").indexOf(cond.rhs.literal) === -1
-      };
+      }
     case "=":
       return (data: any) => {
         return getValue(data) === cond.rhs.literal
-      };
+      }
     case ">":
     case "after":
       return (data: any) => {
         return getValue(data) > cond.rhs.literal
-      };
+      }
     case "<":
     case "before":
       return (data: any) => {
         return getValue(data) < cond.rhs.literal
-      };
+      }
     case "!=":
       return (data: any) => {
         return getValue(data) !== cond.rhs.literal
-      };
+      }
     case "includes":
       return (data: any) => {
         return _.contains(getValue(data) || [], cond.rhs.literal) || cond.rhs.literal === getAlternate(data)
-      };
+      }
     case "!includes":
       return (data: any) => {
         return !_.contains(getValue(data) || [], cond.rhs.literal) && cond.rhs.literal !== getAlternate(data)
-      };
+      }
     case "is":
       return (data: any) => {
         return getValue(data) === cond.rhs.literal || getAlternate(data) === cond.rhs.literal
-      };
+      }
     case "isnt":
       return (data: any) => {
         return getValue(data) !== cond.rhs.literal && getAlternate(data) !== cond.rhs.literal
-      };
+      }
     case "isoneof":
       return (data: any) => {
         const value = getValue(data)
@@ -133,7 +133,7 @@ let _compileCondition = (compileCondition = (cond: any) => {
         } else {
           return _.contains(cond.rhs.literal, value) || _.contains(cond.rhs.literal, getAlternate(data))
         }
-      };
+      }
     case "isntoneof":
       return (data: any) => {
         const value = getValue(data)
@@ -144,15 +144,15 @@ let _compileCondition = (compileCondition = (cond: any) => {
         } else {
           return !_.contains(cond.rhs.literal, value) && !_.contains(cond.rhs.literal, getAlternate(data))
         }
-      };
+      }
     case "true":
       return (data: any) => {
         return getValue(data) === true
-      };
+      }
     case "false":
       return (data: any) => {
         return getValue(data) !== true
-      };
+      }
     default:
       throw new Error("Unknown condition op " + cond.op)
   }
@@ -171,7 +171,7 @@ export let compileConditions = (conds: any) => {
     }
 
     return true
-  };
+  }
 }
 
 // Maps op id to complete op info

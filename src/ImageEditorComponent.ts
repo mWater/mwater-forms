@@ -4,27 +4,24 @@ const R = React.createElement
 import ImageAnswerComponent from "./answers/ImageAnswerComponent"
 
 interface ImageEditorComponentProps {
-  imageManager: any,
-  imageAcquirer?: any,
+  imageManager: any
+  imageAcquirer?: any
   /** e.g. { id: someid, caption: caption } */
-image?: any,
+  image?: any
   /** Called when image changed */
-onImageChange?: any,
+  onImageChange?: any
   /** Localizer to use */
-T: any,
+  T: any
   /** Question to prompt for consent */
-consentPrompt?: string
+  consentPrompt?: string
 }
 
 // Edit an image
 export default class ImageEditorComponent extends React.Component<ImageEditorComponentProps> {
-  static initClass() {
-    this.childContextTypes = {
-      imageManager: PropTypes.object.isRequired,
-      imageAcquirer: PropTypes.object,
-      T: PropTypes.func.isRequired
-    }
-    // Localizer to use
+  static childContextTypes = {
+    imageManager: PropTypes.object.isRequired,
+    imageAcquirer: PropTypes.object,
+    T: PropTypes.func.isRequired
   }
 
   getChildContext() {
@@ -42,7 +39,4 @@ export default class ImageEditorComponent extends React.Component<ImageEditorCom
       consentPrompt: this.props.consentPrompt
     })
   }
-};
-
-
-ImageEditorComponent.initClass()
+}

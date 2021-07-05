@@ -4,8 +4,8 @@ const R = React.createElement
 import AsyncLoadComponent from "react-library/lib/AsyncLoadComponent"
 
 interface ImageThumbnailComponentProps {
-  imageManager: any,
-  imageId: string,
+  imageManager: any
+  imageId: string
   onClick?: any
 }
 
@@ -24,7 +24,7 @@ export default class ImageThumbnailComponent extends AsyncLoadComponent<ImageThu
         return callback({ url, error: false })
       },
       () => callback({ error: true })
-    );
+    )
   }
 
   handleError = () => {
@@ -51,4 +51,4 @@ export default class ImageThumbnailComponent extends AsyncLoadComponent<ImageThu
       onError: this.handleError
     })
   }
-};
+}

@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import React from "react";
 interface DropdownAnswerComponentProps {
     choices: any;
@@ -7,7 +8,9 @@ interface DropdownAnswerComponentProps {
     data: any;
 }
 export default class DropdownAnswerComponent extends React.Component<DropdownAnswerComponentProps> {
-    static initClass(): void;
+    static contextTypes: {
+        locale: PropTypes.Requireable<string>;
+    };
     focus(): any;
     handleValueChange: (ev: any) => any;
     handleSpecifyChange: (id: any, ev: any) => any;

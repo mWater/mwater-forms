@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import React from "react";
 interface SectionsComponentProps {
     contents: any;
@@ -20,7 +21,10 @@ interface SectionsComponentState {
     sectionNum: any;
 }
 export default class SectionsComponent extends React.Component<SectionsComponentProps, SectionsComponentState> {
-    static initClass(): void;
+    static contextTypes: {
+        locale: PropTypes.Requireable<string>;
+        T: PropTypes.Validator<(...args: any[]) => any>;
+    };
     constructor(props: any);
     handleSubmit: () => Promise<any>;
     hasPreviousSection(): boolean;

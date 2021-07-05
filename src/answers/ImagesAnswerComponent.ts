@@ -7,24 +7,25 @@ import ImagePopupComponent from "../ImagePopupComponent"
 
 interface ImagesAnswerComponentProps {
   /** array of { id: someid, caption: caption, cover: true/false } */
-imagelist?: any,
+  imagelist?: any
   /** Called when image list changed */
-onImagelistChange?: any,
+  onImagelistChange?: any
   consentPrompt?: string
 }
 
 interface ImagesAnswerComponentState {
-modalImageId: any
+  modalImageId: any
 }
 
 // Edit an image
-export default class ImagesAnswerComponent extends React.Component<ImagesAnswerComponentProps, ImagesAnswerComponentState> {
-  static initClass() {
-    this.contextTypes = {
-      imageManager: PropTypes.object.isRequired,
-      imageAcquirer: PropTypes.object,
-      T: PropTypes.func.isRequired // Localizer to use
-    }
+export default class ImagesAnswerComponent extends React.Component<
+  ImagesAnswerComponentProps,
+  ImagesAnswerComponentState
+> {
+  static contextTypes = {
+    imageManager: PropTypes.object.isRequired,
+    imageAcquirer: PropTypes.object,
+    T: PropTypes.func.isRequired // Localizer to use
   }
 
   constructor(props: any) {
@@ -56,7 +57,7 @@ export default class ImagesAnswerComponent extends React.Component<ImagesAnswerC
         return this.props.onImagelistChange(imagelist)
       },
       (err: any) => alert(err)
-    );
+    )
   }
 
   handleClickImage = (id: any) => {
@@ -85,9 +86,7 @@ export default class ImagesAnswerComponent extends React.Component<ImagesAnswerC
         this.setState({ modalImageId: null })
 
         // Remove from list
-        const imagelist = _.map(this.props.imagelist || [], (image) =>
-          _.extend({}, image, { cover: image.id === id })
-        )
+        const imagelist = _.map(this.props.imagelist || [], (image) => _.extend({}, image, { cover: image.id === id }))
         return this.props.onImagelistChange(imagelist)
       }
 
@@ -143,6 +142,3 @@ export default class ImagesAnswerComponent extends React.Component<ImagesAnswerC
     )
   }
 }
-
-
-ImagesAnswerComponent.initClass()

@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import React from "react";
 import ModalPopupComponent from "react-library/lib/ModalPopupComponent";
 interface AquagenxCBTPopupComponentProps {
@@ -10,7 +11,9 @@ interface AquagenxCBTPopupComponentState {
     value: any;
 }
 export default class AquagenxCBTPopupComponent extends React.Component<AquagenxCBTPopupComponentProps, AquagenxCBTPopupComponentState> {
-    static initClass(): void;
+    static contextTypes: {
+        T: PropTypes.Validator<(...args: any[]) => any>;
+    };
     constructor(props: any);
     componentDidMount(): any;
     handleCompartmentClick(compartmentField: any): void;

@@ -8,33 +8,31 @@ import * as formUtils from "./formUtils"
 import TextExprsComponent from "./TextExprsComponent"
 
 interface SectionsComponentProps {
-  contents: any,
+  contents: any
   /** Current data of response. */
-data?: any,
-  onDataChange: any,
+  data?: any
+  onDataChange: any
   /** Schema to use, including form */
-schema: any,
+  schema: any
   /** ResponseRow object (for roster entry if in roster) */
-responseRow: any,
+  responseRow: any
   /** (id) tells if an item is visible or not */
-isVisible: any,
+  isVisible: any
   /** Called when submit is pressed */
-onSubmit?: any,
+  onSubmit?: any
   /** Optional save for later */
-onSaveLater?: any,
+  onSaveLater?: any
   onDiscard?: any
 }
 
 interface SectionsComponentState {
-sectionNum: any
+  sectionNum: any
 }
 
 export default class SectionsComponent extends React.Component<SectionsComponentProps, SectionsComponentState> {
-  static initClass() {
-    this.contextTypes = {
-      locale: PropTypes.string,
-      T: PropTypes.func.isRequired // Localizer to use
-    }
+  static contextTypes = {
+    locale: PropTypes.string,
+    T: PropTypes.func.isRequired // Localizer to use
   }
 
   constructor(props: any) {
@@ -178,7 +176,7 @@ export default class SectionsComponent extends React.Component<SectionsComponent
         onNext: this.handleItemListNext,
         schema: this.props.schema
       })
-    );
+    )
   }
 
   renderButtons() {
@@ -270,6 +268,3 @@ export default class SectionsComponent extends React.Component<SectionsComponent
     )
   }
 }
-
-
-SectionsComponent.initClass()
