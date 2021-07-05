@@ -723,7 +723,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
       R("div", { className: "answer" }, this.renderAnswer()),
 
       answer.confidential != null
-        ? R("span", { className: "help-block" }, T("Confidential answers may not be edited."))
+        ? R("span", { className: "help-block" }, this.context.T("Confidential answers may not be edited."))
         : undefined,
 
       answer.confidential == null ? [this.renderAlternates(), this.renderValidationError()] : undefined,
