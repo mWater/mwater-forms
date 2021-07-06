@@ -1,6 +1,3 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-let AnswerValidator
 import _ from "lodash"
 import * as siteCodes from "../siteCodes"
 import { PromiseExprEvaluator } from "mwater-expressions"
@@ -9,7 +6,7 @@ import * as formUtils from "../formUtils"
 
 // AnswerValidator gets called when a form is submitted (or on next)
 // Only the validate method is not internal
-export default AnswerValidator = class AnswerValidator {
+export default class AnswerValidator {
   constructor(schema: any, responseRow: any, locale: any) {
     this.schema = schema
     this.responseRow = responseRow

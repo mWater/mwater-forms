@@ -1,11 +1,8 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-let EntitySchemaBuilder
 import _ from "lodash"
 import * as formUtils from "./formUtils"
 
 // Builds schema for entities. Always add entities before forms
-export default EntitySchemaBuilder = class EntitySchemaBuilder {
+export default class EntitySchemaBuilder {
   // Pass in:
   //   entityTypes: list of entity types objects
   //   propFilter: optional filter function that takes a property and returns true to include, false to exclude

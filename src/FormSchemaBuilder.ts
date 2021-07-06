@@ -1,6 +1,3 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-let FormSchemaBuilder
 import _ from "lodash"
 import * as formUtils from "./formUtils"
 import { ExprUtils } from "mwater-expressions"
@@ -12,7 +9,7 @@ import ConditionsExprCompiler from "./ConditionsExprCompiler"
 import { healthRiskEnum } from "./answers/aquagenxCBTUtils"
 
 // Adds a form to a mwater-expressions schema
-export default FormSchemaBuilder = class FormSchemaBuilder {
+export default class FormSchemaBuilder {
   // indicators is at least all indicators referenced in indicator calculations. Can be empty and indicator calculations will be omitted
   addForm(schema: any, form: any, cloneFormsDeprecated: any, isAdmin = true, indicators: any) {
     const contents = []

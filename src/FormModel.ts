@@ -1,11 +1,8 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-let FormModel
 import _ from "lodash"
 import * as formUtils from "./formUtils"
 
 // Model of a form object that allows manipulation and asking of questions
-export default FormModel = class FormModel {
+export default class FormModel {
   constructor(form: any) {
     this.form = form
   }

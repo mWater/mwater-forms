@@ -1,10 +1,7 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-let ValidationCompiler
 import _ from "lodash"
 
 // Compiles validations
-export default ValidationCompiler = class ValidationCompiler {
+export default class ValidationCompiler {
   constructor(locale: any) {
     this.locale = locale
   }

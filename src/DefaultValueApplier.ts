@@ -1,6 +1,3 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-let DefaultValueApplier
 import _ from "lodash"
 import moment from "moment"
 import * as formUtils from "./formUtils"
@@ -10,7 +7,7 @@ import * as formUtils from "./formUtils"
 //    - The question needs to be newly visible
 //    - The question needs to have a default value
 //    - The data for that question needs to be undefined or null, alternate needs to be null or undefined
-export default DefaultValueApplier = class DefaultValueApplier {
+export default class DefaultValueApplier {
   // entity is an object
   // entityType is a string
   constructor(formDesign: any, stickyStorage: any, entity: any, entityType: any) {

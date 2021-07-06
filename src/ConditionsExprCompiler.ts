@@ -1,12 +1,9 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-let ConditionsExprCompiler
 import _ from "lodash"
 import * as formUtils from "./formUtils"
 import * as conditionUtils from "./conditionUtils"
 
 // Compiles conditions into mWater expressions
-export default ConditionsExprCompiler = class ConditionsExprCompiler {
+export default class ConditionsExprCompiler {
   constructor(formDesign: any) {
     this.formDesign = formDesign
 

@@ -1,12 +1,9 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-let RandomAskedCalculator
 import * as formUtils from "./formUtils"
 import _ from "lodash"
 
 // The RandomAskedCalculator sets the randomAsked property of visible answers, determining if the question will be visible.
 // If question has randomAskProbability, it is visible unless randomAsked is set to false, which this class determines.
-export default RandomAskedCalculator = class RandomAskedCalculator {
+export default class RandomAskedCalculator {
   constructor(formDesign: any) {
     this.formDesign = formDesign
   }

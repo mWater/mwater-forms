@@ -1,6 +1,3 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-let ResponseCleaner
 import _ from "lodash"
 import * as formUtils from "./formUtils"
 import * as conditionUtils from "./conditionUtils"
@@ -17,7 +14,7 @@ To further complicate it, when a question becomes visible, it may get a default 
 Therefore, it's an iterative process which is also asynchronous, as condition evaluation is asynchronous.
 
 */
-export default ResponseCleaner = class ResponseCleaner {
+export default class ResponseCleaner {
   cleanData = (
     design: any,
     visibilityCalculator: any,

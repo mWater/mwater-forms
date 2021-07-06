@@ -1,10 +1,7 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-let AdminRegionDataSource
 import $ from "jquery"
 
 // Gets the admin region information from an mWater server. Here as a convenience for creating the form context
-export default AdminRegionDataSource = class AdminRegionDataSource {
+export default class AdminRegionDataSource {
   constructor(apiUrl: any) {
     this.apiUrl = apiUrl
   }

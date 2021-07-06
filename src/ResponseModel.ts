@@ -1,6 +1,3 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-let ResponseModel
 import _ from "lodash"
 import * as formUtils from "./formUtils"
 
@@ -10,7 +7,7 @@ import * as formUtils from "./formUtils"
 // form: form object. Required
 // user: current username. Required
 // groups: group names of user
-export default ResponseModel = class ResponseModel {
+export default class ResponseModel {
   constructor(options: any) {
     this.response = options.response
     this.form = options.form

@@ -1,6 +1,4 @@
-declare const _default: {
-    new (html: any): {
-        render(): any;
-    };
-};
-export default _default;
+export default class HtmlText {
+    constructor(html: any);
+    render(): any;
+}
