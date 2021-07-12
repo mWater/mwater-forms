@@ -5,7 +5,7 @@ R = React.createElement
 
 formUtils = require './formUtils'
 TextExprsComponent = require './TextExprsComponent'
-
+cx = require 'classnames'
 # TODO Add focus()
 
 # Rosters are repeated information, such as asking questions about household members N times.
@@ -22,6 +22,13 @@ module.exports = class RosterGroupComponent extends React.Component
     isVisible: PropTypes.func.isRequired # (id) tells if an item is visible or not
     responseRow: PropTypes.object    # ResponseRow object (for roster entry if in roster)
     schema: PropTypes.object.isRequired  # Schema to use, including form
+
+  constructor: (props) ->
+    super(props)
+
+    @state = {
+      collapsedEntries: [] # the indices that are collapsed
+    }
 
   # Gets the id that the answer is stored under
   getAnswerId: ->
@@ -67,6 +74,9 @@ module.exports = class RosterGroupComponent extends React.Component
   isChildVisible: (index, id) =>
     return @props.isVisible("#{@getAnswerId()}.#{index}.#{id}")
 
+  handleToggle: (index) => 
+    @setState(collapsedEntries: _.xor(@state.collapsedEntries, [index]))
+
   renderName: ->
     R 'h4', key: "prompt",
       formUtils.localizeString(@props.rosterGroup.name, @context.locale)
@@ -82,12 +92,24 @@ module.exports = class RosterGroupComponent extends React.Component
   renderEntry: (entry, index) ->
     # To avoid circularity
     ItemListComponent = require './ItemListComponent'
+    isCollapsed = @state.collapsedEntries.includes(index)
+
+    bodyStyle = {
+      height: if isCollapsed then 0 else 'auto', 
+      transition: 'height 0.25s ease-in'
+      padding: if isCollapsed then 0 else 15, 
+      overflow: 'hidden'
+    }
 
     R 'div', key: index, className: "panel panel-default", 
-      R 'div', key: "header", className: "panel-heading", style: { fontWeight: "bold" },
+      R 'div', key: "header", className: "panel-heading", style: { fontWeight: "bold", position: "relative" },
         "#{index + 1}. "
         @renderEntryTitle(entry, index)
-      R 'div', key: "body", className: "panel-body",
+
+        R 'button', className: 'btn btn-link', style: {position: 'absolute', right: 0, top: 5}, onClick: @handleToggle.bind(null, index),
+          R 'span', className: cx('glyphicon', {'glyphicon-chevron-up': !isCollapsed, 'glyphicon-chevron-down':  isCollapsed})
+
+      R 'div', key: "body", className: "panel-body", style: bodyStyle,
         if @props.rosterGroup.allowRemove
           R 'button', type: "button", style: { float: "right" }, className: "btn btn-sm btn-link", onClick: @handleRemove.bind(null, index),
             R 'span', className: "glyphicon glyphicon-remove"  
