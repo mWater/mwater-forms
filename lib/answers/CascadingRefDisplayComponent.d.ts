@@ -4,7 +4,7 @@ import { CascadingRefQuestion } from "../formDesign";
 import { Row, Schema } from "mwater-expressions";
 /** Displays a cascading list question answer */
 export declare const CascadingRefDisplayComponent: (props: {
-    question: any;
+    question: CascadingRefQuestion;
     value: CascadingRefAnswerValue;
     locale: string;
     schema: Schema;

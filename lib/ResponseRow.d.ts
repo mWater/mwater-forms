@@ -25,7 +25,7 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
     /** Get a specific row of a custom table */
     getCustomTableRow: (tableId: string, rowId: string) => Promise<Row | null>;
     /** Deployment _id of the response */
-    deployment: string;
+    deployment?: string;
     /** Optional submitted on */
     submittedOn?: string;
     /** Optional code */
@@ -52,7 +52,7 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
         /** Get a specific row of a custom table */
         getCustomTableRow: (tableId: string, rowId: string) => Promise<Row | null>;
         /** Deployment _id of the response */
-        deployment: string;
+        deployment?: string;
         /** Optional submitted on */
         submittedOn?: string;
         /** Optional code */

@@ -236,7 +236,7 @@ export interface MatrixColumn {
     validations: Validation[];
 }
 /** Group of questions which can have conditions as a whole */
-interface Group {
+export interface Group {
     _id: string;
     _type: "Group";
     /** Name of group (displayed above list). Can be blank */
@@ -253,7 +253,7 @@ interface Group {
 /**  Conditions on an item or section that determine if it is visible. All must be true to be visible */
 declare type Conditions = Condition[];
 declare type Condition = UnaryCondition | TextCondition | NumberCondition | ChoiceCondition | ChoicesCondition | DateCondition;
-interface BaseCondition {
+export interface BaseCondition {
     /** Left-hand side of the condition inequality */
     lhs: {
         /** Question whose answer to use as left-hand side of the condition inequality */
@@ -261,25 +261,25 @@ interface BaseCondition {
     };
 }
 /** Unary type conditions */
-interface UnaryCondition extends BaseCondition {
+export interface UnaryCondition extends BaseCondition {
     op: "present" /** If question was answered */ | "!present" /** If question was not answered */ | "true" /** If answer is true */ | "false"; /** If answer is false */
 }
 /** Conditions with text as right-hand side */
-interface TextCondition extends BaseCondition {
+export interface TextCondition extends BaseCondition {
     op: "contains" /** If answer contains text in RHS */ | "!contains"; /** If answer does not contain text in RHS */
     rhs: {
         literal: string;
     };
 }
 /** Conditions with number as right-hand side */
-interface NumberCondition extends BaseCondition {
+export interface NumberCondition extends BaseCondition {
     op: "=" /** If answer equals a value */ | "!=" /** If answer does not equal a value */ | ">" /** If answer is greater than */ | "<"; /** If answer is less than */
     rhs: {
         literal: number;
     };
 }
 /** Conditions with choice as right-hand side */
-interface ChoiceCondition extends BaseCondition {
+export interface ChoiceCondition extends BaseCondition {
     op: "is" /** If answer is a certain choice */ | "isnt" /** If answer is not a choice */ | "includes" /** If answer is includes a choice (multi-check) */ | "!includes"; /** If answer doesn't include a choice (multi-check) */
     /** Id of the choice */
     rhs: {
@@ -287,7 +287,7 @@ interface ChoiceCondition extends BaseCondition {
     };
 }
 /** Conditions with choices as right-hand side */
-interface ChoicesCondition extends BaseCondition {
+export interface ChoicesCondition extends BaseCondition {
     op: "isoneof" /** If answer is in a list of choices */ | "isntoneof"; /** If answer isn't in a list of choice */
     /** Ids of the choices */
     rhs: {
@@ -295,7 +295,7 @@ interface ChoicesCondition extends BaseCondition {
     };
 }
 /** Conditions with date as right-hand side */
-interface DateCondition extends BaseCondition {
+export interface DateCondition extends BaseCondition {
     op: "before" /** If answer is before a date */ | "after"; /** If answer is after a date */
     /** Ids of the choices */
     rhs: {
@@ -306,12 +306,12 @@ declare type Validation = LengthRangeValidation | RangeValidation | RegexValidat
 /** Validations are a condition that the answer must pass
  * The type is specific to the question type, but have a
  * common structure */
-interface BaseValidation {
+export interface BaseValidation {
     /** Message to be displayed when the validation fails */
     message: LocalizedString;
 }
 /** Validation which constrains length of text field in characters */
-interface LengthRangeValidation extends BaseValidation {
+export interface LengthRangeValidation extends BaseValidation {
     op: "lengthRange";
     rhs: {
         /** Literal contains min and max length */
@@ -324,7 +324,7 @@ interface LengthRangeValidation extends BaseValidation {
     };
 }
 /** Validation which constrains range of a number answer. Range is inclusive */
-interface RangeValidation extends BaseValidation {
+export interface RangeValidation extends BaseValidation {
     op: "range";
     rhs: {
         /** Literal contains min and max value */
@@ -337,7 +337,7 @@ interface RangeValidation extends BaseValidation {
     };
 }
 /** Validation which matches regex */
-interface RegexValidation extends BaseValidation {
+export interface RegexValidation extends BaseValidation {
     op: "regex";
     rhs: {
         /** Literal regex to match*/
@@ -345,33 +345,33 @@ interface RegexValidation extends BaseValidation {
     };
 }
 /** Simple text question, single or multi-line */
-interface TextQuestion extends QuestionBase {
+export interface TextQuestion extends QuestionBase {
     _type: "TextQuestion";
     format: "singleline" /** single line of text */ | "multiline" /** paragraph of text */ | "email" /** valid email address */ | "url"; /** valid URL */
     validations: (LengthRangeValidation | RegexValidation)[];
 }
 /** Number question, integer or decimal */
-interface NumberQuestion extends QuestionBase {
+export interface NumberQuestion extends QuestionBase {
     _type: "NumberQuestion";
     /** True to allow decimals */
     decimal: boolean;
     validations: RangeValidation[];
 }
 /** Displays a stopwatch with manual edit option */
-interface StopwatchQuestion extends QuestionBase {
+export interface StopwatchQuestion extends QuestionBase {
     _type: "StopwatchQuestion";
     /** No validation available */
     validations: [];
 }
 /** Displays choices in a dropdown */
-interface DropdownQuestion extends QuestionBase {
+export interface DropdownQuestion extends QuestionBase {
     _type: "DropdownQuestion";
     /** Choices of the dropdown */
     choices: Choices;
     /** No validation available */
     validations: [];
 }
-interface RadioQuestion extends QuestionBase {
+export interface RadioQuestion extends QuestionBase {
     _type: "RadioQuestion";
     /** Choices of the radio buttons */
     choices: Choices;
@@ -381,7 +381,7 @@ interface RadioQuestion extends QuestionBase {
     validations: [];
 }
 /** Displays same choices for each item */
-interface LikertQuestion extends QuestionBase {
+export interface LikertQuestion extends QuestionBase {
     _type: "LikertQuestion";
     /** Choices of the radio buttons */
     choices: Choices;
@@ -391,7 +391,7 @@ interface LikertQuestion extends QuestionBase {
     validations: [];
 }
 /** Allows multiple checked values */
-interface MulticheckQuestion extends QuestionBase {
+export interface MulticheckQuestion extends QuestionBase {
     _type: "MulticheckQuestion";
     /** Choices of the check boxes */
     choices: Choices;
@@ -399,7 +399,7 @@ interface MulticheckQuestion extends QuestionBase {
     validations: [];
 }
 /** Date question */
-interface DateQuestion extends QuestionBase {
+export interface DateQuestion extends QuestionBase {
     _type: "DateQuestion";
     /** moment.js format of the displayed date (is always stored in ISO 8601) */
     format: string;
@@ -409,7 +409,7 @@ interface DateQuestion extends QuestionBase {
     validations: [];
 }
 /** Allows value with units selectable */
-interface UnitsQuestion extends QuestionBase {
+export interface UnitsQuestion extends QuestionBase {
     _type: "UnitsQuestion";
     /** moment.js format of the displayed date (is always stored in ISO 8601) */
     format: string;
@@ -424,13 +424,13 @@ interface UnitsQuestion extends QuestionBase {
     validations: RangeValidation[];
 }
 /** Single checkbox question */
-interface CheckQuestion extends QuestionBase {
+export interface CheckQuestion extends QuestionBase {
     _type: "CheckQuestion";
     /** No validation available */
     validations: [];
 }
 /** Location (lat/lng) question */
-interface LocationQuestion extends QuestionBase {
+export interface LocationQuestion extends QuestionBase {
     _type: "LocationQuestion";
     /** True if should calculate the admin region (done on the fly, server-side for now) */
     calculateAdminRegion?: boolean;
@@ -442,7 +442,7 @@ interface LocationQuestion extends QuestionBase {
     validations: [];
 }
 /** Single image question */
-interface ImageQuestion extends QuestionBase {
+export interface ImageQuestion extends QuestionBase {
     _type: "ImageQuestion";
     /** Optional yes/no question asked before an image is registered
      * As in "Does the subject consent to the photo?" */
@@ -451,7 +451,7 @@ interface ImageQuestion extends QuestionBase {
     validations: [];
 }
 /** Multiple image question */
-interface ImagesQuestion extends QuestionBase {
+export interface ImagesQuestion extends QuestionBase {
     _type: "ImagesQuestion";
     /** Optional yes/no question asked before an image is registered
      * As in "Does the subject consent to the photo?" */
@@ -460,13 +460,13 @@ interface ImagesQuestion extends QuestionBase {
     validations: [];
 }
 /** List of text values question */
-interface TextListQuestion extends QuestionBase {
+export interface TextListQuestion extends QuestionBase {
     _type: "TextListQuestion";
     /** No validation available */
     validations: [];
 }
 /** Selects a single site (entity) */
-interface SiteQuestion extends QuestionBase {
+export interface SiteQuestion extends QuestionBase {
     _type: "SiteQuestion";
     /** Optional list of site types to include. e.g. "water_point", "community"
      * LEGACY: Used to contain "Water point", "Community". As a result, always use .toLowerCase().replace(new RegExp(' ', 'g'), "_")
@@ -477,13 +477,13 @@ interface SiteQuestion extends QuestionBase {
     validations: [];
 }
 /** Scans a barcode */
-interface BarcodeQuestion extends QuestionBase {
+export interface BarcodeQuestion extends QuestionBase {
     _type: "BarcodeQuestion";
     /** No validation available */
     validations: [];
 }
 /** Single entity selection (DEPRECATED!) */
-interface EntityQuestion extends QuestionBase {
+export interface EntityQuestion extends QuestionBase {
     _type: "EntityQuestion";
     /** Entity type that can be selected. e.g water_point */
     entityType: string;
@@ -497,7 +497,7 @@ interface EntityQuestion extends QuestionBase {
     validations: [];
 }
 /** Admin region selection (DEPRECATED!) */
-interface AdminRegionQuestion extends QuestionBase {
+export interface AdminRegionQuestion extends QuestionBase {
     _type: "AdminRegionQuestion";
     /** Default value (id of admin region) */
     defaultValue: number;
@@ -505,7 +505,7 @@ interface AdminRegionQuestion extends QuestionBase {
     validations: [];
 }
 /** Matrix of questions with fixed columns */
-interface MatrixQuestion extends QuestionBase {
+export interface MatrixQuestion extends QuestionBase {
     _type: "MatrixQuestion";
     /** Items, each representing a row */
     items: Choices;
@@ -515,20 +515,20 @@ interface MatrixQuestion extends QuestionBase {
     validations: [];
 }
 /** Compartment bag test */
-interface AquagenxCBTQuestion extends QuestionBase {
+export interface AquagenxCBTQuestion extends QuestionBase {
     _type: "AquagenxCBTQuestion";
     /** No validation available */
     validations: [];
 }
 /** Single row of list that the cascading question chooses from */
-interface CascadingListRow {
+export interface CascadingListRow {
     /** ID of the row */
     id: string;
     /** Rest of column values */
     [columnId: string]: string;
 }
 /** Column of a cascading question's data */
-interface CascadingListColumn {
+export interface CascadingListColumn {
     /** Unique id of the column. "c0", "c1", etc */
     id: string;
     /** For now, all columns are enum */
@@ -538,7 +538,7 @@ interface CascadingListColumn {
     /** Values that column can have */
     enumValues: EnumValue[];
 }
-interface CascadingListQuestion extends QuestionBase {
+export interface CascadingListQuestion extends QuestionBase {
     _type: "CascadingListQuestion";
     /** Rows in the list to choose from */
     rows: CascadingListRow[];
@@ -550,7 +550,7 @@ interface CascadingListQuestion extends QuestionBase {
     validations: [];
 }
 /** Single dropdown dropdown */
-interface CascadingRefDropdown {
+export interface CascadingRefDropdown {
     /** Column that is referenced */
     columnId: string;
     /** Name of the dropdown */
@@ -559,7 +559,7 @@ interface CascadingRefDropdown {
     hint?: LocalizedString;
 }
 /** Question that references a custom table */
-interface CascadingRefQuestion extends QuestionBase {
+export interface CascadingRefQuestion extends QuestionBase {
     _type: "CascadingRefQuestion";
     /** Table that question references (e.g. "custom.abc.x") */
     tableId: string;
@@ -570,7 +570,7 @@ interface CascadingRefQuestion extends QuestionBase {
 }
 /** List of choices for a dropdown, radio or multicheck */
 declare type Choices = Choice[];
-interface Choice {
+export interface Choice {
     /** Unique (within the question) id of the choice. Cannot be "na" or "dontknow" as they are reserved for alternates */
     id: string;
     /** Code, unique within the question that should be used for exporting */
@@ -586,7 +586,7 @@ interface Choice {
 }
 /** List of units for a units question */
 declare type Units = Unit[];
-interface Unit {
+export interface Unit {
     /** Unique (within the question) id of the choice. Cannot be "na" or "dontknow" as they are reserved for alternates */
     id: string;
     /** Code, unique within the question that should be used for exporting */
@@ -597,7 +597,7 @@ interface Unit {
     hint?: LocalizedString;
 }
 /** Expression-based validation */
-interface AdvancedValidation {
+export interface AdvancedValidation {
     /** mwater-expression that should evaluate to true */
     expr: Expr;
     /** Message that is shown if expr is not true */

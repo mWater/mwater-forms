@@ -16,9 +16,11 @@ interface EntityDisplayComponentProps {
     renderEntityView: any;
     T: any;
 }
-export default class EntityDisplayComponent extends AsyncLoadComponent<EntityDisplayComponentProps> {
-    isLoadNeeded(newProps: any, oldProps: any): boolean;
-    load(props: any, prevProps: any, callback: any): any;
+export default class EntityDisplayComponent extends AsyncLoadComponent<EntityDisplayComponentProps, {
+    entity: any;
+}> {
+    isLoadNeeded(newProps: EntityDisplayComponentProps, oldProps: EntityDisplayComponentProps): boolean;
+    load(props: EntityDisplayComponentProps, prevProps: EntityDisplayComponentProps, callback: any): any;
     render(): React.DetailedReactHTMLElement<{
         className: string | undefined;
     }, HTMLElement> | null;

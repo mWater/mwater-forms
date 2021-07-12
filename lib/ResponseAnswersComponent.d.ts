@@ -1,10 +1,13 @@
 import React from "react";
 import AsyncLoadComponent from "react-library/lib/AsyncLoadComponent";
+import { Schema } from "mwater-expressions";
+import { FormDesign } from "./formDesign";
+import { ResponseData } from "./response";
 interface ResponseAnswersComponentProps {
-    formDesign: any;
-    data: any;
+    formDesign: FormDesign;
+    data: ResponseData;
     /** Schema of the */
-    schema: any;
+    schema: Schema;
     /** Deployment id of the response */
     deployment?: string;
     /** True to hide empty answers */
@@ -25,11 +28,13 @@ interface ResponseAnswersComponentProps {
     onCompleteHistoryLinkClick?: any;
     hideCalculations?: boolean;
 }
-export default class ResponseAnswersComponent extends AsyncLoadComponent<ResponseAnswersComponentProps> {
+interface ResponseAnswersComponentState {
+}
+export default class ResponseAnswersComponent extends AsyncLoadComponent<ResponseAnswersComponentProps, ResponseAnswersComponentState> {
     isLoadNeeded(newProps: any, oldProps: any): boolean;
-    load(props: any, prevProps: any, callback: any): void;
+    load(props: ResponseAnswersComponentProps, prevProps: ResponseAnswersComponentProps, callback: any): void;
     handleLocationClick(location: any): any;
-    renderLocation(location: any): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement> | undefined;
+    renderLocation(location: any): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement> | null;
     renderAnswer(q: any, answer: any): any;
     renderLikertAnswer(q: any, answer: any, prevAnswer: any): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>[] | null;
     renderQuestion(q: any, dataId: any): (React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement> | React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>[] | null)[] | null;
@@ -37,7 +42,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<Respons
     renderItem(item: any, visibilityStructure: any, dataId: any): any;
     renderExpression(q: any, dataId: any): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>[];
     renderExpressionAnswer(q: any, dataId: any): React.CElement<any, {
-        componentWillMount(): void;
+        componentWillMount(): void; /** Previous data */
         componentDidUpdate(): void;
         evaluateExprs(): void;
         render(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement> | React.DetailedReactHTMLElement<{

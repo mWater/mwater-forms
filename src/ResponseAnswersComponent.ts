@@ -18,12 +18,15 @@ import AquagenxCBTDisplayComponent from "./answers/AquagenxCBTDisplayComponent"
 import { CascadingListDisplayComponent } from "./answers/CascadingListDisplayComponent"
 import { CascadingRefDisplayComponent } from "./answers/CascadingRefDisplayComponent"
 import { CalculationsDisplayComponent } from "./CalculationsDisplayComponent"
+import { Schema } from "mwater-expressions"
+import { FormDesign } from "./formDesign"
+import { ResponseData } from "./response"
 
 interface ResponseAnswersComponentProps {
-  formDesign: any
-  data: any
+  formDesign: FormDesign
+  data: ResponseData
   /** Schema of the */
-  schema: any
+  schema: Schema
   /** Deployment id of the response */
   deployment?: string
   /** True to hide empty answers */
@@ -45,22 +48,26 @@ interface ResponseAnswersComponentProps {
   hideCalculations?: boolean
 }
 
+interface ResponseAnswersComponentState {
+}
+
 // Displays the answers of a response in a table
-export default class ResponseAnswersComponent extends AsyncLoadComponent<ResponseAnswersComponentProps> {
+export default class ResponseAnswersComponent extends AsyncLoadComponent<ResponseAnswersComponentProps, ResponseAnswersComponentState> {
   // Check if form design or data are different
   isLoadNeeded(newProps: any, oldProps: any) {
     return !_.isEqual(newProps.formDesign, oldProps.formDesign) || !_.isEqual(newProps.data, oldProps.data)
   }
 
   // Call callback with state changes
-  load(props: any, prevProps: any, callback: any) {
+  load(props: ResponseAnswersComponentProps, prevProps: ResponseAnswersComponentProps, callback: any) {
     const responseRow = new ResponseRow({
       responseData: props.data,
       formDesign: props.formDesign,
       getEntityById: props.formCtx.getEntityById,
       getEntityByCode: props.formCtx.getEntityByCode,
       getCustomTableRow: props.formCtx.getCustomTableRow,
-      deployment: props.deployment
+      deployment: props.deployment,
+      schema: props.schema
     })
 
     // Calculate visibility asynchronously
@@ -93,6 +100,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<Respons
         )
       )
     }
+    return null
   }
 
   renderAnswer(q: any, answer: any) {
@@ -114,7 +122,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<Respons
     }
 
     if (answer.confidential != null) {
-      return R("em", null, T("Redacted"))
+      return R("em", null, this.props.T("Redacted"))
     }
 
     if (answer.value == null) {
@@ -469,7 +477,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<Respons
                   },
                   R(ui.Icon, { id: "glyphicon-pencil" }),
                   " ",
-                  T("Edited")
+                  this.props.T("Edited")
                 )
               : undefined
           )
@@ -487,7 +495,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<Respons
                       onClick: this.props.onCompleteHistoryLinkClick,
                       key: "view_history"
                     },
-                    T("Show Changes")
+                    this.props.T("Show Changes")
                   )
                 : undefined,
 

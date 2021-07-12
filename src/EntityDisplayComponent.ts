@@ -21,9 +21,9 @@ interface EntityDisplayComponentProps {
 }
 
 // Loads and displays an entity
-export default class EntityDisplayComponent extends AsyncLoadComponent<EntityDisplayComponentProps> {
+export default class EntityDisplayComponent extends AsyncLoadComponent<EntityDisplayComponentProps, { entity: any }> {
   // Override to determine if a load is needed. Not called on mounting
-  isLoadNeeded(newProps: any, oldProps: any) {
+  isLoadNeeded(newProps: EntityDisplayComponentProps, oldProps: EntityDisplayComponentProps) {
     return (
       newProps.entityType !== oldProps.entityType ||
       newProps.entityId !== oldProps.entityId ||
@@ -32,7 +32,7 @@ export default class EntityDisplayComponent extends AsyncLoadComponent<EntityDis
   }
 
   // Call callback with state changes
-  load(props: any, prevProps: any, callback: any) {
+  load(props: EntityDisplayComponentProps, prevProps: EntityDisplayComponentProps, callback: any) {
     if (!props.entityId && !props.entityCode) {
       callback({ entity: null })
       return

@@ -392,7 +392,7 @@ export interface MatrixColumn {
 }
 
 /** Group of questions which can have conditions as a whole */
-interface Group {
+export interface Group {
   _id: string
 
   _type: "Group"
@@ -418,7 +418,7 @@ type Conditions = Condition[]
 
 type Condition = UnaryCondition | TextCondition | NumberCondition | ChoiceCondition | ChoicesCondition | DateCondition
 
-interface BaseCondition {
+export interface BaseCondition {
   /** Left-hand side of the condition inequality */
   lhs: {
     /** Question whose answer to use as left-hand side of the condition inequality */
@@ -427,7 +427,7 @@ interface BaseCondition {
 }
 
 /** Unary type conditions */
-interface UnaryCondition extends BaseCondition {
+export interface UnaryCondition extends BaseCondition {
   op:
     | "present" /** If question was answered */
     | "!present" /** If question was not answered */
@@ -436,14 +436,14 @@ interface UnaryCondition extends BaseCondition {
 }
 
 /** Conditions with text as right-hand side */
-interface TextCondition extends BaseCondition {
+export interface TextCondition extends BaseCondition {
   op: "contains" /** If answer contains text in RHS */ | "!contains" /** If answer does not contain text in RHS */
 
   rhs: { literal: string }
 }
 
 /** Conditions with number as right-hand side */
-interface NumberCondition extends BaseCondition {
+export interface NumberCondition extends BaseCondition {
   op:
     | "=" /** If answer equals a value */
     | "!=" /** If answer does not equal a value */
@@ -454,7 +454,7 @@ interface NumberCondition extends BaseCondition {
 }
 
 /** Conditions with choice as right-hand side */
-interface ChoiceCondition extends BaseCondition {
+export interface ChoiceCondition extends BaseCondition {
   op:
     | "is" /** If answer is a certain choice */
     | "isnt" /** If answer is not a choice */
@@ -466,7 +466,7 @@ interface ChoiceCondition extends BaseCondition {
 }
 
 /** Conditions with choices as right-hand side */
-interface ChoicesCondition extends BaseCondition {
+export interface ChoicesCondition extends BaseCondition {
   op: "isoneof" /** If answer is in a list of choices */ | "isntoneof" /** If answer isn't in a list of choice */
 
   /** Ids of the choices */
@@ -474,7 +474,7 @@ interface ChoicesCondition extends BaseCondition {
 }
 
 /** Conditions with date as right-hand side */
-interface DateCondition extends BaseCondition {
+export interface DateCondition extends BaseCondition {
   op: "before" /** If answer is before a date */ | "after" /** If answer is after a date */
 
   /** Ids of the choices */
@@ -486,13 +486,13 @@ type Validation = LengthRangeValidation | RangeValidation | RegexValidation
 /** Validations are a condition that the answer must pass
  * The type is specific to the question type, but have a
  * common structure */
-interface BaseValidation {
+export interface BaseValidation {
   /** Message to be displayed when the validation fails */
   message: LocalizedString
 }
 
 /** Validation which constrains length of text field in characters */
-interface LengthRangeValidation extends BaseValidation {
+export interface LengthRangeValidation extends BaseValidation {
   op: "lengthRange"
   rhs: {
     /** Literal contains min and max length */
@@ -506,7 +506,7 @@ interface LengthRangeValidation extends BaseValidation {
 }
 
 /** Validation which constrains range of a number answer. Range is inclusive */
-interface RangeValidation extends BaseValidation {
+export interface RangeValidation extends BaseValidation {
   op: "range"
   rhs: {
     /** Literal contains min and max value */
@@ -520,7 +520,7 @@ interface RangeValidation extends BaseValidation {
 }
 
 /** Validation which matches regex */
-interface RegexValidation extends BaseValidation {
+export interface RegexValidation extends BaseValidation {
   op: "regex"
   rhs: {
     /** Literal regex to match*/
@@ -529,7 +529,7 @@ interface RegexValidation extends BaseValidation {
 }
 
 /** Simple text question, single or multi-line */
-interface TextQuestion extends QuestionBase {
+export interface TextQuestion extends QuestionBase {
   _type: "TextQuestion"
 
   format:
@@ -542,7 +542,7 @@ interface TextQuestion extends QuestionBase {
 }
 
 /** Number question, integer or decimal */
-interface NumberQuestion extends QuestionBase {
+export interface NumberQuestion extends QuestionBase {
   _type: "NumberQuestion"
 
   /** True to allow decimals */
@@ -552,7 +552,7 @@ interface NumberQuestion extends QuestionBase {
 }
 
 /** Displays a stopwatch with manual edit option */
-interface StopwatchQuestion extends QuestionBase {
+export interface StopwatchQuestion extends QuestionBase {
   _type: "StopwatchQuestion"
 
   /** No validation available */
@@ -560,7 +560,7 @@ interface StopwatchQuestion extends QuestionBase {
 }
 
 /** Displays choices in a dropdown */
-interface DropdownQuestion extends QuestionBase {
+export interface DropdownQuestion extends QuestionBase {
   _type: "DropdownQuestion"
 
   /** Choices of the dropdown */
@@ -570,7 +570,7 @@ interface DropdownQuestion extends QuestionBase {
   validations: []
 }
 
-interface RadioQuestion extends QuestionBase {
+export interface RadioQuestion extends QuestionBase {
   _type: "RadioQuestion"
 
   /** Choices of the radio buttons */
@@ -584,7 +584,7 @@ interface RadioQuestion extends QuestionBase {
 }
 
 /** Displays same choices for each item */
-interface LikertQuestion extends QuestionBase {
+export interface LikertQuestion extends QuestionBase {
   _type: "LikertQuestion"
 
   /** Choices of the radio buttons */
@@ -598,7 +598,7 @@ interface LikertQuestion extends QuestionBase {
 }
 
 /** Allows multiple checked values */
-interface MulticheckQuestion extends QuestionBase {
+export interface MulticheckQuestion extends QuestionBase {
   _type: "MulticheckQuestion"
 
   /** Choices of the check boxes */
@@ -609,7 +609,7 @@ interface MulticheckQuestion extends QuestionBase {
 }
 
 /** Date question */
-interface DateQuestion extends QuestionBase {
+export interface DateQuestion extends QuestionBase {
   _type: "DateQuestion"
 
   /** moment.js format of the displayed date (is always stored in ISO 8601) */
@@ -623,7 +623,7 @@ interface DateQuestion extends QuestionBase {
 }
 
 /** Allows value with units selectable */
-interface UnitsQuestion extends QuestionBase {
+export interface UnitsQuestion extends QuestionBase {
   _type: "UnitsQuestion"
 
   /** moment.js format of the displayed date (is always stored in ISO 8601) */
@@ -645,7 +645,7 @@ interface UnitsQuestion extends QuestionBase {
 }
 
 /** Single checkbox question */
-interface CheckQuestion extends QuestionBase {
+export interface CheckQuestion extends QuestionBase {
   _type: "CheckQuestion"
 
   /** No validation available */
@@ -653,7 +653,7 @@ interface CheckQuestion extends QuestionBase {
 }
 
 /** Location (lat/lng) question */
-interface LocationQuestion extends QuestionBase {
+export interface LocationQuestion extends QuestionBase {
   _type: "LocationQuestion"
 
   /** True if should calculate the admin region (done on the fly, server-side for now) */
@@ -670,7 +670,7 @@ interface LocationQuestion extends QuestionBase {
 }
 
 /** Single image question */
-interface ImageQuestion extends QuestionBase {
+export interface ImageQuestion extends QuestionBase {
   _type: "ImageQuestion"
 
   /** Optional yes/no question asked before an image is registered
@@ -682,7 +682,7 @@ interface ImageQuestion extends QuestionBase {
 }
 
 /** Multiple image question */
-interface ImagesQuestion extends QuestionBase {
+export interface ImagesQuestion extends QuestionBase {
   _type: "ImagesQuestion"
 
   /** Optional yes/no question asked before an image is registered
@@ -694,7 +694,7 @@ interface ImagesQuestion extends QuestionBase {
 }
 
 /** List of text values question */
-interface TextListQuestion extends QuestionBase {
+export interface TextListQuestion extends QuestionBase {
   _type: "TextListQuestion"
 
   /** No validation available */
@@ -702,7 +702,7 @@ interface TextListQuestion extends QuestionBase {
 }
 
 /** Selects a single site (entity) */
-interface SiteQuestion extends QuestionBase {
+export interface SiteQuestion extends QuestionBase {
   _type: "SiteQuestion"
 
   /** Optional list of site types to include. e.g. "water_point", "community"
@@ -716,7 +716,7 @@ interface SiteQuestion extends QuestionBase {
 }
 
 /** Scans a barcode */
-interface BarcodeQuestion extends QuestionBase {
+export interface BarcodeQuestion extends QuestionBase {
   _type: "BarcodeQuestion"
 
   /** No validation available */
@@ -724,7 +724,7 @@ interface BarcodeQuestion extends QuestionBase {
 }
 
 /** Single entity selection (DEPRECATED!) */
-interface EntityQuestion extends QuestionBase {
+export interface EntityQuestion extends QuestionBase {
   _type: "EntityQuestion"
 
   /** Entity type that can be selected. e.g water_point */
@@ -767,7 +767,7 @@ interface EntityQuestion extends QuestionBase {
 }
 
 /** Admin region selection (DEPRECATED!) */
-interface AdminRegionQuestion extends QuestionBase {
+export interface AdminRegionQuestion extends QuestionBase {
   _type: "AdminRegionQuestion"
 
   /** Default value (id of admin region) */
@@ -778,7 +778,7 @@ interface AdminRegionQuestion extends QuestionBase {
 }
 
 /** Matrix of questions with fixed columns */
-interface MatrixQuestion extends QuestionBase {
+export interface MatrixQuestion extends QuestionBase {
   _type: "MatrixQuestion"
 
   /** Items, each representing a row */
@@ -793,7 +793,7 @@ interface MatrixQuestion extends QuestionBase {
 }
 
 /** Compartment bag test */
-interface AquagenxCBTQuestion extends QuestionBase {
+export interface AquagenxCBTQuestion extends QuestionBase {
   _type: "AquagenxCBTQuestion"
 
   /** No validation available */
@@ -801,7 +801,7 @@ interface AquagenxCBTQuestion extends QuestionBase {
 }
 
 /** Single row of list that the cascading question chooses from */
-interface CascadingListRow {
+export interface CascadingListRow {
   /** ID of the row */
   id: string
 
@@ -810,7 +810,7 @@ interface CascadingListRow {
 }
 
 /** Column of a cascading question's data */
-interface CascadingListColumn {
+export interface CascadingListColumn {
   /** Unique id of the column. "c0", "c1", etc */
   id: string
 
@@ -824,7 +824,7 @@ interface CascadingListColumn {
   enumValues: EnumValue[]
 }
 
-interface CascadingListQuestion extends QuestionBase {
+export interface CascadingListQuestion extends QuestionBase {
   _type: "CascadingListQuestion"
 
   /** Rows in the list to choose from */
@@ -841,7 +841,7 @@ interface CascadingListQuestion extends QuestionBase {
 }
 
 /** Single dropdown dropdown */
-interface CascadingRefDropdown {
+export interface CascadingRefDropdown {
   /** Column that is referenced */
   columnId: string
 
@@ -853,7 +853,7 @@ interface CascadingRefDropdown {
 }
 
 /** Question that references a custom table */
-interface CascadingRefQuestion extends QuestionBase {
+export interface CascadingRefQuestion extends QuestionBase {
   _type: "CascadingRefQuestion"
 
   /** Table that question references (e.g. "custom.abc.x") */
@@ -869,7 +869,7 @@ interface CascadingRefQuestion extends QuestionBase {
 /** List of choices for a dropdown, radio or multicheck */
 type Choices = Choice[]
 
-interface Choice {
+export interface Choice {
   /** Unique (within the question) id of the choice. Cannot be "na" or "dontknow" as they are reserved for alternates */
   id: string
 
@@ -892,7 +892,7 @@ interface Choice {
 /** List of units for a units question */
 type Units = Unit[]
 
-interface Unit {
+export interface Unit {
   /** Unique (within the question) id of the choice. Cannot be "na" or "dontknow" as they are reserved for alternates */
   id: string
 
@@ -907,7 +907,7 @@ interface Unit {
 }
 
 /** Expression-based validation */
-interface AdvancedValidation {
+export interface AdvancedValidation {
   /** mwater-expression that should evaluate to true */
   expr: Expr
 
