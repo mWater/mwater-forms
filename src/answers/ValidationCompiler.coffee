@@ -42,7 +42,10 @@ module.exports = class ValidationCompiler
           return @compileValidationMessage(val)
       when "range"
         return (answer) =>
-          value = if answer? and answer.value? then answer.value else 0
+          value = if answer? then answer.value else null
+
+          if value == null or value == undefined
+            return null
           # For units question, get quantity
           if value.quantity?
             value = value.quantity
