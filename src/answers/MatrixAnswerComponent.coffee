@@ -138,6 +138,7 @@ module.exports = class MatrixAnswerComponent extends React.Component
       answer: cellAnswer
       onAnswerChange: @handleCellChange.bind(null, item, column)
       invalid: invalid?
+      invalidMessage: invalid or null
       schema: @props.schema
 
   renderItem: (item, index) ->

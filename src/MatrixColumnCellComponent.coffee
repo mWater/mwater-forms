@@ -20,6 +20,7 @@ module.exports = class MatrixColumnCellComponent extends React.Component
     answer: PropTypes.object                  # Answer of the cell
     onAnswerChange: PropTypes.func.isRequired   # Called with new answer of cell
     invalid: PropTypes.bool                   # True if invalid
+    invalidMessage: PropTypes.string          # Validation message
     schema: PropTypes.object.isRequired  # Schema to use, including form
 
   @contextTypes:
@@ -102,3 +103,5 @@ module.exports = class MatrixColumnCellComponent extends React.Component
 
     return R 'td', className: className,
       elem
+      if @props.invalid and @props.invalidMessage != null
+        R 'small', style: {color: '#C43B1D'}, @props.invalidMessage
