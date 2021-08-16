@@ -251,8 +251,8 @@ export interface Group {
     contents: BasicItem[];
 }
 /**  Conditions on an item or section that determine if it is visible. All must be true to be visible */
-declare type Conditions = Condition[];
-declare type Condition = UnaryCondition | TextCondition | NumberCondition | ChoiceCondition | ChoicesCondition | DateCondition;
+export declare type Conditions = Condition[];
+export declare type Condition = UnaryCondition | TextCondition | NumberCondition | ChoiceCondition | ChoicesCondition | DateCondition;
 export interface BaseCondition {
     /** Left-hand side of the condition inequality */
     lhs: {

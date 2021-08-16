@@ -1,7 +1,5 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-let compileCondition: any
 import _ from "lodash"
+import { Condition, DropdownQuestion, Question } from "./formDesign"
 import * as formUtils from "./formUtils"
 
 // Helpful utilities when building conditions
@@ -27,7 +25,7 @@ const allOps = [
 ]
 
 // This code has been copied from FromCompiler, only getValue and getAlternate have been changed
-let _compileCondition = (compileCondition = (cond: any) => {
+export function compileCondition(cond: Condition) {
   const getValue = (data: any) => {
     const answer = data[cond.lhs.question] || {}
     return answer.value
@@ -156,12 +154,10 @@ let _compileCondition = (compileCondition = (cond: any) => {
     default:
       throw new Error("Unknown condition op " + cond.op)
   }
-})
-
-export { _compileCondition as compileCondition }
+}
 
 // This code has been copied from FromCompiler
-export let compileConditions = (conds: any) => {
+export function compileConditions(conds: Condition[]) {
   const compConds = _.map(conds, compileCondition)
   return (data: any) => {
     for (let compCond of compConds) {
@@ -269,11 +265,11 @@ export { _rhsType as rhsType }
 
 // In the case of choice, returns choices for rhs (returns base localization)
 // Return includes id and text for each one, suitable for a select2 control
-export function rhsChoices(lhsQuestion: any, op: any) {
+export function rhsChoices(lhsQuestion: Question, op: any): { id: string, text: string }[] {
   // Doesn't apply to LikertQuestions/MatrixQuestions since simple conditions don't apply to them
   let choices: any
   if (!["LikertQuestion", "MatrixQuestion"].includes(lhsQuestion._type)) {
-    choices = _.map(lhsQuestion.choices, (choice) => ({
+    choices = _.map((lhsQuestion as DropdownQuestion).choices, (choice) => ({
       id: choice.id,
       text: choice.label[choice.label._base || "en"]
     }))
@@ -384,11 +380,11 @@ export function summarizeCondition(cond: any, formDesign: any, locale: any) {
       str += ` ${cond.rhs.literal}`
       break
     case "choice":
-      var choices = exports.rhsChoices(lhsQuestion, cond.op)
+      var choices = rhsChoices(lhsQuestion, cond.op)
       str += " " + _.findWhere(choices, { id: cond.rhs.literal })?.text
       break
     case "choices":
-      choices = exports.rhsChoices(lhsQuestion, cond.op)
+      choices = rhsChoices(lhsQuestion, cond.op)
       str += " "
       str += _.map(cond.rhs.literal, (choice) => _.findWhere(choices, { id: choice })?.text).join(", ")
       break
