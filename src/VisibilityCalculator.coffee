@@ -48,9 +48,10 @@ module.exports = class VisibilityCalculator
         visibilityStructure[prefix + item._id] = isVisible
 
       async.each item.contents, (subitem, cb) =>
-        @processItem(subitem, isVisible == false, data, responseRow, visibilityStructure, prefix, -> _.defer(cb))
+        _.defer(() => 
+          @processItem(subitem, isVisible == false, data, responseRow, visibilityStructure, prefix, -> _.defer(cb))
+        )
       , callback
-
 
     # Always visible if no condition has been set
     if forceToInvisible
