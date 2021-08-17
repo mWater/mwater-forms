@@ -1,3 +1,4 @@
+import { VisibilityStructure } from './VisibilityCalculator';
 import EntityRow from './EntityRow';
 import { PromiseExprEvaluatorRow, Schema, Row } from 'mwater-expressions';
 import { ResponseData } from './response';
@@ -30,6 +31,8 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
     submittedOn?: string;
     /** Optional code */
     code?: string;
+    /** Cached visibility structure, needed when visible is queried */
+    visibilityStructure?: VisibilityStructure;
     constructor(options: {
         /** data of entire response */
         responseData: ResponseData;

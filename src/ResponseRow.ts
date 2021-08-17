@@ -49,6 +49,9 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
   /** Optional code */
   code?: string
 
+  /** Cached visibility structure, needed when visible is queried */
+  visibilityStructure?: VisibilityStructure
+
   // Create a response row from a response data object.
   // Options:
   //  responseData: data of entire response
@@ -184,6 +187,10 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
 
       // Visible
       if (parts.length === 3 && parts[2] === "visible") {
+        if (this.visibilityStructure) {
+          return this.visibilityStructure[parts[1]]  
+        }
+
         const visibilityCalculator = new VisibilityCalculator(this.formDesign, this.schema)
         const visibilityStructure = await new Promise<VisibilityStructure>((resolve, reject) => {
           visibilityCalculator.createVisibilityStructure(this.responseData, this, (error, visibilityStructure) => {
@@ -195,7 +202,9 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
             }
           })
         })
-        return visibilityStructure[parts[1]]
+        this.visibilityStructure = visibilityStructure
+
+        return this.visibilityStructure[parts[1]]
       }
 
       // Simple values
