@@ -42,7 +42,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<Respons
     renderItem(item: any, visibilityStructure: any, dataId: any): any;
     renderExpression(q: any, dataId: any): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>[];
     renderExpressionAnswer(q: any, dataId: any): React.CElement<any, {
-        componentWillMount(): void; /** Previous data */
+        componentWillMount(): void;
         componentDidUpdate(): void;
         evaluateExprs(): void;
         render(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement> | React.DetailedReactHTMLElement<{

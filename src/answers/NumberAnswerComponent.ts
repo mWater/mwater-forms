@@ -3,7 +3,7 @@ import _ from "lodash"
 import React from "react"
 const R = React.createElement
 
-import ui from "react-library/lib/bootstrap"
+import * as ui from "react-library/lib/bootstrap"
 
 interface NumberAnswerComponentProps {
   decimal: boolean

@@ -6,7 +6,7 @@ const R = React.createElement
 import * as formUtils from "./formUtils"
 import moment from "moment"
 import ezlocalize from "ez-localize"
-import ui from "react-library/lib/bootstrap"
+import * as ui from "react-library/lib/bootstrap"
 import AsyncLoadComponent from "react-library/lib/AsyncLoadComponent"
 import VisibilityCalculator from "./VisibilityCalculator"
 import { default as ResponseRow } from "./ResponseRow"

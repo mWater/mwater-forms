@@ -6,7 +6,7 @@ const R = React.createElement
 import FormComponent from "./FormComponent"
 import ResponseModel from "./ResponseModel"
 import ResponseDisplayComponent from "./ResponseDisplayComponent"
-import ui from "react-library/lib/bootstrap"
+import * as ui from "react-library/lib/bootstrap"
 
 interface ResponseViewEditComponentProps {
   /** Form to use */

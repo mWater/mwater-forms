@@ -3,7 +3,7 @@ import React from "react"
 const R = React.createElement
 
 import * as formUtils from "../formUtils"
-import ui from "react-library/lib/bootstrap"
+import * as ui from "react-library/lib/bootstrap"
 
 interface UnitsAnswerComponentProps {
   answer: any
