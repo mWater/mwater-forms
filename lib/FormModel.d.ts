@@ -1,7 +1,9 @@
+import { Form } from "./form";
 export default class FormModel {
-    constructor(form: any);
-    getDeploymentSubjects(): any[];
-    correctViewers(): any;
+    form: Form;
+    constructor(form: Form);
+    getDeploymentSubjects(): string[];
+    correctViewers(): void;
     canDeleteRole(role: any): boolean;
     canChangeRole(role: any): boolean;
     amAdmin(user: any, groups: any): boolean;

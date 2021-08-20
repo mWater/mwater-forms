@@ -460,7 +460,7 @@ export function isSectioned(form: any) {
 
 // Duplicates an item (form design, section or question)
 // idMap is a map of old _ids to new _ids. If any not present, new uid will be used
-export function duplicateItem(item: any, idMap: any) {
+export function duplicateItem(item: any, idMap?: any) {
   // If form or section and ids not mapped, map ids
   let question
   if (!idMap) {

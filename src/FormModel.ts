@@ -1,21 +1,23 @@
 import _ from "lodash"
-import * as formUtils from "./formUtils"
+import { Deployment, Form } from "./form"
 
 // Model of a form object that allows manipulation and asking of questions
 export default class FormModel {
-  constructor(form: any) {
+  form: Form
+
+  constructor(form: Form) {
     this.form = form
   }
 
   // Gets all subjects that must be able to see form because of deployments
   getDeploymentSubjects() {
-    function getDeploymentSubs(deployment: any) {
+    function getDeploymentSubs(deployment: Deployment) {
       const approvers = _.flatten(_.map(deployment.approvalStages, (stage) => stage.approvers))
       return _.union(approvers, deployment.enumerators, deployment.viewers, deployment.admins)
     }
 
     // Get all deployment subjects
-    const deploySubs = _.uniq(_.flatten(_.map(this.form.deployments, getDeploymentSubs)))
+    const deploySubs = _.uniq(_.flatten(_.map(this.form.deployments || [], getDeploymentSubs)))
     return deploySubs
   }
 
@@ -26,12 +28,13 @@ export default class FormModel {
       this.getDeploymentSubjects(),
       _.map(this.form.roles, (r) => r.id)
     )
-    return (this.form.roles = this.form.roles.concat(
+    
+    this.form.roles = this.form.roles.concat(
       _.map(needed, (n) => ({
         id: n,
         role: "view"
       }))
-    ))
+    )
   }
 
   // Checks if the role must remain as a role due to being in a deployment or being only admin
@@ -69,6 +72,6 @@ export default class FormModel {
   amDeploymentAdmin(user: any, groups: any) {
     let subjects = ["all", "user:" + user]
     subjects = subjects.concat(_.map(groups, (g) => "group:" + g))
-    return _.any(this.form.deployments, (dep) => _.intersection(dep.admins, subjects).length > 0)
+    return _.any(this.form.deployments || [], (dep) => _.intersection(dep.admins, subjects).length > 0)
   }
 }
