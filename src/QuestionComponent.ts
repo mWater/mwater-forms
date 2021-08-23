@@ -70,6 +70,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
     disableConfidentialFields: PropTypes.bool,
     getCustomTableRows: PropTypes.func.isRequired
   }
+  comments: HTMLTextAreaElement | null
 
   constructor(props: any) {
     super(props)
@@ -277,17 +278,18 @@ export default class QuestionComponent extends React.Component<QuestionComponent
   }
 
   // Either jump to next question or select the comments box
-  handleNextOrComments = (ev: any) => {
+  handleNextOrComments = (ev?: any) => {
     // If it has a comment box, set the focus on it
-    if (this.props.question.commentsField != null) {
-      const { comments } = this
+    if (this.props.question.commentsField) {
       // For some reason, comments can be null here sometimes
-      comments?.focus()
-      return comments?.select()
+      this.comments?.focus()
+      this.comments?.select()
       // Else we lose the focus and go to the next question
     } else {
       // Blur the input (remove the focus)
-      ev.target.blur()
+      if (ev) {
+        ev.target.blur()
+      }
       return this.props.onNext?.()
     }
   }
