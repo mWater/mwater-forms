@@ -20,13 +20,6 @@ export default class AquagenxCBTPopupComponent extends React.Component<AquagenxC
     handleSaveClick: () => any;
     renderStyle(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>;
     renderInfo(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>;
-    render(): React.CElement<{
-        header?: React.ReactNode;
-        footer?: React.ReactNode;
-        size?: "small" | "normal" | "full" | "large" | undefined;
-        width?: number | undefined;
-        showCloseX?: boolean | undefined;
-        onClose?: (() => void) | undefined;
-    }, ModalPopupComponent>;
+    render(): React.CElement<any, ModalPopupComponent>;
 }
 export {};

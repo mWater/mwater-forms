@@ -13,16 +13,6 @@ interface NumberAnswerComponentProps {
 export default class NumberAnswerComponent extends React.Component<NumberAnswerComponentProps> {
     focus(): any;
     validate(): "Invalid number" | null;
-    render(): React.CElement<{
-        decimal: boolean;
-        value?: number | null | undefined;
-        onChange?: ((value: number | null) => void) | undefined;
-        style?: object | undefined;
-        size?: "sm" | "lg" | undefined;
-        onTab?: (() => void) | undefined;
-        onEnter?: (() => void) | undefined;
-        decimalPlaces?: number | undefined;
-        placeholder?: string | undefined;
-    }, ui.NumberInput>;
+    render(): React.CElement<ui.NumberInputProps, ui.NumberInput>;
 }
 export {};

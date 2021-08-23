@@ -39,14 +39,7 @@ export default class ResponseDisplayComponent extends React.Component<ResponseDi
     renderEvent(ev: any): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement> | null;
     renderHistory(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>;
     renderStatus(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>;
-    renderArchives(): React.CElement<{
-        header?: React.ReactNode;
-        footer?: React.ReactNode;
-        size?: "small" | "normal" | "full" | "large" | undefined;
-        width?: number | undefined;
-        showCloseX?: boolean | undefined;
-        onClose?: (() => void) | undefined;
-    }, ModalPopupComponent> | null;
+    renderArchives(): React.CElement<any, ModalPopupComponent> | null;
     renderHeader(): React.DetailedReactHTMLElement<{
         style: {
             paddingBottom: number;

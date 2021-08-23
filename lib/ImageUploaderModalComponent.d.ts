@@ -16,7 +16,7 @@ interface ImageUploaderModalComponentState {
     percentComplete: any;
 }
 export default class ImageUploaderModalComponent extends React.Component<ImageUploaderModalComponentProps, ImageUploaderModalComponentState> {
-    static show: (apiUrl: any, client: any, T: any, success: any, forceCamera: any) => any;
+    static show: (apiUrl: any, client: any, T: any, success: any, forceCamera: any) => Element;
     constructor(props: any);
     handleUploadProgress: (evt: any) => void;
     handleUploadComplete: (evt: any) => any;
@@ -25,13 +25,6 @@ export default class ImageUploaderModalComponent extends React.Component<ImageUp
     handleCancel: () => any;
     handleFileSelected: (ev: any) => void;
     renderContents(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>;
-    render(): React.CElement<{
-        header?: React.ReactNode;
-        footer?: React.ReactNode;
-        size?: "small" | "normal" | "full" | "large" | undefined;
-        width?: number | undefined;
-        showCloseX?: boolean | undefined;
-        onClose?: (() => void) | undefined;
-    }, ModalPopupComponent>;
+    render(): React.CElement<any, ModalPopupComponent>;
 }
 export {};
