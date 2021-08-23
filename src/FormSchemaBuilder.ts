@@ -1,23 +1,22 @@
 import _ from "lodash"
 import * as formUtils from "./formUtils"
-import { ExprUtils } from "mwater-expressions"
+import { ExprUtils, Schema } from "mwater-expressions"
 import { ExprCompiler } from "mwater-expressions"
 import update from "update-object"
-import { ColumnNotFoundException } from "mwater-expressions"
-import TopoSort from "topo-sort"
 import ConditionsExprCompiler from "./ConditionsExprCompiler"
 import { healthRiskEnum } from "./answers/aquagenxCBTUtils"
+import { Form } from "./form"
 
 // Adds a form to a mwater-expressions schema
 export default class FormSchemaBuilder {
   // indicators is at least all indicators referenced in indicator calculations. Can be empty and indicator calculations will be omitted
-  addForm(schema: any, form: any, cloneFormsDeprecated: any, isAdmin = true, indicators: any) {
+  addForm(schema: Schema, form: Form, cloneFormsDeprecated: any, isAdmin = true, indicators: any) {
     const contents = []
 
     const metadata = []
 
     // Get deployments
-    const deploymentValues = _.map(form.deployments, (dep) => ({
+    const deploymentValues = _.map(form.deployments || [], (dep) => ({
       id: dep._id,
       name: { en: dep.name }
     }))

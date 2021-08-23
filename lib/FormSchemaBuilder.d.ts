@@ -1,5 +1,7 @@
+import { Schema } from "mwater-expressions";
+import { Form } from "./form";
 export default class FormSchemaBuilder {
-    addForm(schema: any, form: any, cloneFormsDeprecated: any, isAdmin: boolean | undefined, indicators: any): any;
+    addForm(schema: Schema, form: Form, cloneFormsDeprecated: any, isAdmin: boolean | undefined, indicators: any): Schema;
     addReverseJoins(schema: any, form: any, reverseJoins: any): any;
     addRosterTables(schema: any, design: any, conditionsExprCompiler: any, reverseJoins: any, tableId: any): any;
     addIndicatorCalculations(schema: any, form: any, indicators: any): any;
