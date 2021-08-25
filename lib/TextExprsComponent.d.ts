@@ -1,36 +1,36 @@
 import React from "react";
-declare const _default: {
-    new (props: any): {
-        componentWillMount(): void;
-        componentDidUpdate(): void;
-        evaluateExprs(): void;
-        render(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement> | React.DetailedReactHTMLElement<{
-            dangerouslySetInnerHTML: {
-                __html: any;
-            };
-        }, HTMLElement>;
-        context: any;
-        setState<K extends never>(state: {} | ((prevState: Readonly<{}>, props: Readonly<{}>) => {} | Pick<{}, K> | null) | Pick<{}, K> | null, callback?: (() => void) | undefined): void;
-        forceUpdate(callback?: (() => void) | undefined): void;
-        readonly props: Readonly<{}> & Readonly<{
-            children?: React.ReactNode;
-        }>;
-        state: Readonly<{}>;
-        refs: {
-            [key: string]: React.ReactInstance;
+import { Expr, Schema } from "mwater-expressions";
+import { LocalizedString } from "ez-localize";
+import ResponseRow from "./ResponseRow";
+interface TextExprsComponentProps {
+    /** String to render (localized) */
+    localizedStr?: LocalizedString;
+    /** Array of mwater-expressions to insert at {0}, {1}, etc. */
+    exprs?: Expr[];
+    /** Schema that includes the current form */
+    schema: Schema;
+    /** response row to use */
+    responseRow: ResponseRow;
+    /** locale (e.g. "en") to use */
+    locale?: string;
+    /** True to render as markdown text */
+    markdown?: boolean;
+    /** Format to be used by d3 formatter */
+    format?: string;
+}
+interface TextExprsComponentState {
+    exprValueStrs: string[];
+}
+/** Displays a text string with optional expressions embedded in it that are computed */
+export default class TextExprsComponent extends React.Component<TextExprsComponentProps, TextExprsComponentState> {
+    constructor(props: TextExprsComponentProps);
+    componentWillMount(): void;
+    componentDidUpdate(): void;
+    evaluateExprs(): void;
+    render(): React.DetailedReactHTMLElement<{
+        dangerouslySetInnerHTML: {
+            __html: any;
         };
-        componentDidMount?(): void;
-        shouldComponentUpdate?(nextProps: Readonly<{}>, nextState: Readonly<{}>, nextContext: any): boolean;
-        componentWillUnmount?(): void;
-        componentDidCatch?(error: Error, errorInfo: React.ErrorInfo): void;
-        getSnapshotBeforeUpdate?(prevProps: Readonly<{}>, prevState: Readonly<{}>): any;
-        UNSAFE_componentWillMount?(): void;
-        componentWillReceiveProps?(nextProps: Readonly<{}>, nextContext: any): void;
-        UNSAFE_componentWillReceiveProps?(nextProps: Readonly<{}>, nextContext: any): void;
-        componentWillUpdate?(nextProps: Readonly<{}>, nextState: Readonly<{}>, nextContext: any): void;
-        UNSAFE_componentWillUpdate?(nextProps: Readonly<{}>, nextState: Readonly<{}>, nextContext: any): void;
-    };
-    initClass(): void;
-    contextType?: React.Context<any> | undefined;
-};
-export default _default;
+    }, HTMLElement> | React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+}
+export {};
