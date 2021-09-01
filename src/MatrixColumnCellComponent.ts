@@ -24,6 +24,8 @@ interface MatrixColumnCellComponentProps {
   onAnswerChange: any
   /** True if invalid */
   invalid?: boolean
+  /** Validation message */
+  invalidMessage?: string
   /** Schema to use, including form */
   schema: any
 }
@@ -160,6 +162,9 @@ export default class MatrixColumnCellComponent extends React.Component<MatrixCol
       className = "invalid"
     }
 
-    return R("td", { className }, elem)
+    return R("td", { className }, 
+      elem,
+      (this.props.invalid && !!this.props.invalidMessage) ? R('small', {style: {color: '#C43B1D'}}, this.props.invalidMessage): undefined
+    )
   }
 }

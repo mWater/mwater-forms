@@ -472,6 +472,45 @@ describe("AnswerValidator", function () {
   })
 
   return describe("validateMatrixQuestion", function () {
+
+    it("allows non-valid blank answer if not required", async function () {
+      const question = {
+        "_id": "q1",
+        "_type": "MatrixQuestion",
+        "columns": [
+          { "_id": "c1", "_type": "TextColumnQuestion", "required": false},
+          {
+            "_id": "c2",
+            "_type": "NumberColumnQuestion",
+            "decimal": false,
+            "required": false,
+            "validations": [ {"message": { "undefined": "Wrong" }, "op": "range", "rhs": { "literal": { "max": "10", "min": "0"}}}]
+          },
+          {
+            "_id": "c3",
+            "_type": "NumberColumnQuestion",
+            "decimal": false,
+            "required": false,
+            "validations": [ { "message": { "undefined": "Wrong" }, "op": "range", "rhs": { "literal": { "max": "100", "min": "10" }}}]
+          }
+        ],
+        "items": [ { "id": "ts39QF6" }, { "id": "dWY5r5E" }],
+        "required": true,
+      }
+
+      const answer = {
+        value: {
+          "ts39QF6": {
+            "c1": {value: "as"},
+            "c2": {value: null},
+            "c3": {value: null}
+          }
+        }
+      }
+      const result = await this.answerValidator.validate(question, answer)
+      assert.equal(result, null)
+    })
+
     it("passes if ok", async function () {
       const question = {
         _type: "MatrixQuestion",

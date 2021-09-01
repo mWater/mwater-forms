@@ -918,7 +918,7 @@ module.exports = {
             allowRemove: true,
             contents: [
               { _id: "a", _type: "TextColumnQuestion", text: { en: "Name" }, required: true },
-              { _id: "b", _type: "NumberColumnQuestion", text: { en: "Age" } },
+              { _id: "b", _type: "NumberColumnQuestion", text: { en: "Age" }, validations: [ { message: { en: "Wrong", _base: "en" }, op: "range", rhs: { literal: { max: 100, min: 10 }}}] },
               { _id: "c", _type: "CheckColumnQuestion", text: { en: "Present" } },
               {
                 _id: "d",

@@ -6,6 +6,7 @@ const R = React.createElement
 import * as formUtils from "./formUtils"
 import TextExprsComponent from "./TextExprsComponent"
 import ItemListComponent from "./ItemListComponent"
+import cx from "classnames"
 
 interface RosterGroupComponentProps {
   /** Design of roster group. See schema */
@@ -21,14 +22,26 @@ interface RosterGroupComponentProps {
   schema: any
 }
 
+interface RosterGroupComponentState {
+  /** The indices that are collapsed */
+  collapsedEntries: number[]
+}
 // TODO Add focus()
 
 // Rosters are repeated information, such as asking questions about household members N times.
 // A roster group is a group of questions that is asked once for each roster entry
-export default class RosterGroupComponent extends React.Component<RosterGroupComponentProps> {
+export default class RosterGroupComponent extends React.Component<RosterGroupComponentProps, RosterGroupComponentState> {
   static contextTypes = {
     locale: PropTypes.string,
     T: PropTypes.func.isRequired // Localizer to use
+  }
+
+  constructor(props: RosterGroupComponentProps) {
+    super(props)
+
+    this.state = {
+      collapsedEntries: []
+    }
   }
 
   // Gets the id that the answer is stored under
@@ -87,6 +100,10 @@ export default class RosterGroupComponent extends React.Component<RosterGroupCom
     return this.props.isVisible(`${this.getAnswerId()}.${index}.${id}`)
   }
 
+  handleToggle = (index: number) => {
+    this.setState({collapsedEntries: _.xor(this.state.collapsedEntries, [index])})
+  }
+
   renderName() {
     return R("h4", { key: "prompt" }, formUtils.localizeString(this.props.rosterGroup.name, this.context.locale))
   }
@@ -102,18 +119,31 @@ export default class RosterGroupComponent extends React.Component<RosterGroupCom
   }
 
   renderEntry(entry: any, index: any) {
+    const isCollapsed = this.state.collapsedEntries.includes(index)
+    const bodyStyle = {
+      height: isCollapsed ? 0: 'auto',
+      transition: 'height 0.25s ease-in',
+      padding: isCollapsed? 0: 15,
+      overflow: 'hidden'
+    }
+
     return R(
       "div",
       { key: index, className: "panel panel-default" },
       R(
         "div",
-        { key: "header", className: "panel-heading", style: { fontWeight: "bold" } },
+        { key: "header", className: "panel-heading", style: { fontWeight: "bold", position: "relative" }},
         `${index + 1}. `,
-        this.renderEntryTitle(entry, index)
+        this.renderEntryTitle(entry, index),
+        R("button", {
+          className: "btn btn-link", 
+          style: {position: 'absolute', right: 0, top: 5}, 
+          onClick: this.handleToggle.bind(null, index)
+        }, R("span", {className: cx('glyphicon', {'glyphicon-chevron-up': !isCollapsed, 'glyphicon-chevron-down': isCollapsed})}))
       ),
       R(
         "div",
-        { key: "body", className: "panel-body" },
+        { key: "body", className: "panel-body", style: bodyStyle },
         this.props.rosterGroup.allowRemove
           ? R(
               "button",

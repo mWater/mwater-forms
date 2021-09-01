@@ -13,6 +13,8 @@ interface MatrixColumnCellComponentProps {
     onAnswerChange: any;
     /** True if invalid */
     invalid?: boolean;
+    /** Validation message */
+    invalidMessage?: string;
     /** Schema to use, including form */
     schema: any;
 }
