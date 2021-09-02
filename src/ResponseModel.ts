@@ -1,14 +1,32 @@
 import _ from "lodash"
+import { Form, Deployment } from "./form"
+import { Response } from "./response"
 import * as formUtils from "./formUtils"
 
-// Model of a response object that allows manipulation and asking of questions
-// Options are:
-// response: response object. Required
-// form: form object. Required
-// user: current username. Required
-// groups: group names of user
+/** Model of a response object that allows manipulation and asking of questions */
 export default class ResponseModel {
-  constructor(options: any) {
+  response: Response
+  form: Form
+  user: string
+  username: string
+  groups: string[]
+  
+  constructor(options: {
+    /** response object. Required */
+    response: Response
+
+    /** form object. Required */
+    form: Form
+
+    /** current user. Required */
+    user: string
+
+    /** current username. Required */
+    username: string
+
+    /** group names of user */
+    groups?: string[]
+  }) {
     this.response = options.response
     this.form = options.form
     this.user = options.user
@@ -16,8 +34,8 @@ export default class ResponseModel {
     this.groups = options.groups || []
   }
 
-  // Setup draft. deploymentId is optional _id of deployment to use for cases where ambiguous
-  draft(deploymentId: any) {
+  /** Setup draft. deploymentId is optional _id of deployment to use for cases where ambiguous */
+  draft(deploymentId?: string): void {
     if (!this.response._id) {
       this.response._id = formUtils.createUid()
     }
@@ -33,7 +51,7 @@ export default class ResponseModel {
     // Create code. Not unique, but unique per user if logged in once.
     this.response.code = this.username + "-" + formUtils.createBase32TimeCode(new Date())
 
-    this.response.formRev = this.form._rev
+    this.response.formRev = this.form._rev!
     this.response.status = "draft"
 
     this._addEvent("draft")
@@ -52,11 +70,11 @@ export default class ResponseModel {
     }
 
     this.fixRoles()
-    return this.updateEntities()
+    this.updateEntities()
   }
 
-  // Switch back to draft mode
-  redraft() {
+  /** Switch back to draft mode */
+  redraft(): void {
     // Add event if not in draft
     if (this.response.status !== "draft") {
       this._addEvent("draft")
@@ -74,8 +92,8 @@ export default class ResponseModel {
     return this.updateEntities()
   }
 
-  // Return all active deployments that the user can enumerate
-  listEnumeratorDeployments() {
+  /** Return all active deployments that the user can enumerate */
+  listEnumeratorDeployments(): Deployment[] {
     let subjects = ["user:" + this.user, "all"]
     subjects = subjects.concat(_.map(this.groups, (g) => "group:" + g))
 
@@ -84,15 +102,15 @@ export default class ResponseModel {
     })
   }
 
-  // Save for later. Does no state transitions, but updates any entity references
-  // and other housekeeping before saving it
-  saveForLater() {
+  /** Save for later. Does no state transitions, but updates any entity references
+   * and other housekeeping before saving it */
+  saveForLater(): void {
     this.fixRoles()
-    return this.updateEntities()
+    this.updateEntities()
   }
 
-  // Submit (either to final or pending as appropriate)
-  submit() {
+  /** Submit (either to final or pending as appropriate) */
+  submit(): void {
     this.response.submittedOn = new Date().toISOString()
 
     const deployment = _.findWhere(this.form.deployments, { _id: this.response.deployment })
@@ -111,11 +129,11 @@ export default class ResponseModel {
     this._addEvent("submit")
 
     this.fixRoles()
-    return this.updateEntities()
+    this.updateEntities()
   }
 
-  // Can submit if in draft/rejected and am enumerator or admin
-  canSubmit() {
+  /** Can submit if in draft/rejected and am enumerator or admin */
+  canSubmit(): boolean {
     if (!["draft", "rejected"].includes(this.response.status)) {
       return false
     }
@@ -142,8 +160,8 @@ export default class ResponseModel {
     return _.intersection(admins, subjects).length > 0
   }
 
-  // Approve response
-  approve() {
+  /** Approve response */
+  approve(): void {
     if (!this.canApprove()) {
       throw new Error("Cannot approve")
     }
@@ -174,11 +192,11 @@ export default class ResponseModel {
     this._addEvent("approve", { override: _.intersection(approvers, subjects).length === 0 })
 
     this.fixRoles()
-    return this.updateEntities()
+    this.updateEntities()
   }
 
-  // Reject a response with a specific rejection message
-  reject(message: any) {
+  /** Reject a response with a specific rejection message */
+  reject(message: string): void {
     if (!this.canReject()) {
       throw new Error("Cannot reject")
     }
@@ -200,13 +218,13 @@ export default class ResponseModel {
     this._addEvent("reject", { message })
 
     this.fixRoles()
-    return this.updateEntities()
+    this.updateEntities()
   }
 
-  // Record that an edit was done, if not by enumerator
-  recordEdit() {
+  /** Record that an edit was done, if not by enumerator */
+  recordEdit(): void {
     if (this.user !== this.response.user) {
-      return this._addEvent("edit")
+      this._addEvent("edit")
     }
   }
 
@@ -219,13 +237,13 @@ export default class ResponseModel {
   // Performs special operation when a response goes from final to other
   _unfinalize() {}
 
-  // Updates entities field. Stores a list of all entity references in the response
-  updateEntities() {
-    return (this.response.entities = formUtils.extractEntityReferences(this.form.design, this.response.data))
+  /** Updates entities field. Stores a list of all entity references in the response */
+  updateEntities(): void {
+    this.response.entities = formUtils.extractEntityReferences(this.form.design, this.response.data)
   }
 
-  // Fixes roles to reflect status and approved fields
-  fixRoles() {
+  /** Fixes roles to reflect status and approved fields */
+  fixRoles(): void {
     // Determine deployment
     let admins: any, viewers: any
     const deployment = _.findWhere(this.form.deployments, { _id: this.response.deployment })
@@ -316,16 +334,16 @@ export default class ResponseModel {
       id: s,
       role: "admin"
     }))
-    return (this.response.roles = this.response.roles.concat(
+    this.response.roles = this.response.roles.concat(
       _.map(viewers, (s) => ({
         id: s,
         role: "view"
       }))
-    ))
+    )
   }
 
-  // Determine if can approve response
-  canApprove() {
+  /** Determine if can approve response */
+  canApprove(): boolean {
     const deployment = _.findWhere(this.form.deployments, { _id: this.response.deployment })
     if (!deployment) {
       return false
@@ -350,8 +368,8 @@ export default class ResponseModel {
     return false
   }
 
-  // Determine if am an approver for the response, as opposed to admin who could still approve
-  amApprover() {
+  /** Determine if am an approver for the response, as opposed to admin who could still approve */
+  amApprover(): boolean {
     const deployment = _.findWhere(this.form.deployments, { _id: this.response.deployment })
     if (!deployment) {
       return false
@@ -372,8 +390,8 @@ export default class ResponseModel {
     return false
   }
 
-  // Determine if can delete response
-  canDelete() {
+  /** Determine if can delete response */
+  canDelete(): boolean {
     let subjects = ["user:" + this.user, "all"]
     subjects = subjects.concat(_.map(this.groups, (g) => "group:" + g))
 
@@ -407,8 +425,8 @@ export default class ResponseModel {
     return _.intersection(admins, subjects).length > 0
   }
 
-  // Determine if can edit response
-  canEdit() {
+  /** Determine if can edit response */
+  canEdit(): boolean {
     const deployment = _.findWhere(this.form.deployments, { _id: this.response.deployment })
     if (!deployment) {
       return false
@@ -436,8 +454,8 @@ export default class ResponseModel {
     return _.intersection(admins, subjects).length > 0
   }
 
-  // Determine if can switch back to draft phase. Only enumerators can do this and only if pending, rejected, draft or enumerators can edit final
-  canRedraft() {
+  /** Determine if can switch back to draft phase. Only enumerators can do this and only if pending, rejected, draft or enumerators can edit final */
+  canRedraft(): boolean {
     // Cannot redraft anonymous responses
     if (!this.response.user) {
       return false
