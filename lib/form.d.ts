@@ -22,6 +22,8 @@ export interface Form {
     masterForm?: boolean;
     /** Permissions on the form */
     roles: FormRole[];
+    /** Group _id who owns the form */
+    ownedBy?: string;
     created: {
         /** ISO8601 datetime */
         on: string;
