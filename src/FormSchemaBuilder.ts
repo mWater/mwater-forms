@@ -16,7 +16,7 @@ export default class FormSchemaBuilder {
     const metadata = []
 
     // Get deployments
-    const deploymentValues = _.map(form.deployments || [], (dep) => ({
+    const deploymentValues = _.map(form.deployments, (dep) => ({
       id: dep._id,
       name: { en: dep.name }
     }))

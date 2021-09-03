@@ -7,7 +7,7 @@ export interface Form {
     /** _id of the form that this is a duplicate of */
     _basedOn?: string;
     /** List of deployments. */
-    deployments?: Deployment[];
+    deployments: Deployment[];
     /** Current status of the form. Starts in active state */
     state: "active" | "deleted";
     /** Design of the form */

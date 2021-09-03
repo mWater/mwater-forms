@@ -10,7 +10,7 @@ export interface Form {
   _basedOn?: string
 
   /** List of deployments. */
-  deployments?: Deployment[]
+  deployments: Deployment[]
 
   /** Current status of the form. Starts in active state */
   state: "active" | "deleted"

@@ -17,7 +17,7 @@ export default class FormModel {
     }
 
     // Get all deployment subjects
-    const deploySubs = _.uniq(_.flatten(_.map(this.form.deployments || [], getDeploymentSubs)))
+    const deploySubs = _.uniq(_.flatten(_.map(this.form.deployments, getDeploymentSubs)))
     return deploySubs
   }
 
@@ -72,6 +72,6 @@ export default class FormModel {
   amDeploymentAdmin(user: any, groups: any) {
     let subjects = ["all", "user:" + user]
     subjects = subjects.concat(_.map(groups, (g) => "group:" + g))
-    return _.any(this.form.deployments || [], (dep) => _.intersection(dep.admins, subjects).length > 0)
+    return _.any(this.form.deployments, (dep) => _.intersection(dep.admins, subjects).length > 0)
   }
 }
