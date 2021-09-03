@@ -36,6 +36,7 @@
     "hbsfy": "^2.2.1",
     "immer": "^8.0.0",
     "jquery": "~2.1.0",
+    "jsonql": "github:mWater/jsonql",
     "lodash": "^3.2.0",
     "markdown-it": "^12.0.4",
     "moment": "^2.27.0",
