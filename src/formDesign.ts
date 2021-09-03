@@ -785,7 +785,6 @@ export interface MatrixQuestion extends QuestionBase {
   items: Choices
 
   /** Contains a list of columns */
-
   columns: MatrixColumn[]
 
   /** No validation available */
