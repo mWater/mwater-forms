@@ -64,7 +64,7 @@ export class CascadingRefAnswerComponent extends React.Component<Props, State> {
         }
 
         // Get dropdown values
-        const dropdownValues = this.props.question.dropdowns.map((sel) => (row ? row[sel.columnId] : null))
+        const dropdownValues = this.props.question.dropdowns.map((sel) => (row ? (row[sel.columnId] != null ? row[sel.columnId] : null) : null))
         this.setState({ dropdownValues, rows })
       })
       .catch((err) => {
@@ -152,7 +152,8 @@ export class CascadingRefAnswerComponent extends React.Component<Props, State> {
         }
       }
       if (!exclude) {
-        values.push(row[this.props.question.dropdowns[index].columnId])
+        const columnId = this.props.question.dropdowns[index].columnId 
+        values.push(row[columnId] != null ? row[columnId] : null)
       }
     }
 
