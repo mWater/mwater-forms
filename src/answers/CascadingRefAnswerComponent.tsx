@@ -190,9 +190,9 @@ export class CascadingRefAnswerComponent extends React.Component<Props, State> {
         }
       }
     } else {
-      // Text are added as is, converting null to ""
+      // Text are added as is, converting null value to "" and label to emdash
       for (const value of values) {
-        options.push({ value: value, label: value })
+        options.push({ value: value, label: value || "\u2014" })
       }
     }
 
