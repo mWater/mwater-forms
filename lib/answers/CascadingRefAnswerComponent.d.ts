@@ -27,6 +27,9 @@ interface State {
     /** True if editing the value. Ignores changes to the value and prevents saving */
     editing: boolean;
 }
+/** Cascading selection of a row from a table.
+ * Special handling of null (arrives as undefined) values in table: they are converted to ""
+ */
 export declare class CascadingRefAnswerComponent extends React.Component<Props, State> {
     constructor(props: Props);
     componentDidMount(): void;

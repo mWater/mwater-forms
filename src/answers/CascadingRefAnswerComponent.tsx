@@ -41,6 +41,9 @@ interface State {
   editing: boolean
 }
 
+/** Cascading selection of a row from a table.
+ * Special handling of null (arrives as undefined) values in table: they are converted to ""
+ */
 export class CascadingRefAnswerComponent extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
@@ -64,7 +67,7 @@ export class CascadingRefAnswerComponent extends React.Component<Props, State> {
         }
 
         // Get dropdown values
-        const dropdownValues = this.props.question.dropdowns.map((sel) => (row ? (row[sel.columnId] != null ? row[sel.columnId] : null) : null))
+        const dropdownValues = this.props.question.dropdowns.map((sel) => (row ? (row[sel.columnId] || "") : null))
         this.setState({ dropdownValues, rows })
       })
       .catch((err) => {
@@ -119,7 +122,7 @@ export class CascadingRefAnswerComponent extends React.Component<Props, State> {
       for (const row of this.state.rows!) {
         let exclude = false
         for (let pos = 0; pos < dropdowns.length; pos++) {
-          if (row[dropdowns[pos].columnId] !== dropdownValues[pos]) {
+          if ((row[dropdowns[pos].columnId] || "") !== dropdownValues[pos]) {
             exclude = true
           }
         }
@@ -147,13 +150,13 @@ export class CascadingRefAnswerComponent extends React.Component<Props, State> {
     for (const row of this.state.rows!) {
       let exclude = false
       for (let prev = 0; prev < index; prev++) {
-        if (row[this.props.question.dropdowns[prev].columnId] !== dropdownValues[prev]) {
+        if ((row[this.props.question.dropdowns[prev].columnId] || "") !== dropdownValues[prev]) {
           exclude = true
         }
       }
       if (!exclude) {
         const columnId = this.props.question.dropdowns[index].columnId 
-        values.push(row[columnId] != null ? row[columnId] : null)
+        values.push(row[columnId] || "")
       }
     }
 
@@ -187,7 +190,7 @@ export class CascadingRefAnswerComponent extends React.Component<Props, State> {
         }
       }
     } else {
-      // Text are added as is
+      // Text are added as is, converting null to ""
       for (const value of values) {
         options.push({ value: value, label: value })
       }
