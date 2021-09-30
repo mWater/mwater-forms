@@ -21,7 +21,7 @@ const RankedQuestion:React.FC<RankedQuestionProps> = ({choices, locale, answer, 
   }, [onValueChange])
 
   const items = useMemo(() => {
-    return _.sortBy(choices, (item) => answer[item.id] ?? 0)
+    return _.sortBy(choices, (item) => !!answer ? (answer[item.id] ?? 0) : 0)
   }, [choices, answer])
 
   const renderItem = (entry: any, index: any, connectDragSource: any, connectDragPreview: any, connectDropTarget: any) => {
