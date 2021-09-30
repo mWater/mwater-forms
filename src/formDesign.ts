@@ -210,6 +210,7 @@ export type Question =
   | AquagenxCBTQuestion
   | CascadingListQuestion
   | CascadingRefQuestion
+  | RankedQuestion
 
 /** Instructional text item */
 export interface Instructions {
@@ -918,4 +919,10 @@ export interface AdvancedValidation {
 
   /** Message that is shown if expr is not true */
   message: LocalizedString
+}
+
+export interface RankedQuestion extends QuestionBase {
+  _type: "RankedQuestion"
+  
+  items: Choices
 }

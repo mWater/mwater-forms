@@ -29,6 +29,7 @@ export type AnswerType =
   | "aquagenx_cbt"
   | "cascading_list"
   | "cascading_ref"
+  | "ranked"
 
 /** Create ~ 128-bit uid without dashes */
 export function createUid() {
@@ -456,6 +457,8 @@ export function getAnswerType(q: QuestionBase): AnswerType {
     case "TextColumn":
     case "Calculation":
       return "expr"
+    case "RankedQuestion":
+      return "ranked"
     default:
       throw new Error(`Unknown question type ${q._type}`)
   }

@@ -176,3 +176,22 @@ th .table-sort-controls {
 th:hover .table-sort-controls {
   visibility: visible;
 }
+
+
+.__ranked_option{
+  display: block;
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 6px;
+  background-color: #fff;
+}
+
+.__ranked_option p{
+  margin: 0;
+  padding: 0;
+}
+
+.__ranked_option .glyphicon{
+  margin-right: 10px;
+}

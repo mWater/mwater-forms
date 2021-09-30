@@ -2,7 +2,9 @@ import _ from "lodash"
 
 // Compiles validations
 export default class ValidationCompiler {
-  constructor(locale: any) {
+  locale: string
+
+  constructor(locale: string) {
     this.locale = locale
   }
 
