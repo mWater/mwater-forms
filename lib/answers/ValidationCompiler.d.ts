@@ -1,5 +1,6 @@
 export default class ValidationCompiler {
-    constructor(locale: any);
+    locale: string;
+    constructor(locale: string);
     compileString: (str: any) => any;
     compileValidationMessage: (val: any) => any;
     compileValidation: (val: any) => (answer: any) => any;
