@@ -272,6 +272,9 @@ export function prepareQuestion(q: any) {
     case "CascadingRefQuestion":
       _.defaults(q, { dropdowns: [] })
       break
+    case "RankedQuestion":
+      _.defaults(q, {choices: []})
+      break
   }
 
   // Get known fields
