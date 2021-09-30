@@ -101,7 +101,7 @@ export class CustomTablesetSchemaBuilder {
       // Create table
       schema = schema.addTable(schemaTable)
 
-      // Add reverse joins to entities
+      // Add reverse joins to entities (if not already present)
       for (const column of flattenContents(contents)) {
         if (column.type == "id" && column.idTable!.match(/^entities\./)) {
           const otherTable = schema.getTable(column.idTable!)
@@ -119,11 +119,13 @@ export class CustomTablesetSchemaBuilder {
                 toColumn: column.id
               }
             }
-            schema = schema.addTable(
-              produce(otherTable, (draft) => {
-                draft.contents.push(reverseColumn)
-              })
-            )
+            if (schema.getColumn(otherTable.id, reverseColumn.id) == null) {
+              schema = schema.addTable(
+                produce(otherTable, (draft) => {
+                  draft.contents.push(reverseColumn)
+                })
+              )
+            }
           }
         }
       }
