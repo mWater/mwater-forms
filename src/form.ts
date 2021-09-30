@@ -24,6 +24,9 @@ export interface Form {
   /** Indicator calculations that create indicator values from form responses */
   indicatorCalculations?: IndicatorCalculation[]
 
+  /** Status of query optimization. null (default), "setup" (if table created but not fully populated) or `"ready"` (if fully ready) */
+  qopt_status?: null | "setup" | "ready"
+
   /** True if master form (DEPRECATED) */
   isMaster?: boolean
 
