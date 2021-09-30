@@ -377,6 +377,8 @@ export function prepareQuestion(q: any) {
       knownFields.push("tableId")
       knownFields.push("dropdowns")
       break
+    case "RankedQuestion":
+      knownFields.push("choices")
   }
 
   // Strip unknown fields
