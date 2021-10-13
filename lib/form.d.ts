@@ -91,17 +91,16 @@ export interface Deployment {
      * has a list of approvers who can approve/reject the response and move it along */
     approvalStages: ApprovalStage[];
 }
-interface FormRole {
+export interface FormRole {
     /** Subject (user:xyz or group:abc or "all") */
     id: string;
     /** view can view only, admin can do anything, deploy cannot edit but can deploy form */
     role: "view" | "admin" | "deploy";
 }
 /** One stage of approval for a deployment needed */
-interface ApprovalStage {
+export interface ApprovalStage {
     /** List of ids of users and groups who can approve/reject responses at this step. i.e. user:<username> or group:<groupname> */
     approvers: string[];
     /** If true, prevents approvers from editing/deleting */
     preventEditing?: boolean;
 }
-export {};

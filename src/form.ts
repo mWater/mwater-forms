@@ -127,7 +127,7 @@ export interface Deployment {
   approvalStages: ApprovalStage[]
 }
 
-interface FormRole {
+export interface FormRole {
   /** Subject (user:xyz or group:abc or "all") */
   id: string
 
@@ -136,7 +136,7 @@ interface FormRole {
 }
 
 /** One stage of approval for a deployment needed */
-interface ApprovalStage {
+export interface ApprovalStage {
   /** List of ids of users and groups who can approve/reject responses at this step. i.e. user:<username> or group:<groupname> */
   approvers: string[]
 
