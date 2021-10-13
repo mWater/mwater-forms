@@ -590,8 +590,8 @@ export default class FormSchemaBuilder {
     item: any,
     contents: any,
     tableId: any,
-    conditionsExprCompiler: any,
-    existingConditionExpr: any,
+    conditionsExprCompiler?: any,
+    existingConditionExpr?: any,
     reverseJoins = [],
     confidentialData = false
   ) {
@@ -611,15 +611,9 @@ export default class FormSchemaBuilder {
     // Add sub-items
     if (item.contents) {
       if (item._type === "Form") {
-        return (() => {
-          const result = []
-          for (let subitem of item.contents) {
-            result.push(
-              this.addFormItem(subitem, contents, tableId, conditionsExprCompiler, existingConditionExpr, reverseJoins)
-            )
-          }
-          return result
-        })()
+        for (let subitem of item.contents) {
+          this.addFormItem(subitem, contents, tableId, conditionsExprCompiler, existingConditionExpr, reverseJoins)
+        }
       } else if (["Section", "Group"].includes(item._type)) {
         // Create section contents
         let sectionConditionExpr
@@ -649,7 +643,7 @@ export default class FormSchemaBuilder {
       } else if (["RosterGroup", "RosterMatrix"].includes(item._type)) {
         // Add join to roster table if original (no rosterId specified)
         if (!item.rosterId) {
-          return contents.push({
+          contents.push({
             id: `data:${item._id}`,
             type: "join",
             name: item.name,

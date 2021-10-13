@@ -12,6 +12,6 @@ export default class FormSchemaBuilder {
     } | null;
     addConfidentialDataForRosters(schema: any, form: any, conditionsExprCompiler: any): any;
     addConfidentialData(schema: any, form: any, conditionsExprCompiler: any): any;
-    addFormItem(item: any, contents: any, tableId: any, conditionsExprCompiler: any, existingConditionExpr: any, reverseJoins?: never[], confidentialData?: boolean): any;
+    addFormItem(item: any, contents: any, tableId: any, conditionsExprCompiler?: any, existingConditionExpr?: any, reverseJoins?: never[], confidentialData?: boolean): any;
     addCalculations(schema: any, form: any): any;
 }
