@@ -16,6 +16,6 @@ export default class ItemListComponent extends React.Component<ItemListComponent
     validate(scrollToFirstInvalid: any): Promise<boolean>;
     handleNext(index: any): any;
     renderItem: (item: any, index: any) => any;
-    render(): any;
+    render(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>;
 }
 export {};

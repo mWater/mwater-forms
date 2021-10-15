@@ -12,17 +12,17 @@ import GroupComponent from "./GroupComponent"
 import RosterGroupComponent from "./RosterGroupComponent"
 import RosterMatrixComponent from "./RosterMatrixComponent"
 
-// Render an item, given its data, visibility function, etc.
+/** Render an item, given its data, visibility function, etc. */
 export function renderItem(
-  item: any,
+  item: Item,
   data: any,
-  responseRow: any,
-  schema: any,
-  onDataChange: any,
-  isVisible: any,
-  onNext: any,
-  ref: any
-) {
+  responseRow: ResponseRow,
+  schema: Schema,
+  onDataChange: (data: ResponseData) => void,
+  isVisible: () => boolean,
+  onNext: () => any,
+  ref?: (c: any) => void
+): ReactElement {
   const handleAnswerChange = (id: any, answer: any) => {
     const change = {}
     change[id] = answer

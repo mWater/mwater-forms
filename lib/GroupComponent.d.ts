@@ -20,6 +20,8 @@ export default class GroupComponent extends React.Component<GroupComponentProps>
         locale: PropTypes.Requireable<string>;
     };
     validate(scrollToFirstInvalid: any): any;
-    render(): any;
+    render(): React.DetailedReactHTMLElement<{
+        className: string;
+    }, HTMLElement>;
 }
 export {};

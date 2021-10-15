@@ -1,15 +1,16 @@
 import PropTypes from "prop-types";
 import React from "react";
 import ImageAnswerComponent from "./answers/ImageAnswerComponent";
+import { ImageAcquirer, ImageManager } from "./formContext";
+import { ImageAnswerValue } from "./response";
 interface ImageEditorComponentProps {
-    imageManager: any;
-    imageAcquirer?: any;
-    /** e.g. { id: someid, caption: caption } */
-    image?: any;
+    imageManager: ImageManager;
+    imageAcquirer?: ImageAcquirer;
+    image?: ImageAnswerValue | null;
     /** Called when image changed */
-    onImageChange?: any;
+    onImageChange?: (image: ImageAnswerValue | null) => void;
     /** Localizer to use */
-    T: any;
+    T: (str: string, ...args: any[]) => string;
     /** Question to prompt for consent */
     consentPrompt?: string;
 }
@@ -20,9 +21,9 @@ export default class ImageEditorComponent extends React.Component<ImageEditorCom
         T: PropTypes.Validator<(...args: any[]) => any>;
     };
     getChildContext(): {
-        imageManager: any;
-        imageAcquirer: any;
-        T: any;
+        imageManager: ImageManager;
+        imageAcquirer: ImageAcquirer | undefined;
+        T: (str: string, ...args: any[]) => string;
     };
     render(): React.CElement<any, ImageAnswerComponent>;
 }

@@ -2,16 +2,20 @@ import PropTypes from "prop-types"
 import React from "react"
 const R = React.createElement
 import ImageAnswerComponent from "./answers/ImageAnswerComponent"
+import { ImageAcquirer, ImageManager } from "./formContext"
+import { ImageAnswerValue } from "./response"
 
 interface ImageEditorComponentProps {
-  imageManager: any
-  imageAcquirer?: any
-  /** e.g. { id: someid, caption: caption } */
-  image?: any
+  imageManager: ImageManager
+  imageAcquirer?: ImageAcquirer
+  image?: ImageAnswerValue | null
+
   /** Called when image changed */
-  onImageChange?: any
+  onImageChange?: (image: ImageAnswerValue | null) => void
+
   /** Localizer to use */
-  T: any
+  T: (str: string, ...args: any[]) => string
+
   /** Question to prompt for consent */
   consentPrompt?: string
 }
