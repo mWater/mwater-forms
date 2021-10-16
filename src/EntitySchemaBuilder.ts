@@ -1,4 +1,5 @@
 import _ from "lodash"
+import { Schema, Section, Table } from "mwater-expressions"
 import * as formUtils from "./formUtils"
 
 // Builds schema for entities. Always add entities before forms
@@ -8,9 +9,9 @@ export default class EntitySchemaBuilder {
   //   propFilter: optional filter function that takes a property and returns true to include, false to exclude
   //   regionTypes: optional region types to add to schema
   // Returns updated schema
-  addEntities(schema: any, entityTypes: any, propFilter: any, regionTypes: any) {
+  addEntities(schema: Schema, entityTypes: any[], propFilter?: any, regionTypes?: any) {
     // Keep list of reverse join columns (one to many) to add later. table and column
-    let contents, entityType: any, table
+    let contents, entityType: any, table: Table
     const reverseJoins: any = []
 
     // For each entity type, finding reverse joins
@@ -157,7 +158,7 @@ export default class EntitySchemaBuilder {
           return item
         }
 
-        const section = {
+        const section: Section = {
           type: "section",
           name: { _base: "en", en: "Custom Regions" },
           contents: []
@@ -370,10 +371,10 @@ export default class EntitySchemaBuilder {
     // Add reverse joins, putting them in "!related_entities" section
     const object = _.groupBy(reverseJoins, "table")
     for (let rjTable in object) {
-      const rjs = object[rjTable]
-      table = schema.getTable(rjTable)
+      const rjs = object[rjTable] as any[]
+      table = schema.getTable(rjTable)!
       table.contents = table.contents.slice()
-      let linksSection = _.findWhere(table.contents, { id: "!related_entities", type: "section" })
+      let linksSection = _.findWhere(table.contents, { id: "!related_entities", type: "section" }) as Section | undefined
       if (!linksSection) {
         linksSection = {
           id: "!related_entities",
@@ -394,7 +395,7 @@ export default class EntitySchemaBuilder {
 
 // Append a string to each language
 function appendStr(str: any, suffix: any) {
-  const output = {}
+  const output: any = {}
   for (let key in str) {
     const value = str[key]
     if (key === "_base") {
@@ -419,7 +420,7 @@ function mapTree(tree: any, func: any) {
 
   return _.compact(
     _.flatten(
-      _.map(tree, function (item) {
+      _.map(tree, function (item: any) {
         let newItem = func(item)
         if (newItem && item.contents) {
           newItem = _.extend({}, newItem, { contents: mapTree(item.contents, func) })
@@ -436,18 +437,12 @@ function traverseTree(tree: any, func: any) {
     return
   }
 
-  return (() => {
-    const result = []
-    for (let item of tree) {
-      func(item)
-      if (item.contents) {
-        result.push(traverseTree(item.contents, func))
-      } else {
-        result.push(undefined)
-      }
+  for (let item of tree) {
+    func(item)
+    if (item.contents) {
+      traverseTree(item.contents, func)
     }
-    return result
-  })()
+  }
 }
 
 // Make a plural form (in English)
