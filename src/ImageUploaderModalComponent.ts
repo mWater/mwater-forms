@@ -161,7 +161,7 @@ export default class ImageUploaderModalComponent extends React.Component<
           R("p", null, R("em", null, this.props.T("Uploading Image..."))),
           R(
             "div",
-            { className: "progress progress-striped active" },
+            { className: "progress progress-bar-striped active" },
             R("div", { className: "progress-bar", style: { width: `${this.state.percentComplete}%` } })
           )
         )
