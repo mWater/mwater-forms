@@ -13,17 +13,17 @@ import ResponseRow from "./ResponseRow"
 
 interface TextExprsComponentProps {
   /** String to render (localized) */
-  localizedStr?: LocalizedString 
+  localizedStr?: LocalizedString
   /** Array of mwater-expressions to insert at {0}, {1}, etc. */
-  exprs?: Expr[] 
+  exprs?: Expr[]
   /** Schema that includes the current form */
   schema: Schema
   /** response row to use */
   responseRow: ResponseRow
   /** locale (e.g. "en") to use */
-  locale?: string 
+  locale?: string
   /** True to render as markdown text */
-  markdown?: boolean 
+  markdown?: boolean
   /** Format to be used by d3 formatter */
   format?: string
 }

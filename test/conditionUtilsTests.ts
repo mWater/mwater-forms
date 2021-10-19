@@ -24,11 +24,11 @@ describe("conditionUtils", function () {
       }
 
       // lhsExtras is stuff to add to answer of lhs question
-      return this.testFalse = (lhs: any, op: any, rhs: any, lhsExtras = {}) => {
+      return (this.testFalse = (lhs: any, op: any, rhs: any, lhsExtras = {}) => {
         const data = { lhsid: _.extend({ value: lhs }, lhsExtras) }
         const condition = this.compileCondition(lhs, op, rhs, lhsExtras)
         return assert.isFalse(condition(data))
-      };
+      })
     })
 
     describe("present", function () {

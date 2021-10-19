@@ -160,7 +160,7 @@ export default class MatrixAnswerComponent extends React.Component<
       answer: cellAnswer,
       onAnswerChange: this.handleCellChange.bind(null, item, column),
       invalid: invalid != null,
-      invalidMessage: invalid != null ? invalid: undefined,
+      invalidMessage: invalid != null ? invalid : undefined,
       schema: this.props.schema
     })
   }

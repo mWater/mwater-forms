@@ -164,5 +164,5 @@ describe("MulticheckAnswerComponent", function () {
 
     const choiceB = testComponent.findComponentById("b")
     return TestComponent.click(choiceB)
-  });
+  })
 })

@@ -30,7 +30,10 @@ interface RosterGroupComponentState {
 
 // Rosters are repeated information, such as asking questions about household members N times.
 // A roster group is a group of questions that is asked once for each roster entry
-export default class RosterGroupComponent extends React.Component<RosterGroupComponentProps, RosterGroupComponentState> {
+export default class RosterGroupComponent extends React.Component<
+  RosterGroupComponentProps,
+  RosterGroupComponentState
+> {
   static contextTypes = {
     locale: PropTypes.string,
     T: PropTypes.func.isRequired // Localizer to use
@@ -101,7 +104,7 @@ export default class RosterGroupComponent extends React.Component<RosterGroupCom
   }
 
   handleToggle = (index: number) => {
-    this.setState({collapsedEntries: _.xor(this.state.collapsedEntries, [index])})
+    this.setState({ collapsedEntries: _.xor(this.state.collapsedEntries, [index]) })
   }
 
   renderName() {
@@ -121,10 +124,10 @@ export default class RosterGroupComponent extends React.Component<RosterGroupCom
   renderEntry(entry: any, index: any) {
     const isCollapsed = this.state.collapsedEntries.includes(index)
     const bodyStyle = {
-      height: isCollapsed ? 0: 'auto',
-      transition: 'height 0.25s ease-in',
-      padding: isCollapsed? 0: 15,
-      overflow: 'hidden'
+      height: isCollapsed ? 0 : "auto",
+      transition: "height 0.25s ease-in",
+      padding: isCollapsed ? 0 : 15,
+      overflow: "hidden"
     }
 
     return R(
@@ -132,14 +135,20 @@ export default class RosterGroupComponent extends React.Component<RosterGroupCom
       { key: index, className: "panel panel-default" },
       R(
         "div",
-        { key: "header", className: "panel-heading", style: { fontWeight: "bold", position: "relative" }},
+        { key: "header", className: "panel-heading", style: { fontWeight: "bold", position: "relative" } },
         `${index + 1}. `,
         this.renderEntryTitle(entry, index),
-        R("button", {
-          className: "btn btn-link", 
-          style: {position: 'absolute', right: 0, top: 5}, 
-          onClick: this.handleToggle.bind(null, index)
-        }, R("span", {className: cx('glyphicon', {'glyphicon-chevron-up': !isCollapsed, 'glyphicon-chevron-down': isCollapsed})}))
+        R(
+          "button",
+          {
+            className: "btn btn-link",
+            style: { position: "absolute", right: 0, top: 5 },
+            onClick: this.handleToggle.bind(null, index)
+          },
+          R("span", {
+            className: cx("glyphicon", { "glyphicon-chevron-up": !isCollapsed, "glyphicon-chevron-down": isCollapsed })
+          })
+        )
       ),
       R(
         "div",

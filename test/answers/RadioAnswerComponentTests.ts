@@ -139,5 +139,5 @@ describe("RadioAnswerComponent", function () {
     const choiceC = testComponent.findComponentById("c")
     assert(choiceC != null, "could not find choice C")
     return TestComponent.click(choiceC)
-  });
+  })
 })

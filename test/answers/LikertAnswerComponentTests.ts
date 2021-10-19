@@ -112,5 +112,5 @@ describe("LikertAnswerComponent", function () {
 
     assert(itemBchoiceB != null, "could not find item B, choice B, radio btn")
     return TestComponent.click(itemBchoiceB)
-  });
+  })
 })

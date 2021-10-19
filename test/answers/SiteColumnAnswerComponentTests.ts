@@ -49,7 +49,7 @@ class SiteContext extends React.Component {
       T(str: any) {
         return str
       }
-    };
+    }
   }
 
   render() {
@@ -71,7 +71,7 @@ describe("SiteColumnAnswerComponent", function () {
   })
 
   afterEach(function () {
-    return this.toDestroy.map((comp: any) => comp.destroy());
+    return this.toDestroy.map((comp: any) => comp.destroy())
   })
 
   it("selects entity", function (done) {
@@ -90,7 +90,7 @@ describe("SiteColumnAnswerComponent", function () {
         return done()
       }
     })
-    return TestComponent.click(testComponent.findDOMNodeByText(/Select/));
+    return TestComponent.click(testComponent.findDOMNodeByText(/Select/))
   })
 
   it("displays entity", function (done) {
@@ -104,7 +104,7 @@ describe("SiteColumnAnswerComponent", function () {
       // Check for display
       assert(testComponent.findDOMNodeByText(/10007/), "Should display code")
       return done()
-    });
+    })
   })
 
   return it("clears entity", function (done) {
@@ -120,5 +120,5 @@ describe("SiteColumnAnswerComponent", function () {
     const clearButton = ReactTestUtils.findRenderedDOMComponentWithTag(testComponent.getComponent(), "button")
     assert(clearButton)
     return TestComponent.click(clearButton)
-  });
+  })
 })

@@ -200,7 +200,7 @@ export default class RosterMatrixComponent extends React.Component {
       answer: entryData?.[column._id] || {},
       onAnswerChange: this.handleCellChange.bind(null, entryIndex, column._id),
       invalid,
-      invalidMessage: invalid != null ? invalid: undefined,
+      invalidMessage: invalid != null ? invalid : undefined,
       schema: this.props.schema
     })
   }

@@ -20,19 +20,19 @@ export default () =>
     })
 
     it("displays question text", function () {
-      return assert.match(this.qview.el.outerHTML, /Spanish/);
+      return assert.match(this.qview.el.outerHTML, /Spanish/)
     })
 
     it("displays hint", function () {
-      return assert.match(this.qview.el.outerHTML, /HINT/);
+      return assert.match(this.qview.el.outerHTML, /HINT/)
     })
 
     it("displays required", function () {
-      return assert.match(this.qview.el.outerHTML, /\*/);
+      return assert.match(this.qview.el.outerHTML, /\*/)
     })
 
     it("displays help", function () {
-      return assert.match(this.qview.el.outerHTML, /<em>formatting<\/em>/);
+      return assert.match(this.qview.el.outerHTML, /<em>formatting<\/em>/)
     })
 
     it("hides only when conditions are false", function () {

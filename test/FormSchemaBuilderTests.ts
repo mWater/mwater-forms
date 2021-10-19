@@ -485,7 +485,7 @@ describe("FormSchemaBuilder addForm", function () {
 
   describe("Answer types", function () {
     before(function () {
-      return this.testQuestion = function (questionOptions: any, expectedColumns: any) {
+      return (this.testQuestion = function (questionOptions: any, expectedColumns: any) {
         // Create question
         const question = {
           _id: "questionid",
@@ -530,7 +530,7 @@ describe("FormSchemaBuilder addForm", function () {
           }
           return result
         })()
-      };
+      })
     })
 
     it("text", function () {

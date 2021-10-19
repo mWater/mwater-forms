@@ -37,7 +37,7 @@ describe("UnitsAnswerComponent", function () {
   })
 
   afterEach(function () {
-    return this.toDestroy.map((comp: any) => comp.destroy());
+    return this.toDestroy.map((comp: any) => comp.destroy())
   })
 
   it("allows changing of units", function (done) {
@@ -118,5 +118,5 @@ describe("UnitsAnswerComponent", function () {
 
     TestComponent.changeValue(quantityInput, "13.33")
     return ReactTestUtils.Simulate.blur(quantityInput)
-  });
+  })
 })

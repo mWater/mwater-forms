@@ -53,12 +53,12 @@ export default class ValidationCompiler {
         }
       case "range":
         return (answer: any) => {
-          let value = answer != null ? answer.value: null
+          let value = answer != null ? answer.value : null
 
           if (value === null || value === undefined) {
             return null
           }
-          
+
           // For units question, get quantity
           if (value.quantity != null) {
             value = value.quantity

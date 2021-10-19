@@ -162,9 +162,13 @@ export default class MatrixColumnCellComponent extends React.Component<MatrixCol
       className = "invalid"
     }
 
-    return R("td", { className }, 
+    return R(
+      "td",
+      { className },
       elem,
-      (this.props.invalid && !!this.props.invalidMessage) ? R('small', {style: {color: '#C43B1D'}}, this.props.invalidMessage): undefined
+      this.props.invalid && !!this.props.invalidMessage
+        ? R("small", { style: { color: "#C43B1D" } }, this.props.invalidMessage)
+        : undefined
     )
   }
 }

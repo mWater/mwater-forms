@@ -67,5 +67,5 @@ describe("EntityRow", function () {
     let value = await row.followJoin("y")
     value = await value.getField("x")
     return assert.equal(value, "abc")
-  });
+  })
 })

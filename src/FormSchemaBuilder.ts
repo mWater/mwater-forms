@@ -21,7 +21,12 @@ export default class FormSchemaBuilder {
       id: dep._id,
       name: { _base: "en", en: dep.name }
     }))
-    metadata.push({ id: "deployment", type: "enum", name: { _base: "en", en: "Deployment" }, enumValues: deploymentValues })
+    metadata.push({
+      id: "deployment",
+      type: "enum",
+      name: { _base: "en", en: "Deployment" },
+      enumValues: deploymentValues
+    })
 
     // Add user
     metadata.push({

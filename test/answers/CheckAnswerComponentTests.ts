@@ -21,7 +21,7 @@ describe("CheckAnswerComponent", function () {
   })
 
   afterEach(function () {
-    return this.toDestroy.map((comp: any) => comp.destroy());
+    return this.toDestroy.map((comp: any) => comp.destroy())
   })
 
   it("can check", function (callback) {
@@ -46,5 +46,5 @@ describe("CheckAnswerComponent", function () {
     const checkbox = ReactTestUtils.findRenderedDOMComponentWithClass(this.comp.getComponent(), "touch-checkbox")
 
     return TestComponent.click(checkbox)
-  });
+  })
 })

@@ -117,27 +117,31 @@ describe("VisibilityCalculator", function () {
         responseData: data
       })
 
-      return this.visibilityCalculator.createVisibilityStructure(data, responseRow, (error: any, visibilityStructure: any) => {
-        const expectedVisibilityStructure = {
-          sectionId: true,
-          checkboxQuestionId: true,
-          mainRosterGroupId: true,
-          "mainRosterGroupId.0.firstRosterQuestionId": true,
-          "mainRosterGroupId.0.secondRosterQuestionId": true,
-          "mainRosterGroupId.1.firstRosterQuestionId": true,
-          "mainRosterGroupId.1.secondRosterQuestionId": false,
-          // Questions under subRosterGroup need to use the mainRosterGroup id.
-          // This makes the data cleaning easier.
-          "mainRosterGroupId.0.firstSubRosterQuestionId": true,
-          "mainRosterGroupId.1.firstSubRosterQuestionId": true,
-          subRosterGroupId: true,
-          groupId: false,
-          groupQuestionId: false
+      return this.visibilityCalculator.createVisibilityStructure(
+        data,
+        responseRow,
+        (error: any, visibilityStructure: any) => {
+          const expectedVisibilityStructure = {
+            sectionId: true,
+            checkboxQuestionId: true,
+            mainRosterGroupId: true,
+            "mainRosterGroupId.0.firstRosterQuestionId": true,
+            "mainRosterGroupId.0.secondRosterQuestionId": true,
+            "mainRosterGroupId.1.firstRosterQuestionId": true,
+            "mainRosterGroupId.1.secondRosterQuestionId": false,
+            // Questions under subRosterGroup need to use the mainRosterGroup id.
+            // This makes the data cleaning easier.
+            "mainRosterGroupId.0.firstSubRosterQuestionId": true,
+            "mainRosterGroupId.1.firstSubRosterQuestionId": true,
+            subRosterGroupId: true,
+            groupId: false,
+            groupQuestionId: false
+          }
+          assert.deepEqual(visibilityStructure, expectedVisibilityStructure)
+          return done()
         }
-        assert.deepEqual(visibilityStructure, expectedVisibilityStructure)
-        return done()
-      });
-    });
+      )
+    })
   })
 
   describe("processQuestion", function () {
@@ -162,7 +166,7 @@ describe("VisibilityCalculator", function () {
             assert.deepEqual({ testId: false }, visibilityStructure)
             return done()
           }
-        );
+        )
       })
 
       it("sets visibility using the prefix", function (done) {
@@ -180,7 +184,7 @@ describe("VisibilityCalculator", function () {
             assert.deepEqual({ "testprefix.testId": true }, visibilityStructure)
             return done()
           }
-        );
+        )
       })
 
       it("sets visibility to true if conditions is null, undefined or empty", function (done) {
@@ -223,41 +227,65 @@ describe("VisibilityCalculator", function () {
                     assert.deepEqual({ testId: true }, visibilityStructure)
                     return done()
                   }
-                );
+                )
               }
-            );
+            )
           }
-        );
+        )
       })
 
       it("evaluates conditionExpr true", function (done) {
         const data = {}
         const question = { _id: "testId", conditionExpr: { type: "literal", valueType: "boolean", value: true } }
         const visibilityStructure = {}
-        this.visibilityCalculator.processQuestion(question, false, data, null, visibilityStructure, "", (error: any) => {
-          assert.deepEqual({ testId: true }, visibilityStructure)
-          return done()
-        })
+        this.visibilityCalculator.processQuestion(
+          question,
+          false,
+          data,
+          null,
+          visibilityStructure,
+          "",
+          (error: any) => {
+            assert.deepEqual({ testId: true }, visibilityStructure)
+            return done()
+          }
+        )
       })
 
       it("evaluates conditionExpr false", function (done) {
         const data = {}
         const question = { _id: "testId", conditionExpr: { type: "literal", valueType: "boolean", value: false } }
         const visibilityStructure = {}
-        this.visibilityCalculator.processQuestion(question, false, data, null, visibilityStructure, "", (error: any) => {
-          assert.deepEqual({ testId: false }, visibilityStructure)
-          return done()
-        })
+        this.visibilityCalculator.processQuestion(
+          question,
+          false,
+          data,
+          null,
+          visibilityStructure,
+          "",
+          (error: any) => {
+            assert.deepEqual({ testId: false }, visibilityStructure)
+            return done()
+          }
+        )
       })
 
       it("evaluates conditionExpr null as false", function (done) {
         const data = {}
         const question = { _id: "testId", conditionExpr: { type: "literal", valueType: "boolean", value: null } }
         const visibilityStructure = {}
-        this.visibilityCalculator.processQuestion(question, false, data, null, visibilityStructure, "", (error: any) => {
-          assert.deepEqual({ testId: false }, visibilityStructure)
-          return done()
-        })
+        this.visibilityCalculator.processQuestion(
+          question,
+          false,
+          data,
+          null,
+          visibilityStructure,
+          "",
+          (error: any) => {
+            assert.deepEqual({ testId: false }, visibilityStructure)
+            return done()
+          }
+        )
       })
 
       it("sets visibility to true if conditions is true", function (done) {
@@ -278,7 +306,7 @@ describe("VisibilityCalculator", function () {
             assert.deepEqual({ testId: true }, visibilityStructure)
             return done()
           }
-        );
+        )
       })
 
       it("sets visibility to false if conditions is false", function (done) {
@@ -299,7 +327,7 @@ describe("VisibilityCalculator", function () {
             assert.deepEqual(visibilityStructure, { testId: false })
             return done()
           }
-        );
+        )
       })
 
       it("sets visibility to true if randomAsked is null", function (done) {
@@ -323,7 +351,7 @@ describe("VisibilityCalculator", function () {
             assert.deepEqual(visibilityStructure, { testId: true })
             return done()
           }
-        );
+        )
       })
 
       return it("sets visibility to false if randomAsked is false", function (done) {
@@ -348,9 +376,9 @@ describe("VisibilityCalculator", function () {
             assert.deepEqual(visibilityStructure, { testId: false })
             return done()
           }
-        );
-      });
-    });
+        )
+      })
+    })
   })
 
   return describe("processGroup", () =>
@@ -401,17 +429,33 @@ describe("VisibilityCalculator", function () {
       const data = {}
 
       const firstSection = form.contents[0]
-      return visibilityCalculator.processGroup(firstSection, false, data, null, visibilityStructure, "", (error: any) => {
-        assert.deepEqual({ firstSectionId: true, checkboxQuestionId: true }, visibilityStructure)
+      return visibilityCalculator.processGroup(
+        firstSection,
+        false,
+        data,
+        null,
+        visibilityStructure,
+        "",
+        (error: any) => {
+          assert.deepEqual({ firstSectionId: true, checkboxQuestionId: true }, visibilityStructure)
 
-        const secondSection = form.contents[1]
-        return visibilityCalculator.processGroup(secondSection, true, data, null, visibilityStructure, "", (error: any) => {
-          assert.deepEqual(
-            { firstSectionId: true, checkboxQuestionId: true, secondSectionId: false, anotherQuestionId: false },
-            visibilityStructure
+          const secondSection = form.contents[1]
+          return visibilityCalculator.processGroup(
+            secondSection,
+            true,
+            data,
+            null,
+            visibilityStructure,
+            "",
+            (error: any) => {
+              assert.deepEqual(
+                { firstSectionId: true, checkboxQuestionId: true, secondSectionId: false, anotherQuestionId: false },
+                visibilityStructure
+              )
+              return done()
+            }
           )
-          return done()
-        });
-      });
-    }));
+        }
+      )
+    }))
 })

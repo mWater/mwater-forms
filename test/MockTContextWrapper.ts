@@ -17,7 +17,7 @@ export default MockTContextWrapper = (function () {
         T(str: any) {
           return str
         }
-      };
+      }
     }
 
     render() {

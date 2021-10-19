@@ -28,7 +28,7 @@ export default class FormModel {
       this.getDeploymentSubjects(),
       _.map(this.form.roles, (r) => r.id)
     )
-    
+
     this.form.roles = this.form.roles.concat(
       _.map(needed, (n) => ({
         id: n,

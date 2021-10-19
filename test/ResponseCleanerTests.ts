@@ -60,7 +60,7 @@ describe("ResponseCleaner", function () {
           assert.deepEqual(results.visibilityStructure, { q1: true, q2: true, q3: false })
           return done()
         }
-      );
+      )
     })
 
     return it("does not delete disabled questions data", function (done) {
@@ -104,8 +104,8 @@ describe("ResponseCleaner", function () {
           assert.deepEqual(results.data, { q1: { value: "sometext" } })
           return done()
         }
-      );
-    });
+      )
+    })
   })
 
   describe("cleanDataBasedOnVisibility", function () {

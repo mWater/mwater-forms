@@ -47,7 +47,7 @@ class SiteContext extends React.Component {
       T() {
         return null
       }
-    };
+    }
   }
 
   render() {
@@ -69,7 +69,7 @@ describe("SiteAnswerComponent", function () {
   })
 
   afterEach(function () {
-    return this.toDestroy.map((comp: any) => comp.destroy());
+    return this.toDestroy.map((comp: any) => comp.destroy())
   })
 
   it("allows valid site codes", function (done) {
@@ -110,5 +110,5 @@ describe("SiteAnswerComponent", function () {
     const input = testComponent.findInput()
     TestComponent.changeValue(input, "10008")
     return ReactTestUtils.Simulate.blur(input)
-  });
+  })
 })

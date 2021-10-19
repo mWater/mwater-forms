@@ -416,7 +416,13 @@ export interface Group {
 /**  Conditions on an item or section that determine if it is visible. All must be true to be visible */
 export type Conditions = Condition[]
 
-export type Condition = UnaryCondition | TextCondition | NumberCondition | ChoiceCondition | ChoicesCondition | DateCondition
+export type Condition =
+  | UnaryCondition
+  | TextCondition
+  | NumberCondition
+  | ChoiceCondition
+  | ChoicesCondition
+  | DateCondition
 
 export interface BaseCondition {
   /** Left-hand side of the condition inequality */

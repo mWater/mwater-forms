@@ -190,7 +190,7 @@ describe("CurrentPositionFinder", function () {
 
   it("fires error if location finder reports error", function () {
     let error = ""
-    this.posFinder.on("error", (err: any) => error = err)
+    this.posFinder.on("error", (err: any) => (error = err))
 
     this.locationFinder.trigger("error", "some error")
     assert.equal(error, "some error")

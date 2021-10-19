@@ -1276,10 +1276,10 @@ describe("ResponseModel", function () {
         username: "user",
         groups: ["dep2en1"]
       })
-      return assert.throws(function(this: any) {
+      return assert.throws(function (this: any) {
         return this.model.draft()
-      });
-    });
+      })
+    })
   })
 
   describe("entities field", function () {

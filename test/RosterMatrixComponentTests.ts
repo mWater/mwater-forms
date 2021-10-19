@@ -82,7 +82,7 @@ describe("RosterMatrixComponent", function () {
   })
 
   afterEach(function () {
-    return this.toDestroy.map((comp: any) => comp.destroy());
+    return this.toDestroy.map((comp: any) => comp.destroy())
   })
 
   it("adds entry when add is clicked", function (done) {
@@ -101,7 +101,7 @@ describe("RosterMatrixComponent", function () {
 
   it("does not show add if add is disabled", function () {
     const comp = this.render({ rosterMatrix: this.rosterMatrix, data: {} })
-    return assert(!comp.findDOMNodeByText(/add/i));
+    return assert(!comp.findDOMNodeByText(/add/i))
   })
 
   it("removes entry when remove is clicked", function (done) {
@@ -179,7 +179,7 @@ describe("RosterMatrixComponent", function () {
 
   it("displays prompt", function () {
     const comp = this.render({ rosterMatrix: this.rosterMatrix, data: {} })
-    return assert(comp.findDOMNodeByText(/Name/));
+    return assert(comp.findDOMNodeByText(/Name/))
   })
 
   it("records text", function (done) {

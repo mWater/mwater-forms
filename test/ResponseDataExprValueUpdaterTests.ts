@@ -18,7 +18,7 @@ describe("ResponseDataExprValueUpdater", function () {
   describe("updates simple question values", function () {
     beforeEach(function () {
       // Test updating a single value. newValue is optional different resulting value
-      return this.testUpdate = function (type: any, options: any, value: any, done: any, newValue: any) {
+      return (this.testUpdate = function (type: any, options: any, value: any, done: any, newValue: any) {
         // Make simple question
         const question = {
           _id: "q1234",
@@ -42,7 +42,7 @@ describe("ResponseDataExprValueUpdater", function () {
           compare(data, { q1234: { value: newValue || value } })
           return done()
         })
-      };
+      })
     })
 
     it("TextQuestion, TextColumnQuestion", function (done) {
@@ -109,7 +109,15 @@ describe("ResponseDataExprValueUpdater", function () {
   describe("Complex questions", function () {
     before(function () {
       // Test updating a single expression. answer is expected answer
-      return this.testUpdate = function (questionType: any, options: any, column: any, value: any, oldAnswer: any, newAnswer: any, done: any) {
+      return (this.testUpdate = function (
+        questionType: any,
+        options: any,
+        column: any,
+        value: any,
+        oldAnswer: any,
+        newAnswer: any,
+        done: any
+      ) {
         // Make simple question
         const question = {
           _id: "q1234",
@@ -133,7 +141,7 @@ describe("ResponseDataExprValueUpdater", function () {
           compare(data, { q1234: newAnswer })
           return done()
         })
-      };
+      })
     })
 
     describe("LikertQuestion", function () {
@@ -472,7 +480,7 @@ describe("ResponseDataExprValueUpdater", function () {
           compare(data.q1234.value, { code: "10007" })
           return done()
         })
-      });
+      })
     })
 
     describe("EntityQuestion", function () {
@@ -557,7 +565,7 @@ describe("ResponseDataExprValueUpdater", function () {
           compare(data.q1234.value, "12345")
           return done()
         })
-      });
+      })
     })
 
     return describe("AdminRegionQuestion", function () {
@@ -642,8 +650,8 @@ describe("ResponseDataExprValueUpdater", function () {
           compare(data.q1234.value, "12345")
           return done()
         })
-      });
-    });
+      })
+    })
   })
 
   describe("locations", function () {
@@ -679,7 +687,7 @@ describe("ResponseDataExprValueUpdater", function () {
           compare(data, { q1234: { value: { latitude: 45, longitude: 3, altitude: 4 } } })
           return done()
         }
-      );
+      )
     })
 
     it("updates longitude individually", function (done) {
@@ -699,7 +707,7 @@ describe("ResponseDataExprValueUpdater", function () {
           compare(data, { q1234: { value: { latitude: 2, longitude: 45, altitude: 4 } } })
           return done()
         }
-      );
+      )
     })
 
     it("updates accuracy", function (done) {
@@ -714,7 +722,7 @@ describe("ResponseDataExprValueUpdater", function () {
           compare(data, { q1234: { value: { latitude: 2, longitude: 3, accuracy: 45, altitude: 4 } } })
           return done()
         }
-      );
+      )
     })
 
     it("updates altitude", function (done) {
@@ -729,7 +737,7 @@ describe("ResponseDataExprValueUpdater", function () {
           compare(data, { q1234: { value: { latitude: 2, longitude: 3, altitude: 45 } } })
           return done()
         }
-      );
+      )
     })
 
     return it("updates method", function (done) {
@@ -744,8 +752,8 @@ describe("ResponseDataExprValueUpdater", function () {
           compare(data, { q1234: { value: { latitude: 2, longitude: 3, altitude: 4, method: "gps" } } })
           return done()
         }
-      );
-    });
+      )
+    })
   })
 
   it("updates na/don't know", function (done) {
@@ -921,10 +929,10 @@ describe("ResponseDataExprValueUpdater", function () {
           cbt[field] = value
           compare(data, { q1234: { value: { cbt } } })
           return done()
-        });
+        })
       }
 
-      return this.testExistingCBTField = (field: any, value: any, done: any) => {
+      return (this.testExistingCBTField = (field: any, value: any, done: any) => {
         const expr = { type: "field", table: "responses:form1234", column: `data:q1234:value:cbt:${field}` }
 
         return this.updater.updateData(
@@ -938,8 +946,8 @@ describe("ResponseDataExprValueUpdater", function () {
             compare(data, expected)
             return done()
           }
-        );
-      };
+        )
+      })
     })
 
     it("updates c1 individually", function (done) {
@@ -1014,7 +1022,7 @@ describe("ResponseDataExprValueUpdater", function () {
         assert(!error)
         compare(data, { q1234: { value: { image: "https://api.mwater.co/v3/images/abc" } } })
         return done()
-      });
+      })
     })
 
     return it("updates image existing data", function (done) {
@@ -1030,8 +1038,8 @@ describe("ResponseDataExprValueUpdater", function () {
           compare(data, { q1234: { value: { image: "https://api.mwater.co/v3/images/xyz" } } })
           return done()
         }
-      );
-    });
+      )
+    })
   })
 
   describe("handles cascading list question", function () {
@@ -1092,7 +1100,7 @@ describe("ResponseDataExprValueUpdater", function () {
         assert(!error)
         compare(data, { q1234: { value: { c0: "FH75Bd8sGs" } } })
         return done()
-      });
+      })
     })
 
     it("rejects unknown field value", function (done) {
@@ -1101,7 +1109,7 @@ describe("ResponseDataExprValueUpdater", function () {
         assert(error)
         assert.equal('Column "Type" value 123 in question "Food" not found', error.message)
         return done()
-      });
+      })
     })
 
     it("updates cascading answer", function (done) {
@@ -1126,9 +1134,9 @@ describe("ResponseDataExprValueUpdater", function () {
               })
               return done()
             }
-          );
-        });
-      });
+          )
+        })
+      })
     })
 
     return it("prevents selecting a non-existant row", function (done) {
@@ -1155,10 +1163,10 @@ describe("ResponseDataExprValueUpdater", function () {
               compare(cleanData, { q1234: {} })
               return done()
             }
-          );
-        });
-      });
-    });
+          )
+        })
+      })
+    })
   })
 
   return describe("handles cascading ref question", function () {
@@ -1239,6 +1247,6 @@ describe("ResponseDataExprValueUpdater", function () {
         { expr: expr2, value: "v2" }
       ])
       return compare(data, { q1234: { value: "12345" } })
-    });
-  });
+    })
+  })
 })

@@ -24,7 +24,7 @@ describe("ResponseRow", function () {
       ]
     }
 
-    return this.testField = (data: any, column: any, expected: any, done: any) => {
+    return (this.testField = (data: any, column: any, expected: any, done: any) => {
       const row = new ResponseRow({ formDesign: this.formDesign, responseData: data })
       row
         .getField(column)
@@ -33,7 +33,7 @@ describe("ResponseRow", function () {
           return done()
         })
         .catch(done)
-    };
+    })
   })
 
   describe("values", function () {

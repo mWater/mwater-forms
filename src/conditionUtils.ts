@@ -265,7 +265,7 @@ export { _rhsType as rhsType }
 
 // In the case of choice, returns choices for rhs (returns base localization)
 // Return includes id and text for each one, suitable for a select2 control
-export function rhsChoices(lhsQuestion: Question, op: any): { id: string, text: string }[] {
+export function rhsChoices(lhsQuestion: Question, op: any): { id: string; text: string }[] {
   // Doesn't apply to LikertQuestions/MatrixQuestions since simple conditions don't apply to them
   let choices: any
   if (!["LikertQuestion", "MatrixQuestion"].includes(lhsQuestion._type)) {

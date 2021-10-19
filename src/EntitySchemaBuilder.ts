@@ -374,7 +374,9 @@ export default class EntitySchemaBuilder {
       const rjs = object[rjTable] as any[]
       table = schema.getTable(rjTable)!
       table.contents = table.contents.slice()
-      let linksSection = _.findWhere(table.contents, { id: "!related_entities", type: "section" }) as Section | undefined
+      let linksSection = _.findWhere(table.contents, { id: "!related_entities", type: "section" }) as
+        | Section
+        | undefined
       if (!linksSection) {
         linksSection = {
           id: "!related_entities",

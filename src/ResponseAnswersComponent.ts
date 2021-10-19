@@ -48,11 +48,13 @@ interface ResponseAnswersComponentProps {
   hideCalculations?: boolean
 }
 
-interface ResponseAnswersComponentState {
-}
+interface ResponseAnswersComponentState {}
 
 // Displays the answers of a response in a table
-export default class ResponseAnswersComponent extends AsyncLoadComponent<ResponseAnswersComponentProps, ResponseAnswersComponentState> {
+export default class ResponseAnswersComponent extends AsyncLoadComponent<
+  ResponseAnswersComponentProps,
+  ResponseAnswersComponentState
+> {
   // Check if form design or data are different
   isLoadNeeded(newProps: any, oldProps: any) {
     return !_.isEqual(newProps.formDesign, oldProps.formDesign) || !_.isEqual(newProps.data, oldProps.data)

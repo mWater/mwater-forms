@@ -54,7 +54,7 @@ describe("BarcodeAnswerComponent", function () {
     })
 
     afterEach(function () {
-      return this.toDestroy.map((comp: any) => comp.destroy());
+      return this.toDestroy.map((comp: any) => comp.destroy())
     })
 
     return it("shows text if not supported", function () {
@@ -66,7 +66,7 @@ describe("BarcodeAnswerComponent", function () {
       })
       const component = comp.findDOMNodeByText(/not supported/i)
       return assert(component != null, "Not showing not supported text")
-    });
+    })
   })
 
   return describe("Works with scanBarcode", function () {
@@ -83,7 +83,7 @@ describe("BarcodeAnswerComponent", function () {
     })
 
     afterEach(function () {
-      return this.toDestroy.map((comp: any) => comp.destroy());
+      return this.toDestroy.map((comp: any) => comp.destroy())
     })
 
     it("shows scan button", function () {
@@ -129,6 +129,6 @@ describe("BarcodeAnswerComponent", function () {
       })
       const button = ReactTestUtils.findRenderedDOMComponentWithClass(comp.getComponent(), "btn")
       return TestComponent.click(button)
-    });
-  });
+    })
+  })
 })

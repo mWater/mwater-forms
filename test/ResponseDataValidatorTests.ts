@@ -17,14 +17,14 @@ function compare(actual: any, expected: any) {
 describe("ResponseDataValidator", function () {
   before(function () {
     // Fake row response that returns array for every field, to simulate getting roster rows
-    return this.responseRow = {
+    return (this.responseRow = {
       getField(columnId: any) {
         return Promise.resolve([null, null, null, null, null])
       },
       followJoin(columnId: any) {
         return Promise.resolve([null, null, null, null, null])
       }
-    };
+    })
   })
 
   describe("without sections", function () {
@@ -275,7 +275,15 @@ describe("ResponseDataValidator", function () {
             allowRemove: true,
             contents: [
               { _id: "a", _type: "TextColumnQuestion", text: { en: "Name" }, required: true },
-              { _id: "b", _type: "NumberColumnQuestion", text: { en: "Age" }, decimal: false ,validations: [ { message: { en: "Wrong", _base: "en" }, op: "range", rhs: { literal: { max: 100, min: 10 }}}]},
+              {
+                _id: "b",
+                _type: "NumberColumnQuestion",
+                text: { en: "Age" },
+                decimal: false,
+                validations: [
+                  { message: { en: "Wrong", _base: "en" }, op: "range", rhs: { literal: { max: 100, min: 10 } } }
+                ]
+              },
               { _id: "c", _type: "CheckColumnQuestion", text: { en: "Present" } },
               {
                 _id: "d",

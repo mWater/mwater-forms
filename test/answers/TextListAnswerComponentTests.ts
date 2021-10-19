@@ -62,5 +62,5 @@ describe("TextListAnswerComponent", function () {
     const newLine = testComponent.findComponentById("newLine")
 
     return TestComponent.changeValue(newLine, "more text")
-  });
+  })
 })

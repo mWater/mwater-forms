@@ -17,7 +17,7 @@ describe("StopwatchAnswerComponent", function () {
 
     this.toDestroy = []
 
-    return this.render = (options = {}) => {
+    return (this.render = (options = {}) => {
       if (!options.T) {
         options.T = (str: any) => str
       }
@@ -25,7 +25,7 @@ describe("StopwatchAnswerComponent", function () {
       const comp = new TestComponent(elem)
       this.toDestroy.push(comp)
       return comp
-    };
+    })
   })
 
   afterEach(function () {
@@ -73,5 +73,5 @@ describe("StopwatchAnswerComponent", function () {
     ReactTestUtils.Simulate.click(btnStop)
     ready = true
     return ReactTestUtils.Simulate.click(btnReset)
-  });
+  })
 })

@@ -294,10 +294,7 @@ describe("FormUtils", function () {
       })
 
       it("duplicates questions", function () {
-        return assert.equal(
-          this.duplicate.contents[0].contents[0]._basedOn,
-          sectionedForm.contents[0].contents[0]._id
-        )
+        return assert.equal(this.duplicate.contents[0].contents[0]._basedOn, sectionedForm.contents[0].contents[0]._id)
       })
 
       it("maps references across sections", function () {

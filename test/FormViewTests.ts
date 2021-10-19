@@ -9,13 +9,13 @@ describe("FormView", () =>
     // Create sample properties
     this.propText = { _id: "1", code: "text", type: "text", name: { en: "Text" } }
 
-    return this.ctx = {
+    return (this.ctx = {
       getProperty: (id: any) => {
         if (id === "1") {
           return this.propText
         }
       }
-    };
+    })
   }))
 
 // describe "setEntity of form-level entity (deprecated)", ->

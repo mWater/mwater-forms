@@ -83,7 +83,6 @@ export function isQuestion(item: Item): boolean {
   return item._type != null && item._type.match(/Question$/) != null
 }
 
-
 /** Determine if item is an expression */
 export function isExpression(item: Item): boolean {
   return item._type != null && ["TextColumn", "Calculation"].includes(item._type)
@@ -117,7 +116,11 @@ export function localizeString(str?: LocalizedString | null, locale?: string): s
 // Gets all questions in form before reference item specified
 // refItem can be null for all questions
 // rosterId is the rosterId to use. null for only top-level
-export function priorQuestions(formDesign: FormDesign, refItem: Item | null = null, rosterId: string | null = null): Question[] {
+export function priorQuestions(
+  formDesign: FormDesign,
+  refItem: Item | null = null,
+  rosterId: string | null = null
+): Question[] {
   const questions: any = []
 
   // Append all child items
@@ -188,7 +191,7 @@ export function findItem(formDesign: FormDesign, itemId: string): Item | undefin
 }
 
 // All items under an item including self
-export function allItems(rootItem: FormDesign | Item): (Item | FormDesign)[]  {
+export function allItems(rootItem: FormDesign | Item): (Item | FormDesign)[] {
   let items: Item[] = []
   items.push(rootItem)
   if ((rootItem as any).contents) {

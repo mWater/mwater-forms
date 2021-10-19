@@ -28,7 +28,7 @@ export default class ResponseCleaner {
    * Setting a value to A will make B visible and set to defaultValue, but C will remain invisible until the process is repeated
    * responseRowFactory: returns responseRow when called with data
    */
-   cleanData = (
+  cleanData = (
     design: FormDesign,
     visibilityCalculator: VisibilityCalculator,
     defaultValueApplier: DefaultValueApplier,

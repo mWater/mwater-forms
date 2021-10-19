@@ -49,7 +49,7 @@ describe("RosterGroupComponent", function () {
   })
 
   afterEach(function () {
-    return this.toDestroy.map((comp: any) => comp.destroy());
+    return this.toDestroy.map((comp: any) => comp.destroy())
   })
 
   it("adds entry when add is clicked", function (done) {
@@ -68,7 +68,7 @@ describe("RosterGroupComponent", function () {
 
   it("does not show add if add is disabled", function () {
     const comp = this.render({ rosterGroup: this.rosterGroup, data: {} })
-    return assert(!comp.findDOMNodeByText(/add/i));
+    return assert(!comp.findDOMNodeByText(/add/i))
   })
 
   it("removes entry when remove is clicked", function (done) {
@@ -147,7 +147,7 @@ describe("RosterGroupComponent", function () {
 
   it("displays prompt", function () {
     const comp = this.render({ rosterGroup: this.rosterGroup, data: {} })
-    return assert(comp.findDOMNodeByText(/Name/));
+    return assert(comp.findDOMNodeByText(/Name/))
   })
 
   it("displays default entry header of n.", function () {
@@ -162,7 +162,7 @@ describe("RosterGroupComponent", function () {
       }
     })
     assert(comp.findDOMNodeByText(/1\./))
-    return assert(comp.findDOMNodeByText(/2\./));
+    return assert(comp.findDOMNodeByText(/2\./))
   })
 
   return it("hides sub-items if isVisible for <id/rosterId>.<n>.<questionId> is false", function () {
@@ -208,5 +208,5 @@ describe("RosterGroupComponent", function () {
       isVisible
     })
     return assert.equal(ReactTestUtils.scryRenderedDOMComponentsWithTag(comp.getComponent(), "input").length, 0)
-  });
+  })
 })

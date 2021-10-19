@@ -44,7 +44,7 @@ describe("QuestionComponent", function () {
   })
 
   afterEach(function () {
-    return this.toDestroy.map((comp: any) => comp.destroy());
+    return this.toDestroy.map((comp: any) => comp.destroy())
   })
 
   it("displays question text", function () {
@@ -219,5 +219,5 @@ describe("QuestionComponent", function () {
     const input = testComponent.findComponentById("input")
     TestComponent.changeValue(input, "test")
     return ReactTestUtils.Simulate.blur(input)
-  });
+  })
 })

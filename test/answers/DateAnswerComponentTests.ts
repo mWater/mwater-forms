@@ -24,7 +24,7 @@ describe.skip("DateAnswerComponent", function () {
   })
 
   afterEach(function () {
-    return this.toDestroy.map((comp: any) => comp.destroy());
+    return this.toDestroy.map((comp: any) => comp.destroy())
   })
 
   it("displays format YYYY-MM-DD", function (done) {

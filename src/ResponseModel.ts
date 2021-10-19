@@ -10,7 +10,7 @@ export default class ResponseModel {
   user: string
   username: string
   groups: string[]
-  
+
   constructor(options: {
     /** response object. Required */
     response: Response

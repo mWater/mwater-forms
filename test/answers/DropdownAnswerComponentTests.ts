@@ -48,7 +48,7 @@ describe("DropdownAnswerComponent", function () {
   })
 
   afterEach(function () {
-    return this.toDestroy.map((comp: any) => comp.destroy());
+    return this.toDestroy.map((comp: any) => comp.destroy())
   })
 
   it("accepts known value", function (done) {
@@ -144,5 +144,5 @@ describe("DropdownAnswerComponent", function () {
 
     const select = ReactTestUtils.findRenderedDOMComponentWithTag(testComponent.getComponent(), "select")
     return TestComponent.changeValue(select, "b")
-  });
+  })
 })
