@@ -44,8 +44,8 @@ export default class SiteColumnAnswerComponent extends React.Component<SiteColum
         null,
         R(
           "button",
-          { className: "btn btn-link btn-sm pull-right", onClick: this.handleClearClick },
-          R("span", { className: "glyphicon glyphicon-remove" })
+          { className: "btn btn-link btn-sm float-right", onClick: this.handleClearClick },
+          R("span", { className: "fas fa-times" })
         ),
 
         R(EntityDisplayComponent, {

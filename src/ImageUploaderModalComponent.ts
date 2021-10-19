@@ -142,8 +142,8 @@ export default class ImageUploaderModalComponent extends React.Component<
         { encType: "multipart/form-data", method: "post" },
         R(
           "label",
-          { className: "btn btn-default btn-lg", style: { display: this.state.xhr ? "none" : undefined } },
-          R("span", { className: "glyphicon glyphicon-camera" }),
+          { className: "btn btn-secondary btn-lg", style: { display: this.state.xhr ? "none" : undefined } },
+          R("span", { className: "fas fa-camera" }),
           " ",
           this.props.T("Select"),
           R("input", {
@@ -170,7 +170,7 @@ export default class ImageUploaderModalComponent extends React.Component<
       this.state.xhr
         ? R(
             "button",
-            { type: "button", className: "btn btn-default", onClick: this.handleCancel },
+            { type: "button", className: "btn btn-secondary", onClick: this.handleCancel },
             this.props.T("Cancel")
           )
         : undefined

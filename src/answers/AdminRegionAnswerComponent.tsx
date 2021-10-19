@@ -120,7 +120,7 @@ export default AdminRegionAnswerComponent = (function () {
                 onClick: this.handleUseGPS,
                 disabled: this.context.locationFinder == null
               },
-              R("span", { className: "glyphicon glyphicon-screenshot" }),
+              R("span", { className: "fas fa-location-arrow" }),
               " ",
               this.context.T("Set Using GPS")
             )
@@ -132,7 +132,7 @@ export default AdminRegionAnswerComponent = (function () {
                 onClick: this.handleCancelUseGPS,
                 disabled: this.context.locationFinder == null
               },
-              R("span", { className: "glyphicon glyphicon-remove" }),
+              R("span", { className: "fas fa-times" }),
               " ",
               this.context.T("Cancel GPS")
             ),
@@ -145,7 +145,7 @@ export default AdminRegionAnswerComponent = (function () {
             onClick: this.handleUseMap,
             disabled: this.context.displayMap == null
           },
-          R("span", { className: "glyphicon glyphicon-map-marker" }),
+          R("span", { className: "fas fa-map-marker-alt" }),
           " ",
           this.context.T("Set Using Map")
         )

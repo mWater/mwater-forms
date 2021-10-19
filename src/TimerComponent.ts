@@ -117,7 +117,7 @@ export default class TimerComponent extends React.Component<TimerComponentProps,
       R("h1", { style: { fontFamily: "monospace" } }, getDisplayValue(timeLeft)),
       R(
         "div",
-        { className: "btn-toolbar", role: "toolbar" },
+        { className: "", role: "toolbar" },
         R(
           "div",
           { className: "btn-group", role: "group" },
@@ -133,7 +133,7 @@ export default class TimerComponent extends React.Component<TimerComponentProps,
           ),
           R(
             "button",
-            { className: "btn btn-default", onClick: this.handleResetClick, disabled: !this.state.elapsedTicks },
+            { className: "btn btn-secondary", onClick: this.handleResetClick, disabled: !this.state.elapsedTicks },
             this.context.T("Reset")
           )
         )

@@ -122,17 +122,12 @@ describe("RosterMatrixComponent", function () {
       },
       onDataChange
     })
-    return TestComponent.click(
-      ReactTestUtils.scryRenderedDOMComponentsWithClass(comp.getComponent(), "glyphicon-remove")[0]
-    )
+    return TestComponent.click(ReactTestUtils.scryRenderedDOMComponentsWithClass(comp.getComponent(), "fa-times")[0])
   })
 
   it("does not show remove if remove is disabled", function () {
     const comp = this.render({ rosterMatrix: this.rosterMatrix, data: {} })
-    return assert.equal(
-      ReactTestUtils.scryRenderedDOMComponentsWithClass(comp.getComponent(), "glyphicon-remove").length,
-      0
-    )
+    return assert.equal(ReactTestUtils.scryRenderedDOMComponentsWithClass(comp.getComponent(), "fa-times").length, 0)
   })
 
   it("puts answers from column components in correct position in array", function (done) {

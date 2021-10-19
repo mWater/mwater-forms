@@ -252,7 +252,7 @@ export default class FormComponent extends React.Component<FormComponentProps, F
                 {
                   type: "button",
                   key: "saveLaterButton",
-                  className: "btn btn-default",
+                  className: "btn btn-secondary",
                   onClick: this.props.onSaveLater
                 },
                 this.props.saveLaterLabel ? this.props.saveLaterLabel : this.state.T("Save for Later")
@@ -264,10 +264,10 @@ export default class FormComponent extends React.Component<FormComponentProps, F
         this.props.onDiscard
           ? R(
               "button",
-              { type: "button", key: "discardButton", className: "btn btn-default", onClick: this.props.onDiscard },
+              { type: "button", key: "discardButton", className: "btn btn-secondary", onClick: this.props.onDiscard },
               this.props.discardLabel
                 ? this.props.discardLabel
-                : [R("span", { className: "glyphicon glyphicon-trash" }), " " + this.state.T("Discard")]
+                : [R("span", { className: "fas fa-trash-alt" }), " " + this.state.T("Discard")]
             )
           : undefined
       )

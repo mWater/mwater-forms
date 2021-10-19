@@ -81,14 +81,14 @@ export default class EntityAnswerComponent extends AsyncLoadComponent<EntityAnsw
       R(
         "button",
         { type: "button", className: "btn btn-link btn-sm", onClick: this.handleSelectEntity },
-        R("span", { className: "glyphicon glyphicon-ok" }),
+        R("span", { className: "fas fa-check" }),
         " ",
         this.context.T("Change Selection")
       ),
       R(
         "button",
         { type: "button", className: "btn btn-link btn-sm", onClick: this.handleClearEntity },
-        R("span", { className: "glyphicon glyphicon-remove" }),
+        R("span", { className: "fas fa-times" }),
         " ",
         this.context.T("Clear Selection")
       ),
@@ -96,7 +96,7 @@ export default class EntityAnswerComponent extends AsyncLoadComponent<EntityAnsw
         ? R(
             "button",
             { type: "button", className: "btn btn-link btn-sm", onClick: this.handleEditEntity },
-            R("span", { className: "glyphicon glyphicon-pencil" }),
+            R("span", { className: "fas fa-pencil-alt" }),
             " ",
             this.context.T("Edit Selection")
           )
@@ -113,8 +113,8 @@ export default class EntityAnswerComponent extends AsyncLoadComponent<EntityAnsw
       // Render select button
       return R(
         "button",
-        { type: "button", className: "btn btn-default btn-sm", onClick: this.handleSelectEntity },
-        R("span", { className: "glyphicon glyphicon-ok" }),
+        { type: "button", className: "btn btn-secondary btn-sm", onClick: this.handleSelectEntity },
+        R("span", { className: "fas fa-check" }),
         " ",
         this.context.T("Select")
       )

@@ -155,12 +155,12 @@ export default class RosterMatrixComponent extends React.Component {
             "div",
             { style: { float: "right" } },
             R("span", {
-              className: "table-sort-controls glyphicon glyphicon-triangle-top",
+              className: "table-sort-controls fas fa-caret-up",
               style: { cursor: "pointer" },
               onClick: this.handleSort.bind(null, column, "asc")
             }),
             R("span", {
-              className: "table-sort-controls glyphicon glyphicon-triangle-bottom",
+              className: "table-sort-controls fas fa-caret-down",
               style: { cursor: "pointer" },
               onClick: this.handleSort.bind(null, column, "desc")
             })
@@ -219,7 +219,7 @@ export default class RosterMatrixComponent extends React.Component {
             R(
               "button",
               { type: "button", className: "btn btn-sm btn-link", onClick: this.handleRemove.bind(null, index) },
-              R("span", { className: "glyphicon glyphicon-remove" })
+              R("span", { className: "fas fa-times" })
             )
           )
         : undefined
@@ -236,7 +236,7 @@ export default class RosterMatrixComponent extends React.Component {
         R(
           "button",
           { type: "button", className: "btn btn-primary", onClick: this.handleAdd },
-          R("span", { className: "glyphicon glyphicon-plus" }),
+          R("span", { className: "fas fa-plus" }),
           " " + this.context.T("Add")
         )
       )

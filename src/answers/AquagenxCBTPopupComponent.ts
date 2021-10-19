@@ -219,7 +219,7 @@ fill: ${hoverColors[4]}; \
           ),
           R(
             "button",
-            { type: "button", className: "btn btn-default", id: "close", onClick: this.props.onClose },
+            { type: "button", className: "btn btn-secondary", id: "close", onClick: this.props.onClose },
             this.context.T("Cancel")
           )
         ),

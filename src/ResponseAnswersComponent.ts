@@ -170,7 +170,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
             })()
           )
         } else {
-          return R("span", { className: "label label-danger" }, "Invalid Choice")
+          return R("span", { className: "badge bg-danger" }, "Invalid Choice")
         }
       case "choices":
         return _.map(answer.value, (v) => {
@@ -188,7 +188,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
               })()
             )
           } else {
-            return R("div", { className: "label label-danger" }, "Invalid Choice")
+            return R("div", { className: "badge bg-danger" }, "Invalid Choice")
           }
         })
 
@@ -303,7 +303,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
             if (choice != null) {
               return R("div", null, formUtils.localizeString(choice.label, this.props.locale))
             } else {
-              return R("span", { className: "label label-danger" }, "Invalid Choice")
+              return R("span", { className: "badge bg-danger" }, "Invalid Choice")
             }
           }
         }
@@ -362,7 +362,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
             )
           } else {
             contents.push(
-              R("tr", null, itemTd, R("td", null, R("span", { className: "label label-danger" }, "Invalid Choice")))
+              R("tr", null, itemTd, R("td", null, R("span", { className: "badge bg-danger" }, "Invalid Choice")))
             )
           }
 
@@ -376,7 +376,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
                 )
               } else {
                 contents.push(
-                  R("tr", null, itemTd, R("td", null, R("span", { className: "label label-danger" }, "Invalid Choice")))
+                  R("tr", null, itemTd, R("td", null, R("span", { className: "badge bg-danger" }, "Invalid Choice")))
                 )
               }
             }
@@ -477,7 +477,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
                     onClick: this.props.onChangedLinkClick,
                     key: "view_change"
                   },
-                  R(ui.Icon, { id: "glyphicon-pencil" }),
+                  R(ui.Icon, { id: "fa-pencil-alt" }),
                   " ",
                   this.props.T("Edited")
                 )
@@ -770,7 +770,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
       null,
       R(
         "table",
-        { className: "table table-bordered table-condensed", style: { marginBottom: 0 } },
+        { className: "table table-bordered table-sm", style: { marginBottom: 0 } },
         R(
           "thead",
           null,

@@ -191,7 +191,7 @@ export default class ResponseDisplayComponent extends React.Component<
       " ",
       moment(ev.on).format("lll"),
       ev.message ? [": ", R("i", null, ev.message)] : undefined,
-      ev.override ? R("span", { className: "label label-warning" }, this.state.T("Admin Override")) : undefined
+      ev.override ? R("span", { className: "badge bg-warning" }, this.state.T("Admin Override")) : undefined
     )
   }
 

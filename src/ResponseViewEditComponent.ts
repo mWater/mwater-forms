@@ -169,7 +169,7 @@ export default class ResponseViewEditComponent extends React.Component<
     return R(
       "select",
       {
-        className: "form-control input-sm",
+        className: "form-control form-control-sm",
         style: { width: "auto", float: "right", margin: 5 },
         onChange: this.handleLocaleChange,
         value: this.state.locale
@@ -259,11 +259,11 @@ export default class ResponseViewEditComponent extends React.Component<
               "button",
               {
                 type: "button",
-                className: "btn btn-sm btn-default",
+                className: "btn btn-sm btn-secondary",
                 onClick: this.handleEdit,
                 style: { marginLeft: "10px" }
               },
-              R("span", { className: "glyphicon glyphicon-edit" }),
+              R("span", { className: "fas fa-edit" }),
               "Edit Response"
             )
           : undefined
@@ -295,7 +295,7 @@ export default class ResponseViewEditComponent extends React.Component<
             { style: { textAlign: "right" } },
             R(
               "a",
-              { className: "btn btn-xs btn-link", target: "_blank", href: printUrl },
+              { className: "btn btn-sm btn-link", target: "_blank", href: printUrl },
               R(ui.Icon, { id: "fa-external-link" }),
               " Export as PDF"
             )

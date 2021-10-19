@@ -115,7 +115,7 @@ export default class StopwatchAnswerComponent extends React.Component<
       R("h1", { style: { fontFamily: "monospace" } }, getDisplayValue(this.state.elapsedTicks)),
       R(
         "div",
-        { className: "btn-toolbar", role: "toolbar" },
+        { className: "", role: "toolbar" },
         R(
           "div",
           { className: "btn-group", role: "group" },
@@ -131,7 +131,7 @@ export default class StopwatchAnswerComponent extends React.Component<
           ),
           R(
             "button",
-            { className: "btn btn-default", onClick: this.handleResetClick, disabled: !this.state.elapsedTicks },
+            { className: "btn btn-secondary", onClick: this.handleResetClick, disabled: !this.state.elapsedTicks },
             this.props.T("Reset")
           )
         )

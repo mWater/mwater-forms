@@ -125,11 +125,11 @@ export default class SiteAnswerComponent extends React.Component<SiteAnswerCompo
         }),
         R(
           "span",
-          { className: "input-group-btn" },
+          { className: "" },
           R(
             "button",
             {
-              className: "btn btn-default",
+              className: "btn btn-secondary",
               disabled: this.context.selectEntity == null,
               type: "button",
               onClick: this.handleSelectClick,

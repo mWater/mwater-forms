@@ -178,7 +178,7 @@ export class CascadingListAnswerComponent extends React.Component<Props, State> 
 
     return (
       <div>
-        <button type="button" className="btn btn-link btn-xs" style={{ float: "right" }} onClick={this.handleReset}>
+        <button type="button" className="btn btn-link btn-sm" style={{ float: "right" }} onClick={this.handleReset}>
           {this.props.T("Reset")}
         </button>
         {dropdowns}

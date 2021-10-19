@@ -322,7 +322,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
         ? R(
             "button",
             { type: "button", id: "helpbtn", className: "btn btn-link btn-sm", onClick: this.handleToggleHelp },
-            R("span", { className: "glyphicon glyphicon-question-sign" })
+            R("span", { className: "fas fa-question-circle" })
           )
         : undefined
     )
@@ -361,12 +361,16 @@ export default class QuestionComponent extends React.Component<QuestionComponent
 
   renderHelp() {
     if (this.state.helpVisible && this.props.question.help) {
-      return R("div", {
-        className: "help well well-sm",
-        dangerouslySetInnerHTML: {
-          __html: new Markdown().render(formUtils.localizeString(this.props.question.help, this.context.locale))
-        }
-      })
+      return R(
+        "div",
+        { className: "card bg-light" },
+        R("div", {
+          className: "card-body",
+          dangerouslySetInnerHTML: {
+            __html: new Markdown().render(formUtils.localizeString(this.props.question.help, this.context.locale))
+          }
+        })
+      )
     }
   }
 
@@ -725,7 +729,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
       R("div", { className: "answer" }, this.renderAnswer()),
 
       answer.confidential != null
-        ? R("span", { className: "help-block" }, this.context.T("Confidential answers may not be edited."))
+        ? R("div", { className: "form-text text-muted" }, this.context.T("Confidential answers may not be edited."))
         : undefined,
 
       answer.confidential == null ? [this.renderAlternates(), this.renderValidationError()] : undefined,

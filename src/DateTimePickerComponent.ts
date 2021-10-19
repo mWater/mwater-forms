@@ -122,11 +122,7 @@ export default class DateTimePickerComponent extends React.Component<DateTimePic
         }
       },
       input,
-      R(
-        "span",
-        { className: "input-group-addon", onClick: this.handleCalendarClick },
-        R("span", { className: "glyphicon glyphicon-calendar" })
-      )
+      R("span", { className: "", onClick: this.handleCalendarClick }, R("span", { className: "fas fa-calendar-alt" }))
     )
   }
 }

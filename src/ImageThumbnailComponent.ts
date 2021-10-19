@@ -46,7 +46,7 @@ export default class ImageThumbnailComponent extends AsyncLoadComponent<ImageThu
     return R("img", {
       src: url,
       style: { maxHeight: 100 },
-      className: "img-thumbnail",
+      className: "",
       onClick: this.props.onClick,
       onError: this.handleError
     })

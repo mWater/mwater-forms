@@ -49,7 +49,7 @@ export default class ImagePopupComponent extends AsyncLoadComponent<ImagePopupCo
       {
         footer: R(
           "button",
-          { type: "button", className: "btn btn-default", onClick: this.props.onClose },
+          { type: "button", className: "btn btn-secondary", onClick: this.props.onClose },
           this.props.T("Close")
         )
       },

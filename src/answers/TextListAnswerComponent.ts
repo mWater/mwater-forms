@@ -115,7 +115,7 @@ export default class TextListAnswerComponent extends React.Component<TextListAns
                 }),
                 R(
                   "span",
-                  { className: "input-group-btn" },
+                  { className: "" },
                   R(
                     "button",
                     {
@@ -124,7 +124,7 @@ export default class TextListAnswerComponent extends React.Component<TextListAns
                       type: "button",
                       onClick: this.handleRemoveClick.bind(null, index)
                     },
-                    R("span", { className: "glyphicon glyphicon-remove" })
+                    R("span", { className: "fas fa-times" })
                   )
                 )
               )
@@ -152,7 +152,7 @@ export default class TextListAnswerComponent extends React.Component<TextListAns
                 id: "newLine"
               }),
 
-              R("span", { className: "input-group-btn", style: { paddingRight: "39px" } })
+              R("span", { className: "", style: { paddingRight: "39px" } })
             )
           )
         )

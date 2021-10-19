@@ -369,7 +369,7 @@ export default class LocationEditorComponent extends React.Component<Props, Stat
             {this.props.T("Save")}
           </button>
           &nbsp;
-          <button className="btn btn-default" onClick={this.handleCancelManual}>
+          <button className="btn btn-secondary" onClick={this.handleCancelManual}>
             {this.props.T("Cancel")}
           </button>
         </div>
@@ -464,7 +464,7 @@ export default class LocationEditorComponent extends React.Component<Props, Stat
           {this.state.positionStatus.strength != "none" && this.state.positionStatus.strength != "good" ? (
             <button
               type="button"
-              className="btn btn-sm btn-default"
+              className="btn btn-sm btn-secondary"
               style={{ marginLeft: 5 }}
               disabled={!this.state.positionStatus.useable}
               onClick={this.handleUseAnyway}
@@ -475,7 +475,7 @@ export default class LocationEditorComponent extends React.Component<Props, Stat
           ) : null}
           <button
             type="button"
-            className="btn btn-sm btn-default"
+            className="btn btn-sm btn-secondary"
             style={{ marginLeft: 5 }}
             onClick={this.handleCancelGPS}
           >
@@ -503,30 +503,36 @@ export default class LocationEditorComponent extends React.Component<Props, Stat
       <div>
         <div>{this.props.T("Set location using")}:</div>
         <div style={{ padding: 10 }}>
-          <button
-            type="button"
-            className="btn btn-default btn-block"
-            onClick={this.handleSetUsingGPS}
-            disabled={this.state.settingUsingGPS}
-          >
-            <span className="glyphicon glyphicon-screenshot"></span> {this.props.T("Current Location")}
-          </button>
-          <button
-            type="button"
-            className="btn btn-default btn-block"
-            disabled={this.props.onUseMap == null}
-            onClick={this.props.onUseMap}
-          >
-            <span className="glyphicon glyphicon-map-marker"></span> {this.props.T("Use Map")}
-          </button>
-          <button
-            type="button"
-            className="btn btn-default btn-block"
-            disabled={this.props.location == null}
-            onClick={this.handleClear}
-          >
-            <span className="glyphicon glyphicon-remove"></span> {this.props.T("Clear")}
-          </button>
+          <div className="d-grid">
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={this.handleSetUsingGPS}
+              disabled={this.state.settingUsingGPS}
+            >
+              <span className="fas fa-location-arrow"></span> {this.props.T("Current Location")}
+            </button>
+          </div>
+          <div className="d-grid">
+            <button
+              type="button"
+              className="btn btn-secondary"
+              disabled={this.props.onUseMap == null}
+              onClick={this.props.onUseMap}
+            >
+              <span className="fas fa-map-marker-alt"></span> {this.props.T("Use Map")}
+            </button>
+          </div>
+          <div className="d-grid">
+            <button
+              type="button"
+              className="btn btn-secondary"
+              disabled={this.props.location == null}
+              onClick={this.handleClear}
+            >
+              <span className="fas fa-times"></span> {this.props.T("Clear")}
+            </button>
+          </div>
         </div>
       </div>
     )

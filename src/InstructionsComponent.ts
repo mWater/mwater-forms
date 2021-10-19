@@ -36,15 +36,19 @@ export default class InstructionsComponent extends React.Component<InstructionsC
   render() {
     return R(
       "div",
-      { className: "well well-small" },
-      R(TextExprsComponent, {
-        localizedStr: this.props.instructions.text,
-        exprs: this.props.instructions.textExprs,
-        schema: this.props.schema,
-        responseRow: this.props.responseRow,
-        locale: this.context.locale,
-        markdown: true
-      })
+      { className: "card bg-light" },
+      R(
+        "div",
+        { className: "card-body" },
+        R(TextExprsComponent, {
+          localizedStr: this.props.instructions.text,
+          exprs: this.props.instructions.textExprs,
+          schema: this.props.schema,
+          responseRow: this.props.responseRow,
+          locale: this.context.locale,
+          markdown: true
+        })
+      )
     )
   }
 }

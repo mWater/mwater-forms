@@ -114,7 +114,7 @@ export default AdminRegionSelectComponent = (function () {
             "select",
             {
               key: `level${level}`,
-              className: "form-control",
+              className: "form-select",
               value: this.state.path[level] ? this.state.path[level].id : "",
               onChange: this.handleChange.bind(null, level)
             },

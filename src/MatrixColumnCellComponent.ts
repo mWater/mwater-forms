@@ -94,7 +94,7 @@ export default class MatrixColumnCellComponent extends React.Component<MatrixCol
       case "TextColumnQuestion":
         elem = R("input", {
           type: "text",
-          className: "form-control input-sm",
+          className: "form-control form-control-sm",
           value: value || "",
           onChange: (ev) => this.handleValueChange(ev.target.value)
         })
@@ -123,7 +123,7 @@ export default class MatrixColumnCellComponent extends React.Component<MatrixCol
         elem = R(
           "select",
           {
-            className: "form-control input-sm",
+            className: "form-select form-select-sm",
             style: { width: "auto" },
             value,
             onChange: (ev) => this.handleValueChange(ev.target.value ? ev.target.value : null)

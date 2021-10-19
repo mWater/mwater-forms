@@ -66,10 +66,13 @@ export default class EntityDisplayComponent extends AsyncLoadComponent<EntityDis
       )
     }
 
-    return R(
-      "div",
-      { className: this.props.displayInWell ? "well well-sm" : undefined },
-      this.props.renderEntityView(this.props.entityType, this.state.entity)
-    )
+    if (this.props.displayInWell) {
+      return R(
+        "div",
+        { className: "card bg-light" },
+        R("div", { className: "card-body" }, this.props.renderEntityView(this.props.entityType, this.state.entity))
+      )
+    }
+    return R("div", {}, this.props.renderEntityView(this.props.entityType, this.state.entity))
   }
 }

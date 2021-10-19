@@ -132,10 +132,10 @@ export default class RosterGroupComponent extends React.Component<
 
     return R(
       "div",
-      { key: index, className: "panel panel-default" },
+      { key: index, className: "card" },
       R(
         "div",
-        { key: "header", className: "panel-heading", style: { fontWeight: "bold", position: "relative" } },
+        { key: "header", className: "card-header", style: { fontWeight: "bold", position: "relative" } },
         `${index + 1}. `,
         this.renderEntryTitle(entry, index),
         R(
@@ -146,13 +146,13 @@ export default class RosterGroupComponent extends React.Component<
             onClick: this.handleToggle.bind(null, index)
           },
           R("span", {
-            className: cx("glyphicon", { "glyphicon-chevron-up": !isCollapsed, "glyphicon-chevron-down": isCollapsed })
+            className: cx("fas", { "fa-chevron-up": !isCollapsed, "fa-chevron-down": isCollapsed })
           })
         )
       ),
       R(
         "div",
-        { key: "body", className: "panel-body", style: bodyStyle },
+        { key: "body", className: "card-body", style: bodyStyle },
         this.props.rosterGroup.allowRemove
           ? R(
               "button",
@@ -162,7 +162,7 @@ export default class RosterGroupComponent extends React.Component<
                 className: "btn btn-sm btn-link",
                 onClick: this.handleRemove.bind(null, index)
               },
-              R("span", { className: "glyphicon glyphicon-remove" })
+              R("span", { className: "fas fa-times" })
             )
           : undefined,
 
@@ -188,8 +188,8 @@ export default class RosterGroupComponent extends React.Component<
         { key: "add" },
         R(
           "button",
-          { type: "button", className: "btn btn-default btn-sm", onClick: this.handleAdd },
-          R("span", { className: "glyphicon glyphicon-plus" }),
+          { type: "button", className: "btn btn-secondary btn-sm", onClick: this.handleAdd },
+          R("span", { className: "fas fa-plus" }),
           " " + this.context.T("Add")
         )
       )

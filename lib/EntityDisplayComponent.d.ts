@@ -21,8 +21,6 @@ export default class EntityDisplayComponent extends AsyncLoadComponent<EntityDis
 }> {
     isLoadNeeded(newProps: EntityDisplayComponentProps, oldProps: EntityDisplayComponentProps): boolean;
     load(props: EntityDisplayComponentProps, prevProps: EntityDisplayComponentProps, callback: any): any;
-    render(): React.DetailedReactHTMLElement<{
-        className: string | undefined;
-    }, HTMLElement> | null;
+    render(): React.DetailedReactHTMLElement<{}, HTMLElement> | null;
 }
 export {};

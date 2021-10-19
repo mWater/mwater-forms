@@ -69,7 +69,7 @@ export default class DropdownAnswerComponent extends React.Component<DropdownAns
       R(
         "select",
         {
-          className: "form-control",
+          className: "form-select",
           style: { width: "auto" },
           value: this.props.answer.value,
           onChange: this.handleValueChange,

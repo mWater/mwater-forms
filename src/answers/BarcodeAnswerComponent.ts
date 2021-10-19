@@ -52,8 +52,8 @@ export default class BarcodeAnswerComponent extends React.Component<BarcodeAnswe
           null,
           R(
             "button",
-            { className: "btn btn-default", onClick: this.handleClearClick, type: "button" },
-            R("span", { className: "glyphicon glyphicon-remove" }, this.context.T("Clear"))
+            { className: "btn btn-secondary", onClick: this.handleClearClick, type: "button" },
+            R("span", { className: "fas fa-times" }, this.context.T("Clear"))
           )
         )
       )
@@ -64,8 +64,8 @@ export default class BarcodeAnswerComponent extends React.Component<BarcodeAnswe
           null,
           R(
             "button",
-            { className: "btn btn-default", onClick: this.handleScanClick, type: "button" },
-            R("span", { className: "glyphicon glyphicon-qrcode" }),
+            { className: "btn btn-secondary", onClick: this.handleScanClick, type: "button" },
+            R("span", { className: "fas fa-qrcode" }),
             this.context.T("Scan")
           )
         )

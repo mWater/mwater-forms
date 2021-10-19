@@ -124,7 +124,7 @@ export default class SectionsComponent extends React.Component<SectionsComponent
       breadcrumbs.push(
         R(
           "li",
-          { key: index },
+          { key: index, className: "breadcrumb-item" },
           R(
             "b",
             null,
@@ -132,7 +132,6 @@ export default class SectionsComponent extends React.Component<SectionsComponent
               ? R(
                   "a",
                   {
-                    className: "section-crumb",
                     disabled: !visible,
                     onClick: this.handleBreadcrumbClick.bind(this, index)
                   },
@@ -150,10 +149,14 @@ export default class SectionsComponent extends React.Component<SectionsComponent
       this.context.locale
     )
     breadcrumbs.push(
-      R("li", { key: this.state.sectionNum }, R("b", null, `${this.state.sectionNum + 1}. ${currentSectionName}`))
+      R(
+        "li",
+        { key: this.state.sectionNum, className: "breadcrumb-item active" },
+        R("b", null, `${this.state.sectionNum + 1}. ${currentSectionName}`)
+      )
     )
 
-    return R("ul", { className: "breadcrumb" }, breadcrumbs)
+    return R("ol", { className: "breadcrumb" }, breadcrumbs)
   }
 
   renderSection() {
@@ -188,8 +191,8 @@ export default class SectionsComponent extends React.Component<SectionsComponent
         ? [
             R(
               "button",
-              { key: "back", type: "button", className: "btn btn-default", onClick: this.handleBackSection },
-              R("span", { className: "glyphicon glyphicon-backward" }),
+              { key: "back", type: "button", className: "btn btn-secondary", onClick: this.handleBackSection },
+              R("span", { className: "fas fa-backward" }),
               " " + this.context.T("Back")
             ),
             "\u00A0"
@@ -211,7 +214,7 @@ export default class SectionsComponent extends React.Component<SectionsComponent
               onClick: this.handleNextSection
             },
             this.context.T("Next") + " ",
-            R("span", { className: "glyphicon glyphicon-forward" })
+            R("span", { className: "fas fa-forward" })
           )
         } else if (this.props.onSubmit) {
           return R(
@@ -236,7 +239,7 @@ export default class SectionsComponent extends React.Component<SectionsComponent
         ? [
             R(
               "button",
-              { key: "saveLater", type: "button", className: "btn btn-default", onClick: this.props.onSaveLater },
+              { key: "saveLater", type: "button", className: "btn btn-secondary", onClick: this.props.onSaveLater },
               this.context.T("Save for Later")
             ),
             "\u00A0"
@@ -246,8 +249,8 @@ export default class SectionsComponent extends React.Component<SectionsComponent
       this.props.onDiscard
         ? R(
             "button",
-            { key: "discard", type: "button", className: "btn btn-default", onClick: this.props.onDiscard },
-            R("span", { className: "glyphicon glyphicon-trash" }),
+            { key: "discard", type: "button", className: "btn btn-secondary", onClick: this.props.onDiscard },
+            R("span", { className: "fas fa-trash-alt" }),
             " " + this.context.T("Discard")
           )
         : undefined

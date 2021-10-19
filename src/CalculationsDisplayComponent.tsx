@@ -46,7 +46,7 @@ export const CalculationsDisplayComponent = (props: {
   }
 
   return (
-    <table className="table table-bordered table-condensed">
+    <table className="table table-bordered table-sm">
       <thead>
         <tr>
           <th>Calculation</th>

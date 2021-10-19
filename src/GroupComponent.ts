@@ -33,16 +33,16 @@ export default class GroupComponent extends React.Component<GroupComponentProps>
   render() {
     return R(
       "div",
-      { className: "panel panel-default" },
+      { className: "card" },
       R(
         "div",
-        { key: "header", className: "panel-heading" },
+        { key: "header", className: "card-header" },
         formUtils.localizeString(this.props.group.name, this.context.locale)
       ),
 
       R(
         "div",
-        { key: "body", className: "panel-body" },
+        { key: "body", className: "card-body" },
         R(ItemListComponent, {
           ref: (c: any) => {
             return (this.itemlist = c)

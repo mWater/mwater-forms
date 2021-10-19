@@ -139,7 +139,7 @@ export default class RadioAnswerComponent extends React.Component<RadioAnswerCom
                     value: choice.id === this.props.answer.value ? null : choice.id,
                     specify: null
                   }),
-                className: this.props.answer.value === choice.id ? "btn btn-primary active" : "btn btn-default"
+                className: this.props.answer.value === choice.id ? "btn btn-primary active" : "btn btn-outline-primary"
               },
               text
             )
