@@ -114,18 +114,14 @@ export default class TextListAnswerComponent extends React.Component<TextListAns
                   }
                 }),
                 R(
-                  "span",
-                  { className: "" },
-                  R(
-                    "button",
-                    {
-                      className: "btn btn-link remove",
-                      "data-index": index,
-                      type: "button",
-                      onClick: this.handleRemoveClick.bind(null, index)
-                    },
-                    R("span", { className: "fas fa-times" })
-                  )
+                  "button",
+                  {
+                    className: "btn btn-link remove",
+                    "data-index": index,
+                    type: "button",
+                    onClick: this.handleRemoveClick.bind(null, index)
+                  },
+                  R("span", { className: "fas fa-times" })
                 )
               )
             )

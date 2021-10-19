@@ -503,7 +503,7 @@ export default class LocationEditorComponent extends React.Component<Props, Stat
       <div>
         <div>{this.props.T("Set location using")}:</div>
         <div style={{ padding: 10 }}>
-          <div className="d-grid">
+          <div className="d-grid pb-1">
             <button
               type="button"
               className="btn btn-secondary"
@@ -513,7 +513,7 @@ export default class LocationEditorComponent extends React.Component<Props, Stat
               <span className="fas fa-location-arrow"></span> {this.props.T("Current Location")}
             </button>
           </div>
-          <div className="d-grid">
+          <div className="d-grid pb-1">
             <button
               type="button"
               className="btn btn-secondary"
@@ -523,7 +523,7 @@ export default class LocationEditorComponent extends React.Component<Props, Stat
               <span className="fas fa-map-marker-alt"></span> {this.props.T("Use Map")}
             </button>
           </div>
-          <div className="d-grid">
+          <div className="d-grid pb-1">
             <button
               type="button"
               className="btn btn-secondary"

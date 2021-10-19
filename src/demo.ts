@@ -786,7 +786,7 @@ DemoComponent = DragDropContext(HTML5Backend)(DemoComponent)
 //       onSuccess: (id) => console.log(id)
 //       onCancel: => console.log "Cancel"
 
-$(() => ReactDOM.render(R(DemoComponent), document.getElementById("main")))
+ReactDOM.render(R(DemoComponent), document.getElementById("main"))
 // ReactDOM.render(R(DemoLocationEditorComponent), document.getElementById("main"))
 // ImageUploaderModalComponent.show("http://localhost:1234/v3/", null, window.T, (id) -> alert(id))
 // ReactDOM.render(R(ImageUploaderTestComponent), document.getElementById("main"))

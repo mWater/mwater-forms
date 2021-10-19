@@ -124,19 +124,15 @@ export default class SiteAnswerComponent extends React.Component<SiteAnswerCompo
           onChange: this.handleChange
         }),
         R(
-          "span",
-          { className: "" },
-          R(
-            "button",
-            {
-              className: "btn btn-secondary",
-              disabled: this.context.selectEntity == null,
-              type: "button",
-              onClick: this.handleSelectClick,
-              style: { zIndex: "inherit" }
-            },
-            this.context.T("Select")
-          )
+          "button",
+          {
+            className: "btn btn-secondary",
+            disabled: this.context.selectEntity == null,
+            type: "button",
+            onClick: this.handleSelectClick,
+            style: { zIndex: "inherit" }
+          },
+          this.context.T("Select")
         )
       ),
 
