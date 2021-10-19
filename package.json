@@ -44,7 +44,7 @@
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-library": "github:mWater/react-library",
+    "react-library": "github:mWater/react-library#bs5",
     "topo-sort": "^1.0.0",
     "underscore": "^1.11.0",
     "update-object": "^1.0.0",
