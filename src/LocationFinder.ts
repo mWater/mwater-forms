@@ -1,13 +1,21 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-import EventEmiiter from "events"
+import { EventEmitter } from "events"
 import _ from "lodash"
 
-// Improved location finder. Triggers found event with HTML5 position object (containing coords, etc).
-// Pass storage as option (implementing localStorage API) to get caching of position
-class LocationFinder {
-  constructor(options: any) {
-    this.eventEmitter = new EventEmiiter()
+export interface Storage {
+  get: (key: string) => string | null
+  set: (key: string, value: string) => string | null
+}
+
+/** Improved location finder. Triggers found event with HTML5 position object (containing coords, etc).
+ * Pass storage as option (implementing localStorage API) to get caching of position */
+export default class LocationFinder {
+  eventEmitter: EventEmitter
+  storage: Storage | undefined
+  watchCount: number
+  locationWatchId: number | undefined
+  
+  constructor(options: { storage?: Storage }) {
+    this.eventEmitter = new EventEmitter()
 
     // "error" messages are handled specially and will crash if not handled!
     this.eventEmitter.on("error", () => {})
@@ -18,23 +26,27 @@ class LocationFinder {
     this.watchCount = 0
   }
 
-  on = (event: any, callback: any) => {
+  on(ev: "found", callback: (position: GeolocationPosition) => void): void
+  on(ev: "error", callback: (error: any) => void): void
+  on(event: any, callback: any) {
     return this.eventEmitter.on(event, callback)
   }
 
-  off = (event: any, callback: any) => {
+  off(ev: "found", callback: (position: GeolocationPosition) => void): void
+  off(ev: "error", callback: (error: any) => void): void
+  off(event: any, callback: any) {
     return this.eventEmitter.removeListener(event, callback)
   }
 
   cacheLocation(pos: any) {
     if (this.storage != null) {
-      return this.storage.set("LocationFinder.lastPosition", JSON.stringify(pos))
+      this.storage.set("LocationFinder.lastPosition", JSON.stringify(pos))
     }
   }
 
   getCachedLocation() {
     if (this.storage != null && this.storage.get("LocationFinder.lastPosition")) {
-      const pos = JSON.parse(this.storage.get("LocationFinder.lastPosition"))
+      const pos = JSON.parse(this.storage.get("LocationFinder.lastPosition")!)
 
       // Check that valid position (unreproducible bug)
       if (!pos.coords) {
@@ -47,7 +59,8 @@ class LocationFinder {
     }
   }
 
-  getLocation(success: any, error: any) {
+  getLocation(success: (position: GeolocationPosition) => void, error: (err: any) => void): void {
+    navigator.geolocation
     // If no geolocation, send error immediately
     if (!navigator.geolocation) {
       if (error) {
@@ -105,7 +118,7 @@ class LocationFinder {
     })
 
     // Fire stored one within short time
-    return setTimeout(() => {
+    setTimeout(() => {
       const cachedLocation = this.getCachedLocation()
       if (cachedLocation && !lowAccuracyFired && !highAccuracyFired) {
         return success(cachedLocation)
@@ -113,6 +126,7 @@ class LocationFinder {
     }, 250)
   }
 
+  /** Start watching current location */
   startWatch() {
     // If no geolocation, trigger error
     if (!navigator.geolocation) {
@@ -129,7 +143,7 @@ class LocationFinder {
       if (!highAccuracyFired) {
         lowAccuracyFired = true
         this.cacheLocation(pos)
-        return this.eventEmitter.emit("found", pos)
+        this.eventEmitter.emit("found", pos)
       }
     }
 
@@ -138,7 +152,8 @@ class LocationFinder {
       console.error(`Low accuracy watch location error: ${err.message}`)
       // if failed due to PERMISSION_DENIED emit error, or should we always emit error?
       if (err.code === 1) {
-        return this.eventEmitter.emit("error", err)
+        this.eventEmitter.emit("error", err)
+        return
       }
     }
 
@@ -153,7 +168,8 @@ class LocationFinder {
       console.error(`High accuracy watch location error: ${err.message}`)
       // if failed due to PERMISSION_DENIED emit error, or should we always emit error?
       if (err.code === 1) {
-        return this.eventEmitter.emit("error", err)
+        this.eventEmitter.emit("error", err)
+        return
       }
     }
 
@@ -188,11 +204,12 @@ class LocationFinder {
       const cachedLocation = this.getCachedLocation()
       if (cachedLocation && !lowAccuracyFired && !highAccuracyFired) {
         cachedFired = true
-        return this.eventEmitter.emit("found", cachedLocation)
+        this.eventEmitter.emit("found", cachedLocation)
       }
     }, 500)
   }
 
+  /** Stop watching current location */
   stopWatch() {
     // Decrement watch count if watching
     if (this.watchCount === 0) {
@@ -220,14 +237,14 @@ class LocationFinder {
   pause = () => {
     if (this.locationWatchId != null) {
       navigator.geolocation.clearWatch(this.locationWatchId)
-      return (this.locationWatchId = undefined)
+      this.locationWatchId = undefined
     }
   }
 
   resume = () => {
     const highAccuracy = (pos: any) => {
       this.cacheLocation(pos)
-      return this.eventEmitter.emit("found", pos)
+      this.eventEmitter.emit("found", pos)
     }
 
     const highAccuracyError = (err: any) => {
@@ -237,15 +254,14 @@ class LocationFinder {
       this.stopWatch()
 
       // Send error message
-      return this.eventEmitter.emit("error")
+      this.eventEmitter.emit("error")
     }
 
     if (this.locationWatchId == null) {
-      return (this.locationWatchId = navigator.geolocation.watchPosition(highAccuracy, highAccuracyError, {
+      this.locationWatchId = navigator.geolocation.watchPosition(highAccuracy, highAccuracyError, {
         enableHighAccuracy: true
-      }))
+      })
     }
   }
 }
 
-export default LocationFinder
