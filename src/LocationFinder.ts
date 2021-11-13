@@ -14,7 +14,7 @@ export default class LocationFinder {
   watchCount: number
   locationWatchId: number | undefined
   
-  constructor(options: { storage?: Storage }) {
+  constructor(options: { storage?: Storage } = {}) {
     this.eventEmitter = new EventEmitter()
 
     // "error" messages are handled specially and will crash if not handled!
