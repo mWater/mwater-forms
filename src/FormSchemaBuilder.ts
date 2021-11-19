@@ -7,6 +7,7 @@ import ConditionsExprCompiler from "./ConditionsExprCompiler"
 import { healthRiskEnum } from "./answers/aquagenxCBTUtils"
 import { Form } from "./form"
 import { JsonQLExpr } from "jsonql"
+import { IndicatorCalculation } from "."
 
 /** Adds a form to a mwater-expressions schema */
 export default class FormSchemaBuilder {
@@ -355,7 +356,7 @@ export default class FormSchemaBuilder {
   }
 
   // Create a subsection of Indicators for an indicator calculation.
-  createIndicatorCalculationSection(indicatorCalculation: any, schema: any, indicators: any, form: any) {
+  createIndicatorCalculationSection(indicatorCalculation: IndicatorCalculation, schema: Schema, indicators: any[], form: Form) {
     // Find indicator
     const indicator = _.findWhere(indicators, { _id: indicatorCalculation.indicator })
 
@@ -370,7 +371,7 @@ export default class FormSchemaBuilder {
     // Map properties
     const contents = []
     for (let properties of _.values(indicator.design.properties)) {
-      for (let property of properties) {
+      for (let property of properties as Column[]) {
         // If has expression already, we need to replace the references to this indicator with the indicator calculations
         var expression
         if (property.expr) {
@@ -384,27 +385,7 @@ export default class FormSchemaBuilder {
         // Create column from property
         const column = _.extend({}, property, {
           id: `indicator_calculation:${indicatorCalculation._id}:${property.id}`
-        })
-
-        // ids are special
-        if (property.type === "id") {
-          // Compile to an jsonql of the id of the "to" table
-          const fromColumn = exprCompiler.compileExpr({ expr: expression, tableAlias: "{alias}" })
-
-          // Create a join expression
-          const toColumn = schema.getTable(property.idTable).primaryKey
-
-          column.type = "join"
-          column.join = {
-            type: "n-1",
-            toTable: property.idTable,
-            fromColumn,
-            toColumn
-          }
-
-          contents.push(column)
-          continue
-        }
+        }) as Column
 
         // If no expression, jsonql null should be explicit so it doesn't just think there is no jsonql specified
         if (!expression) {
@@ -437,7 +418,7 @@ export default class FormSchemaBuilder {
               break
             case "id":
               // admin_region has integer pk
-              if (column.idTable === "admin_regions" || column.idTable.startsWith("regions.")) {
+              if (column.idTable === "admin_regions" || column.idTable!.startsWith("regions.")) {
                 column.jsonql = { type: "op", op: "::integer", exprs: [{ type: "literal", value: null }] }
               } else {
                 column.jsonql = { type: "op", op: "::text", exprs: [{ type: "literal", value: null }] }
@@ -445,7 +426,7 @@ export default class FormSchemaBuilder {
               break
             case "id[]":
               // admin_region has integer pk
-              if (column.idTable === "admin_regions" || column.idTable.startsWith("regions.")) {
+              if (column.idTable === "admin_regions" || column.idTable!.startsWith("regions.")) {
                 column.jsonql = { type: "op", op: "::integer[]", exprs: [{ type: "literal", value: null }] }
               } else {
                 column.jsonql = { type: "op", op: "::text[]", exprs: [{ type: "literal", value: null }] }

@@ -1,5 +1,6 @@
-import { Schema } from "mwater-expressions";
+import { Schema, Column } from "mwater-expressions";
 import { Form } from "./form";
+import { IndicatorCalculation } from ".";
 /** Adds a form to a mwater-expressions schema */
 export default class FormSchemaBuilder {
     /** indicators is at least all indicators referenced in indicator calculations. Can be empty and indicator calculations will be omitted */
@@ -7,10 +8,10 @@ export default class FormSchemaBuilder {
     addReverseJoins(schema: any, form: any, reverseJoins: any): any;
     addRosterTables(schema: any, design: any, conditionsExprCompiler: any, reverseJoins: any, tableId: any): any;
     addIndicatorCalculations(schema: any, form: any, indicators: any): any;
-    createIndicatorCalculationSection(indicatorCalculation: any, schema: any, indicators: any, form: any): {
+    createIndicatorCalculationSection(indicatorCalculation: IndicatorCalculation, schema: Schema, indicators: any[], form: Form): {
         type: string;
         name: any;
-        contents: {}[];
+        contents: Column[];
     } | null;
     addConfidentialDataForRosters(schema: any, form: any, conditionsExprCompiler: any): any;
     addConfidentialData(schema: any, form: any, conditionsExprCompiler: any): any;
