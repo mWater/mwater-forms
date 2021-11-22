@@ -1,13 +1,13 @@
 import _ from "lodash"
 import * as formUtils from "./formUtils"
-import { ExprUtils, Schema, Column, Section } from "mwater-expressions"
+import { ExprUtils, Schema, Column, Section, LocalizedString, Expr } from "mwater-expressions"
 import { ExprCompiler } from "mwater-expressions"
 import update from "update-object"
 import ConditionsExprCompiler from "./ConditionsExprCompiler"
 import { healthRiskEnum } from "./answers/aquagenxCBTUtils"
 import { Form } from "./form"
 import { JsonQLExpr } from "jsonql"
-import { IndicatorCalculation } from "."
+import { Choice, IndicatorCalculation, Unit } from "."
 
 /** Adds a form to a mwater-expressions schema */
 export default class FormSchemaBuilder {
@@ -193,7 +193,7 @@ export default class FormSchemaBuilder {
 
     schema = this.addCalculations(schema, form)
 
-    schema = this.addIndicatorCalculations(schema, form, indicators, false)
+    schema = this.addIndicatorCalculations(schema, form, indicators)
 
     // Create table
     return schema
@@ -202,7 +202,7 @@ export default class FormSchemaBuilder {
   // Add joins back from entities to site and entity questions
   // reverseJoins: list of joins in format: { table: destination table, column: join column to add }
   // Adds to section with id "!related_forms" with name "Related Forms"
-  addReverseJoins(schema: any, form: any, reverseJoins: any) {
+  addReverseJoins(schema: Schema, form: Form, reverseJoins: { table: string, column: Column }[]) {
     for (let reverseJoin of reverseJoins) {
       const column = _.clone(reverseJoin.column)
 
@@ -217,7 +217,7 @@ export default class FormSchemaBuilder {
       // Add to entities table if it exists
       if (schema.getTable(reverseJoin.table)) {
         var section
-        let table = schema.getTable(reverseJoin.table)
+        let table = schema.getTable(reverseJoin.table)!
 
         // Create related forms section
         let sectionIndex = _.findIndex(table.contents, (item) => item.id === "!related_forms")
@@ -250,7 +250,7 @@ export default class FormSchemaBuilder {
   addRosterTables(schema: any, design: any, conditionsExprCompiler: any, reverseJoins: any, tableId: any) {
     // For each item
     for (let item of formUtils.allItems(design)) {
-      if (["RosterGroup", "RosterMatrix"].includes(item._type)) {
+      if (item._type == "RosterGroup" || item._type == "RosterMatrix") {
         // If new, create table with single join back to responses
         var contents, name
         if (!item.rosterId) {
@@ -305,7 +305,7 @@ export default class FormSchemaBuilder {
   }
 
   // Create a section in schema called Indicators with one subsection for each indicator calculated
-  addIndicatorCalculations(schema: any, form: any, indicators: any) {
+  addIndicatorCalculations(schema: Schema, form: Form, indicators: any[]) {
     // If not calculations, don't add indicators section
     if (!form.indicatorCalculations || form.indicatorCalculations.length === 0) {
       return schema
@@ -320,7 +320,7 @@ export default class FormSchemaBuilder {
       }
 
       // Add indicator section
-      let indicatorsSection = _.last(schema.getTable(tableId).contents)
+      let indicatorsSection = _.last(schema.getTable(tableId)!.contents) as Section
       if (indicatorsSection.id !== "indicators") {
         // Add indicator section
         indicatorsSection = {
@@ -345,7 +345,7 @@ export default class FormSchemaBuilder {
       }
 
       // Update in original
-      const contents = schema.getTable(tableId).contents.slice()
+      const contents = schema.getTable(tableId)!.contents.slice()
       contents[contents.length - 1] = update(indicatorsSection, { contents: { $set: indicatorSectionContents } })
 
       // Re-add table
@@ -356,7 +356,7 @@ export default class FormSchemaBuilder {
   }
 
   // Create a subsection of Indicators for an indicator calculation.
-  createIndicatorCalculationSection(indicatorCalculation: IndicatorCalculation, schema: Schema, indicators: any[], form: Form) {
+  createIndicatorCalculationSection(indicatorCalculation: IndicatorCalculation, schema: Schema, indicators: any[], form: Form): Section | null {
     // Find indicator
     const indicator = _.findWhere(indicators, { _id: indicatorCalculation.indicator })
 
@@ -459,7 +459,7 @@ export default class FormSchemaBuilder {
     }
 
     // Create section
-    const section = {
+    const section: Section = {
       type: "section",
       name: indicator.design.name,
       contents
@@ -468,16 +468,16 @@ export default class FormSchemaBuilder {
     return section
   }
 
-  addConfidentialDataForRosters(schema: any, form: any, conditionsExprCompiler: any) {
+  addConfidentialDataForRosters(schema: Schema, form: Form, conditionsExprCompiler: ConditionsExprCompiler) {
     for (let item of formUtils.allItems(form.design)) {
-      if (["RosterGroup", "RosterMatrix"].includes(item._type)) {
+      if (item._type == "RosterGroup" || item._type == "RosterMatrix") {
         const tableId = `responses:${form._id}:roster:${item.rosterId || item._id}`
 
-        let contents = schema.getTable(tableId).contents.slice()
+        let contents = schema.getTable(tableId)!.contents.slice()
 
         for (let rosterItem of item.contents) {
-          if (rosterItem.confidential) {
-            let confidentialDataSection = _.find(contents, { id: "confidentialData" })
+          if ((rosterItem as any).confidential) {
+            let confidentialDataSection = _.find(contents, { id: "confidentialData" }) as Section | null
 
             if (!confidentialDataSection) {
               confidentialDataSection = {
@@ -504,7 +504,7 @@ export default class FormSchemaBuilder {
             )
 
             // Update in original
-            contents = schema.getTable(tableId).contents.slice()
+            contents = schema.getTable(tableId)!.contents.slice()
             const index = _.findIndex(contents, { id: "confidentialData" })
             contents[index] = update(confidentialDataSection, { contents: { $set: confidentialDataSectionContents } })
             schema = schema.addTable(update(schema.getTable(tableId), { contents: { $set: contents } }))
@@ -521,7 +521,7 @@ export default class FormSchemaBuilder {
 
     const addData = (question: any) => {
       if (question.confidential) {
-        let confidentialDataSection = _.find(schema.getTable(tableId).contents, { id: "confidentialData" })
+        let confidentialDataSection = _.find(schema.getTable(tableId).contents, { id: "confidentialData" }) as Section | undefined
 
         if (!confidentialDataSection) {
           confidentialDataSection = {
@@ -578,7 +578,7 @@ export default class FormSchemaBuilder {
     tableId: any,
     conditionsExprCompiler?: any,
     existingConditionExpr?: any,
-    reverseJoins = [],
+    reverseJoins: { table: string, column: Column }[] = [],
     confidentialData = false
   ) {
     const addColumn = (column: any) => {
@@ -644,7 +644,7 @@ export default class FormSchemaBuilder {
       }
     } else if (formUtils.isQuestion(item)) {
       // Get type of answer
-      let column, jsonql, name
+      let column: Column, jsonql, name
       let formId, itemCode, itemItem, reverseJoin
       const answerType = formUtils.getAnswerType(item)
 
@@ -706,7 +706,7 @@ export default class FormSchemaBuilder {
             type: "enum",
             name: item.text,
             code,
-            enumValues: _.map(item.choices, (c) => ({
+            enumValues: _.map((item.choices as Choice[]), (c) => ({
               id: c.id,
               name: c.label,
               code: c.code
@@ -727,7 +727,7 @@ export default class FormSchemaBuilder {
             type: "enumset",
             name: item.text,
             code,
-            enumValues: _.map(item.choices, (c) => ({
+            enumValues: _.map(item.choices, (c: Choice) => ({
               id: c.id,
               name: c.label,
               code: c.code
@@ -859,7 +859,7 @@ export default class FormSchemaBuilder {
               op: "#>>",
               exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},value,units}`]
             },
-            enumValues: _.map(item.units, (c) => ({
+            enumValues: _.map(item.units, (c: Unit) => ({
               id: c.id,
               name: c.label
             }))
@@ -869,7 +869,7 @@ export default class FormSchemaBuilder {
 
         case "aquagenx_cbt":
           // Create section
-          var section = {
+          var section: Section = {
             type: "section",
             name: item.text,
             contents: []
@@ -1184,7 +1184,7 @@ export default class FormSchemaBuilder {
 
         case "site":
           // { code: "somecode" }
-          var codeExpr = {
+          var codeExpr: JsonQLExpr = {
             type: "op",
             op: "#>>",
             exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},value,code}`]
@@ -1287,7 +1287,7 @@ export default class FormSchemaBuilder {
                   inverse: column.id,
                   jsonql
                 }
-              }
+              } as Column
             }
             reverseJoins.push(reverseJoin)
           }
@@ -1361,7 +1361,7 @@ export default class FormSchemaBuilder {
                   inverse: column.id,
                   jsonql
                 }
-              }
+              } as Column
             }
             reverseJoins.push(reverseJoin)
           }
@@ -1465,7 +1465,7 @@ export default class FormSchemaBuilder {
                     toTable: tableId,
                     jsonql
                   }
-                }
+                } as Column
               }
               reverseJoins.push(reverseJoin)
             }
@@ -1563,7 +1563,7 @@ export default class FormSchemaBuilder {
               type: "enum",
               name: appendStr(appendStr(item.text, ": "), itemItem.label),
               code: itemCode,
-              enumValues: _.map(item.choices, (c) => ({
+              enumValues: _.map(item.choices, (c: Choice) => ({
                 id: c.id,
                 name: c.label,
                 code: c.code
@@ -1691,7 +1691,7 @@ export default class FormSchemaBuilder {
                     itemColumn.text
                   ),
                   code: cellCode,
-                  enumValues: _.map(itemColumn.choices, (c) => ({
+                  enumValues: _.map(itemColumn.choices, (c: Choice) => ({
                     id: c.id,
                     code: c.code,
                     name: c.label
@@ -1741,7 +1741,7 @@ export default class FormSchemaBuilder {
                     appendStr(appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "), itemColumn.text),
                     " (units)"
                   ),
-                  enumValues: _.map(itemColumn.units, (c) => ({
+                  enumValues: _.map(itemColumn.units, (c: Unit) => ({
                     id: c.id,
                     code: c.code,
                     name: c.label
@@ -2072,7 +2072,7 @@ export default class FormSchemaBuilder {
           tableId,
           existingConditionExpr,
           conditionsExprCompiler.compileConditions(item.conditions, tableId)
-        )
+        ) as Expr
         if (conditionExpr) {
           conditionExpr = {
             type: "op",
@@ -2110,7 +2110,7 @@ export default class FormSchemaBuilder {
       }
 
       // Add calculations section
-      let calculationsSection = _.last(schema.getTable(tableId).contents)
+      let calculationsSection = _.last(schema.getTable(tableId).contents) as Section
       if (calculationsSection.id !== "calculations") {
         // Add calculations section
         calculationsSection = {
@@ -2146,8 +2146,8 @@ export default class FormSchemaBuilder {
 }
 
 // Append a string to each language
-function appendStr(str: any, suffix: any) {
-  const output = {}
+function appendStr(str: any, suffix: any): LocalizedString {
+  const output: any = {}
   for (let key in str) {
     const value = str[key]
     if (key === "_base") {
@@ -2165,7 +2165,7 @@ function appendStr(str: any, suffix: any) {
 }
 
 // Map a tree that consists of items with optional 'contents' array. null means to discard item
-function mapTree(tree: any, func: any) {
+function mapTree(tree: any, func: any): any {
   if (!tree) {
     return tree
   }
@@ -2188,7 +2188,7 @@ function mapTree(tree: any, func: any) {
 // Convert an expression that is the expr of an indicator property into an expression
 // that instead references the indicator calculation columns. This is to allow indicator
 // properties that are calculations (have an expr) from the form
-function formizeIndicatorPropertyExpr(expr: any, form: any, indicatorCalculation: any, indicator: any) {
+function formizeIndicatorPropertyExpr(expr: Expr, form: Form, indicatorCalculation: IndicatorCalculation, indicator: any): Expr {
   if (!expr) {
     return expr
   }
@@ -2207,14 +2207,14 @@ function formizeIndicatorPropertyExpr(expr: any, form: any, indicatorCalculation
   }
 
   // If it has a table, change that
-  if (expr.table === `indicator_values:${indicator._id}`) {
-    expr = _.extend({}, expr, { table: `responses:${form._id}` })
+  if ((expr as any).table === `indicator_values:${indicator._id}`) {
+    expr = { ...(expr as any), table: `responses:${form._id}` }
   }
 
   // Otherwise replace recursively
   return _.mapValues(expr, function (value, key) {
     if (_.isArray(value)) {
-      return _.map(value, (v) => formizeIndicatorPropertyExpr(v, form, indicatorCalculation, indicator))
+      return _.map(value, (v: any) => formizeIndicatorPropertyExpr(v, form, indicatorCalculation, indicator))
     } else {
       return formizeIndicatorPropertyExpr(value, form, indicatorCalculation, indicator)
     }
@@ -2270,5 +2270,5 @@ function createWebmercatorGeometry(
       },
       3857
     ]
-  }
+  } as JsonQLExpr
 }
