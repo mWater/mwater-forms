@@ -36,7 +36,7 @@ export default class InstructionsComponent extends React.Component<InstructionsC
   render() {
     return R(
       "div",
-      { className: "card bg-light" },
+      { className: "card bg-light mb-3" },
       R(
         "div",
         { className: "card-body" },
