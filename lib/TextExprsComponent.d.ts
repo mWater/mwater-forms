@@ -2,7 +2,7 @@ import React from "react";
 import { Expr, Schema } from "mwater-expressions";
 import { LocalizedString } from "ez-localize";
 import ResponseRow from "./ResponseRow";
-interface TextExprsComponentProps {
+export interface TextExprsComponentProps {
     /** String to render (localized) */
     localizedStr?: LocalizedString;
     /** Array of mwater-expressions to insert at {0}, {1}, etc. */

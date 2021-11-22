@@ -1,18 +1,44 @@
-import PropTypes from "prop-types"
-import React from "react"
+import React, { CSSProperties } from "react"
 const R = React.createElement
 import AsyncLoadComponent from "react-library/lib/AsyncLoadComponent"
 import classNames from "classnames"
+import { ImageManager } from "./formContext"
 
-interface RotationAwareImageComponentProps {
-  image: any
-  imageManager: any
-  thumbnail?: boolean
-  height?: number
-  onClick?: any
+export interface Image {
+  /** UUID of image */
+  id: string
+
+  /** Optional clockwise rotation (0, 90, 180, 270) */
+  rotation?: number
+
+  /** Optional caption */
+  caption?: string
+
+  /** If part of an image set, true if cover image */
+  cover?: boolean
 }
 
-export default class RotationAwareImageComponent extends AsyncLoadComponent<RotationAwareImageComponentProps> {
+interface RotationAwareImageComponentProps {
+  image: Image
+  imageManager: ImageManager
+
+  /** True to use thumbnail (max 160 height) */
+  thumbnail?: boolean
+
+  /** Optional width */
+  width?: number
+
+  /** Optional height */
+  height?: number
+
+  /** Called when clicked */
+  onClick?: () => void
+}
+
+/** Displays a single image rotated appropriately */
+export default class RotationAwareImageComponent extends AsyncLoadComponent<RotationAwareImageComponentProps, { loading: boolean, url?: string, error: any }> {
+  parent: HTMLElement | null
+  image: HTMLImageElement | null
   // Override to determine if a load is needed. Not called on mounting
   isLoadNeeded(newProps: any, oldProps: any) {
     return newProps.image.id !== oldProps.image.id || newProps.thumbnail !== oldProps.thumbnail
@@ -40,8 +66,8 @@ export default class RotationAwareImageComponent extends AsyncLoadComponent<Rota
   }
 
   render() {
-    const imageStyle = {}
-    const containerStyle = {}
+    const imageStyle: CSSProperties = {}
+    const containerStyle: CSSProperties = {}
     const classes = classNames({
       "img-thumbnail": this.props.thumbnail,
       rotated: this.props.image.rotation,
@@ -73,15 +99,15 @@ export default class RotationAwareImageComponent extends AsyncLoadComponent<Rota
       return R(
         "span",
         {
-          ref: (c) => {
-            return (this.parent = c)
+          ref: (c: HTMLElement | null) => {
+            this.parent = c
           },
           className: containerClasses,
           style: containerStyle
         },
         R("img", {
-          ref: (c: any) => {
-            return (this.image = c)
+          ref: (c: HTMLImageElement | null) => {
+            this.image = c
           },
           src: this.state.url,
           style: imageStyle,

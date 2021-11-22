@@ -1,39 +1,58 @@
-import PropTypes from "prop-types"
 import _ from "lodash"
 import React from "react"
 const R = React.createElement
 
 import FormComponent from "./FormComponent"
 import ResponseModel from "./ResponseModel"
+import { Response } from './response'
 import ResponseDisplayComponent from "./ResponseDisplayComponent"
 import * as ui from "react-library/lib/bootstrap"
+import { Schema } from "mwater-expressions"
+import { Form } from "./form"
+import { FormContext } from "./formContext"
+import { LocalizeString } from "ez-localize"
 
 interface ResponseViewEditComponentProps {
   /** Form to use */
-  form: any
+  form: Form
+
   /** FormContext */
-  formCtx: any
+  formCtx: FormContext
+
   /** Response object */
-  response: any
+  response: Response
+
   /** Current login (contains user, username, groups) */
-  login?: any
+  login?: {
+    client: string
+    user: string
+    username: string
+    groups: string[]
+  }
+
   /** api url to use e.g. https://api.mwater.co/v3/ */
   apiUrl: string
+
   /** Called when response is updated with new response */
-  onUpdateResponse: any
+  onUpdateResponse: (response: Response) => void
+
   /** Called when response is removed */
-  onDeleteResponse: any
+  onDeleteResponse: () => void
+
   /** Schema, including the form */
-  schema: any
+  schema: Schema
+
   /** The locale to display the response in */
   locale?: string
-  T: any
+  
+  /** Localizer to use */
+  T: LocalizeString
 }
 
 interface ResponseViewEditComponentState {
-  locale: any
+  locale: string
   unsavedData: any
-  editMode: any
+  editMode: boolean
 }
 
 // Displays a view of a response that can be edited, rejected, etc.
@@ -46,23 +65,20 @@ export default class ResponseViewEditComponent extends React.Component<
     super(props)
     this.state = {
       editMode: false, // True if in edit mode
-      unsavedData: null // Present if unsaved changes have been made
+      unsavedData: null, // Present if unsaved changes have been made
+      locale: props.locale || props.form.design.locales[0]?.code || "en"
     }
-
-    // Set locale to first locale of form
-    this.state.locale = props.locale || props.form.design.locales[0]?.code || "en"
   }
 
   // Create a response model
   createResponseModel(response: any) {
-    let responseModel
-    return (responseModel = new ResponseModel({
+    return new ResponseModel({
       response,
       form: this.props.form,
-      user: this.props.login?.user,
-      username: this.props.login?.username,
+      user: this.props.login?.user!,
+      username: this.props.login?.username!,
       groups: this.props.login?.groups
-    }))
+    })
   }
 
   handleApprove = () => {
@@ -101,7 +117,7 @@ export default class ResponseViewEditComponent extends React.Component<
     const response = _.cloneDeep(this.props.response)
     const responseModel = this.createResponseModel(response)
 
-    if (!responseModel.canSubmit(this.props.response)) {
+    if (!responseModel.canSubmit()) {
       return alert("Cannot unreject")
     }
 
@@ -245,8 +261,8 @@ export default class ResponseViewEditComponent extends React.Component<
       const responseModel = new ResponseModel({
         response: this.props.response,
         form: this.props.form,
-        user: this.props.login?.user,
-        username: this.props.login?.username,
+        user: this.props.login?.user!,
+        username: this.props.login?.username!,
         groups: this.props.login?.groups
       })
 

@@ -1,44 +1,55 @@
 import React from "react";
 import ResponseModel from "./ResponseModel";
+import { Response } from './response';
+import { Schema } from "mwater-expressions";
+import { Form } from "./form";
+import { FormContext } from "./formContext";
+import { LocalizeString } from "ez-localize";
 interface ResponseViewEditComponentProps {
     /** Form to use */
-    form: any;
+    form: Form;
     /** FormContext */
-    formCtx: any;
+    formCtx: FormContext;
     /** Response object */
-    response: any;
+    response: Response;
     /** Current login (contains user, username, groups) */
-    login?: any;
+    login?: {
+        client: string;
+        user: string;
+        username: string;
+        groups: string[];
+    };
     /** api url to use e.g. https://api.mwater.co/v3/ */
     apiUrl: string;
     /** Called when response is updated with new response */
-    onUpdateResponse: any;
+    onUpdateResponse: (response: Response) => void;
     /** Called when response is removed */
-    onDeleteResponse: any;
+    onDeleteResponse: () => void;
     /** Schema, including the form */
-    schema: any;
+    schema: Schema;
     /** The locale to display the response in */
     locale?: string;
-    T: any;
+    /** Localizer to use */
+    T: LocalizeString;
 }
 interface ResponseViewEditComponentState {
-    locale: any;
+    locale: string;
     unsavedData: any;
-    editMode: any;
+    editMode: boolean;
 }
 export default class ResponseViewEditComponent extends React.Component<ResponseViewEditComponentProps, ResponseViewEditComponentState> {
     constructor(props: any);
     createResponseModel(response: any): ResponseModel;
-    handleApprove: () => any;
-    handleReject: () => any;
-    handleUnreject: () => any;
-    handleDelete: () => any;
+    handleApprove: () => void;
+    handleReject: () => void;
+    handleUnreject: () => void;
+    handleDelete: () => void;
     handleDataChange: (data: any) => void;
     handleDiscard: () => void;
     handleSaveLater: () => void;
     handleEdit: () => void;
     handleLocaleChange: (ev: any) => void;
-    handleSubmit: () => any;
+    handleSubmit: () => void;
     renderLocales(): React.DetailedReactHTMLElement<{
         className: string;
         style: {
@@ -47,7 +58,7 @@ export default class ResponseViewEditComponent extends React.Component<ResponseV
             margin: number;
         };
         onChange: (ev: any) => void;
-        value: any;
+        value: string;
     }, HTMLElement> | null;
     renderOperations(): React.DetailedReactHTMLElement<{
         className: string;
