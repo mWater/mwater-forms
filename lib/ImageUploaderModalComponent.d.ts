@@ -1,6 +1,6 @@
 import React from "react";
 import ModalPopupComponent from "react-library/lib/ModalPopupComponent";
-interface ImageUploaderModalComponentProps {
+export interface ImageUploaderModalComponentProps {
     apiUrl: string;
     client?: string;
     onCancel: any;

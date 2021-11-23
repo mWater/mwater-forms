@@ -2,9 +2,7 @@ import PropTypes from "prop-types"
 import React from "react"
 const R = React.createElement
 
-import * as formUtils from "../formUtils"
-
-interface BarcodeAnswerComponentProps {
+export interface BarcodeAnswerComponentProps {
   value?: string
   onValueChange: any
 }

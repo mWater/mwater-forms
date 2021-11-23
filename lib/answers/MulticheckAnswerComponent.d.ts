@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import React from "react";
-interface MulticheckAnswerComponentProps {
+export interface MulticheckAnswerComponentProps {
     choices: any;
     /** See answer format */
     answer: any;
@@ -24,4 +24,3 @@ export default class MulticheckAnswerComponent extends React.Component<Multichec
     renderChoice(choice: any): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement> | null;
     render(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>;
 }
-export {};

@@ -1,5 +1,5 @@
 import React from "react";
-interface ImageDisplayComponentProps {
+export interface ImageDisplayComponentProps {
     /** Image object to display */
     image: any;
     imageManager: any;

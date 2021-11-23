@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import React from "react";
-interface MatrixColumnCellComponentProps {
+export interface MatrixColumnCellComponentProps {
     /** Column. See designSchema */
     column: any;
     /** Current data of response (for roster entry if in roster) */
@@ -28,4 +28,3 @@ export default class MatrixColumnCellComponent extends React.Component<MatrixCol
         className: string | undefined;
     }, HTMLElement>;
 }
-export {};

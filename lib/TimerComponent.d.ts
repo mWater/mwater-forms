@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import React from "react";
-interface TimerComponentProps {
+export interface TimerComponentProps {
     timer: any;
 }
 interface TimerComponentState {

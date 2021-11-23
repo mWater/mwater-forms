@@ -1,6 +1,6 @@
 import React from "react";
 import AsyncLoadComponent from "react-library/lib/AsyncLoadComponent";
-interface ImageThumbnailComponentProps {
+export interface ImageThumbnailComponentProps {
     imageManager: any;
     imageId: string;
     onClick?: any;
@@ -19,4 +19,3 @@ export default class ImageThumbnailComponent extends AsyncLoadComponent<ImageThu
         onError: () => any;
     }, HTMLElement>;
 }
-export {};

@@ -3,7 +3,7 @@ import React from "react";
 import { CascadingListRow, CascadingListColumn } from "../formDesign";
 /** Localizes strings. Must be called as T("some string") or someThing.T("some string") */
 declare type LocalizeString = (str: string, ...args: any[]) => string;
-interface Props {
+export interface Props {
     /** Rows in the list to choose from */
     rows: CascadingListRow[];
     /** Columns in the table that are displayed also as dropdowns to choose the row */

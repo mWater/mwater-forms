@@ -6,7 +6,7 @@ const R = React.createElement
 import * as formUtils from "./formUtils"
 import ItemListComponent from "./ItemListComponent"
 
-interface GroupComponentProps {
+export interface GroupComponentProps {
   /** Design of group. See schema */
   group: any
   /** Current data of response (for roster entry if in roster) */

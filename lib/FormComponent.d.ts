@@ -1,28 +1,32 @@
 import React from "react";
+import { FormContext } from "./formContext";
+import { FormDesign } from "./formDesign";
+import { ResponseData } from "./response";
+import { Schema } from "mwater-expressions";
 import SectionsComponent from "./SectionsComponent";
 import ezlocalize from "ez-localize";
 import { default as ResponseRow } from "./ResponseRow";
-interface FormComponentProps {
+export interface FormComponentProps {
     /** Context to use for form. See docs/FormsContext.md */
-    formCtx: any;
+    formCtx: FormContext;
     /** Form design. See schema.coffee */
-    design: any;
+    design: FormDesign;
     /** Form response data. See docs/Answer Formats.md */
-    data: any;
+    data: ResponseData;
     /** Called when response data changes */
-    onDataChange: any;
+    onDataChange: (data: ResponseData) => void;
     /** Schema to use, including form */
-    schema: any;
+    schema: Schema;
     /** The current deployment */
     deployment: string;
     /** e.g. "fr" */
     locale?: string;
     /** Called when submit is pressed */
-    onSubmit?: any;
+    onSubmit?: () => void;
     /** Optional save for later */
-    onSaveLater?: any;
+    onSaveLater?: () => void;
     /** Called when discard is pressed */
-    onDiscard?: any;
+    onDiscard?: () => void;
     /** To override submit label */
     submitLabel?: string;
     /** To override Save For Later label */
@@ -52,7 +56,7 @@ export default class FormComponent extends React.Component<FormComponentProps, F
     componentDidUpdate(prevProps: any): void;
     componentWillMount(): void;
     createLocalizer(design: any, locale: any): ezlocalize.LocalizeString;
-    handleSubmit: () => Promise<any>;
+    handleSubmit: () => Promise<void>;
     isVisible: (itemId: any) => any;
     createResponseRow: (data: any) => ResponseRow;
     handleDataChange: (data: any) => void;

@@ -5,7 +5,7 @@ const R = React.createElement
 import * as formUtils from "../formUtils"
 import * as ui from "react-library/lib/bootstrap"
 
-interface UnitsAnswerComponentProps {
+export interface UnitsAnswerComponentProps {
   answer: any
   onValueChange: any
   units: any

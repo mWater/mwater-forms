@@ -1,7 +1,7 @@
 import React from "react";
 import ezlocalize from "ez-localize";
 import ModalPopupComponent from "react-library/lib/ModalPopupComponent";
-interface ResponseDisplayComponentProps {
+export interface ResponseDisplayComponentProps {
     form: any;
     response: any;
     /** Schema including the form */

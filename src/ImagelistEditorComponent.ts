@@ -3,7 +3,7 @@ import React from "react"
 const R = React.createElement
 import ImagesAnswerComponent from "./answers/ImagesAnswerComponent"
 
-interface ImagelistEditorComponentProps {
+export interface ImagelistEditorComponentProps {
   imageManager: any
   imageAcquirer?: any
   /** e.g. [{ id: someid, caption: caption }] */

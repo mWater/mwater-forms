@@ -11,7 +11,7 @@ import UnitsAnswerComponent from "./answers/UnitsAnswerComponent"
 import SiteColumnAnswerComponent from "./answers/SiteColumnAnswerComponent"
 import TextExprsComponent from "./TextExprsComponent"
 
-interface MatrixColumnCellComponentProps {
+export interface MatrixColumnCellComponentProps {
   /** Column. See designSchema */
   column: any
   /** Current data of response (for roster entry if in roster) */

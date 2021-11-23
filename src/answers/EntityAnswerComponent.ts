@@ -5,7 +5,7 @@ const R = React.createElement
 import EntityDisplayComponent from "../EntityDisplayComponent"
 import AsyncLoadComponent from "react-library/lib/AsyncLoadComponent"
 
-interface EntityAnswerComponentProps {
+export interface EntityAnswerComponentProps {
   value?: string
   entityType: string
   onValueChange: any

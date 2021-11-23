@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import React from "react";
-interface SiteAnswerComponentProps {
+export interface SiteAnswerComponentProps {
     value?: any;
     onValueChange: any;
     siteTypes?: any;

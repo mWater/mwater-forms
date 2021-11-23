@@ -1,7 +1,7 @@
 import React from "react";
 import ModalPopupComponent from "react-library/lib/ModalPopupComponent";
 import AsyncLoadComponent from "react-library/lib/AsyncLoadComponent";
-interface ImagePopupComponentProps {
+export interface ImagePopupComponentProps {
     imageManager: any;
     /** The image object */
     image: any;
@@ -18,4 +18,3 @@ export default class ImagePopupComponent extends AsyncLoadComponent<ImagePopupCo
         className: string;
     }, HTMLElement> | React.CElement<import("react-library/lib/ModalPopupComponent").ModalPopupComponentProps, ModalPopupComponent>;
 }
-export {};

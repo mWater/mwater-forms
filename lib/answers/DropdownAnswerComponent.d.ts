@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import React from "react";
-interface DropdownAnswerComponentProps {
+export interface DropdownAnswerComponentProps {
     choices: any;
     onAnswerChange: any;
     /** See answer format */
@@ -23,4 +23,3 @@ export default class DropdownAnswerComponent extends React.Component<DropdownAns
     areConditionsValid(choice: any): boolean;
     render(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>;
 }
-export {};

@@ -1,9 +1,8 @@
 import _ from "lodash"
-import PropTypes from "prop-types"
 import React from "react"
 const R = React.createElement
 
-interface TextListAnswerComponentProps {
+export interface TextListAnswerComponentProps {
   value?: any
   onValueChange: any
   onNextOrComments?: any

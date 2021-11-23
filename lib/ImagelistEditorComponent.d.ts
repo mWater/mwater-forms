@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import React from "react";
 import ImagesAnswerComponent from "./answers/ImagesAnswerComponent";
-interface ImagelistEditorComponentProps {
+export interface ImagelistEditorComponentProps {
     imageManager: any;
     imageAcquirer?: any;
     /** e.g. [{ id: someid, caption: caption }] */
@@ -26,4 +26,3 @@ export default class ImagelistEditorComponent extends React.Component<ImagelistE
     };
     render(): React.CElement<any, ImagesAnswerComponent>;
 }
-export {};

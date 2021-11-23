@@ -3,10 +3,9 @@ import _ from "lodash"
 import React from "react"
 const R = React.createElement
 
-import * as formUtils from "./formUtils"
 import TextExprsComponent from "./TextExprsComponent"
 
-interface InstructionsComponentProps {
+export interface InstructionsComponentProps {
   /** Design of instructions. See schema */
   instructions: any
   /** Current data of response (for roster entry if in roster) */

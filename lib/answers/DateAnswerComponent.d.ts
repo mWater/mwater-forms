@@ -1,5 +1,5 @@
 import React from "react";
-interface DateAnswerComponentProps {
+export interface DateAnswerComponentProps {
     value?: string;
     onValueChange: any;
     format?: string;

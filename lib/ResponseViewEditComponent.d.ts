@@ -5,7 +5,7 @@ import { Schema } from "mwater-expressions";
 import { Form } from "./form";
 import { FormContext } from "./formContext";
 import { LocalizeString } from "ez-localize";
-interface ResponseViewEditComponentProps {
+export interface ResponseViewEditComponentProps {
     /** Form to use */
     form: Form;
     /** FormContext */

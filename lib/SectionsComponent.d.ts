@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import React from "react";
-interface SectionsComponentProps {
+export interface SectionsComponentProps {
     contents: any;
     /** Current data of response. */
     data?: any;

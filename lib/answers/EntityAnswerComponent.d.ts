@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import React from "react";
 import AsyncLoadComponent from "react-library/lib/AsyncLoadComponent";
-interface EntityAnswerComponentProps {
+export interface EntityAnswerComponentProps {
     value?: string;
     entityType: string;
     onValueChange: any;
@@ -26,4 +26,3 @@ export default class EntityAnswerComponent extends AsyncLoadComponent<EntityAnsw
         className: string;
     }, HTMLElement>;
 }
-export {};

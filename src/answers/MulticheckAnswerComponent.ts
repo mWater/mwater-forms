@@ -6,7 +6,7 @@ const R = React.createElement
 import * as formUtils from "../formUtils"
 import * as conditionUtils from "../conditionUtils"
 
-interface MulticheckAnswerComponentProps {
+export interface MulticheckAnswerComponentProps {
   choices: any
   /** See answer format */
   answer: any

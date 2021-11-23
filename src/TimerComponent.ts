@@ -51,7 +51,7 @@ function getDisplayValue(ticks: any) {
   }
 }
 
-interface TimerComponentProps {
+export interface TimerComponentProps {
   timer: any
 }
 

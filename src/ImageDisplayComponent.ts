@@ -4,7 +4,7 @@ const R = React.createElement
 import ImagePopupComponent from "./ImagePopupComponent"
 import RotationAwareImageComponent from "./RotationAwareImageComponent"
 
-interface ImageDisplayComponentProps {
+export interface ImageDisplayComponentProps {
   /** Image object to display */
   image: any
   imageManager: any

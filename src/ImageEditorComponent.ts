@@ -5,7 +5,7 @@ import ImageAnswerComponent from "./answers/ImageAnswerComponent"
 import { ImageAcquirer, ImageManager } from "./formContext"
 import { ImageAnswerValue } from "./response"
 
-interface ImageEditorComponentProps {
+export interface ImageEditorComponentProps {
   imageManager: ImageManager
   imageAcquirer?: ImageAcquirer
   image?: ImageAnswerValue | null

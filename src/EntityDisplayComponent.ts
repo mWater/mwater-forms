@@ -3,7 +3,7 @@ import React from "react"
 const R = React.createElement
 import AsyncLoadComponent from "react-library/lib/AsyncLoadComponent"
 
-interface EntityDisplayComponentProps {
+export interface EntityDisplayComponentProps {
   /** _id of entity */
   entityType: string
   /** _id of entity */

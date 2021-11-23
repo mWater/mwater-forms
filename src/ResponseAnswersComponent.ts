@@ -22,7 +22,7 @@ import { Schema } from "mwater-expressions"
 import { FormDesign } from "./formDesign"
 import { ResponseData } from "./response"
 
-interface ResponseAnswersComponentProps {
+export interface ResponseAnswersComponentProps {
   formDesign: FormDesign
   data: ResponseData
   /** Schema of the */

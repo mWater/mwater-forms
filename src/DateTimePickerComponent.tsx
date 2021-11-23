@@ -6,7 +6,7 @@ import ReactDOM from "react-dom"
 
 import "react-datepicker/dist/react-datepicker.css"
 
-interface DateTimePickerComponentProps {
+export interface DateTimePickerComponentProps {
   /** date format. */
   format?: string
 

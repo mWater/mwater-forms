@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import React from "react";
-interface SiteColumnAnswerComponentProps {
+export interface SiteColumnAnswerComponentProps {
     value?: any;
     onValueChange: any;
     siteType: string;
@@ -20,4 +20,3 @@ export default class SiteColumnAnswerComponent extends React.Component<SiteColum
         onClick: () => any;
     }, HTMLElement>;
 }
-export {};

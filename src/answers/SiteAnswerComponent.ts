@@ -2,10 +2,9 @@ import PropTypes from "prop-types"
 import React from "react"
 const R = React.createElement
 
-import * as formUtils from "../formUtils"
 import EntityDisplayComponent from "../EntityDisplayComponent"
 
-interface SiteAnswerComponentProps {
+export interface SiteAnswerComponentProps {
   value?: any
   onValueChange: any
   siteTypes?: any

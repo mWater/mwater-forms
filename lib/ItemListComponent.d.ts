@@ -1,5 +1,5 @@
 import React from "react";
-interface ItemListComponentProps {
+export interface ItemListComponentProps {
     contents: any;
     /** Current data of response (for roster entry if in roster) */
     data?: any;
@@ -18,4 +18,3 @@ export default class ItemListComponent extends React.Component<ItemListComponent
     renderItem: (item: any, index: any) => any;
     render(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>;
 }
-export {};

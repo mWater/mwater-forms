@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import React from "react";
-interface InstructionsComponentProps {
+export interface InstructionsComponentProps {
     /** Design of instructions. See schema */
     instructions: any;
     /** Current data of response (for roster entry if in roster) */
@@ -18,4 +18,3 @@ export default class InstructionsComponent extends React.Component<InstructionsC
         className: string;
     }, HTMLElement>;
 }
-export {};

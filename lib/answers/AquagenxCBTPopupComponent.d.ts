@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import React from "react";
 import ModalPopupComponent from "react-library/lib/ModalPopupComponent";
-interface AquagenxCBTPopupComponentProps {
+export interface AquagenxCBTPopupComponentProps {
     value?: any;
     questionId: string;
     onSave: any;

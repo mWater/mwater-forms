@@ -1,5 +1,5 @@
 import React from "react";
-interface CheckAnswerComponentProps {
+export interface CheckAnswerComponentProps {
     value?: boolean;
     onValueChange: any;
     label: any;
@@ -16,4 +16,3 @@ export default class CheckAnswerComponent extends React.Component<CheckAnswerCom
         ref: (c: HTMLElement | null) => HTMLElement | null;
     }, HTMLElement>;
 }
-export {};

@@ -1,7 +1,7 @@
 import React from "react";
 import { Moment } from "moment";
 import "react-datepicker/dist/react-datepicker.css";
-interface DateTimePickerComponentProps {
+export interface DateTimePickerComponentProps {
     /** date format. */
     format?: string;
     /** do we need time picker?  (Only useful if format is not set) */
@@ -23,4 +23,3 @@ export default class DateTimePickerComponent extends React.Component<DateTimePic
     };
     render(): JSX.Element;
 }
-export {};

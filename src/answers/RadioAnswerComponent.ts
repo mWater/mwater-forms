@@ -6,7 +6,7 @@ const R = React.createElement
 import * as formUtils from "../formUtils"
 import * as conditionUtils from "../conditionUtils"
 
-interface RadioAnswerComponentProps {
+export interface RadioAnswerComponentProps {
   choices: any
   onAnswerChange: any
   /** See answer format */

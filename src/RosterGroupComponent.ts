@@ -8,7 +8,7 @@ import TextExprsComponent from "./TextExprsComponent"
 import ItemListComponent from "./ItemListComponent"
 import cx from "classnames"
 
-interface RosterGroupComponentProps {
+export interface RosterGroupComponentProps {
   /** Design of roster group. See schema */
   rosterGroup: any
   /** Current data of response. */

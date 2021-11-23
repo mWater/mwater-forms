@@ -10,7 +10,7 @@ import ResponseArchivesComponent from "./ResponseArchivesComponent"
 import ModalPopupComponent from "react-library/lib/ModalPopupComponent"
 import * as formContextTypes from "./formContextTypes"
 
-interface ResponseDisplayComponentProps {
+export interface ResponseDisplayComponentProps {
   form: any
   response: any
   /** Schema including the form */

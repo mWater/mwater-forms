@@ -9,7 +9,7 @@ import ImagePopupComponent from "../ImagePopupComponent"
 import AquagenxCBTPopupComponent from "./AquagenxCBTPopupComponent"
 import AquagenxCBTDisplayComponent from "./AquagenxCBTDisplayComponent"
 
-interface AquagenxCBTAnswerComponentProps {
+export interface AquagenxCBTAnswerComponentProps {
   /** Value contains two entries: image and cbt */
   value?: any
   onValueChange: any

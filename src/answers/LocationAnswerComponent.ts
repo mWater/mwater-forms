@@ -5,7 +5,7 @@ const R = React.createElement
 import { default as LocationEditorComponent } from "../LocationEditorComponent"
 import LocationFinder from "../LocationFinder"
 
-interface LocationAnswerComponentProps {
+export interface LocationAnswerComponentProps {
   value?: any
   onValueChange: any
   disableSetByMap?: boolean

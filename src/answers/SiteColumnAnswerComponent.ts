@@ -3,9 +3,8 @@ import React from "react"
 const R = React.createElement
 
 import EntityDisplayComponent from "../EntityDisplayComponent"
-import * as formUtils from "../formUtils"
 
-interface SiteColumnAnswerComponentProps {
+export interface SiteColumnAnswerComponentProps {
   value?: any
   onValueChange: any
   siteType: string

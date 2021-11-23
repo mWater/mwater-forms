@@ -11,7 +11,7 @@ export interface Image {
     /** If part of an image set, true if cover image */
     cover?: boolean;
 }
-interface RotationAwareImageComponentProps {
+export interface RotationAwareImageComponentProps {
     image: Image;
     imageManager: ImageManager;
     /** True to use thumbnail (max 160 height) */
@@ -32,11 +32,10 @@ export default class RotationAwareImageComponent extends AsyncLoadComponent<Rota
     parent: HTMLElement | null;
     image: HTMLImageElement | null;
     isLoadNeeded(newProps: any, oldProps: any): boolean;
-    load(props: any, prevProps: any, callback: any): any;
+    load(props: RotationAwareImageComponentProps, prevProps: RotationAwareImageComponentProps, callback: any): void;
     render(): React.DetailedReactHTMLElement<{
         ref: (c: HTMLElement | null) => void;
         className: any;
         style: React.CSSProperties;
     }, HTMLElement> | null;
 }
-export {};

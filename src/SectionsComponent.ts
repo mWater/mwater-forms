@@ -7,7 +7,7 @@ import ItemListComponent from "./ItemListComponent"
 import * as formUtils from "./formUtils"
 import TextExprsComponent from "./TextExprsComponent"
 
-interface SectionsComponentProps {
+export interface SectionsComponentProps {
   contents: any
   /** Current data of response. */
   data?: any

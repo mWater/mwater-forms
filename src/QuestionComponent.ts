@@ -32,7 +32,7 @@ import UnitsAnswerComponent from "./answers/UnitsAnswerComponent"
 import { CascadingListAnswerComponent } from "./answers/CascadingListAnswerComponent"
 import { CascadingRefAnswerComponent } from "./answers/CascadingRefAnswerComponent"
 
-interface QuestionComponentProps {
+export interface QuestionComponentProps {
   /** Design of question. See schema */
   question: any
   /** Current data of response (for roster entry if in roster) */

@@ -48,7 +48,7 @@ function getDisplayValue(ticks: any) {
   }
 }
 
-interface StopwatchAnswerComponentProps {
+export interface StopwatchAnswerComponentProps {
   onValueChange: any
   value?: number
   T: any

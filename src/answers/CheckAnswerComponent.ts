@@ -4,7 +4,7 @@ const R = React.createElement
 
 import * as formUtils from "../formUtils"
 
-interface CheckAnswerComponentProps {
+export interface CheckAnswerComponentProps {
   value?: boolean
   onValueChange: any
   label: any

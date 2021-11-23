@@ -4,7 +4,7 @@ const R = React.createElement
 import moment from "moment"
 import DateTimePickerComponent from "../DateTimePickerComponent"
 
-interface DateAnswerComponentProps {
+export interface DateAnswerComponentProps {
   value?: string
   onValueChange: any
   format?: string

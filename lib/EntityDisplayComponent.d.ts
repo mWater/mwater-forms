@@ -1,6 +1,6 @@
 import React from "react";
 import AsyncLoadComponent from "react-library/lib/AsyncLoadComponent";
-interface EntityDisplayComponentProps {
+export interface EntityDisplayComponentProps {
     /** _id of entity */
     entityType: string;
     /** _id of entity */
@@ -23,4 +23,3 @@ export default class EntityDisplayComponent extends AsyncLoadComponent<EntityDis
     load(props: EntityDisplayComponentProps, prevProps: EntityDisplayComponentProps, callback: any): any;
     render(): React.DetailedReactHTMLElement<{}, HTMLElement> | null;
 }
-export {};

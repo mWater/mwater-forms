@@ -7,7 +7,7 @@ import * as formUtils from "../formUtils"
 import MatrixColumnCellComponent from "../MatrixColumnCellComponent"
 import ValidationCompiler from "./ValidationCompiler"
 
-interface MatrixAnswerComponentProps {
+export interface MatrixAnswerComponentProps {
   items: any
   /** Array of matrix columns */
   columns: any

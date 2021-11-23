@@ -1,7 +1,6 @@
 import PropTypes from "prop-types";
 import React from "react";
-interface LikertAnswerComponentProps {
-    choices: any;
+export interface LikertAnswerComponentProps {
     choices: any;
     onAnswerChange: any;
     /** See answer format */
@@ -23,4 +22,3 @@ export default class LikertAnswerComponent extends React.Component<LikertAnswerC
         };
     }, HTMLElement>;
 }
-export {};

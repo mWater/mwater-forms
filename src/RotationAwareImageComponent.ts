@@ -18,7 +18,7 @@ export interface Image {
   cover?: boolean
 }
 
-interface RotationAwareImageComponentProps {
+export interface RotationAwareImageComponentProps {
   image: Image
   imageManager: ImageManager
 
@@ -39,13 +39,14 @@ interface RotationAwareImageComponentProps {
 export default class RotationAwareImageComponent extends AsyncLoadComponent<RotationAwareImageComponentProps, { loading: boolean, url?: string, error: any }> {
   parent: HTMLElement | null
   image: HTMLImageElement | null
+  
   // Override to determine if a load is needed. Not called on mounting
   isLoadNeeded(newProps: any, oldProps: any) {
     return newProps.image.id !== oldProps.image.id || newProps.thumbnail !== oldProps.thumbnail
   }
 
   // Call callback with state changes
-  load(props: any, prevProps: any, callback: any) {
+  load(props: RotationAwareImageComponentProps, prevProps: RotationAwareImageComponentProps, callback: any) {
     if (props.thumbnail) {
       return props.imageManager.getImageThumbnailUrl(
         props.image.id,

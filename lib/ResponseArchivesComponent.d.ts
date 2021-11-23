@@ -1,5 +1,5 @@
 import React from "react";
-interface ResponseArchivesComponentProps {
+export interface ResponseArchivesComponentProps {
     formDesign: any;
     response: any;
     /** Schema of the */
@@ -23,4 +23,3 @@ export default class ResponseArchivesComponent extends React.Component<ResponseA
     }, HTMLElement>;
     render(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>;
 }
-export {};

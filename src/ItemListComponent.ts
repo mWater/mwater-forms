@@ -1,12 +1,10 @@
-import PropTypes from "prop-types"
 import _ from "lodash"
 import React from "react"
 const R = React.createElement
 
-import * as formUtils from "./formUtils"
 import * as formRenderUtils from "./formRenderUtils"
 
-interface ItemListComponentProps {
+export interface ItemListComponentProps {
   contents: any
   /** Current data of response (for roster entry if in roster) */
   data?: any

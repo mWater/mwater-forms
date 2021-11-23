@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import React from "react";
-interface RadioAnswerComponentProps {
+export interface RadioAnswerComponentProps {
     choices: any;
     onAnswerChange: any;
     /** See answer format */
@@ -36,4 +36,3 @@ export default class RadioAnswerComponent extends React.Component<RadioAnswerCom
         className: string;
     }, HTMLElement> | null;
 }
-export {};

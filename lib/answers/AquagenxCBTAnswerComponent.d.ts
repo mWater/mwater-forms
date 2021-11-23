@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import React from "react";
-interface AquagenxCBTAnswerComponentProps {
+export interface AquagenxCBTAnswerComponentProps {
     /** Value contains two entries: image and cbt */
     value?: any;
     onValueChange: any;

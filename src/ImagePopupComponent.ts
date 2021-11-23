@@ -6,7 +6,7 @@ import ModalPopupComponent from "react-library/lib/ModalPopupComponent"
 import AsyncLoadComponent from "react-library/lib/AsyncLoadComponent"
 import RotationAwareImageComponent from "./RotationAwareImageComponent"
 
-interface ImagePopupComponentProps {
+export interface ImagePopupComponentProps {
   imageManager: any
   /** The image object */
   image: any

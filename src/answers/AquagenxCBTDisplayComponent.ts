@@ -7,7 +7,7 @@ import AquagenxCBTDisplaySVGString from "./AquagenxCBTDisplaySVG"
 import { getHealthRiskString } from "./aquagenxCBTUtils"
 import ImageDisplayComponent from "../ImageDisplayComponent"
 
-interface AquagenxCBTDisplayComponentProps {
+export interface AquagenxCBTDisplayComponentProps {
   value?: any
   questionId: string
   onEdit?: any

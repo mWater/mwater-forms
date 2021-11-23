@@ -5,7 +5,7 @@ const R = React.createElement
 
 import * as ui from "react-library/lib/bootstrap"
 
-interface NumberAnswerComponentProps {
+export interface NumberAnswerComponentProps {
   decimal: boolean
   value?: number
   onChange?: any

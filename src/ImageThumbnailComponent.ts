@@ -1,9 +1,8 @@
-import PropTypes from "prop-types"
 import React from "react"
 const R = React.createElement
 import AsyncLoadComponent from "react-library/lib/AsyncLoadComponent"
 
-interface ImageThumbnailComponentProps {
+export interface ImageThumbnailComponentProps {
   imageManager: any
   imageId: string
   onClick?: any

@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import React from "react";
-interface GroupComponentProps {
+export interface GroupComponentProps {
     /** Design of group. See schema */
     group: any;
     /** Current data of response (for roster entry if in roster) */
@@ -24,4 +24,3 @@ export default class GroupComponent extends React.Component<GroupComponentProps>
         className: string;
     }, HTMLElement>;
 }
-export {};

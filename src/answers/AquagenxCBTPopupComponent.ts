@@ -49,7 +49,7 @@ const possibleCombinations = {
   "true,true,true,true,true": { mpn: 100, confidence: 9435.1, healthRisk: "unsafe" }
 }
 
-interface AquagenxCBTPopupComponentProps {
+export interface AquagenxCBTPopupComponentProps {
   value?: any
   questionId: string
   onSave: any

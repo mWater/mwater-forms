@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import React from "react";
-interface BarcodeAnswerComponentProps {
+export interface BarcodeAnswerComponentProps {
     value?: string;
     onValueChange: any;
 }
@@ -17,4 +17,3 @@ export default class BarcodeAnswerComponent extends React.Component<BarcodeAnswe
         className: string;
     }, HTMLElement>;
 }
-export {};

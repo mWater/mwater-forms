@@ -6,7 +6,7 @@ import ImageThumbnailComponent from "../ImageThumbnailComponent"
 import ImagePopupComponent from "../ImagePopupComponent"
 import RotationAwareImageComponent from "../RotationAwareImageComponent"
 
-interface ImageAnswerComponentProps {
+export interface ImageAnswerComponentProps {
   /** e.g. { id: someid, caption: caption } */
   image?: any
   /** Called when image changed */

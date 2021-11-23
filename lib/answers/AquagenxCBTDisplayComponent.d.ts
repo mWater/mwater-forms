@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import React from "react";
-interface AquagenxCBTDisplayComponentProps {
+export interface AquagenxCBTDisplayComponentProps {
     value?: any;
     questionId: string;
     onEdit?: any;
@@ -18,4 +18,3 @@ export default class AquagenxCBTDisplayComponent extends React.Component<Aquagen
         id: string;
     }, HTMLElement> | null;
 }
-export {};

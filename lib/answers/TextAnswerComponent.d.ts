@@ -1,5 +1,5 @@
 import React from "react";
-interface TextAnswerComponentProps {
+export interface TextAnswerComponentProps {
     value?: string;
     format: string;
     readOnly?: boolean;

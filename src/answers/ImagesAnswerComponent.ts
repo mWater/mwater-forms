@@ -5,7 +5,7 @@ const R = React.createElement
 import RotationAwareImageComponent from "../RotationAwareImageComponent"
 import ImagePopupComponent from "../ImagePopupComponent"
 
-interface ImagesAnswerComponentProps {
+export interface ImagesAnswerComponentProps {
   /** array of { id: someid, caption: caption, cover: true/false } */
   imagelist?: any
   /** Called when image list changed */

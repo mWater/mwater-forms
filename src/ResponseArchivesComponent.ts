@@ -5,7 +5,7 @@ const R = React.createElement
 import ResponseAnswersComponent from "./ResponseAnswersComponent"
 import moment from "moment"
 
-interface ResponseArchivesComponentProps {
+export interface ResponseArchivesComponentProps {
   formDesign: any
   response: any
   /** Schema of the */

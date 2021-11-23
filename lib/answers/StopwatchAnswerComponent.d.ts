@@ -1,5 +1,5 @@
 import React from "react";
-interface StopwatchAnswerComponentProps {
+export interface StopwatchAnswerComponentProps {
     onValueChange: any;
     value?: number;
     T: any;

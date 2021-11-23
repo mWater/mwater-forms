@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import React from "react";
-interface UnitsAnswerComponentProps {
+export interface UnitsAnswerComponentProps {
     answer: any;
     onValueChange: any;
     units: any;

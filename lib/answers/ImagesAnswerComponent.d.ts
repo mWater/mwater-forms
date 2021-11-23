@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import React from "react";
-interface ImagesAnswerComponentProps {
+export interface ImagesAnswerComponentProps {
     /** array of { id: someid, caption: caption, cover: true/false } */
     imagelist?: any;
     /** Called when image list changed */

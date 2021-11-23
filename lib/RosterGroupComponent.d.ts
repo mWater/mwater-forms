@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import React from "react";
 import TextExprsComponent from "./TextExprsComponent";
-interface RosterGroupComponentProps {
+export interface RosterGroupComponentProps {
     /** Design of roster group. See schema */
     rosterGroup: any;
     /** Current data of response. */

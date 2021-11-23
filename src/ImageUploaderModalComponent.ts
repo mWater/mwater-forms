@@ -8,7 +8,7 @@ const R = React.createElement
 import * as formUtils from "./formUtils"
 import ModalPopupComponent from "react-library/lib/ModalPopupComponent"
 
-interface ImageUploaderModalComponentProps {
+export interface ImageUploaderModalComponentProps {
   apiUrl: string
   client?: string
   onCancel: any

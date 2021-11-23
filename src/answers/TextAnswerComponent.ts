@@ -2,7 +2,7 @@ import PropTypes from "prop-types"
 import React from "react"
 const R = React.createElement
 
-interface TextAnswerComponentProps {
+export interface TextAnswerComponentProps {
   value?: string
   format: string
   readOnly?: boolean

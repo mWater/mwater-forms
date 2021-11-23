@@ -19,7 +19,7 @@ export interface Location {
   method?: "gps" | "map" | "manual"
 }
 
-interface Props {
+export interface Props {
   location?: Location
   /** Location finder to use */
   locationFinder: LocationFinder
