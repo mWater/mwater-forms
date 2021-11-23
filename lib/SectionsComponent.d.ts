@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import React from "react";
+import ItemListComponent from "./ItemListComponent";
 export interface SectionsComponentProps {
     contents: any;
     /** Current data of response. */
@@ -25,15 +26,18 @@ export default class SectionsComponent extends React.Component<SectionsComponent
         locale: PropTypes.Requireable<string>;
         T: PropTypes.Validator<(...args: any[]) => any>;
     };
+    itemListComponent: ItemListComponent | null;
+    sections: HTMLDivElement | null;
+    nextOrSubmit: HTMLButtonElement | null;
     constructor(props: any);
     handleSubmit: () => Promise<any>;
     hasPreviousSection(): boolean;
     hasNextSection(): boolean;
-    nextVisibleSectionIndex(index: any, increment: any): any;
-    handleBackSection: () => any;
-    handleNextSection: () => Promise<any>;
+    nextVisibleSectionIndex(index: any, increment: any): number;
+    handleBackSection: () => void;
+    handleNextSection: () => Promise<void>;
     handleBreadcrumbClick: (index: any) => void;
-    handleItemListNext: () => any;
+    handleItemListNext: () => void;
     renderBreadcrumbs(): React.DetailedReactHTMLElement<{
         className: string;
     }, HTMLElement>;
@@ -41,6 +45,6 @@ export default class SectionsComponent extends React.Component<SectionsComponent
     renderButtons(): React.DetailedReactHTMLElement<{
         className: string;
     }, HTMLElement>;
-    render(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+    render(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
 }
 export {};

@@ -34,6 +34,9 @@ export default class SectionsComponent extends React.Component<SectionsComponent
     locale: PropTypes.string,
     T: PropTypes.func.isRequired // Localizer to use
   }
+  itemListComponent: ItemListComponent | null
+  sections: HTMLDivElement | null
+  nextOrSubmit: HTMLButtonElement | null
 
   constructor(props: any) {
     super(props)
@@ -44,7 +47,7 @@ export default class SectionsComponent extends React.Component<SectionsComponent
   }
 
   handleSubmit = async () => {
-    const result = await this.itemListComponent.validate(true)
+    const result = await this.itemListComponent!.validate(true)
     if (!result) {
       return this.props.onSubmit()
     }
@@ -60,7 +63,7 @@ export default class SectionsComponent extends React.Component<SectionsComponent
     return this.nextVisibleSectionIndex(this.state.sectionNum + 1, 1) !== -1
   }
 
-  nextVisibleSectionIndex(index: any, increment: any) {
+  nextVisibleSectionIndex(index: any, increment: any): number {
     if (index < 0) {
       return -1
     }
@@ -83,14 +86,14 @@ export default class SectionsComponent extends React.Component<SectionsComponent
       this.setState({ sectionNum: previousVisibleIndex })
 
       // Scroll to top of section
-      return this.sections.scrollIntoView()
+      return this.sections!.scrollIntoView()
     }
   }
 
   // This should never happen... simply ignore
 
   handleNextSection = async () => {
-    const result = await this.itemListComponent.validate(true)
+    const result = await this.itemListComponent!.validate(true)
     if (result) {
       return
     }
@@ -101,7 +104,7 @@ export default class SectionsComponent extends React.Component<SectionsComponent
       this.setState({ sectionNum: nextVisibleIndex })
 
       // Scroll to top of section
-      return this.sections.scrollIntoView()
+      return this.sections!.scrollIntoView()
     }
   }
 
@@ -112,7 +115,7 @@ export default class SectionsComponent extends React.Component<SectionsComponent
   }
 
   handleItemListNext = () => {
-    return this.nextOrSubmit.focus()
+    return this.nextOrSubmit!.focus()
   }
 
   renderBreadcrumbs() {
@@ -168,8 +171,8 @@ export default class SectionsComponent extends React.Component<SectionsComponent
       R("h3", null, formUtils.localizeString(section.name, this.context.locale)),
 
       R(ItemListComponent, {
-        ref: (c: any) => {
-          return (this.itemListComponent = c)
+        ref: (c: ItemListComponent | null) => {
+          this.itemListComponent = c
         },
         contents: section.contents,
         data: this.props.data,
@@ -207,8 +210,8 @@ export default class SectionsComponent extends React.Component<SectionsComponent
             {
               key: "next",
               type: "button",
-              ref: (c) => {
-                return (this.nextOrSubmit = c)
+              ref: (c: HTMLButtonElement | null) => {
+                this.nextOrSubmit = c
               },
               className: "btn btn-primary",
               onClick: this.handleNextSection
@@ -222,8 +225,8 @@ export default class SectionsComponent extends React.Component<SectionsComponent
             {
               key: "submit",
               type: "button",
-              ref: (c) => {
-                return (this.nextOrSubmit = c)
+              ref: (c: HTMLButtonElement | null) => {
+                this.nextOrSubmit = c
               },
               className: "btn btn-primary",
               onClick: this.handleSubmit
@@ -231,6 +234,7 @@ export default class SectionsComponent extends React.Component<SectionsComponent
             this.context.T("Submit")
           )
         }
+        return null
       })(),
 
       "\u00A0",
@@ -261,8 +265,8 @@ export default class SectionsComponent extends React.Component<SectionsComponent
     return R(
       "div",
       {
-        ref: (c) => {
-          return (this.sections = c)
+        ref: (c: HTMLDivElement | null) => {
+          this.sections = c
         }
       },
       this.renderBreadcrumbs(),
