@@ -363,7 +363,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
     if (this.state.helpVisible && this.props.question.help) {
       return R(
         "div",
-        { className: "card bg-light" },
+        { className: "card bg-light mb-3" },
         R("div", {
           className: "card-body",
           dangerouslySetInnerHTML: {

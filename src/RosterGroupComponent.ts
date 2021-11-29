@@ -132,7 +132,7 @@ export default class RosterGroupComponent extends React.Component<
 
     return R(
       "div",
-      { key: index, className: "card" },
+      { key: index, className: "card mb-3" },
       R(
         "div",
         { key: "header", className: "card-header", style: { fontWeight: "bold", position: "relative" } },

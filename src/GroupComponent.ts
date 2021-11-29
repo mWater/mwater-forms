@@ -33,7 +33,7 @@ export default class GroupComponent extends React.Component<GroupComponentProps>
   render() {
     return R(
       "div",
-      { className: "card" },
+      { className: "card mb-3" },
       R(
         "div",
         { key: "header", className: "card-header" },
