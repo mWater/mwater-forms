@@ -183,11 +183,9 @@ export default class MatrixAnswerComponent extends React.Component<
 
   render() {
     // Create table
-    // borderCollapse is set to separate (overriding bootstrap table value), so that we can properly see the validation
-    // error borders (or else the top one of the first row is missing since it's being collapsed with the th border)
     return R(
       "table",
-      { className: "table", style: { borderCollapse: "separate" } },
+      { className: "table" },
       this.renderHeader(),
       R(
         "tbody",

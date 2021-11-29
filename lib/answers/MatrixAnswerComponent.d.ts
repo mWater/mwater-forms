@@ -33,9 +33,6 @@ export default class MatrixAnswerComponent extends React.Component<MatrixAnswerC
     renderItem(item: any, index: any): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>;
     render(): React.DetailedReactHTMLElement<{
         className: string;
-        style: {
-            borderCollapse: "separate";
-        };
     }, HTMLElement>;
 }
 export {};
