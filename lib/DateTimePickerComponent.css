@@ -1,0 +1,5 @@
+/* Position past calendar addon */
+.datetimepickercomponent .react-datepicker__close-icon {
+  top: 11px;
+  right: 46px;
+}

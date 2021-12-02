@@ -1,6 +1,7 @@
 import React from "react";
 import { Moment } from "moment";
 import "react-datepicker/dist/react-datepicker.css";
+import "./DateTimePickerComponent.css";
 export interface DateTimePickerComponentProps {
     /** date format. */
     format?: string;
