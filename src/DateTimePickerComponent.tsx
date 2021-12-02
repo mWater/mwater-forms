@@ -28,11 +28,13 @@ export interface DateTimePickerComponentProps {
 
   /** default date as moment */
   defaultDate?: Moment
+
+  placeholder?: string
 }
 
-const CustomInput = forwardRef((props: { value?: any, onClick?: () => void }, ref) => {
+const CustomInput = forwardRef((props: { value?: any, onClick?: () => void, placeholder?: string }, ref) => {
   return <div className="input-group">
-    <input type="text" className="form-control" onClick={props.onClick} ref={ref as any} value={props.value}/>
+    <input type="text" className="form-control" placeholder={props.placeholder} onClick={props.onClick} ref={ref as any} value={props.value}/>
     <span className="input-group-text" onClick={props.onClick}><i className="fas fa-calendar-alt" /></span>
   </div>
 })
@@ -49,6 +51,7 @@ export default class DateTimePickerComponent extends React.Component<DateTimePic
           onChange={this.props.onChange}
           showTimeSelect={(this.props.format && (this.props.format.includes("ss") || this.props.format == "lll" || this.props.format == "LLL")) || this.props.timepicker}
           dateFormat={this.props.format}
+          placeholderText={this.props.placeholder}
           popperContainer={createPopperContainer}
           showMonthDropdown
           showYearDropdown

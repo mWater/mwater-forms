@@ -17,6 +17,7 @@ export interface DateTimePickerComponentProps {
     date?: Moment | null;
     /** default date as moment */
     defaultDate?: Moment;
+    placeholder?: string;
 }
 export default class DateTimePickerComponent extends React.Component<DateTimePickerComponentProps> {
     static defaultProps: {
