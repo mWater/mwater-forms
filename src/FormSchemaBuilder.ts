@@ -8,6 +8,7 @@ import { healthRiskEnum } from "./answers/aquagenxCBTUtils"
 import { Form } from "./form"
 import { JsonQLExpr } from "jsonql"
 import { Choice, IndicatorCalculation, Unit } from "."
+import { IndicatorCalculation } from "."
 
 /** Adds a form to a mwater-expressions schema */
 export default class FormSchemaBuilder {
