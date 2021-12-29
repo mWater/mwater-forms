@@ -797,7 +797,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
         ? R(
             "div",
             { key: "calculations" },
-            R("h4", null, this.props.T("Calculations")),
+            R("h4", { className: "mt-4" }, this.props.T("Calculations")),
             R(CalculationsDisplayComponent, {
               formDesign: this.props.formDesign,
               schema: this.props.schema,
