@@ -186,7 +186,7 @@ export default class ResponseViewEditComponent extends React.Component<
       "select",
       {
         className: "form-select form-select-sm",
-        style: { width: "auto", float: "right", margin: 5 },
+        style: { width: "auto", float: "right", marginBottom: 5 },
         onChange: this.handleLocaleChange,
         value: this.state.locale
       },
@@ -305,6 +305,7 @@ export default class ResponseViewEditComponent extends React.Component<
     return R(
       "div",
       null,
+      this.renderLocales(),
       printUrl !== null
         ? R(
             "div",
@@ -317,7 +318,6 @@ export default class ResponseViewEditComponent extends React.Component<
             )
           )
         : undefined,
-      this.renderLocales(),
       R("div", { style: { clear: "both" } }, elem)
     )
   }

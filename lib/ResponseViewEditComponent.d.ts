@@ -55,7 +55,7 @@ export default class ResponseViewEditComponent extends React.Component<ResponseV
         style: {
             width: string;
             float: "right";
-            margin: number;
+            marginBottom: number;
         };
         onChange: (ev: any) => void;
         value: string;
