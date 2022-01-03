@@ -56,7 +56,7 @@ export default class ImagePopupComponent extends AsyncLoadComponent<ImagePopupCo
       R(
         "div",
         null,
-        R("button", { type: "button", className: "close", onClick: this.props.onClose }, "×"),
+        R("button", { type: "button", className: "btn-close", onClick: this.props.onClose }),
 
         // Add button links
         R(

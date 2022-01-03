@@ -157,7 +157,7 @@ export default class ImageUploaderModalComponent extends React.Component<
 
         R(
           "div",
-          { style: { display: !this.state.xhr ? "none" : undefined } },
+          { style: { display: !this.state.xhr ? "none" : undefined, marginBottom: 10 } },
           R("p", null, R("em", null, this.props.T("Uploading Image..."))),
           R(
             "div",
