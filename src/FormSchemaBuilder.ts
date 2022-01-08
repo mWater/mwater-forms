@@ -8,7 +8,6 @@ import { healthRiskEnum } from "./answers/aquagenxCBTUtils"
 import { Form } from "./form"
 import { JsonQLExpr } from "jsonql"
 import { Choice, IndicatorCalculation, Unit } from "."
-import { IndicatorCalculation } from "."
 
 /** Adds a form to a mwater-expressions schema */
 export default class FormSchemaBuilder {
@@ -104,6 +103,12 @@ export default class FormSchemaBuilder {
         { id: "2", name: { _base: "en", en: "Pending Level 3" } },
         { id: "3", name: { _base: "en", en: "Pending Level 4" } }
       ]
+    })
+
+    metadata.push({
+      id: "rejectionMessage",
+      type: "text",
+      name: { _base: "en", en: "Rejection message" },
     })
 
     // Add number of rejections
