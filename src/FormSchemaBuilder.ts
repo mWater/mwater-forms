@@ -105,6 +105,12 @@ export default class FormSchemaBuilder {
       ]
     })
 
+    metadata.push({
+      id: "rejectionMessage",
+      type: "text",
+      name: { _base: "en", en: "Rejection message" },
+    })
+
     // Add number of rejections
     jsonql = {
       type: "scalar",
