@@ -71,6 +71,8 @@ export default class QuestionComponent extends React.Component<QuestionComponent
     getCustomTableRows: PropTypes.func.isRequired
   }
   comments: HTMLTextAreaElement | null
+  answer: any
+  unmounted: boolean
 
   constructor(props: any) {
     super(props)
