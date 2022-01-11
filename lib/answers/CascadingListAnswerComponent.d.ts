@@ -16,6 +16,8 @@ export interface Props {
     T: LocalizeString;
     /** Locale to use */
     locale: string;
+    /** True if an alternate is selected. Resets editing mode */
+    alternateSelected?: boolean;
 }
 interface State {
     /** Values of columns as they are selected */
@@ -27,6 +29,7 @@ export declare class CascadingListAnswerComponent extends React.Component<Props,
     constructor(props: Props);
     /** Validate the component */
     validate(): string | boolean | null;
+    componentDidUpdate(): void;
     /** Handle change to a dropdown */
     handleChange: (index: number, value: string | null) => void;
     /** Reset control */

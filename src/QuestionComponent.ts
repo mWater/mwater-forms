@@ -335,7 +335,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
         CheckAnswerComponent,
         {
           ref: (c) => {
-            return (this.answer = c)
+            this.answer = c
           },
           value: this.getAnswer().value,
           onValueChange: this.handleValueChange,
@@ -442,7 +442,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
       case "TextQuestion":
         return R(TextAnswerComponent, {
           ref: (c: any) => {
-            return (this.answer = c)
+            this.answer = c
           },
           value: answer.value,
           format: this.props.question.format,
@@ -455,7 +455,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
       case "NumberQuestion":
         return R(NumberAnswerComponent, {
           ref: (c) => {
-            return (this.answer = c)
+            this.answer = c
           },
           value: answer.value,
           onChange: !readonly ? this.handleValueChange : undefined,
@@ -467,7 +467,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
       case "DropdownQuestion":
         return R(DropdownAnswerComponent, {
           ref: (c) => {
-            return (this.answer = c)
+            this.answer = c
           },
           choices: this.props.question.choices,
           answer,
@@ -479,7 +479,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
       case "LikertQuestion":
         return R(LikertAnswerComponent, {
           ref: (c) => {
-            return (this.answer = c)
+            this.answer = c
           },
           items: this.props.question.items,
           choices: this.props.question.choices,
@@ -492,7 +492,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
       case "RadioQuestion":
         return R(RadioAnswerComponent, {
           ref: (c) => {
-            return (this.answer = c)
+            this.answer = c
           },
           choices: this.props.question.choices,
           answer,
@@ -505,7 +505,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
       case "MulticheckQuestion":
         return R(MulticheckAnswerComponent, {
           ref: (c) => {
-            return (this.answer = c)
+            this.answer = c
           },
           choices: this.props.question.choices,
           data: this.props.data,
@@ -517,7 +517,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
       case "DateQuestion":
         return R(DateAnswerComponent, {
           ref: (c: any) => {
-            return (this.answer = c)
+            this.answer = c
           },
           value: answer.value,
           onValueChange: this.handleValueChange,
@@ -530,7 +530,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
       case "UnitsQuestion":
         return R(UnitsAnswerComponent, {
           ref: (c: any) => {
-            return (this.answer = c)
+            this.answer = c
           },
           answer,
           onValueChange: this.handleValueChange,
@@ -550,7 +550,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
       case "LocationQuestion":
         return R(LocationAnswerComponent, {
           ref: (c) => {
-            return (this.answer = c)
+            this.answer = c
           },
           disableSetByMap: this.props.question.disableSetByMap,
           disableManualLatLng: this.props.question.disableManualLatLng,
@@ -562,7 +562,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
       case "ImageQuestion":
         return R(ImageAnswerComponent, {
           ref: (c: any) => {
-            return (this.answer = c)
+            this.answer = c
           },
           image: answer.value,
           onImageChange: this.handleValueChange,
@@ -575,7 +575,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
       case "ImagesQuestion":
         return R(ImagesAnswerComponent, {
           ref: (c: any) => {
-            return (this.answer = c)
+            this.answer = c
           },
           imagelist: answer.value,
           onImagelistChange: this.handleValueChange,
@@ -588,7 +588,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
       case "TextListQuestion":
         return R(TextListAnswerComponent, {
           ref: (c) => {
-            return (this.answer = c)
+            this.answer = c
           },
           value: answer.value,
           onValueChange: this.handleValueChange,
@@ -599,7 +599,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
       case "SiteQuestion":
         return R(SiteAnswerComponent, {
           ref: (c: any) => {
-            return (this.answer = c)
+            this.answer = c
           },
           value: answer.value,
           onValueChange: this.handleValueChange,
@@ -611,7 +611,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
       case "BarcodeQuestion":
         return R(BarcodeAnswerComponent, {
           ref: (c) => {
-            return (this.answer = c)
+            this.answer = c
           },
           value: answer.value,
           onValueChange: this.handleValueChange
@@ -621,7 +621,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
       case "EntityQuestion":
         return R(EntityAnswerComponent, {
           ref: (c) => {
-            return (this.answer = c)
+            this.answer = c
           },
           value: answer.value,
           entityType: this.props.question.entityType,
@@ -632,7 +632,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
       case "AdminRegionQuestion":
         return R(AdminRegionAnswerComponent, {
           ref: (c: any) => {
-            return (this.answer = c)
+            this.answer = c
           },
           value: answer.value,
           onChange: this.handleValueChange
@@ -642,7 +642,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
       case "StopwatchQuestion":
         return R(StopwatchAnswerComponent, {
           ref: (c: any) => {
-            return (this.answer = c)
+            this.answer = c
           },
           value: answer.value,
           onValueChange: this.handleValueChange,
@@ -653,7 +653,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
       case "MatrixQuestion":
         return R(MatrixAnswerComponent, {
           ref: (c: any) => {
-            return (this.answer = c)
+            this.answer = c
           },
           value: answer.value,
           onValueChange: this.handleValueChange,
@@ -669,7 +669,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
       case "AquagenxCBTQuestion":
         return R(AquagenxCBTAnswerComponent, {
           ref: (c: any) => {
-            return (this.answer = c)
+            this.answer = c
           },
           value: answer.value,
           onValueChange: this.handleValueChange,
@@ -680,7 +680,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
       case "CascadingListQuestion":
         return R(CascadingListAnswerComponent, {
           ref: (c) => {
-            return (this.answer = c)
+            this.answer = c
           },
           value: answer.value,
           onValueChange: this.handleValueChange,
@@ -688,14 +688,15 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           rows: this.props.question.rows,
           sortOptions: this.props.question.sortOptions,
           T: this.context.T,
-          locale: this.context.locale
+          locale: this.context.locale,
+          alternateSelected: this.getAnswer().alternate != null
         })
         break
 
       case "CascadingRefQuestion":
         return R(CascadingRefAnswerComponent, {
           ref: (c) => {
-            return (this.answer = c)
+            this.answer = c
           },
           question: this.props.question,
           value: answer.value,
@@ -703,7 +704,8 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           schema: this.props.schema,
           getCustomTableRows: this.context.getCustomTableRows,
           T: this.context.T,
-          locale: this.context.locale
+          locale: this.context.locale,
+          alternateSelected: this.getAnswer().alternate != null
         })
         break
 

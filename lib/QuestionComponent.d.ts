@@ -29,6 +29,8 @@ export default class QuestionComponent extends React.Component<QuestionComponent
         getCustomTableRows: PropTypes.Validator<(...args: any[]) => any>;
     };
     comments: HTMLTextAreaElement | null;
+    answer: any;
+    unmounted: boolean;
     constructor(props: any);
     componentWillUnmount(): any;
     shouldComponentUpdate(nextProps: any, nextState: any, nextContext: any): boolean;

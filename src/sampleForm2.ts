@@ -966,6 +966,41 @@ module.exports = {
             ]
           },
           {
+            _type: "CascadingListQuestion",
+            _id: "aa331b86fb5d40ffbf6600e8357e2b0a",
+            text: { en: "Cascade", _base: "en" },
+            rows: [
+              { id: "wpg", c0: "manitoba", c1: "winnipeg" },
+              { id: "wloo", c0: "ontario", c1: "waterloo" },
+              { id: "tor", c0: "ontario", c1: "toronto" }
+            ],
+            columns: [
+              {
+                id: "c0",
+                name: { en: "Province" },
+                type: "enum",
+                enumValues: [
+                  { id: "manitoba", name: { en: "Manitoba" } },
+                  { id: "ontario", name: { en: "Ontario" } }
+                ]
+              },
+              {
+                id: "c1",
+                name: { en: "City" },
+                type: "enum",
+                enumValues: [
+                  { id: "winnipeg", name: { en: "Winnipeg" } },
+                  { id: "toronto", name: { en: "Toronto" } },
+                  { id: "waterloo", name: { en: "Waterloo" } }
+                ]
+              }
+            ],
+            alternates: {
+              na: true,
+              dontknow: false
+            },
+          },
+          {
             _id: "groupId",
             name: { en: "Question Group", _base: "en" },
             _type: "Group",

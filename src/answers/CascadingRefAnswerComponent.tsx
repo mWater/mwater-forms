@@ -28,6 +28,9 @@ export interface Props {
    * @param tableId table id e.g. custom.abc.xyz
    */
   getCustomTableRows: (tableId: string) => Promise<Row[]>
+
+  /** True if an alternate is selected. Resets editing mode */
+  alternateSelected?: boolean
 }
 
 interface State {
@@ -74,6 +77,13 @@ export class CascadingRefAnswerComponent extends React.Component<Props, State> {
         this.setState({ rows: [] })
         throw err
       })
+  }
+
+  componentDidUpdate() {
+    // Reset if alternate selected
+    if (this.props.alternateSelected && (this.state.editing || this.state.dropdownValues && this.state.dropdownValues.some(dv => dv != null))) {
+      this.setState({ dropdownValues: this.props.question.dropdowns.map((c) => null), editing: false })
+    }
   }
 
   /** Validate the component */

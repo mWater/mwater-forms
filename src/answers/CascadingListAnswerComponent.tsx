@@ -26,6 +26,9 @@ export interface Props {
 
   /** Locale to use */
   locale: string
+
+  /** True if an alternate is selected. Resets editing mode */
+  alternateSelected?: boolean
 }
 
 interface State {
@@ -49,6 +52,13 @@ export class CascadingListAnswerComponent extends React.Component<Props, State> 
   /** Validate the component */
   validate(): string | boolean | null {
     return this.state.editing ? this.props.T("Incomplete selection") : null
+  }
+
+  componentDidUpdate() {
+    // Reset if alternate selected
+    if (this.props.alternateSelected && (this.state.editing || this.state.columnValues.some(c => c != null))) {
+      this.setState({ columnValues: this.props.columns.map((c) => null), editing: false })
+    }
   }
 
   /** Handle change to a dropdown */

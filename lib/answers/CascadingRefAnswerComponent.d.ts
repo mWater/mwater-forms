@@ -18,6 +18,8 @@ export interface Props {
      * @param tableId table id e.g. custom.abc.xyz
      */
     getCustomTableRows: (tableId: string) => Promise<Row[]>;
+    /** True if an alternate is selected. Resets editing mode */
+    alternateSelected?: boolean;
 }
 interface State {
     /** Rows of the table */
@@ -33,6 +35,7 @@ interface State {
 export declare class CascadingRefAnswerComponent extends React.Component<Props, State> {
     constructor(props: Props);
     componentDidMount(): void;
+    componentDidUpdate(): void;
     /** Validate the component */
     validate(): string | boolean | null;
     /** Handle change to a dropdown */
