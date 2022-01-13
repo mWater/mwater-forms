@@ -5,17 +5,21 @@ export interface ImageThumbnailComponentProps {
     imageId: string;
     onClick?: any;
 }
-export default class ImageThumbnailComponent extends AsyncLoadComponent<ImageThumbnailComponentProps> {
+export default class ImageThumbnailComponent extends AsyncLoadComponent<ImageThumbnailComponentProps, {
+    loading: boolean;
+    error?: boolean;
+    url?: string;
+}> {
     isLoadNeeded(newProps: any, oldProps: any): boolean;
     load(props: any, prevProps: any, callback: any): any;
-    handleError: () => any;
+    handleError: () => void;
     render(): React.DetailedReactHTMLElement<{
-        src: any;
+        src: string | undefined;
         style: {
             maxHeight: number;
         };
         className: string;
         onClick: any;
-        onError: () => any;
+        onError: () => void;
     }, HTMLElement>;
 }

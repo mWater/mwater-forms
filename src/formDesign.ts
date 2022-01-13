@@ -597,7 +597,7 @@ export interface LikertQuestion extends QuestionBase {
   choices: Choices
 
   /** Items to rate */
-  items?: Choices
+  items: Choices
 
   /** No validation available */
   validations: []

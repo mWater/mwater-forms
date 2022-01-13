@@ -11,7 +11,11 @@ export interface ImagePopupComponentProps {
     onClose: any;
     T: any;
 }
-export default class ImagePopupComponent extends AsyncLoadComponent<ImagePopupComponentProps> {
+export default class ImagePopupComponent extends AsyncLoadComponent<ImagePopupComponentProps, {
+    loading: boolean;
+    url?: string;
+    error?: boolean;
+}> {
     isLoadNeeded(newProps: any, oldProps: any): boolean;
     load(props: any, prevProps: any, callback: any): any;
     render(): React.DetailedReactHTMLElement<{

@@ -18,7 +18,7 @@ export interface ImagePopupComponentProps {
 }
 
 // Displays an image in a popup and allows removing or setting as cover image
-export default class ImagePopupComponent extends AsyncLoadComponent<ImagePopupComponentProps> {
+export default class ImagePopupComponent extends AsyncLoadComponent<ImagePopupComponentProps, { loading: boolean, url?: string, error?: boolean}> {
   // Override to determine if a load is needed. Not called on mounting
   isLoadNeeded(newProps: any, oldProps: any) {
     return newProps.id !== oldProps.id
@@ -91,8 +91,7 @@ export default class ImagePopupComponent extends AsyncLoadComponent<ImagePopupCo
         React.createElement(RotationAwareImageComponent, {
           key: this.props.image.id,
           imageManager: this.props.imageManager,
-          image: this.props.image,
-          onClick: this.handleClickImage
+          image: this.props.image
         })
       )
     )

@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import React from "react";
+import ImagePopupComponent from "../ImagePopupComponent";
 export interface ImageAnswerComponentProps {
     /** e.g. { id: someid, caption: caption } */
     image?: any;
@@ -20,7 +21,7 @@ export default class ImageAnswerComponent extends React.Component<ImageAnswerCom
     focus(): null;
     handleClickImage: () => void;
     handleAdd: () => any;
-    renderModal(): React.DetailedReactHTMLElement<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> | null;
+    renderModal(): React.CElement<import("../ImagePopupComponent").ImagePopupComponentProps, ImagePopupComponent> | null;
     render(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>;
 }
 export {};

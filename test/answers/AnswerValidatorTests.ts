@@ -257,7 +257,7 @@ describe("AnswerValidator", function () {
     })
 
     it("enforces required on blank answer", async function () {
-      const answer = { value: { quantity: "", unit: "a" } }
+      const answer = { value: { quantity: null, unit: "a" } }
       const question = { _type: "UnitsQuestion" }
 
       // Okay if not required

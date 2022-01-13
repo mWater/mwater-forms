@@ -1,13 +1,18 @@
 import _ from "lodash"
 import * as siteCodes from "../siteCodes"
-import { PromiseExprEvaluator } from "mwater-expressions"
+import { PromiseExprEvaluator, Schema } from "mwater-expressions"
 import ValidationCompiler from "./ValidationCompiler"
 import * as formUtils from "../formUtils"
+import { Answer, AquagenxCBTAnswerValue, DropdownQuestion, LikertQuestion, Question, ResponseRow, UnitsAnswerValue } from ".."
 
 // AnswerValidator gets called when a form is submitted (or on next)
 // Only the validate method is not internal
 export default class AnswerValidator {
-  constructor(schema: any, responseRow: any, locale: any) {
+  schema: Schema
+  responseRow: ResponseRow
+  locale: string
+
+  constructor(schema: Schema, responseRow: ResponseRow, locale: string) {
     this.schema = schema
     this.responseRow = responseRow
     this.locale = locale
@@ -17,7 +22,7 @@ export default class AnswerValidator {
   // It makes sure required questions are properly answered
   // It checks answer type specific validations
   // It checks custom validations
-  async validate(question: any, answer: any) {
+  async validate(question: Question, answer: Answer) {
     // If it has an alternate value, it cannot be invalid
     if (answer.alternate) {
       return null
@@ -34,10 +39,10 @@ export default class AnswerValidator {
       }
 
       // Handle specify
-      if (question.choices) {
+      if ((question as DropdownQuestion).choices) {
         // MulticheckQuestion
         if (_.isArray(answer.value)) {
-          const specifyChoices = question.choices.filter((c: any) => c.specify).map((c: any) => c.id)
+          const specifyChoices = (question as DropdownQuestion).choices.filter((c: any) => c.specify).map((c: any) => c.id)
           const selectedSpecifyChoicecs = _.intersection(specifyChoices, answer.value)
 
           if (selectedSpecifyChoicecs.length > 0) {
@@ -49,7 +54,7 @@ export default class AnswerValidator {
           }
         } else {
           // RadioQuestion
-          const choiceOption = _.find(question.choices, { specify: true })
+          const choiceOption = _.find((question as DropdownQuestion).choices, { specify: true })
           if (choiceOption && answer.value === choiceOption.id && !answer.specify) {
             return true
           }
@@ -57,19 +62,21 @@ export default class AnswerValidator {
       }
 
       // Handling empty string for Units values
-      if (answer.value != null && answer.value.quantity != null && answer.value.quantity === "") {
-        return true
+      if (question._type == "UnitsQuestion") {
+        if (answer.value != null && (answer.value as UnitsAnswerValue).quantity == null) {
+          return true
+        }
       }
       // A required LikertQuestion needs an answer for all items
       if (question._type === "LikertQuestion") {
-        for (let item of question.items) {
+        for (let item of (question as LikertQuestion).items) {
           if (answer.value[item.id] == null) {
             return true
           }
         }
       }
       if (question._type === "AquagenxCBTQuestion") {
-        if (answer.value.cbt == null) {
+        if ((answer.value as AquagenxCBTAnswerValue).cbt == null) {
           return true
         }
       }

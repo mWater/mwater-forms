@@ -9,7 +9,7 @@ export interface ImageThumbnailComponentProps {
 }
 
 // Displays a thumbnail of an image
-export default class ImageThumbnailComponent extends AsyncLoadComponent<ImageThumbnailComponentProps> {
+export default class ImageThumbnailComponent extends AsyncLoadComponent<ImageThumbnailComponentProps, { loading: boolean, error?: boolean, url?: string }> {
   // Override to determine if a load is needed. Not called on mounting
   isLoadNeeded(newProps: any, oldProps: any) {
     return newProps.imageId !== oldProps.imageId
