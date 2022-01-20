@@ -26,6 +26,7 @@ export default class UnitsAnswerComponent extends React.Component<
   UnitsAnswerComponentState
 > {
   static contextTypes = { locale: PropTypes.string }
+  units: HTMLSelectElement | null
 
   constructor(props: any) {
     super(props)
@@ -141,10 +142,10 @@ export default class UnitsAnswerComponent extends React.Component<
               "select",
               {
                 id: "units",
-                ref: (c: any) => {
-                  return (this.units = c)
+                ref: (c: HTMLSelectElement | null) => {
+                  this.units = c
                 },
-                className: "form-control",
+                className: "form-select",
                 style: { width: "auto" },
                 onChange: this.handleUnitChange,
                 value: this.state.selectedUnits === null ? "" : this.state.selectedUnits

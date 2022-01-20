@@ -17,6 +17,7 @@ export default class UnitsAnswerComponent extends React.Component<UnitsAnswerCom
     static contextTypes: {
         locale: PropTypes.Requireable<string>;
     };
+    units: HTMLSelectElement | null;
     constructor(props: any);
     componentWillReceiveProps(nextProps: any): void;
     focus(): any;
