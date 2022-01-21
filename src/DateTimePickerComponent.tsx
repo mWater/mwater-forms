@@ -49,7 +49,7 @@ export default class DateTimePickerComponent extends React.Component<DateTimePic
           isClearable={this.props.showClear}
           selected={this.props.date}
           onChange={this.props.onChange}
-          showTimeSelect={(this.props.format && (this.props.format.includes("ss") || this.props.format == "lll" || this.props.format == "LLL")) || this.props.timepicker}
+          showTimeSelect={(this.props.format && (this.props.format.includes("HH") || this.props.format.includes("mm") ||this.props.format.includes("ss") || this.props.format == "lll" || this.props.format == "LLL")) || this.props.timepicker}
           dateFormat={this.props.format}
           placeholderText={this.props.placeholder}
           popperContainer={createPopperContainer}
