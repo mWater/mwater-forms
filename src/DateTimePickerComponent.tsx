@@ -1,17 +1,15 @@
 import _ from "lodash"
-import React, { forwardRef } from "react"
-import { Moment } from "moment"
-import DatePicker from "react-datepicker"
-import ReactDOM from "react-dom"
+import React from "react"
+import moment, { Moment } from "moment"
+import { TempusDominus, Namespace, DateTime } from "@eonasdan/tempus-dominus"
 
-import "react-datepicker/dist/react-datepicker.css"
-import "./DateTimePickerComponent.css"
+import "@eonasdan/tempus-dominus/dist/css/tempus-dominus.css"
 
 export interface DateTimePickerComponentProps {
   /** date format. */
   format?: string
 
-  /** do we need time picker?  (Only useful if format is not set) */
+  /** True to show timepicker. Only if no format */
   timepicker?: boolean
 
   /** Show the today button */
@@ -21,50 +19,102 @@ export interface DateTimePickerComponentProps {
   showClear: boolean
 
   /** callback on date change (argument: moment date) */
-  onChange: (date: Moment) => void
+  onChange: (date: Moment | null) => void
 
   /** date as moment */
   date?: Moment | null
 
-  /** default date as moment */
-  defaultDate?: Moment
-
   placeholder?: string
 }
-
-const CustomInput = forwardRef((props: { value?: any, onClick?: () => void, placeholder?: string }, ref) => {
-  return <div className="input-group">
-    <input type="text" className="form-control" placeholder={props.placeholder} onClick={props.onClick} ref={ref as any} value={props.value}/>
-    <span className="input-group-text" onClick={props.onClick}><i className="fas fa-calendar-alt" /></span>
-  </div>
-})
 
 export default class DateTimePickerComponent extends React.Component<DateTimePickerComponentProps> {
   static defaultProps = { timepicker: false }
 
+  control: TempusDominus
+  textRef: HTMLInputElement | null
+
+  getFormat() {
+    if (!this.props.format) {
+      return this.props.timepicker ? "YYYY-MM-DD HH:mm:ss" : "YYYY-MM-DD"
+    }
+    return this.props.format
+  }
+
+  componentDidUpdate(prevProps: DateTimePickerComponentProps) {
+    if (!prevProps.date && !this.props.date) {
+      return
+    }
+
+    // If changed
+    const current = this.control.dates.lastPicked ? moment(this.control.dates.lastPicked) : null
+    if (current && !this.props.date || 
+      !current && this.props.date ||
+      (current && this.props.date && !current.isSame(this.props.date))) {
+      // If different than current
+      if (this.props.date) {
+        this.control.dates.set(this.props.date.toDate())
+      }
+      else {
+        // Text needs to be cleared from some reason too
+        this.textRef!.value = ""
+        this.control.clear()
+      }
+    }
+  }
+
+  inputRef = (elem: HTMLDivElement | null) => {
+    const format = this.getFormat()
+
+    if (elem) {
+      this.control = new TempusDominus(elem, {
+        hooks: {
+          inputFormat: (context, date) => { return date ? moment(date).format(format) : "" },
+          inputParse: (context, value) => { return new DateTime(moment(value, format).toDate()) }
+        },
+        display: {
+          buttons: {
+            clear: this.props.showClear,
+            today: this.props.showTodayButton,
+          },
+          components: {
+            date: format.includes("DD") || format.includes("ll") || format.includes("LL"),
+            month: format.includes("MM") || format.includes("ll") || format.includes("LL"),
+            year: true,
+            decades: true,
+            clock: format.includes("HH") || format.includes("lll") || format.includes("LLL"),
+            hours: format.includes("HH") || format.includes("lll") || format.includes("LLL"),
+            minutes: format.includes("mm") || format.includes("lll") || format.includes("LLL"),
+            seconds: format.includes("ss") || format.includes("lll") || format.includes("LLL"),
+            useTwentyfourHour: true
+          },
+          sideBySide: format.includes("HH") || format.includes("lll") || format.includes("LLL")
+        }
+      })
+
+      this.control.subscribe(Namespace.events.change, e => {
+        this.props.onChange(e.date ? moment(e.date) : null)
+      })
+    }
+    else {
+      if (this.control) {
+        this.control.dispose()
+      }
+    }
+  }
+
   render() {
+    const defaultValue = this.props.date ? moment(this.props.date).format(this.getFormat()) : ""
     return (
-      <div className="datetimepickercomponent">
-        <DatePicker
-          isClearable={this.props.showClear}
-          selected={this.props.date}
-          onChange={this.props.onChange}
-          showTimeSelect={(this.props.format && (this.props.format.includes("HH") || this.props.format.includes("mm") ||this.props.format.includes("ss") || this.props.format == "lll" || this.props.format == "LLL")) || this.props.timepicker}
-          dateFormat={this.props.format}
-          placeholderText={this.props.placeholder}
-          popperContainer={createPopperContainer}
-          showMonthDropdown
-          showYearDropdown
-          dropdownMode="select"
-          customInput={<CustomInput/>}
-          todayButton={<span><i className="fas fa-arrow-right" style={{ marginRight: 3 }} /><i className="fas fa-clock" /></span> as any}
-        />
+      <div className="input-group" ref={this.inputRef}>
+        <input 
+          type="text" 
+          className="form-control" 
+          placeholder={this.props.placeholder} 
+          defaultValue={defaultValue} 
+          ref={c => { this.textRef = c }}
+          />
+        <span className="input-group-text"><i className="fas fa-calendar"/></span>
       </div>
     )
   }
-}
-
-// https://github.com/Hacker0x01/react-datepicker/issues/1366
-function createPopperContainer(props: { children: React.ReactNode[] }): React.ReactNode {
-  return ReactDOM.createPortal(<div style={{ zIndex: 10000 }}>{props.children}</div>, document.body)
 }
