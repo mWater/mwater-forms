@@ -86,8 +86,7 @@ export default class DateTimePickerComponent extends React.Component<DateTimePic
             minutes: format.includes("mm") || format.includes("lll") || format.includes("LLL"),
             seconds: format.includes("ss") || format.includes("lll") || format.includes("LLL"),
             useTwentyfourHour: true
-          },
-          sideBySide: format.includes("HH") || format.includes("lll") || format.includes("LLL")
+          }
         }
       })
 
