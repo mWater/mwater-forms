@@ -16,19 +16,15 @@ export default class DateAnswerComponent extends React.Component<DateAnswerCompo
         format: string;
     };
     constructor(props: any);
-    componentWillReceiveProps: (nextProps: any) => void | {
-        detailLevel: number;
-        isoFormat: string | null;
-        placeholder: any;
-    };
-    updateState: (props: any) => void | {
-        detailLevel: number;
-        isoFormat: string | null;
-        placeholder: any;
-    };
+    componentWillReceiveProps: (nextProps: any) => void;
+    updateState: (props: any) => void;
     focus(): any;
     handleKeyDown: (ev: any) => any;
     handleChange: (date: any) => any;
-    render(): React.DetailedReactHTMLElement<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>;
+    render(): React.DetailedReactHTMLElement<{
+        style: {
+            maxWidth: string;
+        };
+    }, HTMLElement>;
 }
 export {};

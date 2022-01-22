@@ -69,7 +69,14 @@ export default class DateTimePickerComponent extends React.Component<DateTimePic
       this.control = new TempusDominus(elem, {
         hooks: {
           inputFormat: (context, date) => { return date ? moment(date).format(format) : "" },
-          inputParse: (context, value) => { return new DateTime(moment(value, format).toDate()) }
+          inputParse: (context, value) => { 
+            const parsedValue = moment(value, format)
+            if (parsedValue.isValid()) {
+              return new DateTime(parsedValue.toDate()) 
+            } else {
+              return "" as any
+            }
+          }
         },
         display: {
           buttons: {

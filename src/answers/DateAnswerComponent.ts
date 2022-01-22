@@ -60,17 +60,17 @@ export default class DateAnswerComponent extends React.Component<DateAnswerCompo
     } else {
       // Can't set for full dates
       if (!format.match(/l|L/)) {
-        placeholder = format
+        placeholder = format.replace("HH", "hh")
       } else {
         placeholder = "..."
       }
     }
 
     if (this.state) {
-      return this.setState({ detailLevel, isoFormat, placeholder })
+      this.setState({ detailLevel, isoFormat, placeholder })
     } else {
       // This is a weird lifecycle quirk of it being called on the constructor
-      return (this.state = { detailLevel, isoFormat, placeholder })
+      this.state = { detailLevel, isoFormat, placeholder }
     }
   }
 
@@ -143,17 +143,19 @@ export default class DateAnswerComponent extends React.Component<DateAnswerCompo
       }
     }
 
-    return R(DateTimePickerComponent, {
-      ref: (c) => {
-        return (this.datetimepicker = c)
-      },
-      onChange: this.handleChange,
-      date: value,
-      format: this.props.format,
-      placeholder: this.state.placeholder,
-      showTodayButton: true,
-      showClear: true,
-      onKeyDown: this.handleKeyDown
-    })
+    return R("div", { style: { maxWidth: "30em" } },
+      R(DateTimePickerComponent, {
+        ref: (c) => {
+          return (this.datetimepicker = c)
+        },
+        onChange: this.handleChange,
+        date: value,
+        format: this.props.format,
+        placeholder: this.state.placeholder,
+        showTodayButton: true,
+        showClear: true,
+        onKeyDown: this.handleKeyDown
+      })
+   )
   }
 }
