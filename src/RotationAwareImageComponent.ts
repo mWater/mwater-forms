@@ -91,7 +91,8 @@ export default class RotationAwareImageComponent extends AsyncLoadComponent<Rota
         imageStyle.maxWidth = this.props.width || 160
       }
 
-      containerStyle.height = this.props.height || 160
+      // Changing to max height as seems to create extra padding
+      containerStyle.maxHeight = this.props.height || 160
     } else {
       imageStyle.maxWidth = "100%"
     }
