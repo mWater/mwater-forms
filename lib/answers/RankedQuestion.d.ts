@@ -1,8 +1,9 @@
 import React from "react";
 import { Choice } from "../formDesign";
+import { RankedAnswerValue } from "src";
 declare type RankedQuestionProps = {
     choices: Choice[];
-    answer: any;
+    answer: RankedAnswerValue;
     /** Locale to use */
     locale: string;
     onValueChange: (value?: any) => void;

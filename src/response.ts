@@ -277,6 +277,7 @@ export type AnswerValue =
   | AquagenxCBTAnswerValue
   | CascadingListAnswerValue
   | CascadingRefAnswerValue
+  | RankedAnswerValue
 
 export type TextAnswerValue = string
 
@@ -388,3 +389,7 @@ export interface CascadingListAnswerValue {
 
 /** _id of the row */
 export type CascadingRefAnswerValue = string
+
+export type RankedAnswerValue = {
+  [choiceId: string]: number
+}

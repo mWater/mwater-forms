@@ -3,10 +3,11 @@ import ReorderableListComponent from "react-library/lib/reorderable/ReorderableL
 import { localizeString } from "../formUtils"
 import { Choice } from "../formDesign"
 import _ from "lodash"
+import { RankedAnswerValue } from "src"
 
 type RankedQuestionProps = {
   choices: Choice[]
-  answer: any
+  answer: RankedAnswerValue
   /** Locale to use */
   locale: string
   onValueChange: (value?: any) => void
