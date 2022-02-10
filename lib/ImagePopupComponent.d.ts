@@ -20,5 +20,5 @@ export default class ImagePopupComponent extends AsyncLoadComponent<ImagePopupCo
     load(props: any, prevProps: any, callback: any): any;
     render(): React.DetailedReactHTMLElement<{
         className: string;
-    }, HTMLElement> | React.CElement<any, ModalPopupComponent>;
+    }, HTMLElement> | React.CElement<import("react-library/lib/ModalPopupComponent").ModalPopupComponentProps, ModalPopupComponent>;
 }
