@@ -35,7 +35,7 @@ export default class RosterMatrixComponent extends React.Component {
             marginTop: number;
         };
     }, HTMLElement> | undefined;
-    renderBody(): React.CElement<any, ReorderableListComponent<unknown>>;
+    renderBody(): React.CElement<any, ReorderableListComponent>;
     renderEmptyPrompt(): React.DetailedReactHTMLElement<{
         style: {
             fontStyle: "italic";

@@ -65,7 +65,12 @@ export default class QuestionComponent extends React.Component<QuestionComponent
         value: any;
         onChange: (ev: any) => any;
     }, Element> | undefined;
-    renderAnswer(): string | React.DetailedReactHTMLElement<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> | React.CElement<any, any> | null;
+    renderAnswer(): string | React.DetailedReactHTMLElement<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> | React.CElement<any, any> | React.FunctionComponentElement<{
+        choices: import("./formDesign").Choice[];
+        answer: import("./response").RankedAnswerValue;
+        locale: string;
+        onValueChange: (value?: any) => void;
+    }> | null;
     render(): React.DetailedReactHTMLElement<{
         className: string;
         "data-qn-id": any;
