@@ -5,7 +5,7 @@ export interface ImageUploaderModalComponentProps {
     client?: string;
     onCancel: any;
     /** Called with id of image */
-    onSuccess: any;
+    onSuccess: (id: string) => void;
     /** Localizer to use */
     T: any;
     forceCamera?: boolean;
@@ -16,7 +16,7 @@ interface ImageUploaderModalComponentState {
     percentComplete: any;
 }
 export default class ImageUploaderModalComponent extends React.Component<ImageUploaderModalComponentProps, ImageUploaderModalComponentState> {
-    static show: (apiUrl: any, client: any, T: any, success: any, forceCamera: any) => void | Element | React.Component<any, any, any>;
+    static show: (apiUrl: string, client: string | null | undefined, T: any, success: (id: string) => void, forceCamera?: boolean | undefined) => void | Element | React.Component<any, any, any>;
     constructor(props: any);
     handleUploadProgress: (evt: any) => void;
     handleUploadComplete: (evt: any) => any;

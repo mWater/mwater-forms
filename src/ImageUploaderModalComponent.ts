@@ -1,5 +1,3 @@
-import PropTypes from "prop-types"
-
 // Modal that allows upload of an image to the server
 import React from "react"
 
@@ -13,7 +11,7 @@ export interface ImageUploaderModalComponentProps {
   client?: string
   onCancel: any
   /** Called with id of image */
-  onSuccess: any
+  onSuccess: (id: string) => void
   /** Localizer to use */
   T: any
   forceCamera?: boolean
@@ -30,7 +28,7 @@ export default class ImageUploaderModalComponent extends React.Component<
   ImageUploaderModalComponentProps,
   ImageUploaderModalComponentState
 > {
-  static show = (apiUrl: any, client: any, T: any, success: any, forceCamera: any) => {
+  static show = (apiUrl: string, client: string | null | undefined, T: any, success: (id: string) => void, forceCamera?: boolean) => {
     return ModalPopupComponent.show((onClose: any) => {
       return R(ImageUploaderModalComponent, {
         apiUrl,
