@@ -665,7 +665,13 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
     }
 
     if (item._type === "MatrixQuestion") {
-      const answer = this.props.data[dataId]
+      let answer = this.props.data[dataId]
+
+      if(!answer) {
+        // handle matrix inside of roster where dataId is a path
+        answer = _.get(this.props.data, dataId)
+      }
+
       if (answer?.value != null) {
         const rows = []
         rows.push(
