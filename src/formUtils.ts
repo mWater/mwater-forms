@@ -79,7 +79,7 @@ export function createBase32TimeCode(date: any) {
 }
 
 /** Determine if item is a question */
-export function isQuestion(item: Item): boolean {
+export function isQuestion(item: Item): item is Question {
   return item._type != null && item._type.match(/Question$/) != null
 }
 

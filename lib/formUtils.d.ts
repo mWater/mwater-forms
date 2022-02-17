@@ -9,7 +9,7 @@ export declare function createShortUid(): string;
 export declare function createMediumUid(): string;
 export declare function createBase32TimeCode(date: any): string;
 /** Determine if item is a question */
-export declare function isQuestion(item: Item): boolean;
+export declare function isQuestion(item: Item): item is Question;
 /** Determine if item is an expression */
 export declare function isExpression(item: Item): boolean;
 /** Localize a localized string */

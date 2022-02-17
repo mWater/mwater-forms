@@ -7,7 +7,7 @@ import ConditionsExprCompiler from "./ConditionsExprCompiler"
 import { healthRiskEnum } from "./answers/aquagenxCBTUtils"
 import { Form } from "./form"
 import { JsonQLExpr } from "jsonql"
-import { Choice, IndicatorCalculation, Unit } from "."
+import { BasicItem, Choice, IndicatorCalculation, Unit, Section as FormSection, Question } from "."
 
 /** Adds a form to a mwater-expressions schema */
 export default class FormSchemaBuilder {
@@ -522,12 +522,12 @@ export default class FormSchemaBuilder {
     return schema
   }
 
-  addConfidentialData(schema: any, form: any, conditionsExprCompiler: any) {
+  addConfidentialData(schema: Schema, form: Form, conditionsExprCompiler: ConditionsExprCompiler) {
     const tableId = `responses:${form._id}`
 
-    const addData = (question: any) => {
+    const addData = (question: Question) => {
       if (question.confidential) {
-        let confidentialDataSection = _.find(schema.getTable(tableId).contents, { id: "confidentialData" }) as Section | undefined
+        let confidentialDataSection = _.find(schema.getTable(tableId)!.contents, { id: "confidentialData" }) as Section | undefined
 
         if (!confidentialDataSection) {
           confidentialDataSection = {
@@ -552,7 +552,7 @@ export default class FormSchemaBuilder {
         )
 
         // Update in original
-        const contents = schema.getTable(tableId).contents.slice()
+        const contents = schema.getTable(tableId)!.contents.slice()
         const index = _.findIndex(contents, { id: "confidentialData" })
         contents[index] = update(confidentialDataSection, { contents: { $set: confidentialDataSectionContents } })
 
@@ -562,15 +562,19 @@ export default class FormSchemaBuilder {
       return schema
     }
 
-    for (let item of form.design.contents) {
-      if (item.contents && ["Section", "Group"].includes(item._type)) {
-        for (let subItem of item.contents) {
-          schema = addData(subItem)
+    function addContents(contents: (FormSection[] | BasicItem[])) {
+      for (const item of contents) {
+        if (item._type == "Group" || item._type == "Section") {
+          addContents(item.contents)
         }
-      } else if (formUtils.isQuestion(item)) {
-        schema = addData(item)
+        else if (formUtils.isQuestion(item)) {
+          addData(item)
+        }
       }
     }
+
+    // Add contents of form
+    addContents(form.design.contents)
 
     return schema
   }
