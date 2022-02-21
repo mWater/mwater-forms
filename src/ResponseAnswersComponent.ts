@@ -400,6 +400,9 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
       if (rosterData.value != null) {
         rosterData = rosterData.value
         answer = rosterData[dataIds[1]][dataIds[2]]
+      } else if(dataIds.length > 3){
+        // todo: convert to using data path which would be more predictable.
+        answer = rosterData[dataIds[1]].data[dataIds[2]].value[dataIds[3]][dataIds[4]]
       } else {
         answer = rosterData[dataIds[1]].data[dataIds[2]]
       }
@@ -665,7 +668,14 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
     }
 
     if (item._type === "MatrixQuestion") {
-      const answer = this.props.data[dataId]
+      let answer = this.props.data[dataId]
+
+      if(!answer && dataId.split(".").length > 0) {
+        const dataIds = dataId.split(".")
+        // handle matrix inside of roster where dataId is a path
+        answer = this.props.data[dataIds[0]][dataIds[1]].data[dataIds[2]]
+      }
+
       if (answer?.value != null) {
         const rows = []
         rows.push(
@@ -695,8 +705,8 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
             )
             for (let column of item.columns) {
               if (itemValue[column._id]) {
-                dataId = `${item._id}.${rowItem.id}.${column._id}`
-                rows.push(this.renderItem(column, visibilityStructure, dataId))
+                // dataId = `${item._id}.${rowItem.id}.data.${column._id}`
+                rows.push(this.renderItem(column, visibilityStructure, `${dataId}.${rowItem.id}.${column._id}`))
               }
             }
           }
