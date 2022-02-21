@@ -158,7 +158,7 @@ export default class VisibilityCalculator {
             return async.each(
               question.columns,
               (column, cb2) => {
-                const newPrefix = `${question._id}.${item.id}.`
+                const newPrefix = `${prefix}${question._id}.${item.id}.`
                 return this.processItem(
                   column,
                   isVisible === false,

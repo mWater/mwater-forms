@@ -69,6 +69,17 @@ describe("VisibilityCalculator", function () {
                   },
                   conditions: [{ op: "present", lhs: { question: "firstRosterQuestionId" } }],
                   validations: []
+                },
+                {
+                  _id: "MatrixQuestionInRoster",
+                  _type: "MatrixQuestion",
+                  columns: [
+                    {_id: 'unitquestion', _type: 'UnitsColumnQuestion', units: [{id: 'feets'}, {id: 'meters'}], unitsPosition: 'suffix', defaultUnits: 'feets'}
+                  ],
+                  items: [
+                    {id: 'height'},
+                    {id: 'width'}
+                  ]
                 }
               ]
             },
@@ -127,8 +138,14 @@ describe("VisibilityCalculator", function () {
             mainRosterGroupId: true,
             "mainRosterGroupId.0.firstRosterQuestionId": true,
             "mainRosterGroupId.0.secondRosterQuestionId": true,
+            "mainRosterGroupId.0.MatrixQuestionInRoster": true,
+            "mainRosterGroupId.0.MatrixQuestionInRoster.height.unitquestion": true,
+            "mainRosterGroupId.0.MatrixQuestionInRoster.width.unitquestion": true,
             "mainRosterGroupId.1.firstRosterQuestionId": true,
             "mainRosterGroupId.1.secondRosterQuestionId": false,
+            "mainRosterGroupId.1.MatrixQuestionInRoster": true,
+            "mainRosterGroupId.1.MatrixQuestionInRoster.height.unitquestion": true,
+            "mainRosterGroupId.1.MatrixQuestionInRoster.width.unitquestion": true,
             // Questions under subRosterGroup need to use the mainRosterGroup id.
             // This makes the data cleaning easier.
             "mainRosterGroupId.0.firstSubRosterQuestionId": true,
