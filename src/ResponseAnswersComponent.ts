@@ -670,7 +670,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
     if (item._type === "MatrixQuestion") {
       let answer = this.props.data[dataId]
 
-      if(!answer && dataId.split(".").length > 0) {
+      if(!answer && dataId.split(".").length === 3) {
         const dataIds = dataId.split(".")
         // handle matrix inside of roster where dataId is a path
         answer = this.props.data[dataIds[0]][dataIds[1]].data[dataIds[2]]
