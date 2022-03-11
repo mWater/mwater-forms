@@ -1876,23 +1876,24 @@ export default class FormSchemaBuilder {
             const itemCode = code && choice.code ? `${code} - ${choice.code}` : undefined
             section.contents.push({
               id: `${dataColumn}:${item._id}:value:${choice.id}`,
-              type: "number",
-              name: appendStr(appendStr(item.text, ": "), choice.label),
+              type: "enum",
+              name: appendStr(appendStr(appendStr(item.text, ": "), choice.label), " is ranked " ),
               code: itemCode,
-              jsonql: {
-                type: "op",
-                op: "convert_to_decimal",
-                exprs: [
-                  {
-                    type: "op",
-                    op: "#>>",
-                    exprs: [
-                      {type: "field", tableAlias: "{alias}", column: dataColumn},
-                      `${item._id},value,${choice.id}`
-                    ]
-                  }
-                ]
-              }
+              enumValues: item.choices.map((choice, index) => ({id: String(index), value: String(index)}))
+              // jsonql: {
+              //   type: "op",
+              //   op: "convert_to_decimal",
+              //   exprs: [
+              //     {
+              //       type: "op",
+              //       op: "#>>",
+              //       exprs: [
+              //         {type: "field", tableAlias: "{alias}", column: dataColumn},
+              //         `${item._id},value,${choice.id}`
+              //       ]
+              //     }
+              //   ]
+              // }
             })
           }
 
