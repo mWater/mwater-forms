@@ -741,6 +741,20 @@ const rankedDesign = {
                   en: "Ranked Option 3"
                 },
                 id: "AK51bEH"
+              },
+              {
+                label: {
+                  _base: "en",
+                  en: "Ranked Option 4"
+                },
+                id: "AK51bEPP"
+              },
+              {
+                label: {
+                  _base: "en",
+                  en: "Ranked Option 5"
+                },
+                id: "AK51bEOP"
               }
             ]
           }

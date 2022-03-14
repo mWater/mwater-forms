@@ -179,7 +179,7 @@ th:hover .table-sort-controls {
 
 
 .__ranked_option{
-  display: block;
+  display: flex;
   padding: 6px 10px;
   border: 1px solid #ddd;
   border-radius: 4px;
@@ -187,11 +187,14 @@ th:hover .table-sort-controls {
   background-color: #fff;
 }
 
-.__ranked_option p{
+.__ranked_option .label{
+  align-self: center;
   margin: 0;
   padding: 0;
+  flex: 1;
 }
 
-.__ranked_option .fas{
-  margin-right: 10px;
+.__ranked_option .label .fas{
+  margin-right: 15px;
+  margin-left: 10px;
 }

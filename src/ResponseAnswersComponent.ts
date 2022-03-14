@@ -332,8 +332,8 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
         })
       case "ranked":
         const sortedChoices = _.sortBy(q.choices, (item: Choice) => answer.value[item.id] ?? 0)
-        const items = sortedChoices.map((choice: Choice) => R('p', {}, formUtils.localizeString(choice.label, this.props.locale)))
-        return R('div', {}, items)
+        const items = sortedChoices.map((choice: Choice, index: number) => R('li', {key: index}, formUtils.localizeString(choice.label, this.props.locale)))
+        return R('ol', {}, items)
     }
   }
 
