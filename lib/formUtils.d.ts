@@ -1,6 +1,6 @@
 import { Item, FormDesign, Question, QuestionBase, SiteQuestion } from "./formDesign";
 import { LocalizedString } from "mwater-expressions";
-export declare type AnswerType = "text" | "number" | "choice" | "choices" | "date" | "units" | "boolean" | "location" | "image" | "images" | "texts" | "site" | "entity" | "admin_region" | "items_choices" | "matrix" | "aquagenx_cbt" | "cascading_list" | "cascading_ref";
+export declare type AnswerType = "text" | "number" | "choice" | "choices" | "date" | "units" | "boolean" | "location" | "image" | "images" | "texts" | "site" | "entity" | "admin_region" | "items_choices" | "matrix" | "aquagenx_cbt" | "cascading_list" | "cascading_ref" | "ranked";
 /** Create ~ 128-bit uid without dashes */
 export declare function createUid(): any;
 /** Create short unique id, with ~42 bits randomness to keep unique amoung a few choices */

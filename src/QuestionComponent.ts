@@ -31,6 +31,7 @@ import TextListAnswerComponent from "./answers/TextListAnswerComponent"
 import UnitsAnswerComponent from "./answers/UnitsAnswerComponent"
 import { CascadingListAnswerComponent } from "./answers/CascadingListAnswerComponent"
 import { CascadingRefAnswerComponent } from "./answers/CascadingRefAnswerComponent"
+import RankedQuestion from "./answers/RankedQuestion"
 
 export interface QuestionComponentProps {
   /** Design of question. See schema */
@@ -708,6 +709,13 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           alternateSelected: this.getAnswer().alternate != null
         })
         break
+      case "RankedQuestion":
+        return R(RankedQuestion, {
+          choices: this.props.question.choices,
+          answer: answer.value,
+          locale: this.context.locale,
+          onValueChange: this.handleValueChange
+        })
 
       default:
         return `Unknown type ${this.props.question._type}`

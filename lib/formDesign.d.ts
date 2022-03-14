@@ -116,7 +116,7 @@ export interface QuestionBase {
     /** If present, only ask with this probability, hide otherwise. 0-1 */
     randomAskProbability?: number;
 }
-export declare type Question = TextQuestion | NumberQuestion | DropdownQuestion | RadioQuestion | MulticheckQuestion | DateQuestion | UnitsQuestion | CheckQuestion | LocationQuestion | ImageQuestion | ImagesQuestion | TextListQuestion | SiteQuestion | BarcodeQuestion | EntityQuestion | AdminRegionQuestion | StopwatchQuestion | MatrixQuestion | LikertQuestion | AquagenxCBTQuestion | CascadingListQuestion | CascadingRefQuestion;
+export declare type Question = TextQuestion | NumberQuestion | DropdownQuestion | RadioQuestion | MulticheckQuestion | DateQuestion | UnitsQuestion | CheckQuestion | LocationQuestion | ImageQuestion | ImagesQuestion | TextListQuestion | SiteQuestion | BarcodeQuestion | EntityQuestion | AdminRegionQuestion | StopwatchQuestion | MatrixQuestion | LikertQuestion | AquagenxCBTQuestion | CascadingListQuestion | CascadingRefQuestion | RankedQuestion;
 /** Instructional text item */
 export interface Instructions {
     _id: string;
@@ -602,5 +602,9 @@ export interface AdvancedValidation {
     expr: Expr;
     /** Message that is shown if expr is not true */
     message: LocalizedString;
+}
+export interface RankedQuestion extends QuestionBase {
+    _type: "RankedQuestion";
+    items: Choices;
 }
 export {};

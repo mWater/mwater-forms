@@ -691,13 +691,94 @@ const cascadingRefCustomTableset = {
   }
 }
 
+const rankedDesign = {
+  _id: 'asdasdasd',
+  design: {
+    _type: "Form",
+    _schema: 11,
+    locales: [{ code: "en", name: "English" }],
+    name: {
+      _base: "en",
+      en: "Sample Form"
+    },
+    contents: [
+      {
+        _id: "02",
+        _type: "Section",
+        name: {
+          _base: "en",
+          en: "Introduction and informed consent"
+        },
+        contents: [
+          {
+            _type: "RankedQuestion",
+            _id: "dd7ffa2f8cf9423fbf814d710a3e55a4",
+            text: {
+              _base: "en",
+              en: "Rank the following in order of importance?"
+            },
+            conditions: [],
+            validations: [],
+            required: false,
+            choices: [
+              {
+                label: {
+                  _base: "en",
+                  en: "Ranked Option 1"
+                },
+                id: "ChFvwt8"
+              },
+              {
+                label: {
+                  _base: "en",
+                  en: "Ranked Option 2"
+                },
+                id: "AK51bEJ"
+              },
+              {
+                label: {
+                  _base: "en",
+                  en: "Ranked Option 3"
+                },
+                id: "AK51bEH"
+              },
+              {
+                label: {
+                  _base: "en",
+                  en: "Ranked Option 4"
+                },
+                id: "AK51bEPP"
+              },
+              {
+                label: {
+                  _base: "en",
+                  en: "Ranked Option 5"
+                },
+                id: "AK51bEOP"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+
 class DemoComponent extends React.Component {
   constructor(props: any) {
     super(props)
 
     // data = { site01: { value: { code: "10007"}, confidential: true}}
     // data = { d0dcfce3a697453ba16cc8baa8e384e: { value: null, confidential: true}}
-    const data = {} //exprResponse
+    const data = {
+      dd7ffa2f8cf9423fbf814d710a3e55a4: {
+        value: {
+          AK51bEJ: 3,
+          AK51bEH: 1,
+          ChFvwt8: 2
+        }
+      }
+    } //exprResponse
 
     this.state = { data }
   }
@@ -722,7 +803,7 @@ class DemoComponent extends React.Component {
     // design = sampleFormAdvancedValidations
     // design = require('./sampleFormRM')
     // design = randomAskFormDesign
-    const design = sampleForm2
+    const design = rankedDesign
     schema = new FormSchemaBuilder({ user: "bob" }).addForm(schema, design)
     // schema = new CustomTablesetSchemaBuilder().addTableset(schema, cascadingRefCustomTableset)
 

@@ -173,7 +173,7 @@ export interface ConfidentialRosterEntryData {
     [itemId: string]: ConfidentialAnswer;
 }
 /** All values of answers possible */
-export declare type AnswerValue = TextAnswerValue | NumberAnswerValue | ChoiceAnswerValue | ChoicesAnswerValue | BooleanAnswerValue | DateAnswerValue | UnitsAnswerValue | LocationAnswerValue | ImageAnswerValue | ImagesAnswerValue | TextsAnswerValue | SiteAnswerValue | EntityAnswerValue | ItemsChoicesAnswerValue | MatrixAnswerValue | AdminRegionAnswerValue | AquagenxCBTAnswerValue | CascadingListAnswerValue | CascadingRefAnswerValue;
+export declare type AnswerValue = TextAnswerValue | NumberAnswerValue | ChoiceAnswerValue | ChoicesAnswerValue | BooleanAnswerValue | DateAnswerValue | UnitsAnswerValue | LocationAnswerValue | ImageAnswerValue | ImagesAnswerValue | TextsAnswerValue | SiteAnswerValue | EntityAnswerValue | ItemsChoicesAnswerValue | MatrixAnswerValue | AdminRegionAnswerValue | AquagenxCBTAnswerValue | CascadingListAnswerValue | CascadingRefAnswerValue | RankedAnswerValue;
 export declare type TextAnswerValue = string;
 export declare type NumberAnswerValue = number;
 /** Choice id */
@@ -262,4 +262,7 @@ export interface CascadingListAnswerValue {
 }
 /** _id of the row */
 export declare type CascadingRefAnswerValue = string;
+export declare type RankedAnswerValue = {
+    [choiceId: string]: number;
+};
 export {};

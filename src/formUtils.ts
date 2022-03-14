@@ -29,6 +29,7 @@ export type AnswerType =
   | "aquagenx_cbt"
   | "cascading_list"
   | "cascading_ref"
+  | "ranked"
 
 /** Create ~ 128-bit uid without dashes */
 export function createUid() {
@@ -271,6 +272,9 @@ export function prepareQuestion(q: any) {
     case "CascadingRefQuestion":
       _.defaults(q, { dropdowns: [] })
       break
+    case "RankedQuestion":
+      _.defaults(q, {choices: []})
+      break
   }
 
   // Get known fields
@@ -373,6 +377,8 @@ export function prepareQuestion(q: any) {
       knownFields.push("tableId")
       knownFields.push("dropdowns")
       break
+    case "RankedQuestion":
+      knownFields.push("choices")
   }
 
   // Strip unknown fields
@@ -456,6 +462,8 @@ export function getAnswerType(q: QuestionBase): AnswerType {
     case "TextColumn":
     case "Calculation":
       return "expr"
+    case "RankedQuestion":
+      return "ranked"
     default:
       throw new Error(`Unknown question type ${q._type}`)
   }

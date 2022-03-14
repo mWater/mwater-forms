@@ -176,3 +176,25 @@ th .table-sort-controls {
 th:hover .table-sort-controls {
   visibility: visible;
 }
+
+
+.__ranked_option{
+  display: flex;
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 6px;
+  background-color: #fff;
+}
+
+.__ranked_option .label{
+  align-self: center;
+  margin: 0;
+  padding: 0;
+  flex: 1;
+}
+
+.__ranked_option .label .fas{
+  margin-right: 15px;
+  margin-left: 5px;
+}

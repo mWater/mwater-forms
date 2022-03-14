@@ -19,7 +19,7 @@ import { CascadingListDisplayComponent } from "./answers/CascadingListDisplayCom
 import { CascadingRefDisplayComponent } from "./answers/CascadingRefDisplayComponent"
 import { CalculationsDisplayComponent } from "./CalculationsDisplayComponent"
 import { Schema } from "mwater-expressions"
-import { FormDesign } from "./formDesign"
+import { FormDesign, Choice } from "./formDesign"
 import { ResponseData } from "./response"
 
 export interface ResponseAnswersComponentProps {
@@ -330,6 +330,10 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
           schema: this.props.schema,
           getCustomTableRow: this.props.formCtx.getCustomTableRow
         })
+      case "ranked":
+        const sortedChoices = _.sortBy(q.choices, (item: Choice) => answer.value[item.id] ?? 0)
+        const items = sortedChoices.map((choice: Choice, index: number) => R('li', {key: index}, formUtils.localizeString(choice.label, this.props.locale)))
+        return R('ol', {}, items)
     }
   }
 
