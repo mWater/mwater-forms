@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import { CascadingRefAnswerValue } from "../response";
 import { CascadingRefQuestion } from "../formDesign";
 import { Row, Schema } from "mwater-expressions";

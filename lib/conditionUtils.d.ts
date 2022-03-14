@@ -5,7 +5,7 @@ export declare function applicableOps(lhsQuestion: any): {
     id: string;
     text: string;
 }[];
-declare function _rhsType(lhsQuestion: any, op: any): "text" | "number" | "date" | "choice" | "choices" | null;
+declare function _rhsType(lhsQuestion: any, op: any): "text" | "number" | "date" | "choices" | "choice" | null;
 export { _rhsType as rhsType };
 export declare function rhsChoices(lhsQuestion: Question, op: any): {
     id: string;

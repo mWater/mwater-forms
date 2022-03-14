@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import { FormDesign } from "./formDesign";
 import { Schema } from "mwater-expressions";
 import ResponseRow from "./ResponseRow";
