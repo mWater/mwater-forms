@@ -36,7 +36,7 @@ export default class ResponseCleaner {
     data: ResponseData,
     responseRowFactory: (data: ResponseData) => ResponseRow,
     oldVisibilityStructure: VisibilityStructure | null,
-    callback: (err: any, result?: { data: ResponseData; visibilityStructure: VisibilityState }) => void
+    callback: (err: any, result?: { data: ResponseData; visibilityStructure: VisibilityStructure }) => void
   ): void => {
     let nbIterations = 0
     let complete = false
@@ -156,13 +156,15 @@ export default class ResponseCleaner {
   // Remove data entries for all the conditional choices that are false
   // 'DropdownQuestion', 'RadioQuestion' and 'DropdownColumnQuestion' can have choices that are only present if a condition
   // is filled. If the condition is no longer filled, the answer data needs to be removed
-  cleanDataBasedOnChoiceConditions(data: any, visibilityStructure: any, design: any) {
+  cleanDataBasedOnChoiceConditions(data: any, visibilityStructure: VisibilityStructure, design: FormDesign) {
     const newData = _.cloneDeep(data)
 
     for (let key in visibilityStructure) {
       const visible = visibilityStructure[key]
       if (visible) {
-        var conditionData, deleteAnswer, questionId: any
+        var conditionData, questionId: any
+        let deleteAnswer: () => void
+
         const values = key.split(".")
         let selectedChoice = null
 
@@ -193,25 +195,28 @@ export default class ResponseCleaner {
             }
           }
         }
+        else {
+          continue
+        }
 
         // SECOND: look for conditional choices and delete their answer if the conditions are false
         if (selectedChoice != null) {
           // Get the question
-          const question = formUtils.findItem(design, questionId)
+          const question = formUtils.findItem(design, questionId)!
           // Of dropdown or radio type (types with conditional choices)
           if (
             question._type === "DropdownQuestion" ||
             question._type === "RadioQuestion" ||
             question._type === "DropdownColumnQuestion"
           ) {
-            for (let choice of question.choices) {
+            for (let choice of question.choices!) {
               // If one of the choice is conditional
               if (choice.conditions) {
                 // And it's the selected choice
                 if (choice.id === selectedChoice) {
                   // Test the condition
                   if (!conditionUtils.compileConditions(choice.conditions)(conditionData)) {
-                    deleteAnswer()
+                    deleteAnswer!()
                   }
                 }
               }
@@ -259,11 +264,14 @@ export default class ResponseCleaner {
             answerValue = relevantData?.[questionId]?.value
           }
         }
+        else {
+          continue
+        }
 
         // SECOND: look for conditional choices and delete their answer if the conditions are false
         if (answerValue != null) {
           // Get the question
-          const question = formUtils.findItem(design, questionId)
+          const question = formUtils.findItem(design, questionId)!
           // If cascading list
           if (question._type === "CascadingListQuestion") {
             // If id, find row

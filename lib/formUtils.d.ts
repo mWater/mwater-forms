@@ -14,6 +14,10 @@ export declare function isQuestion(item: Item): item is Question;
 export declare function isExpression(item: Item): boolean;
 /** Localize a localized string */
 export declare function localizeString(str?: LocalizedString | null, locale?: string): string;
+/** Gets all questions in form before reference item specified
+ * refItem can be null for all questions
+ * rosterId is the rosterId to use. null for only top-level
+ */
 export declare function priorQuestions(formDesign: FormDesign, refItem?: Item | null, rosterId?: string | null): Question[];
 export declare function getRosterIds(formDesign: any): unknown[];
 export declare function findItem(formDesign: FormDesign, itemId: string): Item | undefined;
@@ -26,15 +30,15 @@ export declare function duplicateItem(item: any, idMap?: any): any;
 export declare function extractLocalizedStrings(obj: any): any;
 export declare function updateLocalizations(formDesign: any): (boolean | undefined)[];
 export declare function hasLocalizations(obj: any, locale: any): boolean;
-export declare function findEntityQuestion(formDesign: any, entityType: any): unknown;
+export declare function findEntityQuestion(formDesign: any, entityType: any): Question | null;
 export declare function extractEntityReferences(formDesign: any, responseData: any): ({
-    question: any;
+    question: string;
     entityType: any;
     property: string;
     value: any;
     roster?: undefined;
 } | {
-    question: any;
+    question: string;
     roster: any;
     entityType: any;
     property: string;

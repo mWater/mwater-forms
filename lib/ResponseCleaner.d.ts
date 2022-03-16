@@ -14,9 +14,9 @@ export default class ResponseCleaner {
      */
     cleanData: (design: FormDesign, visibilityCalculator: VisibilityCalculator, defaultValueApplier: DefaultValueApplier, randomAskedCalculator: RandomAskedCalculator | null, data: ResponseData, responseRowFactory: (data: ResponseData) => ResponseRow, oldVisibilityStructure: VisibilityStructure | null, callback: (err: any, result?: {
         data: ResponseData;
-        visibilityStructure: VisibilityState;
+        visibilityStructure: VisibilityStructure;
     } | undefined) => void) => void;
     cleanDataBasedOnVisibility(data: any, visibilityStructure: any): any;
-    cleanDataBasedOnChoiceConditions(data: any, visibilityStructure: any, design: any): any;
+    cleanDataBasedOnChoiceConditions(data: any, visibilityStructure: VisibilityStructure, design: FormDesign): any;
     cleanDataCascadingLists(data: any, visibilityStructure: any, design: any): any;
 }

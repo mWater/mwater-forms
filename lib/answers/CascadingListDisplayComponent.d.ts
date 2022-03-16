@@ -1,4 +1,3 @@
-/// <reference types="react" />
 import { CascadingListAnswerValue } from "../response";
 import { CascadingListQuestion } from "../formDesign";
 /** Displays a cascading list question answer */

@@ -583,6 +583,8 @@ export interface Choice {
     specify?: boolean;
     /** Conditions for visibility of the choice */
     conditions: Conditions;
+    /** Condition expression (mwater-expression) for visiblity of the choice */
+    conditionExpr?: Expr;
 }
 /** List of units for a units question */
 declare type Units = Unit[];

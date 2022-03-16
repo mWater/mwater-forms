@@ -114,9 +114,10 @@ export function localizeString(str?: LocalizedString | null, locale?: string): s
   return ""
 }
 
-// Gets all questions in form before reference item specified
-// refItem can be null for all questions
-// rosterId is the rosterId to use. null for only top-level
+/** Gets all questions in form before reference item specified
+ * refItem can be null for all questions
+ * rosterId is the rosterId to use. null for only top-level
+ */
 export function priorQuestions(
   formDesign: FormDesign,
   refItem: Item | null = null,
@@ -182,7 +183,7 @@ export function findItem(formDesign: FormDesign, itemId: string): Item | undefin
     }
 
     if ((item as any).contents) {
-      const found = exports.findItem(item, itemId)
+      const found = findItem(item as any, itemId)
       if (found) {
         return found
       }
@@ -197,7 +198,7 @@ export function allItems(rootItem: FormDesign | Item): (Item | FormDesign)[] {
   items.push(rootItem)
   if ((rootItem as any).contents) {
     for (let item of (rootItem as any).contents) {
-      items = items.concat(exports.allItems(item))
+      items = items.concat(allItems(item))
     }
   }
 
@@ -207,7 +208,7 @@ export function allItems(rootItem: FormDesign | Item): (Item | FormDesign)[] {
 // Fills question with default values and removes extraneous fields
 export function prepareQuestion(q: any) {
   _.defaults(q, {
-    _id: exports.createUid(),
+    _id: createUid(),
     text: {},
     conditions: [],
     validations: [],
@@ -402,7 +403,7 @@ export function changeQuestionType(question: any, newType: any) {
   question._type = newType
 
   // Prepare question to ensure correct fields
-  exports.prepareQuestion(question)
+  prepareQuestion(question)
 
   return question
 }
@@ -484,14 +485,14 @@ export function duplicateItem(item: any, idMap?: any) {
   }
 
   if (["Form", "Section"].includes(item._type)) {
-    for (question of exports.priorQuestions(item)) {
+    for (question of priorQuestions(item)) {
       // Map non-mapped ones
       if (!idMap[question._id]) {
-        idMap[question._id] = exports.createUid()
+        idMap[question._id] = createUid()
       }
     }
   } else if (item._id) {
-    idMap[item._id] = exports.createUid()
+    idMap[item._id] = createUid()
   }
 
   const dup = _.cloneDeep(item)
@@ -504,7 +505,7 @@ export function duplicateItem(item: any, idMap?: any) {
     if (idMap && idMap[dup._id]) {
       dup._id = idMap[dup._id]
     } else {
-      dup._id = exports.createUid()
+      dup._id = createUid()
     }
   }
 
@@ -530,13 +531,13 @@ export function duplicateItem(item: any, idMap?: any) {
   // Duplicate contents
   if (dup.contents) {
     dup.contents = _.map(dup.contents, (item) => {
-      return exports.duplicateItem(item, idMap)
+      return duplicateItem(item, idMap)
     })
   }
 
   if (dup.calculations) {
     let calculations = _.map(dup.calculations, (item) => {
-      return exports.duplicateItem(item, idMap)
+      return duplicateItem(item, idMap)
     })
 
     calculations = JSON.stringify(calculations)
@@ -569,12 +570,12 @@ export function extractLocalizedStrings(obj: any) {
   // If array, concat each
   if (_.isArray(obj)) {
     for (let item of obj) {
-      strs = strs.concat(this.extractLocalizedStrings(item))
+      strs = strs.concat(extractLocalizedStrings(item))
     }
   } else if (_.isObject(obj)) {
     for (let key in obj) {
       const value = obj[key]
-      strs = strs.concat(this.extractLocalizedStrings(value))
+      strs = strs.concat(extractLocalizedStrings(value))
     }
   }
 
@@ -610,19 +611,19 @@ export function updateLocalizations(formDesign: any) {
 
 // Determines if has at least one localization in locale
 export function hasLocalizations(obj: any, locale: any) {
-  const strs = exports.extractLocalizedStrings(obj)
+  const strs = extractLocalizedStrings(obj)
   return _.any(strs, (str) => str[locale])
 }
 
 // Finds an entity question of the specified type, or a legacy site question
 export function findEntityQuestion(formDesign: any, entityType: any) {
-  let question = _.find(exports.priorQuestions(formDesign), function (q) {
+  let question = _.find(priorQuestions(formDesign), function (q) {
     if (q._type === "EntityQuestion" && q.entityType === entityType) {
       return true
     }
 
     if (q._type === "SiteQuestion") {
-      const questionEntityType = exports.getSiteEntityType(q)
+      const questionEntityType = getSiteEntityType(q)
       if (questionEntityType === entityType) {
         return true
       }
@@ -634,8 +635,8 @@ export function findEntityQuestion(formDesign: any, entityType: any) {
     return question
   }
 
-  for (let rosterId of exports.getRosterIds(formDesign)) {
-    question = _.find(exports.priorQuestions(formDesign, null, rosterId), function (q) {
+  for (let rosterId of getRosterIds(formDesign)) {
+    question = _.find(priorQuestions(formDesign, null, rosterId), function (q) {
       if (q._type === "EntityQuestion" && q.entityType === entityType) {
         return true
       }
@@ -645,7 +646,7 @@ export function findEntityQuestion(formDesign: any, entityType: any) {
       }
 
       if (q._type === "SiteQuestion") {
-        const questionEntityType = exports.getSiteEntityType(q)
+        const questionEntityType = getSiteEntityType(q)
         if (questionEntityType === entityType) {
           return true
         }
@@ -674,11 +675,11 @@ export function extractEntityReferences(formDesign: any, responseData: any) {
   const results = []
 
   // Handle non-roster
-  for (question of exports.priorQuestions(formDesign)) {
-    switch (exports.getAnswerType(question)) {
+  for (question of priorQuestions(formDesign)) {
+    switch (getAnswerType(question)) {
       case "site":
         code = responseData[question._id]?.value?.code
-        entityType = exports.getSiteEntityType(question)
+        entityType = getSiteEntityType(question)
         if (code) {
           results.push({ question: question._id, entityType, property: "code", value: code })
         }
@@ -692,14 +693,14 @@ export function extractEntityReferences(formDesign: any, responseData: any) {
     }
   }
 
-  for (let rosterId of exports.getRosterIds(formDesign)) {
-    for (question of exports.priorQuestions(formDesign, null, rosterId)) {
+  for (let rosterId of getRosterIds(formDesign)) {
+    for (question of priorQuestions(formDesign, null, rosterId)) {
       var rosterEntry
-      switch (exports.getAnswerType(question)) {
+      switch (getAnswerType(question)) {
         case "site":
           for (rosterEntry of responseData[rosterId] || []) {
             code = rosterEntry.data[question._id]?.value?.code
-            entityType = exports.getSiteEntityType(question)
+            entityType = getSiteEntityType(question)
             if (code) {
               results.push({
                 question: question._id,
@@ -743,7 +744,7 @@ export function getSiteEntityType(question: SiteQuestion): string {
 
 /** Get list of custom table ids referenced by a form (cascading ref questions) */
 export function getCustomTablesReferenced(formDesign: FormDesign): string[] {
-  const items = exports.allItems(formDesign)
+  const items = allItems(formDesign)
 
   const crqs = _.filter(items, (item) => item._type === "CascadingRefQuestion")
   const tableIds = _.uniq(_.pluck(crqs, "tableId"))
