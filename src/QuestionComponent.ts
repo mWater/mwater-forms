@@ -32,18 +32,21 @@ import UnitsAnswerComponent from "./answers/UnitsAnswerComponent"
 import { CascadingListAnswerComponent } from "./answers/CascadingListAnswerComponent"
 import { CascadingRefAnswerComponent } from "./answers/CascadingRefAnswerComponent"
 import RankedQuestion from "./answers/RankedQuestion"
+import ResponseRow from "./ResponseRow"
+import { Schema } from "mwater-expressions"
+import { Choice, Question } from "./formDesign"
 
 export interface QuestionComponentProps {
   /** Design of question. See schema */
-  question: any
+  question: Question
   /** Current data of response (for roster entry if in roster) */
   data?: any
   /** ResponseRow object (for roster entry if in roster) */
-  responseRow?: any
+  responseRow: ResponseRow
   onAnswerChange: any
   displayMissingRequired?: boolean
   onNext?: any
-  schema: any
+  schema: Schema
 }
 
 interface QuestionComponentState {
@@ -98,16 +101,20 @@ export default class QuestionComponent extends React.Component<QuestionComponent
     }
   }
 
-  shouldComponentUpdate(nextProps: any, nextState: any, nextContext: any) {
+  /** Speed up reloading by not updating questions that are simple. */
+  shouldComponentUpdate(nextProps: QuestionComponentProps, nextState: QuestionComponentState, nextContext: any) {
     if (this.context.locale !== nextContext.locale) {
       return true
     }
     if (nextProps.question.textExprs != null && nextProps.question.textExprs.length > 0) {
       return true
     }
-    if (nextProps.question.choices != null) {
-      for (let choice of nextProps.question.choices) {
+    if ((nextProps.question as any).choices != null) {
+      for (let choice of (nextProps.question as any).choices as Choice[]) {
         if (choice.conditions != null && choice.conditions.length > 0) {
+          return true
+        }
+        if (choice.conditionExpr != null) {
           return true
         }
       }
@@ -336,7 +343,6 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           },
           value: this.getAnswer().value,
           onValueChange: this.handleValueChange,
-          label: this.props.question.label
         },
         promptDiv
       )
@@ -473,7 +479,9 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           choices: this.props.question.choices,
           answer,
           data: this.props.data,
-          onAnswerChange: this.handleAnswerChange
+          onAnswerChange: this.handleAnswerChange,
+          schema: this.props.schema,
+          responseRow: this.props.responseRow
         })
         break
 

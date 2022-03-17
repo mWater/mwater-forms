@@ -1,33 +1,35 @@
 import PropTypes from "prop-types";
 import React from "react";
+import { Choice } from "../formDesign";
 export interface RadioAnswerComponentProps {
-    choices: any;
+    choices: Choice[];
     onAnswerChange: any;
     /** See answer format */
     answer: any;
     data: any;
+    displayMode?: "vertical" | "toggle";
 }
 export default class RadioAnswerComponent extends React.Component<RadioAnswerComponentProps> {
     static contextTypes: {
         locale: PropTypes.Requireable<string>;
     };
     focus(): null;
-    handleValueChange: (choice: any) => any;
+    handleValueChange: (choice: Choice) => any;
     handleSpecifyChange: (id: any, ev: any) => any;
-    renderSpecify(choice: any): React.DetailedReactHTMLElement<{
+    renderSpecify(choice: Choice): React.DetailedReactHTMLElement<{
         className: string;
         type: string;
         value: any;
         onChange: any;
     }, HTMLElement>;
-    areConditionsValid(choice: any): boolean;
+    isChoiceVisible(choice: Choice): boolean;
     renderGeneralSpecify(): React.DetailedReactHTMLElement<{
         className: string;
         type: string;
         value: any;
         onChange: any;
-    }, HTMLElement> | undefined;
-    renderVerticalChoice(choice: any): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement> | undefined;
+    }, HTMLElement> | null;
+    renderVerticalChoice(choice: Choice): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement> | null;
     renderAsVertical(): React.DetailedReactHTMLElement<{
         className: string;
     }, HTMLElement>;

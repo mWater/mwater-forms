@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import React from "react";
+import { Choice } from "./formDesign";
 export interface MatrixColumnCellComponentProps {
     /** Column. See designSchema */
     column: any;
@@ -23,7 +24,7 @@ export default class MatrixColumnCellComponent extends React.Component<MatrixCol
         locale: PropTypes.Requireable<string>;
     };
     handleValueChange: (value: any) => any;
-    areConditionsValid(choice: any): boolean;
+    isChoiceVisible(choice: Choice): boolean;
     render(): React.DetailedReactHTMLElement<{
         className: string | undefined;
     }, HTMLElement>;

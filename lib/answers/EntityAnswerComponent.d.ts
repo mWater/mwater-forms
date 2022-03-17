@@ -6,7 +6,10 @@ export interface EntityAnswerComponentProps {
     entityType: string;
     onValueChange: any;
 }
-export default class EntityAnswerComponent extends AsyncLoadComponent<EntityAnswerComponentProps> {
+export default class EntityAnswerComponent extends AsyncLoadComponent<EntityAnswerComponentProps, {
+    entity: any;
+    loading: boolean;
+}> {
     static contextTypes: {
         selectEntity: PropTypes.Requireable<(...args: any[]) => any>;
         editEntity: PropTypes.Requireable<(...args: any[]) => any>;

@@ -3,7 +3,7 @@
 import _ from "lodash"
 import { assert } from "chai"
 import TestComponent from "react-library/lib/TestComponent"
-import ReactTestUtils from "react-dom/test-utils"
+import ReactTestUtils, { act } from "react-dom/test-utils"
 import DropdownAnswerComponent from "../../src/answers/DropdownAnswerComponent"
 import React from "react"
 import ReactDOM from "react-dom"
@@ -39,12 +39,12 @@ describe("DropdownAnswerComponent", function () {
   beforeEach(function () {
     this.toDestroy = []
 
-    return (this.render = (options = {}) => {
+    this.render = (options = {}) => {
       const elem = R(DropdownAnswerComponent, options)
       const comp = new TestComponent(elem)
       this.toDestroy.push(comp)
       return comp
-    })
+    }
   })
 
   afterEach(function () {
@@ -60,9 +60,9 @@ describe("DropdownAnswerComponent", function () {
         }
       })
     )
-
+    
     const select = ReactTestUtils.findRenderedDOMComponentWithTag(testComponent.getComponent(), "select")
-    return TestComponent.changeValue(select, "a")
+    TestComponent.changeValue(select, "a")
   })
 
   it("is not disabled with empty value", function (done) {

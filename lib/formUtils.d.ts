@@ -1,5 +1,7 @@
-import { Item, FormDesign, Question, QuestionBase, SiteQuestion } from "./formDesign";
-import { LocalizedString } from "mwater-expressions";
+import { Item, FormDesign, Question, QuestionBase, SiteQuestion, Choice } from "./formDesign";
+import { LocalizedString, Schema } from "mwater-expressions";
+import { ResponseData } from "./response";
+import ResponseRow from "./ResponseRow";
 export declare type AnswerType = "text" | "number" | "choice" | "choices" | "date" | "units" | "boolean" | "location" | "image" | "images" | "texts" | "site" | "entity" | "admin_region" | "items_choices" | "matrix" | "aquagenx_cbt" | "cascading_list" | "cascading_ref" | "ranked";
 /** Create ~ 128-bit uid without dashes */
 export declare function createUid(): any;
@@ -47,3 +49,5 @@ export declare function extractEntityReferences(formDesign: any, responseData: a
 export declare function getSiteEntityType(question: SiteQuestion): string;
 /** Get list of custom table ids referenced by a form (cascading ref questions) */
 export declare function getCustomTablesReferenced(formDesign: FormDesign): string[];
+/** Determine if a choice is visible */
+export declare function isChoiceVisible(choice: Choice, data: ResponseData, responseRow: ResponseRow, schema: Schema): Promise<boolean>;

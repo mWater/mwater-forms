@@ -2,8 +2,11 @@ import _ from "lodash"
 import localizations from "../localizations.json"
 import uuid from "uuid"
 
-import { Item, FormDesign, Question, QuestionBase, SiteQuestion } from "./formDesign"
-import { LocalizedString } from "mwater-expressions"
+import { Item, FormDesign, Question, QuestionBase, SiteQuestion, Choice } from "./formDesign"
+import { LocalizedString, PromiseExprEvaluator, Schema } from "mwater-expressions"
+import { ResponseData } from "./response"
+import ResponseRow from "./ResponseRow"
+import { conditionUtils } from "."
 
 // function allItems(rootItem: any): any;
 // function changeQuestionType(question: any, newType: any): any;
@@ -749,4 +752,25 @@ export function getCustomTablesReferenced(formDesign: FormDesign): string[] {
   const crqs = _.filter(items, (item) => item._type === "CascadingRefQuestion")
   const tableIds = _.uniq(_.pluck(crqs, "tableId"))
   return tableIds
+}
+
+/** Determine if a choice is visible */
+export async function isChoiceVisible(choice: Choice, data: ResponseData, responseRow: ResponseRow, schema: Schema) {
+  // Check conditions
+  if (choice.conditions != null) {
+    if (!conditionUtils.compileConditions(choice.conditions)(data)) {
+      return false
+    }
+  }
+
+  // Check conditionExpr
+  if (choice.conditionExpr) {
+    const exprEvaluator = new PromiseExprEvaluator({ schema })
+    const value = exprEvaluator.evaluate(choice.conditionExpr, { row: responseRow })
+    if (!value) {
+      return false
+    }
+  }
+
+  return true
 }

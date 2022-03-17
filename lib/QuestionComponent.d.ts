@@ -1,17 +1,21 @@
 import PropTypes from "prop-types";
 import React from "react";
+import { default as CurrentPositionFinder } from "./CurrentPositionFinder";
 import CheckAnswerComponent from "./answers/CheckAnswerComponent";
+import ResponseRow from "./ResponseRow";
+import { Schema } from "mwater-expressions";
+import { Choice, Question } from "./formDesign";
 export interface QuestionComponentProps {
     /** Design of question. See schema */
-    question: any;
+    question: Question;
     /** Current data of response (for roster entry if in roster) */
     data?: any;
     /** ResponseRow object (for roster entry if in roster) */
-    responseRow?: any;
+    responseRow: ResponseRow;
     onAnswerChange: any;
     displayMissingRequired?: boolean;
     onNext?: any;
-    schema: any;
+    schema: Schema;
 }
 interface QuestionComponentState {
     helpVisible: any;
@@ -31,9 +35,12 @@ export default class QuestionComponent extends React.Component<QuestionComponent
     comments: HTMLTextAreaElement | null;
     answer: any;
     unmounted: boolean;
+    prompt: HTMLElement | null;
+    currentPositionFinder: CurrentPositionFinder;
     constructor(props: any);
-    componentWillUnmount(): any;
-    shouldComponentUpdate(nextProps: any, nextState: any, nextContext: any): boolean;
+    componentWillUnmount(): void;
+    /** Speed up reloading by not updating questions that are simple. */
+    shouldComponentUpdate(nextProps: QuestionComponentProps, nextState: QuestionComponentState, nextContext: any): boolean;
     focus(): any;
     getAnswer(): any;
     validate(scrollToFirstInvalid: any): Promise<any>;
@@ -47,33 +54,33 @@ export default class QuestionComponent extends React.Component<QuestionComponent
     handleNextOrComments: (ev?: any) => any;
     renderPrompt(): React.DetailedReactHTMLElement<{
         className: string;
-        ref: (c: HTMLElement | null) => HTMLElement | null;
+        ref: (c: HTMLElement | null) => void;
     }, HTMLElement> | React.CElement<import("./answers/CheckAnswerComponent").CheckAnswerComponentProps, CheckAnswerComponent>;
     renderHint(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>;
     renderHelp(): React.DetailedReactHTMLElement<{
         className: string;
-    }, HTMLElement> | undefined;
+    }, HTMLElement> | null;
     renderValidationError(): React.DetailedReactHTMLElement<{
         className: string;
-    }, HTMLElement> | undefined;
-    renderAlternates(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement> | undefined;
+    }, HTMLElement> | null;
+    renderAlternates(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement> | null;
     renderCommentsField(): React.DOMElement<{
         className: string;
         id: string;
-        ref: (c: Element | null) => Element | null;
+        ref: (c: Element | null) => void;
         placeholder: any;
         value: any;
         onChange: (ev: any) => any;
-    }, Element> | undefined;
+    }, Element> | null;
     renderAnswer(): string | React.DetailedReactHTMLElement<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> | React.CElement<any, any> | React.FunctionComponentElement<{
-        choices: import("./formDesign").Choice[];
+        choices: Choice[];
         answer: import("./response").RankedAnswerValue;
         locale: string;
         onValueChange: (value?: any) => void;
     }> | null;
     render(): React.DetailedReactHTMLElement<{
         className: string;
-        "data-qn-id": any;
+        "data-qn-id": string;
     }, HTMLElement>;
 }
 export {};

@@ -1,7 +1,8 @@
 import PropTypes from "prop-types";
 import React from "react";
+import { Choice } from "../formDesign";
 export interface MulticheckAnswerComponentProps {
-    choices: any;
+    choices: Choice[];
     /** See answer format */
     answer: any;
     onAnswerChange: any;
@@ -12,15 +13,15 @@ export default class MulticheckAnswerComponent extends React.Component<Multichec
         locale: PropTypes.Requireable<string>;
     };
     focus(): null;
-    handleValueChange: (choice: any) => any;
+    handleValueChange: (choice: Choice) => any;
     handleSpecifyChange: (id: any, ev: any) => any;
-    areConditionsValid(choice: any): boolean;
-    renderSpecify(choice: any): React.DetailedReactHTMLElement<{
+    isChoiceVisible(choice: Choice): boolean;
+    renderSpecify(choice: Choice): React.DetailedReactHTMLElement<{
         className: string;
         type: string;
         value: any;
         onChange: any;
     }, HTMLElement>;
-    renderChoice(choice: any): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement> | null;
+    renderChoice(choice: Choice): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement> | null;
     render(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>;
 }

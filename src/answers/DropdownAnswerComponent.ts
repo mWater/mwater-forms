@@ -4,8 +4,9 @@ import React from "react"
 const R = React.createElement
 
 import * as formUtils from "../formUtils"
-import * as conditionUtils from "../conditionUtils"
 import { Choice } from "../formDesign"
+import { Schema } from "mwater-expressions"
+import ResponseRow from "../ResponseRow"
 
 export interface DropdownAnswerComponentProps {
   choices: Choice[]
@@ -13,11 +14,52 @@ export interface DropdownAnswerComponentProps {
   /** See answer format */
   answer: any
   data: any
+
+  schema: Schema
+  responseRow: ResponseRow
 }
 
-export default class DropdownAnswerComponent extends React.Component<DropdownAnswerComponentProps> {
+export interface DropdownAnswerComponentState {
+  /** Status of visibility of choices */
+  choiceVisibility: { [choiceId: string]: boolean }
+}
+
+export default class DropdownAnswerComponent extends React.Component<DropdownAnswerComponentProps, DropdownAnswerComponentState> {
   static contextTypes = { locale: PropTypes.string }
   select: HTMLSelectElement | null
+
+  constructor(props: DropdownAnswerComponentProps) {
+    super(props)
+
+    this.state = {
+      choiceVisibility: {}
+    }
+
+    // Set all initially visible
+    for (const choice of this.props.choices) {
+      this.state.choiceVisibility[choice.id] = true
+    }
+  }
+
+  componentDidMount() {
+    this.calculateChoiceVisibility()
+  }
+
+  componentDidUpdate(prevProps: DropdownAnswerComponentProps) {
+    // If visibility potentially changed, recalculate
+    if (prevProps.data != this.props.data) {
+      this.calculateChoiceVisibility()
+    }
+  }
+
+  async calculateChoiceVisibility() {
+    const choiceVisibility: { [choiceId: string]: boolean } = {}
+
+    for (const choice of this.props.choices) {
+      choiceVisibility[choice.id] = await formUtils.isChoiceVisible(choice, this.props.data, this.props.responseRow, this.props.schema)
+    }
+    this.setState({ choiceVisibility })
+  }
 
   focus() {
     return this.select?.focus()
@@ -58,13 +100,6 @@ export default class DropdownAnswerComponent extends React.Component<DropdownAns
     return null
   }
 
-  isChoiceVisible(choice: Choice) {
-    if (choice.conditions == null) {
-      return true
-    }
-    return conditionUtils.compileConditions(choice.conditions)(this.props.data)
-  }
-
   render() {
     return R(
       "div",
@@ -82,7 +117,7 @@ export default class DropdownAnswerComponent extends React.Component<DropdownAns
         },
         R("option", { key: "__none__", value: "" }),
         _.map(this.props.choices, (choice) => {
-          if (this.isChoiceVisible(choice)) {
+          if (this.state.choiceVisibility[choice.id]) {
             let text = formUtils.localizeString(choice.label, this.context.locale)
             if (choice.hint) {
               text += " (" + formUtils.localizeString(choice.hint, this.context.locale) + ")"
