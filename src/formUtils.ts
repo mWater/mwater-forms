@@ -766,7 +766,7 @@ export async function isChoiceVisible(choice: Choice, data: ResponseData, respon
   // Check conditionExpr
   if (choice.conditionExpr) {
     const exprEvaluator = new PromiseExprEvaluator({ schema })
-    const value = exprEvaluator.evaluate(choice.conditionExpr, { row: responseRow })
+    const value = await exprEvaluator.evaluate(choice.conditionExpr, { row: responseRow })
     if (!value) {
       return false
     }
