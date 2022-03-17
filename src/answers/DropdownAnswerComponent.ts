@@ -8,7 +8,7 @@ import * as conditionUtils from "../conditionUtils"
 import { Choice } from "../formDesign"
 
 export interface DropdownAnswerComponentProps {
-  choices: any
+  choices: Choice[]
   onAnswerChange: any
   /** See answer format */
   answer: any
@@ -17,6 +17,7 @@ export interface DropdownAnswerComponentProps {
 
 export default class DropdownAnswerComponent extends React.Component<DropdownAnswerComponentProps> {
   static contextTypes = { locale: PropTypes.string }
+  select: HTMLSelectElement | null
 
   focus() {
     return this.select?.focus()
@@ -54,6 +55,7 @@ export default class DropdownAnswerComponent extends React.Component<DropdownAns
         onChange: this.handleSpecifyChange.bind(null, choice.id)
       })
     }
+    return null
   }
 
   isChoiceVisible(choice: Choice) {
@@ -74,8 +76,8 @@ export default class DropdownAnswerComponent extends React.Component<DropdownAns
           style: { width: "auto" },
           value: this.props.answer.value,
           onChange: this.handleValueChange,
-          ref: (c: any) => {
-            return (this.select = c)
+          ref: (c: HTMLSelectElement | null) => {
+            this.select = c
           }
         },
         R("option", { key: "__none__", value: "" }),
@@ -87,6 +89,7 @@ export default class DropdownAnswerComponent extends React.Component<DropdownAns
             }
             return R("option", { key: choice.id, value: choice.id }, text)
           }
+          return null
         })
       ),
 

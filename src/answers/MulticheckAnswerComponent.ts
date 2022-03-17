@@ -8,7 +8,7 @@ import * as conditionUtils from "../conditionUtils"
 import { Choice } from "../formDesign"
 
 export interface MulticheckAnswerComponentProps {
-  choices: any
+  choices: Choice[]
   /** See answer format */
   answer: any
   onAnswerChange: any

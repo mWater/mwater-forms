@@ -7,7 +7,7 @@ const R = React.createElement
 import * as formUtils from "../formUtils"
 
 export interface LikertAnswerComponentProps {
-  choices: any
+  choices: Choice[]
   onAnswerChange: any
   /** See answer format */
   answer: any

@@ -8,11 +8,12 @@ import * as conditionUtils from "../conditionUtils"
 import { Choice } from "../formDesign"
 
 export interface RadioAnswerComponentProps {
-  choices: any
+  choices: Choice[]
   onAnswerChange: any
   /** See answer format */
   answer: any
   data: any
+  displayMode?: "vertical" | "toggle"
 }
 
 export default class RadioAnswerComponent extends React.Component<RadioAnswerComponentProps> {
@@ -78,6 +79,7 @@ export default class RadioAnswerComponent extends React.Component<RadioAnswerCom
         onChange: this.handleSpecifyChange.bind(null, choice.id)
       })
     }
+    return null
   }
 
   renderVerticalChoice(choice: Choice) {
@@ -106,6 +108,7 @@ export default class RadioAnswerComponent extends React.Component<RadioAnswerCom
         choice.specify && this.props.answer.value === choice.id ? this.renderSpecify(choice) : undefined
       )
     }
+    return null
   }
 
   renderAsVertical() {
@@ -145,6 +148,7 @@ export default class RadioAnswerComponent extends React.Component<RadioAnswerCom
               text
             )
           }
+          return null
         })
       ),
 

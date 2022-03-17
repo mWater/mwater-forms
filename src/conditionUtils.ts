@@ -267,7 +267,7 @@ export { _rhsType as rhsType }
 // Return includes id and text for each one, suitable for a select2 control
 export function rhsChoices(lhsQuestion: Question, op: any): { id: string; text: string }[] {
   // Doesn't apply to LikertQuestions/MatrixQuestions since simple conditions don't apply to them
-  let choices: any
+  let choices: { id: string; text: string }[]
   if (!["LikertQuestion", "MatrixQuestion"].includes(lhsQuestion._type)) {
     choices = _.map((lhsQuestion as DropdownQuestion).choices, (choice) => ({
       id: choice.id,
