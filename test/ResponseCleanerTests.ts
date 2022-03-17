@@ -5,6 +5,8 @@ import _ from "lodash"
 import { assert } from "chai"
 import ResponseCleaner from "../src/ResponseCleaner"
 import VisibilityCalculator from "../src/VisibilityCalculator"
+import { ResponseRow } from "../src"
+import { Schema } from "mwater-expressions"
 
 describe("ResponseCleaner", function () {
   describe("cleanData", function () {
@@ -63,7 +65,7 @@ describe("ResponseCleaner", function () {
       )
     })
 
-    return it("does not delete disabled questions data", function (done) {
+    it("does not delete disabled questions data", function (done) {
       const q1 = { _id: "q1", _type: "TextQuestion", conditions: [], disabled: true }
 
       const design = {
@@ -120,7 +122,7 @@ describe("ResponseCleaner", function () {
         const newData = responseCleaner.cleanDataBasedOnVisibility(data, visibilityStructure)
 
         assert(data !== newData, "It returned data instead of a copy")
-        return assert.deepEqual(data, newData, "Data should have stayed the same")
+        assert.deepEqual(data, newData, "Data should have stayed the same")
       })
 
       it("removes the data for all invisible questions", function () {
@@ -133,10 +135,10 @@ describe("ResponseCleaner", function () {
         const newData = responseCleaner.cleanDataBasedOnVisibility(data, visibilityStructure)
 
         assert(data !== newData, "It returned data instead of a copy")
-        return assert.deepEqual({}, newData, "All the data should have been removed")
+        assert.deepEqual({}, newData, "All the data should have been removed")
       })
 
-      return it("keeps randomAsked for invisible questions so that the decision is not lost", function () {
+      it("keeps randomAsked for invisible questions so that the decision is not lost", function () {
         const responseCleaner = new ResponseCleaner()
 
         const design = {}
@@ -145,7 +147,7 @@ describe("ResponseCleaner", function () {
 
         const newData = responseCleaner.cleanDataBasedOnVisibility(data, visibilityStructure)
 
-        return assert.deepEqual(newData, { questionA: { randomAsked: false } }, "Should keep randomAsked")
+        assert.deepEqual(newData, { questionA: { randomAsked: false } }, "Should keep randomAsked")
       })
     })
 
@@ -160,7 +162,7 @@ describe("ResponseCleaner", function () {
         const newData = responseCleaner.cleanDataBasedOnVisibility(data, visibilityStructure, design)
 
         assert(data !== newData, "It returned data instead of a copy")
-        return assert.deepEqual(data, newData, "Data should have stayed the same")
+        assert.deepEqual(data, newData, "Data should have stayed the same")
       })
 
       it("removes part of the data if sub question is not visible", function () {
@@ -179,14 +181,14 @@ describe("ResponseCleaner", function () {
         const expectedData = { rosterGroupId: [{ data: { firstQuestionId: "sometext" } }] }
 
         assert(data !== newData, "It returned data instead of a copy")
-        return assert.deepEqual(
+        assert.deepEqual(
           expectedData,
           newData,
           "Only the secondQuestionId should have been deleted: " + JSON.stringify(newData)
         )
       })
 
-      return it("removes all the data if the rosterGroupId is invisible", function () {
+      it("removes all the data if the rosterGroupId is invisible", function () {
         const responseCleaner = new ResponseCleaner()
 
         const design = {}
@@ -202,11 +204,11 @@ describe("ResponseCleaner", function () {
         const expectedData = {}
 
         assert(data !== newData, "It returned data instead of a copy")
-        return assert.deepEqual(expectedData, newData, "The whole roster entry should have been deleted")
+        assert.deepEqual(expectedData, newData, "The whole roster entry should have been deleted")
       })
     })
 
-    return describe("Matrix", function () {
+    describe("Matrix", function () {
       it("keeps the data for all visible questions", function () {
         const responseCleaner = new ResponseCleaner()
 
@@ -217,7 +219,7 @@ describe("ResponseCleaner", function () {
         const newData = responseCleaner.cleanDataBasedOnVisibility(data, visibilityStructure, design)
 
         assert(data !== newData, "It returned data instead of a copy")
-        return assert.deepEqual(data, newData, "Data should have stayed the same")
+        assert.deepEqual(data, newData, "Data should have stayed the same")
       })
 
       it("removes part of the data if sub question is not visible", function () {
@@ -235,14 +237,14 @@ describe("ResponseCleaner", function () {
         const expectedData = { matrixId: { item1Id: { firstQuestionId: "sometext" } } }
 
         assert(data !== newData, "It returned data instead of a copy")
-        return assert.deepEqual(
+        assert.deepEqual(
           expectedData,
           newData,
           "Only the secondQuestionId should have been deleted: " + JSON.stringify(newData)
         )
       })
 
-      return it("removes all the data if the whole thing is invisible", function () {
+      it("removes all the data if the whole thing is invisible", function () {
         const responseCleaner = new ResponseCleaner()
 
         const design = {}
@@ -254,12 +256,12 @@ describe("ResponseCleaner", function () {
         const expectedData = {}
 
         assert(data !== newData, "It returned data instead of a copy")
-        return assert.deepEqual(expectedData, newData, "The whole matrix should have been deleted")
+        assert.deepEqual(expectedData, newData, "The whole matrix should have been deleted")
       })
     })
   })
 
-  return describe("cleanDataBasedOnChoiceConditions", function () {
+  describe("cleanDataBasedOnChoiceConditions", function () {
     it("removes invalid dropdown options", function () {
       // Choice c1 conditional on q1 being present
       const design = {
@@ -281,10 +283,10 @@ describe("ResponseCleaner", function () {
       const newData = responseCleaner.cleanDataBasedOnChoiceConditions(data, visibilityStructure, design)
 
       const expectedData = {}
-      return assert.deepEqual(expectedData, newData, "Choice should be deleted")
+      assert.deepEqual(expectedData, newData, "Choice should be deleted")
     })
 
-    it("leaves valid dropdown options", function () {
+    it("leaves valid dropdown options", async function () {
       // Choice c1 conditional on q1 being present
       const design = {
         _type: "Form",
@@ -302,14 +304,14 @@ describe("ResponseCleaner", function () {
       const data = { q1: { value: "sometext" }, q2: { value: "c1" } }
       const visibilityStructure = { q1: true, q2: true }
 
-      const newData = responseCleaner.cleanDataBasedOnChoiceConditions(data, visibilityStructure, design)
+      const newData = await responseCleaner.cleanDataBasedOnChoiceConditions(data, visibilityStructure, design)
 
       const expectedData = { q1: { value: "sometext" }, q2: { value: "c1" } }
-      return assert.deepEqual(expectedData, newData, "Choice should be left")
+      assert.deepEqual(expectedData, newData, "Choice should be left")
     })
 
     describe("roster", function () {
-      it("removes invalid dropdown options", function () {
+      it("removes invalid dropdown options", async function () {
         // Choice c1 conditional on q1 being present
         const design = {
           _type: "Form",
@@ -332,14 +334,20 @@ describe("ResponseCleaner", function () {
         const responseCleaner = new ResponseCleaner()
         const data = { r1: [{ _id: "e1", data: { q2: { value: "c1" } } }] }
         const visibilityStructure = { r1: true, "r1.0.q1": true, "r1.0.q2": true }
+        const schema = new Schema()
+        const responseRow = new ResponseRow({
+          formDesign: design,
+          schema,
+          responseData: data
+        })
 
-        const newData = responseCleaner.cleanDataBasedOnChoiceConditions(data, visibilityStructure, design)
+        const newData = await responseCleaner.cleanDataBasedOnChoiceConditions(data, visibilityStructure, design, responseRow, schema)
 
         const expectedData = { r1: [{ _id: "e1", data: {} }] }
-        return assert.deepEqual(expectedData, newData, "Choice should be deleted")
+        assert.deepEqual(expectedData, newData, "Choice should be deleted")
       })
 
-      return it("leaves valid dropdown options", function () {
+      it("leaves valid dropdown options", async function () {
         // Choice c1 conditional on q1 being present
         const design = {
           _type: "Form",
@@ -362,15 +370,21 @@ describe("ResponseCleaner", function () {
         const responseCleaner = new ResponseCleaner()
         const data = { r1: [{ _id: "e1", data: { q1: { value: "sometext" }, q2: { value: "c1" } } }] }
         const visibilityStructure = { r1: true, "r1.0.q1": true, "r1.0.q2": true }
+        const schema = new Schema()
+        const responseRow = new ResponseRow({
+          formDesign: design,
+          schema,
+          responseData: data
+        })
 
-        const newData = responseCleaner.cleanDataBasedOnChoiceConditions(data, visibilityStructure, design)
+        const newData = await responseCleaner.cleanDataBasedOnChoiceConditions(data, visibilityStructure, design, responseRow, schema)
 
         const expectedData = { r1: [{ _id: "e1", data: { q1: { value: "sometext" }, q2: { value: "c1" } } }] }
-        return assert.deepEqual(expectedData, newData, "Choice should be left")
+        assert.deepEqual(expectedData, newData, "Choice should be left")
       })
     })
 
-    return it("leaves valid dropdown options", function () {
+    it("leaves valid dropdown options", async function () {
       // Choice c1 conditional on q1 being present
       const design = {
         _type: "Form",
@@ -387,11 +401,17 @@ describe("ResponseCleaner", function () {
       const responseCleaner = new ResponseCleaner()
       const data = { q1: { value: "sometext" }, q2: { value: "c1" } }
       const visibilityStructure = { q1: true, q2: true }
+      const schema = new Schema()
+      const responseRow = new ResponseRow({
+        formDesign: design,
+        schema,
+        responseData: data
+      })
 
-      const newData = responseCleaner.cleanDataBasedOnChoiceConditions(data, visibilityStructure, design)
+      const newData = await responseCleaner.cleanDataBasedOnChoiceConditions(data, visibilityStructure, design, responseRow, schema)
 
       const expectedData = { q1: { value: "sometext" }, q2: { value: "c1" } }
-      return assert.deepEqual(expectedData, newData, "Choice should be left")
+      assert.deepEqual(expectedData, newData, "Choice should be left")
     })
   })
 })

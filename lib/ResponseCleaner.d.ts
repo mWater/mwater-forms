@@ -2,6 +2,7 @@ import { FormDesign, ResponseData, ResponseRow } from ".";
 import DefaultValueApplier from "./DefaultValueApplier";
 import RandomAskedCalculator from "./RandomAskedCalculator";
 import VisibilityCalculator, { VisibilityStructure } from "./VisibilityCalculator";
+import { Schema } from "mwater-expressions";
 export default class ResponseCleaner {
     /**
      * Cleans data, calling back with { data: cleaned data, visibilityStructure: final visibility structure (since expensive to compute) }
@@ -17,6 +18,6 @@ export default class ResponseCleaner {
         visibilityStructure: VisibilityStructure;
     } | undefined) => void) => void;
     cleanDataBasedOnVisibility(data: any, visibilityStructure: any): any;
-    cleanDataBasedOnChoiceConditions(data: any, visibilityStructure: VisibilityStructure, design: FormDesign): any;
+    cleanDataBasedOnChoiceConditions(data: any, visibilityStructure: VisibilityStructure, design: FormDesign, responseRow: ResponseRow, schema: Schema): Promise<any>;
     cleanDataCascadingLists(data: any, visibilityStructure: any, design: any): any;
 }

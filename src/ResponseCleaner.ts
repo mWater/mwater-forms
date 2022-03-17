@@ -2,10 +2,11 @@ import _ from "lodash"
 import * as formUtils from "./formUtils"
 import * as conditionUtils from "./conditionUtils"
 import async from "async"
-import { FormDesign, ResponseData, ResponseRow } from "."
+import { FormDesign, ResponseData, ResponseRow, schema } from "."
 import DefaultValueApplier from "./DefaultValueApplier"
 import RandomAskedCalculator from "./RandomAskedCalculator"
 import VisibilityCalculator, { VisibilityStructure } from "./VisibilityCalculator"
+import { Schema } from "mwater-expressions"
 
 /*
 ResponseCleaner removes the data entry (answer) of invisible questions and defaults values
@@ -48,10 +49,11 @@ export default class ResponseCleaner {
       () => !complete,
       (cb) => {
         // Compute visibility
-        return visibilityCalculator.createVisibilityStructure(
+        const responseRow = responseRowFactory(newData)
+        visibilityCalculator.createVisibilityStructure(
           newData,
-          responseRowFactory(newData),
-          (error: any, visibilityStructure: any) => {
+          responseRow,
+          async (error: any, visibilityStructure: any) => {
             if (error) {
               return cb(error)
             }
@@ -60,7 +62,7 @@ export default class ResponseCleaner {
 
             // Clean data
             newData = this.cleanDataBasedOnVisibility(newData, newVisibilityStructure)
-            newData = this.cleanDataBasedOnChoiceConditions(newData, newVisibilityStructure, design)
+            newData = await this.cleanDataBasedOnChoiceConditions(newData, newVisibilityStructure, design, responseRow, visibilityCalculator.schema)
             newData = this.cleanDataCascadingLists(newData, newVisibilityStructure, design)
 
             // Default values
@@ -156,7 +158,7 @@ export default class ResponseCleaner {
   // Remove data entries for all the conditional choices that are false
   // 'DropdownQuestion', 'RadioQuestion' and 'DropdownColumnQuestion' can have choices that are only present if a condition
   // is filled. If the condition is no longer filled, the answer data needs to be removed
-  cleanDataBasedOnChoiceConditions(data: any, visibilityStructure: VisibilityStructure, design: FormDesign) {
+  async cleanDataBasedOnChoiceConditions(data: any, visibilityStructure: VisibilityStructure, design: FormDesign, responseRow: ResponseRow, schema: Schema) {
     const newData = _.cloneDeep(data)
 
     for (let key in visibilityStructure) {
@@ -164,6 +166,7 @@ export default class ResponseCleaner {
       if (visible) {
         var conditionData, questionId: any
         let deleteAnswer: () => void
+        let currentResponseRow: ResponseRow | null = null
 
         const values = key.split(".")
         let selectedChoice = null
@@ -176,8 +179,9 @@ export default class ResponseCleaner {
           selectedChoice = newData[questionId]?.value
           // A simple delete
           deleteAnswer = () => delete newData[questionId]
-          // Check if value is an array, which indicates roster
-        } else if (_.isArray(newData[values[0]])) {
+          currentResponseRow = responseRow
+
+        } else if (_.isArray(newData[values[0]])) { // Check if value is an array, which indicates roster
           // The id of the roster containing the data
           var rosterGroupId = values[0]
           // The index of the answer
@@ -193,6 +197,8 @@ export default class ResponseCleaner {
               const answerToClean = newData[rosterGroupId][index].data
               return delete answerToClean[questionId]
             }
+            const rosterResponseRows = await responseRow.followJoin(`data:${rosterGroupId}`) as ResponseRow[]
+            currentResponseRow = rosterResponseRows[index]
           }
         }
         else {
@@ -200,7 +206,7 @@ export default class ResponseCleaner {
         }
 
         // SECOND: look for conditional choices and delete their answer if the conditions are false
-        if (selectedChoice != null) {
+        if (selectedChoice != null && currentResponseRow != null) {
           // Get the question
           const question = formUtils.findItem(design, questionId)!
           // Of dropdown or radio type (types with conditional choices)
@@ -209,19 +215,18 @@ export default class ResponseCleaner {
             question._type === "RadioQuestion" ||
             question._type === "DropdownColumnQuestion"
           ) {
+
             for (let choice of question.choices!) {
-              // If one of the choice is conditional
-              if (choice.conditions) {
-                // And it's the selected choice
-                if (choice.id === selectedChoice) {
-                  // Test the condition
-                  if (!conditionUtils.compileConditions(choice.conditions)(conditionData)) {
-                    deleteAnswer!()
-                  }
+              // If it's the selected choice
+              if (choice.id === selectedChoice) {
+                // Check if visible
+                if (!await formUtils.isChoiceVisible(choice, conditionData, currentResponseRow, schema)) {
+                  deleteAnswer!()
                 }
               }
             }
           }
+          // TODO handle multicheck and matrix dropdowns
         }
       }
     }
