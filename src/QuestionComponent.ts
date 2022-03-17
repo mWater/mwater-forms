@@ -74,6 +74,8 @@ export default class QuestionComponent extends React.Component<QuestionComponent
   comments: HTMLTextAreaElement | null
   answer: any
   unmounted: boolean
+  prompt: HTMLElement | null
+  currentPositionFinder: CurrentPositionFinder
 
   constructor(props: any) {
     super(props)
@@ -155,7 +157,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
       const answerInvalid = this.answer?.validate()
 
       if (answerInvalid && scrollToFirstInvalid) {
-        this.prompt.scrollIntoView()
+        this.prompt?.scrollIntoView()
       }
 
       if (answerInvalid) {
@@ -170,15 +172,9 @@ export default class QuestionComponent extends React.Component<QuestionComponent
       this.context.locale
     ).validate(this.props.question, this.getAnswer())
 
-    // Check for isValid function in answer component, as some answer components don't store invalid answers
-    // like the number answer.
-    if (!validationError && this.answer?.isValid && !this.answer?.isValid()) {
-      validationError = true
-    }
-
     if (validationError != null) {
       if (scrollToFirstInvalid) {
-        this.prompt.scrollIntoView()
+        this.prompt?.scrollIntoView()
       }
       this.setState({ validationError })
       return true
@@ -303,7 +299,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
       {
         className: "prompt",
         ref: (c) => {
-          return (this.prompt = c)
+          this.prompt = c
         }
       },
       this.props.question.code ? R("span", { className: "question-code" }, this.props.question.code + ": ") : undefined,
@@ -375,12 +371,14 @@ export default class QuestionComponent extends React.Component<QuestionComponent
         })
       )
     }
+    return null
   }
 
   renderValidationError() {
     if (this.state.validationError != null && typeof this.state.validationError === "string") {
       return R("div", { className: "validation-message text-danger" }, this.state.validationError)
     }
+    return null
   }
 
   renderAlternates() {
@@ -417,6 +415,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           : undefined
       )
     }
+    return null
   }
 
   renderCommentsField() {
@@ -425,13 +424,14 @@ export default class QuestionComponent extends React.Component<QuestionComponent
         className: "form-control question-comments",
         id: "comments",
         ref: (c) => {
-          return (this.comments = c)
+          this.comments = c
         },
         placeholder: this.context.T("Comments"),
         value: this.getAnswer().comments,
         onChange: this.handleCommentsChange
       })
     }
+    return null
   }
 
   renderAnswer() {

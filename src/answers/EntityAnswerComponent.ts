@@ -13,7 +13,7 @@ export interface EntityAnswerComponentProps {
 
 // Allows user to select an entity
 // State is needed for canEditEntity which requires entire entity
-export default class EntityAnswerComponent extends AsyncLoadComponent<EntityAnswerComponentProps> {
+export default class EntityAnswerComponent extends AsyncLoadComponent<EntityAnswerComponentProps, { entity: any, loading: boolean }> {
   static contextTypes = {
     selectEntity: PropTypes.func,
     editEntity: PropTypes.func,
