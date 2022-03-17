@@ -1,6 +1,8 @@
 import PropTypes from "prop-types";
 import React from "react";
 import { Choice } from "../formDesign";
+import { Schema } from "mwater-expressions";
+import ResponseRow from "../ResponseRow";
 export interface RadioAnswerComponentProps {
     choices: Choice[];
     onAnswerChange: any;
@@ -8,11 +10,23 @@ export interface RadioAnswerComponentProps {
     answer: any;
     data: any;
     displayMode?: "vertical" | "toggle";
+    schema: Schema;
+    responseRow: ResponseRow;
 }
-export default class RadioAnswerComponent extends React.Component<RadioAnswerComponentProps> {
+export interface RadioAnswerComponentState {
+    /** Status of visibility of choices */
+    choiceVisibility: {
+        [choiceId: string]: boolean;
+    };
+}
+export default class RadioAnswerComponent extends React.Component<RadioAnswerComponentProps, RadioAnswerComponentState> {
     static contextTypes: {
         locale: PropTypes.Requireable<string>;
     };
+    constructor(props: RadioAnswerComponentProps);
+    componentDidMount(): void;
+    componentDidUpdate(prevProps: RadioAnswerComponentProps): void;
+    calculateChoiceVisibility(): Promise<void>;
     focus(): null;
     handleValueChange: (choice: Choice) => any;
     handleSpecifyChange: (id: any, ev: any) => any;
@@ -22,7 +36,6 @@ export default class RadioAnswerComponent extends React.Component<RadioAnswerCom
         value: any;
         onChange: any;
     }, HTMLElement>;
-    isChoiceVisible(choice: Choice): boolean;
     renderGeneralSpecify(): React.DetailedReactHTMLElement<{
         className: string;
         type: string;

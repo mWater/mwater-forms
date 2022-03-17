@@ -225,6 +225,12 @@ export interface MatrixColumn {
     choices?: Choices;
     /** Site type (e.g. "water_point"). Required for SiteColumnQuestion */
     siteType?: string;
+    /** Expression for calculation type column */
+    expr?: Expr;
+    /** For TextColumn */
+    cellText?: LocalizedString;
+    /** For TextColumn */
+    cellTextExprs?: Expr[];
     /** True to default to current date/time for DateColumnQuestions */
     defaultNow?: boolean;
     /** moment.js format of the displayed date (is always stored in ISO 8601) */

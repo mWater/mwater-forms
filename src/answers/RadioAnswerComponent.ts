@@ -4,8 +4,9 @@ import React from "react"
 const R = React.createElement
 
 import * as formUtils from "../formUtils"
-import * as conditionUtils from "../conditionUtils"
 import { Choice } from "../formDesign"
+import { Schema } from "mwater-expressions"
+import ResponseRow from "../ResponseRow"
 
 export interface RadioAnswerComponentProps {
   choices: Choice[]
@@ -14,10 +15,51 @@ export interface RadioAnswerComponentProps {
   answer: any
   data: any
   displayMode?: "vertical" | "toggle"
+
+  schema: Schema
+  responseRow: ResponseRow
 }
 
-export default class RadioAnswerComponent extends React.Component<RadioAnswerComponentProps> {
+export interface RadioAnswerComponentState {
+  /** Status of visibility of choices */
+  choiceVisibility: { [choiceId: string]: boolean }
+}
+
+export default class RadioAnswerComponent extends React.Component<RadioAnswerComponentProps, RadioAnswerComponentState> {
   static contextTypes = { locale: PropTypes.string }
+
+  constructor(props: RadioAnswerComponentProps) {
+    super(props)
+
+    this.state = {
+      choiceVisibility: {}
+    }
+
+    // Set all initially visible
+    for (const choice of this.props.choices) {
+      this.state.choiceVisibility[choice.id] = true
+    }
+  }
+
+  componentDidMount() {
+    this.calculateChoiceVisibility()
+  }
+
+  componentDidUpdate(prevProps: RadioAnswerComponentProps) {
+    // If visibility potentially changed, recalculate
+    if (prevProps.data != this.props.data) {
+      this.calculateChoiceVisibility()
+    }
+  }
+
+  async calculateChoiceVisibility() {
+    const choiceVisibility: { [choiceId: string]: boolean } = {}
+
+    for (const choice of this.props.choices) {
+      choiceVisibility[choice.id] = await formUtils.isChoiceVisible(choice, this.props.data, this.props.responseRow, this.props.schema)
+    }
+    this.setState({ choiceVisibility })
+  }
 
   focus() {
     // Nothing to focus
@@ -55,13 +97,6 @@ export default class RadioAnswerComponent extends React.Component<RadioAnswerCom
     })
   }
 
-  isChoiceVisible(choice: Choice) {
-    if (choice.conditions == null) {
-      return true
-    }
-    return conditionUtils.compileConditions(choice.conditions)(this.props.data)
-  }
-
   // Render general specify input box (without choice specified)
   renderGeneralSpecify() {
     let value
@@ -83,7 +118,7 @@ export default class RadioAnswerComponent extends React.Component<RadioAnswerCom
   }
 
   renderVerticalChoice(choice: Choice) {
-    if (this.isChoiceVisible(choice)) {
+    if (this.state.choiceVisibility[choice.id]) {
       return R(
         "div",
         { key: choice.id },
@@ -128,7 +163,7 @@ export default class RadioAnswerComponent extends React.Component<RadioAnswerCom
         "div",
         { className: "btn-group", key: "toggle" },
         _.map(this.props.choices, (choice) => {
-          if (this.isChoiceVisible(choice)) {
+          if (this.state.choiceVisibility[choice.id]) {
             let text = formUtils.localizeString(choice.label, this.context.locale)
             if (choice.hint) {
               text += " (" + formUtils.localizeString(choice.hint, this.context.locale) + ")"

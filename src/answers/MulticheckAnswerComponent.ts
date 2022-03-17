@@ -4,8 +4,9 @@ import React from "react"
 const R = React.createElement
 
 import * as formUtils from "../formUtils"
-import * as conditionUtils from "../conditionUtils"
 import { Choice } from "../formDesign"
+import { Schema } from "mwater-expressions"
+import ResponseRow from "../ResponseRow"
 
 export interface MulticheckAnswerComponentProps {
   choices: Choice[]
@@ -13,11 +14,52 @@ export interface MulticheckAnswerComponentProps {
   answer: any
   onAnswerChange: any
   data: any
+
+  schema: Schema
+  responseRow: ResponseRow
+}
+
+export interface MulticheckAnswerComponentState {
+  /** Status of visibility of choices */
+  choiceVisibility: { [choiceId: string]: boolean }
 }
 
 // Multiple checkboxes where more than one can be checked
-export default class MulticheckAnswerComponent extends React.Component<MulticheckAnswerComponentProps> {
+export default class MulticheckAnswerComponent extends React.Component<MulticheckAnswerComponentProps, MulticheckAnswerComponentState> {
   static contextTypes = { locale: PropTypes.string }
+
+  constructor(props: MulticheckAnswerComponentProps) {
+    super(props)
+
+    this.state = {
+      choiceVisibility: {}
+    }
+
+    // Set all initially visible
+    for (const choice of this.props.choices) {
+      this.state.choiceVisibility[choice.id] = true
+    }
+  }
+
+  componentDidMount() {
+    this.calculateChoiceVisibility()
+  }
+
+  componentDidUpdate(prevProps: MulticheckAnswerComponentProps) {
+    // If visibility potentially changed, recalculate
+    if (prevProps.data != this.props.data) {
+      this.calculateChoiceVisibility()
+    }
+  }
+
+  async calculateChoiceVisibility() {
+    const choiceVisibility: { [choiceId: string]: boolean } = {}
+
+    for (const choice of this.props.choices) {
+      choiceVisibility[choice.id] = await formUtils.isChoiceVisible(choice, this.props.data, this.props.responseRow, this.props.schema)
+    }
+    this.setState({ choiceVisibility })
+  }
 
   focus() {
     // Nothing to focus
@@ -49,13 +91,6 @@ export default class MulticheckAnswerComponent extends React.Component<Multichec
     return this.props.onAnswerChange({ value: this.props.answer.value, specify })
   }
 
-  isChoiceVisible(choice: Choice) {
-    if (choice.conditions == null) {
-      return true
-    }
-    return conditionUtils.compileConditions(choice.conditions)(this.props.data)
-  }
-
   // Render specify input box
   renderSpecify(choice: Choice) {
     let value
@@ -73,7 +108,7 @@ export default class MulticheckAnswerComponent extends React.Component<Multichec
   }
 
   renderChoice(choice: Choice) {
-    if (!this.isChoiceVisible(choice)) {
+    if (!this.state.choiceVisibility[choice.id]) {
       return null
     }
 

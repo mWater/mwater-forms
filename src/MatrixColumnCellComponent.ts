@@ -4,21 +4,22 @@ import React from "react"
 const R = React.createElement
 
 import * as formUtils from "./formUtils"
-import * as conditionUtils from "./conditionUtils"
 import NumberAnswerComponent from "./answers/NumberAnswerComponent"
 import DateAnswerComponent from "./answers/DateAnswerComponent"
 import UnitsAnswerComponent from "./answers/UnitsAnswerComponent"
 import SiteColumnAnswerComponent from "./answers/SiteColumnAnswerComponent"
 import TextExprsComponent from "./TextExprsComponent"
-import { Choice } from "./formDesign"
+import { Choice, MatrixColumn } from "./formDesign"
+import { Schema } from "mwater-expressions"
+import ResponseRow from "./ResponseRow"
 
 export interface MatrixColumnCellComponentProps {
   /** Column. See designSchema */
-  column: any
+  column: MatrixColumn
   /** Current data of response (for roster entry if in roster) */
   data?: any
   /** ResponseRow object (for roster entry if in roster) */
-  responseRow?: any
+  responseRow: ResponseRow
   /** Answer of the cell */
   answer?: any
   /** Called with new answer of cell */
@@ -28,22 +29,59 @@ export interface MatrixColumnCellComponentProps {
   /** Validation message */
   invalidMessage?: string
   /** Schema to use, including form */
-  schema: any
+  schema: Schema
+}
+
+export interface MatrixColumnCellComponentState {
+  /** Status of visibility of choices */
+  choiceVisibility: { [choiceId: string]: boolean }
 }
 
 // Cell of a matrix column
-export default class MatrixColumnCellComponent extends React.Component<MatrixColumnCellComponentProps> {
+export default class MatrixColumnCellComponent extends React.Component<MatrixColumnCellComponentProps, MatrixColumnCellComponentState> {
   static contextTypes = { locale: PropTypes.string }
+
+  constructor(props: MatrixColumnCellComponentProps) {
+    super(props)
+
+    this.state = {
+      choiceVisibility: {}
+    }
+
+    // Set all initially visible
+    if (this.props.column._type == "DropdownColumnQuestion") {
+      for (const choice of this.props.column.choices!) {
+        this.state.choiceVisibility[choice.id] = true
+      }
+    }
+  }
+
+  componentDidMount() {
+    this.calculateChoiceVisibility()
+  }
+
+  componentDidUpdate(prevProps: MatrixColumnCellComponentProps) {
+    // If visibility potentially changed, recalculate
+    if (prevProps.data != this.props.data) {
+      this.calculateChoiceVisibility()
+    }
+  }
+
+  async calculateChoiceVisibility() {
+    if (this.props.column._type != "DropdownColumnQuestion") {
+      return
+    }
+
+    const choiceVisibility: { [choiceId: string]: boolean } = {}
+
+    for (const choice of this.props.column.choices!) {
+      choiceVisibility[choice.id] = await formUtils.isChoiceVisible(choice, this.props.data, this.props.responseRow, this.props.schema)
+    }
+    this.setState({ choiceVisibility })
+  }
 
   handleValueChange = (value: any) => {
     return this.props.onAnswerChange(_.extend({}, this.props.answer, { value }))
-  }
-
-  isChoiceVisible(choice: Choice) {
-    if (choice.conditions == null) {
-      return true
-    }
-    return conditionUtils.compileConditions(choice.conditions)(this.props.data)
   }
 
   render() {
@@ -59,7 +97,7 @@ export default class MatrixColumnCellComponent extends React.Component<MatrixCol
           { key: column._id },
           R(TextExprsComponent, {
             localizedStr: { _base: "en", en: "{0}" }, // This does not need to be translated, so en as base should be fine
-            exprs: [column.expr],
+            exprs: [column.expr || null],
             format: column.format,
             schema: this.props.schema,
             responseRow: this.props.responseRow,
@@ -104,7 +142,7 @@ export default class MatrixColumnCellComponent extends React.Component<MatrixCol
         elem = R(NumberAnswerComponent, {
           small: true,
           style: { maxWidth: "10em" },
-          decimal: column.decimal,
+          decimal: column.decimal!,
           value,
           onChange: this.handleValueChange
         })
@@ -130,11 +168,12 @@ export default class MatrixColumnCellComponent extends React.Component<MatrixCol
             onChange: (ev) => this.handleValueChange(ev.target.value ? ev.target.value : null)
           },
           R("option", { key: "__none__", value: "" }),
-          _.map(column.choices, (choice) => {
-            if (this.isChoiceVisible(choice)) {
+          _.map(column.choices!, (choice) => {
+            if (this.state.choiceVisibility[choice.id]) {
               const text = formUtils.localizeString(choice.label, this.context.locale)
               return R("option", { key: choice.id, value: choice.id }, text)
             }
+            return null
           })
         )
         break
@@ -142,7 +181,7 @@ export default class MatrixColumnCellComponent extends React.Component<MatrixCol
         elem = R(SiteColumnAnswerComponent, {
           value,
           onValueChange: this.handleValueChange,
-          siteType: column.siteType
+          siteType: column.siteType!
         })
         break
       case "DateColumnQuestion":
