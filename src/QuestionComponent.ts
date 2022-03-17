@@ -507,7 +507,9 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           answer,
           data: this.props.data,
           displayMode: this.props.question.displayMode,
-          onAnswerChange: this.handleAnswerChange
+          onAnswerChange: this.handleAnswerChange,
+          schema: this.props.schema,
+          responseRow: this.props.responseRow
         })
         break
 
@@ -519,7 +521,9 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           choices: this.props.question.choices,
           data: this.props.data,
           answer,
-          onAnswerChange: this.handleAnswerChange
+          onAnswerChange: this.handleAnswerChange,
+          schema: this.props.schema,
+          responseRow: this.props.responseRow
         })
         break
 
