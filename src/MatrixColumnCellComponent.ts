@@ -10,6 +10,7 @@ import DateAnswerComponent from "./answers/DateAnswerComponent"
 import UnitsAnswerComponent from "./answers/UnitsAnswerComponent"
 import SiteColumnAnswerComponent from "./answers/SiteColumnAnswerComponent"
 import TextExprsComponent from "./TextExprsComponent"
+import { Choice } from "./formDesign"
 
 export interface MatrixColumnCellComponentProps {
   /** Column. See designSchema */
@@ -38,7 +39,7 @@ export default class MatrixColumnCellComponent extends React.Component<MatrixCol
     return this.props.onAnswerChange(_.extend({}, this.props.answer, { value }))
   }
 
-  areConditionsValid(choice: any) {
+  isChoiceVisible(choice: Choice) {
     if (choice.conditions == null) {
       return true
     }
@@ -130,7 +131,7 @@ export default class MatrixColumnCellComponent extends React.Component<MatrixCol
           },
           R("option", { key: "__none__", value: "" }),
           _.map(column.choices, (choice) => {
-            if (this.areConditionsValid(choice)) {
+            if (this.isChoiceVisible(choice)) {
               const text = formUtils.localizeString(choice.label, this.context.locale)
               return R("option", { key: choice.id, value: choice.id }, text)
             }

@@ -1,6 +1,7 @@
 import _ from "lodash"
 import PropTypes from "prop-types"
 import React from "react"
+import { Choice } from "../formDesign"
 const R = React.createElement
 
 import * as formUtils from "../formUtils"
@@ -21,7 +22,7 @@ export default class LikertAnswerComponent extends React.Component<LikertAnswerC
     return null
   }
 
-  handleValueChange = (choice: any, item: any) => {
+  handleValueChange = (choice: Choice, item: any) => {
     let newValue
     if (this.props.answer.value != null) {
       newValue = _.clone(this.props.answer.value)
@@ -37,7 +38,7 @@ export default class LikertAnswerComponent extends React.Component<LikertAnswerC
     return this.props.onAnswerChange(_.extend({}, this.props.answer, { value: newValue }))
   }
 
-  renderChoice(item: any, choice: any) {
+  renderChoice(item: any, choice: Choice) {
     let value
     const id = `${item.id}:${choice.id}`
     if (this.props.answer.value != null) {

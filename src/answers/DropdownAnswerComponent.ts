@@ -5,6 +5,7 @@ const R = React.createElement
 
 import * as formUtils from "../formUtils"
 import * as conditionUtils from "../conditionUtils"
+import { Choice } from "../formDesign"
 
 export interface DropdownAnswerComponentProps {
   choices: any
@@ -55,7 +56,7 @@ export default class DropdownAnswerComponent extends React.Component<DropdownAns
     }
   }
 
-  areConditionsValid(choice: any) {
+  isChoiceVisible(choice: Choice) {
     if (choice.conditions == null) {
       return true
     }
@@ -79,7 +80,7 @@ export default class DropdownAnswerComponent extends React.Component<DropdownAns
         },
         R("option", { key: "__none__", value: "" }),
         _.map(this.props.choices, (choice) => {
-          if (this.areConditionsValid(choice)) {
+          if (this.isChoiceVisible(choice)) {
             let text = formUtils.localizeString(choice.label, this.context.locale)
             if (choice.hint) {
               text += " (" + formUtils.localizeString(choice.hint, this.context.locale) + ")"

@@ -5,6 +5,7 @@ const R = React.createElement
 
 import * as formUtils from "../formUtils"
 import * as conditionUtils from "../conditionUtils"
+import { Choice } from "../formDesign"
 
 export interface MulticheckAnswerComponentProps {
   choices: any
@@ -23,7 +24,7 @@ export default class MulticheckAnswerComponent extends React.Component<Multichec
     return null
   }
 
-  handleValueChange = (choice: any) => {
+  handleValueChange = (choice: Choice) => {
     let specify
     const ids = this.props.answer.value || []
     if (ids.includes(choice.id)) {
@@ -48,7 +49,7 @@ export default class MulticheckAnswerComponent extends React.Component<Multichec
     return this.props.onAnswerChange({ value: this.props.answer.value, specify })
   }
 
-  areConditionsValid(choice: any) {
+  isChoiceVisible(choice: Choice) {
     if (choice.conditions == null) {
       return true
     }
@@ -56,7 +57,7 @@ export default class MulticheckAnswerComponent extends React.Component<Multichec
   }
 
   // Render specify input box
-  renderSpecify(choice: any) {
+  renderSpecify(choice: Choice) {
     let value
     if (this.props.answer.specify != null) {
       value = this.props.answer.specify[choice.id]
@@ -71,8 +72,8 @@ export default class MulticheckAnswerComponent extends React.Component<Multichec
     })
   }
 
-  renderChoice(choice: any) {
-    if (!this.areConditionsValid(choice)) {
+  renderChoice(choice: Choice) {
+    if (!this.isChoiceVisible(choice)) {
       return null
     }
 

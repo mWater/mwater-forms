@@ -5,6 +5,7 @@ const R = React.createElement
 
 import * as formUtils from "../formUtils"
 import * as conditionUtils from "../conditionUtils"
+import { Choice } from "../formDesign"
 
 export interface RadioAnswerComponentProps {
   choices: any
@@ -22,7 +23,7 @@ export default class RadioAnswerComponent extends React.Component<RadioAnswerCom
     return null
   }
 
-  handleValueChange = (choice: any) => {
+  handleValueChange = (choice: Choice) => {
     if (choice.id === this.props.answer.value) {
       return this.props.onAnswerChange({ value: null, specify: null })
     } else {
@@ -38,7 +39,7 @@ export default class RadioAnswerComponent extends React.Component<RadioAnswerCom
   }
 
   // Render specify input box
-  renderSpecify(choice: any) {
+  renderSpecify(choice: Choice) {
     let value
     if (this.props.answer.specify != null) {
       value = this.props.answer.specify[choice.id]
@@ -53,7 +54,7 @@ export default class RadioAnswerComponent extends React.Component<RadioAnswerCom
     })
   }
 
-  areConditionsValid(choice: any) {
+  isChoiceVisible(choice: Choice) {
     if (choice.conditions == null) {
       return true
     }
@@ -79,8 +80,8 @@ export default class RadioAnswerComponent extends React.Component<RadioAnswerCom
     }
   }
 
-  renderVerticalChoice(choice: any) {
-    if (this.areConditionsValid(choice)) {
+  renderVerticalChoice(choice: Choice) {
+    if (this.isChoiceVisible(choice)) {
       return R(
         "div",
         { key: choice.id },
@@ -124,7 +125,7 @@ export default class RadioAnswerComponent extends React.Component<RadioAnswerCom
         "div",
         { className: "btn-group", key: "toggle" },
         _.map(this.props.choices, (choice) => {
-          if (this.areConditionsValid(choice)) {
+          if (this.isChoiceVisible(choice)) {
             let text = formUtils.localizeString(choice.label, this.context.locale)
             if (choice.hint) {
               text += " (" + formUtils.localizeString(choice.hint, this.context.locale) + ")"
