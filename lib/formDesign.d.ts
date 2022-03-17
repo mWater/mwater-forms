@@ -582,7 +582,7 @@ export interface Choice {
     /** True to require a text field to specify the value when selected. Usually used for "Other" options. Value is stored in specify[id] */
     specify?: boolean;
     /** Conditions for visibility of the choice */
-    conditions: Conditions;
+    conditions?: Conditions;
     /** Condition expression (mwater-expression) for visiblity of the choice */
     conditionExpr?: Expr;
 }
