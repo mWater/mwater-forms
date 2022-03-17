@@ -135,7 +135,7 @@ export default class MatrixColumnCellComponent extends React.Component<MatrixCol
           type: "text",
           className: "form-control form-control-sm",
           value: value || "",
-          onChange: (ev) => this.handleValueChange(ev.target.value)
+          onChange: (ev) => this.handleValueChange(ev.target.value || null)
         })
         break
       case "NumberColumnQuestion":
