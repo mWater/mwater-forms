@@ -52,7 +52,8 @@ export default class DateTimePickerComponent extends React.Component<DateTimePic
       (current && this.props.date && !current.isSame(this.props.date))) {
       // If different than current
       if (this.props.date) {
-        this.control.dates.set(this.props.date.toDate())
+        // TODO beta 4 issues
+        ;(this.control.dates as any).setValue(this.props.date.toDate())
       }
       else {
         // Text needs to be cleared from some reason too
@@ -67,17 +68,6 @@ export default class DateTimePickerComponent extends React.Component<DateTimePic
 
     if (elem) {
       this.control = new TempusDominus(elem, {
-        hooks: {
-          inputFormat: (context, date) => { return date ? moment(date).format(format) : "" },
-          inputParse: (context, value) => { 
-            const parsedValue = moment(value, format)
-            if (parsedValue.isValid()) {
-              return new DateTime(parsedValue.toDate()) 
-            } else {
-              return "" as any
-            }
-          }
-        },
         display: {
           buttons: {
             clear: this.props.showClear,
@@ -96,6 +86,30 @@ export default class DateTimePickerComponent extends React.Component<DateTimePic
           }
         }
       })
+
+      // TODO beta 4 issues
+      ;(this.control.dates as any).formatInput = (date: any) => date ? moment(date).format(format) : ""
+      ;(this.control.dates as any).setFromInput = (value: any, index: any) => {
+        const parsedValue = moment(value, format)
+        if (parsedValue.isValid()) {
+          ;(this.control.dates as any).setValue(new DateTime(parsedValue.toDate()), index)
+        } else {
+          ;(this.control.dates as any).setValue(null, index)
+        }
+      }
+      // this.control.dates.setFromInput
+      // hooks: {
+      //   inputFormat: (context, date) => { return date ? moment(date).format(format) : "" },
+      //   inputParse: (context, value) => { 
+      //     const parsedValue = moment(value, format)
+      //     if (parsedValue.isValid()) {
+      //       return new DateTime(parsedValue.toDate()) 
+      //     } else {
+      //       return "" as any
+      //     }
+      //   }
+      // },
+
 
       this.control.subscribe(Namespace.events.change, e => {
         this.props.onChange(e.date ? moment(e.date) : null)
