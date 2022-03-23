@@ -136,6 +136,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
         // Format as url if url
         if (
           answer.value &&
+          typeof answer.value == "string" &&
           answer.value.match(
             /^((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:,&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:,&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&,;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)$/
           )
