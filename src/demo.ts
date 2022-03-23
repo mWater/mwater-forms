@@ -803,7 +803,8 @@ class DemoComponent extends React.Component {
     // design = sampleFormAdvancedValidations
     // design = require('./sampleFormRM')
     // design = randomAskFormDesign
-    const design = rankedDesign
+    // const design = rankedDesign
+    const design = sampleForm2
     schema = new FormSchemaBuilder({ user: "bob" }).addForm(schema, design)
     // schema = new CustomTablesetSchemaBuilder().addTableset(schema, cascadingRefCustomTableset)
 
