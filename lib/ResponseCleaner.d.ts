@@ -13,7 +13,7 @@ export default class ResponseCleaner {
      * Setting a value to A will make B visible and set to defaultValue, but C will remain invisible until the process is repeated
      * responseRowFactory: returns responseRow when called with data
      */
-    cleanData: (design: FormDesign, visibilityCalculator: VisibilityCalculator, defaultValueApplier: DefaultValueApplier, randomAskedCalculator: RandomAskedCalculator | null, data: ResponseData, responseRowFactory: (data: ResponseData) => ResponseRow, oldVisibilityStructure: VisibilityStructure | null, callback: (err: any, result?: {
+    cleanData: (design: FormDesign, visibilityCalculator: VisibilityCalculator, defaultValueApplier: DefaultValueApplier | null, randomAskedCalculator: RandomAskedCalculator | null, data: ResponseData, responseRowFactory: (data: ResponseData) => ResponseRow, oldVisibilityStructure: VisibilityStructure | null, callback: (err: any, result?: {
         data: ResponseData;
         visibilityStructure: VisibilityStructure;
     } | undefined) => void) => void;
