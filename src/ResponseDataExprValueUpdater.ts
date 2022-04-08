@@ -9,6 +9,7 @@ import { CascadingListQuestion, FormDesign, Item, Question, QuestionBase, SiteQu
 import { Answer, AquagenxCBTAnswerValue, CascadingListAnswerValue, ChoicesAnswerValue, ResponseData } from "./response"
 import { ResponseRow } from "."
 import { JsonQLExpr, JsonQLSelectQuery } from "jsonql"
+import produce from "immer"
 
 /** Updates data in a response given an expression (mWater expression, see FormSchemaBuilder and also mwater-expressions package) and a value
  * When updates are complete for data, cleanData must be called to clean data (removing values that are invisble because of conditions).
@@ -790,15 +791,15 @@ export default class ResponseDataExprValueUpdater {
   }
 
   setAnswer(data: ResponseData, question: Question, answer: Answer): ResponseData {
-    const change = {}
-    change[question._id] = answer
-    return _.extend({}, data, change)
+    return produce(data, draft => {
+      draft[question._id] = answer
+    })
   }
 
   // Sets a value in data
   setValue(data: ResponseData, question: Question, value: any) {
-    const answer = (data[question._id] || {}) as Answer
-    answer.value = value
+    let answer = (data[question._id] || {}) as Answer
+    answer = { ...answer, value }
     return this.setAnswer(data, question, answer)
   }
 
