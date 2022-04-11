@@ -32,7 +32,7 @@ export default class ResponseCleaner {
   cleanData = (
     design: FormDesign,
     visibilityCalculator: VisibilityCalculator,
-    defaultValueApplier: DefaultValueApplier,
+    defaultValueApplier: DefaultValueApplier | null,
     randomAskedCalculator: RandomAskedCalculator | null,
     data: ResponseData,
     responseRowFactory: (data: ResponseData) => ResponseRow,

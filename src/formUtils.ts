@@ -6,7 +6,7 @@ import { Item, FormDesign, Question, QuestionBase, SiteQuestion, Choice } from "
 import { LocalizedString, PromiseExprEvaluator, Schema } from "mwater-expressions"
 import { ResponseData } from "./response"
 import ResponseRow from "./ResponseRow"
-import { conditionUtils } from "."
+import * as conditionUtils from "./conditionUtils"
 
 // function allItems(rootItem: any): any;
 // function changeQuestionType(question: any, newType: any): any;

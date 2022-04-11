@@ -1,8 +1,6 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
 import _ from "lodash"
 import * as formUtils from "./formUtils"
-import React from "react"
+import React, { ReactElement } from "react"
 const R = React.createElement
 
 import QuestionComponent from "./QuestionComponent"
@@ -11,6 +9,10 @@ import TimerComponent from "./TimerComponent"
 import GroupComponent from "./GroupComponent"
 import RosterGroupComponent from "./RosterGroupComponent"
 import RosterMatrixComponent from "./RosterMatrixComponent"
+import { Item } from "./formDesign"
+import { Schema } from "mwater-expressions"
+import { default as ResponseRow } from "./ResponseRow"
+import { ResponseData } from "./response"
 
 /** Render an item, given its data, visibility function, etc. */
 export function renderItem(

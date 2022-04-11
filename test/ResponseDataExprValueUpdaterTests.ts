@@ -1,9 +1,7 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
 import _ from "lodash"
 import { assert } from "chai"
 import { default as ResponseDataExprValueUpdater } from "../src/ResponseDataExprValueUpdater"
-import { Schema } from "mwater-expressions"
+import { Expr, Schema } from "mwater-expressions"
 import canonical from "canonical-json"
 
 function compare(actual: any, expected: any) {
@@ -18,7 +16,7 @@ describe("ResponseDataExprValueUpdater", function () {
   describe("updates simple question values", function () {
     beforeEach(function () {
       // Test updating a single value. newValue is optional different resulting value
-      return (this.testUpdate = function (type: any, options: any, value: any, done: any, newValue: any) {
+      this.testUpdate = function (type: any, options: any, value: any, done: any, newValue: any) {
         // Make simple question
         const question = {
           _id: "q1234",
@@ -30,76 +28,78 @@ describe("ResponseDataExprValueUpdater", function () {
         const formDesign = {
           _type: "Form",
           contents: [question]
-        }
+        } as any
 
-        const updater = new ResponseDataExprValueUpdater(formDesign, null, null)
+        const updater = new ResponseDataExprValueUpdater(formDesign, null as any, null as any)
 
         // Simple field
-        const expr = { type: "field", table: "responses:form1234", column: "data:q1234:value" }
+        const expr: Expr = { type: "field", table: "responses:form1234", column: "data:q1234:value" }
 
-        return updater.updateData({}, expr, value, (error, data) => {
+        const oldData = {}
+        updater.updateData(oldData, expr, value, (error, data) => {
           assert(!error)
           compare(data, { q1234: { value: newValue || value } })
-          return done()
+          compare(oldData, {})
+          done()
         })
-      })
+      }
     })
 
     it("TextQuestion, TextColumnQuestion", function (done) {
-      return this.testUpdate("TextQuestion", {}, "abc", done)
+      this.testUpdate("TextQuestion", {}, "abc", done)
     })
 
     it("NumberQuestion, NumberColumnQuestion", function (done) {
-      return this.testUpdate("NumberQuestion", {}, 123, () => {
-        return this.testUpdate("NumberColumnQuestion", {}, 123, done)
+      this.testUpdate("NumberQuestion", {}, 123, () => {
+        this.testUpdate("NumberColumnQuestion", {}, 123, done)
       })
     })
 
     it("DropdownQuestion, DropdownColumnQuestion, RadioQuestion", function (done) {
       const choices = [{ id: "a" }, { id: "b" }]
-      return this.testUpdate("NumberQuestion", { choices }, "a", done)
+      this.testUpdate("NumberQuestion", { choices }, "a", done)
     })
 
     it("MulticheckQuestion", function (done) {
       const choices = [{ id: "a" }, { id: "b" }]
-      return this.testUpdate("NumberQuestion", { choices }, ["a", "b"], done)
+      this.testUpdate("NumberQuestion", { choices }, ["a", "b"], done)
     })
 
     it("DateQuestion (date and datetime)", function (done) {
-      return this.testUpdate("DateQuestion", { format: "YYYY-MM-DD" }, "2015-12-25", () => {
-        return this.testUpdate("DateQuestion", { format: "lll" }, "2015-12-25T12:34:56Z", done)
+      this.testUpdate("DateQuestion", { format: "YYYY-MM-DD" }, "2015-12-25", () => {
+        this.testUpdate("DateQuestion", { format: "lll" }, "2015-12-25T12:34:56Z", done)
       })
     })
 
     it("CheckQuestion, CheckColumnQuestion", function (done) {
-      return this.testUpdate("CheckQuestion", {}, true, () => {
-        return this.testUpdate("CheckColumnQuestion", {}, true, done)
+      this.testUpdate("CheckQuestion", {}, true, () => {
+        this.testUpdate("CheckColumnQuestion", {}, true, done)
       })
     })
 
     it("ImageQuestion", function (done) {
-      return this.testUpdate("ImageQuestion", {}, { id: "1234" }, done)
+      this.testUpdate("ImageQuestion", {}, { id: "1234" }, done)
     })
 
     it("ImagesQuestion", function (done) {
-      return this.testUpdate("ImagesQuestion", {}, [{ id: "1234" }, { id: "1235" }], done)
+      this.testUpdate("ImagesQuestion", {}, [{ id: "1234" }, { id: "1235" }], done)
     })
 
     it("TextListQuestion", function (done) {
-      return this.testUpdate("TextListQuestion", {}, ["a", "b"], done)
+      this.testUpdate("TextListQuestion", {}, ["a", "b"], done)
     })
 
     it("BarcodeQuestion", function (done) {
-      return this.testUpdate("BarcodeQuestion", {}, "abc", done)
+      this.testUpdate("BarcodeQuestion", {}, "abc", done)
     })
 
-    return it("LocationQuestion value", function (done) {
-      return this.testUpdate(
+    it("LocationQuestion value", function (done) {
+      this.testUpdate(
         "LocationQuestion",
         {},
         { type: "Point", coordinates: [2, 3] },
         () => {
-          return this.testUpdate("LocationQuestion", {}, null, done, null)
+          this.testUpdate("LocationQuestion", {}, null, done, null)
         },
         { latitude: 3, longitude: 2 }
       )
@@ -109,7 +109,7 @@ describe("ResponseDataExprValueUpdater", function () {
   describe("Complex questions", function () {
     before(function () {
       // Test updating a single expression. answer is expected answer
-      return (this.testUpdate = function (
+      this.testUpdate = function (
         questionType: any,
         options: any,
         column: any,
@@ -131,22 +131,22 @@ describe("ResponseDataExprValueUpdater", function () {
           contents: [question]
         }
 
-        const updater = new ResponseDataExprValueUpdater(formDesign, null, null)
+        const updater = new ResponseDataExprValueUpdater(formDesign as any, null as any, null as any)
 
         // Simple field
-        const expr = { type: "field", table: "responses:form1234", column }
+        const expr: Expr = { type: "field", table: "responses:form1234", column }
 
         return updater.updateData({ q1234: oldAnswer }, expr, value, (error, data) => {
           assert(!error)
           compare(data, { q1234: newAnswer })
           return done()
         })
-      })
+      }
     })
 
     describe("LikertQuestion", function () {
       it("creates new answer", function (done) {
-        return this.testUpdate(
+        this.testUpdate(
           "LikertQuestion",
           {
             items: [
@@ -166,8 +166,8 @@ describe("ResponseDataExprValueUpdater", function () {
         )
       })
 
-      return it("keeps existing answer", function (done) {
-        return this.testUpdate(
+      it("keeps existing answer", function (done) {
+        this.testUpdate(
           "LikertQuestion",
           {
             items: [
@@ -188,9 +188,9 @@ describe("ResponseDataExprValueUpdater", function () {
       })
     })
 
-    return describe("MatrixQuestion", function () {
+    describe("MatrixQuestion", function () {
       it("updates simple column", function (done) {
-        return this.testUpdate(
+        this.testUpdate(
           "MatrixQuestion",
           {
             items: [
@@ -208,7 +208,7 @@ describe("ResponseDataExprValueUpdater", function () {
       })
 
       it("updates units magnitude column", function (done) {
-        return this.testUpdate(
+        this.testUpdate(
           "MatrixQuestion",
           {
             items: [
@@ -225,8 +225,8 @@ describe("ResponseDataExprValueUpdater", function () {
         )
       })
 
-      return it("updates units units column", function (done) {
-        return this.testUpdate(
+      it("updates units units column", function (done) {
+        this.testUpdate(
           "MatrixQuestion",
           {
             items: [
@@ -263,10 +263,10 @@ describe("ResponseDataExprValueUpdater", function () {
       it("quantity from empty", function (done) {
         this.question._type = "UnitsQuestion"
         this.question.units = [{ id: "a" }, { id: "b" }]
-        const updater = new ResponseDataExprValueUpdater(this.formDesign, null, null)
+        const updater = new ResponseDataExprValueUpdater(this.formDesign, null as any, null as any)
 
         // Quantity
-        const expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:quantity" }
+        const expr: Expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:quantity" }
 
         return updater.updateData({}, expr, 4, (error, data) => {
           assert(!error)
@@ -278,10 +278,10 @@ describe("ResponseDataExprValueUpdater", function () {
       it("quantity with existing data", function (done) {
         this.question._type = "UnitsQuestion"
         this.question.units = [{ id: "a" }, { id: "b" }]
-        const updater = new ResponseDataExprValueUpdater(this.formDesign, null, null)
+        const updater = new ResponseDataExprValueUpdater(this.formDesign, null as any, null as any)
 
         // Quantity
-        const expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:quantity" }
+        const expr: Expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:quantity" }
 
         return updater.updateData({ q1234: { value: { quantity: 3, units: "a" } } }, expr, 4, (error, data) => {
           assert(!error)
@@ -290,13 +290,13 @@ describe("ResponseDataExprValueUpdater", function () {
         })
       })
 
-      return it("units with existing data", function (done) {
+      it("units with existing data", function (done) {
         this.question._type = "UnitsQuestion"
         this.question.units = [{ id: "a" }, { id: "b" }]
-        const updater = new ResponseDataExprValueUpdater(this.formDesign, null, null)
+        const updater = new ResponseDataExprValueUpdater(this.formDesign, null as any, null as any)
 
         // Quantity
-        const expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:units" }
+        const expr: Expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:units" }
 
         return updater.updateData({ q1234: { value: { quantity: 3, units: "a" } } }, expr, "b", (error, data) => {
           assert(!error)
@@ -321,7 +321,7 @@ describe("ResponseDataExprValueUpdater", function () {
 
       it("nulls", function (done) {
         // Create updater
-        const updater = new ResponseDataExprValueUpdater(this.formDesign, null, null)
+        const updater = new ResponseDataExprValueUpdater(this.formDesign, null as any, null as any)
 
         // Update by name
         const expr = {
@@ -331,10 +331,10 @@ describe("ResponseDataExprValueUpdater", function () {
           expr: { type: "field", table: "entities.community", column: "name" }
         }
 
-        return updater.updateData({ q1234: { value: { code: "somecode" } } }, expr, null, (error, data) => {
+        updater.updateData({ q1234: { value: { code: "somecode" } } }, expr, null, (error, data) => {
           assert(!error)
           assert.equal(data.q1234.value, null)
-          return done()
+          done()
         })
       })
 
@@ -429,7 +429,7 @@ describe("ResponseDataExprValueUpdater", function () {
         const updater = new ResponseDataExprValueUpdater(this.formDesign, schema, dataSource)
 
         // Update by name
-        const expr = { type: "field", table: "responses:form123", column: "data:q1234:value" }
+        const expr: Expr = { type: "field", table: "responses:form123", column: "data:q1234:value" }
 
         assert.isTrue(updater.canUpdate(expr), "Should be able to update")
 
@@ -441,7 +441,7 @@ describe("ResponseDataExprValueUpdater", function () {
         })
       })
 
-      return it("shortcuts if has code", function (done) {
+      it("shortcuts if has code", function (done) {
         // Mock data source
         const dataSource = {
           performQuery: (query: any, callback: any) => {
@@ -498,7 +498,7 @@ describe("ResponseDataExprValueUpdater", function () {
 
       it("nulls", function (done) {
         // Create updater
-        const updater = new ResponseDataExprValueUpdater(this.formDesign, null, null)
+        const updater = new ResponseDataExprValueUpdater(this.formDesign, null as any, null as any)
 
         // Update by name
         const expr = {
@@ -515,7 +515,7 @@ describe("ResponseDataExprValueUpdater", function () {
         })
       })
 
-      return it("searches", function (done) {
+      it("searches", function (done) {
         // Mock data source
         const dataSource = {
           performQuery: (query: any, callback: any) => {
@@ -568,7 +568,7 @@ describe("ResponseDataExprValueUpdater", function () {
       })
     })
 
-    return describe("AdminRegionQuestion", function () {
+    describe("AdminRegionQuestion", function () {
       beforeEach(function () {
         // Create form
         const question = {
@@ -583,7 +583,7 @@ describe("ResponseDataExprValueUpdater", function () {
 
       it("nulls", function (done) {
         // Create updater
-        const updater = new ResponseDataExprValueUpdater(this.formDesign, null, null)
+        const updater = new ResponseDataExprValueUpdater(this.formDesign, null as any, null as any)
 
         // Update by name
         const expr = {
@@ -600,7 +600,7 @@ describe("ResponseDataExprValueUpdater", function () {
         })
       })
 
-      return it("searches", function (done) {
+      it("searches", function (done) {
         // Mock data source
         const dataSource = {
           performQuery: (query: any, callback: any) => {
@@ -711,7 +711,7 @@ describe("ResponseDataExprValueUpdater", function () {
     })
 
     it("updates accuracy", function (done) {
-      const expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:accuracy" }
+      const expr: Expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:accuracy" }
 
       return this.updater.updateData(
         { q1234: { value: { latitude: 2, longitude: 3, altitude: 4 } } },
@@ -726,7 +726,7 @@ describe("ResponseDataExprValueUpdater", function () {
     })
 
     it("updates altitude", function (done) {
-      const expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:altitude" }
+      const expr: Expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:altitude" }
 
       return this.updater.updateData(
         { q1234: { value: { latitude: 2, longitude: 3, altitude: 4 } } },
@@ -740,8 +740,8 @@ describe("ResponseDataExprValueUpdater", function () {
       )
     })
 
-    return it("updates method", function (done) {
-      const expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:method" }
+    it("updates method", function (done) {
+      const expr: Expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:method" }
 
       return this.updater.updateData(
         { q1234: { value: { latitude: 2, longitude: 3, altitude: 4 } } },
@@ -770,7 +770,7 @@ describe("ResponseDataExprValueUpdater", function () {
     }
 
     const updater = new ResponseDataExprValueUpdater(formDesign, null, null)
-    const expr = { type: "field", table: "responses:form1234", column: "data:q1234:na" }
+    const expr: Expr = { type: "field", table: "responses:form1234", column: "data:q1234:na" }
 
     return updater.updateData({}, expr, true, (error, data) => {
       assert(!error)
@@ -830,7 +830,7 @@ describe("ResponseDataExprValueUpdater", function () {
       ]
     }
 
-    const expr = { type: "field", table: "responses:form1234", column: "data:q1234:specify:b" }
+    const expr: Expr = { type: "field", table: "responses:form1234", column: "data:q1234:specify:b" }
     const updater = new ResponseDataExprValueUpdater(formDesign, null, null)
 
     return updater.updateData({}, expr, "apple", (error, data) => {
@@ -853,7 +853,7 @@ describe("ResponseDataExprValueUpdater", function () {
       ]
     }
 
-    const expr = { type: "field", table: "responses:form1234", column: "data:q1234:comments" }
+    const expr: Expr = { type: "field", table: "responses:form1234", column: "data:q1234:comments" }
     const updater = new ResponseDataExprValueUpdater(formDesign, null, null)
 
     return updater.updateData({}, expr, "apple", (error, data) => {
@@ -889,7 +889,7 @@ describe("ResponseDataExprValueUpdater", function () {
     const updater = new ResponseDataExprValueUpdater(design, null, null)
 
     // q1
-    const expr = { type: "field", table: "responses:form1234", column: "data:q1:value" }
+    const expr: Expr = { type: "field", table: "responses:form1234", column: "data:q1:value" }
 
     // Set q1 = null
     return updater.updateData({ q1: { value: "a" }, q2: { value: "b" } }, expr, null, (error, data) => {
@@ -921,7 +921,7 @@ describe("ResponseDataExprValueUpdater", function () {
       this.updater = new ResponseDataExprValueUpdater(formDesign, null, null)
 
       this.testIndividualCBTField = (field: any, value: any, done: any) => {
-        const expr = { type: "field", table: "responses:form1234", column: `data:q1234:value:cbt:${field}` }
+        const expr: Expr = { type: "field", table: "responses:form1234", column: `data:q1234:value:cbt:${field}` }
 
         return this.updater.updateData({}, expr, value, (error: any, data: any) => {
           assert(!error)
@@ -933,7 +933,7 @@ describe("ResponseDataExprValueUpdater", function () {
       }
 
       return (this.testExistingCBTField = (field: any, value: any, done: any) => {
-        const expr = { type: "field", table: "responses:form1234", column: `data:q1234:value:cbt:${field}` }
+        const expr: Expr = { type: "field", table: "responses:form1234", column: `data:q1234:value:cbt:${field}` }
 
         return this.updater.updateData(
           { q1234: { value: { cbt: { mpn: 4, confidence: 80, healthRisk: "Unsafe" } } } },
@@ -1016,7 +1016,7 @@ describe("ResponseDataExprValueUpdater", function () {
 
     it("updates image individually", function (done) {
       // mpn
-      const expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:image" }
+      const expr: Expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:image" }
 
       return this.updater.updateData({}, expr, "https://api.mwater.co/v3/images/abc", (error: any, data: any) => {
         assert(!error)
@@ -1025,9 +1025,9 @@ describe("ResponseDataExprValueUpdater", function () {
       })
     })
 
-    return it("updates image existing data", function (done) {
+    it("updates image existing data", function (done) {
       // mpn
-      const expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:image" }
+      const expr: Expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:image" }
 
       return this.updater.updateData(
         { q1234: { value: { image: "https://api.mwater.co/v3/images/abc" } } },
@@ -1095,7 +1095,7 @@ describe("ResponseDataExprValueUpdater", function () {
     })
 
     it("handles cascading field", function (done) {
-      const expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:c0" }
+      const expr: Expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:c0" }
       return this.updater.updateData({}, expr, "FH75Bd8sGs", (error: any, data: any) => {
         assert(!error)
         compare(data, { q1234: { value: { c0: "FH75Bd8sGs" } } })
@@ -1104,7 +1104,7 @@ describe("ResponseDataExprValueUpdater", function () {
     })
 
     it("rejects unknown field value", function (done) {
-      const expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:c0" }
+      const expr: Expr = { type: "field", table: "responses:form1234", column: "data:q1234:value:c0" }
       return this.updater.updateData({}, expr, "123", (error: any, data: any) => {
         assert(error)
         assert.equal('Column "Type" value 123 in question "Food" not found', error.message)
@@ -1139,7 +1139,7 @@ describe("ResponseDataExprValueUpdater", function () {
       })
     })
 
-    return it("prevents selecting a non-existant row", function (done) {
+    it("prevents selecting a non-existant row", function (done) {
       const expr1 = { type: "field", table: "responses:form1234", column: "data:q1234:value:c0" }
       const expr2 = { type: "field", table: "responses:form1234", column: "data:q1234:value:c1" }
 
@@ -1169,7 +1169,7 @@ describe("ResponseDataExprValueUpdater", function () {
     })
   })
 
-  return describe("handles cascading ref question", function () {
+  describe("handles cascading ref question", function () {
     beforeEach(function () {
       return (this.formDesign = {
         _type: "Form",
@@ -1189,7 +1189,7 @@ describe("ResponseDataExprValueUpdater", function () {
       })
     })
 
-    return it("searches", async function () {
+    it("searches", async function () {
       // Mock data source
       const dataSource = {
         performQuery: (query: any, callback: any) => {

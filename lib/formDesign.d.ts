@@ -59,7 +59,7 @@ export interface Section {
 /** All item types including sections and roster matrix columns */
 export declare type Item = BasicItem | MatrixColumn | Section;
 /** Item such as a question or instruction that make up the basic building block of a form. Does not include roster matrix column or section */
-export declare type BasicItem = Question | Instructions | RosterGroup | RosterMatrix | Group;
+export declare type BasicItem = Question | Instructions | RosterGroup | RosterMatrix | Group | Timer;
 /** Question of various types which records an answer in the response */
 export interface QuestionBase {
     _id: string;
