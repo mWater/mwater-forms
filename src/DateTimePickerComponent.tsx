@@ -87,7 +87,7 @@ export default class DateTimePickerComponent extends React.Component<DateTimePic
         }
       })
 
-      // TODO beta 4 issues
+      // TODO beta 5 issues
       ;(this.control.dates as any).formatInput = (date: any) => date ? moment(date).format(format) : ""
       ;(this.control.dates as any).setFromInput = (value: any, index: any) => {
         const parsedValue = moment(value, format)
@@ -109,7 +109,6 @@ export default class DateTimePickerComponent extends React.Component<DateTimePic
       //     }
       //   }
       // },
-
 
       this.control.subscribe(Namespace.events.change, e => {
         this.props.onChange(e.date ? moment(e.date) : null)
