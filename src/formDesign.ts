@@ -29,6 +29,9 @@ export interface FormDesign {
 
   /** Name of the form */
   name: LocalizedString
+  
+  /** Optional description of the form */
+  description?: LocalizedString
 
   /** When set to true, the response will be assigned a name at creation (instead of only when being saved as a draft) */
   draftNameRequired?: boolean

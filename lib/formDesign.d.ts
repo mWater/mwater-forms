@@ -6,6 +6,8 @@ export interface FormDesign {
     _schema: 1 | 2 | 3 | 4 | 5 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22;
     /** Name of the form */
     name: LocalizedString;
+    /** Optional description of the form */
+    description?: LocalizedString;
     /** When set to true, the response will be assigned a name at creation (instead of only when being saved as a draft) */
     draftNameRequired?: boolean;
     /** When set to true, users will be able to add questions with confidential answers */
