@@ -1,3 +1,4 @@
+import { LocalizeString } from "ez-localize"
 import PropTypes from "prop-types"
 import React from "react"
 const R = React.createElement
@@ -14,13 +15,13 @@ export interface ImageEditorComponentProps {
   onImageChange?: (image: ImageAnswerValue | null) => void
 
   /** Localizer to use */
-  T: (str: string, ...args: any[]) => string
+  T: LocalizeString
 
   /** Question to prompt for consent */
   consentPrompt?: string
 }
 
-// Edit an image
+/** Edit an image */
 export default class ImageEditorComponent extends React.Component<ImageEditorComponentProps> {
   static childContextTypes = {
     imageManager: PropTypes.object.isRequired,

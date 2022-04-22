@@ -1,31 +1,32 @@
-import PropTypes from "prop-types"
 import React from "react"
 const R = React.createElement
 
 import ModalPopupComponent from "react-library/lib/ModalPopupComponent"
 import AsyncLoadComponent from "react-library/lib/AsyncLoadComponent"
-import RotationAwareImageComponent from "./RotationAwareImageComponent"
+import RotationAwareImageComponent, { Image } from "./RotationAwareImageComponent"
+import { ImageManager } from "./formContext"
+import { LocalizeString } from "ez-localize"
 
 export interface ImagePopupComponentProps {
-  imageManager: any
+  imageManager: ImageManager
   /** The image object */
-  image: any
+  image: Image
   onRemove?: any
   onSetCover?: any
   onRotate?: any
   onClose: any
-  T: any
+  T: LocalizeString
 }
 
-// Displays an image in a popup and allows removing or setting as cover image
+/** Displays an image in a popup and allows removing or setting as cover image */
 export default class ImagePopupComponent extends AsyncLoadComponent<ImagePopupComponentProps, { loading: boolean, url?: string, error?: boolean}> {
   // Override to determine if a load is needed. Not called on mounting
-  isLoadNeeded(newProps: any, oldProps: any) {
-    return newProps.id !== oldProps.id
+  isLoadNeeded(newProps: ImagePopupComponentProps, oldProps: ImagePopupComponentProps) {
+    return newProps.image.id !== oldProps.image.id
   }
 
   // Call callback with state changes
-  load(props: any, prevProps: any, callback: any) {
+  load(props: ImagePopupComponentProps, prevProps: ImagePopupComponentProps, callback: any) {
     return this.props.imageManager.getImageUrl(
       props.image.id,
       (url: any) => {

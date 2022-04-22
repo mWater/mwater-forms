@@ -1,3 +1,4 @@
+import { LocalizeString } from "ez-localize";
 import PropTypes from "prop-types";
 import React from "react";
 import ImageAnswerComponent from "./answers/ImageAnswerComponent";
@@ -10,10 +11,11 @@ export interface ImageEditorComponentProps {
     /** Called when image changed */
     onImageChange?: (image: ImageAnswerValue | null) => void;
     /** Localizer to use */
-    T: (str: string, ...args: any[]) => string;
+    T: LocalizeString;
     /** Question to prompt for consent */
     consentPrompt?: string;
 }
+/** Edit an image */
 export default class ImageEditorComponent extends React.Component<ImageEditorComponentProps> {
     static childContextTypes: {
         imageManager: PropTypes.Validator<object>;
@@ -23,7 +25,7 @@ export default class ImageEditorComponent extends React.Component<ImageEditorCom
     getChildContext(): {
         imageManager: ImageManager;
         imageAcquirer: ImageAcquirer | undefined;
-        T: (str: string, ...args: any[]) => string;
+        T: LocalizeString;
     };
     render(): React.CElement<any, ImageAnswerComponent>;
 }
