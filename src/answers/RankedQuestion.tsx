@@ -47,7 +47,7 @@ const RankedQuestion:React.FC<RankedQuestionProps> = ({choices, locale, answer, 
       <div className="__ranked_option">
         <div className="label">
           {
-            connectDragSource(<span className="fas fa-grip-vertical" />)
+            connectDragSource(<span className="fas fa-arrows-alt" />)
           }
           {`${index+1}. `}
           <span>{localizeString(entry.label, locale)}</span>

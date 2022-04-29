@@ -180,7 +180,7 @@ th:hover .table-sort-controls {
 
 .__ranked_option{
   display: flex;
-  padding: 6px 10px;
+  align-items: center;
   border: 1px solid #ddd;
   border-radius: 4px;
   margin-bottom: 6px;
@@ -195,6 +195,11 @@ th:hover .table-sort-controls {
 }
 
 .__ranked_option .label .fas{
-  margin-right: 15px;
+  margin-right: 10px;
   margin-left: 5px;
+  padding: 15px 10px;
+}
+
+.__ranked_option .controls .fas{
+  font-size: 1.5rem;
 }
