@@ -21,6 +21,12 @@ const reduceAnswer = (value: any[]) => {
 }
 
 const RankedQuestion:React.FC<RankedQuestionProps> = ({choices, locale, answer, onValueChange}) => {
+  
+
+  const items = useMemo(() => {
+    return _.sortBy(choices, (item) => !!answer ? (answer[item.id] ?? 0) : 0)
+  }, [choices, answer])
+
   const handleReorder = useCallback((result) => {
     if (!result.destination) {
       return;
@@ -32,13 +38,7 @@ const RankedQuestion:React.FC<RankedQuestionProps> = ({choices, locale, answer, 
       result.destination.index
     );
     onValueChange(reduceAnswer(_items))
-
-
-  }, [onValueChange])
-
-  const items = useMemo(() => {
-    return _.sortBy(choices, (item) => !!answer ? (answer[item.id] ?? 0) : 0)
-  }, [choices, answer])
+  }, [onValueChange, items])
 
   const moveUp = useCallback((index: number) => {
     const newAnswer = [...items] as Choice[]
