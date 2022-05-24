@@ -504,7 +504,7 @@ export interface EntityQuestion extends QuestionBase {
     /** No validation available */
     validations: [];
 }
-/** Admin region selection (DEPRECATED!) */
+/** Admin region selection (DEPRECATED!) @deprecated */
 export interface AdminRegionQuestion extends QuestionBase {
     _type: "AdminRegionQuestion";
     /** Default value (id of admin region) */

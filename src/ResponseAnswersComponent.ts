@@ -13,7 +13,6 @@ import { default as ResponseRow } from "./ResponseRow"
 import TextExprsComponent from "./TextExprsComponent"
 import ImageDisplayComponent from "./ImageDisplayComponent"
 import EntityDisplayComponent from "./EntityDisplayComponent"
-import AdminRegionDisplayComponent from "./AdminRegionDisplayComponent"
 import AquagenxCBTDisplayComponent from "./answers/AquagenxCBTDisplayComponent"
 import { CascadingListDisplayComponent } from "./answers/CascadingListDisplayComponent"
 import { CascadingRefDisplayComponent } from "./answers/CascadingRefDisplayComponent"
@@ -290,11 +289,9 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
         })
 
       case "admin_region":
-        return R(AdminRegionDisplayComponent, {
-          getAdminRegionPath: this.props.formCtx.getAdminRegionPath,
-          value: answer.value,
-          T: this.props.T
-        })
+        return R("div", { className: "alert alert-warning" },
+          "Admin region questions are no longer supported"
+        )
 
       case "items_choices":
         for (let item of q.items) {

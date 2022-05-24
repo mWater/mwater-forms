@@ -48,38 +48,12 @@ const testStickyStorage = {
 
 const formCtx = {
   locale: "en",
-  getAdminRegionPath(id: any, callback: any) {
-    if (id === "manitoba") {
-      return callback(null, [canada, manitoba])
-    } else if (id === "ontario") {
-      return callback(null, [canada, ontario])
-    } else if (id === "canada") {
-      return callback(null, [canada])
-    } else {
-      return callback(null, [])
-    }
-  },
-
-  getSubAdminRegions(id: any, level: any, callback: any) {
-    if (id == null) {
-      return callback(null, [canada])
-    } else if (id === "canada") {
-      return callback(null, [manitoba, ontario])
-    } else {
-      return callback(null, [])
-    }
-  },
-
   renderEntitySummaryView(entityType: any, entity: any) {
     return JSON.stringify(entity)
   },
 
   renderEntityListItemView(entityType: any, entity: any) {
     return JSON.stringify(entity)
-  },
-
-  findAdminRegionByLatLng(lat: any, lng: any, callback: any) {
-    return callback("Not implemented")
   },
 
   imageManager: {
@@ -827,8 +801,7 @@ class DemoComponent extends React.Component {
           // submitLabel: PropTypes.string           # Label for submit button
           // discardLabel: PropTypes.string           # Label for discard button
           // entity: PropTypes.object            # Form-level entity to load
-          // entityType: PropTypes.string        # Type of form-level entity to load      getAdminRegionPath: getAdminRegionPath
-          //   getSubAdminRegions: getSubAdminRegions
+          // entityType: PropTypes.string        # Type of form-level entity to load      
           //   onChange: onChange
           //   value: value
           // })

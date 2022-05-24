@@ -324,19 +324,23 @@
     },
     {
       "_base": "en",
-      "en": "Set Using GPS"
+      "en": "Set Using GPS",
+      "_unused": true
     },
     {
       "_base": "en",
-      "en": "Set Using Map"
+      "en": "Set Using Map",
+      "_unused": true
     },
     {
       "_base": "en",
-      "en": "Unable to lookup location"
+      "en": "Unable to lookup location",
+      "_unused": true
     },
     {
       "_base": "en",
-      "en": "Unable to get location"
+      "en": "Unable to get location",
+      "_unused": true
     },
     {
       "_base": "en",
@@ -345,11 +349,13 @@
     },
     {
       "_base": "en",
-      "en": "Unable to connect to server"
+      "en": "Unable to connect to server",
+      "_unused": true
     },
     {
       "_base": "en",
-      "en": "Cancel GPS"
+      "en": "Cancel GPS",
+      "_unused": true
     },
     {
       "_base": "en",
@@ -357,7 +363,8 @@
     },
     {
       "_base": "en",
-      "en": "None"
+      "en": "None",
+      "_unused": true
     },
     {
       "_base": "en",

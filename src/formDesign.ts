@@ -785,7 +785,7 @@ export interface EntityQuestion extends QuestionBase {
   //         createEntity: { type: "boolean" }
 }
 
-/** Admin region selection (DEPRECATED!) */
+/** Admin region selection (DEPRECATED!) @deprecated */
 export interface AdminRegionQuestion extends QuestionBase {
   _type: "AdminRegionQuestion"
 

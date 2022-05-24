@@ -72,7 +72,9 @@ export default class QuestionComponent extends React.Component<QuestionComponent
         value: any;
         onChange: (ev: any) => any;
     }, Element> | null;
-    renderAnswer(): string | React.DetailedReactHTMLElement<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> | React.CElement<any, any> | React.FunctionComponentElement<{
+    renderAnswer(): string | React.DetailedReactHTMLElement<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> | React.CElement<any, any> | React.DetailedReactHTMLElement<{
+        className: string;
+    }, HTMLElement> | React.FunctionComponentElement<{
         choices: Choice[];
         answer: import("./response").RankedAnswerValue;
         locale: string;

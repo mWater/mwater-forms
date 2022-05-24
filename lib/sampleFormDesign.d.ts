@@ -21,23 +21,6 @@ declare const _default: {
             };
             conditions: never[];
             validations: never[];
-            required: boolean;
-            defaultValue: string;
-            propertyLinks?: undefined;
-            entityType?: undefined;
-            choices?: undefined;
-            hint?: undefined;
-            help?: undefined;
-            alternates?: undefined;
-        } | {
-            _type: string;
-            _id: string;
-            text: {
-                _base: string;
-                en: string;
-            };
-            conditions: never[];
-            validations: never[];
             propertyLinks: {
                 questionId: string;
                 propertyId: null;
@@ -46,7 +29,6 @@ declare const _default: {
             }[];
             required: boolean;
             entityType: string;
-            defaultValue?: undefined;
             choices?: undefined;
             hint?: undefined;
             help?: undefined;
@@ -76,7 +58,6 @@ declare const _default: {
                 id: string;
                 specify: boolean;
             })[];
-            defaultValue?: undefined;
             propertyLinks?: undefined;
             entityType?: undefined;
             hint?: undefined;
@@ -91,9 +72,8 @@ declare const _default: {
             };
             conditions: never[];
             validations?: undefined;
-            required?: undefined;
-            defaultValue?: undefined;
             propertyLinks?: undefined;
+            required?: undefined;
             entityType?: undefined;
             choices?: undefined;
             hint?: undefined;
@@ -120,7 +100,6 @@ declare const _default: {
             alternates: {
                 na: boolean;
             };
-            defaultValue?: undefined;
             propertyLinks?: undefined;
             entityType?: undefined;
             choices?: undefined;

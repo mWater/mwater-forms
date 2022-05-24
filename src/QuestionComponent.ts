@@ -9,7 +9,6 @@ import TextExprsComponent from "./TextExprsComponent"
 import LocationFinder from "./LocationFinder"
 import { default as CurrentPositionFinder } from "./CurrentPositionFinder"
 import AnswerValidator from "./answers/AnswerValidator"
-import AdminRegionAnswerComponent from "./answers/AdminRegionAnswerComponent"
 import AquagenxCBTAnswerComponent from "./answers/AquagenxCBTAnswerComponent"
 import BarcodeAnswerComponent from "./answers/BarcodeAnswerComponent"
 import CheckAnswerComponent from "./answers/CheckAnswerComponent"
@@ -643,14 +642,9 @@ export default class QuestionComponent extends React.Component<QuestionComponent
         break
 
       case "AdminRegionQuestion":
-        return R(AdminRegionAnswerComponent, {
-          ref: (c: any) => {
-            this.answer = c
-          },
-          value: answer.value,
-          onChange: this.handleValueChange
-        })
-        break
+        return R("div", { className: "alert alert-warning" },
+          "Admin region questions are no longer supported"
+        )
 
       case "StopwatchQuestion":
         return R(StopwatchAnswerComponent, {
