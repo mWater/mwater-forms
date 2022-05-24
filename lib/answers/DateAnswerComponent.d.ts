@@ -1,4 +1,5 @@
 import React from "react";
+import DateTimePickerComponent from "../DateTimePickerComponent";
 export interface DateAnswerComponentProps {
     value?: string;
     onValueChange: any;
@@ -15,6 +16,7 @@ export default class DateAnswerComponent extends React.Component<DateAnswerCompo
     static defaultProps: {
         format: string;
     };
+    datetimepicker: DateTimePickerComponent | null;
     constructor(props: any);
     componentWillReceiveProps: (nextProps: any) => void;
     updateState: (props: any) => void;

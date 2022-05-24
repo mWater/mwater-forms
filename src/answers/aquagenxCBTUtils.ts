@@ -1,6 +1,3 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-
 export let healthRiskEnum = [
   { id: "safe", name: { _base: "en", en: "Low Risk/Safe" }, code: "safe" },
   { id: "probably_safe", name: { _base: "en", en: "Intermediate Risk/Probably Safe" }, code: "probably_safe" },

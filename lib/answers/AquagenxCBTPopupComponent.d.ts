@@ -1,3 +1,4 @@
+/// <reference types="jquery" />
 import PropTypes from "prop-types";
 import React from "react";
 import ModalPopupComponent from "react-library/lib/ModalPopupComponent";
@@ -14,8 +15,9 @@ export default class AquagenxCBTPopupComponent extends React.Component<AquagenxC
     static contextTypes: {
         T: PropTypes.Validator<(...args: any[]) => any>;
     };
+    main: HTMLDivElement | null;
     constructor(props: any);
-    componentDidMount(): any;
+    componentDidMount(): JQuery<HTMLElement>;
     handleCompartmentClick(compartmentField: any): void;
     handleSaveClick: () => any;
     renderStyle(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>;

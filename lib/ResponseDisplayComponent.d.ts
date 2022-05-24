@@ -1,3 +1,4 @@
+/// <reference types="jquery" />
 import React from "react";
 import ezlocalize from "ez-localize";
 import ModalPopupComponent from "react-library/lib/ModalPopupComponent";
@@ -27,10 +28,10 @@ interface ResponseDisplayComponentState {
 export default class ResponseDisplayComponent extends React.Component<ResponseDisplayComponentProps, ResponseDisplayComponentState> {
     static childContextTypes: {};
     constructor(props: any);
-    componentWillMount(): any;
-    componentDidMount(): any;
-    loadHistory(props: any): any;
-    loadEventUsernames(events: any): any;
+    componentWillMount(): JQuery.jqXHR<any> | undefined;
+    componentDidMount(): JQuery.jqXHR<any>;
+    loadHistory(props: any): JQuery.jqXHR<any>;
+    loadEventUsernames(events: any): JQuery.jqXHR<any> | undefined;
     componentWillReceiveProps(nextProps: any): any;
     getChildContext(): {};
     createLocalizer(design: any, locale: any): ezlocalize.LocalizeString;

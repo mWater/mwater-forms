@@ -1,7 +1,7 @@
 import React from "react"
 const R = React.createElement
 
-import moment from "moment"
+import moment, { Moment } from "moment"
 import DateTimePickerComponent from "../DateTimePickerComponent"
 
 export interface DateAnswerComponentProps {
@@ -20,6 +20,7 @@ interface DateAnswerComponentState {
 
 export default class DateAnswerComponent extends React.Component<DateAnswerComponentProps, DateAnswerComponentState> {
   static defaultProps = { format: "YYYY-MM-DD" }
+  datetimepicker: DateTimePickerComponent | null
 
   constructor(props: any) {
     super(props)
@@ -76,7 +77,7 @@ export default class DateAnswerComponent extends React.Component<DateAnswerCompo
 
   focus() {
     const { datetimepicker } = this
-    if (datetimepicker.focus != null) {
+    if (datetimepicker && datetimepicker.focus != null) {
       return datetimepicker.focus()
     }
   }
@@ -101,7 +102,7 @@ export default class DateAnswerComponent extends React.Component<DateAnswerCompo
 
     // Get iso format (if date, use format to avoid timezone wrapping)
     if (this.state.isoFormat) {
-      date = date.format(this.isoFormat)
+      date = date.format(this.state.isoFormat)
     } else {
       date = date.toISOString()
     }
@@ -134,19 +135,19 @@ export default class DateAnswerComponent extends React.Component<DateAnswerCompo
   }
 
   render() {
-    let { value } = this.props
-    if (value) {
+    let value: Moment | null = null
+    if (this.props.value) {
       if (this.state.isoFormat) {
-        value = moment(value, this.state.isoFormat)
+        value = moment(this.props.value, this.state.isoFormat)
       } else {
-        value = moment(value, moment.ISO_8601)
+        value = moment(this.props.value, moment.ISO_8601)
       }
     }
 
     return R("div", { style: { maxWidth: "30em" } },
       R(DateTimePickerComponent, {
-        ref: (c) => {
-          return (this.datetimepicker = c)
+        ref: (c: DateTimePickerComponent | null) => {
+          this.datetimepicker = c
         },
         onChange: this.handleChange,
         date: value,

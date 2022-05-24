@@ -13,7 +13,7 @@ export default class AquagenxCBTDisplayComponent extends React.Component<Aquagen
     handleClick: () => any;
     renderStyle(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>;
     renderInfo(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>;
-    renderPhoto(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement> | undefined;
+    renderPhoto(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement> | null;
     render(): React.DetailedReactHTMLElement<{
         id: string;
     }, HTMLElement> | null;

@@ -90,6 +90,7 @@ fill: ${compartmentColors[4]}; \
         })
       )
     }
+    return null
   }
 
   render() {

@@ -65,13 +65,14 @@ export default class AquagenxCBTPopupComponent extends React.Component<
   AquagenxCBTPopupComponentState
 > {
   static contextTypes = { T: PropTypes.func.isRequired }
+  main: HTMLDivElement | null
 
   constructor(props: any) {
     super(props)
 
     const value = _.clone(props.value) || {}
     if (value.cbt == null) {
-      const cbt = _.clone(possibleCombinations["false,false,false,false,false"])
+      const cbt = _.clone(possibleCombinations["false,false,false,false,false"]) as any
       cbt.c1 = cbt.c2 = cbt.c3 = cbt.c4 = cbt.c5 = false
       value.cbt = cbt
     }
@@ -80,7 +81,7 @@ export default class AquagenxCBTPopupComponent extends React.Component<
   }
 
   componentDidMount() {
-    const { main } = this
+    const main = this.main!
     $(main)
       .find("#compartment1")
       .click((ev: any) => {
@@ -228,8 +229,8 @@ fill: ${hoverColors[4]}; \
       R(
         "div",
         {
-          ref: (c: any) => {
-            return (this.main = c)
+          ref: (c: HTMLDivElement | null) => {
+            this.main = c
           },
           id: `cbtPopup${this.props.questionId}`
         },
