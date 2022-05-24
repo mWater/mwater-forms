@@ -2,12 +2,12 @@ import PropTypes from "prop-types"
 import _ from "lodash"
 import React from "react"
 const R = React.createElement
-import RotationAwareImageComponent from "../RotationAwareImageComponent"
+import RotationAwareImageComponent, { Image } from "../RotationAwareImageComponent"
 import ImagePopupComponent from "../ImagePopupComponent"
 
 export interface ImagesAnswerComponentProps {
   /** array of { id: someid, caption: caption, cover: true/false } */
-  imagelist?: any
+  imagelist?: Image[]
   /** Called when image list changed */
   onImagelistChange?: any
   consentPrompt?: string
@@ -104,7 +104,7 @@ export default class ImagesAnswerComponent extends React.Component<
 
     return React.createElement(ImagePopupComponent, {
       imageManager: this.context.imageManager,
-      image: _.find(this.props.imagelist, { id }),
+      image: _.find(this.props.imagelist || [], { id })!,
       T: this.context.T,
       onRemove,
       onSetCover,
@@ -121,7 +121,7 @@ export default class ImagesAnswerComponent extends React.Component<
       null,
       this.renderModal(),
 
-      _.map(this.props.imagelist, (image) => {
+      _.map(this.props.imagelist || [], (image) => {
         return React.createElement(RotationAwareImageComponent, {
           key: image.id,
           imageManager: this.context.imageManager,

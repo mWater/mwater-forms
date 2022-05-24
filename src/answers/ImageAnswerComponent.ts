@@ -2,7 +2,6 @@ import _ from "lodash"
 import PropTypes from "prop-types"
 import React from "react"
 const R = React.createElement
-import ImageThumbnailComponent from "../ImageThumbnailComponent"
 import ImagePopupComponent from "../ImagePopupComponent"
 import RotationAwareImageComponent from "../RotationAwareImageComponent"
 

@@ -5,10 +5,11 @@ const R = React.createElement
 export interface TextListAnswerComponentProps {
   value?: any
   onValueChange: any
-  onNextOrComments?: any
+  onNextOrComments?: (ev: any) => void
 }
 
 export default class TextListAnswerComponent extends React.Component<TextListAnswerComponentProps> {
+  newLine: HTMLInputElement | null
   focus() {
     return this.newLine?.focus()
   }
@@ -55,7 +56,7 @@ export default class TextListAnswerComponent extends React.Component<TextListAns
       // If it equals to one less, we focus the newLine input
       if (index === value.length - 1) {
         nextInput = this.newLine
-        nextInput.focus()
+        nextInput!.focus()
         // If not, we focus the next input
       } else {
         nextInput = this[`input${index + 1}`]
@@ -98,8 +99,8 @@ export default class TextListAnswerComponent extends React.Component<TextListAns
                 "div",
                 { className: "input-group" },
                 R("input", {
-                  ref: (c: any) => {
-                    return (this[`input${index}`] = c)
+                  ref: (c: HTMLInputElement | null) => {
+                    this[`input${index}`] = c
                   },
                   type: "text",
                   className: "form-control box",
@@ -141,8 +142,8 @@ export default class TextListAnswerComponent extends React.Component<TextListAns
                 className: "form-control box",
                 onChange: this.handleNewLineChange,
                 value: "",
-                ref: (c) => {
-                  return (this.newLine = c)
+                ref: (c: HTMLInputElement | null) => {
+                  this.newLine = c
                 },
                 id: "newLine"
               }),

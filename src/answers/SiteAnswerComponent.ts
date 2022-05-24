@@ -1,3 +1,4 @@
+import { LocalizeString } from "ez-localize"
 import PropTypes from "prop-types"
 import React from "react"
 const R = React.createElement
@@ -8,6 +9,8 @@ export interface SiteAnswerComponentProps {
   value?: any
   onValueChange: any
   siteTypes?: any
+  onNextOrComments?: (ev: any) => void
+  T: LocalizeString
 }
 
 interface SiteAnswerComponentState {
@@ -22,6 +25,7 @@ export default class SiteAnswerComponent extends React.Component<SiteAnswerCompo
     renderEntitySummaryView: PropTypes.func.isRequired,
     T: PropTypes.func.isRequired // Localizer to use
   }
+  input: HTMLInputElement | null
 
   constructor(props: any) {
     super(props)
@@ -37,7 +41,7 @@ export default class SiteAnswerComponent extends React.Component<SiteAnswerCompo
   }
 
   focus() {
-    return this.input.focus()
+    return this.input!.focus()
   }
 
   handleKeyDown = (ev: any) => {
@@ -113,8 +117,8 @@ export default class SiteAnswerComponent extends React.Component<SiteAnswerCompo
           type: "tel",
           className: "form-control",
           onKeyDown: this.handleKeyDown,
-          ref: (c: any) => {
-            return (this.input = c)
+          ref: (c: HTMLInputElement | null) => {
+            this.input = c
           },
           placeholder: this.context.T("mWater ID of Site"),
           style: { zIndex: "inherit" }, // Workaround for strange bootstrap z-index

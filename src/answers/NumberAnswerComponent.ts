@@ -13,17 +13,18 @@ export interface NumberAnswerComponentProps {
   style?: any
   /** True to render with input-sm */
   small?: boolean
-  onNextOrComments?: any
+  onNextOrComments?: (ev: any) => void
 }
 
 // Number input component that handles parsing and maintains state when number is invalid
 export default class NumberAnswerComponent extends React.Component<NumberAnswerComponentProps> {
+  input: ui.NumberInput | null
   focus() {
     return this.input?.focus()
   }
 
   validate() {
-    if (!this.input.isValid()) {
+    if (!this.input!.isValid()) {
       return "Invalid number"
     }
     return null
@@ -32,7 +33,7 @@ export default class NumberAnswerComponent extends React.Component<NumberAnswerC
   render() {
     return R(ui.NumberInput, {
       ref: (c) => {
-        return (this.input = c)
+        this.input = c
       },
       decimal: this.props.decimal,
       value: this.props.value,

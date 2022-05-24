@@ -9,7 +9,7 @@ export interface DateAnswerComponentProps {
   onValueChange: any
   format?: string
   placeholder?: string
-  onNextOrComments?: any
+  onNextOrComments?: (ev: any) => void
 }
 
 interface DateAnswerComponentState {
@@ -77,8 +77,8 @@ export default class DateAnswerComponent extends React.Component<DateAnswerCompo
 
   focus() {
     const { datetimepicker } = this
-    if (datetimepicker && datetimepicker.focus != null) {
-      return datetimepicker.focus()
+    if (datetimepicker && (datetimepicker as any).focus != null) {
+      (datetimepicker as any).focus()
     }
   }
 
@@ -146,7 +146,7 @@ export default class DateAnswerComponent extends React.Component<DateAnswerCompo
 
     return R("div", { style: { maxWidth: "30em" } },
       R(DateTimePickerComponent, {
-        ref: (c: DateTimePickerComponent | null) => {
+        ref: (c) => {
           this.datetimepicker = c
         },
         onChange: this.handleChange,

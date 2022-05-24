@@ -12,7 +12,7 @@ export interface UnitsAnswerComponentProps {
   defaultUnits?: string
   prefix: boolean
   decimal: boolean
-  onNextOrComments?: any
+  onNextOrComments?: (ev: any) => void
 }
 
 interface UnitsAnswerComponentState {
@@ -27,6 +27,7 @@ export default class UnitsAnswerComponent extends React.Component<
 > {
   static contextTypes = { locale: PropTypes.string }
   units: HTMLSelectElement | null
+  quantity: ui.NumberInput | null
 
   constructor(props: any) {
     super(props)
@@ -45,9 +46,9 @@ export default class UnitsAnswerComponent extends React.Component<
 
   focus() {
     if (this.props.prefix) {
-      return this.quantity.focus()
+      return this.quantity!.focus()
     } else {
-      return this.units.focus()
+      return this.units!.focus()
     }
   }
 
@@ -66,9 +67,9 @@ export default class UnitsAnswerComponent extends React.Component<
     // When pressing ENTER or TAB
     if (ev.keyCode === 13 || ev.keyCode === 9) {
       if (this.props.prefix) {
-        this.quantity.focus()
+        this.quantity!.focus()
       } else {
-        this.units.focus()
+        this.units!.focus()
       }
       // It's important to prevent the default behavior when handling tabs (or else the tab is applied after the focus change)
       return ev.preventDefault()
@@ -113,7 +114,7 @@ export default class UnitsAnswerComponent extends React.Component<
       null,
       R(ui.NumberInput, {
         ref: (c) => {
-          return (this.quantity = c)
+          this.quantity = c
         },
         decimal: this.props.decimal,
         value: this.state.quantity != null ? this.state.quantity : undefined,

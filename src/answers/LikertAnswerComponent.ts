@@ -1,13 +1,14 @@
 import _ from "lodash"
 import PropTypes from "prop-types"
 import React from "react"
-import { Choice } from "../formDesign"
+import { Choice, Item } from "../formDesign"
 const R = React.createElement
 
 import * as formUtils from "../formUtils"
 
 export interface LikertAnswerComponentProps {
   choices: Choice[]
+  items: Item[]
   onAnswerChange: any
   /** See answer format */
   answer: any

@@ -7,7 +7,7 @@ export interface TextAnswerComponentProps {
   format: string
   readOnly?: boolean
   onValueChange: any
-  onNextOrComments?: any
+  onNextOrComments?: (ev: any) => void
 }
 
 interface TextAnswerComponentState {
@@ -16,6 +16,7 @@ interface TextAnswerComponentState {
 
 export default class TextAnswerComponent extends React.Component<TextAnswerComponentProps, TextAnswerComponentState> {
   static defaultProps = { readOnly: false }
+  input: HTMLTextAreaElement | HTMLInputElement | null
 
   constructor(props: any) {
     super(props)
@@ -31,7 +32,7 @@ export default class TextAnswerComponent extends React.Component<TextAnswerCompo
   }
 
   focus() {
-    return this.input.focus()
+    return this.input!.focus()
   }
 
   handleKeyDown = (ev: any) => {
@@ -54,28 +55,28 @@ export default class TextAnswerComponent extends React.Component<TextAnswerCompo
       return R("textarea", {
         className: "form-control",
         id: "input",
-        ref: (c) => {
-          return (this.input = c)
+        ref: (c: HTMLTextAreaElement | null) => {
+          this.input = c
         },
         value: this.state.text || "",
         rows: "5",
         readOnly: this.props.readOnly,
         onBlur: this.handleBlur,
-        onChange: (ev) => this.setState({ text: ev.target.value })
+        onChange: (ev: any) => this.setState({ text: ev.target.value })
       })
     } else {
       return R("input", {
         className: "form-control",
         id: "input",
-        ref: (c) => {
-          return (this.input = c)
+        ref: (c: HTMLInputElement | null) => {
+          this.input = c
         },
         type: "text",
         value: this.state.text || "",
         readOnly: this.props.readOnly,
         onKeyDown: this.handleKeyDown,
         onBlur: this.handleBlur,
-        onChange: (ev) => this.setState({ text: ev.target.value })
+        onChange: (ev: any) => this.setState({ text: ev.target.value })
       })
     }
   }
