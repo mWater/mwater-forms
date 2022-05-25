@@ -1,28 +1,33 @@
+import { Conditions, FormDesign, Item } from "./formDesign";
 export default class ConditionsExprCompiler {
-    constructor(formDesign: any);
-    compileConditions(conditions: any, tableId: any): {
-        table: any;
+    formDesign: FormDesign;
+    itemMap: {
+        [id: string]: Item;
+    };
+    constructor(formDesign: FormDesign);
+    compileConditions(conditions: Conditions, tableId: string): {
+        table: string;
         type: string;
         op: string;
         exprs: ({
-            table: any;
+            table: string;
             type: string;
             op: string;
             exprs: {
-                table: any;
+                table: string;
                 type: string;
                 column: string;
             }[];
         } | {
-            table: any;
+            table: string;
             type: string;
             op: string;
             exprs: ({
-                table: any;
+                table: string;
                 type: string;
                 op: string;
                 exprs: {
-                    table: any;
+                    table: string;
                     type: string;
                     column: string;
                 }[];
@@ -39,11 +44,11 @@ export default class ConditionsExprCompiler {
         })[];
         column?: undefined;
     } | {
-        table: any;
+        table: string;
         type: string;
         op: string;
         exprs: ({
-            table: any;
+            table: string;
             type: string;
             column: string;
             valueType?: undefined;
@@ -51,44 +56,103 @@ export default class ConditionsExprCompiler {
         } | {
             type: string;
             valueType: string;
-            value: any;
+            value: string;
             table?: undefined;
             column?: undefined;
         })[];
         column?: undefined;
     } | {
-        table: any;
+        table: string;
+        type: string;
+        op: string;
+        exprs: ({
+            table: string;
+            type: string;
+            column: string;
+            valueType?: undefined;
+            value?: undefined;
+        } | {
+            type: string;
+            valueType: string;
+            value: number;
+            table?: undefined;
+            column?: undefined;
+        })[];
+        column?: undefined;
+    } | {
+        table: string;
+        type: string;
+        op: string;
+        exprs: ({
+            table: string;
+            type: string;
+            column: string;
+            valueType?: undefined;
+            value?: undefined;
+        } | {
+            type: string;
+            valueType: string;
+            value: string[];
+            table?: undefined;
+            column?: undefined;
+        })[];
+        column?: undefined;
+    } | {
+        table: string;
         type: string;
         column: string;
         op?: undefined;
         exprs?: undefined;
     } | {
-        table: any;
+        table: string;
         type: string;
         op: string;
         exprs: ({
-            table: any;
+            table: string;
+            type: string;
+            op: string;
+            exprs: {
+                table: string;
+                type: string;
+                op: string;
+                exprs: ({
+                    table: string;
+                    type: string;
+                    column: string;
+                    valueType?: undefined;
+                    value?: undefined;
+                } | {
+                    type: string;
+                    valueType: string;
+                    value: string;
+                    table?: undefined;
+                    column?: undefined;
+                })[];
+            }[];
+            column?: undefined;
+        } | {
+            table: string;
             type: string;
             op: string;
             exprs: ({
-                table: any;
+                table: string;
                 type: string;
                 op: string;
                 exprs: {
-                    table: any;
+                    table: string;
                     type: string;
                     column: string;
                 }[];
             } | {
-                table: any;
+                table: string;
                 type: string;
                 op: string;
                 exprs: ({
-                    table: any;
+                    table: string;
                     type: string;
                     op: string;
                     exprs: {
-                        table: any;
+                        table: string;
                         type: string;
                         column: string;
                     }[];
@@ -105,28 +169,46 @@ export default class ConditionsExprCompiler {
             })[];
             column?: undefined;
         } | {
-            table: any;
+            table: string;
             type: string;
             op: string;
             exprs: ({
-                table: any;
+                table: string;
+                type: string;
+                column: string;
+                valueType?: undefined;
+                value?: undefined;
+            } | {
+                type: string;
+                valueType: string;
+                value: string;
+                table?: undefined;
+                column?: undefined;
+            })[];
+            column?: undefined;
+        } | {
+            table: string;
+            type: string;
+            op: string;
+            exprs: ({
+                table: string;
                 type: string;
                 op: string;
                 exprs: {
-                    table: any;
+                    table: string;
                     type: string;
                     column: string;
                 }[];
             } | {
-                table: any;
+                table: string;
                 type: string;
                 op: string;
                 exprs: {
-                    table: any;
+                    table: string;
                     type: string;
                     op: string;
                     exprs: ({
-                        table: any;
+                        table: string;
                         type: string;
                         column: string;
                         valueType?: undefined;
@@ -142,11 +224,11 @@ export default class ConditionsExprCompiler {
             })[];
             column?: undefined;
         } | {
-            table: any;
+            table: string;
             type: string;
             op: string;
             exprs: ({
-                table: any;
+                table: string;
                 type: string;
                 column: string;
                 valueType?: undefined;
@@ -154,21 +236,21 @@ export default class ConditionsExprCompiler {
             } | {
                 type: string;
                 valueType: string;
-                value: any;
+                value: number;
                 table?: undefined;
                 column?: undefined;
             })[];
             column?: undefined;
         } | {
-            table: any;
+            table: string;
             type: string;
             op: string;
             exprs: {
-                table: any;
+                table: string;
                 type: string;
                 op: string;
                 exprs: ({
-                    table: any;
+                    table: string;
                     type: string;
                     column: string;
                     valueType?: undefined;
@@ -176,35 +258,53 @@ export default class ConditionsExprCompiler {
                 } | {
                     type: string;
                     valueType: string;
-                    value: any;
+                    value: number;
                     table?: undefined;
                     column?: undefined;
                 })[];
             }[];
             column?: undefined;
         } | {
-            table: any;
+            table: string;
             type: string;
             op: string;
             exprs: ({
-                table: any;
+                table: string;
+                type: string;
+                column: string;
+                valueType?: undefined;
+                value?: undefined;
+            } | {
+                type: string;
+                valueType: string;
+                value: string[];
+                table?: undefined;
+                column?: undefined;
+            })[];
+            column?: undefined;
+        } | {
+            table: string;
+            type: string;
+            op: string;
+            exprs: ({
+                table: string;
                 type: string;
                 op: string;
                 exprs: {
-                    table: any;
+                    table: string;
                     type: string;
                     column: string;
                 }[];
             } | {
-                table: any;
+                table: string;
                 type: string;
                 op: string;
                 exprs: {
-                    table: any;
+                    table: string;
                     type: string;
                     op: string;
                     exprs: ({
-                        table: any;
+                        table: string;
                         type: string;
                         column: string;
                         valueType?: undefined;
@@ -212,7 +312,7 @@ export default class ConditionsExprCompiler {
                     } | {
                         type: string;
                         valueType: string;
-                        value: any[];
+                        value: string[];
                         table?: undefined;
                         column?: undefined;
                     })[];
@@ -220,47 +320,70 @@ export default class ConditionsExprCompiler {
             })[];
             column?: undefined;
         } | {
-            table: any;
+            table: string;
             type: string;
             column: string;
             op?: undefined;
             exprs?: undefined;
         } | {
-            table: any;
+            table: string;
+            type: string;
+            op: string;
+            exprs: {
+                table: string;
+                type: string;
+                op: string;
+                exprs: ({
+                    table: string;
+                    type: string;
+                    column: string;
+                    valueType?: undefined;
+                    value?: undefined;
+                } | {
+                    type: string;
+                    valueType: string;
+                    value: string[];
+                    table?: undefined;
+                    column?: undefined;
+                })[];
+            }[];
+            column?: undefined;
+        } | {
+            table: string;
             type: string;
             op: string;
             exprs: ({
-                table: any;
+                table: string;
                 type: string;
                 op: string;
                 exprs: {
-                    table: any;
+                    table: string;
                     type: string;
                     column: string;
                 }[];
             } | {
-                table: any;
+                table: string;
                 type: string;
                 op: string;
                 exprs: ({
-                    table: any;
+                    table: string;
                     type: string;
                     op: string;
                     exprs: {
-                        table: any;
+                        table: string;
                         type: string;
                         column: string;
                     }[];
                 } | {
-                    table: any;
+                    table: string;
                     type: string;
                     op: string;
                     exprs: {
-                        table: any;
+                        table: string;
                         type: string;
                         op: string;
                         exprs: ({
-                            table: any;
+                            table: string;
                             type: string;
                             column: string;
                             valueType?: undefined;
@@ -268,7 +391,7 @@ export default class ConditionsExprCompiler {
                         } | {
                             type: string;
                             valueType: string;
-                            value: unknown[];
+                            value: string[];
                             table?: undefined;
                             column?: undefined;
                         })[];
@@ -277,45 +400,45 @@ export default class ConditionsExprCompiler {
             })[];
             column?: undefined;
         } | {
-            table: any;
+            table: string;
             type: string;
             op: string;
             exprs: ({
-                table: any;
+                table: string;
                 type: string;
                 op: string;
                 exprs: {
-                    table: any;
+                    table: string;
                     type: string;
                     column: string;
                 }[];
             } | {
-                table: any;
+                table: string;
                 type: string;
                 op: string;
                 exprs: ({
-                    table: any;
+                    table: string;
                     type: string;
                     op: string;
                     exprs: {
-                        table: any;
+                        table: string;
                         type: string;
                         column: string;
                     }[];
                 } | {
-                    table: any;
+                    table: string;
                     type: string;
                     op: string;
                     exprs: {
-                        table: any;
+                        table: string;
                         type: string;
                         op: string;
                         exprs: {
-                            table: any;
+                            table: string;
                             type: string;
                             op: string;
                             exprs: ({
-                                table: any;
+                                table: string;
                                 type: string;
                                 column: string;
                                 valueType?: undefined;
@@ -323,7 +446,7 @@ export default class ConditionsExprCompiler {
                             } | {
                                 type: string;
                                 valueType: string;
-                                value: unknown[];
+                                value: string[];
                                 table?: undefined;
                                 column?: undefined;
                             })[];

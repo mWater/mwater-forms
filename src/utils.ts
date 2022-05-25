@@ -3,6 +3,9 @@
 
 // Utility functions and classes for mwater-forms
 
+export type PositionStrength = "none" | "poor" | "fair" | "good" | "excellent"
+
+
 // Gets the { angle, distance } from and to locations
 export function getRelativeLocation(fromLoc: any, toLoc: any) {
   const x1 = fromLoc.longitude
@@ -45,8 +48,8 @@ export function formatRelativeLocation(relLoc: any, T: any) {
   return distance + " " + exports.getCompassBearing(relLoc.angle, T)
 }
 
-// Calculates the relative strength of a GPS signal into "none", "poor", "fair", "good" or "excellent"
-export function calculateGPSStrength(pos: any) {
+/** Calculates the relative strength of a GPS signal into "none", "poor", "fair", "good" or "excellent" */
+export function calculateGPSStrength(pos?: GeolocationPosition | null): PositionStrength {
   const excellentAcc = 5
   const goodAcc = 10
   const fairAcc = 50

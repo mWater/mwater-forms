@@ -4,6 +4,7 @@ import { FormDesign } from "./formDesign";
 import { ResponseData } from "./response";
 import { Schema } from "mwater-expressions";
 import SectionsComponent from "./SectionsComponent";
+import ItemListComponent from "./ItemListComponent";
 import ezlocalize from "ez-localize";
 import { default as ResponseRow } from "./ResponseRow";
 export interface FormComponentProps {
@@ -49,8 +50,12 @@ interface FormComponentState {
     visibilityStructure: any;
 }
 export default class FormComponent extends React.Component<FormComponentProps, FormComponentState> {
+    currentData: ResponseData | null;
     static childContextTypes: {};
-    constructor(props: any);
+    cleanInProgress: any;
+    itemListComponent: ItemListComponent | null;
+    submit: HTMLButtonElement | null;
+    constructor(props: FormComponentProps);
     getChildContext(): {};
     componentWillReceiveProps(nextProps: any): void;
     componentDidUpdate(prevProps: any): void;
@@ -60,7 +65,7 @@ export default class FormComponent extends React.Component<FormComponentProps, F
     isVisible: (itemId: any) => any;
     createResponseRow: (data: any) => ResponseRow;
     handleDataChange: (data: any) => void;
-    handleNext: () => any;
+    handleNext: () => void;
     render(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement> | React.CElement<any, SectionsComponent>;
 }
 export {};

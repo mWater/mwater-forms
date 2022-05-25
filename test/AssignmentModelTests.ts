@@ -21,6 +21,7 @@ describe("AssignmentModel", () =>
     options.user = "testUserId"
     options.groups = []
     const assignmentModel = new AssignmentModel(options)
+    assignmentModel.fixRoles()
 
     const expectedRoles = [
       { role: "admin", id: "formAdminId" },

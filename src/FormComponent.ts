@@ -80,13 +80,18 @@ interface FormComponentState {
 
 // Displays a form that can be filled out
 export default class FormComponent extends React.Component<FormComponentProps, FormComponentState> {
+  currentData: ResponseData | null
+
   static childContextTypes = _.extend({}, formContextTypes, {
     T: PropTypes.func.isRequired,
     locale: PropTypes.string, // e.g. "fr"
     disableConfidentialFields: PropTypes.bool
   })
+  cleanInProgress: any
+  itemListComponent: ItemListComponent | null
+  submit: HTMLButtonElement | null
 
-  constructor(props: any) {
+  constructor(props: FormComponentProps) {
     super(props)
 
     this.state = {
@@ -140,9 +145,9 @@ export default class FormComponent extends React.Component<FormComponentProps, F
 
   handleSubmit = async () => {
     // Cannot submit if at least one item is invalid
-    const result = await this.itemListComponent.validate(true)
+    const result = await this.itemListComponent!.validate(true)
     if (!result) {
-      return this.props.onSubmit()
+      return this.props.onSubmit!()
     }
   }
 
@@ -211,7 +216,7 @@ export default class FormComponent extends React.Component<FormComponentProps, F
   }
 
   handleNext = () => {
-    return this.submit.focus()
+    return this.submit!.focus()
   }
 
   render() {
@@ -236,8 +241,8 @@ export default class FormComponent extends React.Component<FormComponentProps, F
         "div",
         null,
         R(ItemListComponent, {
-          ref: (c: any) => {
-            return (this.itemListComponent = c)
+          ref: (c: ItemListComponent | null) => {
+            this.itemListComponent = c
           },
           contents: this.props.design.contents,
           data: this.props.data,
@@ -255,8 +260,8 @@ export default class FormComponent extends React.Component<FormComponentProps, F
                 type: "button",
                 key: "submitButton",
                 className: "btn btn-primary",
-                ref: (c: any) => {
-                  return (this.submit = c)
+                ref: (c: HTMLButtonElement | null) => {
+                  this.submit = c
                 },
                 onClick: this.handleSubmit
               },

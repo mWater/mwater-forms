@@ -1,4 +1,3 @@
-import PropTypes from "prop-types"
 import React from "react"
 const R = React.createElement
 import AsyncLoadComponent from "react-library/lib/AsyncLoadComponent"
@@ -21,7 +20,7 @@ export interface EntityDisplayComponentProps {
 }
 
 // Loads and displays an entity
-export default class EntityDisplayComponent extends AsyncLoadComponent<EntityDisplayComponentProps, { entity: any }> {
+export default class EntityDisplayComponent extends AsyncLoadComponent<EntityDisplayComponentProps, { entity: any, loading: boolean }> {
   // Override to determine if a load is needed. Not called on mounting
   isLoadNeeded(newProps: EntityDisplayComponentProps, oldProps: EntityDisplayComponentProps) {
     return (

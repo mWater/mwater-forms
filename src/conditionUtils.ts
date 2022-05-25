@@ -1,5 +1,5 @@
 import _ from "lodash"
-import { Condition, DropdownQuestion, Question } from "./formDesign"
+import { Condition, DropdownQuestion, MulticheckQuestion, Question, QuestionBase } from "./formDesign"
 import * as formUtils from "./formUtils"
 
 // Helpful utilities when building conditions
@@ -152,7 +152,7 @@ export function compileCondition(cond: Condition) {
         return getValue(data) !== true
       }
     default:
-      throw new Error("Unknown condition op " + cond.op)
+      throw new Error("Unknown condition op " + (cond as any).op)
   }
 }
 
@@ -325,19 +325,19 @@ export function validateCondition(cond: any, formDesign: any) {
         }
         break
       case "choice":
-        if (!_.findWhere(lhsQuestion.choices, { id: cond.rhs.literal })) {
+        if (!_.findWhere((lhsQuestion as DropdownQuestion).choices, { id: cond.rhs.literal })) {
           // Check alternates
-          if (lhsQuestion.alternates && lhsQuestion.alternates[cond.rhs.literal]) {
+          if ((lhsQuestion as DropdownQuestion).alternates && (lhsQuestion as DropdownQuestion).alternates![cond.rhs.literal]) {
             return true
           }
           return false
         }
         break
       case "choices":
-        return _.all(cond.rhs.literal, function (c) {
-          if (!_.findWhere(lhsQuestion.choices, { id: c })) {
+        return _.all(cond.rhs.literal, function (c: any) {
+          if (!_.findWhere((lhsQuestion as MulticheckQuestion).choices, { id: c })) {
             // Check alternates
-            if (lhsQuestion.alternates && lhsQuestion.alternates[c]) {
+            if ((lhsQuestion as MulticheckQuestion).alternates && (lhsQuestion as MulticheckQuestion).alternates![c]) {
               return true
             }
             return false
@@ -369,7 +369,7 @@ export function summarizeCondition(cond: any, formDesign: any, locale: any) {
     return ""
   }
 
-  let str = formUtils.localizeString(lhsQuestion.text, locale)
+  let str = formUtils.localizeString((lhsQuestion as QuestionBase).text, locale)
   str += " " + getOpDetails(cond.op)?.text
 
   const rhsType = exports.rhsType(lhsQuestion, cond.op)
@@ -380,11 +380,11 @@ export function summarizeCondition(cond: any, formDesign: any, locale: any) {
       str += ` ${cond.rhs.literal}`
       break
     case "choice":
-      var choices = rhsChoices(lhsQuestion, cond.op)
+      var choices = rhsChoices((lhsQuestion as DropdownQuestion), cond.op)
       str += " " + _.findWhere(choices, { id: cond.rhs.literal })?.text
       break
     case "choices":
-      choices = rhsChoices(lhsQuestion, cond.op)
+      choices = rhsChoices((lhsQuestion as MulticheckQuestion), cond.op)
       str += " "
       str += _.map(cond.rhs.literal, (choice) => _.findWhere(choices, { id: choice })?.text).join(", ")
       break

@@ -1,19 +1,28 @@
 import _ from "lodash"
-import * as formUtils from "./formUtils"
+import { Form } from "./form"
 
 // Model of an assignment object that allows manipulation
 // Options are:
 // assignment: assignment object. Required
 // form: form object. Required
-// user: current username. Required
-// groups: group names of user
+// user: current user id. Required
+// groups: group ids of user
 export default class AssignmentModel {
-  constructor(options: any) {
+  assignment: any
+  form: Form
+  user: string
+  groups: string[]
+  
+  constructor(options: {
+    assignment: any
+    form: Form
+    user: string
+    groups: string[]
+  }) {
     this.assignment = options.assignment
     this.form = options.form
     this.user = options.user
     this.groups = options.groups || []
-    this.fixRoles()
   }
 
   // Fixes roles to reflect status and approved fields
@@ -40,16 +49,16 @@ export default class AssignmentModel {
       id: s,
       role: "admin"
     }))
-    return (this.assignment.roles = this.assignment.roles.concat(
+    this.assignment.roles = this.assignment.roles.concat(
       _.map(viewers, (s) => ({
         id: s,
         role: "view"
       }))
-    ))
+    )
   }
 
   canManage() {
-    const admins = _.pluck(_.where(this.assignment.roles, { role: "admin" }), "id")
+    const admins = _.pluck(_.where(this.assignment.roles as any[], { role: "admin" }), "id")
 
     let subjects = ["user:" + this.user, "all"]
     subjects = subjects.concat(_.map(this.groups, (g) => "group:" + g))
@@ -62,7 +71,7 @@ export default class AssignmentModel {
       return true
     }
 
-    const admins = _.pluck(_.where(this.assignment.roles, { role: "view" }), "id")
+    const admins = _.pluck(_.where(this.assignment.roles as any[], { role: "view" }), "id")
 
     let subjects = ["user:" + this.user, "all"]
     subjects = subjects.concat(_.map(this.groups, (g) => "group:" + g))

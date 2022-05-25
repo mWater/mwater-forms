@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import React from "react";
+import * as ui from "react-library/lib/bootstrap";
 export interface UnitsAnswerComponentProps {
     answer: any;
     onValueChange: any;
@@ -7,7 +8,7 @@ export interface UnitsAnswerComponentProps {
     defaultUnits?: string;
     prefix: boolean;
     decimal: boolean;
-    onNextOrComments?: any;
+    onNextOrComments?: (ev: any) => void;
 }
 interface UnitsAnswerComponentState {
     selectedUnits: any;
@@ -18,9 +19,10 @@ export default class UnitsAnswerComponent extends React.Component<UnitsAnswerCom
         locale: PropTypes.Requireable<string>;
     };
     units: HTMLSelectElement | null;
+    quantity: ui.NumberInput | null;
     constructor(props: any);
     componentWillReceiveProps(nextProps: any): void;
-    focus(): any;
+    focus(): void;
     handleKeyDown: (ev: any) => any;
     handleInternalNext: (ev: any) => any;
     handleValueChange: (val: any) => any;

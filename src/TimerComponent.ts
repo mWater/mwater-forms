@@ -103,7 +103,7 @@ export default class TimerComponent extends React.Component<TimerComponentProps,
 
   render() {
     const isRunning = this.state.timerId != null
-    let timeLeft = this.props.timer.duration - this.state.elapsedTicks
+    let timeLeft: number | null = this.props.timer.duration - this.state.elapsedTicks
     if (timeLeft < 0) {
       timeLeft = null // To display -- : --
     }

@@ -1,23 +1,36 @@
 import _ from "lodash"
 import moment from "moment"
 import * as formUtils from "./formUtils"
+import { StickyStorage } from "./formContext"
+import { FormDesign, MatrixQuestion } from "./formDesign"
+import { ResponseData } from "./response"
+import { VisibilityStructure } from "./VisibilityCalculator"
 
-// The DefaultValueApplier applies a value stored in the stickyStorage as a default answer to a question.
-// It uses the following logic:
-//    - The question needs to be newly visible
-//    - The question needs to have a default value
-//    - The data for that question needs to be undefined or null, alternate needs to be null or undefined
-export default class DefaultValueApplier {
-  // entity is an object
-  // entityType is a string
-  constructor(formDesign: any, stickyStorage: any, entity: any, entityType: any) {
+/** The DefaultValueApplier applies a value stored in the stickyStorage as a default answer to a question.
+ * It uses the following logic:
+ *    - The question needs to be newly visible
+ *    - The question needs to have a default value
+ *    - The data for that question needs to be undefined or null, alternate needs to be null or undefined
+ */
+ export default class DefaultValueApplier {
+  formDesign: FormDesign
+  stickyStorage: StickyStorage
+  entity: any
+  entityType: string | undefined
+
+  /** entity is entity to use */
+  constructor(formDesign: FormDesign, stickyStorage: StickyStorage, entity?: any, entityType?: string) {
     this.formDesign = formDesign
     this.stickyStorage = stickyStorage
     this.entity = entity
     this.entityType = entityType
   }
 
-  setStickyData(data: any, previousVisibilityStructure: any, newVisibilityStructure: any) {
+  setStickyData(
+    data: ResponseData,
+    previousVisibilityStructure: VisibilityStructure,
+    newVisibilityStructure: VisibilityStructure
+  ): ResponseData {
     // NOTE: Always remember that data is immutable
     const newData = _.cloneDeep(data)
     const questions = []
@@ -58,7 +71,7 @@ export default class DefaultValueApplier {
             continue
           }
 
-          question = _.findWhere(question.columns, { _id: values[2] })
+          question = _.findWhere((question as MatrixQuestion).columns, { _id: values[2] })
           dataEntry = data[values[0]]?.[values[1]]?.[values[2]]
         } else {
           continue
@@ -66,7 +79,7 @@ export default class DefaultValueApplier {
 
         // If question not found
         if (question == null) {
-          return null
+          continue
         }
 
         // The data for that question needs to be undefined or null

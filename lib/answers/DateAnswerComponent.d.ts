@@ -5,7 +5,7 @@ export interface DateAnswerComponentProps {
     onValueChange: any;
     format?: string;
     placeholder?: string;
-    onNextOrComments?: any;
+    onNextOrComments?: (ev: any) => void;
 }
 interface DateAnswerComponentState {
     isoFormat: any;
@@ -20,7 +20,7 @@ export default class DateAnswerComponent extends React.Component<DateAnswerCompo
     constructor(props: any);
     componentWillReceiveProps: (nextProps: any) => void;
     updateState: (props: any) => void;
-    focus(): any;
+    focus(): void;
     handleKeyDown: (ev: any) => any;
     handleChange: (date: any) => any;
     render(): React.DetailedReactHTMLElement<{

@@ -8,10 +8,11 @@ export interface NumberAnswerComponentProps {
     style?: any;
     /** True to render with input-sm */
     small?: boolean;
-    onNextOrComments?: any;
+    onNextOrComments?: (ev: any) => void;
 }
 export default class NumberAnswerComponent extends React.Component<NumberAnswerComponentProps> {
-    focus(): any;
+    input: ui.NumberInput | null;
+    focus(): void | undefined;
     validate(): "Invalid number" | null;
     render(): React.CElement<ui.NumberInputProps, ui.NumberInput>;
 }

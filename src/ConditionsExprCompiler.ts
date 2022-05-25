@@ -1,22 +1,26 @@
 import _ from "lodash"
 import * as formUtils from "./formUtils"
 import * as conditionUtils from "./conditionUtils"
+import { Conditions, FormDesign, Item } from "./formDesign"
 
 // Compiles conditions into mWater expressions
 export default class ConditionsExprCompiler {
-  constructor(formDesign: any) {
+  formDesign: FormDesign
+  itemMap: { [id: string]: Item } = {}
+
+  constructor(formDesign: FormDesign) {
     this.formDesign = formDesign
 
     // Index all items
     this.itemMap = {}
     for (let item of formUtils.allItems(formDesign)) {
-      if (item._id) {
+      if (item._type != "Form" && item._id) {
         this.itemMap[item._id] = item
       }
     }
   }
 
-  compileConditions(conditions: any, tableId: any) {
+  compileConditions(conditions: Conditions, tableId: string) {
     let type
     if (!conditions || conditions.length === 0) {
       return null
@@ -27,7 +31,7 @@ export default class ConditionsExprCompiler {
     for (let cond of conditions) {
       var alt, alternates, rhsType, subexprs, value, values
       var item = this.itemMap[cond.lhs.question]
-      if (!item) {
+      if (!item || !formUtils.isQuestion(item)) {
         continue
       }
 
@@ -432,8 +436,8 @@ export default class ConditionsExprCompiler {
             ]
           })
         }
-      } else if (cond.op === "before") {
-        rhsType = item.format.match(/ss|LLL|lll|m|h|H/) ? "datetime" : "date"
+      } else if (cond.op === "before" && (item._type == "DateQuestion" || item._type == "DateColumnQuestion")) {
+        rhsType = (item.format || "").match(/ss|LLL|lll|m|h|H/) ? "datetime" : "date"
 
         exprs.push({
           table: tableId,
@@ -444,8 +448,8 @@ export default class ConditionsExprCompiler {
             { type: "literal", valueType: rhsType, value: cond.rhs.literal }
           ]
         })
-      } else if (cond.op === "after") {
-        rhsType = item.format.match(/ss|LLL|lll|m|h|H/) ? "datetime" : "date"
+      } else if (cond.op === "after" && (item._type == "DateQuestion" || item._type == "DateColumnQuestion")) {
+        rhsType = (item.format || "").match(/ss|LLL|lll|m|h|H/) ? "datetime" : "date"
 
         exprs.push({
           table: tableId,

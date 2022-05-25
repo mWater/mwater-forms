@@ -21,6 +21,8 @@ export interface DateTimePickerComponentProps {
   /** callback on date change (argument: moment date) */
   onChange: (date: Moment | null) => void
 
+  onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void
+
   /** date as moment */
   date?: Moment | null
 

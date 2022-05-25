@@ -23,7 +23,6 @@ export * as conditionUtils from "./conditionUtils";
 export * as utils from "./utils";
 export { default as ResponseAnswersComponent } from "./ResponseAnswersComponent";
 export { default as AnswerValidator } from "./answers/AnswerValidator";
-export * as ECPlates from "./ECPlates";
 export { default as FormModel } from "./FormModel";
 export { default as ResponseDisplayComponent } from "./ResponseDisplayComponent";
 export * as formContextTypes from "./formContextTypes";

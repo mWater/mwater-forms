@@ -18,6 +18,7 @@ export interface EntityDisplayComponentProps {
 }
 export default class EntityDisplayComponent extends AsyncLoadComponent<EntityDisplayComponentProps, {
     entity: any;
+    loading: boolean;
 }> {
     isLoadNeeded(newProps: EntityDisplayComponentProps, oldProps: EntityDisplayComponentProps): boolean;
     load(props: EntityDisplayComponentProps, prevProps: EntityDisplayComponentProps, callback: any): any;

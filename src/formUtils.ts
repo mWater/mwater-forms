@@ -2,7 +2,7 @@ import _ from "lodash"
 import localizations from "../localizations.json"
 import uuid from "uuid"
 
-import { Item, FormDesign, Question, QuestionBase, SiteQuestion, Choice } from "./formDesign"
+import { Item, FormDesign, Question, QuestionBase, SiteQuestion, Choice, MatrixColumn } from "./formDesign"
 import { LocalizedString, PromiseExprEvaluator, Schema } from "mwater-expressions"
 import { ResponseData } from "./response"
 import ResponseRow from "./ResponseRow"
@@ -83,7 +83,7 @@ export function createBase32TimeCode(date: any) {
 }
 
 /** Determine if item is a question */
-export function isQuestion(item: Item): item is Question {
+export function isQuestion(item: Item): item is Question | MatrixColumn {
   return item._type != null && item._type.match(/Question$/) != null
 }
 
@@ -412,7 +412,7 @@ export function changeQuestionType(question: any, newType: any) {
 }
 
 // Gets type of the answer: text, number, choice, choices, date, units, boolean, location, image, images, texts, site, entity, admin_region, items_choices, matrix, aquagenx_cbt, cascading_list, cascading_ref
-export function getAnswerType(q: QuestionBase): AnswerType {
+export function getAnswerType(q: QuestionBase | MatrixColumn): AnswerType {
   switch (q._type) {
     case "TextQuestion":
     case "TextColumnQuestion":

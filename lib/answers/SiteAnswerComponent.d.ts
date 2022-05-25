@@ -1,9 +1,12 @@
+import { LocalizeString } from "ez-localize";
 import PropTypes from "prop-types";
 import React from "react";
 export interface SiteAnswerComponentProps {
     value?: any;
     onValueChange: any;
     siteTypes?: any;
+    onNextOrComments?: (ev: any) => void;
+    T: LocalizeString;
 }
 interface SiteAnswerComponentState {
     text: any;
@@ -16,9 +19,10 @@ export default class SiteAnswerComponent extends React.Component<SiteAnswerCompo
         renderEntitySummaryView: PropTypes.Validator<(...args: any[]) => any>;
         T: PropTypes.Validator<(...args: any[]) => any>;
     };
+    input: HTMLInputElement | null;
     constructor(props: any);
     componentWillReceiveProps(nextProps: any): void;
-    focus(): any;
+    focus(): void;
     handleKeyDown: (ev: any) => any;
     getEntityType(): any;
     handleSelectClick: () => any;

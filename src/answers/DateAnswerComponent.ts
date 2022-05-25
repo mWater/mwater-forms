@@ -146,16 +146,16 @@ export default class DateAnswerComponent extends React.Component<DateAnswerCompo
 
     return R("div", { style: { maxWidth: "30em" } },
       R(DateTimePickerComponent, {
-        ref: (c) => {
-          this.datetimepicker = c
-        },
         onChange: this.handleChange,
         date: value,
         format: this.props.format,
         placeholder: this.state.placeholder,
         showTodayButton: true,
         showClear: true,
-        onKeyDown: this.handleKeyDown
+        onKeyDown: this.handleKeyDown,
+        ref: (c) => {
+          this.datetimepicker = c
+        },
       })
    )
   }

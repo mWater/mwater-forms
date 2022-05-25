@@ -9,7 +9,7 @@ const goodDelay = 5
 /** Status of the position finding */
 export interface PositionStatus {
   /** Best position found */
-  pos: Position | null
+  pos: GeolocationPosition | null
 
   /** Strength of GPS for position (based on accuracy) */
   strength: PositionStrength
@@ -46,7 +46,7 @@ export default class CurrentPositionFinder {
 
   strength: PositionStrength
 
-  pos: Position | null
+  pos: GeolocationPosition | null
   error: string | null
 
   constructor(options: { locationFinder: LocationFinder }) {
@@ -111,7 +111,7 @@ export default class CurrentPositionFinder {
   /** Listen for errors in getting position */
   on(event: "error", callback: () => void): void
   /** Listen for position found */
-  on(event: "found", callback: (position: Position) => void): void
+  on(event: "found", callback: (position: GeolocationPosition) => void): void
   /** Listen for status updates */
   on(event: "status", callback: (status: PositionStatus) => void): void
   on(event: string, callback: (args: any) => void): void {
@@ -119,7 +119,7 @@ export default class CurrentPositionFinder {
   }
 
   off(event: "error", callback: () => void): void
-  off(event: "found", callback: (position: Position) => void): void
+  off(event: "found", callback: (position: GeolocationPosition) => void): void
   off(event: "status", callback: (status: PositionStatus) => void): void
   off(event: string, callback: (args: any) => void) {
     this.eventEmitter.removeListener(event, callback)
@@ -134,7 +134,7 @@ export default class CurrentPositionFinder {
     this.pos = null
   }
 
-  locationFinderFound = (pos: Position) => {
+  locationFinderFound = (pos: GeolocationPosition) => {
     // Calculate strength of new position
     const newStrength = calculateGPSStrength(pos)
 

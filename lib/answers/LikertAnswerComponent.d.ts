@@ -1,8 +1,9 @@
 import PropTypes from "prop-types";
 import React from "react";
-import { Choice } from "../formDesign";
+import { Choice, Item } from "../formDesign";
 export interface LikertAnswerComponentProps {
     choices: Choice[];
+    items: Item[];
     onAnswerChange: any;
     /** See answer format */
     answer: any;

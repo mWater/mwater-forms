@@ -1,4 +1,4 @@
-import { Item, FormDesign, Question, QuestionBase, SiteQuestion, Choice } from "./formDesign";
+import { Item, FormDesign, Question, QuestionBase, SiteQuestion, Choice, MatrixColumn } from "./formDesign";
 import { LocalizedString, Schema } from "mwater-expressions";
 import { ResponseData } from "./response";
 import ResponseRow from "./ResponseRow";
@@ -11,7 +11,7 @@ export declare function createShortUid(): string;
 export declare function createMediumUid(): string;
 export declare function createBase32TimeCode(date: any): string;
 /** Determine if item is a question */
-export declare function isQuestion(item: Item): item is Question;
+export declare function isQuestion(item: Item): item is Question | MatrixColumn;
 /** Determine if item is an expression */
 export declare function isExpression(item: Item): boolean;
 /** Localize a localized string */
@@ -26,7 +26,7 @@ export declare function findItem(formDesign: FormDesign, itemId: string): Item |
 export declare function allItems(rootItem: FormDesign | Item): (Item | FormDesign)[];
 export declare function prepareQuestion(q: any): any;
 export declare function changeQuestionType(question: any, newType: any): any;
-export declare function getAnswerType(q: QuestionBase): AnswerType;
+export declare function getAnswerType(q: QuestionBase | MatrixColumn): AnswerType;
 export declare function isSectioned(form: any): boolean;
 export declare function duplicateItem(item: any, idMap?: any): any;
 export declare function extractLocalizedStrings(obj: any): any;
