@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   _id: "1234",
   design: {
     name: {
@@ -377,7 +377,7 @@ module.exports = {
               _base: "en"
             },
             _type: "DateQuestion",
-            format: "YYYY-MM-DD",
+            format: "MM/DD/YYYY",
             required: false,
             alternates: {
               na: true,

@@ -2,7 +2,7 @@ import _ from "lodash"
 import localizations from "../localizations.json"
 import uuid from "uuid"
 
-import { Item, FormDesign, Question, QuestionBase, SiteQuestion, Choice, MatrixColumn, EntityQuestion, Condition } from "./formDesign"
+import { Item, FormDesign, Question, QuestionBase, SiteQuestion, Choice, MatrixColumn, EntityQuestion, Condition, Section, RosterMatrix, RosterGroup, Group, MatrixColumnQuestion } from "./formDesign"
 import { LocalizedString, PromiseExprEvaluator, Schema } from "mwater-expressions"
 import { EntityRef, ResponseData } from "./response"
 import ResponseRow from "./ResponseRow"
@@ -82,19 +82,40 @@ export function createBase32TimeCode(date: any) {
   return code
 }
 
-/** Determine if item is a question */
-export function isQuestion(item: Item | FormDesign): item is Question | MatrixColumn {
+/** Determine if item is a question or a matrix column (which is similar and makes up
+ * the contents of RosterMatrix) */
+export function isQuestionOrMatrixColumnQuestion(item: Item | FormDesign): item is Question | MatrixColumnQuestion {
   return item._type != null && item._type.match(/Question$/) != null
 }
 
-/** Determine if item is a base question (not a column of a matrix) */
-export function isBaseQuestion(item: Item | FormDesign): item is Question {
+/** Determine if item is a question */
+export function isQuestion(item: Item | FormDesign): item is Question {
   return item._type != null && item._type.match(/Question$/) != null && item._type.match(/ColumnQuestion$/) == null 
 }
 
 /** Determine if item is an expression */
 export function isExpression(item: Item): boolean {
   return item._type != null && ["TextColumn", "Calculation"].includes(item._type)
+}
+
+/** Determine if item is of type with contents */
+export function isTypeWithContents(item: Item | FormDesign): item is Section | Group | RosterMatrix | RosterGroup | FormDesign {
+  return item._type != null && ["Section", "Group", "RosterMatrix", "RosterGroup", "Form"].includes(item._type)
+}
+
+/** Determine if item is roster matrix or roster group */
+export function isRoster(item: Item | FormDesign): item is RosterGroup | RosterMatrix {
+  return item._type != null && ["RosterGroup", "RosterMatrix"].includes(item._type)
+}
+
+/** Determine if is form design type */
+export function isFormDesign(item: Item | FormDesign): item is FormDesign {
+  return item._type != null && item._type == "Form"
+}
+
+/** Determine if is matrix column */
+export function isMatrixColumn(item: Item | FormDesign): item is MatrixColumn {
+  return item._type != null && (item._type.match(/ColumnQuestion$/) != null || item._type == "Calculation" || item._type == "TextColumn")
 }
 
 /** Localize a localized string */
@@ -141,7 +162,7 @@ export function priorQuestions(
         return true
       }
 
-      if (currentRosterId === rosterId && isQuestion(child)) {
+      if (currentRosterId === rosterId && isQuestionOrMatrixColumnQuestion(child)) {
         questions.push(child)
       }
 
@@ -417,7 +438,7 @@ export function changeQuestionType(question: any, newType: any) {
 }
 
 // Gets type of the answer: text, number, choice, choices, date, units, boolean, location, image, images, texts, site, entity, admin_region, items_choices, matrix, aquagenx_cbt, cascading_list, cascading_ref
-export function getAnswerType(q: QuestionBase | MatrixColumn): AnswerType {
+export function getAnswerType(q: QuestionBase | MatrixColumnQuestion): AnswerType {
   switch (q._type) {
     case "TextQuestion":
     case "TextColumnQuestion":
@@ -468,9 +489,6 @@ export function getAnswerType(q: QuestionBase | MatrixColumn): AnswerType {
       return "cascading_list"
     case "CascadingRefQuestion":
       return "cascading_ref"
-    case "TextColumn":
-    case "Calculation":
-      return "expr"
     case "RankedQuestion":
       return "ranked"
     default:
@@ -684,6 +702,9 @@ export function extractEntityReferences(formDesign: any, responseData: any): Ent
 
   // Handle non-roster
   for (question of priorQuestions(formDesign)) {
+    if (!isQuestionOrMatrixColumnQuestion(question)) {
+      continue
+    }
     switch (getAnswerType(question)) {
       case "site":
         code = responseData[question._id]?.value?.code
@@ -703,6 +724,9 @@ export function extractEntityReferences(formDesign: any, responseData: any): Ent
 
   for (let rosterId of getRosterIds(formDesign)) {
     for (question of priorQuestions(formDesign, null, rosterId)) {
+      if (!isQuestionOrMatrixColumnQuestion(question)) {
+        continue
+      }
       var rosterEntry
       switch (getAnswerType(question)) {
         case "site":

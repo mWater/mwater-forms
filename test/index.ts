@@ -1,3 +1,4 @@
+// @ts-nocheck
 const context = require.context(
   /*directory*/ "mocha-loader!.",
   /*recursive*/ true,

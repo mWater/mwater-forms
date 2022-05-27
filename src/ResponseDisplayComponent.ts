@@ -9,13 +9,17 @@ import ResponseAnswersComponent from "./ResponseAnswersComponent"
 import ResponseArchivesComponent from "./ResponseArchivesComponent"
 import ModalPopupComponent from "react-library/lib/ModalPopupComponent"
 import * as formContextTypes from "./formContextTypes"
+import { Form } from "./form"
+import { Response } from "./response"
+import { Schema } from "mwater-expressions"
+import { FormContext } from "./formContext"
 
 export interface ResponseDisplayComponentProps {
-  form: any
-  response: any
+  form: Form
+  response: Response
   /** Schema including the form */
-  schema: any
-  formCtx: any
+  schema: Schema
+  formCtx: FormContext
   apiUrl?: string
   /** Defaults to english */
   locale?: string
@@ -33,6 +37,7 @@ interface ResponseDisplayComponentState {
   history: any
   showArchive: any
   showPrevAnswers: any
+  loadingHistory: boolean
 }
 
 // Static view of a response
@@ -45,14 +50,14 @@ export default class ResponseDisplayComponent extends React.Component<
     locale: PropTypes.string // e.g. "fr"
   })
 
-  constructor(props: any) {
+  constructor(props: ResponseDisplayComponentProps) {
     super(props)
 
     this.state = {
       eventsUsernames: null,
       loadingUsernames: false,
       showCompleteHistory: this.props.forceCompleteHistory || false,
-      T: this.createLocalizer(this.props.form.design, this.props.formCtx.locale),
+      T: this.createLocalizer(this.props.form.design, this.props.locale),
       history: null,
       loadingHistory: false,
       showArchive: false,
@@ -68,11 +73,11 @@ export default class ResponseDisplayComponent extends React.Component<
     return this.loadHistory(this.props)
   }
 
-  loadHistory(props: any) {
+  loadHistory(props: ResponseDisplayComponentProps) {
     const url = props.apiUrl + "archives/responses/" + props.response._id + "?client=" + (props.login?.client || "")
     this.setState({ loadingHistory: true })
     return $.ajax({ dataType: "json", url })
-      .done((history: any) => {
+      .done((history: Response[]) => {
         // Get only ones since first submission
         const index = _.findIndex(history, (rev) => ["pending", "final"].includes(rev.status))
         history = history.slice(0, index + 1)
@@ -103,7 +108,7 @@ export default class ResponseDisplayComponent extends React.Component<
       const filter = { _id: { $in: byArray } }
       const url = this.props.apiUrl + "users_public_data?filter=" + JSON.stringify(filter)
       this.setState({ loadingUsernames: true })
-      return $.ajax({ dataType: "json", url })
+      $.ajax({ dataType: "json", url })
         .done((rows: any) => {
           // eventsUsernames is an object with a key for each _id value
           return this.setState({ loadingUsernames: false, eventsUsernames: _.indexBy(rows, "_id") })
@@ -120,7 +125,7 @@ export default class ResponseDisplayComponent extends React.Component<
       this.setState({ T: this.createLocalizer(nextProps.form.design, nextProps.locale) })
     }
 
-    if (!_.isEqual(this.props.response.response, nextProps.response.response)) {
+    if (!_.isEqual(this.props.response._id, nextProps.response._id)) {
       this.loadHistory(nextProps)
     }
 

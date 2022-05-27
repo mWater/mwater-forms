@@ -1,6 +1,3 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-
 // Utility functions and classes for mwater-forms
 
 export type PositionStrength = "none" | "poor" | "fair" | "good" | "excellent"

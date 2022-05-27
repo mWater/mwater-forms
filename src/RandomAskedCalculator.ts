@@ -38,7 +38,7 @@ export default class RandomAskedCalculator {
         if (!item) {
           continue
         }
-        if (formUtils.isBaseQuestion(item)) {
+        if (formUtils.isQuestion(item)) {
           if (item.randomAskProbability != null) {
             newData[item._id] = newData[item._id] || {}
             if ((newData[item._id] as Answer).randomAsked == null) {
@@ -61,7 +61,7 @@ export default class RandomAskedCalculator {
         // Get roster index
         const entryIndex = parseInt(parts[1])
 
-        if (formUtils.isBaseQuestion(item) && item.randomAskProbability != null) {
+        if (formUtils.isQuestion(item) && item.randomAskProbability != null) {
           // Get enty data
           const entryData = newData[parts[0]][entryIndex].data
 

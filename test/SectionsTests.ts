@@ -1,5 +1,3 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
 // TODO: SurveyorPro: Make sure all the tests are in SectionsComponentTests
 /*
 _ = require 'lodash'

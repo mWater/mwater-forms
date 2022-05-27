@@ -1,5 +1,4 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
+// @ts-nocheck
 import $ from "jquery"
 import { assert } from "chai"
 

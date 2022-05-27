@@ -518,6 +518,7 @@ export default class ResponseModel {
 
       return _.intersection(admins, subjects).length > 0
     }
+    return false
   }
 
   // Add an event

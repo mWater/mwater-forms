@@ -6,7 +6,7 @@ import { RosterMatrix } from "./formDesign";
 import { ResponseData, RosterData } from "./response";
 import { Schema } from "mwater-expressions";
 import ResponseRow from "./ResponseRow";
-export default interface RosterMatrixComponentProps {
+export interface RosterMatrixComponentProps {
     rosterMatrix: RosterMatrix;
     /** Current data of response */
     data: ResponseData;

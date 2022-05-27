@@ -3,7 +3,7 @@ import * as formUtils from "./formUtils"
 import async from "async"
 import * as conditionUtils from "./conditionUtils"
 import { PromiseExprEvaluator, PromiseExprEvaluatorRow, Schema } from "mwater-expressions"
-import { BasicItem, FormDesign, Group, Item, Question, RosterGroup, Section } from "./formDesign"
+import { BasicItem, Calculation, FormDesign, Group, Instructions, Item, MatrixColumn, MatrixColumnCalculation, MatrixColumnQuestion, MatrixColumnText, Question, RosterGroup, RosterMatrix, Section, Timer } from "./formDesign"
 import { Answer, ResponseData, RosterData } from "./response"
 import ResponseRow from "./ResponseRow"
 
@@ -36,7 +36,7 @@ export default class VisibilityCalculator {
    * responseRow is a ResponseRow which represents the same row */
   createVisibilityStructure(
     data: ResponseData,
-    responseRow: PromiseExprEvaluatorRow,
+    responseRow: ResponseRow,
     callback: (error: any, visibilityStructure?: VisibilityStructure) => void
   ): void {
     const visibilityStructure = {}
@@ -109,7 +109,7 @@ export default class VisibilityCalculator {
   // If the parent is invisible, forceToInvisible is set to true and the item will be invisible no matter what
   // The prefix contains the info set by a RosterGroup or a RosterMatrix
   processItem(
-    item: Item,
+    item: Item | FormDesign,
     forceToInvisible: boolean,
     data: ResponseData,
     responseRow: ResponseRow,
@@ -117,10 +117,10 @@ export default class VisibilityCalculator {
     prefix: any,
     callback: (error: any, visibilityStructure?: VisibilityStructure) => void
   ) {
-    if (formUtils.isQuestion(item)) {
+    if (formUtils.isQuestionOrMatrixColumnQuestion(item)) {
       this.processQuestion(item, forceToInvisible, data, responseRow, visibilityStructure, prefix, callback)
     } else if (["TextColumn", "Calculation"].includes(item._type)) {
-      this.processQuestion(item, forceToInvisible, data, responseRow, visibilityStructure, prefix, callback)
+      this.processQuestion(item as MatrixColumnText | MatrixColumnCalculation, forceToInvisible, data, responseRow, visibilityStructure, prefix, callback)
     } else if (item._type === "Instructions") {
       // Behaves like a question
       this.processQuestion(item, forceToInvisible, data, responseRow, visibilityStructure, prefix, callback)
@@ -129,17 +129,17 @@ export default class VisibilityCalculator {
       this.processQuestion(item, forceToInvisible, data, responseRow, visibilityStructure, prefix, callback)
     } else if (item._type === "RosterGroup" || item._type === "RosterMatrix") {
       this.processRoster(item, forceToInvisible, data, responseRow, visibilityStructure, prefix, callback)
-    } else if (["Section", "Group", "Form"].includes(item._type)) {
+    } else if (formUtils.isTypeWithContents(item)) {
       this.processGroup(item, forceToInvisible, data, responseRow, visibilityStructure, prefix, callback)
     } else {
-      callback(new Error("Unknown item type"))
+      callback(new Error("Unknown item type " + item._type))
     }
   }
 
   // Sets visible to false if forceToInvisible is true or the conditions and data make the question invisible
   // The prefix contains the info set by a RosterGroup or a RosterMatrix
   processQuestion(
-    question: Question,
+    question: Question | MatrixColumn | Instructions | Timer | Section | Group,
     forceToInvisible: boolean,
     data: ResponseData,
     responseRow: ResponseRow,
@@ -148,8 +148,9 @@ export default class VisibilityCalculator {
     callback: (error: any, visibilityStructure?: VisibilityStructure) => void
   ) {
     // Once visibility is calculated, call this
-    let isVisible: any
-    const applyResult = (isVisible: any) => {
+    let isVisible: boolean
+
+    const applyResult = (isVisible: boolean) => {
       visibilityStructure[prefix + question._id] = isVisible
 
       if (question._type === "MatrixQuestion") {
@@ -182,7 +183,7 @@ export default class VisibilityCalculator {
 
     if (forceToInvisible) {
       isVisible = false
-    } else if (question.conditions != null && question.conditions.length > 0) {
+    } else if (formUtils.isQuestion(question) && question.conditions != null && question.conditions.length > 0) {
       const conditions = conditionUtils.compileConditions(question.conditions)
       isVisible = conditions(data)
     } else {
@@ -190,12 +191,12 @@ export default class VisibilityCalculator {
     }
 
     // Apply randomAsk
-    if (question.randomAskProbability != null && (data[question._id] as Answer)?.randomAsked === false) {
+    if (formUtils.isQuestion(question) && question.randomAskProbability != null && (data[question._id] as Answer)?.randomAsked === false) {
       isVisible = false
     }
 
     // Apply conditionExpr
-    if (question.conditionExpr) {
+    if (!formUtils.isFormDesign(question) && !formUtils.isMatrixColumn(question) && question.conditionExpr) {
       return new PromiseExprEvaluator({ schema: this.schema })
         .evaluate(question.conditionExpr, { row: responseRow })
         .then((value) => {
@@ -216,7 +217,7 @@ export default class VisibilityCalculator {
   // The visibility of the Rosters are similar to questions, the extra logic is for handling the children
   // The logic is a bit more tricky when a rosterId is set. It uses that other roster data for calculating the visibility of its children.
   processRoster(
-    rosterGroup: RosterGroup,
+    rosterGroup: RosterGroup | RosterMatrix,
     forceToInvisible: boolean,
     data: ResponseData,
     responseRow: ResponseRow,
@@ -240,7 +241,7 @@ export default class VisibilityCalculator {
       } else {
         dataId = rosterGroup._id
       }
-      const subData = data[dataId]
+      const subData = data[dataId] as RosterData | undefined
 
       if (subData != null) {
         // Get subrows
@@ -252,8 +253,8 @@ export default class VisibilityCalculator {
               subData,
               (entry, index, cb) => {
                 return async.each(
-                  rosterGroup.contents,
-                  (item, cb2) => {
+                  rosterGroup.contents as any[],
+                  (item: BasicItem | MatrixColumn, cb2) => {
                     const newPrefix = `${dataId}.${index}.`
 
                     // Data is actually stored in .data subfield

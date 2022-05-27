@@ -1,6 +1,6 @@
 import { Schema } from "mwater-expressions";
 import { ResponseRow } from ".";
-import { FormDesign } from "./formDesign";
+import { FormDesign, Group, RosterGroup, RosterMatrix, Section } from "./formDesign";
 import { ResponseData } from "./response";
 import { VisibilityStructure } from "./VisibilityCalculator";
 export interface ResponseDataValidatorError {
@@ -24,5 +24,5 @@ export default class ResponseDataValidator {
      *     QuestionMatrix -> matrixId.itemId.columnId
      */
     validate(formDesign: FormDesign, visibilityStructure: VisibilityStructure, data: ResponseData, schema: Schema, responseRow: ResponseRow): Promise<ResponseDataValidatorError | null>;
-    validateParentItem(parentItem: any, visibilityStructure: any, data: any, schema: any, responseRow: any, keyPrefix: any): Promise<ResponseDataValidatorError | null>;
+    validateParentItem(parentItem: Section | Group | RosterGroup | RosterMatrix | FormDesign, visibilityStructure: VisibilityStructure, data: ResponseData, schema: Schema, responseRow: ResponseRow, keyPrefix: string): Promise<ResponseDataValidatorError | null>;
 }

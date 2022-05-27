@@ -1,3 +1,4 @@
+// @ts-nocheck
 import _ from "lodash"
 import { assert } from "chai"
 import { default as ResponseDataExprValueUpdater } from "../src/ResponseDataExprValueUpdater"

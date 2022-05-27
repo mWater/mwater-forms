@@ -1,5 +1,4 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
+// @ts-nocheck
 import { assert } from "chai"
 import VisibilityCalculator from "../src/VisibilityCalculator"
 import { default as ResponseRow } from "../src/ResponseRow"
@@ -330,6 +329,7 @@ describe("VisibilityCalculator", function () {
         const data = { checkboxQuestionId: { value: false } }
         const question = {
           _id: "testId",
+          _type: "TextQuestion",
           conditions: [{ op: "true", lhs: { question: "checkboxQuestionId" } }]
         }
         const visibilityStructure = {}

@@ -1,54 +1,56 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
 import { assert } from "chai"
+import { Answer, Question, UnitsAnswerValue } from "../../src"
 import AnswerValidator from "../../src/answers/AnswerValidator"
+
+let answerValidator: AnswerValidator
 
 describe("AnswerValidator", function () {
   before(function () {
-    return (this.answerValidator = new AnswerValidator({}, {}))
+    answerValidator = new AnswerValidator({} as any, {} as any, "en")
   })
 
   describe("validate", () =>
     describe("TestQuestion", function () {
       it("returns null for non required value that are null or empty", async function () {
-        let answer = { value: null }
-        const question = { format: "url", required: false }
+        let answer: Answer = { value: null }
+        const question = { format: "url", required: false } as Question
 
-        let result = await this.answerValidator.validate(question, answer)
+        let result = await answerValidator.validate(question, answer)
         assert.equal(null, result)
 
         answer = { value: "" }
-        result = await this.answerValidator.validate(question, answer)
+        result = await answerValidator.validate(question, answer)
         return assert.equal(null, result)
       })
 
       it("returns null for required but disabled questions' value that are null or empty", async function () {
-        let answer = { value: null }
-        const question = { format: "url", disabled: true, required: true }
+        let answer: Answer = { value: null }
+        const question = { _type: "TextQuestion", format: "url", disabled: true, required: true } as Question
 
-        let result = await this.answerValidator.validate(question, answer)
-        assert.equal(null, result)
+        let result = await answerValidator.validate(question, answer)
+        assert.equal(result, null)
 
         answer = { value: "" }
-        result = await this.answerValidator.validate(question, answer)
-        return assert.equal(null, result)
+        result = await answerValidator.validate(question, answer)
+        return assert.equal(result, null)
       })
 
       it("returns an error for required value that are null or empty", async function () {
-        let answer = { value: null }
-        const question = { format: "url", required: true }
+        let answer = { value: null } as Answer
+        const question = { _type: "TextQuestion", format: "url", required: true } as Question
 
-        let result = await this.answerValidator.validate(question, answer)
+        let result = await answerValidator.validate(question, answer)
         assert(result)
 
         answer = { value: "" }
-        result = await this.answerValidator.validate(question, answer)
+        result = await answerValidator.validate(question, answer)
         return assert(result)
       })
 
       it("can apply a validator", async function () {
         const answer = { value: "1234567" }
         const question = {
+          _type: "TextQuestion", 
           format: "singleline",
           validations: [
             {
@@ -57,38 +59,38 @@ describe("AnswerValidator", function () {
               message: { _base: "en", en: "message" }
             }
           ]
-        }
-        const result = await this.answerValidator.validate(question, answer)
+        } as unknown as Question
+        const result = await answerValidator.validate(question, answer)
         return assert.equal(result, "message")
       })
 
       it("allows alternate for required", async function () {
-        const answer = { alternate: "na" }
-        const question = { required: true, alternates: { na: true } }
+        const answer = { alternate: "na" } as Answer
+        const question = { _type: "TextQuestion", required: true, alternates: { na: true } } as Question
 
-        const result = await this.answerValidator.validate(question, answer)
+        const result = await answerValidator.validate(question, answer)
         return assert.equal(null, result, "alternate is valid for a required question")
       })
 
       it("requires specify field to be entered if question is required (RadioQuestion)", async function () {
-        let answer = { value: "c3", specify: null }
+        let answer = { value: "c3" } as Answer
         const question = {
           _type: "RadioQuestion",
           choices: [{ id: "c1" }, { id: "c2" }, { id: "c3", specify: true }],
           required: true
-        }
+        } as Question
 
-        let result = await this.answerValidator.validate(question, answer)
+        let result = await answerValidator.validate(question, answer)
         assert.equal(true, result, "Required specify question requires specify entered")
 
         answer = { value: "c3", specify: { c3: "coz bla bla" } }
 
-        result = await this.answerValidator.validate(question, answer)
+        result = await answerValidator.validate(question, answer)
         return assert.equal(null, result, "Validates if specify text is set on required question")
       })
 
       it("requires specify field to be entered if question is required (MulticheckQuestion)", async function () {
-        let answer = { value: ["c3", "c4", "c5"], specify: null }
+        let answer = { value: ["c3", "c4", "c5"] } as Answer
         const question = {
           _type: "MulticheckQuestion",
           choices: [
@@ -99,51 +101,54 @@ describe("AnswerValidator", function () {
             { id: "c5", specify: true }
           ],
           required: true
-        }
+        } as Question
 
-        let result = await this.answerValidator.validate(question, answer)
+        let result = await answerValidator.validate(question, answer)
         assert.equal(true, result, "Required specify question requires specify entered")
 
         answer = { value: ["c3", "c4", "c5"], specify: { c3: "bla 1" } }
-        result = await this.answerValidator.validate(question, answer)
+        result = await answerValidator.validate(question, answer)
         assert.equal(true, result, "all specifys in multi check question should be provided")
 
         answer = { value: ["c3", "c4", "c5"], specify: { c3: "bla 1", c4: "bla 1", c5: "bla 4" } }
-        result = await this.answerValidator.validate(question, answer)
+        result = await answerValidator.validate(question, answer)
         return assert.equal(null, result, "Validates if all specifys in required multi check question are provided")
       })
 
       it("validates true advanced validations", async function () {
         const question = {
+          _type: "TextQuestion", 
           advancedValidations: [
             { expr: { type: "literal", valueType: "boolean", value: true }, message: { en: "message" } }
           ]
-        }
+        } as unknown as Question
 
         const answer = { value: "value" }
-        const result = await this.answerValidator.validate(question, answer)
+        const result = await answerValidator.validate(question, answer)
         return assert.equal(result, null)
       })
 
       it("validates false advanced validations", async function () {
         const question = {
+          _type: "TextQuestion", 
           advancedValidations: [
             { expr: { type: "literal", valueType: "boolean", value: false }, message: { en: "message" } }
           ]
-        }
+        } as unknown as Question
 
         const answer = { value: "value" }
-        const result = await this.answerValidator.validate(question, answer)
+        const result = await answerValidator.validate(question, answer)
         return assert.equal(result, "message")
       })
 
       return it("blank message is true advanced validations", async function () {
         const question = {
+          _type: "TextQuestion", 
           advancedValidations: [{ expr: { type: "literal", valueType: "boolean", value: false }, message: { en: "" } }]
-        }
+        } as unknown as Question
 
         const answer = { value: "value" }
-        const result = await this.answerValidator.validate(question, answer)
+        const result = await answerValidator.validate(question, answer)
         return assert.equal(result, true)
       })
     }))
@@ -152,25 +157,25 @@ describe("AnswerValidator", function () {
     describe("url", function () {
       it("returns null for empty value", async function () {
         const answer = { value: null }
-        const question = { format: "url" }
+        const question = { _type: "TextQuestion", format: "url" }
 
-        const result = await this.answerValidator.validateTextQuestion(question, answer)
+        const result = await answerValidator.validateTextQuestion(question, answer)
         return assert.equal(null, result)
       })
 
       it("returns null for well formed url", async function () {
         const answer = { value: "http://api.mwater.co" }
-        const question = { format: "url" }
+        const question = { _type: "TextQuestion", format: "url" }
 
-        const result = await this.answerValidator.validateTextQuestion(question, answer)
+        const result = await answerValidator.validateTextQuestion(question, answer)
         return assert.equal(null, result)
       })
 
       return it("returns error on malformed url", async function () {
         const answer = { value: "test" }
-        const question = { format: "url" }
+        const question = { _type: "TextQuestion", format: "url" }
 
-        const result = await this.answerValidator.validateTextQuestion(question, answer)
+        const result = await answerValidator.validateTextQuestion(question, answer)
         return assert(result != null)
       })
     })
@@ -178,25 +183,25 @@ describe("AnswerValidator", function () {
     describe("email", function () {
       it("returns null for empty value", async function () {
         const answer = { value: null }
-        const question = { format: "email" }
+        const question = { _type: "TextQuestion", format: "email" }
 
-        const result = await this.answerValidator.validateTextQuestion(question, answer)
+        const result = await answerValidator.validateTextQuestion(question, answer)
         return assert.equal(null, result)
       })
 
       it("returns null for well formed email", async function () {
         const answer = { value: "test@hotmail.com" }
-        const question = { format: "email" }
+        const question = { _type: "TextQuestion", format: "email" }
 
-        const result = await this.answerValidator.validateTextQuestion(question, answer)
+        const result = await answerValidator.validateTextQuestion(question, answer)
         return assert.equal(null, result)
       })
 
       return it("returns error on malformed url", async function () {
         const answer = { value: "test" }
-        const question = { format: "email" }
+        const question = { _type: "TextQuestion", format: "email" }
 
-        const result = await this.answerValidator.validateTextQuestion(question, answer)
+        const result = await answerValidator.validateTextQuestion(question, answer)
         return assert(result != null)
       })
     })
@@ -204,23 +209,24 @@ describe("AnswerValidator", function () {
     describe("multiline", () =>
       it("returns null", async function () {
         const answer = { value: "patate@@$#@%!@%" }
-        const question = { format: "multiline" }
+        const question = { _type: "TextQuestion", format: "multiline" }
 
-        const result = await this.answerValidator.validateTextQuestion(question, answer)
+        const result = await answerValidator.validateTextQuestion(question, answer)
         return assert.equal(null, result)
       }))
 
     describe("singleline", () =>
       it("returns null", async function () {
         const answer = { value: "patate@@$#@%!@%" }
-        const question = { format: "singleline" }
+        const question = { _type: "TextQuestion", format: "singleline" }
 
-        const result = await this.answerValidator.validateTextQuestion(question, answer)
+        const result = await answerValidator.validateTextQuestion(question, answer)
         return assert.equal(null, result)
       }))
 
     return it("allows non-valid blank answer if not required", async function () {
       const question = {
+        _type: "TextQuestion", 
         validations: [
           {
             op: "lengthRange",
@@ -228,10 +234,10 @@ describe("AnswerValidator", function () {
             message: { _base: "en", en: "message" }
           }
         ]
-      }
+      } as unknown as Question
       const answer = { value: "" }
 
-      const result = await this.answerValidator.validate(question, answer)
+      const result = await answerValidator.validate(question, answer)
       return assert.equal(result, null, "Should be allowed")
     })
   })
@@ -239,77 +245,77 @@ describe("AnswerValidator", function () {
   describe("validateUnitsQuestion", function () {
     it("returns true for empty value if required", async function () {
       const answer = { value: null }
-      const question = { _type: "UnitsQuestion" }
+      const question = { _type: "UnitsQuestion" } as unknown as Question
 
       // Okay if not required
-      let result = await this.answerValidator.validate(question, answer)
+      let result = await answerValidator.validate(question, answer)
       assert.equal(null, result)
 
       question.required = true
 
       // The unit answer is still valid in itself
-      result = await this.answerValidator.validateUnitsQuestion(question, answer)
+      result = await answerValidator.validateUnitsQuestion(question, answer)
       assert.equal(null, result)
 
       // But not if required
-      result = await this.answerValidator.validate(question, answer)
+      result = await answerValidator.validate(question, answer)
       return assert.equal(true, result)
     })
 
     it("enforces required on blank answer", async function () {
-      const answer = { value: { quantity: null, unit: "a" } }
-      const question = { _type: "UnitsQuestion" }
+      const answer = { value: { quantity: null, units: "a" } } as Answer
+      const question = { _type: "UnitsQuestion" } as unknown as Question
 
       // Okay if not required
-      let result = await this.answerValidator.validate(question, answer)
+      let result = await answerValidator.validate(question, answer)
       assert.equal(result, null, "Should be valid")
 
       question.required = true
       // Not Okay if required
-      result = await this.answerValidator.validate(question, answer)
+      result = await answerValidator.validate(question, answer)
       return assert(result, "Shouldn't be valid")
     })
 
     it("allows 0 on required", async function () {
       const answer = { value: { quantity: "0", units: "a" } }
-      const question = { _type: "UnitsQuestion" }
+      const question = { _type: "UnitsQuestion" } as unknown as Question
       question.required = true
       // Okay if not required
-      let result = await this.answerValidator.validate(question, answer)
+      let result = await answerValidator.validate(question, answer)
       assert.equal(result, null, "Should be valid")
 
       // Also Okay if required
-      result = await this.answerValidator.validate(question, answer)
+      result = await answerValidator.validate(question, answer)
       return assert.equal(result, null, "Should also be valid")
     })
 
     it("requires units to be specified if a quantity is set", async function () {
-      const answer = { value: { quantity: "0" } }
-      const question = { _type: "UnitsQuestion" }
+      const answer = { value: { quantity: "0" } } as any
+      const question = { _type: "UnitsQuestion" } as unknown as Question
 
       // Not Okay if unit is undefined
-      let result = await this.answerValidator.validate(question, answer)
+      let result = await answerValidator.validate(question, answer)
       assert(result, "Shouldn't be valid")
 
       // Not Okay if unit is null
       answer.value.units = null
-      result = await this.answerValidator.validate(question, answer)
+      result = await answerValidator.validate(question, answer)
       assert(result, "Shouldn't be valid either")
 
       // Okay if quantity is undefined or nul or empty string
       answer.value.quantity = ""
-      result = await this.answerValidator.validate(question, answer)
+      result = await answerValidator.validate(question, answer)
       assert.equal(result, null)
       answer.value.quantity = null
-      result = await this.answerValidator.validate(question, answer)
+      result = await answerValidator.validate(question, answer)
       assert.equal(result, null)
       delete answer.value["quantity"]
-      result = await this.answerValidator.validate(question, answer)
+      result = await answerValidator.validate(question, answer)
       assert.equal(result, null)
 
       answer.value.quantity = 0
       answer.value.units = "a"
-      result = await this.answerValidator.validate(question, answer)
+      result = await answerValidator.validate(question, answer)
       return assert.equal(result, null)
     })
 
@@ -322,9 +328,9 @@ describe("AnswerValidator", function () {
             message: { _base: "en", en: "message" }
           }
         ]
-      }
+      } as unknown as Question
       const answer = { value: { quantity: 7 }, unit: "a" }
-      const result = await this.answerValidator.validate(question, answer)
+      const result = await answerValidator.validate(question, answer)
       return assert.equal(result, "message")
     })
   })
@@ -332,40 +338,40 @@ describe("AnswerValidator", function () {
   describe("validateNumberQuestion", function () {
     it("enforces required", async function () {
       const answer = { value: null }
-      const question = { _type: "NumberQuestion" }
+      const question = { _type: "NumberQuestion" } as unknown as Question
 
       // Okay if not required
-      let result = await this.answerValidator.validate(question, answer)
+      let result = await answerValidator.validate(question, answer)
       assert.equal(result, null)
 
       question.required = true
 
       // The unit answer is still valid in itself
-      result = this.answerValidator.validateNumberQuestion(question, answer)
+      result = answerValidator.validateNumberQuestion(question, answer)
       assert.equal(result, null)
 
       // But not if required
-      result = await this.answerValidator.validate(question, answer)
+      result = await answerValidator.validate(question, answer)
       return assert.equal(result, true)
     })
 
     it("enforces required on blank answer", async function () {
       const answer = { value: "" }
-      const question = { _type: "NumberQuestion" }
-      question.isRequired = false
+      const question = { _type: "NumberQuestion" } as unknown as Question
+      question.required = false
 
       // Okay if not required
-      const result = await this.answerValidator.validate(question, answer)
+      const result = await answerValidator.validate(question, answer)
       return assert.equal(result, null)
     })
 
     it("allows 0 on required", async function () {
       const answer = { value: 0 }
-      const question = { _type: "NumberQuestion" }
-      question.isRequired = false
+      const question = { _type: "NumberQuestion" } as unknown as Question
+      question.required = false
 
       // Okay if not required
-      const result = await this.answerValidator.validate(question, answer)
+      const result = await answerValidator.validate(question, answer)
       return assert.equal(result, null)
     })
 
@@ -378,45 +384,45 @@ describe("AnswerValidator", function () {
             message: { _base: "en", en: "message" }
           }
         ]
-      }
+      } as unknown as Question
       const answer = { value: 7 }
 
-      const result = await this.answerValidator.validate(question, answer)
+      const result = await answerValidator.validate(question, answer)
       return assert.equal(result, "message")
     })
   })
 
   describe("validateLikertQuestion", function () {
     it("enforces required", async function () {
-      let answer = { value: null }
+      let answer = { value: null } as any
       const question = {
         _type: "LikertQuestion",
         items: [{ id: "itemAId" }, { id: "itemBId" }],
         choices: [{ id: "choiceId" }]
-      }
+      } as unknown as Question
 
       // Okay if not required
-      let result = await this.answerValidator.validate(question, answer)
+      let result = await answerValidator.validate(question, answer)
       assert.equal(result, null)
 
       question.required = true
 
       // The unit answer is still valid in itself
-      result = this.answerValidator.validateLikertQuestion(question, answer)
+      result = answerValidator.validateLikertQuestion(question, answer)
       assert.equal(result, null)
 
       // But not if required
-      result = await this.answerValidator.validate(question, answer)
+      result = await answerValidator.validate(question, answer)
       assert.equal(result, true)
 
       // Even if one of the items has been answered
       answer = { itemAId: "choiceId" }
-      result = await this.answerValidator.validate(question, answer)
+      result = await answerValidator.validate(question, answer)
       assert.equal(result, true)
 
       // But it's validate if all items have been answered
       answer = { value: { itemAId: "choiceId", itemBId: "choiceId" } }
-      result = await this.answerValidator.validate(question, answer)
+      result = await answerValidator.validate(question, answer)
       return assert.equal(result, null)
     })
 
@@ -426,13 +432,13 @@ describe("AnswerValidator", function () {
         _type: "LikertQuestion",
         items: [{ id: "itemAId" }, { id: "itemBId" }],
         choices: [{ id: "choiceId" }]
-      }
+      } as unknown as Question
 
-      assert.equal(null, this.answerValidator.validateLikertQuestion(question, answer))
+      assert.equal(null, answerValidator.validateLikertQuestion(question, answer))
 
       // Setting an invalid choice value
       answer = { value: { itemAId: "choiceId", itemBId: "anotherChoiceId" } }
-      return assert.equal("Invalid choice", this.answerValidator.validateLikertQuestion(question, answer))
+      return assert.equal("Invalid choice", answerValidator.validateLikertQuestion(question, answer))
     })
   })
 
@@ -442,20 +448,20 @@ describe("AnswerValidator", function () {
       const question = {
         _type: "SiteQuestion",
         required: false
-      }
+      } as unknown as Question
 
-      const result = await this.answerValidator.validate(question, answer)
+      const result = await answerValidator.validate(question, answer)
       return assert.equal(result, null)
     })
 
     it("does not allow sites with code null", async function () {
-      const answer = { value: { code: null } }
+      const answer = { value: { code: null } } as any
       const question = {
         _type: "SiteQuestion",
         required: true
-      }
+      } as unknown as Question
 
-      const result = await this.answerValidator.validate(question, answer)
+      const result = await answerValidator.validate(question, answer)
       return assert.equal(result, true)
     })
 
@@ -464,9 +470,9 @@ describe("AnswerValidator", function () {
       const question = {
         _type: "SiteQuestion",
         required: true
-      }
+      } as unknown as Question
 
-      const result = await this.answerValidator.validate(question, answer)
+      const result = await answerValidator.validate(question, answer)
       return assert.equal(result, null)
     })
   })
@@ -495,7 +501,7 @@ describe("AnswerValidator", function () {
         ],
         items: [{ id: "ts39QF6" }, { id: "dWY5r5E" }],
         required: true
-      }
+      } as unknown as Question
 
       const answer = {
         value: {
@@ -506,7 +512,7 @@ describe("AnswerValidator", function () {
           }
         }
       }
-      const result = await this.answerValidator.validate(question, answer)
+      const result = await answerValidator.validate(question, answer)
       assert.equal(result, null)
     })
 
@@ -515,7 +521,7 @@ describe("AnswerValidator", function () {
         _type: "MatrixQuestion",
         items: [{ id: "itemAId" }],
         columns: [{ _id: "c1", _type: "TextColumnQuestion", required: true }]
-      }
+      } as unknown as Question
 
       const answer = {
         value: {
@@ -525,7 +531,7 @@ describe("AnswerValidator", function () {
         }
       }
 
-      const result = await this.answerValidator.validate(question, answer)
+      const result = await answerValidator.validate(question, answer)
       return assert.equal(result, null)
     })
 
@@ -534,7 +540,7 @@ describe("AnswerValidator", function () {
         _type: "MatrixQuestion",
         items: [{ id: "itemAId" }],
         columns: [{ _id: "c1", _type: "TextColumnQuestion", required: true }]
-      }
+      } as unknown as Question
 
       const answer = {
         value: {
@@ -544,7 +550,7 @@ describe("AnswerValidator", function () {
         }
       }
 
-      const result = await this.answerValidator.validate(question, answer)
+      const result = await answerValidator.validate(question, answer)
       return assert.equal(result, true)
     })
 
@@ -565,7 +571,7 @@ describe("AnswerValidator", function () {
             ]
           }
         ]
-      }
+      } as unknown as Question
 
       const answer = {
         value: {
@@ -575,7 +581,7 @@ describe("AnswerValidator", function () {
         }
       }
 
-      const result = await this.answerValidator.validate(question, answer)
+      const result = await answerValidator.validate(question, answer)
       return assert.equal(result, "message")
     })
   })

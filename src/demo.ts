@@ -1,6 +1,3 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-import PropTypes from "prop-types"
 import React from "react"
 import ReactDOM from "react-dom"
 const R = React.createElement
@@ -9,7 +6,7 @@ import "./index"
 import FormComponent from "./FormComponent"
 import sampleFormDesign from "./sampleFormDesign"
 import sampleForm2 from "./sampleForm2"
-import sampleFormAdvancedValidations from "./sampleFormAdvancedValidations"
+// import sampleFormAdvancedValidations from "./sampleFormAdvancedValidations"
 
 //bigsampleForm2 = require './bigsampleForm2'
 import ItemListComponent from "./ItemListComponent"
@@ -24,9 +21,12 @@ import { DragDropContext } from "react-dnd"
 import { default as LocationEditorComponent } from "./LocationEditorComponent"
 import LocationFinder from "./LocationFinder"
 import { CustomTablesetSchemaBuilder } from "./CustomTablesetSchemaBuilder"
+import _, { any } from "lodash"
+import { Form } from "./index"
+import { FormContext } from "./formContext"
 
 // Setup mock localizer
-global.T = function (str: any) {
+window["T"] = function (str: any) {
   if (arguments.length > 1) {
     const iterable = Array.from(arguments).slice(1)
     for (let index = 0; index < iterable.length; index++) {
@@ -107,12 +107,13 @@ const formCtx = {
     if (tableId === "custom.ts.cities") {
       return Promise.resolve(_.findWhere(cascadingRefRows, { _id: rowId }))
     }
+    throw new Error("Not implemented")
   },
 
   displayMap: (location: any, onSet: any) => {
     return alert("Map")
   }
-}
+} as unknown as FormContext
 
 const groupDesign = {
   _id: "761114a3940e4063951387155e112486",
@@ -528,7 +529,7 @@ const exprResponse = {
   ipAddress: "27.34.111.61"
 }
 
-class DemoLocationEditorComponent extends React.Component {
+class DemoLocationEditorComponent extends React.Component<any, any> {
   constructor(props: any) {
     super(props)
 
@@ -549,7 +550,7 @@ class DemoLocationEditorComponent extends React.Component {
         this.setState({
           location: { latitude: 46, longitude: -73, altitude: 240, accuracy: 12, altitudeAccuracy: 30, depth: 3 }
         }),
-      T: global.T
+      T: window["T"]
     })
   }
 }
@@ -738,7 +739,7 @@ const rankedDesign = {
   }
 }
 
-class DemoComponent extends React.Component {
+class DemoComponent extends React.Component<any, any> {
   constructor(props: any) {
     super(props)
 
@@ -777,9 +778,9 @@ class DemoComponent extends React.Component {
     // design = sampleFormAdvancedValidations
     // design = require('./sampleFormRM')
     // design = randomAskFormDesign
-    const design = rankedDesign
-    // const design = sampleForm2
-    schema = new FormSchemaBuilder({ user: "bob" }).addForm(schema, design)
+    // const design = rankedDesign as unknown as Form
+    const design = sampleForm2 as unknown as Form
+    schema = new FormSchemaBuilder().addForm(schema, design)
     // schema = new CustomTablesetSchemaBuilder().addTableset(schema, cascadingRefCustomTableset)
 
     return R(
@@ -797,7 +798,8 @@ class DemoComponent extends React.Component {
           onDataChange: this.handleDataChange,
           onSubmit: () => alert("Submit"),
           onSaveLater: () => alert("SaveLater"),
-          onDiscard: () => alert("Discard")
+          onDiscard: () => alert("Discard"),
+          deployment: "dep"
           // submitLabel: PropTypes.string           # Label for submit button
           // discardLabel: PropTypes.string           # Label for discard button
           // entity: PropTypes.object            # Form-level entity to load
@@ -817,7 +819,7 @@ class DemoComponent extends React.Component {
           schema,
           response: { data: this.state.data, _id: "abc" },
           formCtx,
-          T,
+          T: window["T"],
           login: {
             client: "2a8c5e2e959a53a9609dc5330aa4c4a9",
             user: "broncha",
@@ -831,7 +833,7 @@ class DemoComponent extends React.Component {
   }
 }
 
-DemoComponent = DragDropContext(HTML5Backend)(DemoComponent)
+const DemoComponentWrapped = DragDropContext(HTML5Backend)(DemoComponent)
 
 // class ImageUploaderTestComponent extends React.Component
 //   render: ->
@@ -841,7 +843,7 @@ DemoComponent = DragDropContext(HTML5Backend)(DemoComponent)
 //       onSuccess: (id) => console.log(id)
 //       onCancel: => console.log "Cancel"
 
-ReactDOM.render(R(DemoComponent), document.getElementById("main"))
+ReactDOM.render(R(DemoComponentWrapped), document.getElementById("main"))
 // ReactDOM.render(R(DemoLocationEditorComponent), document.getElementById("main"))
 // ImageUploaderModalComponent.show("http://localhost:1234/v3/", null, window.T, (id) -> alert(id))
 // ReactDOM.render(R(ImageUploaderTestComponent), document.getElementById("main"))

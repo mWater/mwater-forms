@@ -295,7 +295,7 @@ export type BooleanAnswerValue = boolean
 export type DateAnswerValue = string
 
 export interface UnitsAnswerValue {
-  quantity: number
+  quantity: number | null
   /** id of units */
   units: string
 }

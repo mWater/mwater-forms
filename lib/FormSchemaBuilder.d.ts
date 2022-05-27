@@ -2,6 +2,7 @@ import { Schema, Column, Section } from "mwater-expressions";
 import ConditionsExprCompiler from "./ConditionsExprCompiler";
 import { Form } from "./form";
 import { IndicatorCalculation } from ".";
+import { FormDesign, Item } from "./formDesign";
 /** Adds a form to a mwater-expressions schema */
 export default class FormSchemaBuilder {
     /** indicators is at least all indicators referenced in indicator calculations. Can be empty and indicator calculations will be omitted */
@@ -15,7 +16,7 @@ export default class FormSchemaBuilder {
     createIndicatorCalculationSection(indicatorCalculation: IndicatorCalculation, schema: Schema, indicators: any[], form: Form): Section | null;
     addConfidentialDataForRosters(schema: Schema, form: Form, conditionsExprCompiler: ConditionsExprCompiler): Schema;
     addConfidentialData(schema: Schema, form: Form, conditionsExprCompiler: ConditionsExprCompiler): Schema;
-    addFormItem(item: any, contents: any, tableId: any, conditionsExprCompiler?: any, existingConditionExpr?: any, reverseJoins?: {
+    addFormItem(item: Item | FormDesign, contents: any, tableId: any, conditionsExprCompiler?: any, existingConditionExpr?: any, reverseJoins?: {
         table: string;
         column: Column;
     }[], confidentialData?: boolean): any;

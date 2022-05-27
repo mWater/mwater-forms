@@ -1,5 +1,5 @@
-import { PromiseExprEvaluatorRow, Schema } from "mwater-expressions";
-import { FormDesign, Group, Item, Question, RosterGroup, Section } from "./formDesign";
+import { Schema } from "mwater-expressions";
+import { FormDesign, Group, Instructions, Item, MatrixColumn, Question, RosterGroup, RosterMatrix, Section, Timer } from "./formDesign";
 import { ResponseData } from "./response";
 import ResponseRow from "./ResponseRow";
 /**
@@ -24,11 +24,11 @@ export default class VisibilityCalculator {
     /** Updates the visibilityStructure dictionary with one entry for each element
      * data is the data of the response
      * responseRow is a ResponseRow which represents the same row */
-    createVisibilityStructure(data: ResponseData, responseRow: PromiseExprEvaluatorRow, callback: (error: any, visibilityStructure?: VisibilityStructure) => void): void;
+    createVisibilityStructure(data: ResponseData, responseRow: ResponseRow, callback: (error: any, visibilityStructure?: VisibilityStructure) => void): void;
     processGroup(item: FormDesign | Section | Group, forceToInvisible: any, data: any, responseRow: any, visibilityStructure: any, prefix: any, callback: any): void;
-    processItem(item: Item, forceToInvisible: boolean, data: ResponseData, responseRow: ResponseRow, visibilityStructure: VisibilityStructure, prefix: any, callback: (error: any, visibilityStructure?: VisibilityStructure) => void): void;
-    processQuestion(question: Question, forceToInvisible: boolean, data: ResponseData, responseRow: ResponseRow, visibilityStructure: VisibilityStructure, prefix: any, callback: (error: any, visibilityStructure?: VisibilityStructure) => void): void | Promise<void>;
-    processRoster(rosterGroup: RosterGroup, forceToInvisible: boolean, data: ResponseData, responseRow: ResponseRow, visibilityStructure: VisibilityStructure, prefix: any, callback: (error: any, visibilityStructure?: VisibilityStructure) => void): void | Promise<void>;
+    processItem(item: Item | FormDesign, forceToInvisible: boolean, data: ResponseData, responseRow: ResponseRow, visibilityStructure: VisibilityStructure, prefix: any, callback: (error: any, visibilityStructure?: VisibilityStructure) => void): void;
+    processQuestion(question: Question | MatrixColumn | Instructions | Timer | Section | Group, forceToInvisible: boolean, data: ResponseData, responseRow: ResponseRow, visibilityStructure: VisibilityStructure, prefix: any, callback: (error: any, visibilityStructure?: VisibilityStructure) => void): void | Promise<void>;
+    processRoster(rosterGroup: RosterGroup | RosterMatrix, forceToInvisible: boolean, data: ResponseData, responseRow: ResponseRow, visibilityStructure: VisibilityStructure, prefix: any, callback: (error: any, visibilityStructure?: VisibilityStructure) => void): void | Promise<void>;
 }
 /** Non-rosters are just referenced by id: e.g. { "somequestionid": true }
  * Unless it is a matrix, in which case it is referenced by "questionid.itemid.columnid"

@@ -2,12 +2,16 @@
 import React from "react";
 import ezlocalize from "ez-localize";
 import ModalPopupComponent from "react-library/lib/ModalPopupComponent";
+import { Form } from "./form";
+import { Response } from "./response";
+import { Schema } from "mwater-expressions";
+import { FormContext } from "./formContext";
 export interface ResponseDisplayComponentProps {
-    form: any;
-    response: any;
+    form: Form;
+    response: Response;
     /** Schema including the form */
-    schema: any;
-    formCtx: any;
+    schema: Schema;
+    formCtx: FormContext;
     apiUrl?: string;
     /** Defaults to english */
     locale?: string;
@@ -24,15 +28,16 @@ interface ResponseDisplayComponentState {
     history: any;
     showArchive: any;
     showPrevAnswers: any;
+    loadingHistory: boolean;
 }
 export default class ResponseDisplayComponent extends React.Component<ResponseDisplayComponentProps, ResponseDisplayComponentState> {
     static childContextTypes: {};
-    constructor(props: any);
-    componentWillMount(): JQuery.jqXHR<any> | undefined;
+    constructor(props: ResponseDisplayComponentProps);
+    componentWillMount(): void;
     componentDidMount(): JQuery.jqXHR<any>;
-    loadHistory(props: any): JQuery.jqXHR<any>;
-    loadEventUsernames(events: any): JQuery.jqXHR<any> | undefined;
-    componentWillReceiveProps(nextProps: any): any;
+    loadHistory(props: ResponseDisplayComponentProps): JQuery.jqXHR<any>;
+    loadEventUsernames(events: any): void;
+    componentWillReceiveProps(nextProps: any): import("./response").ResponseEvent[];
     getChildContext(): {};
     createLocalizer(design: any, locale: any): ezlocalize.LocalizeString;
     handleHideHistory: () => void;

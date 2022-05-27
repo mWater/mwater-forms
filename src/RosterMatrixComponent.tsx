@@ -1,5 +1,3 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
 import PropTypes from "prop-types"
 import _ from "lodash"
 import React from "react"
@@ -14,7 +12,7 @@ import { ResponseData, RosterData, RosterEntry } from "./response"
 import { Schema } from "mwater-expressions"
 import ResponseRow from "./ResponseRow"
 
-export default interface RosterMatrixComponentProps {
+export interface RosterMatrixComponentProps {
   rosterMatrix: RosterMatrix
   /** Current data of response */
   data: ResponseData
@@ -69,6 +67,10 @@ export default class RosterMatrixComponent extends React.Component<RosterMatrixC
       const entry = iterable[rowIndex]
       for (let columnIndex = 0; columnIndex < this.props.rosterMatrix.contents.length; columnIndex++) {
         const column = this.props.rosterMatrix.contents[columnIndex]
+        if (!formUtils.isQuestionOrMatrixColumnQuestion(column)) {
+          continue
+        }
+        
         const key = `${rowIndex}_${column._id}`
 
         if (column.required && (entry.data[column._id]?.value == null || entry.data[column._id]?.value === "")) {

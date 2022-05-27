@@ -10,7 +10,8 @@ import {
   DateQuestion,
   SiteQuestion,
   EntityQuestion,
-  CascadingRefQuestion
+  CascadingRefQuestion,
+  Question
 } from "./formDesign"
 import { CustomRow } from "./CustomRow"
 
@@ -226,7 +227,7 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
           return null
         }
 
-        const answerType = formUtils.getAnswerType(question as QuestionBase)
+        const answerType = formUtils.getAnswerType(question as Question)
         // Pad to YYYY-MM-DD
         if (answerType === "date") {
           if ((value as string).length === 4) {

@@ -54,6 +54,6 @@ export default class ResponseModel {
     canEdit(): boolean;
     /** Determine if can switch back to draft phase. Only enumerators can do this and only if pending, rejected, draft or enumerators can edit final */
     canRedraft(): boolean;
-    canReject(): boolean | undefined;
+    canReject(): boolean;
     _addEvent(type: any, attrs?: {}): number;
 }

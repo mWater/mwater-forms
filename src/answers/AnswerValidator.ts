@@ -4,6 +4,7 @@ import { PromiseExprEvaluator, Schema } from "mwater-expressions"
 import ValidationCompiler from "./ValidationCompiler"
 import * as formUtils from "../formUtils"
 import { Answer, AquagenxCBTAnswerValue, DropdownQuestion, LikertQuestion, Question, ResponseRow, UnitsAnswerValue } from ".."
+import { MatrixColumn, MatrixColumnQuestion } from "../formDesign"
 
 // AnswerValidator gets called when a form is submitted (or on next)
 // Only the validate method is not internal
@@ -22,13 +23,13 @@ export default class AnswerValidator {
   // It makes sure required questions are properly answered
   // It checks answer type specific validations
   // It checks custom validations
-  async validate(question: Question, answer: Answer) {
+  async validate(question: Question | MatrixColumnQuestion, answer: Answer) {
     // If it has an alternate value, it cannot be invalid
     if (answer.alternate) {
       return null
     }
 
-    if (question.disabled) {
+    if (formUtils.isQuestion(question) && question.disabled) {
       return null
     }
 
@@ -101,7 +102,7 @@ export default class AnswerValidator {
       }
     }
 
-    if (question.advancedValidations != null && this.responseRow) {
+    if (formUtils.isQuestion(question) && question.advancedValidations != null && this.responseRow) {
       for (let { expr, message } of question.advancedValidations) {
         if (expr) {
           // Evaluate expression

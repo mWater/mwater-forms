@@ -296,8 +296,7 @@ export default class ResponseViewEditComponent extends React.Component<
           schema: this.props.schema,
           apiUrl: this.props.apiUrl,
           locale: this.state.locale,
-          login: this.props.login,
-          T: this.props.T
+          login: this.props.login
         })
       )
     }

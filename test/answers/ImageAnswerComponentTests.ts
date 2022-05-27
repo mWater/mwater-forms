@@ -1,12 +1,10 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
 // TODO: SurveyorPro: Make a component version of these tests
 /*
 assert = require("chai").assert
 forms = require '../src'
 UIDriver = require './helpers/UIDriver'
 Backbone = require 'backbone'
-_ = require 'underscore'
+_ = require 'lodash'
 sinon = require 'sinon'
 FormCompiler = require '../src/FormCompiler'
 commonQuestionTestList = require './commonQuestionTestList'

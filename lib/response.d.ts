@@ -182,7 +182,7 @@ export declare type BooleanAnswerValue = boolean;
 /** YYYY-MM-DD */
 export declare type DateAnswerValue = string;
 export interface UnitsAnswerValue {
-    quantity: number;
+    quantity: number | null;
     /** id of units */
     units: string;
 }

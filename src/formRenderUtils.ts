@@ -17,11 +17,11 @@ import { ResponseData } from "./response"
 /** Render an item, given its data, visibility function, etc. */
 export function renderItem(
   item: Item,
-  data: any,
+  data: ResponseData,
   responseRow: ResponseRow,
   schema: Schema,
   onDataChange: (data: ResponseData) => void,
-  isVisible: () => boolean,
+  isVisible: (id: string) => boolean,
   onNext: () => any,
   ref?: (c: any) => void
 ): ReactElement {

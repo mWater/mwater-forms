@@ -1,6 +1,7 @@
 import _ from "lodash"
 import { Schema } from "mwater-expressions"
 import React, { ReactElement } from "react"
+import { Item, Question } from "./formDesign"
 const R = React.createElement
 
 import * as formRenderUtils from "./formRenderUtils"
@@ -10,7 +11,7 @@ import ResponseRow from "./ResponseRow"
 export interface ItemListComponentProps {
   contents: any
   /** Current data of response (for roster entry if in roster) */
-  data?: ResponseData
+  data: ResponseData
   /** ResponseRow object (for roster entry if in roster) */
   responseRow: ResponseRow
   onDataChange: any
@@ -56,8 +57,8 @@ export default class ItemListComponent extends React.Component<ItemListComponent
     }
   }
 
-  renderItem = (item: any, index: any) => {
-    if (this.props.isVisible(item._id) && !item.disabled) {
+  renderItem = (item: Item, index: any) => {
+    if (this.props.isVisible(item._id) && !(item as Question).disabled) {
       return formRenderUtils.renderItem(
         item,
         this.props.data,

@@ -118,6 +118,7 @@ export interface QuestionBase {
     /** If present, only ask with this probability, hide otherwise. 0-1 */
     randomAskProbability?: number;
 }
+/** Question is all base question types. Does not include matrix columns */
 export declare type Question = TextQuestion | NumberQuestion | DropdownQuestion | RadioQuestion | MulticheckQuestion | DateQuestion | UnitsQuestion | CheckQuestion | LocationQuestion | ImageQuestion | ImagesQuestion | TextListQuestion | SiteQuestion | BarcodeQuestion | EntityQuestion | AdminRegionQuestion | StopwatchQuestion | MatrixQuestion | LikertQuestion | AquagenxCBTQuestion | CascadingListQuestion | CascadingRefQuestion | RankedQuestion;
 /** Instructional text item */
 export interface Instructions {
@@ -204,9 +205,31 @@ export interface RosterMatrix {
     contents: MatrixColumn[];
 }
 /** Columns of a matrix question or roster matrix */
-export interface MatrixColumn {
+export declare type MatrixColumn = MatrixColumnQuestion | MatrixColumnText | MatrixColumnCalculation;
+export interface MatrixColumnText {
     _id: string;
-    _type: "TextColumnQuestion" | "NumberColumnQuestion" | "CheckColumnQuestion" | "DropdownColumnQuestion" | "UnitsColumnQuestion" | "TextColumn" | "SiteColumnQuestion" | "DateColumnQuestion" | "Calculation";
+    _type: "TextColumn";
+    /** Header of roster column */
+    text: LocalizedString;
+    /** For TextColumn */
+    cellText?: LocalizedString;
+    /** For TextColumn */
+    cellTextExprs?: Expr[];
+}
+export interface MatrixColumnCalculation {
+    _id: string;
+    _type: "Calculation";
+    /** Header of roster column */
+    text: LocalizedString;
+    /** Expression for calculation type column */
+    expr?: Expr;
+    /** moment.js format of the displayed date (is always stored in ISO 8601) */
+    format?: string;
+}
+/** Columns of a matrix question or roster matrix that are questions */
+export interface MatrixColumnQuestion {
+    _id: string;
+    _type: "TextColumnQuestion" | "NumberColumnQuestion" | "CheckColumnQuestion" | "DropdownColumnQuestion" | "UnitsColumnQuestion" | "SiteColumnQuestion" | "DateColumnQuestion";
     /** Header of roster column */
     text: LocalizedString;
     /** Code, unique within the question that should be used for exporting */
@@ -227,12 +250,6 @@ export interface MatrixColumn {
     choices?: Choices;
     /** Site type (e.g. "water_point"). Required for SiteColumnQuestion */
     siteType?: string;
-    /** Expression for calculation type column */
-    expr?: Expr;
-    /** For TextColumn */
-    cellText?: LocalizedString;
-    /** For TextColumn */
-    cellTextExprs?: Expr[];
     /** True to default to current date/time for DateColumnQuestions */
     defaultNow?: boolean;
     /** moment.js format of the displayed date (is always stored in ISO 8601) */

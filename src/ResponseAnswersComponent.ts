@@ -1,11 +1,9 @@
-import PropTypes from "prop-types"
 import _ from "lodash"
 import React, { ReactNode } from "react"
 const R = React.createElement
 
 import * as formUtils from "./formUtils"
 import moment from "moment"
-import ezlocalize from "ez-localize"
 import * as ui from "react-library/lib/bootstrap"
 import AsyncLoadComponent from "react-library/lib/AsyncLoadComponent"
 import VisibilityCalculator, { VisibilityStructure } from "./VisibilityCalculator"
@@ -18,7 +16,7 @@ import { CascadingListDisplayComponent } from "./answers/CascadingListDisplayCom
 import { CascadingRefDisplayComponent } from "./answers/CascadingRefDisplayComponent"
 import { CalculationsDisplayComponent } from "./CalculationsDisplayComponent"
 import { Schema } from "mwater-expressions"
-import { FormDesign, Choice, Question, DropdownQuestion, MulticheckQuestion, UnitsQuestion, SiteQuestion, EntityQuestion, LikertQuestion, RankedQuestion, Item, RosterMatrix, RosterGroup, BasicItem, MatrixColumn } from "./formDesign"
+import { FormDesign, Choice, Question, DropdownQuestion, MulticheckQuestion, UnitsQuestion, SiteQuestion, EntityQuestion, LikertQuestion, RankedQuestion, Item, RosterMatrix, RosterGroup, BasicItem, MatrixColumn, MatrixColumnQuestion } from "./formDesign"
 import { Answer, RankedAnswerValue, ResponseData, RosterData, RosterEntry, UnitsAnswerValue } from "./response"
 import { Image } from "./RotationAwareImageComponent"
 
@@ -110,7 +108,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
     return null
   }
 
-  renderAnswer(q: Question | MatrixColumn, answer: Answer | null) {
+  renderAnswer(q: Question | MatrixColumnQuestion, answer: Answer | null) {
     let label, specify
     if (!answer) {
       return null
@@ -342,7 +340,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
   }
 
   // Special render on multiple rows
-  renderLikertAnswer(q: Question | MatrixColumn, answer: Answer, prevAnswer: any) {
+  renderLikertAnswer(q: Question | MatrixColumnQuestion, answer: Answer, prevAnswer: any) {
     if (!answer) {
       return null
     }
@@ -398,7 +396,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
     }
   }
 
-  renderQuestion(q: Question | MatrixColumn, dataId: string) {
+  renderQuestion(q: Question | MatrixColumnQuestion, dataId: string) {
     // Get answer
     let answer
     const dataIds = dataId.split(".")
@@ -725,7 +723,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
       }
     }
 
-    if (formUtils.isQuestion(item)) {
+    if (formUtils.isQuestionOrMatrixColumnQuestion(item)) {
       return this.renderQuestion(item, dataId)
     }
 

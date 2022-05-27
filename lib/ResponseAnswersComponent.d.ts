@@ -4,7 +4,7 @@ import { VisibilityStructure } from "./VisibilityCalculator";
 import { default as ResponseRow } from "./ResponseRow";
 import TextExprsComponent from "./TextExprsComponent";
 import { Schema } from "mwater-expressions";
-import { FormDesign, Question, Item, MatrixColumn } from "./formDesign";
+import { FormDesign, Question, Item, MatrixColumnQuestion } from "./formDesign";
 import { Answer, ResponseData } from "./response";
 export interface ResponseAnswersComponentProps {
     formDesign: FormDesign;
@@ -42,9 +42,9 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<Respons
     load(props: ResponseAnswersComponentProps, prevProps: ResponseAnswersComponentProps, callback: any): void;
     handleLocationClick(location: any): any;
     renderLocation(location: any): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement> | null;
-    renderAnswer(q: Question | MatrixColumn, answer: Answer | null): any;
-    renderLikertAnswer(q: Question | MatrixColumn, answer: Answer, prevAnswer: any): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>[] | null;
-    renderQuestion(q: Question | MatrixColumn, dataId: string): (React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>[] | React.ReactElement<{
+    renderAnswer(q: Question | MatrixColumnQuestion, answer: Answer | null): any;
+    renderLikertAnswer(q: Question | MatrixColumnQuestion, answer: Answer, prevAnswer: any): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>[] | null;
+    renderQuestion(q: Question | MatrixColumnQuestion, dataId: string): (React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>[] | React.ReactElement<{
         key: string;
     }, string | React.JSXElementConstructor<any>> | null)[] | null;
     collectItemsReferencingRoster(items: any, contents: any, rosterId: any): any[];

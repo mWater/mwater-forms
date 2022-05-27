@@ -1,7 +1,7 @@
 import { Schema } from "mwater-expressions"
 import { ResponseRow } from "."
-import { FormDesign } from "./formDesign"
-import { ResponseData } from "./response"
+import { FormDesign, Group, RosterGroup, RosterMatrix, Section } from "./formDesign"
+import { Answer, ResponseData, RosterData } from "./response"
 import { VisibilityStructure } from "./VisibilityCalculator"
 import AnswerValidator from "./answers/AnswerValidator"
 import ValidationCompiler from "./answers/ValidationCompiler"
@@ -43,12 +43,12 @@ export default class ResponseDataValidator {
   // Validates an parent row
   //   keyPrefix: the part before the row id in the visibility structure. For rosters
   async validateParentItem(
-    parentItem: any,
-    visibilityStructure: any,
-    data: any,
-    schema: any,
-    responseRow: any,
-    keyPrefix: any
+    parentItem: Section | Group | RosterGroup | RosterMatrix | FormDesign,
+    visibilityStructure: VisibilityStructure,
+    data: ResponseData,
+    schema: Schema,
+    responseRow: ResponseRow,
+    keyPrefix: string
   ): Promise<ResponseDataValidatorError | null> {
     // Create validator
     const answerValidator = new AnswerValidator(schema, responseRow, "en")
@@ -68,10 +68,10 @@ export default class ResponseDataValidator {
         }
       }
 
-      if (["RosterGroup", "RosterMatrix"].includes(item._type)) {
+      if (item._type == "RosterGroup" || item._type == "RosterMatrix") {
         const answerId = item.rosterId || item._id
-        const rosterData = data[answerId] || []
-        const rosterResponseRows = await responseRow.followJoin(`data:${answerId}`)
+        const rosterData = (data[answerId] || []) as RosterData
+        const rosterResponseRows = (await responseRow.followJoin(`data:${answerId}`)) as ResponseRow[]
 
         for (let index = 0; index < rosterData.length; index++) {
           // Key prefix is itemid.indexinroster.
@@ -94,8 +94,8 @@ export default class ResponseDataValidator {
         }
       }
 
-      if (formUtils.isQuestion(item)) {
-        const answer = data[item._id] || {}
+      if (formUtils.isQuestionOrMatrixColumnQuestion(item)) {
+        const answer = (data[item._id] || {}) as Answer
 
         if (item._type === "MatrixQuestion") {
           for (let rowIndex = 0; rowIndex < item.items.length; rowIndex++) {
@@ -108,7 +108,7 @@ export default class ResponseDataValidator {
 
               const cellData = answer.value?.[row.id]?.[column._id]
 
-              if (column.required && (cellData?.value == null || cellData?.value === "")) {
+              if (formUtils.isQuestionOrMatrixColumnQuestion(column) && column.required && (cellData?.value == null || cellData?.value === "")) {
                 return {
                   questionId: completedId,
                   error: true,
@@ -120,7 +120,7 @@ export default class ResponseDataValidator {
                 }
               }
 
-              if (column.validations && column.validations.length > 0) {
+              if (formUtils.isQuestionOrMatrixColumnQuestion(column) && column.validations && column.validations.length > 0) {
                 const validationError = new ValidationCompiler("en").compileValidations(column.validations)(cellData)
                 if (validationError) {
                   return {

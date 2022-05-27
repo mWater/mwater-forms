@@ -1,4 +1,4 @@
-import { Item, FormDesign, Question, QuestionBase, SiteQuestion, Choice, MatrixColumn } from "./formDesign";
+import { Item, FormDesign, Question, QuestionBase, SiteQuestion, Choice, MatrixColumn, Section, RosterMatrix, RosterGroup, Group, MatrixColumnQuestion } from "./formDesign";
 import { LocalizedString, Schema } from "mwater-expressions";
 import { EntityRef, ResponseData } from "./response";
 import ResponseRow from "./ResponseRow";
@@ -10,12 +10,21 @@ export declare function createShortUid(): string;
 /** Create medium unique id, with ~58 bits randomness to keep unique amoung a 1,000,000 choices */
 export declare function createMediumUid(): string;
 export declare function createBase32TimeCode(date: any): string;
+/** Determine if item is a question or a matrix column (which is similar and makes up
+ * the contents of RosterMatrix) */
+export declare function isQuestionOrMatrixColumnQuestion(item: Item | FormDesign): item is Question | MatrixColumnQuestion;
 /** Determine if item is a question */
-export declare function isQuestion(item: Item | FormDesign): item is Question | MatrixColumn;
-/** Determine if item is a base question (not a column of a matrix) */
-export declare function isBaseQuestion(item: Item | FormDesign): item is Question;
+export declare function isQuestion(item: Item | FormDesign): item is Question;
 /** Determine if item is an expression */
 export declare function isExpression(item: Item): boolean;
+/** Determine if item is of type with contents */
+export declare function isTypeWithContents(item: Item | FormDesign): item is Section | Group | RosterMatrix | RosterGroup | FormDesign;
+/** Determine if item is roster matrix or roster group */
+export declare function isRoster(item: Item | FormDesign): item is RosterGroup | RosterMatrix;
+/** Determine if is form design type */
+export declare function isFormDesign(item: Item | FormDesign): item is FormDesign;
+/** Determine if is matrix column */
+export declare function isMatrixColumn(item: Item | FormDesign): item is MatrixColumn;
 /** Localize a localized string */
 export declare function localizeString(str?: LocalizedString | null, locale?: string): string;
 /** Gets all questions in form before reference item specified
@@ -28,7 +37,7 @@ export declare function findItem(formDesign: FormDesign, itemId: string): Item |
 export declare function allItems(rootItem: FormDesign | Item): (Item | FormDesign)[];
 export declare function prepareQuestion(q: any): any;
 export declare function changeQuestionType(question: any, newType: any): any;
-export declare function getAnswerType(q: QuestionBase | MatrixColumn): AnswerType;
+export declare function getAnswerType(q: QuestionBase | MatrixColumnQuestion): AnswerType;
 export declare function isSectioned(form: FormDesign): boolean;
 export declare function duplicateItem(item: any, idMap?: any): any;
 export declare function extractLocalizedStrings(obj: any): LocalizedString[];

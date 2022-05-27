@@ -1,7 +1,4 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
 import PropTypes from "prop-types"
-import React from "react"
 
 // Context types for forms. See formContext.d.ts for details
 export let selectEntity = PropTypes.func

@@ -8,7 +8,7 @@ import { healthRiskEnum } from "./answers/aquagenxCBTUtils"
 import { Form } from "./form"
 import { JsonQLExpr } from "jsonql"
 import { BasicItem, Choice, IndicatorCalculation, Unit, Section as FormSection, Question } from "."
-import { CascadingListQuestion, CascadingRefQuestion, DateQuestion, DropdownQuestion, EntityQuestion, LikertQuestion, LocationQuestion, MatrixQuestion, MulticheckQuestion, QuestionBase, RankedQuestion, SiteQuestion, UnitsQuestion } from "./formDesign"
+import { CascadingListQuestion, CascadingRefQuestion, DateQuestion, DropdownQuestion, EntityQuestion, FormDesign, Item, LikertQuestion, LocationQuestion, MatrixQuestion, MulticheckQuestion, QuestionBase, RankedQuestion, SiteQuestion, UnitsQuestion } from "./formDesign"
 
 /** Adds a form to a mwater-expressions schema */
 export default class FormSchemaBuilder {
@@ -584,7 +584,7 @@ export default class FormSchemaBuilder {
   // That is, if a roster is entirely invisible, roster items will not be conditioned on the overall visibility, as they simply won't exist
   // reverseJoins: list of reverse joins to add to. In format: { table: destination table, column: join column to add }. This list will be mutated. Pass in empty list in general.
   addFormItem(
-    item: any,
+    item: Item | FormDesign,
     contents: any,
     tableId: any,
     conditionsExprCompiler?: any,
@@ -593,7 +593,7 @@ export default class FormSchemaBuilder {
     confidentialData = false
   ) {
     const addColumn = (column: any) => {
-      if (formUtils.isQuestion(item) && item.confidential) {
+      if (formUtils.isQuestionOrMatrixColumnQuestion(item) && item.confidential) {
         if (confidentialData) {
           column.confidential = true
           column.name = appendStr(column.name, " (confidential)")
@@ -606,7 +606,7 @@ export default class FormSchemaBuilder {
     }
 
     // Add sub-items
-    if (item.contents) {
+    if (formUtils.isTypeWithContents(item)) {
       if (item._type === "Form") {
         for (let subitem of item.contents) {
           this.addFormItem(subitem, contents, tableId, conditionsExprCompiler, existingConditionExpr, reverseJoins)
@@ -637,7 +637,7 @@ export default class FormSchemaBuilder {
           )
         }
         return contents.push({ type: "section", name: item.name, contents: sectionContents })
-      } else if (["RosterGroup", "RosterMatrix"].includes(item._type)) {
+      } else if (formUtils.isRoster(item)) {
         // Add join to roster table if original (no rosterId specified)
         if (!item.rosterId) {
           contents.push({
@@ -653,7 +653,7 @@ export default class FormSchemaBuilder {
           })
         }
       }
-    } else if (formUtils.isQuestion(item)) {
+    } else if (formUtils.isQuestionOrMatrixColumnQuestion(item)) {
       // Get type of answer
       let column: Column, jsonql, name
       let formId, itemCode, itemItem, reverseJoin
@@ -1604,8 +1604,11 @@ export default class FormSchemaBuilder {
             }
             sections.push(section)
 
-            // For each column
+            // For each column that is a question
             for (let itemColumn of (item as MatrixQuestion).columns) {
+              if (!formUtils.isQuestionOrMatrixColumnQuestion(itemColumn)) {
+                continue
+              }
               itemCode = itemItem.code
               
               const columnCode = itemColumn.exportId || itemColumn.code
