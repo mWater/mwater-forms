@@ -1,9 +1,9 @@
 import PropTypes from "prop-types";
 import React from "react";
-import { Choice, Item } from "../formDesign";
+import { Choice } from "../formDesign";
 export interface LikertAnswerComponentProps {
     choices: Choice[];
-    items: Item[];
+    items: Choice[];
     onAnswerChange: any;
     /** See answer format */
     answer: any;
@@ -15,8 +15,8 @@ export default class LikertAnswerComponent extends React.Component<LikertAnswerC
     };
     focus(): null;
     handleValueChange: (choice: Choice, item: any) => any;
-    renderChoice(item: any, choice: Choice): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>;
-    renderItem(item: any): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+    renderChoice(item: Choice, choice: Choice): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+    renderItem(item: Choice): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>;
     render(): React.DetailedReactHTMLElement<{
         className: string;
         style: {

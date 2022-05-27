@@ -34,15 +34,16 @@ import RankedQuestion from "./answers/RankedQuestion"
 import ResponseRow from "./ResponseRow"
 import { Schema } from "mwater-expressions"
 import { Choice, Question } from "./formDesign"
+import { Answer, CascadingListAnswerValue, RankedAnswerValue, ResponseData } from "./response"
 
 export interface QuestionComponentProps {
   /** Design of question. See schema */
   question: Question
   /** Current data of response (for roster entry if in roster) */
-  data?: any
+  data: ResponseData
   /** ResponseRow object (for roster entry if in roster) */
   responseRow: ResponseRow
-  onAnswerChange: any
+  onAnswerChange: (answer: Answer) => void
   displayMissingRequired?: boolean
   onNext?: any
   schema: Schema
@@ -142,13 +143,13 @@ export default class QuestionComponent extends React.Component<QuestionComponent
     }
   }
 
-  getAnswer() {
+  getAnswer(): Answer {
     // The answer to this question
     const answer = this.props.data[this.props.question._id]
     if (answer != null) {
-      return answer
+      return answer as Answer
     }
-    return {}
+    return {} as Answer
   }
 
   // Returns true if validation error
@@ -199,11 +200,11 @@ export default class QuestionComponent extends React.Component<QuestionComponent
   }
 
   // Record a position found
-  handleCurrentPositionFound = (loc: any) => {
+  handleCurrentPositionFound = (loc: GeolocationPosition) => {
     if (!this.unmounted) {
       const newAnswer = _.clone(this.getAnswer())
-      newAnswer.location = _.pick(loc.coords, "latitude", "longitude", "accuracy", "altitude", "altitudeAccuracy")
-      return this.props.onAnswerChange(newAnswer)
+      newAnswer.location = _.pick(loc.coords, "latitude", "longitude", "accuracy", "altitude", "altitudeAccuracy") as any
+      this.props.onAnswerChange(newAnswer)
     }
   }
 
@@ -337,10 +338,10 @@ export default class QuestionComponent extends React.Component<QuestionComponent
       return R(
         CheckAnswerComponent,
         {
-          ref: (c) => {
+          ref: (c: CheckAnswerComponent | null) => {
             this.answer = c
           },
-          value: this.getAnswer().value,
+          value: this.getAnswer().value as boolean | undefined,
           onValueChange: this.handleValueChange,
         },
         promptDiv
@@ -428,7 +429,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
       return R("textarea", {
         className: "form-control question-comments",
         id: "comments",
-        ref: (c) => {
+        ref: (c: HTMLTextAreaElement | null) => {
           this.comments = c
         },
         placeholder: this.context.T("Comments"),
@@ -440,7 +441,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
   }
 
   renderAnswer() {
-    const answer = this.getAnswer()
+    const answer = this.getAnswer() as Answer
     const readonly =
       (this.context.disableConfidentialFields && this.props.question.confidential) || answer?.confidential != null
 
@@ -460,10 +461,10 @@ export default class QuestionComponent extends React.Component<QuestionComponent
 
       case "NumberQuestion":
         return R(NumberAnswerComponent, {
-          ref: (c) => {
+          ref: (c: NumberAnswerComponent | null) => {
             this.answer = c
           },
-          value: answer.value,
+          value: answer.value as number | undefined,
           onChange: !readonly ? this.handleValueChange : undefined,
           decimal: this.props.question.decimal,
           onNextOrComments: this.handleNextOrComments
@@ -486,7 +487,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
 
       case "LikertQuestion":
         return R(LikertAnswerComponent, {
-          ref: (c) => {
+          ref: (c: LikertAnswerComponent | null) => {
             this.answer = c
           },
           items: this.props.question.items,
@@ -499,7 +500,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
 
       case "RadioQuestion":
         return R(RadioAnswerComponent, {
-          ref: (c) => {
+          ref: (c: RadioAnswerComponent | null) => {
             this.answer = c
           },
           choices: this.props.question.choices,
@@ -534,7 +535,6 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           value: answer.value,
           onValueChange: this.handleValueChange,
           format: this.props.question.format,
-          placeholder: this.props.question.placeholder,
           onNextOrComments: this.handleNextOrComments
         })
         break
@@ -622,20 +622,20 @@ export default class QuestionComponent extends React.Component<QuestionComponent
 
       case "BarcodeQuestion":
         return R(BarcodeAnswerComponent, {
-          ref: (c) => {
+          ref: (c: BarcodeAnswerComponent | null) => {
             this.answer = c
           },
-          value: answer.value,
+          value: answer.value as string | undefined,
           onValueChange: this.handleValueChange
         })
         break
 
       case "EntityQuestion":
         return R(EntityAnswerComponent, {
-          ref: (c) => {
+          ref: (c: EntityAnswerComponent | null) => {
             this.answer = c
           },
-          value: answer.value,
+          value: answer.value as string | undefined,
           entityType: this.props.question.entityType,
           onValueChange: this.handleValueChange
         })
@@ -686,10 +686,10 @@ export default class QuestionComponent extends React.Component<QuestionComponent
 
       case "CascadingListQuestion":
         return R(CascadingListAnswerComponent, {
-          ref: (c) => {
+          ref: (c: CascadingListAnswerComponent | null) => {
             this.answer = c
           },
-          value: answer.value,
+          value: answer.value as CascadingListAnswerValue | undefined,
           onValueChange: this.handleValueChange,
           columns: this.props.question.columns,
           rows: this.props.question.rows,
@@ -702,11 +702,11 @@ export default class QuestionComponent extends React.Component<QuestionComponent
 
       case "CascadingRefQuestion":
         return R(CascadingRefAnswerComponent, {
-          ref: (c) => {
+          ref: (c: CascadingRefAnswerComponent | null) => {
             this.answer = c
           },
           question: this.props.question,
-          value: answer.value,
+          value: answer.value as string | undefined,
           onValueChange: this.handleValueChange,
           schema: this.props.schema,
           getCustomTableRows: this.context.getCustomTableRows,
@@ -718,13 +718,13 @@ export default class QuestionComponent extends React.Component<QuestionComponent
       case "RankedQuestion":
         return R(RankedQuestion, {
           choices: this.props.question.choices,
-          answer: answer.value,
+          answer: answer.value as RankedAnswerValue,
           locale: this.context.locale,
           onValueChange: this.handleValueChange
         })
 
       default:
-        return `Unknown type ${this.props.question._type}`
+        return `Unknown type ${(this.props.question as any)._type}`
     }
     return null
   }

@@ -2,29 +2,43 @@ import PropTypes from "prop-types";
 import React from "react";
 import ReorderableListComponent from "react-library/lib/reorderable/ReorderableListComponent";
 import MatrixColumnCellComponent from "./MatrixColumnCellComponent";
-export default class RosterMatrixComponent extends React.Component {
+import { RosterMatrix } from "./formDesign";
+import { ResponseData, RosterData } from "./response";
+import { Schema } from "mwater-expressions";
+import ResponseRow from "./ResponseRow";
+export default interface RosterMatrixComponentProps {
+    rosterMatrix: RosterMatrix;
+    /** Current data of response */
+    data: ResponseData;
+    onDataChange: (data: ResponseData) => void;
+    /** (id) tells if an item is visible or not */
+    isVisible: (id: string) => boolean;
+    schema: Schema;
+    responseRow: ResponseRow;
+}
+interface RosterMatrixComponentState {
+    /** Map of "<rowindex>_<columnid>" to validation error */
+    validationErrors: {
+        [id: string]: string | true;
+    };
+}
+export default class RosterMatrixComponent extends React.Component<RosterMatrixComponentProps, RosterMatrixComponentState> {
     static contextTypes: {
         locale: PropTypes.Requireable<string>;
         T: PropTypes.Validator<(...args: any[]) => any>;
     };
-    static propTypes: {
-        rosterMatrix: PropTypes.Validator<object>;
-        data: PropTypes.Requireable<object>;
-        onDataChange: PropTypes.Validator<(...args: any[]) => any>;
-        isVisible: PropTypes.Validator<(...args: any[]) => any>;
-        schema: PropTypes.Validator<object>;
-    };
-    constructor(props: any);
-    getAnswerId(): any;
-    getAnswer(): any;
+    prompt: HTMLHeadingElement | null;
+    constructor(props: RosterMatrixComponentProps);
+    getAnswerId(): string;
+    getAnswer(): RosterData;
     validate(scrollToFirstInvalid: any): boolean;
-    handleAnswerChange: (answer: any) => any;
-    handleEntryDataChange: (index: any, data: any) => any;
-    handleAdd: () => any;
-    handleRemove: (index: any) => any;
-    handleCellChange: (entryIndex: any, columnId: any, answer: any) => any;
-    handleSort: (column: any, order: any) => any;
-    renderName(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+    handleAnswerChange: (answer: any) => void;
+    handleEntryDataChange: (index: any, data: any) => void;
+    handleAdd: () => void;
+    handleRemove: (index: any) => void;
+    handleCellChange: (entryIndex: any, columnId: any, answer: any) => void;
+    handleSort: (column: any, order: any) => void;
+    renderName(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>;
     renderColumnHeader(column: any, index: any): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>;
     renderHeader(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>;
     renderCell(entry: any, entryIndex: any, column: any, columnIndex: any): React.CElement<import("./MatrixColumnCellComponent").MatrixColumnCellComponentProps, MatrixColumnCellComponent>;
@@ -34,7 +48,7 @@ export default class RosterMatrixComponent extends React.Component {
         style: {
             marginTop: number;
         };
-    }, HTMLElement> | undefined;
+    }, HTMLElement> | null;
     renderBody(): React.CElement<any, ReorderableListComponent<unknown>>;
     renderEmptyPrompt(): React.DetailedReactHTMLElement<{
         style: {
@@ -48,3 +62,4 @@ export default class RosterMatrixComponent extends React.Component {
         };
     }, HTMLElement>;
 }
+export {};

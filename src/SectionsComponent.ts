@@ -5,12 +5,12 @@ const R = React.createElement
 
 import ItemListComponent from "./ItemListComponent"
 import * as formUtils from "./formUtils"
-import TextExprsComponent from "./TextExprsComponent"
+import { ResponseData } from "./response"
 
 export interface SectionsComponentProps {
   contents: any
   /** Current data of response. */
-  data?: any
+  data?: ResponseData
   onDataChange: any
   /** Schema to use, including form */
   schema: any

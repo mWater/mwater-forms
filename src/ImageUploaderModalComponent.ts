@@ -8,12 +8,13 @@ import ModalPopupComponent from "react-library/lib/ModalPopupComponent"
 
 export interface ImageUploaderModalComponentProps {
   apiUrl: string
-  client?: string
-  onCancel: any
+  client: string | null
+  onCancel: () => void
   /** Called with id of image */
   onSuccess: (id: string) => void
   /** Localizer to use */
-  T: any
+  T: (str: string, ...args: any[]) => string
+  /** True to force use of camera */
   forceCamera?: boolean
 }
 
@@ -28,8 +29,15 @@ export default class ImageUploaderModalComponent extends React.Component<
   ImageUploaderModalComponentProps,
   ImageUploaderModalComponentState
 > {
-  static show = (apiUrl: string, client: string | null | undefined, T: any, success: (id: string) => void, forceCamera?: boolean) => {
-    return ModalPopupComponent.show((onClose: any) => {
+  /** Static function to show modal easily */
+  static show(
+    apiUrl: string,
+    client: string | null,
+    T: (str: string, ...args: any[]) => string,
+    success: (id: string) => void,
+    forceCamera?: boolean
+  ): void {
+    ModalPopupComponent.show((onClose: any) => {
       return R(ImageUploaderModalComponent, {
         apiUrl,
         client,
@@ -44,7 +52,7 @@ export default class ImageUploaderModalComponent extends React.Component<
     })
   }
 
-  constructor(props: any) {
+  constructor(props: ImageUploaderModalComponentProps) {
     super(props)
 
     this.state = {
@@ -100,7 +108,7 @@ export default class ImageUploaderModalComponent extends React.Component<
     }
 
     if (file.type !== "image/jpeg") {
-      alert(T("Image must be a jpeg file"))
+      alert(this.props.T("Image must be a jpeg file"))
       return
     }
 

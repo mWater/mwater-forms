@@ -5,14 +5,15 @@ import CheckAnswerComponent from "./answers/CheckAnswerComponent";
 import ResponseRow from "./ResponseRow";
 import { Schema } from "mwater-expressions";
 import { Choice, Question } from "./formDesign";
+import { Answer, RankedAnswerValue, ResponseData } from "./response";
 export interface QuestionComponentProps {
     /** Design of question. See schema */
     question: Question;
     /** Current data of response (for roster entry if in roster) */
-    data?: any;
+    data: ResponseData;
     /** ResponseRow object (for roster entry if in roster) */
     responseRow: ResponseRow;
-    onAnswerChange: any;
+    onAnswerChange: (answer: Answer) => void;
     displayMissingRequired?: boolean;
     onNext?: any;
     schema: Schema;
@@ -42,15 +43,15 @@ export default class QuestionComponent extends React.Component<QuestionComponent
     /** Speed up reloading by not updating questions that are simple. */
     shouldComponentUpdate(nextProps: QuestionComponentProps, nextState: QuestionComponentState, nextContext: any): boolean;
     focus(): any;
-    getAnswer(): any;
+    getAnswer(): Answer;
     validate(scrollToFirstInvalid: any): Promise<any>;
     handleToggleHelp: () => void;
-    handleValueChange: (value: any) => any;
-    handleCurrentPositionFound: (loc: any) => any;
-    handleCurrentPositionStatus: (status: any) => any;
-    handleAnswerChange: (newAnswer: any) => any;
-    handleAlternate: (alternate: any) => any;
-    handleCommentsChange: (ev: any) => any;
+    handleValueChange: (value: any) => void;
+    handleCurrentPositionFound: (loc: GeolocationPosition) => void;
+    handleCurrentPositionStatus: (status: any) => void;
+    handleAnswerChange: (newAnswer: any) => void;
+    handleAlternate: (alternate: any) => void;
+    handleCommentsChange: (ev: any) => void;
     handleNextOrComments: (ev?: any) => any;
     renderPrompt(): React.DetailedReactHTMLElement<{
         className: string;
@@ -64,19 +65,19 @@ export default class QuestionComponent extends React.Component<QuestionComponent
         className: string;
     }, HTMLElement> | null;
     renderAlternates(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement> | null;
-    renderCommentsField(): React.DOMElement<{
+    renderCommentsField(): React.DetailedReactHTMLElement<{
         className: string;
         id: string;
-        ref: (c: Element | null) => void;
+        ref: (c: HTMLTextAreaElement | null) => void;
         placeholder: any;
-        value: any;
-        onChange: (ev: any) => any;
-    }, Element> | null;
-    renderAnswer(): string | React.DetailedReactHTMLElement<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> | React.CElement<any, any> | React.DetailedReactHTMLElement<{
+        value: string | undefined;
+        onChange: (ev: any) => void;
+    }, HTMLTextAreaElement> | null;
+    renderAnswer(): string | React.CElement<any, any> | React.DetailedReactHTMLElement<{
         className: string;
     }, HTMLElement> | React.FunctionComponentElement<{
         choices: Choice[];
-        answer: import("./response").RankedAnswerValue;
+        answer: RankedAnswerValue;
         locale: string;
         onValueChange: (value?: any) => void;
     }> | null;

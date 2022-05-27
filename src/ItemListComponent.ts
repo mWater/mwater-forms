@@ -1,24 +1,29 @@
 import _ from "lodash"
-import React from "react"
+import { Schema } from "mwater-expressions"
+import React, { ReactElement } from "react"
 const R = React.createElement
 
 import * as formRenderUtils from "./formRenderUtils"
+import { ResponseData } from "./response"
+import ResponseRow from "./ResponseRow"
 
 export interface ItemListComponentProps {
   contents: any
   /** Current data of response (for roster entry if in roster) */
-  data?: any
+  data?: ResponseData
   /** ResponseRow object (for roster entry if in roster) */
-  responseRow: any
+  responseRow: ResponseRow
   onDataChange: any
   onNext?: any
   /** (id) tells if an item is visible or not */
   isVisible: any
-  schema: any
+  schema: Schema
 }
 
 // Display a list of items
 export default class ItemListComponent extends React.Component<ItemListComponentProps> {
+  itemRefs: { [itemId: string]: any }
+
   constructor(props: any) {
     super(props)
 
@@ -61,11 +66,12 @@ export default class ItemListComponent extends React.Component<ItemListComponent
         this.props.onDataChange,
         this.props.isVisible,
         this.handleNext.bind(this, index),
-        (c: any) => {
+        (c: ReactElement | null) => {
           return (this.itemRefs[item._id] = c)
         }
       )
     }
+    return null
   }
 
   render() {

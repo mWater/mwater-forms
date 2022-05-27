@@ -19,7 +19,7 @@ export interface Response {
   deployment: string
 
   /** Current successful approval list */
-  approvals?: ResponseApproval[]
+  approvals: ResponseApproval[]
 
   /** User _id who started the response */
   user?: string | null
@@ -117,7 +117,7 @@ export interface Response {
   confidentialData?: ConfidentialData
 }
 
-interface ResponseApproval {
+export interface ResponseApproval {
   /** User id who did approval */
   by: string
 
@@ -128,7 +128,7 @@ interface ResponseApproval {
   override?: boolean
 }
 
-interface EntityRef {
+export interface EntityRef {
   /** Question _id */
   question: string
 
@@ -136,13 +136,13 @@ interface EntityRef {
   entityType: string
 
   /** property code (e.g "_id" or "code") of entity that is referenced in value e.g. "code" */
-  property: { type: "string" }
+  property: string
 
   /** Value of entity property that is referenced */
   value: any
 
-  /** _id of roster entry, null if not in roster */
-  roster: string | null
+  /** _id of roster entry, undefined if not in roster */
+  roster?: string
 }
 
 interface ResponseRole {
@@ -153,7 +153,7 @@ interface ResponseRole {
   role: "view" | "admin"
 }
 
-interface ResponseEvent {
+export interface ResponseEvent {
   type: "draft" | "submit" | "approve" | "reject" | "edit"
 
   /** When event took place */

@@ -8,6 +8,7 @@ import { healthRiskEnum } from "./answers/aquagenxCBTUtils"
 import { Form } from "./form"
 import { JsonQLExpr } from "jsonql"
 import { BasicItem, Choice, IndicatorCalculation, Unit, Section as FormSection, Question } from "."
+import { CascadingListQuestion, CascadingRefQuestion, DateQuestion, DropdownQuestion, EntityQuestion, LikertQuestion, LocationQuestion, MatrixQuestion, MulticheckQuestion, QuestionBase, RankedQuestion, SiteQuestion, UnitsQuestion } from "./formDesign"
 
 /** Adds a form to a mwater-expressions schema */
 export default class FormSchemaBuilder {
@@ -716,7 +717,7 @@ export default class FormSchemaBuilder {
             type: "enum",
             name: item.text,
             code,
-            enumValues: _.map((item.choices as Choice[]), (c) => ({
+            enumValues: _.map(((item as DropdownQuestion).choices as Choice[]), (c) => ({
               id: c.id,
               name: c.label,
               code: c.code
@@ -737,7 +738,7 @@ export default class FormSchemaBuilder {
             type: "enumset",
             name: item.text,
             code,
-            enumValues: _.map(item.choices, (c: Choice) => ({
+            enumValues: _.map((item as MulticheckQuestion).choices, (c: Choice) => ({
               id: c.id,
               name: c.label,
               code: c.code
@@ -767,7 +768,7 @@ export default class FormSchemaBuilder {
 
         case "date":
           // If date-time
-          if (item.format.match(/ss|LLL|lll|m|h|H/)) {
+          if ((item as DateQuestion).format.match(/ss|LLL|lll|m|h|H/)) {
             // Fill in month and year and remove timestamp
             column = {
               id: `${dataColumn}:${item._id}:value`,
@@ -869,7 +870,7 @@ export default class FormSchemaBuilder {
               op: "#>>",
               exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},value,units}`]
             },
-            enumValues: _.map(item.units, (c: Unit) => ({
+            enumValues: _.map((item as UnitsQuestion).units, (c: Unit) => ({
               id: c.id,
               name: c.label
             }))
@@ -993,7 +994,7 @@ export default class FormSchemaBuilder {
           }
 
           // For each column
-          for (column of item.columns) {
+          for (column of (item as CascadingListQuestion).columns) {
             section.contents.push({
               id: `${dataColumn}:${item._id}:value:${column.id}`,
               type: "enum",
@@ -1021,7 +1022,7 @@ export default class FormSchemaBuilder {
             code,
             join: {
               type: "n-1",
-              toTable: item.tableId,
+              toTable: (item as CascadingRefQuestion).tableId,
               fromColumn: {
                 type: "op",
                 op: "#>>",
@@ -1070,7 +1071,7 @@ export default class FormSchemaBuilder {
           addColumn(column)
 
           // Add admin region
-          if (item.calculateAdminRegion) {
+          if ((item as LocationQuestion).calculateAdminRegion) {
             // ST_Transform(ST_SetSRID(ST_MakePoint(data#>>'{questionid,value,longitude}'::decimal, data#>>'{questionid,value,latitude}'::decimal),4326), 3857)
             const webmercatorLocation = createWebmercatorGeometry(
               dataColumn,
@@ -1200,7 +1201,7 @@ export default class FormSchemaBuilder {
             exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},value,code}`]
           }
 
-          var siteType = (item.siteTypes ? item.siteTypes[0] : undefined) || "water_point"
+          var siteType = ((item as SiteQuestion).siteTypes ? (item as SiteQuestion).siteTypes![0] : undefined) || "water_point"
 
           // Site column question have siteType
           if (item._type === "SiteColumnQuestion") {
@@ -1379,7 +1380,7 @@ export default class FormSchemaBuilder {
 
         case "entity":
           // Do not add if no entity type
-          if (item.entityType) {
+          if ((item as EntityQuestion).entityType) {
             column = {
               id: `${dataColumn}:${item._id}:value`,
               type: "join",
@@ -1387,7 +1388,7 @@ export default class FormSchemaBuilder {
               code,
               join: {
                 type: "n-1",
-                toTable: `entities.${item.entityType}`,
+                toTable: `entities.${(item as EntityQuestion).entityType}`,
                 fromColumn: {
                   type: "op",
                   op: "#>>",
@@ -1440,7 +1441,7 @@ export default class FormSchemaBuilder {
                           op: "=",
                           exprs: [
                             { type: "field", tableAlias: "response_entities", column: "entityType" },
-                            item.entityType
+                            (item as EntityQuestion).entityType
                           ]
                         },
                         {
@@ -1463,7 +1464,7 @@ export default class FormSchemaBuilder {
               }
 
               reverseJoin = {
-                table: `entities.${item.entityType}`,
+                table: `entities.${(item as EntityQuestion).entityType}`,
                 column: {
                   id: `${tableId}:data:${item._id}:value`,
                   // Form name is not available here. Prefix later.
@@ -1566,14 +1567,14 @@ export default class FormSchemaBuilder {
           }
 
           // For each item
-          for (itemItem of item.items) {
+          for (itemItem of (item as LikertQuestion).items) {
             itemCode = code && itemItem.code ? code + " - " + itemItem.code : undefined
             section.contents.push({
               id: `${dataColumn}:${item._id}:value:${itemItem.id}`,
               type: "enum",
               name: appendStr(appendStr(item.text, ": "), itemItem.label),
               code: itemCode,
-              enumValues: _.map(item.choices, (c: Choice) => ({
+              enumValues: _.map((item as LikertQuestion).choices || [], (c: Choice) => ({
                 id: c.id,
                 name: c.label,
                 code: c.code
@@ -1594,7 +1595,7 @@ export default class FormSchemaBuilder {
         case "matrix":
           var sections = []
           // For each item
-          for (itemItem of item.items) {
+          for (itemItem of (item as MatrixQuestion).items) {
             // Create section
             section = {
               type: "section",
@@ -1604,8 +1605,9 @@ export default class FormSchemaBuilder {
             sections.push(section)
 
             // For each column
-            for (let itemColumn of item.columns) {
-              itemCode = itemItem.exportId || itemItem.code
+            for (let itemColumn of (item as MatrixQuestion).columns) {
+              itemCode = itemItem.code
+              
               const columnCode = itemColumn.exportId || itemColumn.code
               const cellCode = code && itemCode && columnCode ? code + " - " + itemCode + " - " + columnCode : undefined
 
@@ -1701,7 +1703,7 @@ export default class FormSchemaBuilder {
                     itemColumn.text
                   ),
                   code: cellCode,
-                  enumValues: _.map(itemColumn.choices, (c: Choice) => ({
+                  enumValues: _.map(itemColumn.choices!, (c: Choice) => ({
                     id: c.id,
                     code: c.code,
                     name: c.label
@@ -1751,7 +1753,7 @@ export default class FormSchemaBuilder {
                     appendStr(appendStr(appendStr(appendStr(item.text, ": "), itemItem.label), " - "), itemColumn.text),
                     " (units)"
                   ),
-                  enumValues: _.map(itemColumn.units, (c: Unit) => ({
+                  enumValues: _.map(itemColumn.units!, (c: Unit) => ({
                     id: c.id,
                     code: c.code,
                     name: c.label
@@ -1769,7 +1771,7 @@ export default class FormSchemaBuilder {
 
               if (itemColumn._type === "DateColumnQuestion") {
                 // If date-time
-                if (itemColumn.format.match(/ss|LLL|lll|m|h|H/)) {
+                if (itemColumn.format!.match(/ss|LLL|lll|m|h|H/)) {
                   // Take as it is
                   column = {
                     id: `${dataColumn}:${item._id}:value:${itemItem.id}:${itemColumn._id}:value`,
@@ -1872,14 +1874,14 @@ export default class FormSchemaBuilder {
             contents: []
           }
           // For each choices
-          for (const choice of item.choices) {
+          for (const choice of (item as RankedQuestion).choices) {
             const itemCode = code && choice.code ? `${code} - ${choice.code}` : undefined
             section.contents.push({
               id: `${dataColumn}:${item._id}:value:${choice.id}`,
               type: "enum",
               name: appendStr(appendStr(appendStr(item.text, ": "), choice.label), " is ranked " ),
               code: itemCode,
-              enumValues: item.choices.map((choice, index) => ({id: String(index + 1), name: String(index + 1)})),
+              enumValues: (item as RankedQuestion).choices.map((choice, index) => ({id: String(index + 1), name: { _base: "en", en: String(index + 1) }})),
               jsonql: {
                 type: "op",
                 op: "#>>",
@@ -1898,7 +1900,7 @@ export default class FormSchemaBuilder {
 
       // Add specify
       if (["choice", "choices"].includes(answerType)) {
-        for (let choice of item.choices) {
+        for (let choice of (item as DropdownQuestion).choices) {
           if (choice.specify) {
             column = {
               id: `${dataColumn}:${item._id}:specify:${choice.id}`,
@@ -1922,7 +1924,7 @@ export default class FormSchemaBuilder {
       }
 
       // Add comments
-      if (item.commentsField) {
+      if ((item as QuestionBase).commentsField) {
         column = {
           id: `${dataColumn}:${item._id}:comments`,
           type: "text",
@@ -1939,7 +1941,7 @@ export default class FormSchemaBuilder {
       }
 
       // Add timestamp
-      if (item.recordTimestamp) {
+      if ((item as QuestionBase).recordTimestamp) {
         column = {
           id: `${dataColumn}:${item._id}:timestamp`,
           type: "datetime",
@@ -1956,7 +1958,7 @@ export default class FormSchemaBuilder {
       }
 
       // Add GPS stamp
-      if (item.recordLocation) {
+      if ((item as QuestionBase).recordLocation) {
         column = {
           id: `${dataColumn}:${item._id}:location`,
           type: "geometry",
@@ -2016,7 +2018,7 @@ export default class FormSchemaBuilder {
       }
 
       // Add n/a
-      if (item.alternates && item.alternates.na) {
+      if ((item as QuestionBase).alternates && (item as QuestionBase).alternates!.na) {
         column = {
           id: `${dataColumn}:${item._id}:na`,
           type: "boolean",
@@ -2047,7 +2049,7 @@ export default class FormSchemaBuilder {
         addColumn(column)
       }
 
-      if (item.alternates && item.alternates.dontknow) {
+      if ((item as QuestionBase).alternates && (item as QuestionBase).alternates!.dontknow) {
         column = {
           id: `${dataColumn}:${item._id}:dontknow`,
           type: "boolean",
@@ -2079,7 +2081,7 @@ export default class FormSchemaBuilder {
       }
 
       // Add randomAsked if randomAsked
-      if (item.randomAskProbability != null) {
+      if ((item as QuestionBase).randomAskProbability != null) {
         column = {
           id: `${dataColumn}:${item._id}:randomAsked`,
           type: "boolean",
@@ -2103,15 +2105,15 @@ export default class FormSchemaBuilder {
 
       // Add visible if has conditions and not randomly asked
       if (
-        item.randomAskProbability == null &&
+        (item as QuestionBase).randomAskProbability == null &&
         conditionsExprCompiler &&
-        ((item.conditions && item.conditions.length > 0) || existingConditionExpr)
+        (((item as QuestionBase).conditions && (item as QuestionBase).conditions!.length > 0) || existingConditionExpr)
       ) {
         // Guard against null
         let conditionExpr = ExprUtils.andExprs(
           tableId,
           existingConditionExpr,
-          conditionsExprCompiler.compileConditions(item.conditions, tableId)
+          conditionsExprCompiler.compileConditions((item as QuestionBase).conditions, tableId)
         ) as Expr
         if (conditionExpr) {
           conditionExpr = {

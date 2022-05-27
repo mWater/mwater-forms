@@ -1516,7 +1516,7 @@ describe("FormSchemaBuilder addForm", function () {
           {
             _type: "MatrixQuestion",
             exportId: "Q",
-            items: [{ id: "item1", label: { _base: "en", en: "Item 1" }, exportId: "TEST" }],
+            items: [{ id: "item1", label: { _base: "en", en: "Item 1" }, code: "TEST" }],
             columns: [
               { _id: "col1", _type: "TextColumnQuestion", text: { _base: "en", en: "Col 1" }, exportId: "A" },
               {

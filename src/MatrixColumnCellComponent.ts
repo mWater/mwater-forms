@@ -1,6 +1,6 @@
 import PropTypes from "prop-types"
 import _ from "lodash"
-import React from "react"
+import React, { ChangeEvent } from "react"
 const R = React.createElement
 
 import * as formUtils from "./formUtils"
@@ -12,18 +12,19 @@ import TextExprsComponent from "./TextExprsComponent"
 import { Choice, MatrixColumn } from "./formDesign"
 import { Schema } from "mwater-expressions"
 import ResponseRow from "./ResponseRow"
+import { Answer, ResponseData } from "./response"
 
 export interface MatrixColumnCellComponentProps {
   /** Column. See designSchema */
   column: MatrixColumn
   /** Current data of response (for roster entry if in roster) */
-  data?: any
+  data: ResponseData
   /** ResponseRow object (for roster entry if in roster) */
   responseRow: ResponseRow
   /** Answer of the cell */
-  answer?: any
+  answer?: Answer
   /** Called with new answer of cell */
-  onAnswerChange: any
+  onAnswerChange: (answer: Answer) => void
   /** True if invalid */
   invalid?: boolean
   /** Validation message */
@@ -135,7 +136,7 @@ export default class MatrixColumnCellComponent extends React.Component<MatrixCol
           type: "text",
           className: "form-control form-control-sm",
           value: value || "",
-          onChange: (ev) => this.handleValueChange(ev.target.value || null)
+          onChange: (ev: ChangeEvent<HTMLInputElement>) => this.handleValueChange(ev.target.value || null)
         })
         break
       case "NumberColumnQuestion":
@@ -143,7 +144,7 @@ export default class MatrixColumnCellComponent extends React.Component<MatrixCol
           small: true,
           style: { maxWidth: "10em" },
           decimal: column.decimal!,
-          value,
+          value: value as number | undefined,
           onChange: this.handleValueChange
         })
         break
@@ -165,7 +166,7 @@ export default class MatrixColumnCellComponent extends React.Component<MatrixCol
             className: "form-select form-select-sm",
             style: { width: "auto" },
             value,
-            onChange: (ev) => this.handleValueChange(ev.target.value ? ev.target.value : null)
+            onChange: (ev: ChangeEvent<HTMLInputElement>) => this.handleValueChange(ev.target.value ? ev.target.value : null)
           },
           R("option", { key: "__none__", value: "" }),
           _.map(column.choices!, (choice) => {

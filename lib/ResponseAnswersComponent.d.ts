@@ -1,9 +1,11 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import AsyncLoadComponent from "react-library/lib/AsyncLoadComponent";
+import { VisibilityStructure } from "./VisibilityCalculator";
+import { default as ResponseRow } from "./ResponseRow";
 import TextExprsComponent from "./TextExprsComponent";
 import { Schema } from "mwater-expressions";
-import { FormDesign } from "./formDesign";
-import { ResponseData } from "./response";
+import { FormDesign, Question, Item, MatrixColumn } from "./formDesign";
+import { Answer, ResponseData } from "./response";
 export interface ResponseAnswersComponentProps {
     formDesign: FormDesign;
     data: ResponseData;
@@ -30,17 +32,23 @@ export interface ResponseAnswersComponentProps {
     hideCalculations?: boolean;
 }
 interface ResponseAnswersComponentState {
+    loading: boolean;
+    error?: any;
+    responseRow?: ResponseRow;
+    visibilityStructure?: VisibilityStructure;
 }
 export default class ResponseAnswersComponent extends AsyncLoadComponent<ResponseAnswersComponentProps, ResponseAnswersComponentState> {
     isLoadNeeded(newProps: any, oldProps: any): boolean;
     load(props: ResponseAnswersComponentProps, prevProps: ResponseAnswersComponentProps, callback: any): void;
     handleLocationClick(location: any): any;
     renderLocation(location: any): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement> | null;
-    renderAnswer(q: any, answer: any): any;
-    renderLikertAnswer(q: any, answer: any, prevAnswer: any): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>[] | null;
-    renderQuestion(q: any, dataId: any): (React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement> | React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>[] | null)[] | null;
+    renderAnswer(q: Question | MatrixColumn, answer: Answer | null): any;
+    renderLikertAnswer(q: Question | MatrixColumn, answer: Answer, prevAnswer: any): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>[] | null;
+    renderQuestion(q: Question | MatrixColumn, dataId: string): (React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>[] | React.ReactElement<{
+        key: string;
+    }, string | React.JSXElementConstructor<any>> | null)[] | null;
     collectItemsReferencingRoster(items: any, contents: any, rosterId: any): any[];
-    renderItem(item: any, visibilityStructure: any, dataId: any): any;
+    renderItem(item: Item, visibilityStructure: VisibilityStructure, dataId: string): ReactNode;
     renderExpression(q: any, dataId: any): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>[];
     renderExpressionAnswer(q: any, dataId: any): React.CElement<import("./TextExprsComponent").TextExprsComponentProps, TextExprsComponent>;
     render(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement> | React.DetailedReactHTMLElement<{

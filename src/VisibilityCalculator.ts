@@ -3,8 +3,9 @@ import * as formUtils from "./formUtils"
 import async from "async"
 import * as conditionUtils from "./conditionUtils"
 import { PromiseExprEvaluator, PromiseExprEvaluatorRow, Schema } from "mwater-expressions"
-import { FormDesign } from "./formDesign"
-import { ResponseData } from "./response"
+import { BasicItem, FormDesign, Group, Item, Question, RosterGroup, Section } from "./formDesign"
+import { Answer, ResponseData, RosterData } from "./response"
+import ResponseRow from "./ResponseRow"
 
 /**
 Uses conditions to defines the visibility status of all the Sections, Questions, Instructions, Group, RosterGroup and RosterMatrix
@@ -50,7 +51,7 @@ export default class VisibilityCalculator {
 
   // Process a form, section or a group (they both behave the same way when it comes to determining visibility)
   processGroup(
-    item: any,
+    item: FormDesign | Section | Group,
     forceToInvisible: any,
     data: any,
     responseRow: any,
@@ -62,13 +63,13 @@ export default class VisibilityCalculator {
     let isVisible: any
     const applyResult = (isVisible: any) => {
       // Forms don't have an _id at design level
-      if (item._id) {
+      if (item._type == "Group" || item._type == "Section") {
         visibilityStructure[prefix + item._id] = isVisible
       }
 
       return async.each(
-        item.contents,
-        (subitem, cb) => {
+        item.contents as any[],
+        (subitem: Section | BasicItem, cb) => {
           return this.processItem(subitem, isVisible === false, data, responseRow, visibilityStructure, prefix, () =>
             _.defer(cb)
           )
@@ -80,15 +81,15 @@ export default class VisibilityCalculator {
     // Always visible if no condition has been set
     if (forceToInvisible) {
       isVisible = false
-    } else if (item.conditions != null && item.conditions.length > 0) {
-      const conditions = conditionUtils.compileConditions(item.conditions, this.formDesign)
+    } else if ((item._type == "Group" || item._type == "Section") && item.conditions != null && item.conditions.length > 0) {
+      const conditions = conditionUtils.compileConditions(item.conditions)
       isVisible = conditions(data)
     } else {
       isVisible = true
     }
 
     // Apply conditionExpr
-    if (item.conditionExpr) {
+    if ((item._type == "Group" || item._type == "Section") && item.conditionExpr) {
       new PromiseExprEvaluator({ schema: this.schema })
         .evaluate(item.conditionExpr, { row: responseRow })
         .then((value) => {
@@ -108,43 +109,43 @@ export default class VisibilityCalculator {
   // If the parent is invisible, forceToInvisible is set to true and the item will be invisible no matter what
   // The prefix contains the info set by a RosterGroup or a RosterMatrix
   processItem(
-    item: any,
-    forceToInvisible: any,
-    data: any,
-    responseRow: any,
-    visibilityStructure: any,
+    item: Item,
+    forceToInvisible: boolean,
+    data: ResponseData,
+    responseRow: ResponseRow,
+    visibilityStructure: VisibilityStructure,
     prefix: any,
-    callback: any
+    callback: (error: any, visibilityStructure?: VisibilityStructure) => void
   ) {
     if (formUtils.isQuestion(item)) {
-      return this.processQuestion(item, forceToInvisible, data, responseRow, visibilityStructure, prefix, callback)
+      this.processQuestion(item, forceToInvisible, data, responseRow, visibilityStructure, prefix, callback)
     } else if (["TextColumn", "Calculation"].includes(item._type)) {
-      return this.processQuestion(item, forceToInvisible, data, responseRow, visibilityStructure, prefix, callback)
+      this.processQuestion(item, forceToInvisible, data, responseRow, visibilityStructure, prefix, callback)
     } else if (item._type === "Instructions") {
       // Behaves like a question
-      return this.processQuestion(item, forceToInvisible, data, responseRow, visibilityStructure, prefix, callback)
+      this.processQuestion(item, forceToInvisible, data, responseRow, visibilityStructure, prefix, callback)
     } else if (item._type === "Timer") {
       // Behaves like a question
-      return this.processQuestion(item, forceToInvisible, data, responseRow, visibilityStructure, prefix, callback)
+      this.processQuestion(item, forceToInvisible, data, responseRow, visibilityStructure, prefix, callback)
     } else if (item._type === "RosterGroup" || item._type === "RosterMatrix") {
-      return this.processRoster(item, forceToInvisible, data, responseRow, visibilityStructure, prefix, callback)
+      this.processRoster(item, forceToInvisible, data, responseRow, visibilityStructure, prefix, callback)
     } else if (["Section", "Group", "Form"].includes(item._type)) {
-      return this.processGroup(item, forceToInvisible, data, responseRow, visibilityStructure, prefix, callback)
+      this.processGroup(item, forceToInvisible, data, responseRow, visibilityStructure, prefix, callback)
     } else {
-      return callback(new Error("Unknow item type"))
+      callback(new Error("Unknown item type"))
     }
   }
 
   // Sets visible to false if forceToInvisible is true or the conditions and data make the question invisible
   // The prefix contains the info set by a RosterGroup or a RosterMatrix
   processQuestion(
-    question: any,
-    forceToInvisible: any,
-    data: any,
-    responseRow: any,
-    visibilityStructure: any,
+    question: Question,
+    forceToInvisible: boolean,
+    data: ResponseData,
+    responseRow: ResponseRow,
+    visibilityStructure: VisibilityStructure,
     prefix: any,
-    callback: any
+    callback: (error: any, visibilityStructure?: VisibilityStructure) => void
   ) {
     // Once visibility is calculated, call this
     let isVisible: any
@@ -182,14 +183,14 @@ export default class VisibilityCalculator {
     if (forceToInvisible) {
       isVisible = false
     } else if (question.conditions != null && question.conditions.length > 0) {
-      const conditions = conditionUtils.compileConditions(question.conditions, this.formDesign)
+      const conditions = conditionUtils.compileConditions(question.conditions)
       isVisible = conditions(data)
     } else {
       isVisible = true
     }
 
     // Apply randomAsk
-    if (question.randomAskProbability != null && data[question._id]?.randomAsked === false) {
+    if (question.randomAskProbability != null && (data[question._id] as Answer)?.randomAsked === false) {
       isVisible = false
     }
 
@@ -215,13 +216,13 @@ export default class VisibilityCalculator {
   // The visibility of the Rosters are similar to questions, the extra logic is for handling the children
   // The logic is a bit more tricky when a rosterId is set. It uses that other roster data for calculating the visibility of its children.
   processRoster(
-    rosterGroup: any,
-    forceToInvisible: any,
-    data: any,
-    responseRow: any,
-    visibilityStructure: any,
+    rosterGroup: RosterGroup,
+    forceToInvisible: boolean,
+    data: ResponseData,
+    responseRow: ResponseRow,
+    visibilityStructure: VisibilityStructure,
     prefix: any,
-    callback: any
+    callback: (error: any, visibilityStructure?: VisibilityStructure) => void
   ) {
     let isVisible: any
     if (rosterGroup._type !== "RosterGroup" && rosterGroup._type !== "RosterMatrix") {
@@ -281,7 +282,7 @@ export default class VisibilityCalculator {
     if (forceToInvisible) {
       isVisible = false
     } else if (rosterGroup.conditions != null && rosterGroup.conditions.length > 0) {
-      const conditions = conditionUtils.compileConditions(rosterGroup.conditions, this.formDesign)
+      const conditions = conditionUtils.compileConditions(rosterGroup.conditions)
       isVisible = conditions(data)
     } else {
       isVisible = true

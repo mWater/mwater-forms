@@ -1,9 +1,10 @@
 import React from "react";
 import AsyncLoadComponent from "react-library/lib/AsyncLoadComponent";
+import { ImageManager } from "./formContext";
 export interface ImageThumbnailComponentProps {
-    imageManager: any;
+    imageManager: ImageManager;
     imageId: string;
-    onClick?: any;
+    onClick?: () => void;
 }
 export default class ImageThumbnailComponent extends AsyncLoadComponent<ImageThumbnailComponentProps, {
     loading: boolean;
@@ -19,7 +20,7 @@ export default class ImageThumbnailComponent extends AsyncLoadComponent<ImageThu
             maxHeight: number;
         };
         className: string;
-        onClick: any;
+        onClick: (() => void) | undefined;
         onError: () => void;
     }, HTMLElement>;
 }

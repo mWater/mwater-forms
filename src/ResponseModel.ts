@@ -1,6 +1,6 @@
 import _ from "lodash"
 import { Form, Deployment } from "./form"
-import { Response } from "./response"
+import { Response, ResponseApproval, ResponseEvent } from "./response"
 import * as formUtils from "./formUtils"
 
 /** Model of a response object that allows manipulation and asking of questions */
@@ -171,7 +171,7 @@ export default class ResponseModel {
       throw new Error(`No matching deployments for ${this.form._id} user ${this.username}`)
     }
 
-    const approval = { by: this.user, on: new Date().toISOString() }
+    const approval: ResponseApproval = { by: this.user, on: new Date().toISOString() }
 
     // Determine if approver (vs admin)
     const approvers = deployment.approvalStages[this.response.approvals.length]?.approvers || []
@@ -245,7 +245,7 @@ export default class ResponseModel {
   /** Fixes roles to reflect status and approved fields */
   fixRoles(): void {
     // Determine deployment
-    let admins: any, viewers: any
+    let admins: string[], viewers: string[]
     const deployment = _.findWhere(this.form.deployments, { _id: this.response.deployment })
     if (!deployment) {
       admins = _.pluck(_.where(this.form.roles, { role: "admin" }), "id")
@@ -262,7 +262,8 @@ export default class ResponseModel {
 
     // If deleted, no viewers
     if (this.form.state === "deleted") {
-      return (this.response.roles = [])
+      this.response.roles = []
+      return
     }
 
     // If pending and more or equal approvals than approval stages, response is final
@@ -310,7 +311,7 @@ export default class ResponseModel {
         asc ? i < end : i > end;
         asc ? i++ : i--
       ) {
-        if (this.response.approvals.length === i) {
+        if (this.response.approvals!.length === i) {
           admins = _.union(admins, deployment.approvalStages[i]?.approvers || [])
         } else {
           viewers = _.union(viewers, deployment.approvalStages[i]?.approvers || [])
@@ -357,7 +358,7 @@ export default class ResponseModel {
     const admins = _.union(
       _.pluck(_.where(this.form.roles, { role: "admin" }), "id"),
       deployment.admins,
-      deployment.approvalStages[this.response.approvals.length]?.approvers || []
+      deployment.approvalStages[this.response.approvals!.length]?.approvers || []
     )
     let subjects = ["user:" + this.user, "all"]
     subjects = subjects.concat(_.map(this.groups, (g) => "group:" + g))
@@ -380,7 +381,7 @@ export default class ResponseModel {
     }
 
     // Get list of approvers
-    const approvers = deployment.approvalStages[this.response.approvals.length]?.approvers || []
+    const approvers = deployment.approvalStages[this.response.approvals!.length]?.approvers || []
     let subjects = ["user:" + this.user, "all"]
     subjects = subjects.concat(_.map(this.groups, (g) => "group:" + g))
 
@@ -406,7 +407,7 @@ export default class ResponseModel {
 
     // Add approvers if level allows editing
     if (this.response.status === "pending") {
-      const approvalStage = deployment.approvalStages[this.response.approvals.length]
+      const approvalStage = deployment.approvalStages[this.response.approvals!.length]
       if (approvalStage != null && !approvalStage.preventEditing) {
         admins = _.union(admins, approvalStage.approvers)
       }
@@ -437,7 +438,7 @@ export default class ResponseModel {
 
     // Add approvers if level allows editing
     if (this.response.status === "pending") {
-      const approvalStage = deployment.approvalStages[this.response.approvals.length]
+      const approvalStage = deployment.approvalStages[this.response.approvals!.length]
       if (approvalStage != null && !approvalStage.preventEditing) {
         admins = _.union(admins, approvalStage.approvers)
       }
@@ -473,7 +474,7 @@ export default class ResponseModel {
       return subjects.includes(`user:${this.response.user}`)
     } else {
       // Final
-      return subjects.includes(`user:${this.response.user}`) && deployment.enumeratorAdminFinal
+      return subjects.includes(`user:${this.response.user}`) && (deployment.enumeratorAdminFinal == true)
     }
   }
 
@@ -499,7 +500,7 @@ export default class ResponseModel {
       admins = _.union(
         _.pluck(_.where(this.form.roles, { role: "admin" }), "id"),
         deployment.admins,
-        deployment.approvalStages[this.response.approvals.length]?.approvers || []
+        deployment.approvalStages[this.response.approvals!.length]?.approvers || []
       )
       subjects = ["user:" + this.user, "all"]
       subjects = subjects.concat(_.map(this.groups, (g) => "group:" + g))
@@ -521,7 +522,7 @@ export default class ResponseModel {
 
   // Add an event
   _addEvent(type: any, attrs = {}) {
-    const event = _.extend({ type, by: this.user, on: new Date().toISOString() }, attrs)
+    const event: ResponseEvent = _.extend({ type, by: this.user, on: new Date().toISOString() }, attrs)
     this.response.events = this.response.events || []
     return this.response.events.push(event)
   }

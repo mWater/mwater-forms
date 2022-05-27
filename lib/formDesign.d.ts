@@ -615,6 +615,6 @@ export interface AdvancedValidation {
 }
 export interface RankedQuestion extends QuestionBase {
     _type: "RankedQuestion";
-    items: Choices;
+    choices: Choices;
 }
 export {};

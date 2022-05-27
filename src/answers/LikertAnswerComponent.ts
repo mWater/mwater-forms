@@ -8,7 +8,7 @@ import * as formUtils from "../formUtils"
 
 export interface LikertAnswerComponentProps {
   choices: Choice[]
-  items: Item[]
+  items: Choice[]
   onAnswerChange: any
   /** See answer format */
   answer: any
@@ -39,7 +39,7 @@ export default class LikertAnswerComponent extends React.Component<LikertAnswerC
     return this.props.onAnswerChange(_.extend({}, this.props.answer, { value: newValue }))
   }
 
-  renderChoice(item: any, choice: Choice) {
+  renderChoice(item: Choice, choice: Choice) {
     let value
     const id = `${item.id}:${choice.id}`
     if (this.props.answer.value != null) {
@@ -68,7 +68,7 @@ export default class LikertAnswerComponent extends React.Component<LikertAnswerC
   //  R 'td', key: "label#{choice.id}",
   //    formUtils.localizeString(choice.label, @context.locale)
 
-  renderItem(item: any) {
+  renderItem(item: Choice) {
     return R(
       "tr",
       null,

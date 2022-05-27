@@ -74,7 +74,7 @@ export default class LocationEditorComponent extends React.Component<Props, Stat
     handleSetUsingGPS: () => void;
     handleCancelGPS: () => void;
     handleUseAnyway: () => void;
-    handlePositionFound: (pos: Position) => void;
+    handlePositionFound: (pos: GeolocationPosition) => void;
     handlePositionStatus: (positionStatus: PositionStatus) => void;
     handlePositionError: () => void;
     renderLocation(): JSX.Element;

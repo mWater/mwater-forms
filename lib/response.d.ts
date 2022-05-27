@@ -13,7 +13,7 @@ export interface Response {
     /** _id of the deployment that this response is part of */
     deployment: string;
     /** Current successful approval list */
-    approvals?: ResponseApproval[];
+    approvals: ResponseApproval[];
     /** User _id who started the response */
     user?: string | null;
     /** Username of user (virtual field) */
@@ -60,7 +60,7 @@ export interface Response {
     /** The confidential data if the form has confidential mode true */
     confidentialData?: ConfidentialData;
 }
-interface ResponseApproval {
+export interface ResponseApproval {
     /** User id who did approval */
     by: string;
     /** When (ISO8601) */
@@ -68,19 +68,17 @@ interface ResponseApproval {
     /** True if was done by an admin, not the normal approver */
     override?: boolean;
 }
-interface EntityRef {
+export interface EntityRef {
     /** Question _id */
     question: string;
     /** e.g. "water_point" */
     entityType: string;
     /** property code (e.g "_id" or "code") of entity that is referenced in value e.g. "code" */
-    property: {
-        type: "string";
-    };
+    property: string;
     /** Value of entity property that is referenced */
     value: any;
-    /** _id of roster entry, null if not in roster */
-    roster: string | null;
+    /** _id of roster entry, undefined if not in roster */
+    roster?: string;
 }
 interface ResponseRole {
     /** Subject (user:xyz or group:abc or "all") */
@@ -88,7 +86,7 @@ interface ResponseRole {
     /** view can view only, admin can do anything */
     role: "view" | "admin";
 }
-interface ResponseEvent {
+export interface ResponseEvent {
     type: "draft" | "submit" | "approve" | "reject" | "edit";
     /** When event took place */
     on: string;

@@ -1,6 +1,6 @@
 import PropTypes from "prop-types"
 import _ from "lodash"
-import React from "react"
+import React, { ReactNode } from "react"
 const R = React.createElement
 
 import * as formUtils from "./formUtils"
@@ -8,7 +8,7 @@ import moment from "moment"
 import ezlocalize from "ez-localize"
 import * as ui from "react-library/lib/bootstrap"
 import AsyncLoadComponent from "react-library/lib/AsyncLoadComponent"
-import VisibilityCalculator from "./VisibilityCalculator"
+import VisibilityCalculator, { VisibilityStructure } from "./VisibilityCalculator"
 import { default as ResponseRow } from "./ResponseRow"
 import TextExprsComponent from "./TextExprsComponent"
 import ImageDisplayComponent from "./ImageDisplayComponent"
@@ -18,8 +18,9 @@ import { CascadingListDisplayComponent } from "./answers/CascadingListDisplayCom
 import { CascadingRefDisplayComponent } from "./answers/CascadingRefDisplayComponent"
 import { CalculationsDisplayComponent } from "./CalculationsDisplayComponent"
 import { Schema } from "mwater-expressions"
-import { FormDesign, Choice } from "./formDesign"
-import { ResponseData } from "./response"
+import { FormDesign, Choice, Question, DropdownQuestion, MulticheckQuestion, UnitsQuestion, SiteQuestion, EntityQuestion, LikertQuestion, RankedQuestion, Item, RosterMatrix, RosterGroup, BasicItem, MatrixColumn } from "./formDesign"
+import { Answer, RankedAnswerValue, ResponseData, RosterData, RosterEntry, UnitsAnswerValue } from "./response"
+import { Image } from "./RotationAwareImageComponent"
 
 export interface ResponseAnswersComponentProps {
   formDesign: FormDesign
@@ -47,7 +48,12 @@ export interface ResponseAnswersComponentProps {
   hideCalculations?: boolean
 }
 
-interface ResponseAnswersComponentState {}
+interface ResponseAnswersComponentState {
+  loading: boolean
+  error?: any
+  responseRow?: ResponseRow
+  visibilityStructure?: VisibilityStructure
+}
 
 // Displays the answers of a response in a table
 export default class ResponseAnswersComponent extends AsyncLoadComponent<
@@ -104,7 +110,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
     return null
   }
 
-  renderAnswer(q: any, answer: any) {
+  renderAnswer(q: Question | MatrixColumn, answer: Answer | null) {
     let label, specify
     if (!answer) {
       return null
@@ -115,10 +121,8 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
       switch (answer.alternate) {
         case "na":
           return R("em", null, this.props.T("Not Applicable"))
-          break
         case "dontknow":
           return R("em", null, this.props.T("Don't Know"))
-          break
       }
     }
 
@@ -141,7 +145,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
           )
         ) {
           // Open in system window if in cordova
-          const target = window.cordova != null ? "_system" : "_blank"
+          const target = window["cordova"] != null ? "_system" : "_blank"
           return R("a", { href: answer.value, target }, answer.value)
         }
 
@@ -149,11 +153,11 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
       case "number":
         return "" + answer.value
       case "choice":
-        var choice = _.findWhere(q.choices, { id: answer.value })
+        var choice = _.findWhere((q as DropdownQuestion).choices, { id: answer.value })
         if (choice) {
           label = formUtils.localizeString(choice.label, this.props.locale)
           if (answer.specify != null) {
-            specify = answer.specify[answer.value]
+            specify = answer.specify[answer.value as string]
           } else {
             specify = null
           }
@@ -167,14 +171,15 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
                 ;(": ")
                 return R("em", null, specify)
               }
+              return null
             })()
           )
         } else {
           return R("span", { className: "badge bg-danger" }, "Invalid Choice")
         }
       case "choices":
-        return _.map(answer.value, (v) => {
-          choice = _.findWhere(q.choices, { id: v })
+        return _.map(answer.value as string[], (v) => {
+          choice = _.findWhere((q as MulticheckQuestion).choices, { id: v })
           if (choice) {
             return R(
               "div",
@@ -185,6 +190,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
                   ;(": ")
                   return R("em", null, answer.specify[v])
                 }
+                return null
               })()
             )
           } else {
@@ -194,25 +200,25 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
 
       case "date":
         // Depends on precision
-        if (answer.value.length <= 7) {
+        if ((answer.value as string).length <= 7) {
           // YYYY or YYYY-MM
           return R("div", null, answer.value)
-        } else if (answer.value.length <= 10) {
+        } else if ((answer.value as string).length <= 10) {
           // Date
-          return R("div", null, moment(answer.value).format("LL"))
+          return R("div", null, moment(answer.value as string).format("LL"))
         } else {
-          return R("div", null, moment(answer.value).format("LLL"))
+          return R("div", null, moment(answer.value as string).format("LLL"))
         }
 
       case "units":
-        if (answer.value && answer.value.quantity != null && answer.value.units != null) {
+        if (answer.value && (answer.value as UnitsAnswerValue).quantity != null && (answer.value as UnitsAnswerValue).units != null) {
           // Find units
-          const units = _.findWhere(q.units, { id: answer.value.units })
+          const units = _.findWhere((q as UnitsQuestion).units, { id: (answer.value as UnitsAnswerValue).units })
 
-          const valueStr = "" + answer.value.quantity
+          const valueStr = "" + (answer.value as UnitsAnswerValue).quantity
           const unitsStr = units ? formUtils.localizeString(units.label, this.props.locale) : "(Invalid)"
 
-          if (q.unitsPosition === "prefix") {
+          if ((q as UnitsQuestion).unitsPosition === "prefix") {
             return R("div", null, R("em", null, unitsStr), " ", valueStr)
           } else {
             return R("div", null, valueStr, " ", R("em", null, unitsStr))
@@ -241,7 +247,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
         break
 
       case "images":
-        return _.map(answer.value, (img) => {
+        return _.map(answer.value as Image[], (img) => {
           return R(ImageDisplayComponent, {
             image: img,
             imageManager: this.props.formCtx.imageManager,
@@ -250,23 +256,23 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
         })
 
       case "texts":
-        return _.map(answer.value, (txt) => {
+        return _.map(answer.value as string[], (txt) => {
           return R("div", null, txt)
         })
 
       case "site":
-        var code = answer.value
+        var code: any = answer.value
         // TODO Eventually always go to code parameter. Legacy responses used code directly as value.
         if (_.isObject(code)) {
           ;({ code } = code)
         }
 
         // Convert to new entity type
-        var siteType = (q.siteTypes ? q.siteTypes[0] : undefined) || "water_point"
+        var siteType = ((q as SiteQuestion).siteTypes ? (q as SiteQuestion).siteTypes![0] : undefined) || "water_point"
 
-        // Site column question have siteType
-        if (q._type === "SiteColumnQuestion") {
-          siteType = q.siteType || "water_point"
+        // Site column question have siteType (TODO: remove this, as this does not get called for columns)
+        if ((q as any)._type === "SiteColumnQuestion") {
+          siteType = (q as any).siteType || "water_point"
         }
 
         var entityType = siteType.toLowerCase().replace(new RegExp(" ", "g"), "_")
@@ -281,8 +287,8 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
 
       case "entity":
         return R(EntityDisplayComponent, {
-          entityId: answer.value,
-          entityType: q.entityType,
+          entityId: answer.value as string,
+          entityType: (q as EntityQuestion).entityType,
           getEntityById: this.props.formCtx.getEntityById,
           renderEntityView: this.props.formCtx.renderEntitySummaryView,
           T: this.props.T
@@ -294,10 +300,10 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
         )
 
       case "items_choices":
-        for (let item of q.items) {
+        for (let item of (q as LikertQuestion).items) {
           const choiceId = answer.value[item.id]
           if (choiceId != null) {
-            choice = _.findWhere(q.choices, { id: choiceId })
+            choice = _.findWhere((q as LikertQuestion).choices, { id: choiceId })
             if (choice != null) {
               return R("div", null, formUtils.localizeString(choice.label, this.props.locale))
             } else {
@@ -329,14 +335,14 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
           getCustomTableRow: this.props.formCtx.getCustomTableRow
         })
       case "ranked":
-        const sortedChoices = _.sortBy(q.choices, (item: Choice) => answer.value[item.id] ?? 0)
+        const sortedChoices = _.sortBy((q as RankedQuestion).choices, (item: Choice) => (answer.value as RankedAnswerValue)[item.id] ?? 0)
         const items = sortedChoices.map((choice: Choice, index: number) => R('li', {key: index}, formUtils.localizeString(choice.label, this.props.locale)))
         return R('ol', {}, items)
     }
   }
 
   // Special render on multiple rows
-  renderLikertAnswer(q: any, answer: any, prevAnswer: any) {
+  renderLikertAnswer(q: Question | MatrixColumn, answer: Answer, prevAnswer: any) {
     if (!answer) {
       return null
     }
@@ -348,8 +354,9 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
     }
 
     if (formUtils.getAnswerType(q) === "items_choices") {
+      const likertQuestion = q as LikertQuestion
       const contents = []
-      for (let item of q.items) {
+      for (let item of likertQuestion.items) {
         const itemTd = R(
           "td",
           { style: { textAlign: "center" } },
@@ -357,7 +364,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
         )
         let choiceId = answer.value[item.id]
         if (choiceId != null) {
-          let choice = _.findWhere(q.choices, { id: choiceId })
+          let choice = _.findWhere(likertQuestion.choices, { id: choiceId })
           if (choice != null) {
             contents.push(
               R("tr", null, itemTd, R("td", null, formUtils.localizeString(choice.label, this.props.locale)))
@@ -371,7 +378,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
           if (this.props.showPrevAnswers && prevAnswer) {
             choiceId = prevAnswer.value[item.id]
             if (choiceId != null) {
-              choice = _.findWhere(q.choices, { id: choiceId })
+              choice = _.findWhere(likertQuestion.choices, { id: choiceId })
               if (choice != null) {
                 contents.push(
                   R("tr", null, itemTd, R("td", null, formUtils.localizeString(choice.label, this.props.locale)))
@@ -391,16 +398,17 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
     }
   }
 
-  renderQuestion(q: any, dataId: any) {
+  renderQuestion(q: Question | MatrixColumn, dataId: string) {
     // Get answer
     let answer
     const dataIds = dataId.split(".")
     if (dataIds.length === 1) {
       answer = this.props.data[dataId]
     } else {
-      let rosterData = this.props.data[dataIds[0]]
-      if (rosterData.value != null) {
-        rosterData = rosterData.value
+      let rosterData = this.props.data[dataIds[0]] as RosterData
+      // TODO How would this ever be hit?
+      if ((rosterData as any).value != null) {
+        rosterData = (rosterData as any).value
         answer = rosterData[dataIds[1]][dataIds[2]]
       } else if(dataIds.length > 3){
         // todo: convert to using data path which would be more predictable.
@@ -462,13 +470,14 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
           R(
             "div",
             null,
-            likertAnswer == null ? this.renderAnswer(q, answer, dataId) : undefined,
+            likertAnswer == null ? this.renderAnswer(q, answer) : undefined,
             (() => {
               if (answer && answer.timestamp) {
                 this.props.T("Answered")
                 ;(": ")
                 return moment(answer.timestamp).format("llll")
               }
+              return null
             })(),
             answer && answer.location ? this.renderLocation(answer.location) : undefined,
 
@@ -506,9 +515,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
                   )
                 : undefined,
 
-              typeof prevMatrixAnswer === "undefined" || prevMatrixAnswer === null
-                ? this.renderAnswer(q, prevAnswer)
-                : undefined,
+              this.renderAnswer(q, prevAnswer),
               prevAnswer && prevAnswer.timestamp
                 ? R("div", null, this.props.T("Answered"), ": ", moment(prevAnswer.timestamp).format("llll"))
                 : undefined,
@@ -542,11 +549,11 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
 
   // dataId is the key used for looking up the data + testing visibility
   // dataId is simply item._id except for rosters children
-  renderItem(item: any, visibilityStructure: any, dataId: any) {
-    let data, items
-    var contents, dataId
+  renderItem(item: Item, visibilityStructure: VisibilityStructure, dataId: string): ReactNode {
+    let items
+    var contents
     if (!visibilityStructure[dataId]) {
-      return
+      return null
     }
 
     const colspan = this.props.showPrevAnswers && this.props.prevData ? 3 : 2
@@ -590,7 +597,6 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
     // Only the one storing the data will display it
     // The rosters referencing another one will display a simple text to say so
     if (item._type === "RosterMatrix" || item._type === "RosterGroup") {
-      items = []
       // Simply display a text referencing the other roster if a reference
       if (item.rosterId != null) {
         // Unless hiding empty, in which case blank
@@ -598,7 +604,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
           return null
         }
 
-        const referencedRoster = formUtils.findItem(this.props.formDesign, item.rosterId)
+        const referencedRoster = formUtils.findItem(this.props.formDesign, item.rosterId)! as RosterGroup | RosterMatrix
         return R(
           "tr",
           null,
@@ -616,7 +622,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
       }
 
       // Get the data for that roster
-      data = this.props.data[item._id]
+      const data = this.props.data[item._id] as RosterData | undefined
 
       if ((!data || data.length === 0) && this.props.hideEmptyAnswers) {
         return null
@@ -643,7 +649,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
               const result = []
               for (var index = 0; index < data.length; index++) {
                 const entry = data[index]
-                contents = _.map(items, (childItem) => {
+                contents = _.map(items as any[], (childItem: BasicItem | MatrixColumn) => {
                   dataId = `${item._id}.${index}.${childItem._id}`
                   return this.renderItem(childItem, visibilityStructure, dataId)
                 })
@@ -670,7 +676,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
     }
 
     if (item._type === "MatrixQuestion") {
-      let answer = this.props.data[dataId]
+      let answer = this.props.data[dataId] as Answer
 
       if(!answer && dataId.split(".").length === 3) {
         const dataIds = dataId.split(".")
@@ -726,6 +732,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
     if (formUtils.isExpression(item)) {
       return this.renderExpression(item, dataId)
     }
+    return null
   }
 
   renderExpression(q: any, dataId: any) {
@@ -762,7 +769,8 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
         rosterId,
         rosterEntryIndex,
         getEntityById: this.props.formCtx.getEntityById,
-        getEntityByCode: this.props.formCtx.getEntityByCode
+        getEntityByCode: this.props.formCtx.getEntityByCode,
+        getCustomTableRow: this.props.formCtx.getCustomTableRow,
       }),
       locale: this.props.locale
     })
@@ -797,8 +805,8 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
         R(
           "tbody",
           null,
-          _.map(this.props.formDesign.contents, (item) => {
-            return this.renderItem(item, this.state.visibilityStructure, item._id)
+          this.props.formDesign.contents.map((item) => {
+            return this.renderItem(item, this.state.visibilityStructure!, item._id)
           })
         )
       ),

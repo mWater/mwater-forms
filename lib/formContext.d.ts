@@ -39,21 +39,21 @@ export interface FormContext {
      * entityId: _id of entity
      * callback: called with an entity e.g. { _id: some id, a: "abc", b: 123 } or callback null if entity not found
      */
-    getEntityById?: (entityType: string, entityId: string, callback: (entity: any) => void) => void;
+    getEntityById: (entityType: string, entityId: string, callback: (entity: any) => void) => void;
     /**
      * entityType: e.g. "water_point"
      * entityCode: code of entity
      * callback: called with an entity e.g. { _id: some id, a: "abc", b: 123 } or callback null if entity not found
      */
-    getEntityByCode?: (entityType: string, entityCode: string, callback: (entity: any) => void) => void;
+    getEntityByCode: (entityType: string, entityCode: string, callback: (entity: any) => void) => void;
     /** Edit an entity
      * callback: is called when update is complete
      */
     editEntity?: (entityType: string, entityId: string, callback: () => void) => void;
     /** Renders an entity as a React element for summary (small box) */
-    renderEntitySummaryView?: (entityType: string, entity: any) => ReactNode;
+    renderEntitySummaryView: (entityType: string, entity: any) => ReactNode;
     /** Renders an entity as a React element for list (compact) */
-    renderEntityListItemView?: (entityType: string, entity: any) => ReactNode;
+    renderEntityListItemView: (entityType: string, entity: any) => ReactNode;
     /** True if current user can edit the entity specified. Required if editEntity present */
     canEditEntity?: (entityType: string, entity: any) => boolean;
     /** Get all rows of a custom table

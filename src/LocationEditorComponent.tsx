@@ -202,7 +202,7 @@ export default class LocationEditorComponent extends React.Component<Props, Stat
     this.handlePositionFound(this.state.positionStatus!.pos!)
   }
 
-  handlePositionFound = (pos: Position) => {
+  handlePositionFound = (pos: GeolocationPosition) => {
     this.currentPositionFinder.stop()
 
     let altitude = pos.coords.altitude || undefined

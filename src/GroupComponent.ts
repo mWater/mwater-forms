@@ -5,14 +5,16 @@ const R = React.createElement
 
 import * as formUtils from "./formUtils"
 import ItemListComponent from "./ItemListComponent"
+import { ResponseData } from "./response"
+import ResponseRow from "./ResponseRow"
 
 export interface GroupComponentProps {
   /** Design of group. See schema */
   group: any
   /** Current data of response (for roster entry if in roster) */
-  data?: any
+  data?: ResponseData
   /** ResponseRow object (for roster entry if in roster) */
-  responseRow?: any
+  responseRow?: ResponseRow
   /** Called when data changes */
   onDataChange: any
   /** (id) tells if an item is visible or not */
@@ -25,9 +27,10 @@ export interface GroupComponentProps {
 // A group is a list of questions/other items that can have a common condition and a header
 export default class GroupComponent extends React.Component<GroupComponentProps> {
   static contextTypes = { locale: PropTypes.string }
+  itemlist: ItemListComponent | null
 
-  validate(scrollToFirstInvalid: any) {
-    return this.itemlist.validate(scrollToFirstInvalid)
+  validate(scrollToFirstInvalid: boolean = true) {
+    return this.itemlist!.validate(scrollToFirstInvalid)
   }
 
   render() {
@@ -44,8 +47,8 @@ export default class GroupComponent extends React.Component<GroupComponentProps>
         "div",
         { key: "body", className: "card-body" },
         R(ItemListComponent, {
-          ref: (c: any) => {
-            return (this.itemlist = c)
+          ref: (c: ItemListComponent | null) => {
+            this.itemlist = c
           },
           contents: this.props.group.contents,
           data: this.props.data,

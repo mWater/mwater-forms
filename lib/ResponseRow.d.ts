@@ -62,5 +62,5 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
     getPrimaryKey(): any;
     getField(columnId: string): Promise<any>;
     /** Follows a join to get row or rows */
-    followJoin(columnId: string): Promise<EntityRow | CustomRow | ResponseRow | ResponseRow[] | null>;
+    followJoin(columnId: string): Promise<ResponseRow | ResponseRow[] | EntityRow | CustomRow | null>;
 }

@@ -130,6 +130,7 @@ export default class DateTimePickerComponent extends React.Component<DateTimePic
           placeholder={this.props.placeholder} 
           defaultValue={defaultValue} 
           ref={c => { this.textRef = c }}
+          onChange={ev => {}}
           />
         <span className="input-group-text"><i className="fas fa-calendar"/></span>
       </div>

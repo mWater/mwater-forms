@@ -7,19 +7,24 @@ import * as formUtils from "./formUtils"
 import TextExprsComponent from "./TextExprsComponent"
 import ItemListComponent from "./ItemListComponent"
 import cx from "classnames"
+import { ResponseData, RosterData } from "./response"
+import ResponseRow from "./ResponseRow"
+import { Schema } from "mwater-expressions"
+import { RosterGroup } from "./formDesign"
 
 export interface RosterGroupComponentProps {
   /** Design of roster group. See schema */
-  rosterGroup: any
+  rosterGroup: RosterGroup
   /** Current data of response. */
-  data?: any
+  data: ResponseData
   /** Called when data changes */
-  onDataChange: any
+  onDataChange: (data: ResponseData) => void
   /** (id) tells if an item is visible or not */
-  isVisible: any
+  isVisible: (id: string) => boolean
+
   /** ResponseRow object (for roster entry if in roster) */
-  responseRow?: any
-  schema: any
+  responseRow: ResponseRow
+  schema: Schema
 }
 
 interface RosterGroupComponentState {
@@ -55,7 +60,7 @@ export default class RosterGroupComponent extends React.Component<
 
   // Get the current answer value
   getAnswer() {
-    return this.props.data[this.getAnswerId()] || []
+    return (this.props.data[this.getAnswerId()] || []) as RosterData
   }
 
   // Propagate an answer change to the onDataChange
@@ -194,6 +199,7 @@ export default class RosterGroupComponent extends React.Component<
         )
       )
     }
+    return null
   }
 
   renderEmptyPrompt() {

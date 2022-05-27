@@ -1,10 +1,11 @@
 import PropTypes from "prop-types";
 import React from "react";
 import ItemListComponent from "./ItemListComponent";
+import { ResponseData } from "./response";
 export interface SectionsComponentProps {
     contents: any;
     /** Current data of response. */
-    data?: any;
+    data?: ResponseData;
     onDataChange: any;
     /** Schema to use, including form */
     schema: any;

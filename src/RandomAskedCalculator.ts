@@ -1,14 +1,20 @@
 import * as formUtils from "./formUtils"
 import _ from "lodash"
+import { FormDesign, QuestionBase } from "./formDesign"
+import { Answer, ResponseData } from "./response"
+import { VisibilityStructure } from "./VisibilityCalculator"
 
-// The RandomAskedCalculator sets the randomAsked property of visible answers, determining if the question will be visible.
-// If question has randomAskProbability, it is visible unless randomAsked is set to false, which this class determines.
+/** The RandomAskedCalculator sets the randomAsked property of visible answers, determining if the question will be visible.
+ * If question has randomAskProbability, it is visible unless randomAsked is set to false, which this class determines.
+ */
 export default class RandomAskedCalculator {
-  constructor(formDesign: any) {
+  formDesign: FormDesign
+
+  constructor(formDesign: FormDesign) {
     this.formDesign = formDesign
   }
-
-  calculateRandomAsked(data: any, visibilityStructure: any) {
+  
+  calculateRandomAsked(data: ResponseData, visibilityStructure: VisibilityStructure): ResponseData {
     // NOTE: Always remember that data is immutable
     const newData = _.cloneDeep(data)
 
@@ -32,11 +38,12 @@ export default class RandomAskedCalculator {
         if (!item) {
           continue
         }
-
-        if (item.randomAskProbability != null) {
-          newData[item._id] = newData[item._id] || {}
-          if (newData[item._id].randomAsked == null) {
-            newData[item._id].randomAsked = this.generateRandomValue(item.randomAskProbability)
+        if (formUtils.isBaseQuestion(item)) {
+          if (item.randomAskProbability != null) {
+            newData[item._id] = newData[item._id] || {}
+            if ((newData[item._id] as Answer).randomAsked == null) {
+              (newData[item._id] as Answer).randomAsked = this.generateRandomValue(item.randomAskProbability)
+            }
           }
         }
       } else {
@@ -54,7 +61,7 @@ export default class RandomAskedCalculator {
         // Get roster index
         const entryIndex = parseInt(parts[1])
 
-        if (item.randomAskProbability != null) {
+        if (formUtils.isBaseQuestion(item) && item.randomAskProbability != null) {
           // Get enty data
           const entryData = newData[parts[0]][entryIndex].data
 

@@ -2,9 +2,9 @@ import _ from "lodash"
 import localizations from "../localizations.json"
 import uuid from "uuid"
 
-import { Item, FormDesign, Question, QuestionBase, SiteQuestion, Choice, MatrixColumn } from "./formDesign"
+import { Item, FormDesign, Question, QuestionBase, SiteQuestion, Choice, MatrixColumn, EntityQuestion, Condition } from "./formDesign"
 import { LocalizedString, PromiseExprEvaluator, Schema } from "mwater-expressions"
-import { ResponseData } from "./response"
+import { EntityRef, ResponseData } from "./response"
 import ResponseRow from "./ResponseRow"
 import * as conditionUtils from "./conditionUtils"
 
@@ -83,8 +83,13 @@ export function createBase32TimeCode(date: any) {
 }
 
 /** Determine if item is a question */
-export function isQuestion(item: Item): item is Question | MatrixColumn {
+export function isQuestion(item: Item | FormDesign): item is Question | MatrixColumn {
   return item._type != null && item._type.match(/Question$/) != null
+}
+
+/** Determine if item is a base question (not a column of a matrix) */
+export function isBaseQuestion(item: Item | FormDesign): item is Question {
+  return item._type != null && item._type.match(/Question$/) != null && item._type.match(/ColumnQuestion$/) == null 
 }
 
 /** Determine if item is an expression */
@@ -125,7 +130,7 @@ export function priorQuestions(
   formDesign: FormDesign,
   refItem: Item | null = null,
   rosterId: string | null = null
-): Question[] {
+): (Question | MatrixColumn)[] {
   const questions: any = []
 
   // Append all child items
@@ -136,7 +141,7 @@ export function priorQuestions(
         return true
       }
 
-      if (currentRosterId === rosterId && exports.isQuestion(child)) {
+      if (currentRosterId === rosterId && isQuestion(child)) {
         questions.push(child)
       }
 
@@ -160,7 +165,7 @@ export function priorQuestions(
   return questions
 }
 
-export function getRosterIds(formDesign: any) {
+export function getRosterIds(formDesign: any): string[] {
   const rosterIds: any = []
 
   function recurse(item: any) {
@@ -197,7 +202,7 @@ export function findItem(formDesign: FormDesign, itemId: string): Item | undefin
 
 // All items under an item including self
 export function allItems(rootItem: FormDesign | Item): (Item | FormDesign)[] {
-  let items: Item[] = []
+  let items: (Item | FormDesign)[] = []
   items.push(rootItem)
   if ((rootItem as any).contents) {
     for (let item of (rootItem as any).contents) {
@@ -474,8 +479,8 @@ export function getAnswerType(q: QuestionBase | MatrixColumn): AnswerType {
 }
 
 // Check if a form is all sections
-export function isSectioned(form: any) {
-  return form.contents.length > 0 && _.every(form.contents, (item) => item._type === "Section")
+export function isSectioned(form: FormDesign) {
+  return form.contents.length > 0 && _.every(form.contents as any[], (item) => item._type === "Section")
 }
 
 // Duplicates an item (form design, section or question)
@@ -514,7 +519,7 @@ export function duplicateItem(item: any, idMap?: any) {
 
   // Fix condition references, or remove conditions
   if (dup.conditions) {
-    dup.conditions = _.filter(dup.conditions, (cond) => {
+    dup.conditions = _.filter(dup.conditions, (cond: Condition) => {
       if (cond.lhs && cond.lhs.question) {
         // Check if in id
         if (idMap && idMap[cond.lhs.question]) {
@@ -543,14 +548,14 @@ export function duplicateItem(item: any, idMap?: any) {
       return duplicateItem(item, idMap)
     })
 
-    calculations = JSON.stringify(calculations)
+    let calculationsStr = JSON.stringify(calculations)
     // Replace each part of idMap
     for (let key in idMap) {
       const value = idMap[key]
-      calculations = calculations.replace(new RegExp(_.escapeRegExp(key), "g"), value)
+      calculationsStr = calculationsStr.replace(new RegExp(_.escapeRegExp(key), "g"), value)
     }
 
-    calculations = JSON.parse(calculations)
+    calculations = JSON.parse(calculationsStr)
     dup.calculations = calculations
   }
 
@@ -558,7 +563,7 @@ export function duplicateItem(item: any, idMap?: any) {
 }
 
 // Finds all localized strings in an object
-export function extractLocalizedStrings(obj: any) {
+export function extractLocalizedStrings(obj: any): LocalizedString[] {
   if (obj == null) {
     return []
   }
@@ -673,16 +678,16 @@ export function findEntityQuestion(formDesign: any, entityType: any) {
 //   property: property code (e.g "_id" or "code") of entity that is referenced in value
 //   value: value of entity property that is referenced
 // }
-export function extractEntityReferences(formDesign: any, responseData: any) {
+export function extractEntityReferences(formDesign: any, responseData: any): EntityRef[] {
   let code, entityType, question, value
-  const results = []
+  const results: EntityRef[] = []
 
   // Handle non-roster
   for (question of priorQuestions(formDesign)) {
     switch (getAnswerType(question)) {
       case "site":
         code = responseData[question._id]?.value?.code
-        entityType = getSiteEntityType(question)
+        entityType = getSiteEntityType(question as SiteQuestion)
         if (code) {
           results.push({ question: question._id, entityType, property: "code", value: code })
         }
@@ -690,7 +695,7 @@ export function extractEntityReferences(formDesign: any, responseData: any) {
       case "entity":
         value = responseData[question._id]?.value
         if (value) {
-          results.push({ question: question._id, entityType: question.entityType, property: "_id", value })
+          results.push({ question: question._id, entityType: (question as EntityQuestion).entityType, property: "_id", value })
         }
         break
     }
@@ -703,7 +708,7 @@ export function extractEntityReferences(formDesign: any, responseData: any) {
         case "site":
           for (rosterEntry of responseData[rosterId] || []) {
             code = rosterEntry.data[question._id]?.value?.code
-            entityType = getSiteEntityType(question)
+            entityType = getSiteEntityType(question as SiteQuestion)
             if (code) {
               results.push({
                 question: question._id,
@@ -722,7 +727,7 @@ export function extractEntityReferences(formDesign: any, responseData: any) {
               results.push({
                 question: question._id,
                 roster: rosterEntry._id,
-                entityType: question.entityType,
+                entityType: (question as EntityQuestion).entityType,
                 property: "_id",
                 value
               })

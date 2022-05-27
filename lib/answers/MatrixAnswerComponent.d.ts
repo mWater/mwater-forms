@@ -1,6 +1,8 @@
 import PropTypes from "prop-types";
 import React from "react";
 import MatrixColumnCellComponent from "../MatrixColumnCellComponent";
+import { ResponseData } from "../response";
+import ResponseRow from "../ResponseRow";
 export interface MatrixAnswerComponentProps {
     items: any;
     /** Array of matrix columns */
@@ -11,9 +13,9 @@ export interface MatrixAnswerComponentProps {
     /** Alternate value if selected */
     alternate?: string;
     /** Current data of response (for roster entry if in roster) */
-    data?: any;
+    data: ResponseData;
     /** ResponseRow object (for roster entry if in roster) */
-    responseRow?: any;
+    responseRow: ResponseRow;
     schema: any;
 }
 interface MatrixAnswerComponentState {

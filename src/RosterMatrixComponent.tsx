@@ -9,28 +9,41 @@ import * as formUtils from "./formUtils"
 import ValidationCompiler from "./answers/ValidationCompiler"
 import ReorderableListComponent from "react-library/lib/reorderable/ReorderableListComponent"
 import MatrixColumnCellComponent from "./MatrixColumnCellComponent"
+import { RosterMatrix } from "./formDesign"
+import { ResponseData, RosterData, RosterEntry } from "./response"
+import { Schema } from "mwater-expressions"
+import ResponseRow from "./ResponseRow"
+
+export default interface RosterMatrixComponentProps {
+  rosterMatrix: RosterMatrix
+  /** Current data of response */
+  data: ResponseData
+  onDataChange: (data: ResponseData) => void
+  /** (id) tells if an item is visible or not */
+  isVisible: (id: string) => boolean 
+  schema: Schema
+  responseRow: ResponseRow
+}
+
+interface RosterMatrixComponentState {
+  /** Map of "<rowindex>_<columnid>" to validation error */
+  validationErrors: { [id: string]: string | true }
+}
 
 // Rosters are repeated information, such as asking questions about household members N times.
 // A roster matrix is a list of column-type questions with one row for each entry in the roster
-export default class RosterMatrixComponent extends React.Component {
+export default class RosterMatrixComponent extends React.Component<RosterMatrixComponentProps, RosterMatrixComponentState> {
   static contextTypes = {
     locale: PropTypes.string,
     T: PropTypes.func.isRequired // Localizer to use
   }
+  prompt: HTMLHeadingElement | null
 
-  static propTypes = {
-    rosterMatrix: PropTypes.object.isRequired, // Design of roster matrix. See schema
-    data: PropTypes.object, // Current data of response.
-    onDataChange: PropTypes.func.isRequired, // Called when data changes
-    isVisible: PropTypes.func.isRequired, // (id) tells if an item is visible or not
-    schema: PropTypes.object.isRequired
-  }
-
-  constructor(props: any) {
+  constructor(props: RosterMatrixComponentProps) {
     super(props)
 
     this.state = {
-      validationErrors: {} // Map of "<rowindex>_<columnid>" to validation error
+      validationErrors: {} 
     }
   }
 
@@ -41,8 +54,8 @@ export default class RosterMatrixComponent extends React.Component {
   }
 
   // Get the current answer value
-  getAnswer() {
-    return this.props.data[this.getAnswerId()] || []
+  getAnswer(): RosterData {
+    return (this.props.data[this.getAnswerId()] || []) as RosterData
   }
 
   validate(scrollToFirstInvalid: any) {
@@ -80,7 +93,7 @@ export default class RosterMatrixComponent extends React.Component {
 
     // Scroll into view
     if (foundInvalid && scrollToFirstInvalid) {
-      this.prompt.scrollIntoView()
+      this.prompt!.scrollIntoView()
     }
 
     return foundInvalid
@@ -132,8 +145,8 @@ export default class RosterMatrixComponent extends React.Component {
       "h4",
       {
         key: "prompt",
-        ref: (c) => {
-          return (this.prompt = c)
+        ref: (c: HTMLHeadingElement | null) => {
+          this.prompt = c
         }
       },
       formUtils.localizeString(this.props.rosterMatrix.name, this.context.locale)
@@ -199,8 +212,8 @@ export default class RosterMatrixComponent extends React.Component {
       responseRow: this.props.responseRow.getRosterResponseRow(this.getAnswerId(), entryIndex),
       answer: entryData?.[column._id] || {},
       onAnswerChange: this.handleCellChange.bind(null, entryIndex, column._id),
-      invalid,
-      invalidMessage: invalid != null ? invalid : undefined,
+      invalid: !!invalid,
+      invalidMessage: typeof invalid == "string" ? invalid : undefined,
       schema: this.props.schema
     })
   }
@@ -241,6 +254,7 @@ export default class RosterMatrixComponent extends React.Component {
         )
       )
     }
+    return null
   }
 
   renderBody() {
@@ -248,7 +262,7 @@ export default class RosterMatrixComponent extends React.Component {
       items: this.getAnswer(),
       onReorder: this.handleAnswerChange,
       renderItem: this.renderEntry,
-      getItemId: (entry) => entry._id,
+      getItemId: (entry: RosterEntry) => entry._id,
       element: R("tbody", null)
     })
   }

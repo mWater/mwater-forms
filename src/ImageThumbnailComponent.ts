@@ -1,11 +1,12 @@
 import React from "react"
 const R = React.createElement
 import AsyncLoadComponent from "react-library/lib/AsyncLoadComponent"
+import { ImageManager } from "./formContext"
 
 export interface ImageThumbnailComponentProps {
-  imageManager: any
+  imageManager: ImageManager
   imageId: string
-  onClick?: any
+  onClick?: () => void
 }
 
 // Displays a thumbnail of an image

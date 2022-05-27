@@ -106,6 +106,6 @@ export function renderItem(
       onNext
     })
   } else {
-    throw new Error(`Unknown item of type ${item._type}`)
+    throw new Error(`Unknown item of type ${(item as any)._type}`)
   }
 }

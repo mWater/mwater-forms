@@ -3,17 +3,18 @@ import React from "react";
 import { MatrixColumn } from "./formDesign";
 import { Schema } from "mwater-expressions";
 import ResponseRow from "./ResponseRow";
+import { Answer, ResponseData } from "./response";
 export interface MatrixColumnCellComponentProps {
     /** Column. See designSchema */
     column: MatrixColumn;
     /** Current data of response (for roster entry if in roster) */
-    data?: any;
+    data: ResponseData;
     /** ResponseRow object (for roster entry if in roster) */
     responseRow: ResponseRow;
     /** Answer of the cell */
-    answer?: any;
+    answer?: Answer;
     /** Called with new answer of cell */
-    onAnswerChange: any;
+    onAnswerChange: (answer: Answer) => void;
     /** True if invalid */
     invalid?: boolean;
     /** Validation message */
@@ -35,7 +36,7 @@ export default class MatrixColumnCellComponent extends React.Component<MatrixCol
     componentDidMount(): void;
     componentDidUpdate(prevProps: MatrixColumnCellComponentProps): void;
     calculateChoiceVisibility(): Promise<void>;
-    handleValueChange: (value: any) => any;
+    handleValueChange: (value: any) => void;
     render(): React.DetailedReactHTMLElement<{
         className: string | undefined;
     }, HTMLElement>;

@@ -5,6 +5,8 @@ const R = React.createElement
 
 import * as formUtils from "../formUtils"
 import MatrixColumnCellComponent from "../MatrixColumnCellComponent"
+import { ResponseData } from "../response"
+import ResponseRow from "../ResponseRow"
 import ValidationCompiler from "./ValidationCompiler"
 
 export interface MatrixAnswerComponentProps {
@@ -17,9 +19,9 @@ export interface MatrixAnswerComponentProps {
   /** Alternate value if selected */
   alternate?: string
   /** Current data of response (for roster entry if in roster) */
-  data?: any
+  data: ResponseData
   /** ResponseRow object (for roster entry if in roster) */
-  responseRow?: any
+  responseRow: ResponseRow
   schema: any
 }
 

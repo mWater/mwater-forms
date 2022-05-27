@@ -169,12 +169,12 @@ export default class FormComponent extends React.Component<FormComponentProps, F
 
   handleDataChange = (data: any) => {
     const visibilityCalculator = new VisibilityCalculator(this.props.design, this.props.schema)
-    const defaultValueApplier = new DefaultValueApplier(
+    const defaultValueApplier = this.props.formCtx.stickyStorage ? new DefaultValueApplier(
       this.props.design,
       this.props.formCtx.stickyStorage,
       this.props.entity,
       this.props.entityType
-    )
+    ) : null
     const randomAskedCalculator = new RandomAskedCalculator(this.props.design)
     const responseCleaner = new ResponseCleaner()
 
@@ -195,7 +195,7 @@ export default class FormComponent extends React.Component<FormComponentProps, F
       this.state.visibilityStructure,
       (error: any, results: any) => {
         if (error) {
-          alert(T("Error saving data") + `: ${error.message}`)
+          alert(this.state.T("Error saving data") + `: ${error.message}`)
           return
         }
 

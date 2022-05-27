@@ -67,7 +67,7 @@ export default class ResponseCleaner {
 
             // Default values
             if (defaultValueApplier) {
-              newData = defaultValueApplier.setStickyData(newData, oldVisibilityStructure, newVisibilityStructure)
+              newData = defaultValueApplier.setStickyData(newData, oldVisibilityStructure || {}, newVisibilityStructure)
             }
 
             // Set random asked

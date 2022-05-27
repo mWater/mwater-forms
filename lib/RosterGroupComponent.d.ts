@@ -1,18 +1,22 @@
 import PropTypes from "prop-types";
 import React from "react";
 import TextExprsComponent from "./TextExprsComponent";
+import { ResponseData, RosterData } from "./response";
+import ResponseRow from "./ResponseRow";
+import { Schema } from "mwater-expressions";
+import { RosterGroup } from "./formDesign";
 export interface RosterGroupComponentProps {
     /** Design of roster group. See schema */
-    rosterGroup: any;
+    rosterGroup: RosterGroup;
     /** Current data of response. */
-    data?: any;
+    data: ResponseData;
     /** Called when data changes */
-    onDataChange: any;
+    onDataChange: (data: ResponseData) => void;
     /** (id) tells if an item is visible or not */
-    isVisible: any;
+    isVisible: (id: string) => boolean;
     /** ResponseRow object (for roster entry if in roster) */
-    responseRow?: any;
-    schema: any;
+    responseRow: ResponseRow;
+    schema: Schema;
 }
 interface RosterGroupComponentState {
     /** The indices that are collapsed */
@@ -24,14 +28,14 @@ export default class RosterGroupComponent extends React.Component<RosterGroupCom
         T: PropTypes.Validator<(...args: any[]) => any>;
     };
     constructor(props: RosterGroupComponentProps);
-    getAnswerId(): any;
-    getAnswer(): any;
-    handleAnswerChange: (answer: any) => any;
-    handleEntryDataChange: (index: any, data: any) => any;
-    handleAdd: () => any;
-    handleRemove: (index: any) => any;
+    getAnswerId(): string;
+    getAnswer(): RosterData;
+    handleAnswerChange: (answer: any) => void;
+    handleEntryDataChange: (index: any, data: any) => void;
+    handleAdd: () => void;
+    handleRemove: (index: any) => void;
     validate(scrollToFirstInvalid: any): Promise<boolean>;
-    isChildVisible: (index: any, id: any) => any;
+    isChildVisible: (index: any, id: any) => boolean;
     handleToggle: (index: number) => void;
     renderName(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>;
     renderEntryTitle(entry: any, index: any): React.CElement<import("./TextExprsComponent").TextExprsComponentProps, TextExprsComponent>;
@@ -39,7 +43,7 @@ export default class RosterGroupComponent extends React.Component<RosterGroupCom
         key: any;
         className: string;
     }, HTMLElement>;
-    renderAdd(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement> | undefined;
+    renderAdd(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement> | null;
     renderEmptyPrompt(): React.DetailedReactHTMLElement<{
         style: {
             fontStyle: "italic";

@@ -1,6 +1,7 @@
 import { PromiseExprEvaluatorRow, Schema } from "mwater-expressions";
-import { FormDesign } from "./formDesign";
+import { FormDesign, Group, Item, Question, RosterGroup, Section } from "./formDesign";
 import { ResponseData } from "./response";
+import ResponseRow from "./ResponseRow";
 /**
 Uses conditions to defines the visibility status of all the Sections, Questions, Instructions, Group, RosterGroup and RosterMatrix
 The result is kept in the visibilityStructure. It contains an entry with true or false for each element (should never be null or undefined)
@@ -24,10 +25,10 @@ export default class VisibilityCalculator {
      * data is the data of the response
      * responseRow is a ResponseRow which represents the same row */
     createVisibilityStructure(data: ResponseData, responseRow: PromiseExprEvaluatorRow, callback: (error: any, visibilityStructure?: VisibilityStructure) => void): void;
-    processGroup(item: any, forceToInvisible: any, data: any, responseRow: any, visibilityStructure: any, prefix: any, callback: any): void;
-    processItem(item: any, forceToInvisible: any, data: any, responseRow: any, visibilityStructure: any, prefix: any, callback: any): any;
-    processQuestion(question: any, forceToInvisible: any, data: any, responseRow: any, visibilityStructure: any, prefix: any, callback: any): any;
-    processRoster(rosterGroup: any, forceToInvisible: any, data: any, responseRow: any, visibilityStructure: any, prefix: any, callback: any): any;
+    processGroup(item: FormDesign | Section | Group, forceToInvisible: any, data: any, responseRow: any, visibilityStructure: any, prefix: any, callback: any): void;
+    processItem(item: Item, forceToInvisible: boolean, data: ResponseData, responseRow: ResponseRow, visibilityStructure: VisibilityStructure, prefix: any, callback: (error: any, visibilityStructure?: VisibilityStructure) => void): void;
+    processQuestion(question: Question, forceToInvisible: boolean, data: ResponseData, responseRow: ResponseRow, visibilityStructure: VisibilityStructure, prefix: any, callback: (error: any, visibilityStructure?: VisibilityStructure) => void): void | Promise<void>;
+    processRoster(rosterGroup: RosterGroup, forceToInvisible: boolean, data: ResponseData, responseRow: ResponseRow, visibilityStructure: VisibilityStructure, prefix: any, callback: (error: any, visibilityStructure?: VisibilityStructure) => void): void | Promise<void>;
 }
 /** Non-rosters are just referenced by id: e.g. { "somequestionid": true }
  * Unless it is a matrix, in which case it is referenced by "questionid.itemid.columnid"
