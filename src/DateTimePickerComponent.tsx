@@ -21,7 +21,7 @@ export interface DateTimePickerComponentProps {
   /** callback on date change (argument: moment date) */
   onChange: (date: Moment | null) => void
 
-  onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void
 
   /** date as moment */
   date?: Moment | null
@@ -131,6 +131,7 @@ export default class DateTimePickerComponent extends React.Component<DateTimePic
           defaultValue={defaultValue} 
           ref={c => { this.textRef = c }}
           onChange={ev => {}}
+          onKeyDown={this.props.onKeyDown}
           />
         <span className="input-group-text"><i className="fas fa-calendar"/></span>
       </div>
