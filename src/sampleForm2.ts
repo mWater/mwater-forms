@@ -377,7 +377,7 @@ export default {
               _base: "en"
             },
             _type: "DateQuestion",
-            format: "MM/DD/YYYY",
+            format: "DD-MM-YYYY",
             required: false,
             alternates: {
               na: true,

@@ -108,6 +108,9 @@ export default class DateTimePickerComponent extends React.Component<DateTimePic
           this.control.dates.clear()
         }
       }
+      if (this.props.date) {
+        this.control.dates.setFromInput(moment(this.props.date).toDate)
+      }
 
       this.control.subscribe(Namespace.events.change, e => {
         this.props.onChange(e.date ? moment(e.date) : null)
