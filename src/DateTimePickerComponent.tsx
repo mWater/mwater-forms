@@ -109,7 +109,7 @@ export default class DateTimePickerComponent extends React.Component<DateTimePic
         }
       }
       if (this.props.date) {
-        this.control.dates.setFromInput(moment(this.props.date).toDate)
+        this.control.dates.setFromInput(this.props.date.format(format), 0)
       }
 
       this.control.subscribe(Namespace.events.change, e => {
