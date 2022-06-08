@@ -93,6 +93,12 @@ export function isQuestion(item: Item | FormDesign): item is Question {
   return item._type != null && item._type.match(/Question$/) != null && item._type.match(/ColumnQuestion$/) == null 
 }
 
+/** Determine if item is a matrix column (which is similar and makes up
+ * the contents of RosterMatrix) */
+export function isMatrixColumnQuestion(item: Item | FormDesign): item is MatrixColumnQuestion {
+  return item._type != null && item._type.match(/ColumnQuestion$/) != null 
+}
+
 /** Determine if item is an expression */
 export function isExpression(item: Item): boolean {
   return item._type != null && ["TextColumn", "Calculation"].includes(item._type)

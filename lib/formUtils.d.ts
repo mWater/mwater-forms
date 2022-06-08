@@ -15,6 +15,9 @@ export declare function createBase32TimeCode(date: any): string;
 export declare function isQuestionOrMatrixColumnQuestion(item: Item | FormDesign): item is Question | MatrixColumnQuestion;
 /** Determine if item is a question */
 export declare function isQuestion(item: Item | FormDesign): item is Question;
+/** Determine if item is a matrix column (which is similar and makes up
+ * the contents of RosterMatrix) */
+export declare function isMatrixColumnQuestion(item: Item | FormDesign): item is MatrixColumnQuestion;
 /** Determine if item is an expression */
 export declare function isExpression(item: Item): boolean;
 /** Determine if item is of type with contents */

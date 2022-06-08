@@ -183,7 +183,11 @@ export default class VisibilityCalculator {
 
     if (forceToInvisible) {
       isVisible = false
-    } else if (formUtils.isQuestion(question) && question.conditions != null && question.conditions.length > 0) {
+    } else if (!formUtils.isMatrixColumnQuestion(question) 
+      && question._type != "TextColumn" 
+      && question._type != "Calculation" 
+      && question.conditions != null 
+      && question.conditions.length > 0) {
       const conditions = conditionUtils.compileConditions(question.conditions)
       isVisible = conditions(data)
     } else {
