@@ -141,7 +141,7 @@ describe("AnswerValidator", function () {
         return assert.equal(result, "message")
       })
 
-      return it("blank message is true advanced validations", async function () {
+      it("blank message is true advanced validations", async function () {
         const question = {
           _type: "TextQuestion", 
           advancedValidations: [{ expr: { type: "literal", valueType: "boolean", value: false }, message: { en: "" } }]
@@ -150,6 +150,17 @@ describe("AnswerValidator", function () {
         const answer = { value: "value" }
         const result = await answerValidator.validate(question, answer)
         return assert.equal(result, true)
+      })
+
+      it("validates check questions even if not answered", async function() {
+        const question = {
+          _type: "CheckQuestion", 
+          advancedValidations: [{ expr: { type: "literal", valueType: "boolean", value: false }, message: { en: "message" } }]
+        } as unknown as Question
+
+        const answer = {}
+        const result = await answerValidator.validate(question, answer)
+        return assert.equal(result, "message")
       })
     }))
 

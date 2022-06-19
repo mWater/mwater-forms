@@ -90,7 +90,7 @@ export default class AnswerValidator {
     }
 
     // Skip validation if value is not set
-    if (answer.value == null || answer.value === "") {
+    if (question._type !== "CheckQuestion" && (answer.value == null || answer.value === "")) {
       return null
     }
 
