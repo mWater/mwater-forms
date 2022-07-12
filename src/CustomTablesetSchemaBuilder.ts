@@ -101,30 +101,35 @@ export class CustomTablesetSchemaBuilder {
       // Create table
       schema = schema.addTable(schemaTable)
 
-      // Add reverse joins to entities (if not already present)
+      // Add reverse joins to entities and regions (if not already present)
       for (const column of flattenContents(contents)) {
-        if (column.type == "id" && column.idTable!.match(/^entities\./)) {
-          const otherTable = schema.getTable(column.idTable!)
-          if (otherTable) {
-            const reverseColumn: Column = {
-              id: `!${tableId}:${column.id}`,
-              name: concatLocalizedStrings(schemaTable.name, ": ", column.name),
-              deprecated: column.deprecated || table.deprecated,
-              type: "join",
-              join: {
-                type: "1-n",
-                toTable: tableId,
-                inverse: column.id,
-                fromColumn: "_id",
-                toColumn: column.id
+        if (column.type == "id") {
+          const idTable = column.idTable!
+          const reversible = idTable.startsWith("entities.") || idTable.startsWith("regions.") || idTable == "admin_regions"
+          if (reversible) {
+            const otherTable = schema.getTable(column.idTable!)
+            if (otherTable) {
+              const reverseColumn: Column = {
+                id: `!${tableId}:${column.id}`,
+                name: concatLocalizedStrings(schemaTable.name, ": ", column.name),
+                deprecated: column.deprecated || table.deprecated,
+                type: "join",
+                join: {
+                  type: "1-n",
+                  toTable: tableId,
+                  inverse: column.id,
+                  fromColumn: "_id",
+                  toColumn: column.id
+                }
               }
-            }
-            if (schema.getColumn(otherTable.id, reverseColumn.id) == null) {
-              schema = schema.addTable(
-                produce(otherTable, (draft) => {
-                  draft.contents.push(reverseColumn)
-                })
-              )
+              // Prevent adding twice
+              if (schema.getColumn(otherTable.id, reverseColumn.id) == null) {
+                schema = schema.addTable(
+                  produce(otherTable, (draft) => {
+                    draft.contents.push(reverseColumn)
+                  })
+                )
+              }
             }
           }
         }
