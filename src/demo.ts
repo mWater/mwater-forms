@@ -629,13 +629,15 @@ const cascadingRefFormDesign = {
 var cascadingRefRows = [
   { id: "wpg", c0: "manitoba", c1: "winnipeg" },
   { id: "wloo", c0: "ontario", c1: "waterloo" },
-  { id: "tor", c0: "ontario", c1: "toronto" }
+  { id: "tor", c0: "ontario", c1: "toronto" },
+  { id: "kat", c0: "bagmati", c1: "kathmandu" },
 ]
 
 const cascadingRefCustomTableset = {
   _id: "1234",
   code: "ts",
   design: {
+    name: {en: "Custom table", _base: "en"},
     tables: [
       {
         id: "cities",
@@ -643,21 +645,23 @@ const cascadingRefCustomTableset = {
         properties: [
           {
             id: "c0",
-            name: { en: "Province" },
+            name: { en: "Province", _base: 'en' },
             type: "enum",
             enumValues: [
-              { id: "manitoba", name: { en: "Manitoba" } },
-              { id: "ontario", name: { en: "Ontario" } }
+              { id: "manitoba", name: { en: "Manitoba", _base: 'en' } },
+              { id: "ontario", name: { en: "Ontario", _base: 'en' } },
+              { id: "bagmati", name: { en: "Bagmati", _base: 'en' } },
             ]
           },
           {
             id: "c1",
-            name: { en: "City" },
+            name: { en: "City", _base: 'en' },
             type: "enum",
             enumValues: [
-              { id: "winnipeg", name: { en: "Winnipeg" } },
-              { id: "toronto", name: { en: "Toronto" } },
-              { id: "waterloo", name: { en: "Waterloo" } }
+              { id: "winnipeg", name: { en: "Winnipeg", _base: 'en' } },
+              { id: "toronto", name: { en: "Toronto", _base: 'en' } },
+              { id: "waterloo", name: { en: "Waterloo", _base: 'en' } },
+              { id: "kathmandu", name: { en: "Kathmandu", _base: 'en' } }
             ]
           }
         ]
@@ -777,14 +781,14 @@ class DemoComponent extends React.Component<any, any> {
     // design = matrixFormDesign
     // design = rosterFormDesign
     // design = exprFormDesign
-    // design = cascadingRefFormDesign
+    const design = cascadingRefFormDesign  as unknown as Form
     // design = sampleFormAdvancedValidations
     // design = require('./sampleFormRM')
     // design = randomAskFormDesign
     // const design = rankedDesign as unknown as Form
-    const design = sampleForm2 as unknown as Form
+    // const design = sampleForm2 as unknown as Form
     schema = new FormSchemaBuilder().addForm(schema, design)
-    // schema = new CustomTablesetSchemaBuilder().addTableset(schema, cascadingRefCustomTableset)
+    schema = new CustomTablesetSchemaBuilder().addTableset(schema, cascadingRefCustomTableset)
 
     return R(
       "div",

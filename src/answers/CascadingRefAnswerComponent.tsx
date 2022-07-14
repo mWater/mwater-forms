@@ -184,7 +184,6 @@ export class CascadingRefAnswerComponent extends React.Component<Props, State> {
 
     // Find all possible values, filtering by all previous selections
     const values = this.findValues(index, this.state.dropdownValues!)
-
     const column = this.props.schema.getColumn(this.props.question.tableId, dropdown.columnId)
     if (!column) {
       // Not localized because should not happen
@@ -193,7 +192,7 @@ export class CascadingRefAnswerComponent extends React.Component<Props, State> {
 
     // If enum
     if (column.type == "enum" && column.enumValues) {
-      for (const enumValue of column.enumValues!) {
+      for (const enumValue of _.sortBy(column.enumValues!, (e) => e.name[e.name._base])) {
         // Add if in values
         if (values.includes(enumValue.id)) {
           options.push({ value: enumValue.id, label: localizeString(enumValue.name, this.props.locale) })
