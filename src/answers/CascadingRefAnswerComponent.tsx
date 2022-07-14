@@ -200,7 +200,7 @@ export class CascadingRefAnswerComponent extends React.Component<Props, State> {
       }
     } else {
       // Text are added as is, converting null value to "" and label to emdash
-      for (const value of values) {
+      for (const value of values.sort()) {
         options.push({ value: value, label: value || "\u2014" })
       }
     }
