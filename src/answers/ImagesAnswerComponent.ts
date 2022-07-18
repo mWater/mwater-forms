@@ -56,7 +56,11 @@ export default class ImagesAnswerComponent extends React.Component<
         imagelist.push({ id, cover: imagelist.length === 0, rotation })
         return this.props.onImagelistChange(imagelist)
       },
-      (err: any) => alert(err)
+      (err: any) => {
+        console.log("Error acquiring image")
+        console.log(err.message || err)
+        alert(this.context.T("Error getting image") + ": " + (err.message || err))
+      }
     )
   }
 

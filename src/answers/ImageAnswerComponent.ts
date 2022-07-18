@@ -57,7 +57,11 @@ export default class ImageAnswerComponent extends React.Component<
         // Add to model
         return this.props.onImageChange({ id, rotation })
       },
-      (err: any) => alert(err)
+      (err: any) => {
+        console.log("Error acquiring image")
+        console.log(err.message || err)
+        alert(this.context.T("Error getting image") + ": " + (err.message || err))
+      }
     )
   }
 
