@@ -58,8 +58,8 @@ export default class ImagesAnswerComponent extends React.Component<
       },
       (err: any) => {
         console.log("Error acquiring image")
-        console.log(err.message || err)
-        alert(this.context.T("Error getting image") + ": " + (err.message || err))
+        console.log(err.message || err.code || err)
+        alert(this.context.T("Error getting image") + ": " + (err.message || err.code || err))
       }
     )
   }
