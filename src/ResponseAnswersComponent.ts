@@ -752,7 +752,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
     if (dataId != null) {
       const dataIds = dataId.split(".")
       rosterId = dataIds[0]
-      rosterEntryIndex = dataIds[1]
+      rosterEntryIndex = Number(dataIds[1])
     }
 
     return R(TextExprsComponent, {
