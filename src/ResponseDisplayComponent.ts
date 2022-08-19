@@ -280,7 +280,7 @@ export default class ResponseDisplayComponent extends React.Component<
     return R(
       ModalPopupComponent,
       {
-        header: "Change history",
+        header: this.state.T("Change history"),
         size: "large",
         showCloseX: true,
         onClose: () => this.setState({ showArchive: false })

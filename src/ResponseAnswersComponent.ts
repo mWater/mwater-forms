@@ -173,7 +173,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
             })()
           )
         } else {
-          return R("span", { className: "badge bg-danger" }, "Invalid Choice")
+          return R("span", { className: "badge bg-danger" }, this.props.T("Invalid Choice"))
         }
       case "choices":
         return _.map(answer.value as string[], (v) => {
@@ -192,7 +192,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
               })()
             )
           } else {
-            return R("div", { className: "badge bg-danger" }, "Invalid Choice")
+            return R("div", { className: "badge bg-danger" }, this.props.T("Invalid Choice"))
           }
         })
 
@@ -214,7 +214,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
           const units = _.findWhere((q as UnitsQuestion).units, { id: (answer.value as UnitsAnswerValue).units })
 
           const valueStr = "" + (answer.value as UnitsAnswerValue).quantity
-          const unitsStr = units ? formUtils.localizeString(units.label, this.props.locale) : "(Invalid)"
+          const unitsStr = units ? formUtils.localizeString(units.label, this.props.locale) : this.props.T("(Invalid)")
 
           if ((q as UnitsQuestion).unitsPosition === "prefix") {
             return R("div", null, R("em", null, unitsStr), " ", valueStr)
@@ -294,7 +294,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
 
       case "admin_region":
         return R("div", { className: "alert alert-warning" },
-          "Admin region questions are no longer supported"
+          this.props.T("Admin region questions are no longer supported")
         )
 
       case "items_choices":
@@ -305,7 +305,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
             if (choice != null) {
               return R("div", null, formUtils.localizeString(choice.label, this.props.locale))
             } else {
-              return R("span", { className: "badge bg-danger" }, "Invalid Choice")
+              return R("span", { className: "badge bg-danger" }, this.props.T("Invalid Choice"))
             }
           }
         }
@@ -369,7 +369,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
             )
           } else {
             contents.push(
-              R("tr", null, itemTd, R("td", null, R("span", { className: "badge bg-danger" }, "Invalid Choice")))
+              R("tr", null, itemTd, R("td", null, R("span", { className: "badge bg-danger" }, this.props.T("Invalid Choice"))))
             )
           }
 
@@ -383,7 +383,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
                 )
               } else {
                 contents.push(
-                  R("tr", null, itemTd, R("td", null, R("span", { className: "badge bg-danger" }, "Invalid Choice")))
+                  R("tr", null, itemTd, R("td", null, R("span", { className: "badge bg-danger" }, this.props.T("Invalid Choice"))))
                 )
               }
             }
@@ -795,9 +795,9 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
           R(
             "tr",
             null,
-            R("th", null, "Question"),
-            R("th", null, "Answer"),
-            this.props.showPrevAnswers ? R("th", null, "Original Answer") : undefined
+            R("th", null, this.props.T("Question")),
+            R("th", null, this.props.T("Answer")),
+            this.props.showPrevAnswers ? R("th", null, this.props.T("Original Answer")) : undefined
           )
         ),
         R(
@@ -820,7 +820,8 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
               formDesign: this.props.formDesign,
               schema: this.props.schema,
               responseRow: this.state.responseRow,
-              locale: this.props.locale
+              locale: this.props.locale,
+              T: this.props.T,
             })
           )
         : undefined

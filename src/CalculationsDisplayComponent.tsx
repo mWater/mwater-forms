@@ -8,6 +8,8 @@ import ResponseRow from "./ResponseRow"
 export const CalculationsDisplayComponent = (props: {
   formDesign: FormDesign
   locale: string
+  /** Localizer to use */
+  T: any
   schema: Schema
   responseRow: ResponseRow
 }) => {
@@ -49,8 +51,8 @@ export const CalculationsDisplayComponent = (props: {
     <table className="table table-bordered table-sm">
       <thead>
         <tr>
-          <th>Calculation</th>
-          <th>Value</th>
+          <th>{props.T("Calculation")}</th>
+          <th>{props.T("Value")}</th>
         </tr>
       </thead>
       <tbody>
