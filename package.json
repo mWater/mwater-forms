@@ -42,6 +42,7 @@
     "moment": "^2.27.0",
     "mwater-expressions": "github:mWater/mwater-expressions",
     "prop-types": "^15.7.2",
+    "punycode": "^2.1.1",
     "react": "^16.13.1",
     "react-beautiful-dnd": "^13.1.0",
     "react-dom": "^16.13.1",
