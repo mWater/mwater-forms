@@ -227,7 +227,7 @@ export function applicableOps(lhsQuestion: any) {
 
 // Gets rhs type for a question and operator.
 // Can be null (for unary), "text", "number", "choice", "choices", "date", "datetime"
-function _rhsType(lhsQuestion: any, op: any) {
+export function getRhsType(lhsQuestion: any, op: any) {
   switch (op) {
     case "present":
     case "!present":
@@ -260,8 +260,6 @@ function _rhsType(lhsQuestion: any, op: any) {
       throw new Error("Unknown op")
   }
 }
-
-export { _rhsType as rhsType }
 
 // In the case of choice, returns choices for rhs (returns base localization)
 // Return includes id and text for each one, suitable for a select2 control
@@ -305,12 +303,12 @@ export function validateCondition(cond: any, formDesign: any) {
     return false
   }
 
-  if (!_.contains(_.pluck(exports.applicableOps(lhsQuestion), "id"), cond.op)) {
+  if (!_.contains(_.pluck(applicableOps(lhsQuestion), "id"), cond.op)) {
     return false
   }
 
   // Check rhs
-  const rhsType = exports.rhsType(lhsQuestion, cond.op)
+  const rhsType = getRhsType(lhsQuestion, cond.op)
 
   if (rhsType) {
     if (!cond.rhs || cond.rhs.literal == null) {
@@ -356,7 +354,7 @@ export function validateCondition(cond: any, formDesign: any) {
 }
 
 export function summarizeConditions(conditions = [], formDesign: any, locale: any) {
-  return _.map(conditions, (cond) => exports.summarizeCondition(cond, formDesign, locale)).join(" and ")
+  return _.map(conditions, (cond) => summarizeCondition(cond, formDesign, locale)).join(" and ")
 }
 
 export function summarizeCondition(cond: any, formDesign: any, locale: any) {
@@ -372,7 +370,7 @@ export function summarizeCondition(cond: any, formDesign: any, locale: any) {
   let str = formUtils.localizeString((lhsQuestion as QuestionBase).text, locale)
   str += " " + getOpDetails(cond.op)?.text
 
-  const rhsType = exports.rhsType(lhsQuestion, cond.op)
+  const rhsType = getRhsType(lhsQuestion, cond.op)
 
   switch (rhsType) {
     case "text":
@@ -389,7 +387,7 @@ export function summarizeCondition(cond: any, formDesign: any, locale: any) {
       str += _.map(cond.rhs.literal, (choice) => _.findWhere(choices, { id: choice })?.text).join(", ")
       break
     case "date":
-    case "datetime":
+    // case "datetime":
       // TODO prettier
       str += ` ${cond.rhs.literal}`
       break

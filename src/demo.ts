@@ -781,12 +781,12 @@ class DemoComponent extends React.Component<any, any> {
     // design = matrixFormDesign
     // design = rosterFormDesign
     // design = exprFormDesign
-    const design = cascadingRefFormDesign  as unknown as Form
+    // const design = cascadingRefFormDesign  as unknown as Form
     // design = sampleFormAdvancedValidations
     // design = require('./sampleFormRM')
     // design = randomAskFormDesign
     // const design = rankedDesign as unknown as Form
-    // const design = sampleForm2 as unknown as Form
+    const design = sampleForm2 as unknown as Form
     schema = new FormSchemaBuilder().addForm(schema, design)
     schema = new CustomTablesetSchemaBuilder().addTableset(schema, cascadingRefCustomTableset)
 

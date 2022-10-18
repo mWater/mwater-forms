@@ -267,9 +267,6 @@ export function prepareQuestion(q: any) {
     case "SiteColumnQuestion":
       _.defaults(q, { siteType: "water_point" })
       break
-    case "LikertQuestion":
-      _.defaults(q, { items: [], choices: [] })
-      break
     case "DateQuestion": // , "DateTimeQuestion"??
       _.defaults(q, { format: "YYYY-MM-DD" })
       break

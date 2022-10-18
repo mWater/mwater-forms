@@ -42,7 +42,7 @@ export function formatRelativeLocation(relLoc: any, T: any) {
     distance = relLoc.distance.toFixed(0) + " " + T("m")
   }
 
-  return distance + " " + exports.getCompassBearing(relLoc.angle, T)
+  return distance + " " + getCompassBearing(relLoc.angle, T)
 }
 
 /** Calculates the relative strength of a GPS signal into "none", "poor", "fair", "good" or "excellent" */
@@ -80,7 +80,7 @@ export function calculateGPSStrength(pos?: GeolocationPosition | null): Position
 // Format GPS strength in human-readable, Bootstrap-friendly way
 export let formatGPSStrength = (pos: any, T: any) => {
   let text, textClass
-  const strength = exports.calculateGPSStrength(pos)
+  const strength = calculateGPSStrength(pos)
   switch (strength) {
     case "none":
       text = T("Waiting for GPS...")

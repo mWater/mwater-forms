@@ -22,5 +22,5 @@ export function seqToCode(seq: any) {
 export function isValid(code: any) {
   const seq = parseInt(code.substring(0, code.length - 1))
 
-  return exports.seqToCode(seq) === code
+  return seqToCode(seq) === code
 }

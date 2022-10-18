@@ -653,6 +653,42 @@
     {
       "_base": "en",
       "en": "Error getting image"
+    },
+    {
+      "_base": "en",
+      "en": "Calculation"
+    },
+    {
+      "_base": "en",
+      "en": "Value"
+    },
+    {
+      "_base": "en",
+      "en": "Invalid Choice"
+    },
+    {
+      "_base": "en",
+      "en": "(Invalid)"
+    },
+    {
+      "_base": "en",
+      "en": "Admin region questions are no longer supported"
+    },
+    {
+      "_base": "en",
+      "en": "Question"
+    },
+    {
+      "_base": "en",
+      "en": "Answer"
+    },
+    {
+      "_base": "en",
+      "en": "Original Answer"
+    },
+    {
+      "_base": "en",
+      "en": "Change history"
     }
   ]
 }

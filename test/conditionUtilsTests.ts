@@ -379,32 +379,32 @@ describe("conditionUtils", function () {
 
   describe("rhsType", function () {
     it("is correct for TextQuestion", function () {
-      assert.equal(conditionUtils.rhsType({ _type: "TextQuestion" }, "present"), null)
-      return assert.equal(conditionUtils.rhsType({ _type: "TextQuestion" }, "contains"), "text")
+      assert.equal(conditionUtils.getRhsType({ _type: "TextQuestion" }, "present"), null)
+      return assert.equal(conditionUtils.getRhsType({ _type: "TextQuestion" }, "contains"), "text")
     })
 
     it("is correct for NumberQuestion", function () {
-      assert.equal(conditionUtils.rhsType({ _type: "NumberQuestion" }, "present"), null)
-      return assert.equal(conditionUtils.rhsType({ _type: "NumberQuestion" }, ">"), "number")
+      assert.equal(conditionUtils.getRhsType({ _type: "NumberQuestion" }, "present"), null)
+      return assert.equal(conditionUtils.getRhsType({ _type: "NumberQuestion" }, ">"), "number")
     })
 
     it("is correct for DropdownQuestion", function () {
-      assert.equal(conditionUtils.rhsType({ _type: "DropdownQuestion" }, "present"), null)
-      assert.equal(conditionUtils.rhsType({ _type: "DropdownQuestion" }, "is"), "choice")
-      assert.equal(conditionUtils.rhsType({ _type: "DropdownQuestion" }, "isoneof"), "choices")
-      return assert.equal(conditionUtils.rhsType({ _type: "DropdownQuestion" }, "isntoneof"), "choices")
+      assert.equal(conditionUtils.getRhsType({ _type: "DropdownQuestion" }, "present"), null)
+      assert.equal(conditionUtils.getRhsType({ _type: "DropdownQuestion" }, "is"), "choice")
+      assert.equal(conditionUtils.getRhsType({ _type: "DropdownQuestion" }, "isoneof"), "choices")
+      return assert.equal(conditionUtils.getRhsType({ _type: "DropdownQuestion" }, "isntoneof"), "choices")
     })
 
     it("is correct for DropdownColumnQuestion", function () {
-      assert.equal(conditionUtils.rhsType({ _type: "DropdownColumnQuestion" }, "present"), null)
-      assert.equal(conditionUtils.rhsType({ _type: "DropdownColumnQuestion" }, "is"), "choice")
-      assert.equal(conditionUtils.rhsType({ _type: "DropdownColumnQuestion" }, "isoneof"), "choices")
-      return assert.equal(conditionUtils.rhsType({ _type: "DropdownColumnQuestion" }, "isntoneof"), "choices")
+      assert.equal(conditionUtils.getRhsType({ _type: "DropdownColumnQuestion" }, "present"), null)
+      assert.equal(conditionUtils.getRhsType({ _type: "DropdownColumnQuestion" }, "is"), "choice")
+      assert.equal(conditionUtils.getRhsType({ _type: "DropdownColumnQuestion" }, "isoneof"), "choices")
+      return assert.equal(conditionUtils.getRhsType({ _type: "DropdownColumnQuestion" }, "isntoneof"), "choices")
     })
 
     return it("is correct for MulticheckQuestion", function () {
-      assert.equal(conditionUtils.rhsType({ _type: "MulticheckQuestion" }, "present"), null)
-      return assert.equal(conditionUtils.rhsType({ _type: "MulticheckQuestion" }, "includes"), "choice")
+      assert.equal(conditionUtils.getRhsType({ _type: "MulticheckQuestion" }, "present"), null)
+      return assert.equal(conditionUtils.getRhsType({ _type: "MulticheckQuestion" }, "includes"), "choice")
     })
   })
 

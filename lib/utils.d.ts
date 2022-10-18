@@ -8,6 +8,6 @@ export declare function formatRelativeLocation(relLoc: any, T: any): string;
 /** Calculates the relative strength of a GPS signal into "none", "poor", "fair", "good" or "excellent" */
 export declare function calculateGPSStrength(pos?: GeolocationPosition | null): PositionStrength;
 export declare let formatGPSStrength: (pos: any, T: any) => {
-    class: string | undefined;
+    class: string;
     text: any;
 };

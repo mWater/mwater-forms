@@ -5,6 +5,8 @@ import ResponseRow from "./ResponseRow";
 export declare const CalculationsDisplayComponent: (props: {
     formDesign: FormDesign;
     locale: string;
+    /** Localizer to use */
+    T: any;
     schema: Schema;
     responseRow: ResponseRow;
 }) => JSX.Element;
