@@ -1,7 +1,7 @@
 import _ from "lodash"
 import React from "react"
 import moment, { Moment } from "moment"
-import { DateTime, TempusDominus } from "@eonasdan/tempus-dominus"
+import { DateTime, Namespace, TempusDominus } from "@eonasdan/tempus-dominus"
 
 import "@eonasdan/tempus-dominus/dist/css/tempus-dominus.css"
 
@@ -112,7 +112,7 @@ export default class DateTimePickerComponent extends React.Component<DateTimePic
         this.control.dates.setFromInput(this.props.date.format(format), 0)
       }
 
-      this.control.subscribe("change", e => {
+      this.control.subscribe(Namespace.events.change, e => {
         this.props.onChange(e.date ? moment(e.date) : null)
       })
     }
