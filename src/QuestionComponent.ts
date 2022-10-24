@@ -457,7 +457,6 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           onValueChange: this.handleValueChange,
           onNextOrComments: this.handleNextOrComments
         })
-        break
 
       case "NumberQuestion":
         return R(NumberAnswerComponent, {
@@ -469,7 +468,6 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           decimal: this.props.question.decimal,
           onNextOrComments: this.handleNextOrComments
         })
-        break
 
       case "DropdownQuestion":
         return R(DropdownAnswerComponent, {
@@ -483,7 +481,6 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           schema: this.props.schema,
           responseRow: this.props.responseRow
         })
-        break
 
       case "LikertQuestion":
         return R(LikertAnswerComponent, {
@@ -496,7 +493,6 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           data: this.props.data,
           onAnswerChange: this.handleAnswerChange
         })
-        break
 
       case "RadioQuestion":
         return R(RadioAnswerComponent, {
@@ -511,7 +507,6 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           schema: this.props.schema,
           responseRow: this.props.responseRow
         })
-        break
 
       case "MulticheckQuestion":
         return R(MulticheckAnswerComponent, {
@@ -525,7 +520,6 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           schema: this.props.schema,
           responseRow: this.props.responseRow
         })
-        break
 
       case "DateQuestion":
         return R(DateAnswerComponent, {
@@ -537,7 +531,6 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           format: this.props.question.format,
           onNextOrComments: this.handleNextOrComments
         })
-        break
 
       case "UnitsQuestion":
         return R(UnitsAnswerComponent, {
@@ -552,12 +545,10 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           decimal: this.props.question.decimal,
           onNextOrComments: this.handleNextOrComments
         })
-        break
 
       case "CheckQuestion":
         // Look at renderPrompt special case
         return null
-        break
 
       case "LocationQuestion":
         return R(LocationAnswerComponent, {
@@ -569,7 +560,6 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           value: answer.value,
           onValueChange: this.handleValueChange
         })
-        break
 
       case "ImageQuestion":
         return R(ImageAnswerComponent, {
@@ -582,7 +572,6 @@ export default class QuestionComponent extends React.Component<QuestionComponent
             ? formUtils.localizeString(this.props.question.consentPrompt, this.context.locale)
             : undefined
         })
-        break
 
       case "ImagesQuestion":
         return R(ImagesAnswerComponent, {
@@ -595,7 +584,6 @@ export default class QuestionComponent extends React.Component<QuestionComponent
             ? formUtils.localizeString(this.props.question.consentPrompt, this.context.locale)
             : undefined
         })
-        break
 
       case "TextListQuestion":
         return R(TextListAnswerComponent, {
@@ -606,7 +594,6 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           onValueChange: this.handleValueChange,
           onNextOrComments: this.handleNextOrComments
         })
-        break
 
       case "SiteQuestion":
         return R(SiteAnswerComponent, {
@@ -618,7 +605,6 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           siteTypes: this.props.question.siteTypes,
           T: this.context.T
         })
-        break
 
       case "BarcodeQuestion":
         return R(BarcodeAnswerComponent, {
@@ -628,7 +614,6 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           value: answer.value as string | undefined,
           onValueChange: this.handleValueChange
         })
-        break
 
       case "EntityQuestion":
         return R(EntityAnswerComponent, {
@@ -639,7 +624,6 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           entityType: this.props.question.entityType,
           onValueChange: this.handleValueChange
         })
-        break
 
       case "AdminRegionQuestion":
         return R("div", { className: "alert alert-warning" },
@@ -655,7 +639,6 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           onValueChange: this.handleValueChange,
           T: this.context.T
         })
-        break
 
       case "MatrixQuestion":
         return R(MatrixAnswerComponent, {
@@ -671,7 +654,6 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           responseRow: this.props.responseRow,
           schema: this.props.schema
         })
-        break
 
       case "AquagenxCBTQuestion":
         return R(AquagenxCBTAnswerComponent, {
@@ -682,7 +664,6 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           onValueChange: this.handleValueChange,
           questionId: this.props.question._id
         })
-        break
 
       case "CascadingListQuestion":
         return R(CascadingListAnswerComponent, {
@@ -698,7 +679,6 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           locale: this.context.locale,
           alternateSelected: this.getAnswer().alternate != null
         })
-        break
 
       case "CascadingRefQuestion":
         return R(CascadingRefAnswerComponent, {
@@ -714,7 +694,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           locale: this.context.locale,
           alternateSelected: this.getAnswer().alternate != null
         })
-        break
+
       case "RankedQuestion":
         return R(RankedQuestion, {
           choices: this.props.question.choices,
@@ -726,7 +706,6 @@ export default class QuestionComponent extends React.Component<QuestionComponent
       default:
         return `Unknown type ${(this.props.question as any)._type}`
     }
-    return null
   }
 
   render() {
