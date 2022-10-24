@@ -33,6 +33,7 @@ export type AnswerType =
   | "cascading_list"
   | "cascading_ref"
   | "ranked"
+  | "unknown" // For question types that are unknown to this version of forms
 
 /** Create ~ 128-bit uid without dashes */
 export function createUid() {
@@ -495,7 +496,7 @@ export function getAnswerType(q: QuestionBase | MatrixColumnQuestion): AnswerTyp
     case "RankedQuestion":
       return "ranked"
     default:
-      throw new Error(`Unknown question type ${q._type}`)
+      return "unknown"
   }
 }
 
