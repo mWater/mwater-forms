@@ -6,6 +6,8 @@ import TextExprsComponent from "./TextExprsComponent";
 import { Schema } from "mwater-expressions";
 import { FormDesign, Question, Item, MatrixColumnQuestion } from "./formDesign";
 import { Answer, ResponseData } from "./response";
+import { FormContext } from "./formContext";
+import { LocalizeString } from "ez-localize";
 export interface ResponseAnswersComponentProps {
     formDesign: FormDesign;
     data: ResponseData;
@@ -18,11 +20,11 @@ export interface ResponseAnswersComponentProps {
     /** Defaults to english */
     locale?: string;
     /** Localizer to use */
-    T: any;
+    T: LocalizeString;
     /** Form context to use */
-    formCtx: any;
+    formCtx: FormContext;
     /** Previous data */
-    prevData?: any;
+    prevData?: ResponseData;
     showPrevAnswers?: boolean;
     highlightChanges?: boolean;
     hideUnchangedAnswers?: boolean;
@@ -38,11 +40,11 @@ interface ResponseAnswersComponentState {
     visibilityStructure?: VisibilityStructure;
 }
 export default class ResponseAnswersComponent extends AsyncLoadComponent<ResponseAnswersComponentProps, ResponseAnswersComponentState> {
-    isLoadNeeded(newProps: any, oldProps: any): boolean;
+    isLoadNeeded(newProps: ResponseAnswersComponentProps, oldProps: ResponseAnswersComponentProps): boolean;
     load(props: ResponseAnswersComponentProps, prevProps: ResponseAnswersComponentProps, callback: any): void;
-    handleLocationClick(location: any): any;
+    handleLocationClick(location: any): void;
     renderLocation(location: any): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement> | null;
-    renderAnswer(q: Question | MatrixColumnQuestion, answer: Answer | null): any;
+    renderAnswer(q: Question | MatrixColumnQuestion, answer: Answer | null): React.ReactNode;
     renderLikertAnswer(q: Question | MatrixColumnQuestion, answer: Answer, prevAnswer: any): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>[] | null;
     renderQuestion(q: Question | MatrixColumnQuestion, dataId: string): (React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>[] | React.ReactElement<{
         key: string;

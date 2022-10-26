@@ -1016,6 +1016,31 @@ describe("FormSchemaBuilder addForm", function () {
       )
     })
 
+    it("asset", function () {
+      this.testQuestion(
+        {
+          _type: "AssetQuestion",
+          assetSystemId: 2,
+        },
+        [
+          {
+            id: "data:questionid:value",
+            type: "join",
+            join: {
+              type: "n-1",
+              toTable: "assets:2",
+              fromColumn: {
+                type: "op",
+                op: "#>>",
+                exprs: [{ type: "field", tableAlias: "{alias}", column: "data" }, "{questionid,value}"]
+              },
+              toColumn: "_id"
+            }
+          }
+        ]
+      )
+    })
+
     it("units integer with multiple", function () {
       return this.testQuestion(
         {

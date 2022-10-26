@@ -62,6 +62,13 @@ export interface FormContext {
     getCustomTableRows: (tableId: string) => Promise<Row[]>;
     /** Get a specific row of a custom table */
     getCustomTableRow: (tableId: string, rowId: string) => Promise<Row | null>;
+    /** Select an asset with optional filter
+     * @param assetSystemId id of the asset system
+     * @param filter MongoDB-style filter on assets
+     */
+    selectAsset?: (assetSystemId: number, filter: any) => Promise<string | null>;
+    /** Renders an asset as a React element for summary (small box) */
+    renderAssetSummaryView?: (assetSystemId: number, assetId: string) => ReactNode;
 }
 /** Used by ImageQuestion and ImagesQuestion */
 export interface ImageManager {

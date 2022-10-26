@@ -1,5 +1,5 @@
 import LocationFinder from "./LocationFinder"
-import { ReactNode } from "react"
+import { createContext, ReactNode } from "react"
 import { Row } from "mwater-expressions"
 
 export interface StickyStorage {
@@ -79,6 +79,15 @@ export interface FormContext {
   /** Get a specific row of a custom table */
   getCustomTableRow: (tableId: string, rowId: string) => Promise<Row | null>
 
+  /** Select an asset with optional filter 
+   * @param assetSystemId id of the asset system
+   * @param filter MongoDB-style filter on assets
+   */
+  selectAsset?: (assetSystemId: number, filter: any) => Promise<string | null>
+
+  /** Renders an asset as a React element for summary (small box) */
+  renderAssetSummaryView?: (assetSystemId: number, assetId: string) => ReactNode
+
   /** DEPRECATED */
   //getUniqueCode()
   //returns a unique mWater code (e.g. 10007) if one is available
@@ -114,6 +123,8 @@ export interface FormContext {
   // Gets id for an admin region by lat/lng
   // Callback (error, id)
 }
+
+// export const ReactFormContext = createContext<FormContext | undefined>(undefined)
 
 /** Used by ImageQuestion and ImagesQuestion */
 export interface ImageManager {

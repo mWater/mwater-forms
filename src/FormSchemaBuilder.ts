@@ -8,7 +8,7 @@ import { healthRiskEnum } from "./answers/aquagenxCBTUtils"
 import { Form } from "./form"
 import { JsonQLExpr } from "jsonql"
 import { BasicItem, Choice, IndicatorCalculation, Unit, Section as FormSection, Question } from "."
-import { CascadingListQuestion, CascadingRefQuestion, DateQuestion, DropdownQuestion, EntityQuestion, FormDesign, Item, LikertQuestion, LocationQuestion, MatrixQuestion, MulticheckQuestion, QuestionBase, RankedQuestion, SiteQuestion, UnitsQuestion } from "./formDesign"
+import { AssetQuestion, CascadingListQuestion, CascadingRefQuestion, DateQuestion, DropdownQuestion, EntityQuestion, FormDesign, Item, LikertQuestion, LocationQuestion, MatrixQuestion, MulticheckQuestion, QuestionBase, RankedQuestion, SiteQuestion, UnitsQuestion } from "./formDesign"
 
 /** Adds a form to a mwater-expressions schema */
 export default class FormSchemaBuilder {
@@ -1899,6 +1899,27 @@ export default class FormSchemaBuilder {
           addColumn(section)
 
           break
+
+        case "asset":
+          column = {
+            id: `${dataColumn}:${item._id}:value`,
+            type: "join",
+            name: item.text,
+            code,
+            join: {
+              type: "n-1",
+              toTable: `assets:${(item as AssetQuestion).assetSystemId}`,
+              fromColumn: {
+                type: "op",
+                op: "#>>",
+                exprs: [{ type: "field", tableAlias: "{alias}", column: dataColumn }, `{${item._id},value}`]
+              },
+              toColumn: "_id"
+            }
+          }
+
+          addColumn(column)
+          break
       }
 
       // Add specify
@@ -2206,27 +2227,6 @@ function appendStr(str: any, suffix: any): LocalizedString {
       }
     }
   }
-  return output
-}
-
-// Map a tree that consists of items with optional 'contents' array. null means to discard item
-function mapTree(tree: any, func: any): any {
-  if (!tree) {
-    return tree
-  }
-
-  if (_.isArray(tree)) {
-    return _.map(tree, (item) => mapTree(item, func))
-  }
-
-  // Map item
-  const output = func(tree)
-
-  // Map contents
-  if (tree.contents) {
-    output.contents = _.compact(_.map(tree.contents, (item) => func(item)))
-  }
-
   return output
 }
 

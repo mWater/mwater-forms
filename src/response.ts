@@ -278,6 +278,7 @@ export type AnswerValue =
   | CascadingListAnswerValue
   | CascadingRefAnswerValue
   | RankedAnswerValue
+  | AssetAnswerValue
 
 export type TextAnswerValue = string
 
@@ -393,3 +394,5 @@ export type CascadingRefAnswerValue = string
 export type RankedAnswerValue = {
   [choiceId: string]: number
 }
+
+export type AssetAnswerValue = string

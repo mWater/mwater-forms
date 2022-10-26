@@ -1,4 +1,4 @@
-import React from "react"
+import React, { ReactNode } from "react"
 import ReactDOM from "react-dom"
 const R = React.createElement
 
@@ -112,8 +112,21 @@ const formCtx = {
 
   displayMap: (location: any, onSet: any) => {
     return alert("Map")
-  }
-} as unknown as FormContext
+  },
+
+  /** Select an asset with optional filter 
+   * @param assetSystemId id of the asset system
+   * @param filter MongoDB-style filter on assets
+   */
+   selectAsset: (assetSystemId: number, filter: any): Promise<string | null> => {
+      return Promise.resolve("12345")
+   },
+
+   /** Renders an asset as a React element for summary (small box) */
+   renderAssetSummaryView: (assetSystemId: number, assetId: string): ReactNode => {
+     return <div>{`${assetSystemId}:${assetId}`}</div>
+   }
+ } as unknown as FormContext
 
 const groupDesign = {
   _id: "761114a3940e4063951387155e112486",

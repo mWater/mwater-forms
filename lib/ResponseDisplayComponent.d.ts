@@ -1,6 +1,6 @@
 /// <reference types="jquery" />
 import React from "react";
-import ezlocalize from "ez-localize";
+import ezlocalize, { LocalizeString } from "ez-localize";
 import ModalPopupComponent from "react-library/lib/ModalPopupComponent";
 import { Form } from "./form";
 import { Response } from "./response";
@@ -21,11 +21,11 @@ export interface ResponseDisplayComponentProps {
     forceCompleteHistory?: boolean;
 }
 interface ResponseDisplayComponentState {
-    T: any;
+    T: LocalizeString;
     eventsUsernames: any;
     loadingUsernames: any;
     showCompleteHistory: any;
-    history: any;
+    history?: Response[];
     showArchive: any;
     showPrevAnswers: any;
     loadingHistory: boolean;

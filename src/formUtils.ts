@@ -33,6 +33,7 @@ export type AnswerType =
   | "cascading_list"
   | "cascading_ref"
   | "ranked"
+  | "asset"
   | "unknown" // For question types that are unknown to this version of forms
 
 /** Create ~ 128-bit uid without dashes */
@@ -441,7 +442,7 @@ export function changeQuestionType(question: any, newType: any) {
   return question
 }
 
-// Gets type of the answer: text, number, choice, choices, date, units, boolean, location, image, images, texts, site, entity, admin_region, items_choices, matrix, aquagenx_cbt, cascading_list, cascading_ref
+// Gets type of the answer: text, number, choice, choices, date, units, boolean, location, image, images, texts, site, entity, admin_region, items_choices, matrix, aquagenx_cbt, cascading_list, cascading_ref, asset
 export function getAnswerType(q: QuestionBase | MatrixColumnQuestion): AnswerType {
   switch (q._type) {
     case "TextQuestion":
@@ -495,6 +496,8 @@ export function getAnswerType(q: QuestionBase | MatrixColumnQuestion): AnswerTyp
       return "cascading_ref"
     case "RankedQuestion":
       return "ranked"
+    case "AssetQuestion":
+      return "asset"
     default:
       return "unknown"
   }

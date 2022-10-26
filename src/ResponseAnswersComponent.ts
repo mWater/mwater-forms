@@ -16,9 +16,11 @@ import { CascadingListDisplayComponent } from "./answers/CascadingListDisplayCom
 import { CascadingRefDisplayComponent } from "./answers/CascadingRefDisplayComponent"
 import { CalculationsDisplayComponent } from "./CalculationsDisplayComponent"
 import { Schema } from "mwater-expressions"
-import { FormDesign, Choice, Question, DropdownQuestion, MulticheckQuestion, UnitsQuestion, SiteQuestion, EntityQuestion, LikertQuestion, RankedQuestion, Item, RosterMatrix, RosterGroup, BasicItem, MatrixColumn, MatrixColumnQuestion } from "./formDesign"
-import { Answer, RankedAnswerValue, ResponseData, RosterData, RosterEntry, UnitsAnswerValue } from "./response"
+import { FormDesign, Choice, Question, DropdownQuestion, MulticheckQuestion, UnitsQuestion, SiteQuestion, EntityQuestion, LikertQuestion, RankedQuestion, Item, RosterMatrix, RosterGroup, BasicItem, MatrixColumn, MatrixColumnQuestion, AssetQuestion } from "./formDesign"
+import { Answer, AssetAnswerValue, MatrixAnswerValue, RankedAnswerValue, ResponseData, RosterData, RosterEntry, UnitsAnswerValue } from "./response"
 import { Image } from "./RotationAwareImageComponent"
+import { FormContext } from "./formContext"
+import { LocalizeString } from "ez-localize"
 
 export interface ResponseAnswersComponentProps {
   formDesign: FormDesign
@@ -32,11 +34,11 @@ export interface ResponseAnswersComponentProps {
   /** Defaults to english */
   locale?: string
   /** Localizer to use */
-  T: any
+  T: LocalizeString
   /** Form context to use */
-  formCtx: any
+  formCtx: FormContext
   /** Previous data */
-  prevData?: any
+  prevData?: ResponseData
   showPrevAnswers?: boolean
   highlightChanges?: boolean
   hideUnchangedAnswers?: boolean
@@ -59,7 +61,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
   ResponseAnswersComponentState
 > {
   // Check if form design or data are different
-  isLoadNeeded(newProps: any, oldProps: any) {
+  isLoadNeeded(newProps: ResponseAnswersComponentProps, oldProps: ResponseAnswersComponentProps) {
     return !_.isEqual(newProps.formDesign, oldProps.formDesign) || !_.isEqual(newProps.data, oldProps.data)
   }
 
@@ -332,10 +334,16 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
           schema: this.props.schema,
           getCustomTableRow: this.props.formCtx.getCustomTableRow
         })
+
       case "ranked":
         const sortedChoices = _.sortBy((q as RankedQuestion).choices, (item: Choice) => (answer.value as RankedAnswerValue)[item.id] ?? 0)
         const items = sortedChoices.map((choice: Choice, index: number) => R('li', {key: index}, formUtils.localizeString(choice.label, this.props.locale)))
         return R('ol', {}, items)
+
+      case "asset":
+        return this.props.formCtx.renderAssetSummaryView ?
+          this.props.formCtx.renderAssetSummaryView((q as AssetQuestion).assetSystemId, answer.value as AssetAnswerValue)
+        : null
     }
   }
 
@@ -426,12 +434,13 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
 
     if (this.props.prevData) {
       if (dataIds.length === 1) {
-        prevAnswer = this.props.prevData.data[dataId]
+        prevAnswer = this.props.prevData[dataId]
       } else {
-        let prevRosterData = this.props.prevData.data[dataIds[0]]
+        let prevRosterData = this.props.prevData[dataIds[0]]
         if (prevRosterData != null) {
-          if (prevRosterData.value != null) {
-            prevRosterData = prevRosterData.value
+          // TODO Why is this here? What value type is this?
+          if ((prevRosterData as any).value != null) {
+            prevRosterData = (prevRosterData as any).value
             prevAnswer = prevRosterData[dataIds[1]]?.[dataIds[2]]
           } else {
             prevAnswer = prevRosterData[dataIds[1]]?.data[dataIds[2]]
@@ -820,7 +829,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
               formDesign: this.props.formDesign,
               schema: this.props.schema,
               responseRow: this.state.responseRow,
-              locale: this.props.locale,
+              locale: this.props.locale || "en",
               T: this.props.T,
             })
           )

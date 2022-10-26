@@ -39,6 +39,8 @@ declare const _default: {
                 alternates?: undefined;
                 sticky?: undefined;
                 format?: undefined;
+                assetSystemId?: undefined;
+                assetTypes?: undefined;
                 textExprs?: undefined;
                 decimal?: undefined;
                 commentsField?: undefined;
@@ -79,6 +81,8 @@ declare const _default: {
                 alternates?: undefined;
                 sticky?: undefined;
                 format?: undefined;
+                assetSystemId?: undefined;
+                assetTypes?: undefined;
                 textExprs?: undefined;
                 decimal?: undefined;
                 commentsField?: undefined;
@@ -122,6 +126,8 @@ declare const _default: {
                 alternates?: undefined;
                 sticky?: undefined;
                 format?: undefined;
+                assetSystemId?: undefined;
+                assetTypes?: undefined;
                 textExprs?: undefined;
                 decimal?: undefined;
                 commentsField?: undefined;
@@ -188,6 +194,8 @@ declare const _default: {
                 alternates?: undefined;
                 sticky?: undefined;
                 format?: undefined;
+                assetSystemId?: undefined;
+                assetTypes?: undefined;
                 textExprs?: undefined;
                 decimal?: undefined;
                 commentsField?: undefined;
@@ -234,6 +242,8 @@ declare const _default: {
                 items?: undefined;
                 sticky?: undefined;
                 format?: undefined;
+                assetSystemId?: undefined;
+                assetTypes?: undefined;
                 textExprs?: undefined;
                 decimal?: undefined;
                 commentsField?: undefined;
@@ -298,6 +308,8 @@ declare const _default: {
                 code?: undefined;
                 alternates?: undefined;
                 format?: undefined;
+                assetSystemId?: undefined;
+                assetTypes?: undefined;
                 textExprs?: undefined;
                 decimal?: undefined;
                 commentsField?: undefined;
@@ -352,6 +364,8 @@ declare const _default: {
                 items?: undefined;
                 recordLocation?: undefined;
                 code?: undefined;
+                assetSystemId?: undefined;
+                assetTypes?: undefined;
                 textExprs?: undefined;
                 decimal?: undefined;
                 commentsField?: undefined;
@@ -392,6 +406,50 @@ declare const _default: {
                 recordLocation?: undefined;
                 code?: undefined;
                 alternates?: undefined;
+                assetSystemId?: undefined;
+                assetTypes?: undefined;
+                textExprs?: undefined;
+                decimal?: undefined;
+                commentsField?: undefined;
+                units?: undefined;
+                defaultUnits?: undefined;
+                unitsPosition?: undefined;
+                entityType?: undefined;
+                _basedOn?: undefined;
+                displayMode?: undefined;
+                help?: undefined;
+                name?: undefined;
+                allowAdd?: undefined;
+                contents?: undefined;
+                rosterId?: undefined;
+                entryTitle?: undefined;
+                entryTitleExprs?: undefined;
+                allowRemove?: undefined;
+                rows?: undefined;
+                columns?: undefined;
+            } | {
+                _id: string;
+                text: {
+                    en: string;
+                    _base: string;
+                };
+                _type: string;
+                assetSystemId: number;
+                assetTypes: string[];
+                required: boolean;
+                conditions: never[];
+                validations: never[];
+                randomAskProbability?: undefined;
+                duration?: undefined;
+                hint?: undefined;
+                label?: undefined;
+                choices?: undefined;
+                items?: undefined;
+                recordLocation?: undefined;
+                code?: undefined;
+                alternates?: undefined;
+                sticky?: undefined;
+                format?: undefined;
                 textExprs?: undefined;
                 decimal?: undefined;
                 commentsField?: undefined;
@@ -446,6 +504,8 @@ declare const _default: {
                 code?: undefined;
                 sticky?: undefined;
                 format?: undefined;
+                assetSystemId?: undefined;
+                assetTypes?: undefined;
                 commentsField?: undefined;
                 units?: undefined;
                 defaultUnits?: undefined;
@@ -514,6 +574,8 @@ declare const _default: {
                 code?: undefined;
                 sticky?: undefined;
                 format?: undefined;
+                assetSystemId?: undefined;
+                assetTypes?: undefined;
                 textExprs?: undefined;
                 decimal?: undefined;
                 commentsField?: undefined;
@@ -577,6 +639,8 @@ declare const _default: {
                 code?: undefined;
                 sticky?: undefined;
                 format?: undefined;
+                assetSystemId?: undefined;
+                assetTypes?: undefined;
                 textExprs?: undefined;
                 decimal?: undefined;
                 units?: undefined;
@@ -619,6 +683,8 @@ declare const _default: {
                 recordLocation?: undefined;
                 code?: undefined;
                 sticky?: undefined;
+                assetSystemId?: undefined;
+                assetTypes?: undefined;
                 textExprs?: undefined;
                 decimal?: undefined;
                 commentsField?: undefined;
@@ -672,6 +738,8 @@ declare const _default: {
                 code?: undefined;
                 sticky?: undefined;
                 format?: undefined;
+                assetSystemId?: undefined;
+                assetTypes?: undefined;
                 textExprs?: undefined;
                 commentsField?: undefined;
                 entityType?: undefined;
@@ -711,6 +779,8 @@ declare const _default: {
                 code?: undefined;
                 sticky?: undefined;
                 format?: undefined;
+                assetSystemId?: undefined;
+                assetTypes?: undefined;
                 textExprs?: undefined;
                 decimal?: undefined;
                 commentsField?: undefined;
@@ -751,6 +821,8 @@ declare const _default: {
                 code?: undefined;
                 alternates?: undefined;
                 sticky?: undefined;
+                assetSystemId?: undefined;
+                assetTypes?: undefined;
                 textExprs?: undefined;
                 decimal?: undefined;
                 commentsField?: undefined;
@@ -795,6 +867,8 @@ declare const _default: {
                 code?: undefined;
                 sticky?: undefined;
                 format?: undefined;
+                assetSystemId?: undefined;
+                assetTypes?: undefined;
                 textExprs?: undefined;
                 decimal?: undefined;
                 commentsField?: undefined;
@@ -841,6 +915,8 @@ declare const _default: {
                 alternates?: undefined;
                 sticky?: undefined;
                 format?: undefined;
+                assetSystemId?: undefined;
+                assetTypes?: undefined;
                 textExprs?: undefined;
                 decimal?: undefined;
                 commentsField?: undefined;
@@ -894,6 +970,8 @@ declare const _default: {
                 alternates?: undefined;
                 sticky?: undefined;
                 format?: undefined;
+                assetSystemId?: undefined;
+                assetTypes?: undefined;
                 textExprs?: undefined;
                 commentsField?: undefined;
                 units?: undefined;
@@ -954,6 +1032,8 @@ declare const _default: {
                 alternates?: undefined;
                 sticky?: undefined;
                 format?: undefined;
+                assetSystemId?: undefined;
+                assetTypes?: undefined;
                 textExprs?: undefined;
                 decimal?: undefined;
                 commentsField?: undefined;
@@ -1016,6 +1096,8 @@ declare const _default: {
                 alternates?: undefined;
                 sticky?: undefined;
                 format?: undefined;
+                assetSystemId?: undefined;
+                assetTypes?: undefined;
                 textExprs?: undefined;
                 decimal?: undefined;
                 commentsField?: undefined;
@@ -1062,6 +1144,8 @@ declare const _default: {
                 code?: undefined;
                 alternates?: undefined;
                 sticky?: undefined;
+                assetSystemId?: undefined;
+                assetTypes?: undefined;
                 textExprs?: undefined;
                 decimal?: undefined;
                 units?: undefined;
@@ -1101,6 +1185,8 @@ declare const _default: {
                 code?: undefined;
                 alternates?: undefined;
                 sticky?: undefined;
+                assetSystemId?: undefined;
+                assetTypes?: undefined;
                 textExprs?: undefined;
                 decimal?: undefined;
                 units?: undefined;
@@ -1163,6 +1249,8 @@ declare const _default: {
                 alternates?: undefined;
                 sticky?: undefined;
                 format?: undefined;
+                assetSystemId?: undefined;
+                assetTypes?: undefined;
                 textExprs?: undefined;
                 decimal?: undefined;
                 commentsField?: undefined;
@@ -1227,6 +1315,8 @@ declare const _default: {
                 alternates?: undefined;
                 sticky?: undefined;
                 format?: undefined;
+                assetSystemId?: undefined;
+                assetTypes?: undefined;
                 textExprs?: undefined;
                 decimal?: undefined;
                 commentsField?: undefined;
@@ -1349,6 +1439,8 @@ declare const _default: {
                 alternates?: undefined;
                 sticky?: undefined;
                 format?: undefined;
+                assetSystemId?: undefined;
+                assetTypes?: undefined;
                 textExprs?: undefined;
                 decimal?: undefined;
                 commentsField?: undefined;
@@ -1406,6 +1498,8 @@ declare const _default: {
                 code?: undefined;
                 sticky?: undefined;
                 format?: undefined;
+                assetSystemId?: undefined;
+                assetTypes?: undefined;
                 textExprs?: undefined;
                 decimal?: undefined;
                 commentsField?: undefined;
@@ -1461,6 +1555,8 @@ declare const _default: {
                 alternates?: undefined;
                 sticky?: undefined;
                 format?: undefined;
+                assetSystemId?: undefined;
+                assetTypes?: undefined;
                 textExprs?: undefined;
                 decimal?: undefined;
                 commentsField?: undefined;

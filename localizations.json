@@ -689,6 +689,22 @@
     {
       "_base": "en",
       "en": "Change history"
+    },
+    {
+      "_base": "en",
+      "en": "Asset questions not supported"
+    },
+    {
+      "_base": "en",
+      "en": "Error selecting asset: {0}"
+    },
+    {
+      "_base": "en",
+      "en": "Select Asset"
+    },
+    {
+      "_base": "en",
+      "en": "Change"
     }
   ]
 }

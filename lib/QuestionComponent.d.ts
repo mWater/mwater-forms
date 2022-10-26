@@ -32,6 +32,8 @@ export default class QuestionComponent extends React.Component<QuestionComponent
         T: PropTypes.Validator<(...args: any[]) => any>;
         disableConfidentialFields: PropTypes.Requireable<boolean>;
         getCustomTableRows: PropTypes.Validator<(...args: any[]) => any>;
+        selectAsset: PropTypes.Requireable<(...args: any[]) => any>;
+        renderAssetSummaryView: PropTypes.Requireable<(...args: any[]) => any>;
     };
     comments: HTMLTextAreaElement | null;
     answer: any;
@@ -80,6 +82,13 @@ export default class QuestionComponent extends React.Component<QuestionComponent
         answer: RankedAnswerValue;
         locale: string;
         onValueChange: (value?: any) => void;
+    }> | React.FunctionComponentElement<{
+        question: import("./formDesign").AssetQuestion;
+        answer: string | null | undefined;
+        onValueChange: (answer: string | null) => void;
+        T: import("ez-localize").LocalizeString;
+        selectAsset: (assetSystemId: number, filter: any) => Promise<string | null>;
+        renderAssetSummaryView: (assetSystemId: number, assetId: string) => React.ReactNode;
     }> | null;
     render(): React.DetailedReactHTMLElement<{
         className: string;

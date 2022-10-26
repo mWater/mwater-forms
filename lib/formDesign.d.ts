@@ -119,7 +119,7 @@ export interface QuestionBase {
     randomAskProbability?: number;
 }
 /** Question is all base question types. Does not include matrix columns */
-export declare type Question = TextQuestion | NumberQuestion | DropdownQuestion | RadioQuestion | MulticheckQuestion | DateQuestion | UnitsQuestion | CheckQuestion | LocationQuestion | ImageQuestion | ImagesQuestion | TextListQuestion | SiteQuestion | BarcodeQuestion | EntityQuestion | AdminRegionQuestion | StopwatchQuestion | MatrixQuestion | LikertQuestion | AquagenxCBTQuestion | CascadingListQuestion | CascadingRefQuestion | RankedQuestion;
+export declare type Question = TextQuestion | NumberQuestion | DropdownQuestion | RadioQuestion | MulticheckQuestion | DateQuestion | UnitsQuestion | CheckQuestion | LocationQuestion | ImageQuestion | ImagesQuestion | TextListQuestion | SiteQuestion | BarcodeQuestion | EntityQuestion | AdminRegionQuestion | StopwatchQuestion | MatrixQuestion | LikertQuestion | AquagenxCBTQuestion | CascadingListQuestion | CascadingRefQuestion | RankedQuestion | AssetQuestion;
 /** Instructional text item */
 export interface Instructions {
     _id: string;
@@ -633,5 +633,16 @@ export interface AdvancedValidation {
 export interface RankedQuestion extends QuestionBase {
     _type: "RankedQuestion";
     choices: Choices;
+    /** No validation available */
+    validations: [];
+}
+export interface AssetQuestion extends QuestionBase {
+    _type: "AssetQuestion";
+    /** Asset system that question is for. Only assets in that system can be chosen */
+    assetSystemId: number;
+    /** Restricts the asset type if present */
+    assetTypes?: string[];
+    /** No validation available */
+    validations: [];
 }
 export {};

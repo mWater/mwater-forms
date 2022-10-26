@@ -2,7 +2,7 @@ import { Item, FormDesign, Question, QuestionBase, SiteQuestion, Choice, MatrixC
 import { LocalizedString, Schema } from "mwater-expressions";
 import { EntityRef, ResponseData } from "./response";
 import ResponseRow from "./ResponseRow";
-export declare type AnswerType = "text" | "number" | "choice" | "choices" | "date" | "units" | "boolean" | "location" | "image" | "images" | "texts" | "site" | "entity" | "admin_region" | "items_choices" | "matrix" | "aquagenx_cbt" | "cascading_list" | "cascading_ref" | "ranked" | "unknown";
+export declare type AnswerType = "text" | "number" | "choice" | "choices" | "date" | "units" | "boolean" | "location" | "image" | "images" | "texts" | "site" | "entity" | "admin_region" | "items_choices" | "matrix" | "aquagenx_cbt" | "cascading_list" | "cascading_ref" | "ranked" | "asset" | "unknown";
 /** Create ~ 128-bit uid without dashes */
 export declare function createUid(): string;
 /** Create short unique id, with ~42 bits randomness to keep unique amoung a few choices */

@@ -4,13 +4,13 @@ import React from "react"
 const R = React.createElement
 import $ from "jquery"
 import moment from "moment"
-import ezlocalize from "ez-localize"
+import ezlocalize, { LocalizeString } from "ez-localize"
 import ResponseAnswersComponent from "./ResponseAnswersComponent"
 import ResponseArchivesComponent from "./ResponseArchivesComponent"
 import ModalPopupComponent from "react-library/lib/ModalPopupComponent"
 import * as formContextTypes from "./formContextTypes"
 import { Form } from "./form"
-import { Response } from "./response"
+import { Response, ResponseData } from "./response"
 import { Schema } from "mwater-expressions"
 import { FormContext } from "./formContext"
 
@@ -30,11 +30,11 @@ export interface ResponseDisplayComponentProps {
 }
 
 interface ResponseDisplayComponentState {
-  T: any
+  T: LocalizeString
   eventsUsernames: any
   loadingUsernames: any
   showCompleteHistory: any
-  history: any
+  history?: Response[]
   showArchive: any
   showPrevAnswers: any
   loadingHistory: boolean
@@ -58,7 +58,6 @@ export default class ResponseDisplayComponent extends React.Component<
       loadingUsernames: false,
       showCompleteHistory: this.props.forceCompleteHistory || false,
       T: this.createLocalizer(this.props.form.design, this.props.locale),
-      history: null,
       loadingHistory: false,
       showArchive: false,
       showPrevAnswers: false
@@ -95,7 +94,7 @@ export default class ResponseDisplayComponent extends React.Component<
         return this.setState({ loadingHistory: false, history: compactHistory })
       })
       .fail((xhr: any) => {
-        return this.setState({ loadingHistory: false, history: null })
+        return this.setState({ loadingHistory: false, history: undefined })
       })
   }
 
@@ -335,7 +334,7 @@ export default class ResponseDisplayComponent extends React.Component<
         locale: this.props.locale,
         T: this.state.T,
         formCtx: this.props.formCtx,
-        prevData: this.state.history ? _.last(this.state.history) : null,
+        prevData: this.state.history && this.state.history.length > 0 ? _.last(this.state.history).data : undefined,
         showPrevAnswers: this.state.history != null && this.state.showPrevAnswers,
         highlightChanges: this.state.showPrevAnswers,
         showChangedLink: this.state.history != null,

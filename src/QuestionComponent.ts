@@ -34,7 +34,8 @@ import RankedQuestion from "./answers/RankedQuestion"
 import ResponseRow from "./ResponseRow"
 import { Schema } from "mwater-expressions"
 import { Choice, Question } from "./formDesign"
-import { Answer, CascadingListAnswerValue, RankedAnswerValue, ResponseData } from "./response"
+import { Answer, AssetAnswerValue, CascadingListAnswerValue, RankedAnswerValue, ResponseData } from "./response"
+import { AssetAnswerComponent } from "./answers/AssetAnswerComponent"
 
 export interface QuestionComponentProps {
   /** Design of question. See schema */
@@ -72,7 +73,9 @@ export default class QuestionComponent extends React.Component<QuestionComponent
     locationFinder: PropTypes.object,
     T: PropTypes.func.isRequired, // Localizer to use
     disableConfidentialFields: PropTypes.bool,
-    getCustomTableRows: PropTypes.func.isRequired
+    getCustomTableRows: PropTypes.func.isRequired,
+    selectAsset: PropTypes.func,
+    renderAssetSummaryView: PropTypes.func
   }
   comments: HTMLTextAreaElement | null
   answer: any
@@ -703,6 +706,23 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           onValueChange: this.handleValueChange
         })
 
+      case "AssetQuestion":
+        if (this.context.selectAsset && this.context.renderAssetSummaryView) {
+          return R(AssetAnswerComponent, {
+            question: this.props.question,
+            answer: answer.value as AssetAnswerValue,
+            onValueChange: this.handleValueChange,
+            selectAsset: this.context.selectAsset!,
+            renderAssetSummaryView: this.context.renderAssetSummaryView!,
+            T: this.context.T
+          })
+        }
+        else {
+          return R("div", { className: "text-warning "},
+            this.context.T("Asset questions not supported")
+          )
+        }
+  
       default:
         return `Unknown type ${(this.props.question as any)._type}`
     }

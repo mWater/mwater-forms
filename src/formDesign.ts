@@ -215,6 +215,7 @@ export type Question =
   | CascadingListQuestion
   | CascadingRefQuestion
   | RankedQuestion
+  | AssetQuestion
 
 /** Instructional text item */
 export interface Instructions {
@@ -963,4 +964,20 @@ export interface RankedQuestion extends QuestionBase {
   _type: "RankedQuestion"
   
   choices: Choices
+
+  /** No validation available */
+  validations: []
+}
+
+export interface AssetQuestion extends QuestionBase {
+  _type: "AssetQuestion"
+
+  /** Asset system that question is for. Only assets in that system can be chosen */
+  assetSystemId: number
+
+  /** Restricts the asset type if present */
+  assetTypes?: string[]
+
+  /** No validation available */
+  validations: []
 }
