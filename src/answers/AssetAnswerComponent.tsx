@@ -23,8 +23,8 @@ export function AssetAnswerComponent(props: {
 
   function handleSelect() {
     const filter: any = {}
-    if (props.question.assetTypes) {
-      filter.type = { $in: [props.question.assetTypes] }
+    if (props.question.assetTypes && props.question.assetTypes.length > 0) {
+      filter.type = { $in: props.question.assetTypes }
     }
 
     props.selectAsset(props.question.assetSystemId, filter).then(assetId => {
