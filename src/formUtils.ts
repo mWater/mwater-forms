@@ -414,6 +414,9 @@ export function prepareQuestion(q: any) {
       break
     case "RankedQuestion":
       knownFields.push("choices")
+    case "AssetQuestion":
+      knownFields.push("assetSystemId")
+      knownFields.push("assetTypes")        
   }
 
   // Strip unknown fields
