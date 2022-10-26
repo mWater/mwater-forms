@@ -49,7 +49,13 @@ export declare function hasLocalizations(obj: any, locale: any): boolean;
 export declare function findEntityQuestion(formDesign: any, entityType: any): Question | MatrixColumn | null;
 export declare function extractEntityReferences(formDesign: any, responseData: any): EntityRef[];
 export declare function getSiteEntityType(question: SiteQuestion): string;
-/** Get list of custom table ids referenced by a form (cascading ref questions) */
+/** Get list of custom table ids referenced by a form (cascading ref questions)
+ * @deprecated Use getExtraTablesReferenced
+*/
 export declare function getCustomTablesReferenced(formDesign: FormDesign): string[];
+/**
+ * Get list of extra table ids referenced by a form (cascading ref questions and asset questions)
+ */
+export declare function getExtraTablesReferenced(formDesign: FormDesign): string[];
 /** Determine if a choice is visible */
 export declare function isChoiceVisible(choice: Choice, data: ResponseData, responseRow: ResponseRow, schema: Schema): Promise<boolean>;

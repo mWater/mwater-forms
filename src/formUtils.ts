@@ -2,7 +2,7 @@ import _ from "lodash"
 import localizations from "../localizations.json"
 import uuid from "uuid"
 
-import { Item, FormDesign, Question, QuestionBase, SiteQuestion, Choice, MatrixColumn, EntityQuestion, Condition, Section, RosterMatrix, RosterGroup, Group, MatrixColumnQuestion } from "./formDesign"
+import { Item, FormDesign, Question, QuestionBase, SiteQuestion, Choice, MatrixColumn, EntityQuestion, Condition, Section, RosterMatrix, RosterGroup, Group, MatrixColumnQuestion, CascadingRefQuestion, AssetQuestion } from "./formDesign"
 import { LocalizedString, PromiseExprEvaluator, Schema } from "mwater-expressions"
 import { EntityRef, ResponseData } from "./response"
 import ResponseRow from "./ResponseRow"
@@ -784,12 +784,36 @@ export function getSiteEntityType(question: SiteQuestion): string {
   return entityType
 }
 
-/** Get list of custom table ids referenced by a form (cascading ref questions) */
+/** Get list of custom table ids referenced by a form (cascading ref questions) 
+ * @deprecated Use getExtraTablesReferenced
+*/
 export function getCustomTablesReferenced(formDesign: FormDesign): string[] {
+  return getExtraTablesReferenced(formDesign)
+}
+
+/** 
+ * Get list of extra table ids referenced by a form (cascading ref questions and asset questions) 
+ */
+export function getExtraTablesReferenced(formDesign: FormDesign): string[] {
   const items = allItems(formDesign)
 
-  const crqs = _.filter(items, (item) => item._type === "CascadingRefQuestion")
-  const tableIds = _.uniq(_.pluck(crqs, "tableId"))
+  const tableIds: string[] = []
+
+  const cascadingRefQuestions = items.filter(item => item._type === "CascadingRefQuestion") as CascadingRefQuestion[]
+  for (const cascadingRefQuestion of cascadingRefQuestions) {
+    if (!tableIds.includes(cascadingRefQuestion.tableId)) {
+      tableIds.push(cascadingRefQuestion.tableId)
+    }
+  }
+
+  const assetQuestions = items.filter(item => item._type === "AssetQuestion") as AssetQuestion[]
+  for (const assetQuestion of assetQuestions) {
+    const tableId = `assets:${assetQuestion.assetSystemId}`
+    if (!tableIds.includes(tableId)) {
+      tableIds.push(tableId)
+    }
+  }
+
   return tableIds
 }
 
