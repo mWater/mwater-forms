@@ -29,7 +29,7 @@ export function AssetAnswerComponent(props: {
       filter.type = { $in: props.question.assetTypes }
     }
 
-    props.selectAsset(props.question.assetSystemId, filter, props.answer ?? null, (assetId) => {
+    props.selectAsset(props.question.assetSystemId, props.answer ?? null, filter,  (assetId) => {
       props.onValueChange(assetId)
     })
   }
