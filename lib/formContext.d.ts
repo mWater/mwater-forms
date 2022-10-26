@@ -64,10 +64,11 @@ export interface FormContext {
     getCustomTableRow: (tableId: string, rowId: string) => Promise<Row | null>;
     /** Select an asset with optional filter
      * @param assetSystemId id of the asset system
+     * @param assetId currently selected asset
      * @param filter MongoDB-style filter on assets
      * @param callback called with _id of asset selected or null. Never called if cancelled
      */
-    selectAsset?: (assetSystemId: number, filter: any, callback: (assetId: string | null) => void) => void;
+    selectAsset?: (assetSystemId: number, assetId: string | null, filter: any, callback: (assetId: string | null) => void) => void;
     /** Renders an asset as a React element for summary (small box) */
     renderAssetSummaryView?: (assetSystemId: number, assetId: string) => ReactNode;
 }

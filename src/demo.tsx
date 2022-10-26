@@ -116,10 +116,11 @@ const formCtx = {
 
   /** Select an asset with optional filter 
    * @param assetSystemId id of the asset system
+   * @param assetId currently selected asset
    * @param filter MongoDB-style filter on assets
    * @param callback called with _id of asset selected or null. Never called if cancelled
    */
-   selectAsset: (assetSystemId: number, filter: any, callback: (assetId: string | null) => void) => {
+   selectAsset: (assetSystemId: number, assetId: string | null, filter: any, callback: (assetId: string | null) => void) => {
       callback("12345")
    },
 
