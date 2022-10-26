@@ -87,7 +87,7 @@ export default class QuestionComponent extends React.Component<QuestionComponent
         answer: string | null | undefined;
         onValueChange: (answer: string | null) => void;
         T: import("ez-localize").LocalizeString;
-        selectAsset: (assetSystemId: number, filter: any) => Promise<string | null>;
+        selectAsset: (assetSystemId: number, filter: any, callback: (assetId: string | null) => void) => void;
         renderAssetSummaryView: (assetSystemId: number, assetId: string) => React.ReactNode;
     }> | null;
     render(): React.DetailedReactHTMLElement<{

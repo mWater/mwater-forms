@@ -9,10 +9,11 @@ export declare function AssetAnswerComponent(props: {
     onValueChange: (answer: AssetAnswerValue | null) => void;
     T: LocalizeString;
     /** Select an asset with optional filter
-    * @param assetSystemId id of the asset system
-    * @param filter MongoDB-style filter on assets
-    */
-    selectAsset: (assetSystemId: number, filter: any) => Promise<string | null>;
+     * @param assetSystemId id of the asset system
+     * @param filter MongoDB-style filter on assets
+     * @param callback called with _id of asset selected or null. Never called if cancelled
+     */
+    selectAsset: (assetSystemId: number, filter: any, callback: (assetId: string | null) => void) => void;
     /** Renders an asset as a React element for summary (small box) */
     renderAssetSummaryView: (assetSystemId: number, assetId: string) => ReactNode;
 }): JSX.Element;

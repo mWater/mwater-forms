@@ -117,9 +117,10 @@ const formCtx = {
   /** Select an asset with optional filter 
    * @param assetSystemId id of the asset system
    * @param filter MongoDB-style filter on assets
+   * @param callback called with _id of asset selected or null. Never called if cancelled
    */
-   selectAsset: (assetSystemId: number, filter: any): Promise<string | null> => {
-      return Promise.resolve("12345")
+   selectAsset: (assetSystemId: number, filter: any, callback: (assetId: string | null) => void) => {
+      callback("12345")
    },
 
    /** Renders an asset as a React element for summary (small box) */
