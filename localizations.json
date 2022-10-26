@@ -692,7 +692,8 @@
     },
     {
       "_base": "en",
-      "en": "Asset questions not supported"
+      "en": "Asset questions not supported",
+      "_unused": true
     },
     {
       "_base": "en",
@@ -705,6 +706,10 @@
     {
       "_base": "en",
       "en": "Change"
+    },
+    {
+      "_base": "en",
+      "en": "Asset questions not supported on this platform"
     }
   ]
 }

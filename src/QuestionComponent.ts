@@ -718,8 +718,8 @@ export default class QuestionComponent extends React.Component<QuestionComponent
           })
         }
         else {
-          return R("div", { className: "text-warning "},
-            this.context.T("Asset questions not supported")
+          return R("div", { className: "text-warning" },
+            this.context.T("Asset questions not supported on this platform")
           )
         }
   
