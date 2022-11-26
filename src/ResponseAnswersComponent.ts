@@ -89,7 +89,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
 
   handleLocationClick(location: any) {
     if (this.props.formCtx.displayMap) {
-      return this.props.formCtx.displayMap(location)
+      this.props.formCtx.displayMap(location)
     }
   }
 
@@ -345,6 +345,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
           this.props.formCtx.renderAssetSummaryView((q as AssetQuestion).assetSystemId, answer.value as AssetAnswerValue)
         : null
     }
+    return null
   }
 
   // Special render on multiple rows

@@ -17,7 +17,7 @@ export interface FormContext {
      * Function which takes location object { latitude, longitude, accuracy, altitude?, altitudeAccuracy? }
      * and callback with new location object. Opens a map to the location and allows setting if onSet present.
      */
-    displayMap?: (location: Location, onSet?: (location: Location) => void) => void;
+    displayMap?: (location: Location, onSet?: (location: Location | null) => void) => void;
     /** Stores key-value pairs for sticky questions. Object with two functions:
      * get(keyname) : gets object stored under keyname. null/undefined if none
      * set(keyname, value) : saves object as keyname
@@ -84,7 +84,7 @@ export interface ImageAcquirer {
     /** Acquire an image. Success is called with id of image, error with error message */
     acquire(success: (imageId: string) => void, error: () => void): void;
 }
-interface Location {
+export interface Location {
     latitude: number;
     longitude: number;
     /** Elevation, taking into account mastHeight and depth if present */
@@ -92,4 +92,3 @@ interface Location {
     accuracy?: number;
     altitudeAccuracy?: number;
 }
-export {};

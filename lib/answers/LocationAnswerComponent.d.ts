@@ -1,9 +1,10 @@
 import PropTypes from "prop-types";
 import React from "react";
 import { default as LocationEditorComponent } from "../LocationEditorComponent";
+import { LocationAnswerValue } from "../response";
 export interface LocationAnswerComponentProps {
     value?: any;
-    onValueChange: any;
+    onValueChange: (value: LocationAnswerValue | null) => void;
     disableSetByMap?: boolean;
     disableManualLatLng?: boolean;
 }
