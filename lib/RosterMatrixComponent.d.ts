@@ -59,6 +59,7 @@ export default class RosterMatrixComponent extends React.Component<RosterMatrixC
         style: {
             padding: number;
             marginBottom: number;
+            overflowX: "auto";
         };
     }, HTMLElement>;
 }

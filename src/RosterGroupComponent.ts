@@ -214,7 +214,7 @@ export default class RosterGroupComponent extends React.Component<
   render() {
     return R(
       "div",
-      { style: { padding: 5, marginBottom: 20 } },
+      { style: { padding: 5, marginBottom: 20, overflowX: 'auto' } },
       this.renderName(),
       _.map(this.getAnswer(), (entry, index) => this.renderEntry(entry, index)),
 

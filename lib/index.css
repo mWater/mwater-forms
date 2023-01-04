@@ -17,6 +17,7 @@ td.invalid {
 
 .question {
   margin-bottom: 20px;
+  overflow-x: auto;
 }
 
 .question-code {

@@ -281,7 +281,7 @@ export default class RosterMatrixComponent extends React.Component<RosterMatrixC
   render() {
     return R(
       "div",
-      { style: { padding: 5, marginBottom: 20 } },
+      { style: { padding: 5, marginBottom: 20, overflowX: 'auto' } },
       this.renderName(),
       R("table", { className: "table" }, this.renderHeader(), this.renderBody()),
 

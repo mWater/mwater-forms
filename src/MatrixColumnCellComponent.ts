@@ -188,7 +188,7 @@ export default class MatrixColumnCellComponent extends React.Component<MatrixCol
       case "DateColumnQuestion":
         elem = R(
           "div",
-          { style: { maxWidth: "18em" } },
+          { style: { maxWidth: "18em", minWidth: "10em" } },
           R(DateAnswerComponent, {
             format: column.format,
             placeholder: column.placeholder,

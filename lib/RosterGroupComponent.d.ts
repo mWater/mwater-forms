@@ -53,6 +53,7 @@ export default class RosterGroupComponent extends React.Component<RosterGroupCom
         style: {
             padding: number;
             marginBottom: number;
+            overflowX: "auto";
         };
     }, HTMLElement>;
 }
