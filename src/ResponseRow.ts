@@ -328,6 +328,11 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
       // if parts[2] == "value" and parts[3] == "image"
       //   return callback(null, data[parts[1]]?.value?[parts[3]])
 
+      // Randomly asked
+      if (parts.length === 3 && parts[2] === "randomAsked") {
+        return data[parts[1]] ? (data[parts[1]] as Answer).randomAsked || false : null
+      }
+
       // Alternates
       if (parts.length === 3 && (parts[2] === "na" || parts[2] === "dontknow")) {
         return data[parts[1]] ? (data[parts[1]] as Answer).alternate == parts[2] || null : null
