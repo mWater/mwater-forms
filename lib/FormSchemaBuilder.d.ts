@@ -11,7 +11,7 @@ export default class FormSchemaBuilder {
         table: string;
         column: Column;
     }[]): Schema;
-    addRosterTables(schema: any, design: any, conditionsExprCompiler: any, reverseJoins: any, tableId: any): any;
+    addRosterTables(schema: Schema, design: FormDesign, conditionsExprCompiler: ConditionsExprCompiler, reverseJoins: any, tableId: string): Schema;
     addIndicatorCalculations(schema: Schema, form: Form, indicators: any[]): Schema;
     createIndicatorCalculationSection(indicatorCalculation: IndicatorCalculation, schema: Schema, indicators: any[], form: Form): Section | null;
     addConfidentialDataForRosters(schema: Schema, form: Form, conditionsExprCompiler: ConditionsExprCompiler): Schema;

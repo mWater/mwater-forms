@@ -651,8 +651,8 @@ export function hasLocalizations(obj: any, locale: any) {
   return _.any(strs, (str) => str[locale])
 }
 
-// Finds an entity question of the specified type, or a legacy site question
-export function findEntityQuestion(formDesign: any, entityType: any) {
+/** Finds an entity question of the specified type, or a legacy site question */
+export function findEntityQuestion(formDesign: FormDesign, entityType: string) {
   let question = _.find(priorQuestions(formDesign), function (q) {
     if (q._type === "EntityQuestion" && q.entityType === entityType) {
       return true
@@ -696,6 +696,18 @@ export function findEntityQuestion(formDesign: any, entityType: any) {
   }
 
   return null
+}
+
+/** Finds asset question in form */
+export function findAssetQuestion(formDesign: FormDesign, assetSystemId: number): AssetQuestion | null {
+  const question = allItems(formDesign).find((item) => {
+    if (item._type === "AssetQuestion" && item.assetSystemId === assetSystemId) {
+      return true
+    }
+    return false
+  })
+
+  return (question as AssetQuestion | null) ?? null
 }
 
 // Finds all references to entities in a response. Returns array of:

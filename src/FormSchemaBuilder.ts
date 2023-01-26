@@ -221,7 +221,7 @@ export default class FormSchemaBuilder {
         column.name = appendStr(appendStr(form.design.name, ": "), column.name)
       }
 
-      // Add to entities table if it exists
+      // Add to entities/assets table if it exists
       if (schema.getTable(reverseJoin.table)) {
         var section
         let table = schema.getTable(reverseJoin.table)!
@@ -254,12 +254,12 @@ export default class FormSchemaBuilder {
   }
 
   // tableId is form table, not roster table
-  addRosterTables(schema: any, design: any, conditionsExprCompiler: any, reverseJoins: any, tableId: any) {
+  addRosterTables(schema: Schema, design: FormDesign, conditionsExprCompiler: ConditionsExprCompiler, reverseJoins: any, tableId: string) {
     // For each item
     for (let item of formUtils.allItems(design)) {
       if (item._type == "RosterGroup" || item._type == "RosterMatrix") {
         // If new, create table with single join back to responses
-        var contents, name
+        var contents: any[], name
         if (!item.rosterId) {
           contents = [
             {
@@ -279,11 +279,11 @@ export default class FormSchemaBuilder {
               name: { _base: "en", en: "Index" }
             }
           ]
-          name = appendStr(appendStr(schema.getTable(tableId).name, ": "), item.name)
+          name = appendStr(appendStr(schema.getTable(tableId)!.name, ": "), item.name)
         } else {
           // Use existing contents
-          contents = schema.getTable(`${tableId}:roster:${item.rosterId}`).contents.slice()
-          ;({ name } = schema.getTable(`${tableId}:roster:${item.rosterId}`))
+          contents = schema.getTable(`${tableId}:roster:${item.rosterId}`)!.contents.slice()
+          ;({ name } = schema.getTable(`${tableId}:roster:${item.rosterId}`)!)
         }
 
         // Add contents
@@ -1919,6 +1919,25 @@ export default class FormSchemaBuilder {
           }
 
           addColumn(column)
+
+          // Add reverse join 
+          reverseJoin = {
+            table: `assets:${(item as AssetQuestion).assetSystemId}`,
+            column: {
+              id: `${tableId}:data:${item._id}:value`,
+              // Form name is not available here. Prefix later.
+              name: item.text,
+              type: "join",
+              join: {
+                type: "1-n",
+                inverse: column.id,
+                toTable: tableId,
+                fromColumn: "_id",
+                toColumn: column.join!.fromColumn,
+              }
+            } as Column
+          }
+          reverseJoins.push(reverseJoin)
           break
       }
 
