@@ -38,6 +38,12 @@ export interface FormComponentProps {
     entity?: any;
     /** Type of form-level entity to load */
     entityType?: string;
+    /** Form-level asset to load */
+    assetSystemId?: number;
+    /** Type of form-level asset to load */
+    assetType?: string;
+    /** Id of form-level asset to load */
+    assetId?: string;
     /** True to render as a single page, not divided into sections */
     singlePageMode?: boolean;
     /** True to disable the confidential fields, used during editing responses with confidential data */

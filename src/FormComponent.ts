@@ -63,6 +63,15 @@ export interface FormComponentProps {
   /** Type of form-level entity to load */
   entityType?: string
 
+  /** Form-level asset to load */
+  assetSystemId?: number
+
+  /** Type of form-level asset to load */
+  assetType?: string
+
+  /** Id of form-level asset to load */
+  assetId?: string
+  
   /** True to render as a single page, not divided into sections */
   singlePageMode?: boolean
 
@@ -174,6 +183,9 @@ export default class FormComponent extends React.Component<FormComponentProps, F
       this.props.formCtx.stickyStorage, {
         entityType: this.props.entityType,
         entity: this.props.entity,
+        assetSystemId: this.props.assetSystemId,
+        assetType: this.props.assetType,
+        assetId: this.props.assetId,
       }
     ) : null
     const randomAskedCalculator = new RandomAskedCalculator(this.props.design)
