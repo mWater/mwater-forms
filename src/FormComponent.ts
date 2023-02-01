@@ -78,7 +78,7 @@ interface FormComponentState {
   visibilityStructure: any
 }
 
-// Displays a form that can be filled out
+/** Displays a form that can be filled out */
 export default class FormComponent extends React.Component<FormComponentProps, FormComponentState> {
   currentData: ResponseData | null
 
@@ -171,9 +171,10 @@ export default class FormComponent extends React.Component<FormComponentProps, F
     const visibilityCalculator = new VisibilityCalculator(this.props.design, this.props.schema)
     const defaultValueApplier = this.props.formCtx.stickyStorage ? new DefaultValueApplier(
       this.props.design,
-      this.props.formCtx.stickyStorage,
-      this.props.entity,
-      this.props.entityType
+      this.props.formCtx.stickyStorage, {
+        entityType: this.props.entityType,
+        entity: this.props.entity,
+      }
     ) : null
     const randomAskedCalculator = new RandomAskedCalculator(this.props.design)
     const responseCleaner = new ResponseCleaner()

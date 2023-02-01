@@ -49,6 +49,7 @@ interface FormComponentState {
     T: any;
     visibilityStructure: any;
 }
+/** Displays a form that can be filled out */
 export default class FormComponent extends React.Component<FormComponentProps, FormComponentState> {
     currentData: ResponseData | null;
     static childContextTypes: {};

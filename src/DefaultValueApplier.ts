@@ -2,8 +2,8 @@ import _ from "lodash"
 import moment from "moment"
 import * as formUtils from "./formUtils"
 import { StickyStorage } from "./formContext"
-import { FormDesign, MatrixQuestion } from "./formDesign"
-import { ResponseData } from "./response"
+import { FormDesign, Item } from "./formDesign"
+import { Answer, ResponseData } from "./response"
 import { VisibilityStructure } from "./VisibilityCalculator"
 
 /** The DefaultValueApplier applies a value stored in the stickyStorage as a default answer to a question.
@@ -13,17 +13,29 @@ import { VisibilityStructure } from "./VisibilityCalculator"
  *    - The data for that question needs to be undefined or null, alternate needs to be null or undefined
  */
  export default class DefaultValueApplier {
-  formDesign: FormDesign
-  stickyStorage: StickyStorage
-  entity: any
-  entityType: string | undefined
+   formDesign: FormDesign
+   stickyStorage: StickyStorage
+   entity: any
+   entityType: string | undefined
+   assetSystemId: number | undefined
+   assetType: string | undefined
+   assetId: string | undefined
 
   /** entity is entity to use */
-  constructor(formDesign: FormDesign, stickyStorage: StickyStorage, entity?: any, entityType?: string) {
+  constructor(formDesign: FormDesign, stickyStorage: StickyStorage, options: {
+    entity?: any
+    entityType?: string
+    assetSystemId?: number
+    assetType?: string
+    assetId?: string
+  } = {}) {
     this.formDesign = formDesign
     this.stickyStorage = stickyStorage
-    this.entity = entity
-    this.entityType = entityType
+    this.entity = options.entity
+    this.entityType = options.entityType
+    this.assetSystemId = options.assetSystemId
+    this.assetType = options.assetType
+    this.assetId = options.assetId
   }
 
   setStickyData(
@@ -33,7 +45,6 @@ import { VisibilityStructure } from "./VisibilityCalculator"
   ): ResponseData {
     // NOTE: Always remember that data is immutable
     const newData = _.cloneDeep(data)
-    const questions = []
 
     for (let key in newVisibilityStructure) {
       // If it wasn't visible and it now is
@@ -65,14 +76,8 @@ import { VisibilityStructure } from "./VisibilityCalculator"
           dataEntry = data[values[2]]
         } else if (values.length === 3) {
           type = "matrix"
-          // Matrix question, so question is column
-          question = formUtils.findItem(this.formDesign, values[0])
-          if (!question) {
-            continue
-          }
-
-          question = _.findWhere((question as MatrixQuestion).columns, { _id: values[2] })
-          dataEntry = data[values[0]]?.[values[1]]?.[values[2]]
+          // Matrix sticky is not supported
+          continue
         } else {
           continue
         }
@@ -84,7 +89,7 @@ import { VisibilityStructure } from "./VisibilityCalculator"
 
         // The data for that question needs to be undefined or null
         // Alternate for that question needs to be undefined or null
-        if (dataEntry == null || (dataEntry.value == null && dataEntry.alternate == null)) {
+        if (dataEntry == null || ((dataEntry as Answer).value == null && (dataEntry as Answer).alternate == null)) {
           const defaultValue = this.getHighestPriorityDefaultValue(question)
           // Makes sure that a defaultValue has been found
           if (defaultValue != null && defaultValue !== "") {
@@ -102,7 +107,7 @@ import { VisibilityStructure } from "./VisibilityCalculator"
               }
             }
 
-            dataEntry.value = defaultValue
+            (dataEntry as Answer).value = defaultValue
           }
         }
       }
@@ -111,12 +116,12 @@ import { VisibilityStructure } from "./VisibilityCalculator"
     return newData
   }
 
-  // 3 different sources exist for default values.
-  // This function returns the one with highest priority:
-  // - entityType/entity
-  // - sticky with a stored sticky value
-  // - defaultValue
-  getHighestPriorityDefaultValue(question: any) {
+  /** 2 different sources exist for default values.
+   * This function returns the one with highest priority:
+   * - entityType/entity
+   * - sticky with a stored sticky value
+   */
+  getHighestPriorityDefaultValue(question: Item) {
     if (
       this.entityType != null &&
       this.entity != null &&
@@ -139,23 +144,37 @@ import { VisibilityStructure } from "./VisibilityCalculator"
       }
     }
 
+    // Fill in asset question
+    if (question._type === "AssetQuestion"
+      && this.assetSystemId != null &&
+      this.assetId != null &&
+      this.assetType != null) {
+      if (question.assetSystemId === this.assetSystemId) {
+        if (question.assetTypes == null || question.assetTypes.includes(this.assetType)) {
+          return this.assetId
+        }
+      }
+    }
+
     // If it's a sticky question or if it has a defaultValue
     // Tries to use a sticky value if possible, if not it tries to use the defaultValue field
-    if (question.sticky) {
-      // Uses stickyStorage.get(questionId) to find any sticky value
-      return this.stickyStorage.get(question._id)
+    if (formUtils.isQuestion(question)) {
+      if (question.sticky) {
+        // Uses stickyStorage.get(questionId) to find any sticky value
+        return this.stickyStorage.get(question._id)
+      }
     }
 
     // Handle defaultNow
     if ((question._type === "DateQuestion" || question._type === "DateColumnQuestion") && question.defaultNow) {
       // If datetime
-      if (question.format.match(/ss|LLL|lll|m|h|H/)) {
+      if (question.format!.match(/ss|LLL|lll|m|h|H/)) {
         return new Date().toISOString()
       } else {
         return moment().format("YYYY-MM-DD")
       }
     }
 
-    return question.defaultValue
+    return undefined
   }
 }
