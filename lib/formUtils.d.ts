@@ -48,8 +48,10 @@ export declare function updateLocalizations(formDesign: any): (boolean | undefin
 export declare function hasLocalizations(obj: any, locale: any): boolean;
 /** Finds an entity question of the specified type, or a legacy site question */
 export declare function findEntityQuestion(formDesign: FormDesign, entityType: string): Question | MatrixColumn | null;
-/** Finds asset question in form */
-export declare function findAssetQuestion(formDesign: FormDesign, assetSystemId: number): AssetQuestion | null;
+/** Finds asset question in form
+ * @param assetType optional asset type to match
+ */
+export declare function findAssetQuestion(formDesign: FormDesign, assetSystemId: number, assetType?: string): AssetQuestion | null;
 export declare function extractEntityReferences(formDesign: any, responseData: any): EntityRef[];
 export declare function getSiteEntityType(question: SiteQuestion): string;
 /** Get list of custom table ids referenced by a form (cascading ref questions)

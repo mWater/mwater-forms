@@ -698,10 +698,15 @@ export function findEntityQuestion(formDesign: FormDesign, entityType: string) {
   return null
 }
 
-/** Finds asset question in form */
-export function findAssetQuestion(formDesign: FormDesign, assetSystemId: number): AssetQuestion | null {
+/** Finds asset question in form
+ * @param assetType optional asset type to match
+ */
+export function findAssetQuestion(formDesign: FormDesign, assetSystemId: number, assetType?: string): AssetQuestion | null {
   const question = allItems(formDesign).find((item) => {
     if (item._type === "AssetQuestion" && item.assetSystemId === assetSystemId) {
+      if (assetType && item.assetTypes && !item.assetTypes.includes(assetType)) {
+        return false
+      }
       return true
     }
     return false
