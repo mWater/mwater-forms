@@ -5,7 +5,6 @@ import { ResponseData } from "./response";
 import { Schema } from "mwater-expressions";
 import SectionsComponent from "./SectionsComponent";
 import ItemListComponent from "./ItemListComponent";
-import ezlocalize from "ez-localize";
 import { default as ResponseRow } from "./ResponseRow";
 export interface FormComponentProps {
     /** Context to use for form. See docs/FormsContext.md */
@@ -67,7 +66,7 @@ export default class FormComponent extends React.Component<FormComponentProps, F
     componentWillReceiveProps(nextProps: any): void;
     componentDidUpdate(prevProps: any): void;
     componentWillMount(): void;
-    createLocalizer(design: any, locale: any): ezlocalize.LocalizeString;
+    createLocalizer(design: any, locale: any): import("ez-localize").LocalizeString;
     handleSubmit: () => Promise<void>;
     isVisible: (itemId: any) => any;
     createResponseRow: (data: any) => ResponseRow;

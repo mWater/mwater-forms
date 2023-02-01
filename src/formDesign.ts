@@ -144,7 +144,7 @@ export interface QuestionBase {
   /** Localized markdown help which can be opened */
   help?: LocalizedString
 
-  /** True to copy answer from previous time form was filled */
+  /** True to copy answer from previous time form was filled. Not applicable to Matrix Questions */
   sticky?: boolean
 
   /** True to record location where question was first answered */

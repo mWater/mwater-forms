@@ -9,7 +9,7 @@ const R = React.createElement
 
 import SectionsComponent from "./SectionsComponent"
 import ItemListComponent from "./ItemListComponent"
-import ezlocalize from "ez-localize"
+import { Localizer } from "ez-localize"
 import ResponseCleaner from "./ResponseCleaner"
 import { default as ResponseRow } from "./ResponseRow"
 import DefaultValueApplier from "./DefaultValueApplier"
@@ -148,7 +148,7 @@ export default class FormComponent extends React.Component<FormComponentProps, F
       locales: design.locales,
       strings: localizedStrings
     }
-    const { T } = new ezlocalize.Localizer(localizerData, locale)
+    const { T } = new Localizer(localizerData, locale)
     return T
   }
 
