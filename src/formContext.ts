@@ -1,5 +1,5 @@
 import LocationFinder from "./LocationFinder"
-import { createContext, ReactNode } from "react"
+import { ReactNode } from "react"
 import { Row } from "mwater-expressions"
 
 export interface StickyStorage {

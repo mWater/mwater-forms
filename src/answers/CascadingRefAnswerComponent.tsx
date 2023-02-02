@@ -42,6 +42,9 @@ interface State {
 
   /** True if editing the value. Ignores changes to the value and prevents saving */
   editing: boolean
+
+  /** Error object if problem loading the rows */
+  error?: string
 }
 
 /** Cascading selection of a row from a table.
@@ -74,8 +77,7 @@ export class CascadingRefAnswerComponent extends React.Component<Props, State> {
         this.setState({ dropdownValues, rows })
       })
       .catch((err) => {
-        this.setState({ rows: [] })
-        throw err
+        this.setState({ rows: [], error: err })
       })
   }
 
@@ -233,6 +235,16 @@ export class CascadingRefAnswerComponent extends React.Component<Props, State> {
       )
     }
 
+    // If error accessing rows
+    if (this.state.error) {
+      // May mean that doesn't have access to table
+      return (
+        <div className="alert alert-danger">
+          {this.props.T("Cannot access data for this question. Please contact your administrator.")}
+        </div>
+      )
+    }    
+
     const dropdowns: ReactNode[] = []
 
     for (let i = 0; i < this.props.question.dropdowns.length; i++) {
@@ -241,17 +253,6 @@ export class CascadingRefAnswerComponent extends React.Component<Props, State> {
       if (!this.state.dropdownValues[i]) {
         break
       }
-    }
-
-    // If can't access table, fatal error
-    const table = this.props.schema.getTable(this.props.question.tableId)
-    if (!table) {
-      // Means that doesn't have access to table
-      return (
-        <div className="alert alert-danger">
-          {this.props.T("Cannot access data for this question. Please contact your administrator.")}
-        </div>
-      )
     }
 
     // If no data, probably internet issue or not set up

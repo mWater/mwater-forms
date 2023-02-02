@@ -28,6 +28,8 @@ interface State {
     dropdownValues?: (string | null)[];
     /** True if editing the value. Ignores changes to the value and prevents saving */
     editing: boolean;
+    /** Error object if problem loading the rows */
+    error?: string;
 }
 /** Cascading selection of a row from a table.
  * Special handling of null (arrives as undefined) values in table: they are converted to ""
