@@ -3,7 +3,7 @@ import { PromiseExprEvaluatorRow, Schema, Row } from "mwater-expressions";
 import { ResponseData } from "./response";
 import { FormDesign } from "./formDesign";
 import { CustomRow } from "./CustomRow";
-import AssetRow from "./AssetRow";
+import { AssetRow } from "./AssetRow";
 export default class ResponseRow implements PromiseExprEvaluatorRow {
     /** data of entire response */
     responseData: ResponseData;

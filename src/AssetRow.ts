@@ -1,5 +1,5 @@
 import _ from "lodash"
-import { Schema } from "mwater-expressions"
+import { PromiseExprEvaluatorRow } from "mwater-expressions"
 
 /** Columns that are also physical columns in asset table, not stored in jsonb field "data" */
 const physicalColumns = [
@@ -16,51 +16,34 @@ const physicalColumns = [
   "water_point"
 ]
 
+type Asset = any
+
 /**
  * Implements the type of row object required by mwater-expressions' PromiseExprEvaluator. Allows expressions to be evaluated
  * on an asset.
+ * 
+ * Note: this is a copy of mwater-common's AssetRow
  */
-export default class AssetRow {
-  /** System id of asset */
-  systemId: number
+export class AssetRow implements PromiseExprEvaluatorRow {
+  asset: Asset
 
-  /** Object of asset */
-  asset: any
-
-  /** Schema that includes asset table */
-  schema: Schema
-
-  constructor(options: {
-    /** System id of asset */
-    systemId: number
-
-    /** Object of asset */
-    asset: any
-
-    /** Schema that includes asset table */
-    schema: Schema
-  }) {
-    this.systemId = options.systemId
-    this.asset = options.asset
-    this.schema = options.schema
+  constructor(asset: Asset) {
+    this.asset = asset
   }
 
-  // Gets primary key of row. callback is called with (error, value)
-  getPrimaryKey() {
-    return Promise.resolve(this.asset._id)
+  async getPrimaryKey(): Promise<any> {
+    return this.asset._id
   }
 
-  // Gets the value of a column, returning a promise
-  getField(columnId: string) {
-    // TODO: Doesn't support 1-n joins
+  async getField(columnId: string): Promise<any> {
     if (physicalColumns.includes(columnId)) {
-      return Promise.resolve(this.asset[columnId] ?? null)
+      return this.asset[columnId]
+    } else {
+      return this.asset.data[columnId]
     }
-    return Promise.resolve(this.asset.data[columnId] ?? null)
   }
 
-  async followJoin(columnId: string) {
-    // TODO joins not supported
-    return null
+  followJoin(columnId: string): Promise<PromiseExprEvaluatorRow | PromiseExprEvaluatorRow[] | null> {
+    throw new Error("Following joins not implemented for assets")
   }
 }

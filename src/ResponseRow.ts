@@ -15,7 +15,7 @@ import {
   AssetQuestion
 } from "./formDesign"
 import { CustomRow } from "./CustomRow"
-import AssetRow from "./AssetRow"
+import { AssetRow } from "./AssetRow"
 
 /*
   Implements the type of row object required by mwater-expressions' PromiseExprEvaluator. Allows expressions to be evaluated
@@ -518,11 +518,7 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
             const systemId = (question as AssetQuestion).assetSystemId
             const asset = await this.getAssetById(systemId, value as string)
             if (asset) {
-              return new AssetRow({
-                systemId,
-                asset,
-                schema: this.schema
-              })
+              return new AssetRow(asset)
             }
           }
           return null
