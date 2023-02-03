@@ -30,11 +30,11 @@ export interface FormComponentProps {
   /** Called when response data changes */
   onDataChange: (data: ResponseData) => void
 
-  /** Schema to use, including form */
+  /** Schema to use, including form and any dependent extra tables like assets or custom tablesets */
   schema: Schema
 
   /** The current deployment */
-  deployment: string
+  deployment?: string
 
   /** e.g. "fr" */
   locale?: string
