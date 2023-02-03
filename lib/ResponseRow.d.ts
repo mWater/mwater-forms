@@ -3,6 +3,7 @@ import { PromiseExprEvaluatorRow, Schema, Row } from "mwater-expressions";
 import { ResponseData } from "./response";
 import { FormDesign } from "./formDesign";
 import { CustomRow } from "./CustomRow";
+import AssetRow from "./AssetRow";
 export default class ResponseRow implements PromiseExprEvaluatorRow {
     /** data of entire response */
     responseData: ResponseData;
@@ -24,6 +25,8 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
     getEntityByCode: (entityType: string, entityCode: string, callback: (entity: any) => void) => void;
     /** Get a specific row of a custom table */
     getCustomTableRow: (tableId: string, rowId: string) => Promise<Row | null>;
+    /** Gets an asset by _id */
+    getAssetById: (assetSystemId: number, assetId: string) => Promise<any | null>;
     /** Deployment _id of the response */
     deployment?: string;
     /** Optional submitted on */
@@ -51,6 +54,8 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
         getEntityByCode: (entityType: string, entityCode: string, callback: (entity: any) => void) => void;
         /** Get a specific row of a custom table */
         getCustomTableRow: (tableId: string, rowId: string) => Promise<Row | null>;
+        /** Gets an asset by _id */
+        getAssetById: (assetSystemId: number, assetId: string) => Promise<any | null>;
         /** Deployment _id of the response */
         deployment?: string;
         /** Optional submitted on */
@@ -62,5 +67,5 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
     getPrimaryKey(): any;
     getField(columnId: string): Promise<any>;
     /** Follows a join to get row or rows */
-    followJoin(columnId: string): Promise<ResponseRow | ResponseRow[] | EntityRow | CustomRow | null>;
+    followJoin(columnId: string): Promise<AssetRow | ResponseRow | ResponseRow[] | EntityRow | CustomRow | null>;
 }

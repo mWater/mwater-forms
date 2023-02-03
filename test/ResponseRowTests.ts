@@ -19,11 +19,12 @@ describe("ResponseRow", function () {
         { _id: "qcbt", _type: "AquagenxCBTQuestion" },
         { _id: "qroster", _type: "RosterGroup", contents: [{ _id: "qrtext", _type: "TextQuestion" }] },
         { _id: "qconditional", _type: "TextQuestion", conditions: [{ lhs: { question: "qtext" }, op: "present" }] },
-        { _id: "qcascadingref", _type: "CascadingRefQuestion", tableId: "custom.ts0.t0" }
+        { _id: "qcascadingref", _type: "CascadingRefQuestion", tableId: "custom.ts0.t0" },
+        { _id: "qasset", _type: "AssetQuestion", assetSystemId: 1 }
       ]
     }
 
-    return (this.testField = (data: any, column: any, expected: any, done: any) => {
+    this.testField = (data: any, column: any, expected: any, done: any) => {
       const row = new ResponseRow({ formDesign: this.formDesign, responseData: data })
       row
         .getField(column)
@@ -32,7 +33,7 @@ describe("ResponseRow", function () {
           return done()
         })
         .catch(done)
-    })
+    }
   })
 
   describe("values", function () {
@@ -147,6 +148,32 @@ describe("ResponseRow", function () {
 
       value = await customRow.getPrimaryKey()
       return assert.equal(value, "c1")
+    })
+
+    it("gets asset", async function () {
+      const row = new ResponseRow({
+        formDesign: this.formDesign,
+        responseData: { qasset: { value: "12345" } },
+        getAssetById: (systemId, assetId) => {
+          assert.equal(systemId, 1)
+          assert.equal(assetId, "12345")
+          return Promise.resolve({ _id: "c1", name: "abc", data: { foo: "bar" } })
+        }
+      })
+
+      const customId = await row.getField("data:qasset:value")
+      assert.equal(customId, "12345")
+
+      let assetRow = await row.followJoin("data:qasset:value")
+      let value = await assetRow.getField("name")
+      assert.equal(value, "abc")
+
+      assetRow = await row.followJoin("data:qasset:value")
+      value = await assetRow.getField("foo")
+      assert.equal(value, "bar")
+
+      value = await assetRow.getPrimaryKey()
+      assert.equal(value, "c1")
     })
 
     it("gets matrix") // Are just nesting
@@ -299,5 +326,5 @@ describe("ResponseRow", function () {
     assert.equal(value, "def")
   })
 
-  return it("gets asked")
+  it("gets asked")
 })

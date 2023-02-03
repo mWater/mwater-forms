@@ -172,6 +172,7 @@ export default class FormComponent extends React.Component<FormComponentProps, F
       getEntityById: this.props.formCtx.getEntityById,
       getEntityByCode: this.props.formCtx.getEntityByCode,
       getCustomTableRow: this.props.formCtx.getCustomTableRow,
+      getAssetById: this.props.formCtx.getAssetById,
       deployment: this.props.deployment
     })
   }

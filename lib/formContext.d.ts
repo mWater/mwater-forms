@@ -62,6 +62,13 @@ export interface FormContext {
     getCustomTableRows: (tableId: string) => Promise<Row[]>;
     /** Get a specific row of a custom table */
     getCustomTableRow: (tableId: string, rowId: string) => Promise<Row | null>;
+    /**
+     * Get an asset
+     *
+     * @param assetSystemId id of the asset system
+     * @param assetId id of the asset
+     */
+    getAssetById: (assetSystemId: number, assetId: string) => Promise<any | null>;
     /** Select an asset with optional filter
      * @param assetSystemId id of the asset system
      * @param assetId currently selected asset

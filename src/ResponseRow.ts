@@ -11,9 +11,11 @@ import {
   SiteQuestion,
   EntityQuestion,
   CascadingRefQuestion,
-  Question
+  Question,
+  AssetQuestion
 } from "./formDesign"
 import { CustomRow } from "./CustomRow"
+import AssetRow from "./AssetRow"
 
 /*
   Implements the type of row object required by mwater-expressions' PromiseExprEvaluator. Allows expressions to be evaluated
@@ -47,6 +49,9 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
 
   /** Get a specific row of a custom table */
   getCustomTableRow: (tableId: string, rowId: string) => Promise<Row | null>
+
+  /** Gets an asset by _id */
+  getAssetById: (assetSystemId: number, assetId: string) => Promise<any | null>
 
   /** Deployment _id of the response */
   deployment?: string
@@ -97,6 +102,9 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
     /** Get a specific row of a custom table */
     getCustomTableRow: (tableId: string, rowId: string) => Promise<Row | null>
 
+    /** Gets an asset by _id */
+    getAssetById: (assetSystemId: number, assetId: string) => Promise<any | null>
+
     /** Deployment _id of the response */
     deployment?: string
 
@@ -114,6 +122,7 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
     this.getEntityById = options.getEntityById
     this.getEntityByCode = options.getEntityByCode
     this.getCustomTableRow = options.getCustomTableRow
+    this.getAssetById = options.getAssetById
     this.deployment = options.deployment
     this.submittedOn = options.submittedOn
     this.code = options.code
@@ -128,6 +137,7 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
       getEntityById: this.getEntityById,
       getEntityByCode: this.getEntityByCode,
       getCustomTableRow: this.getCustomTableRow,
+      getAssetById: this.getAssetById,
       deployment: this.deployment,
       rosterId: rosterId,
       rosterEntryIndex: rosterEntryIndex
@@ -389,6 +399,7 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
         getEntityById: this.getEntityById,
         getEntityByCode: this.getEntityByCode,
         getCustomTableRow: this.getCustomTableRow,
+        getAssetById: this.getAssetById,
         deployment: this.deployment
       })
     }
@@ -494,6 +505,22 @@ export default class ResponseRow implements PromiseExprEvaluatorRow {
                 tableId: (question as CascadingRefQuestion).tableId,
                 getEntityById: this.getEntityById,
                 row: customRow,
+                schema: this.schema
+              })
+            }
+          }
+          return null
+        }
+
+        if (answerType == "asset") {
+          // Create asset row
+          if (value) {
+            const systemId = (question as AssetQuestion).assetSystemId
+            const asset = await this.getAssetById(systemId, value as string)
+            if (asset) {
+              return new AssetRow({
+                systemId,
+                asset,
                 schema: this.schema
               })
             }
