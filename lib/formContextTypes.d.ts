@@ -14,5 +14,6 @@ export declare let imageManager: PropTypes.Validator<object>;
 export declare let imageAcquirer: PropTypes.Requireable<object>;
 export declare let getCustomTableRows: PropTypes.Validator<(...args: any[]) => any>;
 export declare let getCustomTableRow: PropTypes.Validator<(...args: any[]) => any>;
+export declare let getAssetById: PropTypes.Validator<(...args: any[]) => any>;
 export declare let selectAsset: PropTypes.Requireable<(...args: any[]) => any>;
 export declare let renderAssetSummaryView: PropTypes.Requireable<(...args: any[]) => any>;

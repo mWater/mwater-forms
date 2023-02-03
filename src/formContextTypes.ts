@@ -17,6 +17,7 @@ export let imageManager = PropTypes.object.isRequired
 export let imageAcquirer = PropTypes.object
 export let getCustomTableRows = PropTypes.func.isRequired
 export let getCustomTableRow = PropTypes.func.isRequired
+export let getAssetById = PropTypes.func.isRequired
 export let selectAsset = PropTypes.func
 export let renderAssetSummaryView = PropTypes.func
  
