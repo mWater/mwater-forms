@@ -101,11 +101,11 @@ export class CustomTablesetSchemaBuilder {
       // Create table
       schema = schema.addTable(schemaTable)
 
-      // Add reverse joins to entities and regions (if not already present)
+      // Add reverse joins to entities, regions and similar tables (if not already present)
       for (const column of flattenContents(contents)) {
         if (column.type == "id") {
           const idTable = column.idTable!
-          const reversible = idTable.startsWith("entities.") || idTable.startsWith("regions.") || idTable == "admin_regions"
+          const reversible = idTable.startsWith("entities.") || idTable.startsWith("regions.") || idTable == "admin_regions" || idTable == "users" || idTable == "groups" || idTable == "subjects"
           if (reversible) {
             const otherTable = schema.getTable(column.idTable!)
             if (otherTable) {
