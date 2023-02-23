@@ -118,7 +118,7 @@ export class CustomTablesetSchemaBuilder {
                   type: "1-n",
                   toTable: tableId,
                   inverse: column.id,
-                  fromColumn: "_id",
+                  fromColumn: otherTable.primaryKey!,
                   toColumn: column.id
                 }
               }
