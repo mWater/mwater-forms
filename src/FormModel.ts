@@ -83,7 +83,11 @@ export default class FormModel {
   }
 
   /** Check if user can edit deployment */
-  static canEditDeployment(deployment: Deployment, user: string, groups: string[]) {
+  canEditDeployment(deployment: Deployment, user: string, groups: string[]) {
+    if (this.amDeploy(user, groups)) {
+      return true
+    }
+    
     let subjects = ["all", "user:" + user]
     subjects = subjects.concat(_.map(groups, (g) => "group:" + g))
     return _.intersection(deployment.superadmins || [], subjects).length > 0

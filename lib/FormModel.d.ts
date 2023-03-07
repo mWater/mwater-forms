@@ -16,5 +16,5 @@ export default class FormModel {
     /** Check if user is superadmin of at least one deployment */
     amDeploymentSuperadmin(user: string, groups: string[]): boolean;
     /** Check if user can edit deployment */
-    static canEditDeployment(deployment: Deployment, user: string, groups: string[]): boolean;
+    canEditDeployment(deployment: Deployment, user: string, groups: string[]): boolean;
 }
