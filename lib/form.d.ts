@@ -81,8 +81,14 @@ export interface Deployment {
     enumerators: string[];
     /** List of ids of users and groups who can view final responses. i.e. user:<username> or group:<groupname> */
     viewers: string[];
-    /** List of ids of users and groups who can edit/delete all responses. i.e. user:<username> or group:<groupname> */
+    /** List of ids of users and groups who can edit/delete all responses. i.e. user:<username> or group:<groupname>
+     * Note that this is called "Managers" in the UI.
+     */
     admins: string[];
+    /** List of ids of users and groups who can do everything admins can but also edit the deployment.
+     * Note that this is called "Admins" in the UI.
+     */
+    superadmins?: string[];
     /** List of ids of users and groups who can view all indicator calculation. i.e. user:<username> or group:<groupname> */
     indicatorCalculationViewers?: string[];
     /** True if enumerator retains admin role on final responses */

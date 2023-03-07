@@ -149,7 +149,7 @@ export default class ResponseModel {
     }
 
     // Get list of admins at both deployment and form level
-    let admins = _.union(_.pluck(_.where(this.form.roles, { role: "admin" }), "id"), deployment.admins)
+    let admins = _.union(_.pluck(_.where(this.form.roles, { role: "admin" }), "id"), deployment.admins, deployment.superadmins || [])
 
     // Add enumerator
     admins = _.union(admins, [`user:${this.response.user}`])
@@ -302,7 +302,7 @@ export default class ResponseModel {
     admins = _.union(admins, _.pluck(_.where(this.form.roles, { role: "admin" }), "id"))
 
     // Add deployment admins
-    admins = _.union(admins, deployment.admins)
+    admins = _.union(admins, deployment.admins, deployment.superadmins || [])
 
     // Approvers are admins unless at their stage, otherwise they are viewers
     if (this.response.status === "pending") {
@@ -358,6 +358,7 @@ export default class ResponseModel {
     const admins = _.union(
       _.pluck(_.where(this.form.roles, { role: "admin" }), "id"),
       deployment.admins,
+      deployment.superadmins || [],
       deployment.approvalStages[this.response.approvals!.length]?.approvers || []
     )
     let subjects = ["user:" + this.user, "all"]
@@ -403,7 +404,7 @@ export default class ResponseModel {
     }
 
     // Get list of admins at both deployment and form level
-    let admins = _.union(_.pluck(_.where(this.form.roles, { role: "admin" }), "id"), deployment.admins)
+    let admins = _.union(_.pluck(_.where(this.form.roles, { role: "admin" }), "id"), deployment.admins, deployment.superadmins || [])
 
     // Add approvers if level allows editing
     if (this.response.status === "pending") {
@@ -434,7 +435,7 @@ export default class ResponseModel {
     }
 
     // Get list of admins at both deployment and form level
-    let admins = _.union(_.pluck(_.where(this.form.roles, { role: "admin" }), "id"), deployment.admins)
+    let admins = _.union(_.pluck(_.where(this.form.roles, { role: "admin" }), "id"), deployment.admins, deployment.superadmins || [])
 
     // Add approvers if level allows editing
     if (this.response.status === "pending") {
@@ -500,6 +501,7 @@ export default class ResponseModel {
       admins = _.union(
         _.pluck(_.where(this.form.roles, { role: "admin" }), "id"),
         deployment.admins,
+        deployment.superadmins || [],
         deployment.approvalStages[this.response.approvals!.length]?.approvers || []
       )
       subjects = ["user:" + this.user, "all"]
@@ -511,7 +513,7 @@ export default class ResponseModel {
       return false
     } else if (this.response.status === "final") {
       // Admins can reject final
-      admins = _.union(_.pluck(_.where(this.form.roles, { role: "admin" }), "id"), deployment.admins)
+      admins = _.union(_.pluck(_.where(this.form.roles, { role: "admin" }), "id"), deployment.admins, deployment.superadmins || [])
 
       subjects = ["user:" + this.user, "all"]
       subjects = subjects.concat(_.map(this.groups, (g) => "group:" + g))

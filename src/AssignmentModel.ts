@@ -40,7 +40,7 @@ export default class AssignmentModel {
     admins = _.union(admins, _.pluck(_.where(this.form.roles, { role: "admin" }), "id"))
 
     // Add deployment admins
-    admins = _.union(admins, deployment.admins)
+    admins = _.union(admins, deployment.admins, deployment.superadmins || [])
 
     // If already admin, don't include in viewers
     viewers = _.difference(viewers, admins)
