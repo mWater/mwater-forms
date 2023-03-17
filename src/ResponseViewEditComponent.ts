@@ -91,7 +91,7 @@ export default class ResponseViewEditComponent extends React.Component<
     }
 
     responseModel.approve()
-    return this.props.onUpdateResponse(response)
+    this.props.onUpdateResponse(response)
   }
 
   handleReject = () => {
@@ -109,7 +109,7 @@ export default class ResponseViewEditComponent extends React.Component<
     }
 
     responseModel.reject(message)
-    return this.props.onUpdateResponse(response)
+    this.props.onUpdateResponse(response)
   }
 
   handleUnreject = () => {
