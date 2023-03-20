@@ -3,7 +3,7 @@ import moment from "moment"
 import * as formUtils from "./formUtils"
 import { StickyStorage } from "./formContext"
 import { FormDesign, Item } from "./formDesign"
-import { Answer, ResponseData } from "./response"
+import { Answer, ResponseData, RosterData } from "./response"
 import { VisibilityStructure } from "./VisibilityCalculator"
 
 /** The DefaultValueApplier applies a value stored in the stickyStorage as a default answer to a question.
@@ -63,17 +63,19 @@ import { VisibilityStructure } from "./VisibilityCalculator"
           type = "roster"
           question = formUtils.findItem(this.formDesign, values[2])
 
-          // Get roster
-          dataEntry = data[values[0]]
+          // Get roster data
+          const rosterData = data[values[0]] as RosterData
+
+          // Get roster entry
+          const rosterEntry = rosterData[parseInt(values[1])]
 
           // Get data for roster entry
-          dataEntry = dataEntry[parseInt(values[1])]
-          if (!dataEntry) {
+          if (!rosterEntry) {
             continue
           }
 
           // Get data for specific question
-          dataEntry = data[values[2]]
+          dataEntry = rosterEntry.data[values[2]]
         } else if (values.length === 3) {
           type = "matrix"
           // Matrix sticky is not supported

@@ -352,4 +352,50 @@ describe("DefaultValueApplier", function () {
     assert(data !== newData)
     assert.deepEqual(newData, expectedData)
   })
+
+  it("preserves existing sticky value for a roster value", function () {
+    this.design = {
+      contents: [
+        {
+          _type: "RosterGroup",
+          _id: "roster1",
+          contents: [{ _id: "testId", _type: "TextQuestion", text: { en: "Name" }, sticky: true }]
+        }
+      ]
+    }
+
+    const data = {
+      somethingElse: "random data",
+      roster1: [
+        {
+          _id: "abc",
+          data: {
+            testId: { value: "other" }
+          }
+        }
+      ]
+    } as any
+
+    const previousVisibilityStructure = {}
+    const newVisibilityStructure = { "roster1.0.testId": true }
+
+    defaultValueApplier = new DefaultValueApplier(this.design, this.stickyStorage)
+    const newData = defaultValueApplier.setStickyData(data, previousVisibilityStructure, newVisibilityStructure)
+
+    const expectedData = {
+      roster1: [
+        {
+          _id: "abc",
+          data: {
+            testId: { value: "other" }
+          }
+        }
+      ],
+      somethingElse: "random data"
+    } as any
+
+    assert(data !== newData)
+    assert.deepEqual(newData, expectedData)
+  })
+
 })
