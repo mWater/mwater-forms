@@ -124,14 +124,12 @@ export default class DateTimePickerComponent extends React.Component<DateTimePic
   }
 
   render() {
-    const defaultValue = this.props.date ? moment(this.props.date).format(this.getFormat()) : ""
     return (
       <div className="input-group" ref={this.inputRef}>
         <input 
           type="text" 
           className="form-control" 
           placeholder={this.props.placeholder} 
-          defaultValue={defaultValue} 
           ref={c => { this.textRef = c }}
           onChange={ev => {}}
           onKeyDown={this.props.onKeyDown}
