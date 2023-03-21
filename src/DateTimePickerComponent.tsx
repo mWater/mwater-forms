@@ -80,8 +80,7 @@ export default class DateTimePickerComponent extends React.Component<DateTimePic
             clock: format.includes("HH") || format.includes("lll") || format.includes("LLL"),
             hours: format.includes("HH") || format.includes("lll") || format.includes("LLL"),
             minutes: format.includes("mm") || format.includes("lll") || format.includes("LLL"),
-            seconds: format.includes("ss") || format.includes("lll") || format.includes("LLL"),
-            useTwentyfourHour: true
+            seconds: format.includes("ss") || format.includes("lll") || format.includes("LLL")
           },
           icons: {
             time: "fas fa-clock",
@@ -94,6 +93,9 @@ export default class DateTimePickerComponent extends React.Component<DateTimePic
             clear: "fas fa-trash",
             close: "fas fa-times"
           }
+        },
+        localization: {
+          hourCycle: "h23"
         }
       })
 
