@@ -37,7 +37,7 @@
     "immer": "^8.0.0",
     "jquery": "~2.1.0",
     "jsonql": "github:mWater/jsonql",
-    "lodash": "^3.2.0",
+    "lodash": "^4.17.21",
     "markdown-it": "^13.0.1",
     "moment": "^2.27.0",
     "mwater-expressions": "github:mWater/mwater-expressions",
