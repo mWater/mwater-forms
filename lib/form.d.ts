@@ -1,3 +1,4 @@
+import { LocalizedString } from "ez-localize";
 import { Expr } from "mwater-expressions";
 import { FormDesign } from "./formDesign";
 /** Survey form */
@@ -96,8 +97,8 @@ export interface Deployment {
     /** Optional approval stages that responses must pass through to become final. Each stage
      * has a list of approvers who can approve/reject the response and move it along */
     approvalStages: ApprovalStage[];
-    /** Optional message to show after a response is submitted. Markdown format. */
-    postSubmitMessage?: string;
+    /** Optional localized message to show after a response is submitted. Markdown format. */
+    postSubmitMessage?: LocalizedString;
 }
 export interface FormRole {
     /** Subject (user:xyz or group:abc or "all") */

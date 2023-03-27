@@ -1,3 +1,4 @@
+import { LocalizedString } from "ez-localize"
 import { Expr } from "mwater-expressions"
 import { FormDesign } from "./formDesign"
 
@@ -133,8 +134,8 @@ export interface Deployment {
    * has a list of approvers who can approve/reject the response and move it along */
   approvalStages: ApprovalStage[]
 
-  /** Optional message to show after a response is submitted. Markdown format. */
-  postSubmitMessage?: string
+  /** Optional localized message to show after a response is submitted. Markdown format. */
+  postSubmitMessage?: LocalizedString
 }
 
 export interface FormRole {
