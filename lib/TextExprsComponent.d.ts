@@ -29,7 +29,7 @@ export default class TextExprsComponent extends React.Component<TextExprsCompone
     evaluateExprs(): void;
     render(): React.DetailedReactHTMLElement<{
         dangerouslySetInnerHTML: {
-            __html: any;
+            __html: string;
         };
     }, HTMLElement> | React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>;
 }
