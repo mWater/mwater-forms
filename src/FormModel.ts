@@ -58,28 +58,28 @@ export default class FormModel {
   amAdmin(user: string, groups: string[]) {
     let subjects = ["all", "user:" + user]
     subjects = subjects.concat(_.map(groups, (g) => "group:" + g))
-    return _.any(this.form.roles, (r) => subjects.includes(r.id) && r.role === "admin")
+    return user == "admin" || _.any(this.form.roles, (r) => subjects.includes(r.id) && r.role === "admin")
   }
 
   /** Check if user is admin or deploy of entire form */
   amDeploy(user: string, groups: string[]) {
     let subjects = ["all", "user:" + user]
     subjects = subjects.concat(_.map(groups, (g) => "group:" + g))
-    return _.any(this.form.roles, (r) => subjects.includes(r.id) && ["admin", "deploy"].includes(r.role))
+    return user == "admin" || _.any(this.form.roles, (r) => subjects.includes(r.id) && ["admin", "deploy"].includes(r.role))
   }
 
   /** Check if user is admin or superadmin of at least one deployment */
   amDeploymentAdmin(user: string, groups: string[]) {
     let subjects = ["all", "user:" + user]
     subjects = subjects.concat(_.map(groups, (g) => "group:" + g))
-    return _.any(this.form.deployments, (dep) => _.intersection(_.union(dep.admins, dep.superadmins || []), subjects).length > 0)
+    return user == "admin" || _.any(this.form.deployments, (dep) => _.intersection(_.union(dep.admins, dep.superadmins || []), subjects).length > 0)
   }
 
   /** Check if user is superadmin of at least one deployment */
   amDeploymentSuperadmin(user: string, groups: string[]) {
     let subjects = ["all", "user:" + user]
     subjects = subjects.concat(_.map(groups, (g) => "group:" + g))
-    return _.any(this.form.deployments, (dep) => _.intersection(_.union(dep.superadmins || []), subjects).length > 0)
+    return user == "admin" || _.any(this.form.deployments, (dep) => _.intersection(_.union(dep.superadmins || []), subjects).length > 0)
   }
 
   /** Check if user can edit deployment */
