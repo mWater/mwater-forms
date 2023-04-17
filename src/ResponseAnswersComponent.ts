@@ -112,6 +112,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
 
   renderAnswer(q: Question | MatrixColumnQuestion, answer: Answer | null) {
     let label, specify
+    
     if (!answer) {
       return null
     }
@@ -406,6 +407,10 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
   }
 
   renderQuestion(q: Question | MatrixColumnQuestion, dataId: string) {
+
+    // (Do not render disabled question) https://github.com/mWater/mwater-portal/issues/1578
+    if((q as Question).disabled) return null
+
     // Get answer
     let answer
     const dataIds = dataId.split(".")
