@@ -837,7 +837,7 @@ export default class ResponseDataExprValueUpdater {
     if (question._type === "SiteQuestion") {
       // Site questions store code
       selectExpr = { type: "field", tableAlias: "main", column: "code" }
-    } else if (["EntityQuestion", "AdminRegionQuestion", "CascadingRefQuestion"].includes(question._type)) {
+    } else if (["EntityQuestion", "AdminRegionQuestion", "CascadingRefQuestion", "AssetQuestion"].includes(question._type)) {
       // Entity question etc store _id
       selectExpr = { type: "field", tableAlias: "main", column: "_id" }
     } else {
@@ -885,7 +885,7 @@ export default class ResponseDataExprValueUpdater {
     // Set value
     if (question._type === "SiteQuestion") {
       return this.setValue(data, question, { code: rows[0].value })
-    } else if (["EntityQuestion", "AdminRegionQuestion", "CascadingRefQuestion"].includes(question._type)) {
+    } else if (["EntityQuestion", "AdminRegionQuestion", "CascadingRefQuestion", "AssetQuestion"].includes(question._type)) {
       return this.setValue(data, question, rows[0].value)
     } else {
       throw new Error(`Unsupported type ${question._type}`)

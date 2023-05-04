@@ -570,6 +570,91 @@ describe("ResponseDataExprValueUpdater", function () {
     })
   })
 
+  describe("AssetQuestion", function () {
+    beforeEach(function () {
+      // Create form
+      const question = {
+        _id: "q1234",
+        _type: "AssetQuestion",
+        text: { en: "Q1234" },
+        assetSystemId: 1,
+      }
+
+      return (this.formDesign = { _type: "Form", contents: [question] })
+    })
+
+    it("nulls", function (done) {
+      // Create updater
+      const updater = new ResponseDataExprValueUpdater(this.formDesign, null as any, null as any)
+
+      // Update by name
+      const expr = {
+        type: "scalar",
+        table: "responses:form123",
+        joins: ["data:q1234:value"],
+        expr: { type: "field", table: "assets:1", column: "name" }
+      }
+
+      return updater.updateData({ q1234: { value: "12345" } }, expr, null, (error, data) => {
+        assert(!error)
+        assert.equal(data.q1234.value, null)
+        return done()
+      })
+    })
+
+    it("searches", function (done) {
+      // Mock data source
+      const dataSource = {
+        performQuery: (query: any, callback: any) => {
+          // Should query for assets, getting the _id and searching by code
+          compare(query, {
+            type: "query",
+            selects: [{ type: "select", expr: { type: "field", tableAlias: "main", column: "_id" }, alias: "value" }],
+            from: { type: "table", table: "assets:1", alias: "main" },
+            where: {
+              type: "op",
+              op: "and",
+              exprs: [
+                { type: "op", op: "=", exprs: [{ type: "field", tableAlias: "main", column: "code" }, "Code1"] }
+              ]
+            },
+            limit: 2
+          })
+          return callback(null, [{ value: "12345" }])
+        }
+      }
+
+      // Create schema with assets
+      let schema = new Schema()
+      schema = schema.addTable({
+        id: "assets:1",
+        name: { en: "Assets" },
+        primaryKey: "_id",
+        contents: [{ id: "code", type: "text", name: { en: "Code" } }]
+      })
+
+      // Create updater
+      const updater = new ResponseDataExprValueUpdater(this.formDesign, schema, dataSource)
+
+      // Update by code
+      const expr = {
+        type: "scalar",
+        table: "responses:form123",
+        joins: ["data:q1234:value"],
+        expr: { type: "field", table: "assets:1", column: "code" }
+      }
+
+      assert.isTrue(updater.canUpdate(expr), "Should be able to update")
+
+      updater.updateData({}, expr, "Code1", (error, data) => {
+        assert(!error)
+
+        compare(data.q1234.value, "12345")
+        done()
+      })
+    })
+  })
+
   describe("locations", function () {
     beforeEach(function () {
       const formDesign = {
