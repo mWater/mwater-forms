@@ -31,7 +31,7 @@ export interface Calculation {
     desc?: LocalizedString;
     /** Id of roster if from a roster */
     roster?: string;
-    /** Expression (mwater-expression) for the value of the calculation of type number */
+    /** Expression (mwater-expression) for the value of the calculation (of any type output) */
     expr: Expr;
 }
 export interface Locale {
