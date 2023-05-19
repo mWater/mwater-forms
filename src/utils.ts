@@ -3,8 +3,8 @@
 export type PositionStrength = "none" | "poor" | "fair" | "good" | "excellent"
 
 
-// Gets the { angle, distance } from and to locations
-export function getRelativeLocation(fromLoc: any, toLoc: any) {
+/** Gets the { angle, distance } from and to locations */
+export function getRelativeLocation(fromLoc: { latitude: number, longitude: number }, toLoc: { latitude: number, longitude: number }) {
   const x1 = fromLoc.longitude
   const y1 = fromLoc.latitude
   const x2 = toLoc.longitude

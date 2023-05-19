@@ -1,5 +1,12 @@
 export declare type PositionStrength = "none" | "poor" | "fair" | "good" | "excellent";
-export declare function getRelativeLocation(fromLoc: any, toLoc: any): {
+/** Gets the { angle, distance } from and to locations */
+export declare function getRelativeLocation(fromLoc: {
+    latitude: number;
+    longitude: number;
+}, toLoc: {
+    latitude: number;
+    longitude: number;
+}): {
     angle: number;
     distance: number;
 };
