@@ -37,8 +37,6 @@ export interface FormContext {
   selectEntity?: (options: {
     /** e.g. "water_point" */
     entityType: string
-    /** Optional filter of entities that are acceptable */
-    filter?: any
     /** called with _id of entity selected */
     callback: (entityId: string) => void
   }) => void
