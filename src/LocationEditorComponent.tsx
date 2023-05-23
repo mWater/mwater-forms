@@ -461,7 +461,7 @@ export default class LocationEditorComponent extends React.Component<Props, Stat
         <div>
           <i className="fa fa-spinner fa-spin" />
           &nbsp;<b>{msg}</b> &nbsp;
-          {this.state.positionStatus.strength != "none" && this.state.positionStatus.strength != "good" ? (
+          {(this.state.positionStatus.strength == "fair" || this.state.positionStatus.strength == "poor")  ? (
             <button
               type="button"
               className="btn btn-sm btn-secondary"

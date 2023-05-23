@@ -187,7 +187,7 @@ export default class CurrentPositionFinder {
 
   updateStatus() {
     this.strength = calculateGPSStrength(this.pos)
-    const useable = (this.initialDelayLeft <= 0 && ["fair", "poor"].includes(this.strength)) || this.strength === "good"
+    const useable = (this.initialDelayLeft <= 0 && ["fair", "poor"].includes(this.strength)) || this.strength === "good" || this.strength === "excellent"
 
     // Trigger status
     this.eventEmitter.emit("status", {
