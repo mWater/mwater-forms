@@ -1,5 +1,5 @@
 import _ from "lodash"
-import React, { ReactNode } from "react"
+import React, { ReactElement, ReactNode } from "react"
 const R = React.createElement
 
 import * as formUtils from "./formUtils"
@@ -16,7 +16,7 @@ import { CascadingListDisplayComponent } from "./answers/CascadingListDisplayCom
 import { CascadingRefDisplayComponent } from "./answers/CascadingRefDisplayComponent"
 import { CalculationsDisplayComponent } from "./CalculationsDisplayComponent"
 import { Schema } from "mwater-expressions"
-import { FormDesign, Choice, Question, DropdownQuestion, MulticheckQuestion, UnitsQuestion, SiteQuestion, EntityQuestion, LikertQuestion, RankedQuestion, Item, RosterMatrix, RosterGroup, BasicItem, MatrixColumn, MatrixColumnQuestion, AssetQuestion } from "./formDesign"
+import { FormDesign, Choice, Question, DropdownQuestion, MulticheckQuestion, UnitsQuestion, SiteQuestion, EntityQuestion, LikertQuestion, RankedQuestion, Item, RosterMatrix, RosterGroup, BasicItem, MatrixColumn, MatrixColumnQuestion, AssetQuestion, LocationQuestion } from "./formDesign"
 import { Answer, AssetAnswerValue, MatrixAnswerValue, RankedAnswerValue, ResponseData, RosterData, RosterEntry, UnitsAnswerValue } from "./response"
 import { Image } from "./RotationAwareImageComponent"
 import { FormContext } from "./formContext"
@@ -46,6 +46,7 @@ export interface ResponseAnswersComponentProps {
   onChangedLinkClick?: any
   onCompleteHistoryLinkClick?: any
   hideCalculations?: boolean
+  renderAdminRegionForLocationQuestion?: (dataId: string) => ReactElement | null | undefined
 }
 
 interface ResponseAnswersComponentState {
@@ -73,6 +74,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
       getEntityById: props.formCtx.getEntityById,
       getEntityByCode: props.formCtx.getEntityByCode,
       getCustomTableRow: props.formCtx.getCustomTableRow,
+      getAssetById: props.formCtx.getAssetById,
       deployment: props.deployment,
       schema: props.schema
     })
@@ -472,6 +474,8 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
       }
     }
 
+    const questionType = formUtils.getAnswerType(q)
+
     return [
       R(
         "tr",
@@ -483,7 +487,10 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
           R(
             "div",
             null,
-            likertAnswer == null ? this.renderAnswer(q, answer) : undefined,
+            likertAnswer == null ? [
+              this.renderAnswer(q, answer),
+              questionType === 'location' && (q as LocationQuestion).calculateAdminRegion && this.props.renderAdminRegionForLocationQuestion ? this.props.renderAdminRegionForLocationQuestion(dataId) : undefined
+            ] : undefined,
             (() => {
               if (answer && answer.timestamp) {
                 this.props.T("Answered")
@@ -784,6 +791,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
         getEntityById: this.props.formCtx.getEntityById,
         getEntityByCode: this.props.formCtx.getEntityByCode,
         getCustomTableRow: this.props.formCtx.getCustomTableRow,
+        getAssetById: this.props.formCtx.getAssetById
       }),
       locale: this.props.locale
     })

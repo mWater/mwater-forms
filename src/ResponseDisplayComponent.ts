@@ -13,6 +13,7 @@ import { Form } from "./form"
 import { Response, ResponseData } from "./response"
 import { Schema } from "mwater-expressions"
 import { FormContext } from "./formContext"
+import LocationQuestionAdminRegionComponent from "./LocationQuestionAdminRegionComponent"
 
 export interface ResponseDisplayComponentProps {
   form: Form
@@ -321,6 +322,21 @@ export default class ResponseDisplayComponent extends React.Component<
       this.renderArchives()
     )
   }
+
+  renderAdminRegionForLocationQuestion(dataId: string) {
+    if(this.props.response.code)
+      return R(LocationQuestionAdminRegionComponent, {
+        apiUrl: this.props.apiUrl,
+        login: this.props.login,
+        schema: this.props.schema,
+        dataId,
+        table: `responses:${this.props.form._id}`,
+        responseCode: this.props.response.code
+      })
+    
+      return null
+  }
+  
   render() {
     return R(
       "div",
@@ -338,6 +354,7 @@ export default class ResponseDisplayComponent extends React.Component<
         showPrevAnswers: this.state.history != null && this.state.showPrevAnswers,
         highlightChanges: this.state.showPrevAnswers,
         showChangedLink: this.state.history != null,
+        renderAdminRegionForLocationQuestion: (dataId) => this.renderAdminRegionForLocationQuestion(dataId),
         onChangedLinkClick: () => {
           return this.setState({ showPrevAnswers: !this.state.showPrevAnswers })
         },
