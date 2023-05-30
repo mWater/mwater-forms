@@ -64,7 +64,8 @@ export default class LocationAnswerComponent extends React.Component<LocationAns
       onUseMap: !this.props.disableSetByMap && this.context.displayMap != null ? this.handleUseMap : undefined,
       disableManualLatLng: this.props.disableManualLatLng,
       locationFinder: this.context.locationFinder || new LocationFinder(),
-      T: this.context.T
+      T: this.context.T,
+      enableMastHeightAndDepth: true
     })
   }
 }
