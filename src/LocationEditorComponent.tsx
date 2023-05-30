@@ -30,6 +30,9 @@ export interface Props {
   T: (str: string, ...args: any[]) => string
   /** True to disable manual lat/lng coordinates */
   disableManualLatLng?: boolean
+
+  /** True to enable mast height and depth */
+  enableMastHeightAndDepth?: boolean
 }
 
 interface State {
@@ -425,7 +428,7 @@ export default class LocationEditorComponent extends React.Component<Props, Stat
     return (
       <div style={{ marginTop: 20 }}>
         {this.renderEnterManually()}
-        {this.renderMastAndDepth()}
+        {this.props.enableMastHeightAndDepth == true && this.renderMastAndDepth()}
         <button className="btn btn-sm btn-link" onClick={this.handleCloseAdvanced}>
           {this.props.T("Hide Advanced Settings")}
         </button>

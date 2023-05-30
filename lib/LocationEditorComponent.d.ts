@@ -26,6 +26,8 @@ export interface Props {
     T: (str: string, ...args: any[]) => string;
     /** True to disable manual lat/lng coordinates */
     disableManualLatLng?: boolean;
+    /** True to enable mast height and depth */
+    enableMastHeightAndDepth?: boolean;
 }
 interface State {
     /** True if displaying advanced controls */
