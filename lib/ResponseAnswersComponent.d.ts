@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React, { ReactElement, ReactNode } from "react";
 import AsyncLoadComponent from "react-library/lib/AsyncLoadComponent";
 import { VisibilityStructure } from "./VisibilityCalculator";
 import { default as ResponseRow } from "./ResponseRow";
@@ -32,6 +32,7 @@ export interface ResponseAnswersComponentProps {
     onChangedLinkClick?: any;
     onCompleteHistoryLinkClick?: any;
     hideCalculations?: boolean;
+    renderAdminRegionForLocation?: (location: any) => ReactElement | null | undefined;
 }
 interface ResponseAnswersComponentState {
     loading: boolean;
@@ -43,7 +44,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<Respons
     isLoadNeeded(newProps: ResponseAnswersComponentProps, oldProps: ResponseAnswersComponentProps): boolean;
     load(props: ResponseAnswersComponentProps, prevProps: ResponseAnswersComponentProps, callback: any): void;
     handleLocationClick(location: any): void;
-    renderLocation(location: any): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement> | null;
+    renderLocation(location: any, showAdminRegion?: boolean): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement> | null;
     renderAnswer(q: Question | MatrixColumnQuestion, answer: Answer | null): React.ReactNode;
     renderLikertAnswer(q: Question | MatrixColumnQuestion, answer: Answer, prevAnswer: any): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>[] | null;
     renderQuestion(q: Question | MatrixColumnQuestion, dataId: string): (React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>[] | React.ReactElement<{

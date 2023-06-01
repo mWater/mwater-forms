@@ -51,6 +51,15 @@ export default class ResponseDisplayComponent extends React.Component<ResponseDi
             paddingBottom: number;
         };
     }, HTMLElement>;
+    renderAdminRegionForLocation: (location: any) => React.FunctionComponentElement<{
+        apiUrl?: string | undefined;
+        login?: any;
+        location: {
+            longitude: number;
+            latitude: number;
+            method: string;
+        };
+    }> | null;
     render(): React.DetailedReactHTMLElement<React.HTMLAttributes<HTMLElement>, HTMLElement>;
 }
 export {};

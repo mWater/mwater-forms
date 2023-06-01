@@ -1,5 +1,5 @@
 import _ from "lodash"
-import React, { ReactNode } from "react"
+import React, { ReactElement, ReactNode } from "react"
 const R = React.createElement
 
 import * as formUtils from "./formUtils"
@@ -16,8 +16,36 @@ import { CascadingListDisplayComponent } from "./answers/CascadingListDisplayCom
 import { CascadingRefDisplayComponent } from "./answers/CascadingRefDisplayComponent"
 import { CalculationsDisplayComponent } from "./CalculationsDisplayComponent"
 import { Schema } from "mwater-expressions"
-import { FormDesign, Choice, Question, DropdownQuestion, MulticheckQuestion, UnitsQuestion, SiteQuestion, EntityQuestion, LikertQuestion, RankedQuestion, Item, RosterMatrix, RosterGroup, BasicItem, MatrixColumn, MatrixColumnQuestion, AssetQuestion } from "./formDesign"
-import { Answer, AssetAnswerValue, MatrixAnswerValue, RankedAnswerValue, ResponseData, RosterData, RosterEntry, UnitsAnswerValue } from "./response"
+import {
+  FormDesign,
+  Choice,
+  Question,
+  DropdownQuestion,
+  MulticheckQuestion,
+  UnitsQuestion,
+  SiteQuestion,
+  EntityQuestion,
+  LikertQuestion,
+  RankedQuestion,
+  Item,
+  RosterMatrix,
+  RosterGroup,
+  BasicItem,
+  MatrixColumn,
+  MatrixColumnQuestion,
+  AssetQuestion,
+  LocationQuestion
+} from "./formDesign"
+import {
+  Answer,
+  AssetAnswerValue,
+  MatrixAnswerValue,
+  RankedAnswerValue,
+  ResponseData,
+  RosterData,
+  RosterEntry,
+  UnitsAnswerValue
+} from "./response"
 import { Image } from "./RotationAwareImageComponent"
 import { FormContext } from "./formContext"
 import { LocalizeString } from "ez-localize"
@@ -46,6 +74,7 @@ export interface ResponseAnswersComponentProps {
   onChangedLinkClick?: any
   onCompleteHistoryLinkClick?: any
   hideCalculations?: boolean
+  renderAdminRegionForLocation?: (location: any) => ReactElement | null | undefined
 }
 
 interface ResponseAnswersComponentState {
@@ -73,6 +102,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
       getEntityById: props.formCtx.getEntityById,
       getEntityByCode: props.formCtx.getEntityByCode,
       getCustomTableRow: props.formCtx.getCustomTableRow,
+      getAssetById: props.formCtx.getAssetById,
       deployment: props.deployment,
       schema: props.schema
     })
@@ -93,7 +123,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
     }
   }
 
-  renderLocation(location: any) {
+  renderLocation(location: any, showAdminRegion = false) {
     if (location) {
       return R(
         "div",
@@ -104,7 +134,10 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
           `${location.latitude}\u00B0 ${location.longitude}\u00B0`,
           location.accuracy != null ? `(+/-) ${location.accuracy.toFixed(3)} m` : undefined,
           location.method ? ` (${location.method})` : undefined
-        )
+        ),
+        showAdminRegion && this.props.renderAdminRegionForLocation
+          ? this.props.renderAdminRegionForLocation(location)
+          : undefined
       )
     }
     return null
@@ -112,7 +145,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
 
   renderAnswer(q: Question | MatrixColumnQuestion, answer: Answer | null) {
     let label, specify
-    
+
     if (!answer) {
       return null
     }
@@ -179,7 +212,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
           return R("span", { className: "badge bg-danger" }, this.props.T("Invalid Choice"))
         }
       case "choices":
-        return _.map(answer.value as string[], (v) => {
+        return _.map(answer.value as string[], v => {
           choice = _.findWhere((q as MulticheckQuestion).choices, { id: v })
           if (choice) {
             return R(
@@ -212,7 +245,11 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
         }
 
       case "units":
-        if (answer.value && (answer.value as UnitsAnswerValue).quantity != null && (answer.value as UnitsAnswerValue).units != null) {
+        if (
+          answer.value &&
+          (answer.value as UnitsAnswerValue).quantity != null &&
+          (answer.value as UnitsAnswerValue).units != null
+        ) {
           // Find units
           const units = _.findWhere((q as UnitsQuestion).units, { id: (answer.value as UnitsAnswerValue).units })
 
@@ -235,7 +272,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
         }
 
       case "location":
-        return this.renderLocation(answer.value)
+        return this.renderLocation(answer.value, (q as LocationQuestion).calculateAdminRegion)
 
       case "image":
         if (answer.value) {
@@ -248,7 +285,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
         break
 
       case "images":
-        return _.map(answer.value as Image[], (img) => {
+        return _.map(answer.value as Image[], img => {
           return R(ImageDisplayComponent, {
             image: img,
             imageManager: this.props.formCtx.imageManager,
@@ -257,7 +294,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
         })
 
       case "texts":
-        return _.map(answer.value as string[], (txt) => {
+        return _.map(answer.value as string[], txt => {
           return R("div", null, txt)
         })
 
@@ -296,7 +333,9 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
         })
 
       case "admin_region":
-        return R("div", { className: "alert alert-warning" },
+        return R(
+          "div",
+          { className: "alert alert-warning" },
           this.props.T("Admin region questions are no longer supported")
         )
 
@@ -337,14 +376,22 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
         })
 
       case "ranked":
-        const sortedChoices = _.sortBy((q as RankedQuestion).choices, (item: Choice) => (answer.value as RankedAnswerValue)[item.id] ?? 0)
-        const items = sortedChoices.map((choice: Choice, index: number) => R('li', {key: index}, formUtils.localizeString(choice.label, this.props.locale)))
-        return R('ol', {}, items)
+        const sortedChoices = _.sortBy(
+          (q as RankedQuestion).choices,
+          (item: Choice) => (answer.value as RankedAnswerValue)[item.id] ?? 0
+        )
+        const items = sortedChoices.map((choice: Choice, index: number) =>
+          R("li", { key: index }, formUtils.localizeString(choice.label, this.props.locale))
+        )
+        return R("ol", {}, items)
 
       case "asset":
-        return this.props.formCtx.renderAssetSummaryView ?
-          this.props.formCtx.renderAssetSummaryView((q as AssetQuestion).assetSystemId, answer.value as AssetAnswerValue)
-        : null
+        return this.props.formCtx.renderAssetSummaryView
+          ? this.props.formCtx.renderAssetSummaryView(
+              (q as AssetQuestion).assetSystemId,
+              answer.value as AssetAnswerValue
+            )
+          : null
     }
     return null
   }
@@ -379,7 +426,12 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
             )
           } else {
             contents.push(
-              R("tr", null, itemTd, R("td", null, R("span", { className: "badge bg-danger" }, this.props.T("Invalid Choice"))))
+              R(
+                "tr",
+                null,
+                itemTd,
+                R("td", null, R("span", { className: "badge bg-danger" }, this.props.T("Invalid Choice")))
+              )
             )
           }
 
@@ -393,7 +445,12 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
                 )
               } else {
                 contents.push(
-                  R("tr", null, itemTd, R("td", null, R("span", { className: "badge bg-danger" }, this.props.T("Invalid Choice"))))
+                  R(
+                    "tr",
+                    null,
+                    itemTd,
+                    R("td", null, R("span", { className: "badge bg-danger" }, this.props.T("Invalid Choice")))
+                  )
                 )
               }
             }
@@ -407,9 +464,8 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
   }
 
   renderQuestion(q: Question | MatrixColumnQuestion, dataId: string) {
-
     // (Do not render disabled question) https://github.com/mWater/mwater-portal/issues/1578
-    if((q as Question).disabled) return null
+    if ((q as Question).disabled) return null
 
     // Get answer
     let answer
@@ -422,7 +478,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
       if ((rosterData as any).value != null) {
         rosterData = (rosterData as any).value
         answer = rosterData[dataIds[1]][dataIds[2]]
-      } else if(dataIds.length > 3){
+      } else if (dataIds.length > 3) {
         // todo: convert to using data path which would be more predictable.
         answer = rosterData[dataIds[1]].data[dataIds[2]].value[dataIds[3]][dataIds[4]]
       } else {
@@ -471,6 +527,8 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
         return null
       }
     }
+
+    const questionType = formUtils.getAnswerType(q)
 
     return [
       R(
@@ -572,7 +630,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
     const colspan = this.props.showPrevAnswers && this.props.prevData ? 3 : 2
     // Sections and Groups behave the same
     if (item._type === "Section" || item._type === "Group") {
-      contents = _.map(item.contents, (item) => {
+      contents = _.map(item.contents, item => {
         let id = item._id
         if (dataId) {
           // The group is inside a roster
@@ -691,7 +749,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
     if (item._type === "MatrixQuestion") {
       let answer = this.props.data[dataId] as Answer
 
-      if(!answer && dataId.split(".").length === 3) {
+      if (!answer && dataId.split(".").length === 3) {
         const dataIds = dataId.split(".")
         // handle matrix inside of roster where dataId is a path
         answer = this.props.data[dataIds[0]][dataIds[1]].data[dataIds[2]]
@@ -784,6 +842,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
         getEntityById: this.props.formCtx.getEntityById,
         getEntityByCode: this.props.formCtx.getEntityByCode,
         getCustomTableRow: this.props.formCtx.getCustomTableRow,
+        getAssetById: this.props.formCtx.getAssetById
       }),
       locale: this.props.locale
     })
@@ -818,7 +877,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
         R(
           "tbody",
           null,
-          this.props.formDesign.contents.map((item) => {
+          this.props.formDesign.contents.map(item => {
             return this.renderItem(item, this.state.visibilityStructure!, item._id)
           })
         )
@@ -836,7 +895,7 @@ export default class ResponseAnswersComponent extends AsyncLoadComponent<
               schema: this.props.schema,
               responseRow: this.state.responseRow,
               locale: this.props.locale || "en",
-              T: this.props.T,
+              T: this.props.T
             })
           )
         : undefined
