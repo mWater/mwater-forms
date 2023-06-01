@@ -22,10 +22,12 @@ const LocationQuestionAdminRegionComponent: React.FC<LocationQuestionAdminRegion
 
       ;(async () => {
         const datasource = new MWaterDataSource(apiUrl, login.client)
-        const rows = await datasource.performQuery(jsonql)
-        if (rows.length > 0) {
-          setAdminRegion(rows[0].fullname)
-        }
+        try {
+          const rows = await datasource.performQuery(jsonql)
+          if (rows.length > 0) {
+            setAdminRegion(rows[0].fullname)
+          }
+        } catch (error) {}
       })()
     }
   }, [])
