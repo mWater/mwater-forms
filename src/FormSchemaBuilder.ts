@@ -2207,11 +2207,14 @@ export default class FormSchemaBuilder {
         schema = schema.addTable(update(schema.getTable(tableId), { contents: { $push: [calculationsSection] } }))
       }
 
+      // Get calculation type
+      const exprType = new ExprUtils(schema).getExprType(calculation.expr) || "number"
+
       // Add to calculations section
       const calculationsSectionContents = calculationsSection.contents.slice()
       calculationsSectionContents.push({
         id: `calculation:${calculation._id}`,
-        type: "number",
+        type: exprType,
         name: calculation.name,
         desc: calculation.desc,
         expr: calculation.expr,

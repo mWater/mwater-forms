@@ -406,7 +406,7 @@ describe("FormSchemaBuilder addForm", function () {
     const column = schema.getColumn("responses:formid", "calculation:calc1")
     assert.deepEqual(column.name.en, "Calc1")
     assert.deepEqual(column.desc.en, "desc1")
-    assert.deepEqual(column.type, "number")
+    assert.deepEqual(column.type, "boolean")
     return assert.deepEqual(column.expr, form.design.calculations[0].expr)
   })
 
@@ -450,7 +450,7 @@ describe("FormSchemaBuilder addForm", function () {
     const column = schema.getColumn("responses:formid:roster:roster1", "calculation:calc1")
     assert.deepEqual(column.name.en, "Calc1")
     assert.deepEqual(column.desc.en, "desc1")
-    assert.deepEqual(column.type, "number")
+    assert.deepEqual(column.type, "boolean")
     return assert.deepEqual(column.expr, form.design.calculations[0].expr)
   })
 
