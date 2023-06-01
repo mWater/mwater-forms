@@ -79,7 +79,7 @@ export default class ResponseDisplayComponent extends React.Component<
     return $.ajax({ dataType: "json", url })
       .done((history: Response[]) => {
         // Get only ones since first submission
-        const index = _.findIndex(history, (rev) => ["pending", "final"].includes(rev.status))
+        const index = _.findIndex(history, rev => ["pending", "final"].includes(rev.status))
         history = history.slice(0, index + 1)
 
         // Remove history where there was no change to data
@@ -323,20 +323,17 @@ export default class ResponseDisplayComponent extends React.Component<
     )
   }
 
-  renderAdminRegionForLocationQuestion(dataId: string) {
-    if(this.props.response.code)
+  renderAdminRegionForLocation = (location: any) => {
+    if (location)
       return R(LocationQuestionAdminRegionComponent, {
         apiUrl: this.props.apiUrl,
         login: this.props.login,
-        schema: this.props.schema,
-        dataId,
-        table: `responses:${this.props.form._id}`,
-        responseCode: this.props.response.code
+        location
       })
-    
-      return null
+
+    return null
   }
-  
+
   render() {
     return R(
       "div",
@@ -354,7 +351,7 @@ export default class ResponseDisplayComponent extends React.Component<
         showPrevAnswers: this.state.history != null && this.state.showPrevAnswers,
         highlightChanges: this.state.showPrevAnswers,
         showChangedLink: this.state.history != null,
-        renderAdminRegionForLocationQuestion: (dataId) => this.renderAdminRegionForLocationQuestion(dataId),
+        renderAdminRegionForLocation: this.renderAdminRegionForLocation,
         onChangedLinkClick: () => {
           return this.setState({ showPrevAnswers: !this.state.showPrevAnswers })
         },
