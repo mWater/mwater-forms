@@ -32,7 +32,6 @@ export { default as AnswerValidator } from "./answers/AnswerValidator"
 export { default as FormModel } from "./FormModel"
 export { default as ResponseDisplayComponent } from "./ResponseDisplayComponent"
 export * as formContextTypes from "./formContextTypes"
-export { default as EntitySchemaBuilder } from "./EntitySchemaBuilder"
 export { default as AssignmentModel } from "./AssignmentModel"
 
 export let schemaVersion = 22 // Version of the schema that this package supports (cannot compile if higher)
