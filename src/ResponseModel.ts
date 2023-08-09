@@ -51,6 +51,11 @@ export default class ResponseModel {
     // Create code. Not unique, but unique per user if logged in once.
     this.response.code = this.username + "-" + formUtils.createBase32TimeCode(new Date())
 
+    // If username is "Anonymous", add more entropy
+    if (this.username === "Anonymous") {
+      this.response.code += "-" + formUtils.createShortUid()
+    }
+
     this.response.formRev = this.form._rev!
     this.response.status = "draft"
 
